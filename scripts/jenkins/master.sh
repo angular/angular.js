@@ -4,22 +4,35 @@ echo "#################################"
 echo "#### Update master ##############"
 echo "#################################"
 
-# Enable tracing and exit on first failure
-set -xe
+ARG_DEFS=(
+  "[--no-test=true]"
+)
 
-cd `dirname $0`/../..
+function build {
+  cd ../..
 
-echo "#################################"
-echo "####  Jenkins Build  ############"
-echo "#################################"
-./jenkins_build.sh
+  if [[ $NO_TEST ]]; then
+    grunt package
+  else
+    ./jenkins_build.sh
+  fi
 
-echo "#################################"
-echo "## Update code.angular.js.org ###"
-echo "#################################"
-./scripts/code.angularjs.org/publish.sh
+  cd $SCRIPT_DIR
+}
 
-echo "#################################"
-echo "#### Update bower ###############"
-echo "#################################"
-./scripts/bower/publish.sh
+function phase {
+  ../code.angularjs.org/publish.sh --action=$1
+  ../bower/publish.sh --action=$1
+}
+
+function run {
+  build
+
+  # First prepare all scripts (build, test, commit, tag, ...),
+  # so we are sure everything is all right
+  phase prepare
+  # only then publish to github
+  phase publish
+}
+
+source $(dirname $0)/../utils.inc

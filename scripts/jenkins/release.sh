@@ -4,41 +4,31 @@ echo "#################################"
 echo "#### Cut release ################"
 echo "#################################"
 
-if [ "$1" != "patch" -a "$1" != "minor" -a "$1" != "major" ]; then
-  echo "Please specify the next version type: patch|minor|major"
-  exit 1
-fi
-BUMP_TYPE=$1
+ARG_DEFS=(
+  "--next_version_type=(patch|minor|major)"
+  "--next-version-name=(.+)"
+  "[--no-test=true]"
+)
 
-# Enable tracing and exit on first failure
-set -xe
+function init {
+  NG_ARGS=("$@")
+  if [[ $NO_TEST ]]; then
+    NG_ARGS+=(--no_test=true)
+  fi
+}
 
-# Jump onto the master branch and make sure we are using the latest
-git checkout -f master
-git merge --ff-only origin/master
+function phase {
+  ../angular.js/publish.sh --action=$1 "${NG_ARGS[@]}"
+  ../code.angularjs.org/publish.sh --action=$1
+  ../bower/publish.sh --action=$1
+}
 
+function run {
+  # First prepare all scripts (build, test, commit, tag, ...),
+  # so we are sure everything is all right
+  phase prepare
+  # only then publish to github
+  phase publish
+}
 
-# Normalize working dir to script dir
-cd `dirname $0`/../..
-
-
-# Bump versions: remove "-snapshot" suffix
-./scripts/jenkins/bump-remove-snapshot.sh
-
-# Build
-./jenkins_build.sh
-
-# Bump versions: Increment version and add "-snapshot"
-./scripts/jenkins/bump-increment.sh $BUMP_TYPE
-
-echo "-- push to Github"
-# push the commits to github
-git push origin master
-# push the release tag
-git push origin v`cat build/version.txt`
-
-# Update code.angularjs.org
-./scripts/code.angularjs.org/publish.sh
-
-# Update bower
-./scripts/bower/publish.sh
+source $(dirname $0)/../utils.inc
