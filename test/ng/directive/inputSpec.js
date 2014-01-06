@@ -724,7 +724,7 @@ describe('input', function() {
 
   describe('minlength', function() {
 
-    it('should invalid shorter than given minlenght', function() {
+    it('should invalid shorter than given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
@@ -738,7 +738,7 @@ describe('input', function() {
 
   describe('maxlength', function() {
 
-    it('should invalid shorter than given maxlenght', function() {
+    it('should invalid shorter than given maxlength', function() {
       compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
