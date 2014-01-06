@@ -12,7 +12,8 @@ function build {
   cd ../..
 
   if [[ $NO_TEST == "true" ]]; then
-    grunt package
+    npm install --color false
+    grunt ci-checks package --no-color
   else
     ./jenkins_build.sh
   fi
