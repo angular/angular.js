@@ -416,7 +416,6 @@ function $RootScopeProvider(){
         var self = this;
         var oldValue;
         var newValue;
-        var changeDetected;
         var changeFlipFlop = 0;
         var objGetter = $parse(obj);
         var internalArray = [];
@@ -429,14 +428,14 @@ function $RootScopeProvider(){
         var internalValue = initWatchVal;
 
         function $watchCollectionWatch() {
-          var newLength, key, i;
+          var newLength, key, i, changeDetected;
 
           newValue = objGetter(self);
+          oldValue = internalValue;
           changeDetected = 0;
 
           if (!isObject(newValue)) {
             if (internalValue !== newValue) {
-              oldValue = internalValue;
               internalValue = newValue;
               changeDetected++;
             }
@@ -460,7 +459,6 @@ function $RootScopeProvider(){
               }
             }
             if (changeDetected) {
-              oldValue = internalValue;
               // copy the items to array cache
               internalValue = internalArray = [];
               internalValue.length = internalLength = newLength;
@@ -490,7 +488,6 @@ function $RootScopeProvider(){
               }
             }
             if (changeDetected) {
-              oldValue = internalValue;
               // copy the items to object cache
               internalValue = internalObject = {};
               internalLength = 0;
