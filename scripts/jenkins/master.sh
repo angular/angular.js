@@ -8,6 +8,13 @@ ARG_DEFS=(
   "[--no-test=(true|false)]"
 )
 
+function init {
+  if [[ ! $VERBOSE ]]; then
+    VERBOSE=false
+  fi
+  VERBOSE_ARG="--verbose=$VERBOSE"
+}
+
 function build {
   cd ../..
 
@@ -22,8 +29,9 @@ function build {
 }
 
 function phase {
-  ../code.angularjs.org/publish.sh --action=$1
-  ../bower/publish.sh --action=$1
+  ACTION_ARG="--action=$1"
+  ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
 }
 
 function run {
