@@ -390,6 +390,12 @@ var inputType = {
   'reset': noop
 };
 
+// A helper function to call $setValidity and return the value / undefined,
+// a pattern that is repeated a lot in the input validation logic.
+function validateHelper(ctrl,validatorName,validity,value){
+  ctrl.$setValidity(validatorName, validity);
+  return validity ? value : undefined;
+}
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // In composition mode, users are still inputing intermediate text buffer,
@@ -474,22 +480,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       patternValidator,
       match;
 
-  var validate = function(regexp, value) {
-    if (ctrl.$isEmpty(value) || regexp.test(value)) {
-      ctrl.$setValidity('pattern', true);
-      return value;
-    } else {
-      ctrl.$setValidity('pattern', false);
-      return undefined;
-    }
-  };
-
   if (pattern) {
+    var validateRegex = function(regexp, value) {
+      return validateHelper( ctrl, 'pattern', ctrl.$isEmpty(value) || regexp.test(value), value );
+    };
     match = pattern.match(/^\/(.*)\/([gim]*)$/);
     if (match) {
       pattern = new RegExp(match[1], match[2]);
       patternValidator = function(value) {
-        return validate(pattern, value);
+        return validateRegex(pattern, value);
       };
     } else {
       patternValidator = function(value) {
@@ -500,7 +499,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
             'Expected {0} to be a RegExp but was {1}. Element: {2}', pattern,
             patternObj, startingTag(element));
         }
-        return validate(patternObj, value);
+        return validateRegex(patternObj, value);
       };
     }
 
@@ -512,13 +511,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMinlength) {
     var minlength = int(attr.ngMinlength);
     var minLengthValidator = function(value) {
-      if (!ctrl.$isEmpty(value) && value.length < minlength) {
-        ctrl.$setValidity('minlength', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('minlength', true);
-        return value;
-      }
+      return validateHelper( ctrl, 'minlength', ctrl.$isEmpty(value) || value.length >= minlength, value );
     };
 
     ctrl.$parsers.push(minLengthValidator);
@@ -529,13 +522,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMaxlength) {
     var maxlength = int(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
-      if (!ctrl.$isEmpty(value) && value.length > maxlength) {
-        ctrl.$setValidity('maxlength', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('maxlength', true);
-        return value;
-      }
+      return validateHelper( ctrl, 'maxlength', ctrl.$isEmpty(value) || value.length <= maxlength, value );
     };
 
     ctrl.$parsers.push(maxLengthValidator);
@@ -563,14 +550,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   if (attr.min) {
     var minValidator = function(value) {
-      var min = parseFloat(attr.min);
-      if (!ctrl.$isEmpty(value) && value < min) {
-        ctrl.$setValidity('min', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('min', true);
-        return value;
-      }
+      return validateHelper( ctrl, 'min', ctrl.$isEmpty(value) || value >= parseFloat(attr.min), value );
     };
 
     ctrl.$parsers.push(minValidator);
@@ -579,14 +559,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   if (attr.max) {
     var maxValidator = function(value) {
-      var max = parseFloat(attr.max);
-      if (!ctrl.$isEmpty(value) && value > max) {
-        ctrl.$setValidity('max', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('max', true);
-        return value;
-      }
+      return validateHelper( ctrl, 'max', ctrl.$isEmpty(value) || value <= parseFloat(attr.max), value );
     };
 
     ctrl.$parsers.push(maxValidator);
@@ -594,14 +567,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   ctrl.$formatters.push(function(value) {
-
-    if (ctrl.$isEmpty(value) || isNumber(value)) {
-      ctrl.$setValidity('number', true);
-      return value;
-    } else {
-      ctrl.$setValidity('number', false);
-      return undefined;
-    }
+    return validateHelper( ctrl, 'number', ctrl.$isEmpty(value) || isNumber(value), value );
   });
 }
 
@@ -609,13 +575,7 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var urlValidator = function(value) {
-    if (ctrl.$isEmpty(value) || URL_REGEXP.test(value)) {
-      ctrl.$setValidity('url', true);
-      return value;
-    } else {
-      ctrl.$setValidity('url', false);
-      return undefined;
-    }
+    return validateHelper( ctrl, 'url', ctrl.$isEmpty(value) || URL_REGEXP.test(value), value );
   };
 
   ctrl.$formatters.push(urlValidator);
@@ -626,13 +586,7 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    if (ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value)) {
-      ctrl.$setValidity('email', true);
-      return value;
-    } else {
-      ctrl.$setValidity('email', false);
-      return undefined;
-    }
+    return validateHelper( ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value );
   };
 
   ctrl.$formatters.push(emailValidator);
