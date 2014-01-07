@@ -280,7 +280,7 @@ using `templateUrl` instead:
 </example>
 
 Great! But what if we wanted to have our directive match the tag name `<my-customer>` instead?
-If we simply put a `<my-customer>` element into the HMTL, it doesn't work.
+If we simply put a `<my-customer>` element into the HTML, it doesn't work.
 
 <div class="alert alert-waring">
 **Note:** When you create a directive, it is restricted to attribute only by default. In order to
