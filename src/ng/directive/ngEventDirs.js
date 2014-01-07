@@ -315,6 +315,8 @@ forEach(
         <input type="submit" id="submit" value="Submit" />
         <pre>list={{list}}</pre>
       </form>
+      Note; avoid using the same name for `ng-submit` and the `ng-model` in the same form input fields. Something like `ng-submit="homeForm()"` together with an input field having `ng-model="homeForm.searchType"` will result in an error;
+      `TypeError: object is not a function` once the form is submitted.
      </doc:source>
      <doc:scenario>
        it('should check ng-submit', function() {
