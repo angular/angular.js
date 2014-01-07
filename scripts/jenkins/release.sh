@@ -12,12 +12,24 @@ ARG_DEFS=(
 
 function init {
   NG_ARGS=("$@")
+  if [[ ! $VERBOSE ]]; then
+    VERBOSE=false
+  fi
+  if [[ ! $NO_TEST ]]; then
+    NO_TEST=false
+  fi
+  VERBOSE_ARG="--verbose=$VERBOSE"
+  NO_TEST_ARG="--no_test=$VERBOSE"
 }
 
 function phase {
-  ../angular.js/publish.sh --action=$1 "${NG_ARGS[@]}"
-  ../code.angularjs.org/publish.sh --action=$1
-  ../bower/publish.sh --action=$1
+  ACTION_ARG="--action=$1"
+  ../angular.js/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG \
+      --next-version-type=$NEXT_VERSION_TYPE --next-version-name=$NEXT_VERSION_NAME
+  ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG
+  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG
 }
 
 function run {
