@@ -456,13 +456,15 @@ describe('Scope', function() {
 
 
     describe('$watchCollection', function() {
-      var log, $rootScope, deregister;
+      var log, logb, $rootScope, deregister;
 
       beforeEach(inject(function(_$rootScope_) {
         log = [];
+        logb = [];
         $rootScope = _$rootScope_;
-        deregister = $rootScope.$watchCollection('obj', function logger(obj) {
+        deregister = $rootScope.$watchCollection('obj', function logger(obj, objb) {
           log.push(toJson(obj));
+          logb.push(toJson(objb));
         });
       }));
 
@@ -495,22 +497,27 @@ describe('Scope', function() {
           $rootScope.obj = 'test';
           $rootScope.$digest();
           expect(log).toEqual(['"test"']);
+          expect(logb).toEqual([undefined]);
 
           $rootScope.obj = [];
           $rootScope.$digest();
           expect(log).toEqual(['"test"', '[]']);
+          expect(logb).toEqual([undefined, '"test"']);
 
           $rootScope.obj = {};
           $rootScope.$digest();
           expect(log).toEqual(['"test"', '[]', '{}']);
+          expect(logb).toEqual([undefined, '"test"', '[]']);
 
           $rootScope.obj = [];
           $rootScope.$digest();
           expect(log).toEqual(['"test"', '[]', '{}', '[]']);
+          expect(logb).toEqual([undefined, '"test"', '[]', '{}']);
 
           $rootScope.obj = undefined;
           $rootScope.$digest();
           expect(log).toEqual(['"test"', '[]', '{}', '[]', undefined]);
+          expect(logb).toEqual([undefined, '"test"', '[]', '{}', '[]']);
         });
 
 
@@ -533,22 +540,27 @@ describe('Scope', function() {
           $rootScope.obj.push('a');
           $rootScope.$digest();
           expect(log).toEqual(['[]', '["a"]']);
+          expect(logb).toEqual([undefined, '[]']);
 
           $rootScope.obj[0] = 'b';
           $rootScope.$digest();
           expect(log).toEqual(['[]', '["a"]', '["b"]']);
+          expect(logb).toEqual([undefined, '[]', '["a"]']);
 
           $rootScope.obj.push([]);
           $rootScope.obj.push({});
           log = [];
+          logb = [];
           $rootScope.$digest();
           expect(log).toEqual(['["b",[],{}]']);
+          expect(logb).toEqual(['["b"]']);
 
           var temp = $rootScope.obj[1];
           $rootScope.obj[1] = $rootScope.obj[2];
           $rootScope.obj[2] = temp;
           $rootScope.$digest();
           expect(log).toEqual([ '["b",[],{}]', '["b",{},[]]' ]);
+          expect(logb).toEqual([ '["b"]', '["b",[],{}]']);
 
           $rootScope.obj.shift();
           log = [];
@@ -584,6 +596,7 @@ describe('Scope', function() {
           $rootScope.obj = {};
           $rootScope.$digest();
           expect(log).toEqual(['"test"', '{}']);
+          expect(logb).toEqual([undefined, '"test"']);
         });
 
 
@@ -606,27 +619,34 @@ describe('Scope', function() {
           $rootScope.obj.a= 'A';
           $rootScope.$digest();
           expect(log).toEqual(['{}', '{"a":"A"}']);
+          expect(logb).toEqual([undefined, '{}']);
 
           $rootScope.obj.a = 'B';
           $rootScope.$digest();
           expect(log).toEqual(['{}', '{"a":"A"}', '{"a":"B"}']);
+          expect(logb).toEqual([undefined, '{}', '{"a":"A"}']);
 
           $rootScope.obj.b = [];
           $rootScope.obj.c = {};
           log = [];
+          logb = [];
           $rootScope.$digest();
           expect(log).toEqual(['{"a":"B","b":[],"c":{}}']);
+          expect(logb).toEqual(['{"a":"B"}']);
 
           var temp = $rootScope.obj.a;
           $rootScope.obj.a = $rootScope.obj.b;
           $rootScope.obj.c = temp;
           $rootScope.$digest();
           expect(log).toEqual([ '{"a":"B","b":[],"c":{}}', '{"a":[],"b":[],"c":"B"}' ]);
+          expect(logb).toEqual([ '{"a":"B"}', '{"a":"B","b":[],"c":{}}']);
 
           delete $rootScope.obj.a;
           log = [];
+          logb = [];
           $rootScope.$digest();
           expect(log).toEqual([ '{"b":[],"c":"B"}' ]);
+          expect(logb).toEqual([ '{"a":[],"b":[],"c":"B"}' ]);
         });
       });
     });
