@@ -94,6 +94,49 @@ describe("resource", function() {
   });
 
 
+  describe('shallow copy', function() {
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowClearAndCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+
+
+    it('should omit "$$"-prefixed properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
+
+
+    it('should copy "$"-prefixed properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
+
+
+    it('should omit properties from prototype chain', function() {
+      var original, clone = {};
+      function Func() {};
+      Func.prototype.hello = "world";
+
+      original = new Func();
+      original.goodbye = "world";
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.hello).toBeUndefined();
+      expect(clone.goodbye).toBe("world");
+    });
+  });
+
+
   it('should default to empty parameters', function() {
     $httpBackend.expect('GET', 'URL').respond({});
     $resource('URL').query();

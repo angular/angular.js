@@ -190,13 +190,34 @@ describe('angular', function() {
       expect(copy.key).toBe(original.key);
     });
 
-    it('should not copy $$ properties nor prototype properties', function() {
+    it('should omit "$$"-prefixed properties', function() {
       var original = {$$some: true, $$: true};
       var clone = {};
 
       expect(shallowCopy(original, clone)).toBe(clone);
       expect(clone.$$some).toBeUndefined();
       expect(clone.$$).toBeUndefined();
+    });
+
+    it('should copy "$"-prefixed properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
+
+    it('should omit properties from prototype chain', function() {
+      var original, clone = {};
+      function Func() {};
+      Func.prototype.hello = "world";
+
+      original = new Func();
+      original.goodbye = "world";
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.hello).toBeUndefined();
+      expect(clone.goodbye).toBe("world");
     });
   });
 
