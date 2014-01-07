@@ -299,9 +299,10 @@ function jqLiteHasClass(element, selector) {
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
+  var classAttr = (msie !== 9) ? 'setAttribute' : 'className';
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
+      element[classAttr]('class', trim(
           (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " "))
@@ -322,7 +323,8 @@ function jqLiteAddClass(element, cssClasses) {
       }
     });
 
-    element.setAttribute('class', trim(existingClasses));
+    (msie !== 9) ? element.setAttribute('class', trim(existingClasses)) :
+      element.className = trim(existingClasses);
   }
 }
 
