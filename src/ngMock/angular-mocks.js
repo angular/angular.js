@@ -1836,7 +1836,7 @@ angular.mock.clearDataCache = function() {
   });
 
   function isSpecRunning() {
-    return currentSpec && (window.mocha || currentSpec.queue.running);
+    return !!currentSpec;
   }
 
   /**
