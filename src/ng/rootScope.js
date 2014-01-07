@@ -419,10 +419,14 @@ function $RootScopeProvider(){
         var changeDetected;
         var changeFlipFlop = 0;
         var objGetter = $parse(obj);
-        var internalValue;  // Holds simple value or reference to internalArray or internalObject
         var internalArray = [];
         var internalObject = {};
         var internalLength = 0;
+
+        // Holds simple value or reference to internalArray or internalObject.
+        // The special initial value is used to ensure that the listener is called
+        // when the watch is established and that oldValue = newValue.
+        var internalValue = initWatchVal;
 
         function $watchCollectionWatch() {
           var newLength, key, i;
@@ -432,7 +436,7 @@ function $RootScopeProvider(){
 
           if (!isObject(newValue)) {
             if (internalValue !== newValue) {
-              oldValue = copy(internalValue);
+              oldValue = internalValue;
               internalValue = newValue;
               changeDetected++;
             }
@@ -456,10 +460,9 @@ function $RootScopeProvider(){
               }
             }
             if (changeDetected) {
-              // deep copy for report to listener
-              oldValue = copy(internalValue);
+              oldValue = internalValue;
               // copy the items to array cache
-              internalValue = internalArray;
+              internalValue = internalArray = [];
               internalValue.length = internalLength = newLength;
               for (i = 0; i < newLength; i++) {
                 internalValue[i] = newValue[i];
@@ -487,10 +490,9 @@ function $RootScopeProvider(){
               }
             }
             if (changeDetected) {
-              // deep copy for report to listener
-              oldValue = copy(internalValue);
+              oldValue = internalValue;
               // copy the items to object cache
-              internalValue = internalObject;
+              internalValue = internalObject = {};
               internalLength = 0;
               for (key in newValue) {
                 if (newValue.hasOwnProperty(key)) {
@@ -498,17 +500,14 @@ function $RootScopeProvider(){
                   internalValue[key] = newValue[key];
                 }
               }
-              for(key in internalValue) {
-                if (internalValue.hasOwnProperty(key) &&
-                    !newValue.hasOwnProperty(key)) {
-                  delete internalValue[key];
-                }
-              }
             }
           }
 
           if (changeDetected) {
             changeFlipFlop = 1 - changeFlipFlop;
+            if (oldValue === initWatchVal) {
+              oldValue = internalValue;
+            }
           }
 
           return changeFlipFlop;
