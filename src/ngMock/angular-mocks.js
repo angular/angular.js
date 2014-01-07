@@ -1947,7 +1947,7 @@ if(window.jasmine || window.mocha) {
 
   var currentSpec = null,
       isSpecRunning = function() {
-        return currentSpec && (window.mocha || currentSpec.queue.running);
+        return !!currentSpec;
       };
 
 
