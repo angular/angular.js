@@ -459,12 +459,12 @@ describe('Scope', function() {
       var log, logb, $rootScope, deregister;
 
       beforeEach(inject(function(_$rootScope_) {
-        log = [];
-        logb = [];
+        logb = [];  // list of before values
+        log = [];   // list of after values
         $rootScope = _$rootScope_;
         deregister = $rootScope.$watchCollection('obj', function logger(obj, objb) {
-          log.push(toJson(obj));
           logb.push(toJson(objb));
+          log.push(toJson(obj));
         });
       }));
 
@@ -496,28 +496,28 @@ describe('Scope', function() {
         it('should trigger when property changes into array', function() {
           $rootScope.obj = 'test';
           $rootScope.$digest();
-          expect(log).toEqual(['"test"']);
           expect(logb).toEqual(['"test"']);
+          expect(log).toEqual(['"test"']);
 
           $rootScope.obj = [];
           $rootScope.$digest();
-          expect(log).toEqual(['"test"', '[]']);
           expect(logb).toEqual(['"test"', '"test"']);
+          expect(log).toEqual(['"test"', '[]']);
 
           $rootScope.obj = {};
           $rootScope.$digest();
-          expect(log).toEqual(['"test"', '[]', '{}']);
           expect(logb).toEqual(['"test"', '"test"', '[]']);
+          expect(log).toEqual(['"test"', '[]', '{}']);
 
           $rootScope.obj = [];
           $rootScope.$digest();
-          expect(log).toEqual(['"test"', '[]', '{}', '[]']);
           expect(logb).toEqual(['"test"', '"test"', '[]', '{}']);
+          expect(log).toEqual(['"test"', '[]', '{}', '[]']);
 
           $rootScope.obj = undefined;
           $rootScope.$digest();
-          expect(log).toEqual(['"test"', '[]', '{}', '[]', undefined]);
           expect(logb).toEqual(['"test"', '"test"', '[]', '{}', '[]']);
+          expect(log).toEqual(['"test"', '[]', '{}', '[]', undefined]);
         });
 
 
@@ -539,28 +539,28 @@ describe('Scope', function() {
 
           $rootScope.obj.push('a');
           $rootScope.$digest();
-          expect(log).toEqual(['[]', '["a"]']);
           expect(logb).toEqual(['[]', '[]']);
+          expect(log).toEqual(['[]', '["a"]']);
 
           $rootScope.obj[0] = 'b';
           $rootScope.$digest();
-          expect(log).toEqual(['[]', '["a"]', '["b"]']);
           expect(logb).toEqual(['[]', '[]', '["a"]']);
+          expect(log).toEqual(['[]', '["a"]', '["b"]']);
 
           $rootScope.obj.push([]);
           $rootScope.obj.push({});
-          log = [];
           logb = [];
+          log = [];
           $rootScope.$digest();
-          expect(log).toEqual(['["b",[],{}]']);
           expect(logb).toEqual(['["b"]']);
+          expect(log).toEqual(['["b",[],{}]']);
 
           var temp = $rootScope.obj[1];
           $rootScope.obj[1] = $rootScope.obj[2];
           $rootScope.obj[2] = temp;
           $rootScope.$digest();
-          expect(log).toEqual([ '["b",[],{}]', '["b",{},[]]' ]);
           expect(logb).toEqual([ '["b"]', '["b",[],{}]']);
+          expect(log).toEqual([ '["b",[],{}]', '["b",{},[]]' ]);
 
           $rootScope.obj.shift();
           log = [];
@@ -595,8 +595,8 @@ describe('Scope', function() {
 
           $rootScope.obj = {};
           $rootScope.$digest();
-          expect(log).toEqual(['"test"', '{}']);
           expect(logb).toEqual(['"test"', '"test"']);
+          expect(log).toEqual(['"test"', '{}']);
         });
 
 
@@ -618,35 +618,35 @@ describe('Scope', function() {
 
           $rootScope.obj.a= 'A';
           $rootScope.$digest();
-          expect(log).toEqual(['{}', '{"a":"A"}']);
           expect(logb).toEqual(['{}', '{}']);
+          expect(log).toEqual(['{}', '{"a":"A"}']);
 
           $rootScope.obj.a = 'B';
           $rootScope.$digest();
-          expect(log).toEqual(['{}', '{"a":"A"}', '{"a":"B"}']);
           expect(logb).toEqual(['{}', '{}', '{"a":"A"}']);
+          expect(log).toEqual(['{}', '{"a":"A"}', '{"a":"B"}']);
 
           $rootScope.obj.b = [];
           $rootScope.obj.c = {};
           log = [];
           logb = [];
           $rootScope.$digest();
-          expect(log).toEqual(['{"a":"B","b":[],"c":{}}']);
           expect(logb).toEqual(['{"a":"B"}']);
+          expect(log).toEqual(['{"a":"B","b":[],"c":{}}']);
 
           var temp = $rootScope.obj.a;
           $rootScope.obj.a = $rootScope.obj.b;
           $rootScope.obj.c = temp;
           $rootScope.$digest();
-          expect(log).toEqual([ '{"a":"B","b":[],"c":{}}', '{"a":[],"b":[],"c":"B"}' ]);
           expect(logb).toEqual([ '{"a":"B"}', '{"a":"B","b":[],"c":{}}']);
+          expect(log).toEqual([ '{"a":"B","b":[],"c":{}}', '{"a":[],"b":[],"c":"B"}' ]);
 
           delete $rootScope.obj.a;
-          log = [];
           logb = [];
+          log = [];
           $rootScope.$digest();
-          expect(log).toEqual([ '{"b":[],"c":"B"}' ]);
           expect(logb).toEqual([ '{"a":[],"b":[],"c":"B"}' ]);
+          expect(log).toEqual([ '{"b":[],"c":"B"}' ]);
         });
       });
     });
