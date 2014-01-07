@@ -11,6 +11,9 @@
  *
  * @param {number} amount Input to filter.
  * @param {string=} symbol Currency symbol or identifier to be displayed.
+ * @param {(number|string)=} fractionSize Number of decimal places to round the number to.
+ * If this is not provided then the fraction size is computed from the current locale's number
+ * formatting pattern. In the case of the default locale, it will be 3.
  * @returns {string} Formatted number.
  *
  *
@@ -26,17 +29,20 @@
          <input type="number" ng-model="amount"> <br>
          default currency symbol ($): {{amount | currency}}<br>
          custom currency identifier (USD$): {{amount | currency:"USD$"}}
+         custom currency fractionSize (USD$): {{amount | currency:"USD$":3}}
        </div>
      </doc:source>
      <doc:scenario>
        it('should init with 1234.56', function() {
          expect(binding('amount | currency')).toBe('$1,234.56');
          expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
+         expect(binding('amount | currency:"USD$":3')).toBe('USD$1,234.560');
        });
        it('should update', function() {
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
+         expect(binding('amount | currency:"USD$":3')).toBe('(USD$1,234.000)');
        });
      </doc:scenario>
    </doc:example>
@@ -44,9 +50,10 @@
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
+  return function(amount, currencySymbol, fractionSize){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP).
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP,
+      fractionSize).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
