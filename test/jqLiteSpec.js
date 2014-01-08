@@ -714,6 +714,15 @@ describe('jqLite', function() {
       });
 
 
+      it('should allow adding of class in IE9', function() {
+        if (!(jqLite(a).setAttribute && jqLite(a).getAttribute)) return; // IE9 doesn't support node.setAttribute
+        var selector = jqLite([a, b]);
+        expect(selector.addClass('abc')).toBe(selector);
+        expect(jqLite(a).hasClass('abc')).toBe(true);
+        expect(jqLite(b).hasClass('abc')).toBe(true);
+      });
+
+
       it('should ignore falsy values', function() {
         var jqA = jqLite(a);
         expect(jqA[0].className).toBe('');
@@ -833,6 +842,17 @@ describe('jqLite', function() {
         expect(selector.removeClass('abc')).toEqual(selector);
         expect(jqLite(a).hasClass('abc')).toEqual(false);
         expect(jqLite(b).hasClass('abc')).toEqual(false);
+      });
+
+
+      it('should allow removal of class in IE9', function() {
+        if (!(jqLite(a).setAttribute && jqLite(a).getAttribute)) return; // IE9 doesn't support node.setAttribute
+        var selector = jqLite([a, b]);
+        a.className = 'abc';
+        b.className = 'abc';
+        expect(selector.removeClass('abc')).toBe(selector);
+        expect(jqLite(a).hasClass('abc')).toBe(false);
+        expect(jqLite(b).hasClass('abc')).toBe(false);
       });
 
 
