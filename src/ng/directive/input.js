@@ -534,6 +534,10 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   ctrl.$parsers.push(function(value) {
+    //on some browsers, '.' evaluates to NaN which prevents input of leading decimals
+    if (value === '.') {
+      value = '0.';
+    }
     var empty = ctrl.$isEmpty(value);
     if (empty || NUMBER_REGEXP.test(value)) {
       ctrl.$setValidity('number', true);
