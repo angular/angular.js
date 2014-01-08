@@ -3,7 +3,7 @@
 function createXhr(method) {
   // IE8 doesn't support PATCH method, but the ActiveX object does
   /* global ActiveXObject */
-  return (msie <= 8 && lowercase(method) === 'patch')
+  return ((msie <= 8 && lowercase(method) === 'patch') || isUndefined(window.XMLHttpRequest))
       ? new ActiveXObject('Microsoft.XMLHTTP')
       : new window.XMLHttpRequest();
 }
