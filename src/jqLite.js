@@ -358,9 +358,10 @@ function jqLiteHasClass(element, selector) {
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
+  var setter = element.setAttribute ? function(value) { element.setAttribute('class', value) } : function(value) { element.className = value};
+  if (cssClasses && (element.setAttribute || msie === 9)) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
+      setter(trim(
           (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " "))
@@ -371,7 +372,7 @@ function jqLiteRemoveClass(element, cssClasses) {
 
 function jqLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+    var existingClasses = (' ' + (element.getAttribute('class') || element.className || '') + ' ')
                             .replace(/[\n\t]/g, " ");
 
     forEach(cssClasses.split(' '), function(cssClass) {
@@ -381,7 +382,8 @@ function jqLiteAddClass(element, cssClasses) {
       }
     });
 
-    element.setAttribute('class', trim(existingClasses));
+    (msie === 9 && !(element instanceof SVGElement)) ? element.className = trim(existingClasses) :
+      element.setAttribute('class', trim(existingClasses));
   }
 }
 

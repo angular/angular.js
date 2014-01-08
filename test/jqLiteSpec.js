@@ -713,6 +713,14 @@ describe('jqLite', function() {
         expect(jqLite(b).hasClass('abc')).toEqual(true);
       });
 
+      it('should allow adding of class in IE9', function() {
+        if (msie !== 9) return; // IE9 doesn't support node.setAttribute
+        var selector = jqLite([a, b]);
+        expect(selector.addClass('abc')).toBe(selector);
+        expect(jqLite(a).hasClass('abc')).toBe(true);
+        expect(jqLite(b).hasClass('abc')).toBe(true);
+      });
+
 
       it('should ignore falsy values', function() {
         var jqA = jqLite(a);
