@@ -299,13 +299,21 @@ function jqLiteHasClass(element, selector) {
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
-  var classAttr = (msie !== 9) ? 'setAttribute' : 'className';
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element[classAttr]('class', trim(
+      element.setAttribute('class', trim(
           (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " "))
+      );
+    });
+  }
+  else {
+    forEach(cssClasses.split(' '), function(cssClass) {
+      element.className = trim(
+          (" " + (element.getAttribute('class') || '') + " ")
+          .replace(/[\n\t]/g, " ")
+          .replace(" " + trim(cssClass) + " ", " ")
       );
     });
   }
@@ -323,8 +331,8 @@ function jqLiteAddClass(element, cssClasses) {
       }
     });
 
-    (msie !== 9) ? element.setAttribute('class', trim(existingClasses)) :
-      element.className = trim(existingClasses);
+    (msie === 9 && !(element instanceof SVGElement)) ? element.className = trim(existingClasses) :
+      element.setAttribute('class', trim(existingClasses));
   }
 }
 
