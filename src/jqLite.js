@@ -294,7 +294,7 @@ function jqLiteData(element, key, value) {
 
 function jqLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
-  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
+  return ((" " + (element.getAttribute('class') || element.className || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
