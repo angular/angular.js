@@ -308,7 +308,7 @@ function jqLiteRemoveClass(element, cssClasses) {
       );
     });
   }
-  else if (msie === 9) {
+  else if (msie) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.className = trim(
           (" " + (element.className || '') + " ")
@@ -331,7 +331,7 @@ function jqLiteAddClass(element, cssClasses) {
       }
     });
 
-    (msie === 9 && !(element instanceof SVGElement)) ? element.className = trim(existingClasses) :
+    (msie && !(element instanceof SVGElement)) ? element.className = trim(existingClasses) :
       element.setAttribute('class', trim(existingClasses));
   }
 }
