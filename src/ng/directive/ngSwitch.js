@@ -168,11 +168,9 @@ var ngSwitchWhenDirective = ngDirective({
   transclude: 'element',
   priority: 800,
   require: '^ngSwitch',
-  compile: function(element, attrs) {
-    return function(scope, element, attr, ctrl, $transclude) {
-      ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
-      ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: $transclude, element: element });
-    };
+  link: function(scope, element, attrs, ctrl, $transclude) {
+    ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
+    ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: $transclude, element: element });
   }
 });
 
