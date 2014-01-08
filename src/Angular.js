@@ -772,7 +772,7 @@ function shallowCopy(src, dst) {
   for(var key in src) {
     // shallowCopy is only ever called by $compile nodeLinkFn, which has control over src
     // so we don't need to worry about using our custom hasOwnProperty here
-    if (src.hasOwnProperty(key) && key.charAt(0) !== '$' && key.charAt(1) !== '$') {
+    if (src.hasOwnProperty(key) && !(key.charAt(0) === '$' && key.charAt(1) === '$')) {
       dst[key] = src[key];
     }
   }
