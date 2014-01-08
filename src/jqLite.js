@@ -308,10 +308,10 @@ function jqLiteRemoveClass(element, cssClasses) {
       );
     });
   }
-  else {
+  else if (msie === 9) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.className = trim(
-          (" " + (element.getAttribute('class') || '') + " ")
+          (" " + (element.className || '') + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " ")
       );
@@ -321,7 +321,7 @@ function jqLiteRemoveClass(element, cssClasses) {
 
 function jqLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+    var existingClasses = (' ' + (element.getAttribute('class') || element.className || '') + ' ')
                             .replace(/[\n\t]/g, " ");
 
     forEach(cssClasses.split(' '), function(cssClass) {
