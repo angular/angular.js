@@ -458,6 +458,28 @@ describe('Scope', function() {
     describe('$watchCollection', function() {
       var log, logb, $rootScope, deregister;
 
+      it('should return oldCollection === newCollection on first call (only) to listener', inject(function($rootScope) {
+        var paramsEqual;
+        $rootScope.obj = {'a': 'b'};
+        deregister = $rootScope.$watchCollection('obj', function listener(obj, objb) {
+          paramsEqual = (obj === objb);
+        });
+
+        // equal first time
+        $rootScope.$digest();
+        expect(paramsEqual).toBeTruthy();
+
+        $rootScope.obj.a = 'c';
+        $rootScope.$digest();
+        expect(paramsEqual).toBeFalsy();
+
+        $rootScope.obj = undefined;
+        $rootScope.$digest();
+        expect(paramsEqual).toBeFalsy();
+
+      }));
+
+
       beforeEach(inject(function(_$rootScope_) {
         logb = [];  // list of before values
         log = [];   // list of after values

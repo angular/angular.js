@@ -503,7 +503,7 @@ function $RootScopeProvider(){
           if (changeDetected) {
             changeFlipFlop = 1 - changeFlipFlop;
             if (oldValue === initWatchVal) {
-              oldValue = internalValue;
+              oldValue = newValue;
             }
           }
 
