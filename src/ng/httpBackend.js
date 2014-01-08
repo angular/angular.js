@@ -54,7 +54,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         } else {
           completeRequest(callback, status || -2);
         }
-        delete callbacks[callbackId];
+        callbacks[callbackId] = angular.noop;
       });
     } else {
 
