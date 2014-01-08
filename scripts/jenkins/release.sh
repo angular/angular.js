@@ -19,7 +19,7 @@ function init {
     NO_TEST=false
   fi
   VERBOSE_ARG="--verbose=$VERBOSE"
-  NO_TEST_ARG="--no_test=$VERBOSE"
+  NO_TEST_ARG="--no_test=$NO_TEST"
 }
 
 function phase {
