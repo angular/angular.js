@@ -1391,6 +1391,30 @@ describe('$compile', function() {
             expect(element.html()).toContain('i = 1');
           });
         });
+
+        it('should copy compileNode data into linkNode\'s data', function() {
+          module(function($compileProvider) {
+            $compileProvider.directive('tplDir', function(log) {
+              return {
+                scope: true,
+                templateUrl: 'tplDir.html',
+                replace: true,
+                link: function(scope, element) {
+                  log(scope.$id);
+                  log(element.scope().$id);
+                }
+              };
+            });
+          });
+          inject(function($compile, $rootScope, $templateCache, log) {
+            $templateCache.put('tplDir.html', '<div></div>');
+            element = $compile('<div tpl-dir></div>')($rootScope);
+            $rootScope.$digest();
+            var $log = log.toArray();
+            expect($log.length).toBe(2);
+            expect($log[0]).toBe($log[1]);
+          });
+        });
       });
 
 

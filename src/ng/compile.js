@@ -1673,7 +1673,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             }
 
             tempTemplateAttrs = {$attr: {}};
+            var data = $compileNode.data();
             replaceWith($rootElement, $compileNode, compileNode);
+            $compileNode.data(data);
             var templateDirectives = collectDirectives(compileNode, [], tempTemplateAttrs);
 
             if (isObject(origAsyncDirective.scope)) {
