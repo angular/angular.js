@@ -307,8 +307,7 @@ function jqLiteRemoveClass(element, cssClasses) {
           .replace(" " + trim(cssClass) + " ", " "))
       );
     });
-  }
-  else if (msie === 9) {
+  } else if (msie === 9) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.className = trim(
           (" " + (element.className || '') + " ")
