@@ -815,6 +815,14 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should parse "." to zero', function () {
+        compileInput('<input type="number" ng-model="price" />');
+        changeInputValueTo('.');
+        expect(scope.price).toBe(0);
+        expect(inputElm).toBeValid();
+        expect(inputElm.val()).toBe('.');
+    });
+
 
     describe('min', function() {
 
