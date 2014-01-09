@@ -308,11 +308,20 @@ function jqLiteRemoveClass(element, cssClasses) {
       );
     });
   }
+  else if (msie === 9) {
+    forEach(cssClasses.split(' '), function(cssClass) {
+      element.className = trim(
+          (" " + (element.className || '') + " ")
+          .replace(/[\n\t]/g, " ")
+          .replace(" " + trim(cssClass) + " ", " ")
+      );
+    });
+  }
 }
 
 function jqLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+    var existingClasses = (' ' + (element.getAttribute('class') || element.className || '') + ' ')
                             .replace(/[\n\t]/g, " ");
 
     forEach(cssClasses.split(' '), function(cssClass) {
@@ -322,7 +331,8 @@ function jqLiteAddClass(element, cssClasses) {
       }
     });
 
-    element.setAttribute('class', trim(existingClasses));
+    (msie === 9 && !(element instanceof SVGElement)) ? element.className = trim(existingClasses) :
+      element.setAttribute('class', trim(existingClasses));
   }
 }
 
