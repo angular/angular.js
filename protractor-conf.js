@@ -3,6 +3,7 @@ exports.config = {
 
   specs: [
     'build/docs/ptore2e/**/*.js',
+    'test/e2e/docsAppE2E.js'
   ],
 
   capabilities: {
