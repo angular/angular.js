@@ -409,1072 +409,1072 @@ describe('ngModel', function() {
 });
 
 
-describe('input', function() {
-  var formElm, inputElm, scope, $compile, $sniffer, $browser, changeInputValueTo;
+describe('input', function () {
+    var formElm, inputElm, scope, $compile, $sniffer, $browser, changeInputValueTo;
 
-  function compileInput(inputHtml) {
-    inputElm = jqLite(inputHtml);
-    formElm = jqLite('<form name="form"></form>');
-    formElm.append(inputElm);
-    $compile(formElm)(scope);
-  }
-
-  beforeEach(inject(function($injector, _$sniffer_, _$browser_) {
-    $sniffer = _$sniffer_;
-    $browser = _$browser_;
-    $compile = $injector.get('$compile');
-    scope = $injector.get('$rootScope');
-
-    changeInputValueTo = function(value) {
-      inputElm.val(value);
-      browserTrigger(inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
-    };
-  }));
-
-  afterEach(function() {
-    dealoc(formElm);
-  });
-
-
-  it('should bind to a model', function() {
-    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
-
-    scope.$apply(function() {
-      scope.name = 'misko';
-    });
-
-    expect(inputElm.val()).toBe('misko');
-  });
-
-
-  it('should not set readonly or disabled property on ie7', function() {
-    this.addMatchers({
-      toBeOff: function(attributeName) {
-        var actualValue = this.actual.attr(attributeName);
-        this.message = function() {
-          return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
-            "' in: " + angular.mock.dump(this.actual);
-        }
-
-        return !actualValue || actualValue == 'false';
-      }
-    });
-
-    compileInput('<input type="text" ng-model="name" name="alias"/>');
-    expect(inputElm.prop('readOnly')).toBe(false);
-    expect(inputElm.prop('disabled')).toBe(false);
-
-    expect(inputElm).toBeOff('readOnly');
-    expect(inputElm).toBeOff('readonly');
-    expect(inputElm).toBeOff('disabled');
-  });
-
-
-  it('should update the model on "blur" event', function() {
-    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
-
-    changeInputValueTo('adam');
-    expect(scope.name).toEqual('adam');
-  });
-
-  if (!(msie < 9)) {
-    describe('compositionevents', function() {
-      it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
-        $sniffer.android = false;
-
-        compileInput('<input type="text" ng-model="name" name="alias"" />');
-        changeInputValueTo('a');
-        expect(scope.name).toEqual('a');
-        browserTrigger(inputElm, 'compositionstart');
-        changeInputValueTo('adam');
-        expect(scope.name).toEqual('a');
-        browserTrigger(inputElm, 'compositionend');
-        changeInputValueTo('adam');
-        expect(scope.name).toEqual('adam');
-      }));
-
-      it('should update the model between "compositionstart" and "compositionend" on android', inject(function($sniffer) {
-        $sniffer.android = true;
-
-        compileInput('<input type="text" ng-model="name" name="alias"" />');
-        changeInputValueTo('a');
-        expect(scope.name).toEqual('a');
-        browserTrigger(inputElm, 'compositionstart');
-        changeInputValueTo('adam');
-        expect(scope.name).toEqual('adam');
-        browserTrigger(inputElm, 'compositionend');
-        changeInputValueTo('adam2');
-        expect(scope.name).toEqual('adam2');
-      }));
-    });
-  }
-
-  describe('"change" event', function() {
-    function assertBrowserSupportsChangeEvent(inputEventSupported) {
-      // Force browser to report a lack of an 'input' event
-      $sniffer.hasEvent = function(eventName) {
-        if (eventName === 'input' && !inputEventSupported) {
-          return false;
-        }
-        return true;
-      };
-      compileInput('<input type="text" ng-model="name" name="alias" />');
-
-      inputElm.val('mark');
-      browserTrigger(inputElm, 'change');
-      expect(scope.name).toEqual('mark');
+    function compileInput(inputHtml) {
+        inputElm = jqLite(inputHtml);
+        formElm = jqLite('<form name="form"></form>');
+        formElm.append(inputElm);
+        $compile(formElm)(scope);
     }
 
-    it('should update the model event if the browser does not support the "input" event',function() {
-      assertBrowserSupportsChangeEvent(false);
-    });
+    beforeEach(inject(function ($injector, _$sniffer_, _$browser_) {
+        $sniffer = _$sniffer_;
+        $browser = _$browser_;
+        $compile = $injector.get('$compile');
+        scope = $injector.get('$rootScope');
 
-    it('should update the model event if the browser supports the "input" ' +
-      'event so that form auto complete works',function() {
-      assertBrowserSupportsChangeEvent(true);
-    });
-
-    if (!_jqLiteMode) {
-      it('should not cause the double $digest when triggering an event using jQuery', function() {
-        $sniffer.hasEvent = function(eventName) {
-          return eventName !== 'input';
+        changeInputValueTo = function (value) {
+            inputElm.val(value);
+            browserTrigger(inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
         };
+    }));
 
+    afterEach(function () {
+        dealoc(formElm);
+    });
+
+
+    it('should bind to a model', function () {
         compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
-        scope.field = 'fake field';
-        scope.$watch('field', function() {
-          // We need to use _originalTrigger since trigger is modified by Angular Scenario.
-          inputElm._originalTrigger('change');
+        scope.$apply(function () {
+            scope.name = 'misko';
         });
-        scope.$apply();
-      });
+
+        expect(inputElm.val()).toBe('misko');
+    });
+
+
+    it('should not set readonly or disabled property on ie7', function () {
+        this.addMatchers({
+            toBeOff: function (attributeName) {
+                var actualValue = this.actual.attr(attributeName);
+                this.message = function () {
+                    return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
+            "' in: " + angular.mock.dump(this.actual);
+                }
+
+                return !actualValue || actualValue == 'false';
+            }
+        });
+
+        compileInput('<input type="text" ng-model="name" name="alias"/>');
+        expect(inputElm.prop('readOnly')).toBe(false);
+        expect(inputElm.prop('disabled')).toBe(false);
+
+        expect(inputElm).toBeOff('readOnly');
+        expect(inputElm).toBeOff('readonly');
+        expect(inputElm).toBeOff('disabled');
+    });
+
+
+    it('should update the model on "blur" event', function () {
+        compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+        changeInputValueTo('adam');
+        expect(scope.name).toEqual('adam');
+    });
+
+    if (!(msie < 9)) {
+        describe('compositionevents', function () {
+            it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function ($sniffer) {
+                $sniffer.android = false;
+
+                compileInput('<input type="text" ng-model="name" name="alias"" />');
+                changeInputValueTo('a');
+                expect(scope.name).toEqual('a');
+                browserTrigger(inputElm, 'compositionstart');
+                changeInputValueTo('adam');
+                expect(scope.name).toEqual('a');
+                browserTrigger(inputElm, 'compositionend');
+                changeInputValueTo('adam');
+                expect(scope.name).toEqual('adam');
+            }));
+
+            it('should update the model between "compositionstart" and "compositionend" on android', inject(function ($sniffer) {
+                $sniffer.android = true;
+
+                compileInput('<input type="text" ng-model="name" name="alias"" />');
+                changeInputValueTo('a');
+                expect(scope.name).toEqual('a');
+                browserTrigger(inputElm, 'compositionstart');
+                changeInputValueTo('adam');
+                expect(scope.name).toEqual('adam');
+                browserTrigger(inputElm, 'compositionend');
+                changeInputValueTo('adam2');
+                expect(scope.name).toEqual('adam2');
+            }));
+        });
     }
-  });
 
-  describe('"paste" and "cut" events', function() {
-    beforeEach(function() {
-      // Force browser to report a lack of an 'input' event
-      $sniffer.hasEvent = function(eventName) {
-        return eventName !== 'input';
-      };
-    });
-
-    it('should update the model on "paste" event', function() {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
-
-      inputElm.val('mark');
-      browserTrigger(inputElm, 'paste');
-      $browser.defer.flush();
-      expect(scope.name).toEqual('mark');
-    });
-
-    it('should update the model on "cut" event', function() {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
-
-      inputElm.val('john');
-      browserTrigger(inputElm, 'cut');
-      $browser.defer.flush();
-      expect(scope.name).toEqual('john');
-    });
-
-  });
-
-
-  it('should update the model and trim the value', function() {
-    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
-
-    changeInputValueTo('  a  ');
-    expect(scope.name).toEqual('a');
-  });
-
-
-  it('should update the model and not trim the value', function() {
-    compileInput('<input type="text" ng-model="name" name="alias" ng-trim="false" />');
-
-    changeInputValueTo('  a  ');
-    expect(scope.name).toEqual('  a  ');
-  });
-
-
-  it('should allow complex reference binding', function() {
-    compileInput('<input type="text" ng-model="obj[\'abc\'].name"/>');
-
-    scope.$apply(function() {
-      scope.obj = { abc: { name: 'Misko'} };
-    });
-    expect(inputElm.val()).toEqual('Misko');
-  });
-
-
-  it('should ignore input without ngModel directive', function() {
-    compileInput('<input type="text" name="whatever" required />');
-
-    changeInputValueTo('');
-    expect(inputElm.hasClass('ng-valid')).toBe(false);
-    expect(inputElm.hasClass('ng-invalid')).toBe(false);
-    expect(inputElm.hasClass('ng-pristine')).toBe(false);
-    expect(inputElm.hasClass('ng-dirty')).toBe(false);
-  });
-
-
-  it('should report error on assignment error', function() {
-    expect(function() {
-      compileInput('<input type="text" ng-model="throw \'\'">');
-      scope.$digest();
-    }).toThrowMinErr("$parse", "syntax", "Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
-  });
-
-
-  it("should render as blank if null", function() {
-    compileInput('<input type="text" ng-model="age" />');
-
-    scope.$apply(function() {
-      scope.age = null;
-    });
-
-    expect(scope.age).toBeNull();
-    expect(inputElm.val()).toEqual('');
-  });
-
-
-  it('should render 0 even if it is a number', function() {
-    compileInput('<input type="text" ng-model="value" />');
-    scope.$apply(function() {
-      scope.value = 0;
-    });
-
-    expect(inputElm.val()).toBe('0');
-  });
-
-
-  describe('pattern', function() {
-
-    it('should validate in-lined pattern', function() {
-      compileInput('<input type="text" ng-model="value" ng-pattern="/^\\d\\d\\d-\\d\\d-\\d\\d\\d\\d$/" />');
-      scope.$digest();
-
-      changeInputValueTo('x000-00-0000x');
-      expect(inputElm).toBeInvalid();
-
-      changeInputValueTo('000-00-0000');
-      expect(inputElm).toBeValid();
-
-      changeInputValueTo('000-00-0000x');
-      expect(inputElm).toBeInvalid();
-
-      changeInputValueTo('123-45-6789');
-      expect(inputElm).toBeValid();
-
-      changeInputValueTo('x');
-      expect(inputElm).toBeInvalid();
-    });
-
-
-    it('should validate in-lined pattern with modifiers', function() {
-      compileInput('<input type="text" ng-model="value" ng-pattern="/^abc?$/i" />');
-      scope.$digest();
-
-      changeInputValueTo('aB');
-      expect(inputElm).toBeValid();
-
-      changeInputValueTo('xx');
-      expect(inputElm).toBeInvalid();
-    });
-
-
-    it('should validate pattern from scope', function() {
-      compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
-      scope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
-      scope.$digest();
-
-      changeInputValueTo('x000-00-0000x');
-      expect(inputElm).toBeInvalid();
-
-      changeInputValueTo('000-00-0000');
-      expect(inputElm).toBeValid();
-
-      changeInputValueTo('000-00-0000x');
-      expect(inputElm).toBeInvalid();
-
-      changeInputValueTo('123-45-6789');
-      expect(inputElm).toBeValid();
-
-      changeInputValueTo('x');
-      expect(inputElm).toBeInvalid();
-
-      scope.regexp = /abc?/;
-
-      changeInputValueTo('ab');
-      expect(inputElm).toBeValid();
-
-      changeInputValueTo('xx');
-      expect(inputElm).toBeInvalid();
-    });
-
-
-    it('should throw an error when scope pattern can\'t be found', function() {
-      expect(function() {
-        compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
-        scope.$apply();
-      }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
-    });
-  });
-
-
-  describe('minlength', function() {
-
-    it('should invalid shorter than given minlength', function() {
-      compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
-
-      changeInputValueTo('aa');
-      expect(scope.value).toBeUndefined();
-
-      changeInputValueTo('aaa');
-      expect(scope.value).toBe('aaa');
-    });
-  });
-
-
-  describe('maxlength', function() {
-
-    it('should invalid shorter than given maxlength', function() {
-      compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
-
-      changeInputValueTo('aaaaaaaa');
-      expect(scope.value).toBeUndefined();
-
-      changeInputValueTo('aaa');
-      expect(scope.value).toBe('aaa');
-    });
-  });
-
-
-  // INPUT TYPES
-
-  describe('number', function() {
-
-    it('should reset the model if view is invalid', function() {
-      compileInput('<input type="number" ng-model="age"/>');
-
-      scope.$apply(function() {
-        scope.age = 123;
-      });
-      expect(inputElm.val()).toBe('123');
-
-      try {
-        // to allow non-number values, we have to change type so that
-        // the browser which have number validation will not interfere with
-        // this test. IE8 won't allow it hence the catch.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {}
-
-      changeInputValueTo('123X');
-      expect(inputElm.val()).toBe('123X');
-      expect(scope.age).toBeUndefined();
-      expect(inputElm).toBeInvalid();
-    });
-
-
-    it('should render as blank if null', function() {
-      compileInput('<input type="number" ng-model="age" />');
-
-      scope.$apply(function() {
-        scope.age = null;
-      });
-
-      expect(scope.age).toBeNull();
-      expect(inputElm.val()).toEqual('');
-    });
-
-
-    it('should come up blank when no value specified', function() {
-      compileInput('<input type="number" ng-model="age" />');
-
-      scope.$digest();
-      expect(inputElm.val()).toBe('');
-
-      scope.$apply(function() {
-        scope.age = null;
-      });
-
-      expect(scope.age).toBeNull();
-      expect(inputElm.val()).toBe('');
-    });
-
-
-    it('should parse empty string to null', function() {
-      compileInput('<input type="number" ng-model="age" />');
-
-      scope.$apply(function() {
-        scope.age = 10;
-      });
-
-      changeInputValueTo('');
-      expect(scope.age).toBeNull();
-      expect(inputElm).toBeValid();
-    });
-
-    it('should parse "." to zero', function () {
-        compileInput('<input type="number" ng-model="price" />');
-        changeInputValueTo('.');
-        expect(scope.price).toBe(0);
-        expect(inputElm).toBeValid();
-        expect(inputElm.val()).toBe('.');
-    });
-
-
-    describe('min', function() {
-
-      it('should validate', function() {
-        compileInput('<input type="number" ng-model="value" name="alias" min="10" />');
-        scope.$digest();
-
-        changeInputValueTo('1');
-        expect(inputElm).toBeInvalid();
-        expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.min).toBeTruthy();
-
-        changeInputValueTo('100');
-        expect(inputElm).toBeValid();
-        expect(scope.value).toBe(100);
-        expect(scope.form.alias.$error.min).toBeFalsy();
-      });
-
-      it('should validate even if min value changes on-the-fly', function(done) {
-        scope.min = 10;
-        compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
-        scope.$digest();
-
-        changeInputValueTo('5');
-        expect(inputElm).toBeInvalid();
-
-        scope.min = 0;
-        scope.$digest(function () {
-          expect(inputElm).toBeValid();
-          done();
-        });
-      });
-    });
-
-
-    describe('max', function() {
-
-      it('should validate', function() {
-        compileInput('<input type="number" ng-model="value" name="alias" max="10" />');
-        scope.$digest();
-
-        changeInputValueTo('20');
-        expect(inputElm).toBeInvalid();
-        expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.max).toBeTruthy();
-
-        changeInputValueTo('0');
-        expect(inputElm).toBeValid();
-        expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.max).toBeFalsy();
-      });
-
-      it('should validate even if max value changes on-the-fly', function(done) {
-        scope.max = 10;
-        compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
-        scope.$digest();
-
-        changeInputValueTo('5');
-        expect(inputElm).toBeValid();
-
-        scope.max = 0;
-        scope.$digest(function () {
-          expect(inputElm).toBeInvalid();
-          done();
-        });
-      });
-    });
-
-
-    describe('required', function() {
-
-      it('should be valid even if value is 0', function() {
-        compileInput('<input type="number" ng-model="value" name="alias" required />');
-
-        changeInputValueTo('0');
-        expect(inputElm).toBeValid();
-        expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.required).toBeFalsy();
-      });
-
-      it('should be valid even if value 0 is set from model', function() {
-        compileInput('<input type="number" ng-model="value" name="alias" required />');
-
-        scope.$apply(function() {
-          scope.value = 0;
+    describe('"change" event', function () {
+        function assertBrowserSupportsChangeEvent(inputEventSupported) {
+            // Force browser to report a lack of an 'input' event
+            $sniffer.hasEvent = function (eventName) {
+                if (eventName === 'input' && !inputEventSupported) {
+                    return false;
+                }
+                return true;
+            };
+            compileInput('<input type="text" ng-model="name" name="alias" />');
+
+            inputElm.val('mark');
+            browserTrigger(inputElm, 'change');
+            expect(scope.name).toEqual('mark');
+        }
+
+        it('should update the model event if the browser does not support the "input" event', function () {
+            assertBrowserSupportsChangeEvent(false);
         });
 
-        expect(inputElm).toBeValid();
-        expect(inputElm.val()).toBe('0')
-        expect(scope.form.alias.$error.required).toBeFalsy();
+        it('should update the model event if the browser supports the "input" ' +
+      'event so that form auto complete works', function () {
+          assertBrowserSupportsChangeEvent(true);
       });
 
-      it('should register required on non boolean elements', function() {
-        compileInput('<div ng-model="value" name="alias" required>');
+        if (!_jqLiteMode) {
+            it('should not cause the double $digest when triggering an event using jQuery', function () {
+                $sniffer.hasEvent = function (eventName) {
+                    return eventName !== 'input';
+                };
 
-        scope.$apply(function() {
-          scope.value = '';
+                compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+                scope.field = 'fake field';
+                scope.$watch('field', function () {
+                    // We need to use _originalTrigger since trigger is modified by Angular Scenario.
+                    inputElm._originalTrigger('change');
+                });
+                scope.$apply();
+            });
+        }
+    });
+
+    describe('"paste" and "cut" events', function () {
+        beforeEach(function () {
+            // Force browser to report a lack of an 'input' event
+            $sniffer.hasEvent = function (eventName) {
+                return eventName !== 'input';
+            };
         });
 
-        expect(inputElm).toBeInvalid();
-        expect(scope.form.alias.$error.required).toBeTruthy();
-      });
-    });
-  });
+        it('should update the model on "paste" event', function () {
+            compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
-  describe('email', function() {
+            inputElm.val('mark');
+            browserTrigger(inputElm, 'paste');
+            $browser.defer.flush();
+            expect(scope.name).toEqual('mark');
+        });
 
-    it('should validate e-mail', function() {
-      compileInput('<input type="email" ng-model="email" name="alias" />');
+        it('should update the model on "cut" event', function () {
+            compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
-      var widget = scope.form.alias;
-      changeInputValueTo('vojta@google.com');
+            inputElm.val('john');
+            browserTrigger(inputElm, 'cut');
+            $browser.defer.flush();
+            expect(scope.name).toEqual('john');
+        });
 
-      expect(scope.email).toBe('vojta@google.com');
-      expect(inputElm).toBeValid();
-      expect(widget.$error.email).toBe(false);
-
-      changeInputValueTo('invalid@');
-      expect(scope.email).toBeUndefined();
-      expect(inputElm).toBeInvalid();
-      expect(widget.$error.email).toBeTruthy();
     });
 
 
-    describe('EMAIL_REGEXP', function() {
+    it('should update the model and trim the value', function () {
+        compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
-      it('should validate email', function() {
-        expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
-        expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
-        expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
-      });
-    });
-  });
-
-
-  describe('url', function() {
-
-    it('should validate url', function() {
-      compileInput('<input type="url" ng-model="url" name="alias" />');
-      var widget = scope.form.alias;
-
-      changeInputValueTo('http://www.something.com');
-      expect(scope.url).toBe('http://www.something.com');
-      expect(inputElm).toBeValid();
-      expect(widget.$error.url).toBe(false);
-
-      changeInputValueTo('invalid.com');
-      expect(scope.url).toBeUndefined();
-      expect(inputElm).toBeInvalid();
-      expect(widget.$error.url).toBeTruthy();
+        changeInputValueTo('  a  ');
+        expect(scope.name).toEqual('a');
     });
 
 
-    describe('URL_REGEXP', function() {
+    it('should update the model and not trim the value', function () {
+        compileInput('<input type="text" ng-model="name" name="alias" ng-trim="false" />');
 
-      it('should validate url', function() {
-        expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
-        expect(URL_REGEXP.test('a@B.c')).toBe(false);
-      });
+        changeInputValueTo('  a  ');
+        expect(scope.name).toEqual('  a  ');
     });
-  });
 
 
-  describe('radio', function() {
+    it('should allow complex reference binding', function () {
+        compileInput('<input type="text" ng-model="obj[\'abc\'].name"/>');
 
-    it('should update the model', function() {
-      compileInput(
+        scope.$apply(function () {
+            scope.obj = { abc: { name: 'Misko'} };
+        });
+        expect(inputElm.val()).toEqual('Misko');
+    });
+
+
+    it('should ignore input without ngModel directive', function () {
+        compileInput('<input type="text" name="whatever" required />');
+
+        changeInputValueTo('');
+        expect(inputElm.hasClass('ng-valid')).toBe(false);
+        expect(inputElm.hasClass('ng-invalid')).toBe(false);
+        expect(inputElm.hasClass('ng-pristine')).toBe(false);
+        expect(inputElm.hasClass('ng-dirty')).toBe(false);
+    });
+
+
+    it('should report error on assignment error', function () {
+        expect(function () {
+            compileInput('<input type="text" ng-model="throw \'\'">');
+            scope.$digest();
+        }).toThrowMinErr("$parse", "syntax", "Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
+    });
+
+
+    it("should render as blank if null", function () {
+        compileInput('<input type="text" ng-model="age" />');
+
+        scope.$apply(function () {
+            scope.age = null;
+        });
+
+        expect(scope.age).toBeNull();
+        expect(inputElm.val()).toEqual('');
+    });
+
+
+    it('should render 0 even if it is a number', function () {
+        compileInput('<input type="text" ng-model="value" />');
+        scope.$apply(function () {
+            scope.value = 0;
+        });
+
+        expect(inputElm.val()).toBe('0');
+    });
+
+
+    describe('pattern', function () {
+
+        it('should validate in-lined pattern', function () {
+            compileInput('<input type="text" ng-model="value" ng-pattern="/^\\d\\d\\d-\\d\\d-\\d\\d\\d\\d$/" />');
+            scope.$digest();
+
+            changeInputValueTo('x000-00-0000x');
+            expect(inputElm).toBeInvalid();
+
+            changeInputValueTo('000-00-0000');
+            expect(inputElm).toBeValid();
+
+            changeInputValueTo('000-00-0000x');
+            expect(inputElm).toBeInvalid();
+
+            changeInputValueTo('123-45-6789');
+            expect(inputElm).toBeValid();
+
+            changeInputValueTo('x');
+            expect(inputElm).toBeInvalid();
+        });
+
+
+        it('should validate in-lined pattern with modifiers', function () {
+            compileInput('<input type="text" ng-model="value" ng-pattern="/^abc?$/i" />');
+            scope.$digest();
+
+            changeInputValueTo('aB');
+            expect(inputElm).toBeValid();
+
+            changeInputValueTo('xx');
+            expect(inputElm).toBeInvalid();
+        });
+
+
+        it('should validate pattern from scope', function () {
+            compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
+            scope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
+            scope.$digest();
+
+            changeInputValueTo('x000-00-0000x');
+            expect(inputElm).toBeInvalid();
+
+            changeInputValueTo('000-00-0000');
+            expect(inputElm).toBeValid();
+
+            changeInputValueTo('000-00-0000x');
+            expect(inputElm).toBeInvalid();
+
+            changeInputValueTo('123-45-6789');
+            expect(inputElm).toBeValid();
+
+            changeInputValueTo('x');
+            expect(inputElm).toBeInvalid();
+
+            scope.regexp = /abc?/;
+
+            changeInputValueTo('ab');
+            expect(inputElm).toBeValid();
+
+            changeInputValueTo('xx');
+            expect(inputElm).toBeInvalid();
+        });
+
+
+        it('should throw an error when scope pattern can\'t be found', function () {
+            expect(function () {
+                compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
+                scope.$apply();
+            }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+        });
+    });
+
+
+    describe('minlength', function () {
+
+        it('should invalid shorter than given minlength', function () {
+            compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
+
+            changeInputValueTo('aa');
+            expect(scope.value).toBeUndefined();
+
+            changeInputValueTo('aaa');
+            expect(scope.value).toBe('aaa');
+        });
+    });
+
+
+    describe('maxlength', function () {
+
+        it('should invalid shorter than given maxlength', function () {
+            compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
+
+            changeInputValueTo('aaaaaaaa');
+            expect(scope.value).toBeUndefined();
+
+            changeInputValueTo('aaa');
+            expect(scope.value).toBe('aaa');
+        });
+    });
+
+
+    // INPUT TYPES
+
+    describe('number', function () {
+
+        it('should reset the model if view is invalid', function () {
+            compileInput('<input type="number" ng-model="age"/>');
+
+            scope.$apply(function () {
+                scope.age = 123;
+            });
+            expect(inputElm.val()).toBe('123');
+
+            try {
+                // to allow non-number values, we have to change type so that
+                // the browser which have number validation will not interfere with
+                // this test. IE8 won't allow it hence the catch.
+                inputElm[0].setAttribute('type', 'text');
+            } catch (e) { }
+
+            changeInputValueTo('123X');
+            expect(inputElm.val()).toBe('123X');
+            expect(scope.age).toBeUndefined();
+            expect(inputElm).toBeInvalid();
+        });
+
+
+        it('should render as blank if null', function () {
+            compileInput('<input type="number" ng-model="age" />');
+
+            scope.$apply(function () {
+                scope.age = null;
+            });
+
+            expect(scope.age).toBeNull();
+            expect(inputElm.val()).toEqual('');
+        });
+
+
+        it('should come up blank when no value specified', function () {
+            compileInput('<input type="number" ng-model="age" />');
+
+            scope.$digest();
+            expect(inputElm.val()).toBe('');
+
+            scope.$apply(function () {
+                scope.age = null;
+            });
+
+            expect(scope.age).toBeNull();
+            expect(inputElm.val()).toBe('');
+        });
+
+
+        it('should parse empty string to null', function () {
+            compileInput('<input type="number" ng-model="age" />');
+
+            scope.$apply(function () {
+                scope.age = 10;
+            });
+
+            changeInputValueTo('');
+            expect(scope.age).toBeNull();
+            expect(inputElm).toBeValid();
+        });
+
+        it('should parse "." to zero', function () {
+            compileInput('<input type="number" ng-model="price" />');
+            changeInputValueTo('.');
+            expect(scope.price).toBe(0);
+            expect(inputElm).toBeValid();
+            expect(inputElm.val()).toBe('.');
+        });
+
+
+        describe('min', function () {
+
+            it('should validate', function () {
+                compileInput('<input type="number" ng-model="value" name="alias" min="10" />');
+                scope.$digest();
+
+                changeInputValueTo('1');
+                expect(inputElm).toBeInvalid();
+                expect(scope.value).toBeFalsy();
+                expect(scope.form.alias.$error.min).toBeTruthy();
+
+                changeInputValueTo('100');
+                expect(inputElm).toBeValid();
+                expect(scope.value).toBe(100);
+                expect(scope.form.alias.$error.min).toBeFalsy();
+            });
+
+            it('should validate even if min value changes on-the-fly', function (done) {
+                scope.min = 10;
+                compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+                scope.$digest();
+
+                changeInputValueTo('5');
+                expect(inputElm).toBeInvalid();
+
+                scope.min = 0;
+                scope.$digest(function () {
+                    expect(inputElm).toBeValid();
+                    done();
+                });
+            });
+        });
+
+
+        describe('max', function () {
+
+            it('should validate', function () {
+                compileInput('<input type="number" ng-model="value" name="alias" max="10" />');
+                scope.$digest();
+
+                changeInputValueTo('20');
+                expect(inputElm).toBeInvalid();
+                expect(scope.value).toBeFalsy();
+                expect(scope.form.alias.$error.max).toBeTruthy();
+
+                changeInputValueTo('0');
+                expect(inputElm).toBeValid();
+                expect(scope.value).toBe(0);
+                expect(scope.form.alias.$error.max).toBeFalsy();
+            });
+
+            it('should validate even if max value changes on-the-fly', function (done) {
+                scope.max = 10;
+                compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+                scope.$digest();
+
+                changeInputValueTo('5');
+                expect(inputElm).toBeValid();
+
+                scope.max = 0;
+                scope.$digest(function () {
+                    expect(inputElm).toBeInvalid();
+                    done();
+                });
+            });
+        });
+
+
+        describe('required', function () {
+
+            it('should be valid even if value is 0', function () {
+                compileInput('<input type="number" ng-model="value" name="alias" required />');
+
+                changeInputValueTo('0');
+                expect(inputElm).toBeValid();
+                expect(scope.value).toBe(0);
+                expect(scope.form.alias.$error.required).toBeFalsy();
+            });
+
+            it('should be valid even if value 0 is set from model', function () {
+                compileInput('<input type="number" ng-model="value" name="alias" required />');
+
+                scope.$apply(function () {
+                    scope.value = 0;
+                });
+
+                expect(inputElm).toBeValid();
+                expect(inputElm.val()).toBe('0')
+                expect(scope.form.alias.$error.required).toBeFalsy();
+            });
+
+            it('should register required on non boolean elements', function () {
+                compileInput('<div ng-model="value" name="alias" required>');
+
+                scope.$apply(function () {
+                    scope.value = '';
+                });
+
+                expect(inputElm).toBeInvalid();
+                expect(scope.form.alias.$error.required).toBeTruthy();
+            });
+        });
+    });
+
+    describe('email', function () {
+
+        it('should validate e-mail', function () {
+            compileInput('<input type="email" ng-model="email" name="alias" />');
+
+            var widget = scope.form.alias;
+            changeInputValueTo('vojta@google.com');
+
+            expect(scope.email).toBe('vojta@google.com');
+            expect(inputElm).toBeValid();
+            expect(widget.$error.email).toBe(false);
+
+            changeInputValueTo('invalid@');
+            expect(scope.email).toBeUndefined();
+            expect(inputElm).toBeInvalid();
+            expect(widget.$error.email).toBeTruthy();
+        });
+
+
+        describe('EMAIL_REGEXP', function () {
+
+            it('should validate email', function () {
+                expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
+                expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
+                expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
+            });
+        });
+    });
+
+
+    describe('url', function () {
+
+        it('should validate url', function () {
+            compileInput('<input type="url" ng-model="url" name="alias" />');
+            var widget = scope.form.alias;
+
+            changeInputValueTo('http://www.something.com');
+            expect(scope.url).toBe('http://www.something.com');
+            expect(inputElm).toBeValid();
+            expect(widget.$error.url).toBe(false);
+
+            changeInputValueTo('invalid.com');
+            expect(scope.url).toBeUndefined();
+            expect(inputElm).toBeInvalid();
+            expect(widget.$error.url).toBeTruthy();
+        });
+
+
+        describe('URL_REGEXP', function () {
+
+            it('should validate url', function () {
+                expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
+                expect(URL_REGEXP.test('a@B.c')).toBe(false);
+            });
+        });
+    });
+
+
+    describe('radio', function () {
+
+        it('should update the model', function () {
+            compileInput(
           '<input type="radio" ng-model="color" value="white" />' +
           '<input type="radio" ng-model="color" value="red" />' +
           '<input type="radio" ng-model="color" value="blue" />');
 
-      scope.$apply(function() {
-        scope.color = 'white';
-      });
-      expect(inputElm[0].checked).toBe(true);
-      expect(inputElm[1].checked).toBe(false);
-      expect(inputElm[2].checked).toBe(false);
+            scope.$apply(function () {
+                scope.color = 'white';
+            });
+            expect(inputElm[0].checked).toBe(true);
+            expect(inputElm[1].checked).toBe(false);
+            expect(inputElm[2].checked).toBe(false);
 
-      scope.$apply(function() {
-        scope.color = 'red';
-      });
-      expect(inputElm[0].checked).toBe(false);
-      expect(inputElm[1].checked).toBe(true);
-      expect(inputElm[2].checked).toBe(false);
+            scope.$apply(function () {
+                scope.color = 'red';
+            });
+            expect(inputElm[0].checked).toBe(false);
+            expect(inputElm[1].checked).toBe(true);
+            expect(inputElm[2].checked).toBe(false);
 
-      browserTrigger(inputElm[2], 'click');
-      expect(scope.color).toBe('blue');
-    });
+            browserTrigger(inputElm[2], 'click');
+            expect(scope.color).toBe('blue');
+        });
 
 
-    it('should allow {{expr}} as value', function() {
-      scope.some = 11;
-      compileInput(
+        it('should allow {{expr}} as value', function () {
+            scope.some = 11;
+            compileInput(
           '<input type="radio" ng-model="value" value="{{some}}" />' +
           '<input type="radio" ng-model="value" value="{{other}}" />');
 
-      scope.$apply(function() {
-        scope.value = 'blue';
-        scope.some = 'blue';
-        scope.other = 'red';
-      });
+            scope.$apply(function () {
+                scope.value = 'blue';
+                scope.some = 'blue';
+                scope.other = 'red';
+            });
 
-      expect(inputElm[0].checked).toBe(true);
-      expect(inputElm[1].checked).toBe(false);
+            expect(inputElm[0].checked).toBe(true);
+            expect(inputElm[1].checked).toBe(false);
 
-      browserTrigger(inputElm[1], 'click');
-      expect(scope.value).toBe('red');
+            browserTrigger(inputElm[1], 'click');
+            expect(scope.value).toBe('red');
 
-      scope.$apply(function() {
-        scope.other = 'non-red';
-      });
+            scope.$apply(function () {
+                scope.other = 'non-red';
+            });
 
-      expect(inputElm[0].checked).toBe(false);
-      expect(inputElm[1].checked).toBe(false);
-    });
-  });
-
-
-  describe('checkbox', function() {
-
-    it('should ignore checkbox without ngModel directive', function() {
-      compileInput('<input type="checkbox" name="whatever" required />');
-
-      changeInputValueTo('');
-      expect(inputElm.hasClass('ng-valid')).toBe(false);
-      expect(inputElm.hasClass('ng-invalid')).toBe(false);
-      expect(inputElm.hasClass('ng-pristine')).toBe(false);
-      expect(inputElm.hasClass('ng-dirty')).toBe(false);
+            expect(inputElm[0].checked).toBe(false);
+            expect(inputElm[1].checked).toBe(false);
+        });
     });
 
 
-    it('should format booleans', function() {
-      compileInput('<input type="checkbox" ng-model="name" />');
+    describe('checkbox', function () {
 
-      scope.$apply(function() {
-        scope.name = false;
-      });
-      expect(inputElm[0].checked).toBe(false);
+        it('should ignore checkbox without ngModel directive', function () {
+            compileInput('<input type="checkbox" name="whatever" required />');
 
-      scope.$apply(function() {
-        scope.name = true;
-      });
-      expect(inputElm[0].checked).toBe(true);
-    });
+            changeInputValueTo('');
+            expect(inputElm.hasClass('ng-valid')).toBe(false);
+            expect(inputElm.hasClass('ng-invalid')).toBe(false);
+            expect(inputElm.hasClass('ng-pristine')).toBe(false);
+            expect(inputElm.hasClass('ng-dirty')).toBe(false);
+        });
 
 
-    it('should support type="checkbox" with non-standard capitalization', function() {
-      compileInput('<input type="checkBox" ng-model="checkbox" />');
+        it('should format booleans', function () {
+            compileInput('<input type="checkbox" ng-model="name" />');
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.checkbox).toBe(true);
+            scope.$apply(function () {
+                scope.name = false;
+            });
+            expect(inputElm[0].checked).toBe(false);
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.checkbox).toBe(false);
-    });
+            scope.$apply(function () {
+                scope.name = true;
+            });
+            expect(inputElm[0].checked).toBe(true);
+        });
 
 
-    it('should allow custom enumeration', function() {
-      compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
+        it('should support type="checkbox" with non-standard capitalization', function () {
+            compileInput('<input type="checkBox" ng-model="checkbox" />');
+
+            browserTrigger(inputElm, 'click');
+            expect(scope.checkbox).toBe(true);
+
+            browserTrigger(inputElm, 'click');
+            expect(scope.checkbox).toBe(false);
+        });
+
+
+        it('should allow custom enumeration', function () {
+            compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
           'ng-false-value="n">');
 
-      scope.$apply(function() {
-        scope.name = 'y';
-      });
-      expect(inputElm[0].checked).toBe(true);
+            scope.$apply(function () {
+                scope.name = 'y';
+            });
+            expect(inputElm[0].checked).toBe(true);
 
-      scope.$apply(function() {
-        scope.name = 'n';
-      });
-      expect(inputElm[0].checked).toBe(false);
+            scope.$apply(function () {
+                scope.name = 'n';
+            });
+            expect(inputElm[0].checked).toBe(false);
 
-      scope.$apply(function() {
-        scope.name = 'something else';
-      });
-      expect(inputElm[0].checked).toBe(false);
+            scope.$apply(function () {
+                scope.name = 'something else';
+            });
+            expect(inputElm[0].checked).toBe(false);
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.name).toEqual('y');
+            browserTrigger(inputElm, 'click');
+            expect(scope.name).toEqual('y');
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.name).toEqual('n');
+            browserTrigger(inputElm, 'click');
+            expect(scope.name).toEqual('n');
+        });
+
+
+        it('should be required if false', function () {
+            compileInput('<input type="checkbox" ng:model="value" required />');
+
+            browserTrigger(inputElm, 'click');
+            expect(inputElm[0].checked).toBe(true);
+            expect(inputElm).toBeValid();
+
+            browserTrigger(inputElm, 'click');
+            expect(inputElm[0].checked).toBe(false);
+            expect(inputElm).toBeInvalid();
+        });
     });
 
 
-    it('should be required if false', function() {
-      compileInput('<input type="checkbox" ng:model="value" required />');
+    describe('textarea', function () {
 
-      browserTrigger(inputElm, 'click');
-      expect(inputElm[0].checked).toBe(true);
-      expect(inputElm).toBeValid();
+        it("should process textarea", function () {
+            compileInput('<textarea ng-model="name"></textarea>');
+            inputElm = formElm.find('textarea');
 
-      browserTrigger(inputElm, 'click');
-      expect(inputElm[0].checked).toBe(false);
-      expect(inputElm).toBeInvalid();
-    });
-  });
+            scope.$apply(function () {
+                scope.name = 'Adam';
+            });
+            expect(inputElm.val()).toEqual('Adam');
 
+            changeInputValueTo('Shyam');
+            expect(scope.name).toEqual('Shyam');
 
-  describe('textarea', function() {
-
-    it("should process textarea", function() {
-      compileInput('<textarea ng-model="name"></textarea>');
-      inputElm = formElm.find('textarea');
-
-      scope.$apply(function() {
-        scope.name = 'Adam';
-      });
-      expect(inputElm.val()).toEqual('Adam');
-
-      changeInputValueTo('Shyam');
-      expect(scope.name).toEqual('Shyam');
-
-      changeInputValueTo('Kai');
-      expect(scope.name).toEqual('Kai');
-    });
+            changeInputValueTo('Kai');
+            expect(scope.name).toEqual('Kai');
+        });
 
 
-    it('should ignore textarea without ngModel directive', function() {
-      compileInput('<textarea name="whatever" required></textarea>');
-      inputElm = formElm.find('textarea');
+        it('should ignore textarea without ngModel directive', function () {
+            compileInput('<textarea name="whatever" required></textarea>');
+            inputElm = formElm.find('textarea');
 
-      changeInputValueTo('');
-      expect(inputElm.hasClass('ng-valid')).toBe(false);
-      expect(inputElm.hasClass('ng-invalid')).toBe(false);
-      expect(inputElm.hasClass('ng-pristine')).toBe(false);
-      expect(inputElm.hasClass('ng-dirty')).toBe(false);
-    });
-  });
-
-
-  describe('ngList', function() {
-
-    it('should parse text into an array', function() {
-      compileInput('<input type="text" ng-model="list" ng-list />');
-
-      // model -> view
-      scope.$apply(function() {
-        scope.list = ['x', 'y', 'z'];
-      });
-      expect(inputElm.val()).toBe('x, y, z');
-
-      // view -> model
-      changeInputValueTo('1, 2, 3');
-      expect(scope.list).toEqual(['1', '2', '3']);
+            changeInputValueTo('');
+            expect(inputElm.hasClass('ng-valid')).toBe(false);
+            expect(inputElm.hasClass('ng-invalid')).toBe(false);
+            expect(inputElm.hasClass('ng-pristine')).toBe(false);
+            expect(inputElm.hasClass('ng-dirty')).toBe(false);
+        });
     });
 
 
-    it("should not clobber text if model changes due to itself", function() {
-      // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
-      // $parseModel function runs it will change to 'a', in essence preventing
-      // the user from ever typying ','.
-      compileInput('<input type="text" ng-model="list" ng-list />');
+    describe('ngList', function () {
 
-      changeInputValueTo('a ');
-      expect(inputElm.val()).toEqual('a ');
-      expect(scope.list).toEqual(['a']);
+        it('should parse text into an array', function () {
+            compileInput('<input type="text" ng-model="list" ng-list />');
 
-      changeInputValueTo('a ,');
-      expect(inputElm.val()).toEqual('a ,');
-      expect(scope.list).toEqual(['a']);
+            // model -> view
+            scope.$apply(function () {
+                scope.list = ['x', 'y', 'z'];
+            });
+            expect(inputElm.val()).toBe('x, y, z');
 
-      changeInputValueTo('a , ');
-      expect(inputElm.val()).toEqual('a , ');
-      expect(scope.list).toEqual(['a']);
+            // view -> model
+            changeInputValueTo('1, 2, 3');
+            expect(scope.list).toEqual(['1', '2', '3']);
+        });
 
-      changeInputValueTo('a , b');
-      expect(inputElm.val()).toEqual('a , b');
-      expect(scope.list).toEqual(['a', 'b']);
+
+        it("should not clobber text if model changes due to itself", function () {
+            // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
+            // $parseModel function runs it will change to 'a', in essence preventing
+            // the user from ever typying ','.
+            compileInput('<input type="text" ng-model="list" ng-list />');
+
+            changeInputValueTo('a ');
+            expect(inputElm.val()).toEqual('a ');
+            expect(scope.list).toEqual(['a']);
+
+            changeInputValueTo('a ,');
+            expect(inputElm.val()).toEqual('a ,');
+            expect(scope.list).toEqual(['a']);
+
+            changeInputValueTo('a , ');
+            expect(inputElm.val()).toEqual('a , ');
+            expect(scope.list).toEqual(['a']);
+
+            changeInputValueTo('a , b');
+            expect(inputElm.val()).toEqual('a , b');
+            expect(scope.list).toEqual(['a', 'b']);
+        });
+
+
+        it('should convert empty string to an empty array', function () {
+            compileInput('<input type="text" ng-model="list" ng-list />');
+
+            changeInputValueTo('');
+            expect(scope.list).toEqual([]);
+        });
+
+        it('should be invalid if required and empty', function () {
+            compileInput('<input type="text" ng-list ng-model="list" required>');
+            changeInputValueTo('');
+            expect(scope.list).toBeUndefined();
+            expect(inputElm).toBeInvalid();
+            changeInputValueTo('a,b');
+            expect(scope.list).toEqual(['a', 'b']);
+            expect(inputElm).toBeValid();
+        });
+
+
+        it('should allow custom separator', function () {
+            compileInput('<input type="text" ng-model="list" ng-list=":" />');
+
+            changeInputValueTo('a,a');
+            expect(scope.list).toEqual(['a,a']);
+
+            changeInputValueTo('a:b');
+            expect(scope.list).toEqual(['a', 'b']);
+        });
+
+
+        it('should allow regexp as a separator', function () {
+            compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
+
+            changeInputValueTo('a,b');
+            expect(scope.list).toEqual(['a', 'b']);
+
+            changeInputValueTo('a,b: c');
+            expect(scope.list).toEqual(['a', 'b', 'c']);
+        });
     });
 
+    describe('required', function () {
 
-    it('should convert empty string to an empty array', function() {
-      compileInput('<input type="text" ng-model="list" ng-list />');
+        it('should allow bindings via ngRequired', function () {
+            compileInput('<input type="text" ng-model="value" ng-required="required" />');
 
-      changeInputValueTo('');
-      expect(scope.list).toEqual([]);
-    });
+            scope.$apply(function () {
+                scope.required = false;
+            });
 
-    it('should be invalid if required and empty', function() {
-      compileInput('<input type="text" ng-list ng-model="list" required>');
-      changeInputValueTo('');
-      expect(scope.list).toBeUndefined();
-      expect(inputElm).toBeInvalid();
-      changeInputValueTo('a,b');
-      expect(scope.list).toEqual(['a','b']);
-      expect(inputElm).toBeValid();
-    });
+            changeInputValueTo('');
+            expect(inputElm).toBeValid();
 
 
-    it('should allow custom separator', function() {
-      compileInput('<input type="text" ng-model="list" ng-list=":" />');
+            scope.$apply(function () {
+                scope.required = true;
+            });
+            expect(inputElm).toBeInvalid();
 
-      changeInputValueTo('a,a');
-      expect(scope.list).toEqual(['a,a']);
+            scope.$apply(function () {
+                scope.value = 'some';
+            });
+            expect(inputElm).toBeValid();
 
-      changeInputValueTo('a:b');
-      expect(scope.list).toEqual(['a', 'b']);
-    });
+            changeInputValueTo('');
+            expect(inputElm).toBeInvalid();
 
-
-    it('should allow regexp as a separator', function() {
-      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
-
-      changeInputValueTo('a,b');
-      expect(scope.list).toEqual(['a', 'b']);
-
-      changeInputValueTo('a,b: c');
-      expect(scope.list).toEqual(['a', 'b', 'c']);
-    });
-  });
-
-  describe('required', function() {
-
-    it('should allow bindings via ngRequired', function() {
-      compileInput('<input type="text" ng-model="value" ng-required="required" />');
-
-      scope.$apply(function() {
-        scope.required = false;
-      });
-
-      changeInputValueTo('');
-      expect(inputElm).toBeValid();
+            scope.$apply(function () {
+                scope.required = false;
+            });
+            expect(inputElm).toBeValid();
+        });
 
 
-      scope.$apply(function() {
-        scope.required = true;
-      });
-      expect(inputElm).toBeInvalid();
+        it('should invalid initial value with bound required', function () {
+            compileInput('<input type="text" ng-model="value" required="{{required}}" />');
 
-      scope.$apply(function() {
-        scope.value = 'some';
-      });
-      expect(inputElm).toBeValid();
+            scope.$apply(function () {
+                scope.required = true;
+            });
 
-      changeInputValueTo('');
-      expect(inputElm).toBeInvalid();
-
-      scope.$apply(function() {
-        scope.required = false;
-      });
-      expect(inputElm).toBeValid();
-    });
+            expect(inputElm).toBeInvalid();
+        });
 
 
-    it('should invalid initial value with bound required', function() {
-      compileInput('<input type="text" ng-model="value" required="{{required}}" />');
+        it('should be $invalid but $pristine if not touched', function () {
+            compileInput('<input type="text" ng-model="name" name="alias" required />');
 
-      scope.$apply(function() {
-        scope.required = true;
-      });
+            scope.$apply(function () {
+                scope.name = '';
+            });
 
-      expect(inputElm).toBeInvalid();
-    });
+            expect(inputElm).toBeInvalid();
+            expect(inputElm).toBePristine();
 
-
-    it('should be $invalid but $pristine if not touched', function() {
-      compileInput('<input type="text" ng-model="name" name="alias" required />');
-
-      scope.$apply(function() {
-        scope.name = '';
-      });
-
-      expect(inputElm).toBeInvalid();
-      expect(inputElm).toBePristine();
-
-      changeInputValueTo('');
-      expect(inputElm).toBeInvalid();
-      expect(inputElm).toBeDirty();
-    });
+            changeInputValueTo('');
+            expect(inputElm).toBeInvalid();
+            expect(inputElm).toBeDirty();
+        });
 
 
-    it('should allow empty string if not required', function() {
-      compileInput('<input type="text" ng-model="foo" />');
-      changeInputValueTo('a');
-      changeInputValueTo('');
-      expect(scope.foo).toBe('');
-    });
+        it('should allow empty string if not required', function () {
+            compileInput('<input type="text" ng-model="foo" />');
+            changeInputValueTo('a');
+            changeInputValueTo('');
+            expect(scope.foo).toBe('');
+        });
 
 
-    it('should set $invalid when model undefined', function() {
-      compileInput('<input type="text" ng-model="notDefined" required />');
-      scope.$digest();
-      expect(inputElm).toBeInvalid();
-    });
+        it('should set $invalid when model undefined', function () {
+            compileInput('<input type="text" ng-model="notDefined" required />');
+            scope.$digest();
+            expect(inputElm).toBeInvalid();
+        });
 
 
-    it('should allow `false` as a valid value when the input type is not "checkbox"', function() {
-      compileInput('<input type="radio" ng-value="true" ng-model="answer" required />' +
+        it('should allow `false` as a valid value when the input type is not "checkbox"', function () {
+            compileInput('<input type="radio" ng-value="true" ng-model="answer" required />' +
         '<input type="radio" ng-value="false" ng-model="answer" required />');
 
-      scope.$apply();
-      expect(inputElm).toBeInvalid();
+            scope.$apply();
+            expect(inputElm).toBeInvalid();
 
-      scope.$apply(function() {
-        scope.answer = true;
-      });
-      expect(inputElm).toBeValid();
+            scope.$apply(function () {
+                scope.answer = true;
+            });
+            expect(inputElm).toBeValid();
 
-      scope.$apply(function() {
-        scope.answer = false;
-      });
-      expect(inputElm).toBeValid();
-    });
-  });
-
-
-  describe('ngChange', function() {
-
-    it('should $eval expression after new value is set in the model', function() {
-      compileInput('<input type="text" ng-model="value" ng-change="change()" />');
-
-      scope.change = jasmine.createSpy('change').andCallFake(function() {
-        expect(scope.value).toBe('new value');
-      });
-
-      changeInputValueTo('new value');
-      expect(scope.change).toHaveBeenCalledOnce();
-    });
-
-    it('should not $eval the expression if changed from model', function() {
-      compileInput('<input type="text" ng-model="value" ng-change="change()" />');
-
-      scope.change = jasmine.createSpy('change');
-      scope.$apply(function() {
-        scope.value = true;
-      });
-
-      expect(scope.change).not.toHaveBeenCalled();
+            scope.$apply(function () {
+                scope.answer = false;
+            });
+            expect(inputElm).toBeValid();
+        });
     });
 
 
-    it('should $eval ngChange expression on checkbox', function() {
-      compileInput('<input type="checkbox" ng-model="foo" ng-change="changeFn()">');
+    describe('ngChange', function () {
 
-      scope.changeFn = jasmine.createSpy('changeFn');
-      scope.$digest();
-      expect(scope.changeFn).not.toHaveBeenCalled();
+        it('should $eval expression after new value is set in the model', function () {
+            compileInput('<input type="text" ng-model="value" ng-change="change()" />');
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.changeFn).toHaveBeenCalledOnce();
+            scope.change = jasmine.createSpy('change').andCallFake(function () {
+                expect(scope.value).toBe('new value');
+            });
+
+            changeInputValueTo('new value');
+            expect(scope.change).toHaveBeenCalledOnce();
+        });
+
+        it('should not $eval the expression if changed from model', function () {
+            compileInput('<input type="text" ng-model="value" ng-change="change()" />');
+
+            scope.change = jasmine.createSpy('change');
+            scope.$apply(function () {
+                scope.value = true;
+            });
+
+            expect(scope.change).not.toHaveBeenCalled();
+        });
+
+
+        it('should $eval ngChange expression on checkbox', function () {
+            compileInput('<input type="checkbox" ng-model="foo" ng-change="changeFn()">');
+
+            scope.changeFn = jasmine.createSpy('changeFn');
+            scope.$digest();
+            expect(scope.changeFn).not.toHaveBeenCalled();
+
+            browserTrigger(inputElm, 'click');
+            expect(scope.changeFn).toHaveBeenCalledOnce();
+        });
     });
-  });
 
 
-  describe('ngValue', function() {
+    describe('ngValue', function () {
 
-    it('should update the dom "value" property and attribute', function() {
-      compileInput('<input type="submit" ng-value="value">');
+        it('should update the dom "value" property and attribute', function () {
+            compileInput('<input type="submit" ng-value="value">');
 
-      scope.$apply(function() {
-        scope.value = 'something';
-      });
+            scope.$apply(function () {
+                scope.value = 'something';
+            });
 
-      expect(inputElm[0].value).toBe('something');
-      expect(inputElm[0].getAttribute('value')).toBe('something');
-    });
+            expect(inputElm[0].value).toBe('something');
+            expect(inputElm[0].getAttribute('value')).toBe('something');
+        });
 
 
-    it('should evaluate and set constant expressions', function() {
-      compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
+        it('should evaluate and set constant expressions', function () {
+            compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
                    '<input type="radio" ng-model="selected" ng-value="false">' +
                    '<input type="radio" ng-model="selected" ng-value="1">');
-      scope.$digest();
+            scope.$digest();
 
-      browserTrigger(inputElm[0], 'click');
-      expect(scope.selected).toBe(true);
+            browserTrigger(inputElm[0], 'click');
+            expect(scope.selected).toBe(true);
 
-      browserTrigger(inputElm[1], 'click');
-      expect(scope.selected).toBe(false);
+            browserTrigger(inputElm[1], 'click');
+            expect(scope.selected).toBe(false);
 
-      browserTrigger(inputElm[2], 'click');
-      expect(scope.selected).toBe(1);
-    });
-
-
-    it('should watch the expression', function() {
-      compileInput('<input type="radio" ng-model="selected" ng-value="value">');
-
-      scope.$apply(function() {
-        scope.selected = scope.value = {some: 'object'};
-      });
-      expect(inputElm[0].checked).toBe(true);
-
-      scope.$apply(function() {
-        scope.value = {some: 'other'};
-      });
-      expect(inputElm[0].checked).toBe(false);
-
-      browserTrigger(inputElm, 'click');
-      expect(scope.selected).toBe(scope.value);
-    });
+            browserTrigger(inputElm[2], 'click');
+            expect(scope.selected).toBe(1);
+        });
 
 
-    it('should work inside ngRepeat', function() {
-      compileInput(
+        it('should watch the expression', function () {
+            compileInput('<input type="radio" ng-model="selected" ng-value="value">');
+
+            scope.$apply(function () {
+                scope.selected = scope.value = { some: 'object' };
+            });
+            expect(inputElm[0].checked).toBe(true);
+
+            scope.$apply(function () {
+                scope.value = { some: 'other' };
+            });
+            expect(inputElm[0].checked).toBe(false);
+
+            browserTrigger(inputElm, 'click');
+            expect(scope.selected).toBe(scope.value);
+        });
+
+
+        it('should work inside ngRepeat', function () {
+            compileInput(
         '<input type="radio" ng-repeat="i in items" ng-model="$parent.selected" ng-value="i.id">');
 
-      scope.$apply(function() {
-        scope.items = [{id: 1}, {id: 2}];
-        scope.selected = 1;
-      });
+            scope.$apply(function () {
+                scope.items = [{ id: 1 }, { id: 2}];
+                scope.selected = 1;
+            });
 
-      inputElm = formElm.find('input');
-      expect(inputElm[0].checked).toBe(true);
-      expect(inputElm[1].checked).toBe(false);
+            inputElm = formElm.find('input');
+            expect(inputElm[0].checked).toBe(true);
+            expect(inputElm[1].checked).toBe(false);
 
-      browserTrigger(inputElm.eq(1), 'click');
-      expect(scope.selected).toBe(2);
-    });
+            browserTrigger(inputElm.eq(1), 'click');
+            expect(scope.selected).toBe(2);
+        });
 
 
-    it('should work inside ngRepeat with primitive values', function() {
-      compileInput(
+        it('should work inside ngRepeat with primitive values', function () {
+            compileInput(
         '<div ng-repeat="i in items">' +
           '<input type="radio" name="sel_{{i.id}}" ng-model="i.selected" ng-value="true">' +
           '<input type="radio" name="sel_{{i.id}}" ng-model="i.selected" ng-value="false">' +
         '</div>');
 
-      scope.$apply(function() {
-        scope.items = [{id: 1, selected: true}, {id: 2, selected: false}];
-      });
+            scope.$apply(function () {
+                scope.items = [{ id: 1, selected: true }, { id: 2, selected: false}];
+            });
 
-      inputElm = formElm.find('input');
-      expect(inputElm[0].checked).toBe(true);
-      expect(inputElm[1].checked).toBe(false);
-      expect(inputElm[2].checked).toBe(false);
-      expect(inputElm[3].checked).toBe(true);
+            inputElm = formElm.find('input');
+            expect(inputElm[0].checked).toBe(true);
+            expect(inputElm[1].checked).toBe(false);
+            expect(inputElm[2].checked).toBe(false);
+            expect(inputElm[3].checked).toBe(true);
 
-      browserTrigger(inputElm.eq(1), 'click');
-      expect(scope.items[0].selected).toBe(false);
-    });
+            browserTrigger(inputElm.eq(1), 'click');
+            expect(scope.items[0].selected).toBe(false);
+        });
 
 
-    it('should work inside ngRepeat without name attribute', function() {
-      compileInput(
+        it('should work inside ngRepeat without name attribute', function () {
+            compileInput(
         '<div ng-repeat="i in items">' +
           '<input type="radio" ng-model="i.selected" ng-value="true">' +
           '<input type="radio" ng-model="i.selected" ng-value="false">' +
         '</div>');
 
-      scope.$apply(function() {
-        scope.items = [{id: 1, selected: true}, {id: 2, selected: false}];
-      });
+            scope.$apply(function () {
+                scope.items = [{ id: 1, selected: true }, { id: 2, selected: false}];
+            });
 
-      inputElm = formElm.find('input');
-      expect(inputElm[0].checked).toBe(true);
-      expect(inputElm[1].checked).toBe(false);
-      expect(inputElm[2].checked).toBe(false);
-      expect(inputElm[3].checked).toBe(true);
+            inputElm = formElm.find('input');
+            expect(inputElm[0].checked).toBe(true);
+            expect(inputElm[1].checked).toBe(false);
+            expect(inputElm[2].checked).toBe(false);
+            expect(inputElm[3].checked).toBe(true);
 
-      browserTrigger(inputElm.eq(1), 'click');
-      expect(scope.items[0].selected).toBe(false);
+            browserTrigger(inputElm.eq(1), 'click');
+            expect(scope.items[0].selected).toBe(false);
+        });
     });
-  });
 });
