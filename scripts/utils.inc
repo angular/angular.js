@@ -202,7 +202,12 @@ function readJsonProp {
 # - note: propertyRegex will be automatically placed into a
 #   capturing group! -> all other groups start at index 2!
 function replaceJsonProp {
-  sed -i .tmp -E 's/"('$2')"[ ]*:[ ]*"'$3'"/"\1": "'$4'"/' $1
+  replaceInFile $1 '"('$2')"[ ]*:[ ]*"'$3'"' '"\1": "'$4'"'
+}
+
+# replaceInFile(file, findPattern, replacePattern)
+function replaceInFile {
+  sed -i .tmp -E "s/$2/$3/" $1
   rm $1.tmp
 }
 
