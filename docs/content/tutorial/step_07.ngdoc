@@ -121,7 +121,7 @@ view, Angular will use the `phone-list.html` template and the `PhoneListCtrl` co
 We reused the `PhoneListCtrl` controller that we constructed in previous steps and we added a new,
 empty `PhoneDetailCtrl` controller to the `app/js/controllers.js` file for the phone details view.
 
-`$route.otherwise({redirectTo: '/phones'})` triggers a redirection to `/phones` when the browser
+`$routeProvider.otherwise({redirectTo: '/phones'})` triggers a redirection to `/phones` when the browser
 address doesn't match either of our routes.
 
 Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
