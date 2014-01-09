@@ -299,20 +299,13 @@ function jqLiteHasClass(element, selector) {
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
+  var setter = element.setAttribute ? function(value) { element.setAttribute('class', value) } : function(value) { element.className = value};
+  if (cssClasses && (element.setAttribute || msie === 9)) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
+      setter(trim(
           (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " "))
-      );
-    });
-  } else if (msie === 9) {
-    forEach(cssClasses.split(' '), function(cssClass) {
-      element.className = trim(
-          (" " + (element.className || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " ")
       );
     });
   }
