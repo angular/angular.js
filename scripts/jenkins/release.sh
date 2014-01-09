@@ -7,6 +7,9 @@ echo "#################################"
 ARG_DEFS=(
   "--next-version-type=(patch|minor|major)"
   "--next-version-name=(.+)"
+  # require the git dryrun flag so the script can't be run without
+  # thinking about this!
+  "--git-push-dryrun=(true|false)"
   "[--no-test=(true|false)]"
 )
 
