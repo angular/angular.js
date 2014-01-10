@@ -90,7 +90,7 @@ function shallowClearAndCopy(src, dst) {
  *   when a param value needs to be obtained for a request (unless the param was overridden).
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
- *   excess keys are appended to the url seapph query after the `?`.
+ *   excess keys are appended to the url search query after the `?`.
  *
  *   Given a template `/path/:verb` and parameter `{verb:'greet', salutation:'Hello'}` results in
  *   URL `/path/greet?salutation=Hello`.
