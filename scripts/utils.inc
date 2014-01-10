@@ -51,6 +51,8 @@
 # - serVar
 # - isFunction
 
+# always stop on errors
+set -e
 
 function usage {
   echo "Usage: ${0} ${ARG_DEFS[@]}"
@@ -254,9 +256,6 @@ function main {
   if [[ $GIT_PUSH_DRYRUN == "true" ]]; then
     git_push_dryrun_proxy
   fi
-
-  # stop on errors
-  set -e
 
   # --verbose argument
   if [[ $VERBOSE == "true" ]]; then
