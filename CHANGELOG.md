@@ -1,3 +1,38 @@
+<a name="1.2.8"></a>
+# 1.2.8 interdimensional-cartography (2014-01-10)
+
+
+## Bug Fixes
+
+- **$http:**
+  - return responseText on IE8 for requests with responseType set
+  ([a9cccbe1](https://github.com/angular/angular.js/commit/a9cccbe14f1bd9048f5dab4443f58c804d4259a1),
+   [#4464](https://github.com/angular/angular.js/issues/4464), [#4738](https://github.com/angular/angular.js/issues/4738), [#5636](https://github.com/angular/angular.js/issues/5636))
+  - Allow status code 0 from any protocol
+  ([28fc80bb](https://github.com/angular/angular.js/commit/28fc80bba0107075ab371fd0a7634a38891626b2),
+   [#1356](https://github.com/angular/angular.js/issues/1356), [#5547](https://github.com/angular/angular.js/issues/5547))
+  - cancelled JSONP requests will not print error in the console
+  ([95e1b2d6](https://github.com/angular/angular.js/commit/95e1b2d6121b4e26cf87dcf6746a7b8cb4c25e7f),
+   [#5615](https://github.com/angular/angular.js/issues/5615), [#5616](https://github.com/angular/angular.js/issues/5616))
+- **$location:** return '/' for root path in hashbang mode
+  ([63cd873f](https://github.com/angular/angular.js/commit/63cd873fef3207deef30c7a7ed66f4b8f647dc12),
+   [#5650](https://github.com/angular/angular.js/issues/5650), [#5712](https://github.com/angular/angular.js/issues/5712))
+- **$parse:** fix CSP nested property evaluation, and issue that prevented its tests from failing
+  ([3b1a4fe0](https://github.com/angular/angular.js/commit/3b1a4fe0c83c7898ecd7261ab4213998ee7be0ec),
+   [#5591](https://github.com/angular/angular.js/issues/5591), [#5592](https://github.com/angular/angular.js/issues/5592))
+- **closure:** add Closure externs for angular.$q.Promise.finally
+  ([caeb7402](https://github.com/angular/angular.js/commit/caeb7402651702cd13df2f1594e9827439a8b760),
+   [#4757](https://github.com/angular/angular.js/issues/4757))
+- **ngMock window.inject:** Remove Error 'stack' property changes
+  ([7e916455](https://github.com/angular/angular.js/commit/7e916455b36dc9ca4d4afc1e44cade90006d00e3))
+
+
+## Features
+
+- **select:** allow multiline ng-options
+  ([43a2f3d0](https://github.com/angular/angular.js/commit/43a2f3d0bf435e3626cd679caff4281cfb3415bd),
+   [#5602](https://github.com/angular/angular.js/issues/5602))
+
 <a name="1.2.7"></a>
 # 1.2.7 emoji-clairvoyance (2014-01-03)
 
