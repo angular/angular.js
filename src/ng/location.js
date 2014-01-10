@@ -184,10 +184,6 @@ function LocationHashbangUrl(appBase, hashPrefix) {
 
     this.$$compose();
 
-    if (!this.$$path) {
-      this.$$path = '/';
-    }
-
     /*
      * In Windows, on an anchor node on documents loaded from
      * the filesystem, the browser will return a pathname

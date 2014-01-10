@@ -1487,16 +1487,6 @@ describe('$location', function() {
       expect(location.url()).toBe('/not-starting-with-slash');
       expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
-
-
-    it("should return / for path for the application root path", function() {
-      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
-      location.$$parse('http://server/pre/index.html');
-      expect(location.path()).toBe('/');
-
-      location.$$parse('http://server/pre/');
-      expect(location.path()).toBe('/');
-    });
   });
 
 
