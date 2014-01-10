@@ -714,7 +714,7 @@ describe('jqLite', function() {
       });
 
       it('should allow adding of class in IE9', function() {
-        if (msie !== 9) return; // IE9 doesn't support node.setAttribute
+        if (!(jqLite(a).setAttribute && jqLite(a).getAttribute)) return; // IE9 doesn't support node.setAttribute
         var selector = jqLite([a, b]);
         expect(selector.addClass('abc')).toBe(selector);
         expect(jqLite(a).hasClass('abc')).toBe(true);

@@ -362,7 +362,7 @@ function jqLiteRemoveClass(element, cssClasses) {
   if (cssClasses && (element.setAttribute || msie === 9)) {
     forEach(cssClasses.split(' '), function(cssClass) {
       setter(trim(
-          (" " + (element.getAttribute('class') || '') + " ")
+          (" " + (element.getAttribute('class') || element.className || '') + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " "))
       );
