@@ -217,9 +217,13 @@ is located at `./config/karma.conf.js`).
 
 * Create a new model property in the controller and bind to it from the template. For example:
 
-          $scope.hello = "Hello, World!"
+          $scope.name = "World"
 
-  Refresh your browser to make sure it says, "Hello, World!"
+  Then add a new binding to `index.html`:
+
+          <p>Hello, {{name}}!</p>
+
+  Refresh your browser and verifies that it says "Hello, World!".
 
 * Create a repeater that constructs a simple table:
 
