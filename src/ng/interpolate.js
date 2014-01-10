@@ -173,7 +173,6 @@ function $InterpolateProvider() {
         forEach(parts, function(value, index) {
           if (isFunction(value)) {
             expressions[index] = value;
-            concat[index] = '';
           } else {
             concat[index] = value;
           }
@@ -214,8 +213,7 @@ function $InterpolateProvider() {
         };
 
         fn = function(scope) {
-          // we don't want others to be able to pass more than the first argument
-          return getConcatValue(scope);
+          return getConcatValue(scope /*, undefined, ...*/);
         };
         fn.exp = text;
         fn.parts = parts;
@@ -225,7 +223,12 @@ function $InterpolateProvider() {
           var lastTextValue, lastValues = {}, watchersRm = [];
 
           forEach(expressions, function(expression, index) {
-            watchersRm.push(scope.$watch(function watchInterpolatedExpr(scope) {
+            watchersRm.push(
+              scope.$watch(watcherOf(expression), listenerOf(index), objectEquality));
+          });
+
+          function watcherOf(expression) {
+            return function interpolatedExprWatcher(scope) {
               try {
                 return getStringValue(expression(scope));
               } catch (err) {
@@ -233,18 +236,17 @@ function $InterpolateProvider() {
                   text, err.toString());
                 $exceptionHandler(newErr);
               }
-            }, listenerOf(index), objectEquality));
-          });
+            }
+          }
 
           function listenerOf(index) {
             return function interpolatedExprListener(value, oldValue) {
               // we only invoke the origListener if the current value
               // is not equal to the last computed value
-              // ex: if in `{{a}}-{{b}}` both values change in a digest,
-              // the listener of `a` gets invoked first, we compute the string
-              // and invoke the origListener once,
-              // and ignore it when the listener of `b` gets triggered
-              // (unless the value of `b` changes again since the last computation)
+              // ex: if in `{{a}}-{{b}}` both values change in a digest, the listener of
+              // `a` gets invoked first, we compute the string and call the origListener
+              // and don't invoke it again when the listener of `b` gets triggered
+              // (unless the value of `b` changes again since the last computation!)
               if (value !== lastValues[index]) {
                 var textValue = getConcatValue(scope, index, value, lastValues);
                 origListener.call(this, textValue,
