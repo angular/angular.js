@@ -358,7 +358,7 @@ function jqLiteHasClass(element, selector) {
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
-  var setter = element.setAttribute ? function(value) { element.setAttribute('class', value) } : function(value) { element.className = value};
+  var setter = element.setAttribute ? function(value) { element.setAttribute('class', value); } : function(value) { element.className = value; };
   if (cssClasses && (element.setAttribute || msie === 9)) {
     forEach(cssClasses.split(' '), function(cssClass) {
       setter(trim(
