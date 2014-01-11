@@ -586,10 +586,10 @@ function $RouteProvider(){
         if (i === 0) {
           result.push(segment);
         } else {
-          var segmentMatch = segment.match(/(\w+)(.*)/);
+          var segmentMatch = segment.match(/(\w+)([\?|\*])?(.*)/);
           var key = segmentMatch[1];
           result.push(params[key]);
-          result.push(segmentMatch[2] || '');
+          result.push(segmentMatch[3] || '');
           delete params[key];
         }
       });
