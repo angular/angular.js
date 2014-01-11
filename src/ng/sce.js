@@ -321,7 +321,7 @@ function $SceDelegateProvider() {
      *
      * @param {*} value The result of a prior {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs`}
      *      call or anything else.
-     * @returns {*} The value the was originally provided to {@link ng.$sceDelegate#methods_trustAs
+     * @returns {*} The `value` that was originally provided to {@link ng.$sceDelegate#methods_trustAs
      *     `$sceDelegate.trustAs`} if `value` is the result of such a call.  Otherwise, returns
      *     `value` unchanged.
      */
