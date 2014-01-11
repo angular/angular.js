@@ -111,9 +111,9 @@ function $HttpProvider() {
       common: {
         'Accept': 'application/json, text/plain, */*'
       },
-      post:   CONTENT_TYPE_APPLICATION_JSON,
-      put:    CONTENT_TYPE_APPLICATION_JSON,
-      patch:  CONTENT_TYPE_APPLICATION_JSON
+      post:   copy(CONTENT_TYPE_APPLICATION_JSON),
+      put:    copy(CONTENT_TYPE_APPLICATION_JSON),
+      patch:  copy(CONTENT_TYPE_APPLICATION_JSON)
     },
 
     xsrfCookieName: 'XSRF-TOKEN',
@@ -324,7 +324,7 @@ function $HttpProvider() {
      * to `push` or `unshift` a new transformation function into the transformation chain. You can
      * also decide to completely override any default transformations by assigning your
      * transformation functions to these properties directly without the array wrapper.  These defaults
-     * are again available on the $http factory at run-time, which may be useful if you have run-time 
+     * are again available on the $http factory at run-time, which may be useful if you have run-time
      * services you wish to be involved in your transformations.
      *
      * Similarly, to locally override the request/response transforms, augment the
