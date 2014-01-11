@@ -99,7 +99,7 @@ actual value is understood.
 
 For example, if you want to display an account balance of 1000 dollars with the following binding
 containing currency filter: `{{ 1000 | currency }}`, and your app is currently in en-US locale.
-'$1000.00' will be shown. However, if someone in a different local (say, Japan) views your app, her
+'$1000.00' will be shown. However, if someone in a different local (say, Japan) views your app, their
 browser will specify the locale as ja, and the balance of '¥1000.00' will be shown instead. This
 will really upset your client.
 
