@@ -63,7 +63,7 @@ This module is provided by default and contains the core components of AngularJS
     </td>
     <td>
       <p>
-        The core filters available in the ng module are used to transform template data before it is renders within directives and expressions.
+        The core filters available in the ng module are used to transform template data before it is rendered within directives and expressions.
       </p>
       <p>
         Some examples include:
