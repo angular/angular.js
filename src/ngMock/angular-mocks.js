@@ -756,6 +756,26 @@ angular.mock.TzDate = function (offset, timestamp) {
 angular.mock.TzDate.prototype = Date.prototype;
 /* jshint +W101 */
 
+angular.module('ngAnimate').config(['$provide', function($provide) {
+  var reflowQueue = [];
+  $provide.value('$$animateReflow', function(fn) {
+    reflowQueue.push(fn);
+    return angular.noop;
+  });
+  $provide.decorator('$animate', function($delegate) {
+    $delegate.triggerReflow = function() {
+      if(reflowQueue.length === 0) {
+        throw new Error('No animation reflows present');
+      }
+      angular.forEach(reflowQueue, function(fn) {
+        fn();
+      });
+      reflowQueue = [];
+    };
+    return $delegate;
+  });
+}]);
+
 angular.mock.animate = angular.module('mock.animate', ['ng'])
 
   .config(['$provide', function($provide) {
@@ -1911,7 +1931,6 @@ angular.mock.clearDataCache = function() {
     }
   }
 };
-
 
 
 if(window.jasmine || window.mocha) {

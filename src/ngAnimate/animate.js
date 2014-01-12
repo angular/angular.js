@@ -248,6 +248,28 @@ angular.module('ngAnimate', ['ng'])
    * Please visit the {@link ngAnimate `ngAnimate`} module overview page learn more about how to use animations in your application.
    *
    */
+  .factory('$$animateReflow', ['$window', '$timeout', function($window, $timeout) {
+    var requestAnimationFrame = $window.requestAnimationFrame       ||
+                                $window.mozRequestAnimationFrame    ||
+                                $window.webkitRequestAnimationFrame ||
+                                function(fn) {
+                                  return $timeout(fn, 10, false);
+                                };
+
+    var cancelAnimationFrame = $window.cancelAnimationFrame       ||
+                               $window.mozCancelAnimationFrame    ||
+                               $window.webkitCancelAnimationFrame ||
+                               function(timer) {
+                                 return $timeout.cancel(timer);
+                               };
+    return function(fn) {
+      var id = requestAnimationFrame(fn);
+      return function() {
+        cancelAnimationFrame(id);
+      };
+    };
+  }])
+
   .config(['$provide', '$animateProvider', function($provide, $animateProvider) {
     var noop = angular.noop;
     var forEach = angular.forEach;
@@ -872,7 +894,8 @@ angular.module('ngAnimate', ['ng'])
       }
     }]);
 
-    $animateProvider.register('', ['$window', '$sniffer', '$timeout', function($window, $sniffer, $timeout) {
+    $animateProvider.register('', ['$window', '$sniffer', '$timeout', '$$animateReflow',
+                           function($window,   $sniffer,   $timeout,   $$animateReflow) {
       // Detect proper transitionend/animationend event names.
       var CSS_PREFIX = '', TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMATIONEND_EVENT;
 
@@ -917,11 +940,13 @@ angular.module('ngAnimate', ['ng'])
       var parentCounter = 0;
       var animationReflowQueue = [];
       var animationElementQueue = [];
-      var animationTimer;
+      var cancelAnimationReflow;
       var closingAnimationTime = 0;
       var timeOut = false;
       function afterReflow(element, callback) {
-        $timeout.cancel(animationTimer);
+        if(cancelAnimationReflow) {
+          cancelAnimationReflow();
+        }
 
         animationReflowQueue.push(callback);
 
@@ -942,7 +967,7 @@ angular.module('ngAnimate', ['ng'])
         //a follow-up animation is midway in its animation
         elementData.animationCount = animationCounter;
 
-        animationTimer = $timeout(function() {
+        cancelAnimationReflow = $$animateReflow(function() {
           forEach(animationReflowQueue, function(fn) {
             fn();
           });
@@ -963,11 +988,11 @@ angular.module('ngAnimate', ['ng'])
 
           animationReflowQueue = [];
           animationElementQueue = [];
-          animationTimer = null;
+          cancelAnimationReflow = null;
           lookupCache = {};
           closingAnimationTime = 0;
           animationCounter++;
-        }, 10, false);
+        });
       }
 
       function closeAllAnimations(elements, count) {
