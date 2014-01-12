@@ -930,8 +930,12 @@ angular.module('ngAnimate', ['ng'])
         animationElementQueue.push(element);
 
         var elementData = element.data(NG_ANIMATE_CSS_DATA_KEY);
-        closingAnimationTime = Math.max(closingAnimationTime,
-          (elementData.maxDelay + elementData.maxDuration) * CLOSING_TIME_BUFFER * ONE_SECOND);
+
+        var stagger = elementData.stagger;
+        var staggerTime = elementData.itemIndex * (Math.max(stagger.animationDelay, stagger.transitionDelay) || 0);
+
+        var animationTime = (elementData.maxDelay + elementData.maxDuration) * CLOSING_TIME_BUFFER;
+        closingAnimationTime = Math.max(closingAnimationTime, (staggerTime + animationTime) * ONE_SECOND);
 
         //by placing a counter we can avoid an accidental
         //race condition which may close an animation when
@@ -1058,9 +1062,9 @@ angular.module('ngAnimate', ['ng'])
         var cacheKey = getCacheKey(element);
         var eventCacheKey = cacheKey + ' ' + className;
         var stagger = {};
-        var ii = lookupCache[eventCacheKey] ? ++lookupCache[eventCacheKey].total : 0;
+        var itemIndex = lookupCache[eventCacheKey] ? ++lookupCache[eventCacheKey].total : 0;
 
-        if(ii > 0) {
+        if(itemIndex > 0) {
           var staggerClassName = className + '-stagger';
           var staggerCacheKey = cacheKey + ' ' + staggerClassName;
           var applyClasses = !lookupCache[staggerCacheKey];
@@ -1113,7 +1117,7 @@ angular.module('ngAnimate', ['ng'])
           classes : className + ' ' + activeClassName,
           timings : timings,
           stagger : stagger,
-          ii : ii
+          itemIndex : itemIndex
         });
 
         return true;
@@ -1158,7 +1162,7 @@ angular.module('ngAnimate', ['ng'])
         var maxDelayTime = Math.max(timings.transitionDelay, timings.animationDelay) * ONE_SECOND;
         var startTime = Date.now();
         var css3AnimationEvents = ANIMATIONEND_EVENT + ' ' + TRANSITIONEND_EVENT;
-        var ii = elementData.ii;
+        var itemIndex = elementData.itemIndex;
 
         var style = '', appliedStyles = [];
         if(timings.transitionDuration > 0) {
@@ -1171,17 +1175,17 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
-        if(ii > 0) {
+        if(itemIndex > 0) {
           if(stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
             var delayStyle = timings.transitionDelayStyle;
             style += CSS_PREFIX + 'transition-delay: ' +
-                     prepareStaggerDelay(delayStyle, stagger.transitionDelay, ii) + '; ';
+                     prepareStaggerDelay(delayStyle, stagger.transitionDelay, itemIndex) + '; ';
             appliedStyles.push(CSS_PREFIX + 'transition-delay');
           }
 
           if(stagger.animationDelay > 0 && stagger.animationDuration === 0) {
             style += CSS_PREFIX + 'animation-delay: ' +
-                     prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, ii) + '; ';
+                     prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, itemIndex) + '; ';
             appliedStyles.push(CSS_PREFIX + 'animation-delay');
           }
         }

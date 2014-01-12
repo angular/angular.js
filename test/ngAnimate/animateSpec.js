@@ -1155,7 +1155,7 @@ describe("ngAnimate", function() {
           }));
 
 
-          it("apply a closing timeout to close all pending transitions",
+          it("should apply a closing timeout to close all pending transitions",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
             if (!$sniffer.transitions) return;
@@ -1172,6 +1172,48 @@ describe("ngAnimate", function() {
 
             $timeout.flush(7500); //closing timeout
             expect(element.hasClass('some-class-add-active')).toBe(false);
+          }));
+
+          it("apply a closing timeout with respect to a staggering animation",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
+
+            if (!$sniffer.transitions) return;
+
+            ss.addRule('.entering-element.ng-enter',
+              '-webkit-transition:5s linear all;' +
+                      'transition:5s linear all;');
+
+            ss.addRule('.entering-element.ng-enter-stagger',
+              '-webkit-transition-delay:0.5s;' +
+                      'transition-delay:0.5s;');
+
+            element = $compile(html('<div></div>'))($rootScope);
+            var kids = [];
+            for(var i = 0; i < 5; i++) {
+              kids.push(angular.element('<div class="entering-element"></div>'));
+              $animate.enter(kids[i], element);
+            }
+            $rootScope.$digest();
+
+            $timeout.flush(10); //reflow
+            expect(element.children().length).toBe(5);
+
+            for(var i = 0; i < 5; i++) {
+              expect(kids[i].hasClass('ng-enter-active')).toBe(true);
+            }
+
+            $timeout.flush(7500);
+
+            for(var i = 0; i < 5; i++) {
+              expect(kids[i].hasClass('ng-enter-active')).toBe(true);
+            }
+
+            //(stagger * index) + (duration + delay) * 150%
+            $timeout.flush(9500); //0.5 * 4 + 5 * 1.5 = 9500;
+
+            for(var i = 0; i < 5; i++) {
+              expect(kids[i].hasClass('ng-enter-active')).toBe(false);
+            }
           }));
 
 
