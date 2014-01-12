@@ -280,7 +280,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(child.hasClass('ng-enter')).toBe(true);
             expect(child.hasClass('ng-enter-active')).toBe(true);
             browserTrigger(element, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -298,7 +298,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(child.hasClass('ng-leave')).toBe(true);
             expect(child.hasClass('ng-leave-active')).toBe(true);
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -322,7 +322,7 @@ describe("ngAnimate", function() {
           $animate.move(child1, element, child2);
           $rootScope.$digest();
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
           }
           expect(element.text()).toBe('21');
         }));
@@ -336,7 +336,7 @@ describe("ngAnimate", function() {
           expect(child).toBeHidden();
           $animate.removeClass(child, 'ng-hide');
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(child.hasClass('ng-hide-remove')).toBe(true);
             expect(child.hasClass('ng-hide-remove-active')).toBe(true);
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -354,7 +354,7 @@ describe("ngAnimate", function() {
           expect(child).toBeShown();
           $animate.addClass(child, 'ng-hide');
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(child.hasClass('ng-hide-add')).toBe(true);
             expect(child.hasClass('ng-hide-add-active')).toBe(true);
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -374,7 +374,7 @@ describe("ngAnimate", function() {
           //enter
           $animate.enter(child, element);
           $rootScope.$digest();
-          $timeout.flush();
+          $animate.triggerReflow();
 
           expect(child.attr('class')).toContain('ng-enter');
           expect(child.attr('class')).toContain('ng-enter-active');
@@ -385,7 +385,7 @@ describe("ngAnimate", function() {
           element.append(after);
           $animate.move(child, element, after);
           $rootScope.$digest();
-          $timeout.flush();
+          $animate.triggerReflow();
 
           expect(child.attr('class')).toContain('ng-move');
           expect(child.attr('class')).toContain('ng-move-active');
@@ -394,14 +394,14 @@ describe("ngAnimate", function() {
 
           //hide
           $animate.addClass(child, 'ng-hide');
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(child.attr('class')).toContain('ng-hide-add');
           expect(child.attr('class')).toContain('ng-hide-add-active');
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
 
           //show
           $animate.removeClass(child, 'ng-hide');
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(child.attr('class')).toContain('ng-hide-remove');
           expect(child.attr('class')).toContain('ng-hide-remove-active');
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -409,7 +409,7 @@ describe("ngAnimate", function() {
           //leave
           $animate.leave(child);
           $rootScope.$digest();
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(child.attr('class')).toContain('ng-leave');
           expect(child.attr('class')).toContain('ng-leave-active');
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -435,7 +435,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           $animate.removeClass(element, 'ng-hide');
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
           }
           expect(element.text()).toBe('memento');
         }));
@@ -455,7 +455,9 @@ describe("ngAnimate", function() {
 
           $animate.leave(child);
           $rootScope.$digest();
-          $timeout.flush();
+          if($sniffer.transitions) {
+            $animate.triggerReflow();
+          }
           expect(child).toBeHidden(); //hides instantly
 
           //lets change this to prove that done doesn't fire anymore for the previous hide() operation
@@ -485,7 +487,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
 
             //this is to verify that the existing style is appended with a semicolon automatically 
             expect(child.attr('style')).toMatch(/width: 20px;.+?/i);
@@ -504,6 +506,7 @@ describe("ngAnimate", function() {
           child.addClass('custom-delay ng-hide');
           $animate.removeClass(child, 'ng-hide');
           if($sniffer.transitions) {
+            $animate.triggerReflow();
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
           $timeout.flush(2000);
@@ -530,7 +533,7 @@ describe("ngAnimate", function() {
 
           expect(completed).toBe(false);
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
           $timeout.flush();
@@ -661,7 +664,7 @@ describe("ngAnimate", function() {
 
             $animate.removeClass(element, 'ng-hide');
             if ($sniffer.animations) {
-              $timeout.flush();
+              $animate.triggerReflow();
               browserTrigger(element,'animationend', { timeStamp: Date.now() + 4000, elapsedTime: 4 });
             }
             expect(element).toBeShown();
@@ -686,7 +689,7 @@ describe("ngAnimate", function() {
 
             $animate.removeClass(element, 'ng-hide');
             if ($sniffer.animations) {
-              $timeout.flush();
+              $animate.triggerReflow();
               browserTrigger(element,'animationend', { timeStamp: Date.now() + 6000, elapsedTime: 6 });
             }
             expect(element).toBeShown();
@@ -713,7 +716,7 @@ describe("ngAnimate", function() {
 
             $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
-              $timeout.flush();
+              $animate.triggerReflow();
               browserTrigger(element,'animationend', { timeStamp : Date.now() + 20000, elapsedTime: 10 });
             }
             expect(element).toBeShown();
@@ -751,7 +754,7 @@ describe("ngAnimate", function() {
               $animate.removeClass(element, 'ng-hide');
 
               if($sniffer.animations) {
-                $timeout.flush();
+                $animate.triggerReflow();
                 expect(element.hasClass('ng-hide-remove')).toBe(true);
                 expect(element.hasClass('ng-hide-remove-active')).toBe(true);
               }
@@ -762,7 +765,7 @@ describe("ngAnimate", function() {
 
 
               if($sniffer.animations) { //cleanup some pending animations
-                $timeout.flush();
+                $animate.triggerReflow();
                 expect(element.hasClass('ng-hide-add')).toBe(true);
                 expect(element.hasClass('ng-hide-add-active')).toBe(true);
                 browserTrigger(element,'animationend', { timeStamp: Date.now() + 2000, elapsedTime: 2 });
@@ -806,7 +809,7 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            $timeout.flush();
+            $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).toMatch(/animation-delay: 0\.1\d*s/);
@@ -823,7 +826,13 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            $timeout.flush();
+            var expectFailure = true;
+            try {
+              $animate.triggerReflow();
+              expectFailure = false;
+            } catch(e) {}
+
+            expect(expectFailure).toBe(true);
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).not.toMatch(/animation-delay: 0\.1\d*s/);
@@ -859,7 +868,7 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            $timeout.flush();
+            $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).toMatch(/animation-delay: 1\.1\d*s,\s*2\.1\d*s/);
@@ -896,7 +905,7 @@ describe("ngAnimate", function() {
 
             $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
-              $timeout.flush();
+              $animate.triggerReflow();
               browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
             }
             expect(element).toBeShown();
@@ -920,7 +929,7 @@ describe("ngAnimate", function() {
               $animate.removeClass(element, 'ng-hide');
 
               if ($sniffer.transitions) {
-                $timeout.flush();
+                $animate.triggerReflow();
                 var now = Date.now();
                 browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
                 browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
@@ -948,7 +957,6 @@ describe("ngAnimate", function() {
 
               element.addClass('ng-hide');
               $animate.removeClass(element, 'ng-hide');
-              $timeout.flush(0);
               expect(element).toBeShown();
               $animate.enabled(true);
 
@@ -957,7 +965,7 @@ describe("ngAnimate", function() {
 
               $animate.removeClass(element, 'ng-hide');
               if ($sniffer.transitions) {
-                $timeout.flush();
+                $animate.triggerReflow();
                 var now = Date.now();
                 browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
                 browserTrigger(element,'transitionend', { timeStamp: now + 3000, elapsedTime: 3 });
@@ -985,7 +993,7 @@ describe("ngAnimate", function() {
 
               $animate.removeClass(element, 'ng-hide');
 
-              $timeout.flush();
+              $animate.triggerReflow();
 
               var now = Date.now();
               browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
@@ -1014,7 +1022,7 @@ describe("ngAnimate", function() {
 
               $animate.removeClass(element, 'ng-hide');
               if ($sniffer.transitions) {
-                $timeout.flush();
+                $animate.triggerReflow();
               }
               expect(element).toBeShown();
               if ($sniffer.transitions) {
@@ -1039,7 +1047,7 @@ describe("ngAnimate", function() {
               $animate.removeClass(element, 'ng-hide');
 
               if($sniffer.transitions) {
-                $timeout.flush();
+                $animate.triggerReflow();
                 expect(element.hasClass('ng-hide-remove')).toBe(true);
                 expect(element.hasClass('ng-hide-remove-active')).toBe(true);
                 browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -1051,7 +1059,7 @@ describe("ngAnimate", function() {
               $animate.addClass(element, 'ng-hide');
 
               if($sniffer.transitions) {
-                $timeout.flush();
+                $animate.triggerReflow();
                 expect(element.hasClass('ng-hide-add')).toBe(true);
                 expect(element.hasClass('ng-hide-add-active')).toBe(true);
               }
@@ -1092,7 +1100,7 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            $timeout.flush();
+            $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).toMatch(/transition-delay: 0\.1\d*s/);
@@ -1109,7 +1117,14 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            $timeout.flush();
+
+            var expectFailure = true;
+            try {
+              $animate.triggerReflow();
+              expectFailure = false;
+            } catch(e) {}
+
+            expect(expectFailure).toBe(true);
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).not.toMatch(/transition-delay: 0\.1\d*s/);
@@ -1145,7 +1160,7 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            $timeout.flush();
+            $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toMatch(/transition-duration: 1\d*s,\s*3\d*s;/);
             expect(elements[0].attr('style')).not.toContain('transition-delay');
@@ -1167,7 +1182,7 @@ describe("ngAnimate", function() {
 
             $animate.addClass(element, 'some-class');
 
-            $timeout.flush(10); //reflow
+            $animate.triggerReflow(); //reflow
             expect(element.hasClass('some-class-add-active')).toBe(true);
 
             $timeout.flush(7500); //closing timeout
@@ -1195,7 +1210,7 @@ describe("ngAnimate", function() {
             }
             $rootScope.$digest();
 
-            $timeout.flush(10); //reflow
+            $animate.triggerReflow(); //reflow
             expect(element.children().length).toBe(5);
 
             for(var i = 0; i < 5; i++) {
@@ -1231,12 +1246,12 @@ describe("ngAnimate", function() {
 
             $animate.addClass(element, 'some-class');
 
-            $timeout.flush(10); //reflow
+            $animate.triggerReflow(); //reflow
             expect(element.hasClass('some-class-add-active')).toBe(true);
 
             $animate.removeClass(element, 'some-class');
 
-            $timeout.flush(10); //second reflow
+            $animate.triggerReflow(); //second reflow
 
             $timeout.flush(7500); //closing timeout for the first animation
             expect(element.hasClass('some-class-remove-active')).toBe(true);
@@ -1279,7 +1294,7 @@ describe("ngAnimate", function() {
           };
 
           $rootScope.$digest();
-          $timeout.flush();
+          $animate.triggerReflow();
 
           expect(elements[0].attr('style')).toBeFalsy();
 
@@ -1317,7 +1332,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if ($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('abc')).toBe(true);
             expect(element.hasClass('ng-enter')).toBe(true);
             expect(element.hasClass('ng-enter-active')).toBe(true);
@@ -1331,7 +1346,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if ($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('xyz')).toBe(true);
             expect(element.hasClass('ng-enter')).toBe(true);
             expect(element.hasClass('ng-enter-active')).toBe(true);
@@ -1359,7 +1374,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('one')).toBe(true);
             expect(element.hasClass('two')).toBe(true);
             expect(element.hasClass('ng-enter')).toBe(true);
@@ -1567,6 +1582,9 @@ describe("ngAnimate", function() {
           });
 
           $animate.addClass(element, 'ng-hide'); //earlier animation cancelled
+          if($sniffer.transitions) {
+            $animate.triggerReflow();
+          }
           $timeout.flush();
           expect(signature).toBe('AB');
         }));
@@ -1697,7 +1715,7 @@ describe("ngAnimate", function() {
 
           if($sniffer.transitions) {
             expect(element.hasClass('klass-add')).toBe(true);
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('klass')).toBe(true);
             expect(element.hasClass('klass-add-active')).toBe(true);
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3 });
@@ -1712,7 +1730,7 @@ describe("ngAnimate", function() {
           if($sniffer.transitions) {
             expect(element.hasClass('klass-remove')).toBe(true);
 
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('klass')).toBe(false);
             expect(element.hasClass('klass-add')).toBe(false);
             expect(element.hasClass('klass-add-active')).toBe(false);
@@ -1776,7 +1794,7 @@ describe("ngAnimate", function() {
           });
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('klass-add')).toBe(true);
             expect(element.hasClass('klass-add-active')).toBe(true);
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 11000, elapsedTime: 11 });
@@ -1792,7 +1810,7 @@ describe("ngAnimate", function() {
           });
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('klass-remove')).toBe(true);
             expect(element.hasClass('klass-remove-active')).toBe(true);
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 11000, elapsedTime: 11 });
@@ -1826,7 +1844,7 @@ describe("ngAnimate", function() {
           });
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('one-add')).toBe(true);
             expect(element.hasClass('two-add')).toBe(true);
 
@@ -1872,7 +1890,7 @@ describe("ngAnimate", function() {
           });
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(element.hasClass('one-remove')).toBe(true);
             expect(element.hasClass('two-remove')).toBe(true);
 
@@ -1926,7 +1944,7 @@ describe("ngAnimate", function() {
       $rootScope.$digest();
 
       if($sniffer.transitions) {
-        $timeout.flush();
+        $animate.triggerReflow();
         expect(child.hasClass('ng-enter')).toBe(true);
         expect(child.hasClass('ng-enter-active')).toBe(true);
         browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -1950,7 +1968,7 @@ describe("ngAnimate", function() {
       $rootScope.$digest();
 
       if($sniffer.transitions) {
-        $timeout.flush();
+        $animate.triggerReflow();
         expect(child.hasClass('ng-enter')).toBe(true);
         expect(child.hasClass('ng-enter-active')).toBe(true);
         browserTrigger(child,'transitionend', { timeStamp: Date.now() + 9000, elapsedTime: 9 });
@@ -2004,9 +2022,8 @@ describe("ngAnimate", function() {
         $animate.enter(child, element);
         $rootScope.$digest();
 
-        $timeout.flush(10);
-
         if($sniffer.transitions) {
+          $animate.triggerReflow();
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
         }
 
@@ -2040,7 +2057,7 @@ describe("ngAnimate", function() {
 
         //this is added/removed right away otherwise
         if($sniffer.transitions) {
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(child.hasClass('ng-enter')).toBe(true);
           expect(child.hasClass('ng-enter-active')).toBe(true);
         }
@@ -2080,7 +2097,7 @@ describe("ngAnimate", function() {
         $animate.leave(child);
         $rootScope.$digest();
 
-        $timeout.flush();
+        $animate.triggerReflow();
         expect(child.hasClass('ng-enter-active')).toBe(false);
       });
     });
@@ -2275,7 +2292,7 @@ describe("ngAnimate", function() {
 
         var empty = true;
         try {
-          $timeout.flush();
+          $animate.triggerReflow();
           empty = false;
         }
         catch(e) {}
@@ -2301,7 +2318,7 @@ describe("ngAnimate", function() {
 
       $animate.enter(child, element);
       $rootScope.$digest();
-      $timeout.flush();
+      $animate.triggerReflow();
 
       expect(child.hasClass('ng-enter')).toBe(true);
       expect(child.hasClass('ng-enter-active')).toBe(true);
@@ -2361,7 +2378,7 @@ describe("ngAnimate", function() {
         expect(animationState).toBe('enter');
         if($sniffer.transitions) {
           expect(child.hasClass('ng-enter')).toBe(true);
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(child.hasClass('ng-enter-active')).toBe(true);
         }
 
@@ -2378,7 +2395,7 @@ describe("ngAnimate", function() {
 
         $animate.addClass(child, 'something');
         if($sniffer.transitions) {
-          $timeout.flush();
+          $animate.triggerReflow();
         }
         expect(animationState).toBe('addClass');
         if($sniffer.transitions) {
@@ -2397,7 +2414,7 @@ describe("ngAnimate", function() {
 
 
     it("should wait until a queue of animations are complete before performing a reflow",
-      inject(function($rootScope, $compile, $timeout,$sniffer) {
+      inject(function($rootScope, $compile, $timeout, $sniffer, $animate) {
 
       if(!$sniffer.transitions) return;
 
@@ -2409,7 +2426,7 @@ describe("ngAnimate", function() {
 
       $rootScope.$digest();
       expect(element[0].querySelectorAll('.ng-enter-active').length).toBe(0);
-      $timeout.flush();
+      $animate.triggerReflow();
       expect(element[0].querySelectorAll('.ng-enter-active').length).toBe(5);
 
       forEach(element.children(), function(kid) {
@@ -2470,7 +2487,7 @@ describe("ngAnimate", function() {
     });
 
 
-    it("should disable all child animations on structural animations until the first reflow has passed", function() {
+    it("should disable all child animations on structural animations until the post animation timeout has passed", function() {
       var intercepted;
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
@@ -2584,7 +2601,6 @@ describe("ngAnimate", function() {
           $animate.enter(kid, element);
         }
         $rootScope.$digest();
-        $timeout.flush();
 
         //called three times since the classname is the same
         expect(count).toBe(2);
@@ -2598,7 +2614,6 @@ describe("ngAnimate", function() {
         }
 
         $rootScope.$digest();
-        $timeout.flush();
 
         expect(count).toBe(20);
       });
@@ -2666,7 +2681,7 @@ describe("ngAnimate", function() {
       expect(element.hasClass('green')).toBe(false);
       expect(element.hasClass('red')).toBe(false);
 
-      $timeout.flush();
+      $animate.triggerReflow();
 
       expect(element.hasClass('green')).toBe(true);
       expect(element.hasClass('red')).toBe(true);
@@ -2826,7 +2841,7 @@ describe("ngAnimate", function() {
       expect(element.hasClass('base-class')).toBe(false);
 
       //the reflow...
-      $timeout.flush();
+      $animate.triggerReflow();
 
       //the reflow DOM operation was commenced but it ran before so it
       //shouldn't run agaun
@@ -2860,9 +2875,10 @@ describe("ngAnimate", function() {
         node._setAttribute(prop, val);
       };
 
+      expect(capturedProperty).toBe('none');
       $animate.addClass(element, 'trigger-class');
 
-      $timeout.flush();
+      $animate.triggerReflow();
 
       expect(capturedProperty).not.toBe('none');
     }));
@@ -2889,7 +2905,7 @@ describe("ngAnimate", function() {
 
       expect(node.style[animationKey]).toContain('none');
 
-      $timeout.flush();
+      $animate.triggerReflow();
 
       expect(node.style[animationKey]).not.toContain('none');
     }));
@@ -2934,7 +2950,7 @@ describe("ngAnimate", function() {
         expect(element[0].style[prop]).toContain('none');
         expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('0s');
 
-        $timeout.flush();
+        $animate.triggerReflow();
       });
     });
 
@@ -2953,7 +2969,7 @@ describe("ngAnimate", function() {
         $animate.leave(element);
         $rootScope.$digest();
 
-        $timeout.flush();
+        $animate.triggerReflow();
 
         browserTrigger(element, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 0.50999999991 });
 
@@ -2977,7 +2993,7 @@ describe("ngAnimate", function() {
           }
         });
       });
-      inject(function($rootScope, $compile, $rootElement, $document, $timeout, $templateCache, $sniffer) {
+      inject(function($rootScope, $compile, $rootElement, $document, $timeout, $templateCache, $sniffer, $animate) {
         if(!$sniffer.transitions) return;
 
         $templateCache.put('item-template', 'item: #{{ item }} ');
@@ -2996,7 +3012,7 @@ describe("ngAnimate", function() {
         $rootScope.tpl = 'item-template';
         $rootScope.items = [1,2,3];
         $rootScope.$digest();
-        $timeout.flush();
+        $animate.triggerReflow();
 
         expect(capturedAnimation).toBe('enter');
         expect(element.text()).toContain('item: #1');
@@ -3008,7 +3024,7 @@ describe("ngAnimate", function() {
 
         $rootScope.items = [];
         $rootScope.$digest();
-        $timeout.flush();
+        $animate.triggerReflow();
 
         expect(capturedAnimation).toBe('leave');
       });
@@ -3086,7 +3102,7 @@ describe("ngAnimate", function() {
         ready = true;
       });
 
-      $timeout.flush(10);
+      $animate.triggerReflow();
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
       $timeout.flush(1);
       expect(ready).toBe(false);
@@ -3100,7 +3116,7 @@ describe("ngAnimate", function() {
         ready = true;
       });
 
-      $timeout.flush(10);
+      $animate.triggerReflow();
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
       $timeout.flush(1);
       expect(ready).toBe(true);
@@ -3168,7 +3184,7 @@ describe("ngAnimate", function() {
       $timeout.flush(1);
       expect(signature).toBe('AB');
 
-      $timeout.flush(10);
+      $animate.triggerReflow();
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2000 });
       $timeout.flush(1);
 
