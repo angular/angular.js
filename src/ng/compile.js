@@ -424,13 +424,17 @@
       <div compile="html"></div>
     </div>
    </doc:source>
-   <doc:scenario>
+   <doc:protractor>
      it('should auto compile', function() {
-       expect(element('div[compile]').text()).toBe('Hello Angular');
-       input('html').enter('{{name}}!');
-       expect(element('div[compile]').text()).toBe('Angular!');
+       var textarea = $('textarea');
+       var output = $('div[compile]');
+       // The initial state reads 'Hello Angular'.
+       expect(output.getText()).toBe('Hello Angular');
+       textarea.clear();
+       textarea.sendKeys('{{name}}!');
+       expect(output.getText()).toBe('Angular!');
      });
-   </doc:scenario>
+   </doc:protractor>
  </doc:example>
 
  *

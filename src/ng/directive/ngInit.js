@@ -44,15 +44,15 @@
      </div>
    </div>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
        it('should alias index positions', function() {
-         expect(element('.example-init').text())
-           .toBe('list[ 0 ][ 0 ] = a;' +
-                 'list[ 0 ][ 1 ] = b;' +
-                 'list[ 1 ][ 0 ] = c;' +
-                 'list[ 1 ][ 1 ] = d;');
+         var elements = element.all(by.css('.example-init'));
+         expect(elements.get(0).getText()).toBe('list[ 0 ][ 0 ] = a;');
+         expect(elements.get(1).getText()).toBe('list[ 0 ][ 1 ] = b;');
+         expect(elements.get(2).getText()).toBe('list[ 1 ][ 0 ] = c;');
+         expect(elements.get(3).getText()).toBe('list[ 1 ][ 1 ] = d;');
        });
-     </doc:scenario>
+     </doc:protractor>
    </doc:example>
  */
 var ngInitDirective = ngDirective({

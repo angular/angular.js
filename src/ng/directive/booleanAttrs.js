@@ -41,46 +41,48 @@
         <a id="link-5" name="xxx" ng-click="value = 5">anchor</a> (no link)<br />
         <a id="link-6" ng-href="{{value}}">link</a> (link, change location)
       </doc:source>
-      <doc:scenario>
+      <doc:protractor>
         it('should execute ng-click but not reload when href without value', function() {
-          element('#link-1').click();
-          expect(input('value').val()).toEqual('1');
-          expect(element('#link-1').attr('href')).toBe("");
+          element(by.id('link-1')).click();
+          expect(element(by.model('value')).getAttribute('value')).toEqual('1');
+          expect(element(by.id('link-1')).getAttribute('href')).toBe('');
         });
 
         it('should execute ng-click but not reload when href empty string', function() {
-          element('#link-2').click();
-          expect(input('value').val()).toEqual('2');
-          expect(element('#link-2').attr('href')).toBe("");
+          element(by.id('link-2')).click();
+          expect(element(by.model('value')).getAttribute('value')).toEqual('2');
+          expect(element(by.id('link-2')).getAttribute('href')).toBe('');
         });
 
         it('should execute ng-click and change url when ng-href specified', function() {
-          expect(element('#link-3').attr('href')).toBe("/123");
+          expect(element(by.id('link-3')).getAttribute('href')).toMatch(/\/123$/);
 
-          element('#link-3').click();
-          expect(browser().window().path()).toEqual('/123');
+          element(by.id('link-3')).click();
+
+          expect(browser.driver.getCurrentUrl()).toMatch(/\/123$/);
         });
 
         it('should execute ng-click but not reload when href empty string and name specified', function() {
-          element('#link-4').click();
-          expect(input('value').val()).toEqual('4');
-          expect(element('#link-4').attr('href')).toBe('');
+          element(by.id('link-4')).click();
+          expect(element(by.model('value')).getAttribute('value')).toEqual('4');
+          expect(element(by.id('link-4')).getAttribute('href')).toBe('');
         });
 
         it('should execute ng-click but not reload when no href but name specified', function() {
-          element('#link-5').click();
-          expect(input('value').val()).toEqual('5');
-          expect(element('#link-5').attr('href')).toBe(undefined);
+          element(by.id('link-5')).click();
+          expect(element(by.model('value')).getAttribute('value')).toEqual('5');
+          expect(element(by.id('link-5')).getAttribute('href')).toBe(null);
         });
 
         it('should only change url when only ng-href', function() {
-          input('value').enter('6');
-          expect(element('#link-6').attr('href')).toBe('6');
+          element(by.model('value')).clear();
+          element(by.model('value')).sendKeys('6');
+          expect(element(by.id('link-6')).getAttribute('href')).toMatch(/\/6$/);
 
-          element('#link-6').click();
-          expect(browser().location().url()).toEqual('/6');
+          element(by.id('link-6')).click();
+          expect(browser.getCurrentUrl()).toMatch(/\/6$/);
         });
-      </doc:scenario>
+      </doc:protractor>
     </doc:example>
  */
 
@@ -165,13 +167,13 @@
         Click me to toggle: <input type="checkbox" ng-model="checked"><br/>
         <button ng-model="button" ng-disabled="checked">Button</button>
       </doc:source>
-      <doc:scenario>
+      <doc:protractor>
         it('should toggle button', function() {
-          expect(element('.doc-example-live :button').prop('disabled')).toBeFalsy();
-          input('checked').check();
-          expect(element('.doc-example-live :button').prop('disabled')).toBeTruthy();
+          expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeFalsy();
+          element(by.model('checked')).click();
+          expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeTruthy();
         });
-      </doc:scenario>
+      </doc:protractor>
     </doc:example>
  *
  * @element INPUT
@@ -200,13 +202,13 @@
         Check me to check both: <input type="checkbox" ng-model="master"><br/>
         <input id="checkSlave" type="checkbox" ng-checked="master">
       </doc:source>
-      <doc:scenario>
+      <doc:protractor>
         it('should check both checkBoxes', function() {
-          expect(element('.doc-example-live #checkSlave').prop('checked')).toBeFalsy();
-          input('master').check();
-          expect(element('.doc-example-live #checkSlave').prop('checked')).toBeTruthy();
+          expect(element(by.id('checkSlave')).getAttribute('checked')).toBeFalsy();
+          element(by.model('master')).click();
+          expect(element(by.id('checkSlave')).getAttribute('checked')).toBeTruthy();
         });
-      </doc:scenario>
+      </doc:protractor>
     </doc:example>
  *
  * @element INPUT
@@ -235,13 +237,13 @@
         Check me to make text readonly: <input type="checkbox" ng-model="checked"><br/>
         <input type="text" ng-readonly="checked" value="I'm Angular"/>
       </doc:source>
-      <doc:scenario>
+      <doc:protractor>
         it('should toggle readonly attr', function() {
-          expect(element('.doc-example-live :text').prop('readonly')).toBeFalsy();
-          input('checked').check();
-          expect(element('.doc-example-live :text').prop('readonly')).toBeTruthy();
+          expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeFalsy();
+          element(by.model('checked')).click();
+          expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeTruthy();
         });
-      </doc:scenario>
+      </doc:protractor>
     </doc:example>
  *
  * @element INPUT
@@ -274,13 +276,13 @@
           <option id="greet" ng-selected="selected">Greetings!</option>
         </select>
       </doc:source>
-      <doc:scenario>
+      <doc:protractor>
         it('should select Greetings!', function() {
-          expect(element('.doc-example-live #greet').prop('selected')).toBeFalsy();
-          input('selected').check();
-          expect(element('.doc-example-live #greet').prop('selected')).toBeTruthy();
+          expect(element(by.id('greet')).getAttribute('selected')).toBeFalsy();
+          element(by.model('selected')).click();
+          expect(element(by.id('greet')).getAttribute('selected')).toBeTruthy();
         });
-      </doc:scenario>
+      </doc:protractor>
     </doc:example>
  *
  * @element OPTION
@@ -310,13 +312,13 @@
             <summary>Show/Hide me</summary>
          </details>
        </doc:source>
-       <doc:scenario>
+       <doc:protractor>
          it('should toggle open', function() {
-           expect(element('#details').prop('open')).toBeFalsy();
-           input('open').check();
-           expect(element('#details').prop('open')).toBeTruthy();
+           expect(element(by.id('details')).getAttribute('open')).toBeFalsy();
+           element(by.model('open')).click();
+           expect(element(by.id('details')).getAttribute('open')).toBeTruthy();
          });
-       </doc:scenario>
+       </doc:protractor>
      </doc:example>
  *
  * @element DETAILS

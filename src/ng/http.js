@@ -587,14 +587,14 @@ function $HttpProvider() {
       <option>JSONP</option>
     </select>
     <input type="text" ng-model="url" size="80"/>
-    <button ng-click="fetch()">fetch</button><br>
-    <button ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
-    <button
+    <button id="fetchbtn" ng-click="fetch()">fetch</button><br>
+    <button id="samplegetbtn" ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
+    <button id="samplejsonpbtn"
       ng-click="updateModel('JSONP',
                     'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">
       Sample JSONP
     </button>
-    <button
+    <button id="invalidjsonpbtn"
       ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">
         Invalid JSONP
       </button>
@@ -631,27 +631,34 @@ function $HttpProvider() {
 <file name="http-hello.html">
   Hello, $http!
 </file>
-<file name="scenario.js">
+<file name="protractorTest.js">
+  var status = element(by.binding('status'));
+  var data = element(by.binding('data'));
+  var fetchBtn = element(by.id('fetchbtn'));
+  var sampleGetBtn = element(by.id('samplegetbtn'));
+  var sampleJsonpBtn = element(by.id('samplejsonpbtn'));
+  var invalidJsonpBtn = element(by.id('invalidjsonpbtn'));
+
   it('should make an xhr GET request', function() {
-    element(':button:contains("Sample GET")').click();
-    element(':button:contains("fetch")').click();
-    expect(binding('status')).toBe('200');
-    expect(binding('data')).toMatch(/Hello, \$http!/);
+    sampleGetBtn.click();
+    fetchBtn.click();
+    expect(status.getText()).toMatch('200');
+    expect(data.getText()).toMatch(/Hello, \$http!/)
   });
 
   it('should make a JSONP request to angularjs.org', function() {
-    element(':button:contains("Sample JSONP")').click();
-    element(':button:contains("fetch")').click();
-    expect(binding('status')).toBe('200');
-    expect(binding('data')).toMatch(/Super Hero!/);
+    sampleJsonpBtn.click();
+    fetchBtn.click();
+    expect(status.getText()).toMatch('200');
+    expect(data.getText()).toMatch(/Super Hero!/);
   });
 
   it('should make JSONP request to invalid URL and invoke the error handler',
       function() {
-    element(':button:contains("Invalid JSONP")').click();
-    element(':button:contains("fetch")').click();
-    expect(binding('status')).toBe('0');
-    expect(binding('data')).toBe('Request failed');
+    invalidJsonpBtn.click();
+    fetchBtn.click();
+    expect(status.getText()).toMatch('0');
+    expect(data.getText()).toMatch('Request failed');
   });
 </file>
 </example>

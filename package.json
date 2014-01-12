@@ -29,7 +29,7 @@
     "karma-sauce-launcher": "0.2.0",
     "karma-script-launcher": "0.1.0",
     "karma-browserstack-launcher": "0.0.7",
-    "protractor": "~0.16.1",
+    "protractor": "~0.17.0",
     "yaml-js": "~0.0.8",
     "marked": "0.2.9",
     "rewire": "1.1.3",
