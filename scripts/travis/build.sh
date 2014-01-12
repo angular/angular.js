@@ -10,7 +10,6 @@ if [ $JOB = "unit" ]; then
   grunt test:promises-aplus
   grunt test:unit --browsers SL_Chrome,SL_Safari,SL_Firefox,SL_IE_8,SL_IE_9,SL_IE_10,SL_IE_11 --reporters dots
 elif [ $JOB = "e2e" ]; then
-  grunt test:e2e --browsers SL_Chrome --reporters dots
   grunt test:protractor --sauceUser $SAUCE_USERNAME \
       --sauceKey $SAUCE_ACCESS_KEY \
       --capabilities.tunnel-identifier=$TRAVIS_JOB_NUMBER \
