@@ -25,12 +25,12 @@
       <a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
       <div id="tpl-content" ng-include src="currentTpl"></div>
     </doc:source>
-    <doc:scenario>
+    <doc:protractor>
       it('should load template defined inside script tag', function() {
-        element('#tpl-link').click();
-        expect(element('#tpl-content').text()).toMatch(/Content of the template/);
+        element(by.css('#tpl-link')).click();
+        expect(element(by.css('#tpl-content')).getText()).toMatch(/Content of the template/);
       });
-    </doc:scenario>
+    </doc:protractor>
   </doc:example>
  */
 var scriptDirective = ['$templateCache', function($templateCache) {

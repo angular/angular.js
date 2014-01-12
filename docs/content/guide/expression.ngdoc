@@ -37,11 +37,11 @@ JavaScript, use the {@link api/ng.$rootScope.Scope#methods_$eval `$eval()`} meth
 <doc:source>
  1+2={{1+2}}
 </doc:source>
-<doc:scenario>
+<doc:protractor>
  it('should calculate expression in binding', function() {
-   expect(binding('1+2')).toEqual('3');
+   expect(element(by.binding('1+2')).getText()).toEqual('1+2=3');
  });
-</doc:scenario>
+</doc:protractor>
 </doc:example>
 
 You can try evaluating different expressions here:
@@ -73,14 +73,14 @@ You can try evaluating different expressions here:
    </ul>
  </div>
 </doc:source>
-<doc:scenario>
+<doc:protractor>
  it('should allow user expression testing', function() {
-    element('.expressions :button').click();
-    var li = using('.expressions ul').repeater('li');
-    expect(li.count()).toBe(1);
-    expect(li.row(0)).toEqual(["3*10|currency", "$30.00"]);
+    element(by.css('.expressions button')).click();
+    var lis = element(by.css('.expressions ul')).element.all(by.repeater('expr in exprs'));
+    expect(lis.count()).toBe(1);
+    expect(lis.get(0).getText()).toEqual('[ X ] 3*10|currency => $30.00');
  });
-</doc:scenario>
+</doc:protractor>
 </doc:example>
 
 
@@ -99,7 +99,7 @@ prevent accidental access to the global state (a common source of subtle bugs).
      $scope.name = 'World';
 
      $scope.greet = function() {
-       ($window.mockWindow || $window).alert('Hello ' + $scope.name);
+       $window.alert('Hello ' + $scope.name);
      }
    }
  </script>
@@ -108,21 +108,17 @@ prevent accidental access to the global state (a common source of subtle bugs).
    <button ng-click="greet()">Greet</button>
  </div>
 </doc:source>
-<doc:scenario>
- it('should calculate expression in binding', function() {
-   var alertText;
-   this.addFutureAction('set mock', function($window, $document, done) {
-     $window.mockWindow = {
-       alert: function(text){ alertText = text; }
-     };
-     done();
-   });
-   element(':button:contains(Greet)').click();
-   expect(this.addFuture('alert text', function(done) {
-     done(null, alertText);
-   })).toBe('Hello World');
- });
-</doc:scenario>
+<doc:protractor>
+  it('should calculate expression in binding', function() {
+    element(by.css('[ng-click="greet()"]')).click();
+
+    var alertDialog = browser.switchTo().alert();
+
+    expect(alertDialog.getText()).toEqual('Hello World');
+
+    alertDialog.accept();
+  });
+</doc:protractor>
 </doc:example>
 
 ## Forgiving

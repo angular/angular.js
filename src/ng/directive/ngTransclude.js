@@ -40,14 +40,18 @@
          <pane title="{{title}}">{{text}}</pane>
        </div>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
         it('should have transcluded', function() {
-          input('title').enter('TITLE');
-          input('text').enter('TEXT');
-          expect(binding('title')).toEqual('TITLE');
-          expect(binding('text')).toEqual('TEXT');
+          var titleElement = element(by.model('title'));
+          titleElement.clear();
+          titleElement.sendKeys('TITLE');
+          var textElement = element(by.model('text'));
+          textElement.clear();
+          textElement.sendKeys('TEXT');
+          expect(element(by.binding('title')).getText()).toEqual('TITLE');
+          expect(element(by.binding('text')).getText()).toEqual('TEXT');
         });
-     </doc:scenario>
+     </doc:protractor>
    </doc:example>
  *
  */

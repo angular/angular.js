@@ -327,20 +327,20 @@ forEach(
         <pre>list={{list}}</pre>
       </form>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
        it('should check ng-submit', function() {
-         expect(binding('list')).toBe('[]');
-         element('.doc-example-live #submit').click();
-         expect(binding('list')).toBe('["hello"]');
-         expect(input('text').val()).toBe('');
+         expect(element(by.binding('list')).getText()).toBe('list=[]');
+         element(by.css('.doc-example-live #submit')).click();
+         expect(element(by.binding('list')).getText()).toContain('hello');
+         expect(element(by.input('text')).getAttribute('value')).toBe('');
        });
        it('should ignore empty strings', function() {
-         expect(binding('list')).toBe('[]');
-         element('.doc-example-live #submit').click();
-         element('.doc-example-live #submit').click();
-         expect(binding('list')).toBe('["hello"]');
-       });
-     </doc:scenario>
+         expect(element(by.binding('list')).getText()).toBe('list=[]');
+         element(by.css('.doc-example-live #submit')).click();
+         element(by.css('.doc-example-live #submit')).click();
+         expect(element(by.binding('list')).getText()).toContain('hello');
+        });
+     </doc:protractor>
    </doc:example>
  */
 

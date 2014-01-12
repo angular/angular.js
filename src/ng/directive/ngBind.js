@@ -38,13 +38,17 @@
          Hello <span ng-bind="name"></span>!
        </div>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
        it('should check ng-bind', function() {
-         expect(using('.doc-example-live').binding('name')).toBe('Whirled');
-         using('.doc-example-live').input('name').enter('world');
-         expect(using('.doc-example-live').binding('name')).toBe('world');
+         var exampleContainer = $('.doc-example-live');
+         var nameInput = element(by.model('name'));
+
+         expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('Whirled');
+         nameInput.clear();
+         nameInput.sendKeys('world');
+         expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('world');
        });
-     </doc:scenario>
+     </doc:protractor>
    </doc:example>
  */
 var ngBindDirective = ngDirective(function(scope, element, attr) {
@@ -90,20 +94,22 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
         <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
        </div>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
        it('should check ng-bind', function() {
-         expect(using('.doc-example-live').binding('salutation')).
-           toBe('Hello');
-         expect(using('.doc-example-live').binding('name')).
-           toBe('World');
-         using('.doc-example-live').input('salutation').enter('Greetings');
-         using('.doc-example-live').input('name').enter('user');
-         expect(using('.doc-example-live').binding('salutation')).
-           toBe('Greetings');
-         expect(using('.doc-example-live').binding('name')).
-           toBe('user');
+         var salutationElem = element(by.binding('salutation'));
+         var salutationInput = element(by.model('salutation'));
+         var nameInput = element(by.model('name'));
+
+         expect(salutationElem.getText()).toBe('Hello World!');
+
+         salutationInput.clear();
+         salutationInput.sendKeys('Greetings');
+         nameInput.clear();
+         nameInput.sendKeys('user');
+
+         expect(salutationElem.getText()).toBe('Greetings user!');
        });
-     </doc:scenario>
+     </doc:protractor>
    </doc:example>
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
@@ -156,12 +162,10 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
        }]);
      </file>
 
-     <file name="scenario.js">
+     <file name="protractorTest.js">
        it('should check ng-bind-html', function() {
-         expect(using('.doc-example-live').binding('myHTML')).
-           toBe(
-           'I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>'
-           );
+         expect(element(by.binding('myHTML')).getText()).toBe(
+             'I am an HTMLstring with links! and other stuff');
        });
      </file>
    </example>

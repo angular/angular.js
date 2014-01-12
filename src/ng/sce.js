@@ -624,13 +624,15 @@ function $SceDelegateProvider() {
 ]
 </file>
 
-<file name="scenario.js">
+<file name="protractorTest.js">
   describe('SCE doc demo', function() {
     it('should sanitize untrusted values', function() {
-      expect(element('.htmlComment').html()).toBe('<span>Is <i>anyone</i> reading this?</span>');
+      expect(element(by.css('.htmlComment')).getInnerHtml())
+          .toBe('<span>Is <i>anyone</i> reading this?</span>');
     });
+
     it('should NOT sanitize explicitly trusted values', function() {
-      expect(element('#explicitlyTrustedHtml').html()).toBe(
+      expect(element(by.id('explicitlyTrustedHtml')).getInnerHtml()).toBe(
           '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
           'sanitization.&quot;">Hover over this text.</span>');
     });
