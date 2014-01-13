@@ -1443,7 +1443,6 @@ describe('$http', function() {
       it('should have seperate opbjects for defaults PUT and POST', function() {
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
-        expect($http.defaults.headers.put).not.toBe($http.defaults.headers.post);
         expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
       })
     });
