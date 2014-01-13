@@ -41,9 +41,14 @@ var scriptDirective = ['$templateCache', function($templateCache) {
       if (attr.type == 'text/ng-template') {
         var templateUrl = attr.id,
             // IE is not consistent, in scripts we have to read .text but in other nodes we have to read .textContent
-            text = element[0].text;
+            text = element[0].text,
+            headers = {};
 
-        $templateCache.put(templateUrl, text);
+        if (attr.contentType || '') {
+          headers['content-type'] = attr.contentType;
+        }
+
+        $templateCache.put(templateUrl, [200, text, headers]);
       }
     }
   };
