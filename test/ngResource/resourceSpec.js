@@ -534,7 +534,9 @@ describe("resource", function() {
   it('should exercise full stack', function() {
     var Person = $resource('/Person/:id');
 
-    $httpBackend.expect('GET', '/Person/123').respond('\n{\n"name":\n"misko"\n}\n');
+    $httpBackend.expect('GET', '/Person/123').respond('\n{\n"name":\n"misko"\n}\n', {
+      'Content-Type': 'application/json'
+    });
     var person = Person.get({id:123});
     $httpBackend.flush();
     expect(person.name).toEqual('misko');

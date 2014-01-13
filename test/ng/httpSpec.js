@@ -1014,8 +1014,10 @@ describe('$http', function() {
 
         describe('default', function() {
 
-          it('should deserialize json objects', function() {
-            $httpBackend.expect('GET', '/url').respond('{"foo":"bar","baz":23}');
+          it('should deserialize json objects with json content-type', function() {
+            $httpBackend.expect('GET', '/url').respond('{"foo":"bar","baz":23}', {
+              'Content-Type': 'application/json'
+            });
             $http({method: 'GET', url: '/url'}).success(callback);
             $httpBackend.flush();
 
@@ -1024,8 +1026,10 @@ describe('$http', function() {
           });
 
 
-          it('should deserialize json arrays', function() {
-            $httpBackend.expect('GET', '/url').respond('[1, "abc", {"foo":"bar"}]');
+          it('should deserialize json arrays with json content-type', function() {
+            $httpBackend.expect('GET', '/url').respond('[1, "abc", {"foo":"bar"}]', {
+              'Content-Type': 'application/json'
+            });
             $http({method: 'GET', url: '/url'}).success(callback);
             $httpBackend.flush();
 
@@ -1034,8 +1038,10 @@ describe('$http', function() {
           });
 
 
-          it('should deserialize json with security prefix', function() {
-            $httpBackend.expect('GET', '/url').respond(')]}\',\n[1, "abc", {"foo":"bar"}]');
+          it('should deserialize json with security prefix with json content-type', function() {
+            $httpBackend.expect('GET', '/url').respond(')]}\',\n[1, "abc", {"foo":"bar"}]', {
+              'Content-Type': 'application/json'
+            });
             $http({method: 'GET', url: '/url'}).success(callback);
             $httpBackend.flush();
 
@@ -1044,8 +1050,10 @@ describe('$http', function() {
           });
 
 
-          it('should deserialize json with security prefix ")]}\'"', function() {
-            $httpBackend.expect('GET', '/url').respond(')]}\'\n\n[1, "abc", {"foo":"bar"}]');
+          it('should deserialize json with security prefix ")]}\'" with json content-type', function() {
+            $httpBackend.expect('GET', '/url').respond(')]}\'\n\n[1, "abc", {"foo":"bar"}]', {
+              'Content-Type': 'application/json'
+            });
             $http({method: 'GET', url: '/url'}).success(callback);
             $httpBackend.flush();
 
@@ -1054,14 +1062,26 @@ describe('$http', function() {
           });
 
 
-          it('should not deserialize tpl beginning with ng expression', function() {
-            $httpBackend.expect('GET', '/url').respond('{{some}}');
+          it('should not deserialize tpl beginning with ng expression with json content-type', function() {
+            $httpBackend.expect('GET', '/url').respond('{{some}}', {
+              'Content-Type': 'application/json'
+            });
             $http.get('/url').success(callback);
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
             expect(callback.mostRecentCall.args[0]).toEqual('{{some}}');
           });
+        });
+
+
+        it('should not deserialize JSON response without Content-Type header matching \'json\'', function() {
+          $httpBackend.expect('GET', '/url').respond('{ "foo": "bar" }');
+          $http.get('/url').success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe('{ "foo": "bar" }');
         });
 
 
