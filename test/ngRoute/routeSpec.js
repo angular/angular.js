@@ -389,7 +389,7 @@ describe('$route', function() {
         var onChangeSpy = jasmine.createSpy('onChange');
 
         $rootScope.$on('$routeChangeStart', onChangeSpy);
-        expect($route.current).not.toBeUndefined();
+        expect($route.current).toBeUndefined();
         expect(onChangeSpy).not.toHaveBeenCalled();
 
         $location.path('/unknownRoute');
@@ -426,7 +426,7 @@ describe('$route', function() {
 
         // init
         $rootScope.$on('$routeChangeStart', onChangeSpy);
-        expect($route.current).not.toBeUndefined();
+        expect($route.current).toBeUndefined();
         expect(onChangeSpy).not.toHaveBeenCalled();
 
 
@@ -434,7 +434,7 @@ describe('$route', function() {
         $location.path('/unknownRoute');
         $rootScope.$digest();
 
-        expect(currentRoute).not.toBeUndefined();
+        expect(currentRoute).toBeUndefined();
         expect(nextRoute.templateUrl).toBe('404.html');
         expect($route.current.templateUrl).toBe('404.html');
         expect(onChangeSpy).toHaveBeenCalled();
@@ -770,7 +770,7 @@ describe('$route', function() {
         var onChangeSpy = jasmine.createSpy('onChange');
 
         $rootScope.$on('$routeChangeStart', onChangeSpy);
-        expect($route.current).not.toBeUndefined();
+        expect($route.current).toBeUndefined();
         expect(onChangeSpy).not.toHaveBeenCalled();
 
         $location.path('/');
