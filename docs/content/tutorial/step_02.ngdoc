@@ -223,7 +223,7 @@ To run the test, do the following:
 
           <p>Hello, {{name}}!</p>
 
-  Refresh your browser and verifies that it says "Hello, World!".
+  Refresh your browser and verify that it says "Hello, World!".
 
 * Create a repeater that constructs a simple table:
 
