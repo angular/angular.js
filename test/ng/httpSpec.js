@@ -1430,12 +1430,6 @@ describe('$http', function() {
 
       it('should expose the defaults object at runtime', function() {
         expect($http.defaults).toBeDefined();
-        expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
-        expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
-        expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
-        expect($http.defaults.headers.put).not.toBe($http.defaults.headers.post);
-        expect($http.defaults.headers.patch).not.toBe($http.defaults.headers.put);
-        expect($http.defaults.headers.patch).not.toBe($http.defaults.headers.post);
 
         $http.defaults.headers.common.foo = 'bar';
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
@@ -1445,6 +1439,13 @@ describe('$http', function() {
         $http.get('/url');
         $httpBackend.flush();
       });
+
+      it('should have seperate opbjects for defaults PUT and POST', function() {
+        expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
+        expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
+        expect($http.defaults.headers.put).not.toBe($http.defaults.headers.post);
+        expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
+      })
     });
   });
 
