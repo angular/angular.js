@@ -1428,9 +1428,13 @@ describe('$http', function() {
 
     describe('defaults', function() {
 
-      it('should expose the defaults object at runtime', function() {
-        expect($http.defaults).toBeDefined();
+      it('should ensure that default headers are different objects', function(){
+          expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
+          expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
+          expect($http.defaults.headers.patch).not.toBe($http.defaults.headers.post);
+      });
 
+      it('should expose the defaults object at runtime', function() {
         $http.defaults.headers.common.foo = 'bar';
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
           return headers['foo'] == 'bar';
