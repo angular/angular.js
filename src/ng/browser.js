@@ -154,7 +154,16 @@ function Browser(window, document, $log, $sniffer) {
 
     // setter
     if (url) {
-      if (lastBrowserUrl == url) return;
+      if (lastBrowserUrl == url) {
+        // Basically the $browser.url method is not called when the URL is changed by history back event.
+        // This case is handled by popstate event handler.
+        // But popstate event is triggered only after onload event
+        // So, the $browser.url method is called when the URL is changed by history back event before onload event.
+        // $locationWatch can cause INFDIG error
+        // because lastBrowserUrl == url == $location.absUrl() != $browser.url()
+        if (lastBrowserUrl != self.url()) fireUrlChange();
+        return;
+      }
       lastBrowserUrl = url;
       if ($sniffer.history) {
         if (replace) history.replaceState(null, '', url);
