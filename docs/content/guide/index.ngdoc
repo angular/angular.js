@@ -75,6 +75,7 @@ This is a short list of libraries with specific support and documentation for wo
 * **SQL and NoSQL backends:** [BreezeJS](http://www.breezejs.com/), [AngularFire](http://angularfire.com/)
 * **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/), [ngTagsInput](https://github.com/mbenford/ngTagsInput)
 * **Advanced Routing:** [UI-Router](https://github.com/angular-ui/ui-router)
+* **Maps:** [UI-Map (Google Maps)](https://github.com/angular-ui/ui-map)
 
 ## Deployment
 
