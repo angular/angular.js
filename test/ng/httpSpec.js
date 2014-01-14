@@ -1074,7 +1074,6 @@ describe('$http', function() {
           });
         });
 
-
         it('should not deserialize JSON response without Content-Type header matching \'json\'', function() {
           $httpBackend.expect('GET', '/url').respond('{ "foo": "bar" }');
           $http.get('/url').success(callback);
@@ -1509,5 +1508,100 @@ describe('$http', function() {
     });
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
+
+  describe('with autoParseJSON(true) response', function() {
+    var $httpBackend, $http, $rootScope;
+
+    beforeEach(module(function($httpProvider) {
+      $httpProvider.autoParseJSON(true);
+    }));
+
+    beforeEach(inject(['$rootScope', function($rs) {
+      $rootScope = $rs;
+
+      spyOn($rootScope, '$apply').andCallThrough();
+    }]));
+
+    beforeEach(inject(['$httpBackend', '$http', function($hb, $h) {
+      $httpBackend = $hb;
+      $http = $h;
+    }]));
+
+    it('should deserialize json objects', function() {
+      $httpBackend.expect('GET', '/url').respond('{"foo":"bar","baz":23}');
+      $http({method: 'GET', url: '/url'}).success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toEqual({foo: 'bar', baz: 23});
+    });
+
+
+    it('should deserialize json arrays', function() {
+      $httpBackend.expect('GET', '/url').respond('[1, "abc", {"foo":"bar"}]');
+      $http({method: 'GET', url: '/url'}).success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo: 'bar'}]);
+    });
+
+
+    it('should deserialize json with security prefix', function() {
+      $httpBackend.expect('GET', '/url').respond(')]}\',\n[1, "abc", {"foo":"bar"}]');
+      $http({method: 'GET', url: '/url'}).success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+    });
+
+
+    it('should deserialize json with security prefix ")]}\'"', function() {
+      $httpBackend.expect('GET', '/url').respond(')]}\'\n\n[1, "abc", {"foo":"bar"}]');
+      $http({method: 'GET', url: '/url'}).success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+    });
+
+
+    it('should not deserialize tpl beginning with ng expression', function() {
+      $httpBackend.expect('GET', '/url').respond('{{some}}');
+      $http.get('/url').success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toEqual('{{some}}');
+    });
+
+
+    it('should have access to response headers', function() {
+      $httpBackend.expect('GET', '/url').respond(200, 'response', {h1: 'header1'});
+      $http.get('/url', {
+        transformResponse: function(data, headers) {
+          return headers('h1');
+        }
+      }).success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toBe('header1');
+    });
+
+
+    it('should pipeline more functions', function() {
+      function first(d, h) {return d + '-first' + ':' + h('h1')}
+      function second(d) {return uppercase(d)}
+
+      $httpBackend.expect('POST', '/url').respond(200, 'resp', {h1: 'v1'});
+      $http.post('/url', '', {transformResponse: [first, second]}).success(callback);
+      $httpBackend.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toBe('RESP-FIRST:V1');
+    });
   });
 });
