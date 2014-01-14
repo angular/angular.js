@@ -227,7 +227,7 @@ function $InterpolateProvider() {
      * @description
      * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
      *
-     * Use {@link ng.$interpolateProvider#endSymbol $interpolateProvider#endSymbol} to change
+     * Use {@link ng.$interpolateProvider#methods_endSymbol $interpolateProvider#endSymbol} to change
      * the symbol.
      *
      * @returns {string} start symbol.
