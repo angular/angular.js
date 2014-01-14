@@ -592,7 +592,14 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function() {
-          dom.tag('a', {href: 'api/ng.' + require.name}, require.name);
+          var name = require.name;
+          var module = name.substr(0, name.indexOf('.'));
+          if (module !== 'AUTO' && module.indexOf('ng') !== 0) {
+            module = 'ng';
+          } else if (module) {
+            name = name.substr(module.length + 1);
+          }
+          dom.tag('a', {href: 'api/' + module + '.' + name}, name);
         });
         dom.html(require.text);
       });
