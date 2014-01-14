@@ -1601,7 +1601,7 @@ angular.$provide.value = function(name, object) {};
 
 /**
  * @typedef {{
- *   all: function(Array.<angular.$q.Promise>): angular.$q.Promise,
+ *   all: function((Object.<angular.$q.Promise>|Array.<angular.$q.Promise>)): angular.$q.Promise,
  *   defer: function():angular.$q.Deferred,
  *   reject: function(*):angular.$q.Promise,
  *   when: function(*):angular.$q.Promise
@@ -1610,7 +1610,7 @@ angular.$provide.value = function(name, object) {};
 angular.$q;
 
 /**
- * @param {Array.<angular.$q.Promise>} promises
+ * @param {Object.<angular.$q.Promise>|Array.<angular.$q.Promise>} promises
  * @return {angular.$q.Promise}
  */
 angular.$q.all = function(promises) {};
