@@ -317,6 +317,10 @@ angular.module('ngAnimate', ['ng'])
                 return classNameFilter.test(className);
               };
 
+      function async(fn) {
+        return $timeout(fn, 0, false);
+      }
+
       function lookup(name) {
         if (name) {
           var matches = [],
@@ -608,6 +612,8 @@ angular.module('ngAnimate', ['ng'])
         //best to catch this early on to prevent any animation operations from occurring
         if(!node || !isAnimatableClassName(classes)) {
           fireDOMOperation();
+          fireBeforeCallbackAsync();
+          fireAfterCallbackAsync();
           closeAnimation();
           return;
         }
@@ -627,6 +633,8 @@ angular.module('ngAnimate', ['ng'])
         //NOTE: IE8 + IE9 should close properly (run closeAnimation()) in case a NO animation is not found.
         if (animationsDisabled(element, parentElement) || matches.length === 0) {
           fireDOMOperation();
+          fireBeforeCallbackAsync();
+          fireAfterCallbackAsync();
           closeAnimation();
           return;
         }
@@ -665,6 +673,8 @@ angular.module('ngAnimate', ['ng'])
         //animation do it's thing and close this one early
         if(animations.length === 0) {
           fireDOMOperation();
+          fireBeforeCallbackAsync();
+          fireAfterCallbackAsync();
           fireDoneCallbackAsync();
           return;
         }
@@ -718,6 +728,8 @@ angular.module('ngAnimate', ['ng'])
         if((animationEvent == 'addClass'    && futureClassName.indexOf(classNameToken) >= 0) ||
            (animationEvent == 'removeClass' && futureClassName.indexOf(classNameToken) == -1)) {
           fireDOMOperation();
+          fireBeforeCallbackAsync();
+          fireAfterCallbackAsync();
           fireDoneCallbackAsync();
           return;
         }
@@ -758,6 +770,10 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function invokeRegisteredAnimationFns(animations, phase, allAnimationFnsComplete) {
+          phase == 'after' ?
+            fireAfterCallbackAsync() :
+            fireBeforeCallbackAsync();
+
           var endFnName = phase + 'End';
           forEach(animations, function(animation, index) {
             var animationPhaseCompleted = function() {
@@ -794,8 +810,27 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
+        function fireDOMCallback(animationPhase) {
+          element.triggerHandler('$animate:' + animationPhase, {
+            event : animationEvent,
+            className : className
+          });
+        }
+
+        function fireBeforeCallbackAsync() {
+          async(function() {
+            fireDOMCallback('before');
+          });
+        }
+
+        function fireAfterCallbackAsync() {
+          async(function() {
+            fireDOMCallback('after');
+          });
+        }
+
         function fireDoneCallbackAsync() {
-          doneCallback && $timeout(doneCallback, 0, false);
+          doneCallback && async(doneCallback);
         }
 
         //it is less complicated to use a flag than managing and cancelling
@@ -819,9 +854,9 @@ angular.module('ngAnimate', ['ng'])
               if(isClassBased) {
                 cleanup(element);
               } else {
-                data.closeAnimationTimeout = $timeout(function() {
+                data.closeAnimationTimeout = async(function() {
                   cleanup(element);
-                }, 0, false);
+                });
                 element.data(NG_ANIMATE_STATE, data);
               }
             }
