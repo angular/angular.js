@@ -811,6 +811,21 @@ describe('angular', function() {
     });
   });
 
+  describe('isFile', function() {
+    it('should return true for a File object', function() {
+      function File(){};
+      spyOn(toString, 'call').andReturn('[object File]');
+      expect(isFile(new File())).toBe(true);
+    });
+
+    it('should return false for non File objects', function() {
+      expect(isFile([])).toBe(false);
+      expect(isFile('')).toBe(false);
+      expect(isFile(23)).toBe(false);
+      expect(isFile({})).toBe(false);
+      expect(isFile(null)).toBe(false);
+    });
+  });
 
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
