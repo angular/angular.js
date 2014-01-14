@@ -1918,41 +1918,6 @@ describe("ngAnimate", function() {
     }));
 
 
-    it("should not set the transition property flag if only CSS animations are used",
-      inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
-
-      if (!$sniffer.animations) return;
-
-      ss.addRule('.sleek-animation.ng-enter', '-webkit-animation: my_animation 2s linear;' +
-                                              'animation: my_animation 2s linear');
-
-      ss.addRule('.trans.ng-enter',  '-webkit-transition:1s linear all;' +
-                                             'transition:1s linear all');
-
-      var propertyKey = ($sniffer.vendorPrefix == 'Webkit' ? '-webkit-' : '') + 'transition-property';
-
-      var element = html($compile('<div>...</div>')($rootScope));
-      var child = $compile('<div class="skeep-animation">...</div>')($rootScope);
-      child.css(propertyKey,'background-color');
-
-      $animate.enter(child, element);
-      $rootScope.$digest();
-      $timeout.flush();
-
-      browserTrigger(child,'transitionend', { timeStamp: Date.now() + 2000, elapsedTime: 2 });
-
-      expect(child.css(propertyKey)).toBe('background-color');
-      child.remove();
-
-      child = $compile('<div class="sleek-animation">...</div>')($rootScope);
-      child.attr('class','trans');
-      $animate.enter(child, element);
-      $rootScope.$digest();
-
-      expect(child.css(propertyKey)).not.toBe('background-color');
-    }));
-
-
     it("should skip animations if the browser does not support CSS3 transitions and CSS3 animations",
       inject(function($compile, $rootScope, $animate, $sniffer) {
 
