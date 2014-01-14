@@ -295,6 +295,20 @@ angular.module('ngAnimate', ['ng'])
                 return classNameFilter.test(className);
               };
 
+      function async(fn) {
+        return fn && $timeout(fn, 0, false);
+      };
+
+      function triggerDOMCallback(element, animationPhase, eventData, isSync) {
+        eventData = eventData || {};
+        var event = '$animate:' + animationPhase;
+        isSync ? trigger() : async(trigger);
+
+        function trigger() {
+          element.triggerHandler(event, eventData);
+        };
+      };
+
       function lookup(name) {
         if (name) {
           var matches = [],
@@ -724,6 +738,11 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function invokeRegisteredAnimationFns(animations, phase, allAnimationFnsComplete) {
+          triggerDOMCallback(element, phase, {
+            event : animationEvent,
+            className : className
+          });
+
           var endFnName = phase + 'End';
           forEach(animations, function(animation, index) {
             var animationPhaseCompleted = function() {
@@ -761,7 +780,7 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function fireDoneCallbackAsync() {
-          doneCallback && $timeout(doneCallback, 0, false);
+          async(doneCallback);
         }
 
         //it is less complicated to use a flag than managing and cancelling
@@ -785,13 +804,17 @@ angular.module('ngAnimate', ['ng'])
               if(isClassBased) {
                 cleanup(element);
               } else {
-                data.closeAnimationTimeout = $timeout(function() {
+                data.closeAnimationTimeout = async(function() {
                   cleanup(element);
-                }, 0, false);
+                });
                 element.data(NG_ANIMATE_STATE, data);
               }
             }
             fireDoneCallbackAsync();
+            triggerDOMCallback(element, 'close', {
+              event : animationEvent,
+              className : className
+            });
           }
         }
       }

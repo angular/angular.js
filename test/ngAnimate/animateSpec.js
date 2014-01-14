@@ -1439,6 +1439,79 @@ describe("ngAnimate", function() {
           expect(signature).toBe('AB');
         }));
 
+        it('should fire DOM callbacks on the element being animated',
+          inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
+
+          $animate.enabled(true);
+
+          ss.addRule('.klass-add', '-webkit-transition:1s linear all;' +
+                                           'transition:1s linear all;');
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          body.append($rootElement);
+
+          var steps = [];
+          element.on('$animate:before', function(e, data) {
+            steps.push(['before', data.className, data.event]);
+          });
+
+          element.on('$animate:after', function(e, data) {
+            steps.push(['after', data.className, data.event]);
+          });
+
+          element.on('$animate:close', function(e, data) {
+            steps.push(['close', data.className, data.event]);
+          });
+
+          $animate.addClass(element, 'klass');
+
+          $timeout.flush(1);
+
+          expect(steps.pop()).toEqual(['before', 'klass', 'addClass']);
+
+          $timeout.flush(10);
+
+          expect(steps.pop()).toEqual(['after', 'klass', 'addClass']);
+
+          browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          $timeout.flush(1);
+
+          expect(steps.pop()).toEqual(['close', 'klass', 'addClass']);
+        })); 
+
+        it('should fire the DOM callbacks even if no animation is rendered',
+          inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
+
+          $animate.enabled(true);
+
+          var parent = jqLite('<div></div>');
+          var element = jqLite('<div></div>');
+          $rootElement.append(parent);
+          body.append($rootElement);
+
+          var steps = [];
+          element.on('$animate:before', function(e, data) {
+            steps.push(['before', data.className, data.event]);
+          });
+
+          element.on('$animate:after', function(e, data) {
+            steps.push(['after', data.className, data.event]);
+          });
+
+          element.on('$animate:close', function(e, data) {
+            steps.push(['close', data.className, data.event]);
+          });
+
+          $animate.enter(element, parent);
+          $rootScope.$digest();
+
+          $timeout.flush(1);
+
+          expect(steps.shift()).toEqual(['before', 'ng-enter', 'enter']);
+          expect(steps.shift()).toEqual(['after',  'ng-enter', 'enter']);
+          expect(steps.shift()).toEqual(['close',  'ng-enter', 'enter']);
+        })); 
 
         it("should fire a done callback when provided with no animation",
           inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
