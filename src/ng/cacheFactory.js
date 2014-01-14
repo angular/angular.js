@@ -5,7 +5,8 @@
  * @name ng.$cacheFactory
  *
  * @description
- * Factory that constructs cache objects and gives access to them.
+ * Factory that constructs {@link api/ng.$cacheFactory.Cache Cache} objects and gives access to
+ * them.
  * 
  * <pre>
  * 
@@ -56,8 +57,69 @@ function $CacheFactoryProvider() {
           freshEnd = null,
           staleEnd = null;
 
+      /**
+       * @ngdoc object
+       * @name ng.$cacheFactory.Cache
+       *
+       * @description
+       * A cache object used to store and retrieve data, primarily used by
+       * {@link api/ng.$http $http} and the {@link ng.directive:script script} directive to cache
+       * templates and other data.
+       *
+       * <pre>
+       *  
+       *  angular.module('superCache')
+       *    .factory('$superCache', ['$cacheFactory', function($cacheFactory) {
+       *      return $cacheFactory('super-cache');
+       *    }]);
+       *
+       * </pre>
+       *
+       * Example test:
+       *
+       * <pre>
+       *  it('should behave like a cache', inject(function($superCache) {
+       *    $superCache.put('key', 'value');
+       *    $superCache.put('another key', 'another value');
+       *
+       *    expect($superCache.info()).toEqual({
+       *      id: 'super-cache',
+       *      size: 2
+       *    });
+       *
+       *    $superCache.remove('another key');
+       *    expect($superCache.get('another key')).toBeUndefined();
+       *
+       *    $superCache.removeAll();
+       *    expect($superCache.info()).toEqual({
+       *      id: 'super-cache',
+       *      size: 0
+       *    });
+       *  }));
+       * 
+       * </pre>
+       */
       return caches[cacheId] = {
 
+        /**
+         * @ngdoc function
+         * @name ng.$cacheFactory.Cache#put
+         * @methodOf ng.$cacheFactory.Cache
+         * @function
+         *
+         * @description
+         * Inserts a named entry into the {@link api/ng.$cacheFactory.Cache Cache} object to be
+         * retrieved later, and incrementing the size of the cache if the key was not already
+         * present in the cache. If behaving like an LRU cache, it will also remove stale
+         * entries from the set.
+         *
+         * It will not insert undefined values into the cache.
+         *
+         * @param {string} key the key under which the cached data is stored.
+         * @param {*} value the value to store alongside the key. If it is undefined, the key
+         *    will not be stored.
+         * @returns {*} the value stored.
+         */
         put: function(key, value) {
           var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
@@ -74,7 +136,18 @@ function $CacheFactoryProvider() {
           return value;
         },
 
-
+        /**
+         * @ngdoc function
+         * @name ng.$cacheFactory.Cache#get
+         * @methodOf ng.$cacheFactory.Cache
+         * @function
+         *
+         * @description
+         * Retrieves named data stored in the {@link api/ng.$cacheFactory.Cache Cache} object.
+         *
+         * @param {string} key the key of the data to be retrieved
+         * @returns {*} the value stored.
+         */
         get: function(key) {
           var lruEntry = lruHash[key];
 
@@ -86,6 +159,17 @@ function $CacheFactoryProvider() {
         },
 
 
+        /**
+         * @ngdoc function
+         * @name ng.$cacheFactory.Cache#remove
+         * @methodOf ng.$cacheFactory.Cache
+         * @function
+         *
+         * @description
+         * Removes an entry from the {@link api/ng.$cacheFactory.Cache Cache} object.
+         *
+         * @param {string} key the key of the entry to be removed
+         */
         remove: function(key) {
           var lruEntry = lruHash[key];
 
@@ -101,6 +185,15 @@ function $CacheFactoryProvider() {
         },
 
 
+        /**
+         * @ngdoc function
+         * @name ng.$cacheFactory.Cache#removeAll
+         * @methodOf ng.$cacheFactory.Cache
+         * @function
+         *
+         * @description
+         * Clears the cache object of any entries.
+         */
         removeAll: function() {
           data = {};
           size = 0;
@@ -109,6 +202,16 @@ function $CacheFactoryProvider() {
         },
 
 
+        /**
+         * @ngdoc function
+         * @name ng.$cacheFactory.Cache#destroy
+         * @methodOf ng.$cacheFactory.Cache
+         * @function
+         *
+         * @description
+         * Destroys the {@link api/ng.$cacheFactory.Cache Cache} object entirely,
+         * removing it from the {@link api/ng.$cacheFactory $cacheFactory} set.
+         */
         destroy: function() {
           data = null;
           stats = null;
@@ -117,6 +220,23 @@ function $CacheFactoryProvider() {
         },
 
 
+        /**
+         * @ngdoc function
+         * @name ng.$cacheFactory.Cache#info
+         * @methodOf ng.$cacheFactory.Cache
+         * @function
+         *
+         * @description
+         * Retrieve information regarding a particular {@link api/ng.$cacheFactory.Cache Cache}.
+         *
+         * @returns {object} an object with the following properties:
+         *   <ul>
+         *     <li>**id**: the id of the cache instance</li>
+         *     <li>**size**: the number of entries kept in the cache instance</li>
+         *     <li>**...**: any additional properties from the options object when creating the
+         *       cache.</li>
+         *   </ul>
+         */
         info: function() {
           return extend({}, stats, {size: size});
         }
