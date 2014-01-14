@@ -124,9 +124,6 @@ var $AnimateProvider = ['$provide', function($provide) {
         if (after) {
           after.after(element);
         } else {
-          if (!parent || !parent[0]) {
-            parent = after.parent();
-          }
           parent.append(element);
         }
         done && $timeout(done, 0, false);
