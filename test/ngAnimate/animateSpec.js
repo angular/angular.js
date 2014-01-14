@@ -2665,6 +2665,45 @@ describe("ngAnimate", function() {
       expect(element.hasClass('red')).toBe(true);
     }));
 
+    it("should avoid mixing up substring classes during add and remove operations", function() {
+      var currentAnimation, currentFn;
+      module(function($animateProvider) {
+        $animateProvider.register('.on', function() {
+          return {
+            beforeAddClass : function(element, className, done) {
+              currentAnimation = 'addClass';
+              currentFn = done;
+              return function(cancelled) {
+                currentAnimation = cancelled ? null : currentAnimation;
+              }
+            },
+            beforeRemoveClass : function(element, className, done) {
+              currentAnimation = 'removeClass';
+              currentFn = done;
+              return function(cancelled) {
+                currentAnimation = cancelled ? null : currentAnimation;
+              }
+            }
+          };
+        });
+      });
+      inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
+        var element = $compile('<div class="animation-enabled only"></div>')($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $animate.addClass(element, 'on');
+        expect(currentAnimation).toBe('addClass');
+        currentFn();
+
+        currentAnimation = null;
+
+        $animate.removeClass(element, 'on');
+        $animate.addClass(element, 'on');
+
+        expect(currentAnimation).toBe(null);
+      });
+    });
 
     it('should enable and disable animations properly on the root element', function() {
       var count = 0;
@@ -2770,14 +2809,14 @@ describe("ngAnimate", function() {
       $animate.removeClass(element, 'base-class one two');
 
       //still true since we're before the reflow
-      expect(element.hasClass('base-class')).toBe(true);
+      expect(element.hasClass('base-class')).toBe(false);
 
       //this will cancel the remove animation
       $animate.addClass(element, 'base-class one two');
 
       //the cancellation was a success and the class was added right away
       //since there was no successive animation for the after animation
-      expect(element.hasClass('base-class')).toBe(true);
+      expect(element.hasClass('base-class')).toBe(false);
 
       //the reflow...
       $timeout.flush();
@@ -3017,5 +3056,116 @@ describe("ngAnimate", function() {
         expect(leaveDone).toBe(true);
       });
     });
+
+    it('should respect the most relevant CSS transition property if defined in multiple classes',
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+      if (!$sniffer.transitions) return;
+
+      ss.addRule('.base-class', '-webkit-transition:1s linear all;' +
+                                        'transition:1s linear all;');
+
+      ss.addRule('.base-class.on', '-webkit-transition:5s linear all;' +
+                                           'transition:5s linear all;');
+
+      $animate.enabled(true);
+
+      var element = $compile('<div class="base-class"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      var ready = false;
+      $animate.addClass(element, 'on', function() {
+        ready = true;
+      });
+
+      $timeout.flush(10);
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
+      $timeout.flush(1);
+      expect(ready).toBe(false);
+
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 5 });
+      $timeout.flush(1);
+      expect(ready).toBe(true);
+
+      ready = false;
+      $animate.removeClass(element, 'on', function() {
+        ready = true;
+      });
+
+      $timeout.flush(10);
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
+      $timeout.flush(1);
+      expect(ready).toBe(true);
+    }));
+
+    it('should not apply a transition upon removal of a class that has a transition',
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+      if (!$sniffer.transitions) return;
+
+      ss.addRule('.base-class.on', '-webkit-transition:5s linear all;' +
+                                           'transition:5s linear all;');
+
+      $animate.enabled(true);
+
+      var element = $compile('<div class="base-class on"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      var ready = false;
+      $animate.removeClass(element, 'on', function() {
+        ready = true;
+      });
+
+      $timeout.flush(1);
+      expect(ready).toBe(true);
+    }));
+
+    it('should avoid skip animations if the same CSS class is added / removed synchronously before the reflow kicks in',
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+      if (!$sniffer.transitions) return;
+
+      ss.addRule('.water-class', '-webkit-transition:2s linear all;' +
+                                         'transition:2s linear all;');
+
+      $animate.enabled(true);
+
+      var element = $compile('<div class="water-class on"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      var signature = '';
+      $animate.removeClass(element, 'on', function() {
+        signature += 'A';
+      });
+      $animate.addClass(element, 'on', function() {
+        signature += 'B';
+      });
+
+      $timeout.flush(1);
+      expect(signature).toBe('AB');
+
+      signature = '';
+      $animate.removeClass(element, 'on', function() {
+        signature += 'A';
+      });
+      $animate.addClass(element, 'on', function() {
+        signature += 'B';
+      });
+      $animate.removeClass(element, 'on', function() {
+        signature += 'C';
+      });
+
+      $timeout.flush(1);
+      expect(signature).toBe('AB');
+
+      $timeout.flush(10);
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2000 });
+      $timeout.flush(1);
+
+      expect(signature).toBe('ABC');
+    }));
   });
 });
