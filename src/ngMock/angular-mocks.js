@@ -1321,7 +1321,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   }
 
   // TODO(vojta): change params to: method, url, data, headers, callback
-  function $httpBackend(method, url, data, callback, headers, timeout, withCredentials) {
+  function $httpBackend(method, url, data, callback, headers, timeout, withCredentials, responseType) {
+
     var xhr = new MockXhr(),
         expectation = expectations[0],
         wasExpected = false;
@@ -1385,7 +1386,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           // if $browser specified, we do auto flush all requests
           ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
         } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers, timeout, withCredentials);
+          $delegate(method, url, data, callback, headers, timeout, withCredentials, responseType);
         } else throw new Error('No response defined !');
         return;
       }
