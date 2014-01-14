@@ -652,6 +652,18 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should delete default headers if custom header function returns null', function () {
+
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return !('Accept' in headers);
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'Accept': function() { return null; }
+        }});
+        $httpBackend.flush();
+      });
+
       it('should override default headers with custom in a case insensitive manner', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['accept'] == 'Rewritten' &&
