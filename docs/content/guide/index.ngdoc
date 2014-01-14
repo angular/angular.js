@@ -81,7 +81,7 @@ This is a short list of libraries with specific support and documentation for wo
 ### General
 
 * **Javascript minification: **[Background](http://thegreenpizza.github.io/2013/05/25/building-minification-safe-angular.js-applications/), [ngmin automation tool](http://www.thinkster.io/pick/XlWneEZCqY/angularjs-ngmin)
-* **Tracking:** [Angularyitcs (Google Analytics)](http://ngmodules.org/modules/angularytics), [Logging Client-Side Errors](http://www.bennadel.com/blog/2542-Logging-Client-Side-Errors-With-AngularJS-And-Stacktrace-js.htm)
+* **Analytics and Logging:** [Angularyitcs (Google Analytics)](http://ngmodules.org/modules/angularytics), [Angulartics (Analytics)](https://github.com/luisfarzati/angulartics), [Logging Client-Side Errors](http://www.bennadel.com/blog/2542-Logging-Client-Side-Errors-With-AngularJS-And-Stacktrace-js.htm)
 * **SEO:** [By hand](http://www.yearofmoo.com/2012/11/angularjs-and-seo.html), [prerender.io](http://prerender.io/), [Brombone](http://www.brombone.com/), [SEO.js](http://getseojs.com/), [SEO4Ajax](http://www.seo4ajax.com/)
 
 ### Server-Specific
