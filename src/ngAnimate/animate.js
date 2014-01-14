@@ -570,15 +570,21 @@ angular.module('ngAnimate', ['ng'])
          * Globally enables/disables animations.
          *
         */
-        enabled : function(value, element) {
+        enabled : function(value, contents) {
           switch(arguments.length) {
             case 2:
-              if(value) {
-                cleanup(element);
-              } else {
-                var data = element.data(NG_ANIMATE_STATE) || {};
-                data.disabled = true;
-                element.data(NG_ANIMATE_STATE, data);
+              var content, data;
+              for (var i = 0; i < contents.length; i++) {
+                content = angular.element(contents[i]);
+                if(content[0].nodeType == ELEMENT_NODE) {
+                  if(value) {
+                    cleanup(content);
+                  } else {
+                    data = content.data(NG_ANIMATE_STATE) || {};
+                    data.disabled = true;
+                    content.data(NG_ANIMATE_STATE, data);
+                  }
+                }
               }
             break;
 
