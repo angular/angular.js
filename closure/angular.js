@@ -289,6 +289,7 @@ angular.LinkingFunctions.post = function(scope, iElement, iAttrs, controller) {
  *   link: (function(
  *       angular.Scope=, angular.JQLite=, angular.Attributes=,
  *       (Object|Array.<Object>)=)|
+ *       {pre: Function, post: Function}|
  *       undefined),
  *   name: (string|undefined),
  *   priority: (number|undefined),
