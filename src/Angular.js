@@ -195,8 +195,6 @@ function isArrayLike(obj) {
  * It is worth nothing that `.forEach` does not iterate over inherited properties because it filters
  * using the `hasOwnProperty` method.
  *
- * Note: this function was previously known as `angular.foreach`.
- *
    <pre>
      var values = {name: 'misko', gender: 'male'};
      var log = [];
