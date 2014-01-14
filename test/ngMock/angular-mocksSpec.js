@@ -823,6 +823,15 @@ describe('ngMock', function() {
           expect(log).toEqual('module');
         });
       });
+
+      describe('returning a value', function() {
+        it('should ignore returned value if it is not a function', function() {
+          module(function(){
+            return {}
+          });
+          inject();
+        })
+      });
     });
 
     describe('inject', function() {
