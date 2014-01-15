@@ -160,7 +160,7 @@ describe('HTML', function() {
 
   it('should handle entities', function() {
     var everything = '<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;">' +
-    '!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;</div>';
+    '!@#$%^&amp;*()_+-={}[]:";\'&lt;&gt;?,./`~ ħ</div>';
     expectHTML(everything).toEqual(everything);
   });
 
@@ -191,7 +191,7 @@ describe('HTML', function() {
   });
 
   it('should allow multiline strings', function() {
-    expectHTML('\na\n').toEqual('&#10;a\&#10;');
+    expectHTML('\na\n').toEqual('\na\n');
   });
 
   describe('htmlSanitizerWriter', function() {
