@@ -1,3 +1,39 @@
+<a name="1.2.9"></a>
+# 1.2.9 enchanted-articulacy (2014-01-15)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure the final closing timeout respects staggering animations
+  ([ed53100a](https://github.com/angular/angular.js/commit/ed53100a0dbc9119d5dfc8b7248845d4f6989df2))
+  - prevent race conditions for class-based animations when animating on the same CSS class
+  ([4aa9df7a](https://github.com/angular/angular.js/commit/4aa9df7a7ae533531dfae1e3eb9646245d6b5ff4),
+   [#5588](https://github.com/angular/angular.js/issues/5588))
+  - correctly detect and handle CSS transition changes during class addition and removal
+  ([7d5d62da](https://github.com/angular/angular.js/commit/7d5d62dafe11620082c79da35958f8014eeb008c))
+  - avoid accidentally matching substrings when resolving the presence of className tokens
+  ([524650a4](https://github.com/angular/angular.js/commit/524650a40ed20f01571e5466475749874ee67288))
+- **$http:** ensure default headers PUT and POST are different objects
+  ([e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
+   [#5742](https://github.com/angular/angular.js/issues/5742), [#5747](https://github.com/angular/angular.js/issues/5747), [#5764](https://github.com/angular/angular.js/issues/5764))
+- **$rootScope:** prevent infinite $digest by checking if asyncQueue is empty when decrementing ttl
+  ([2cd09c9f](https://github.com/angular/angular.js/commit/2cd09c9f0e7766bcd191662841b7b1ffc3b6dc3f),
+   [#2622](https://github.com/angular/angular.js/issues/2622))
+- **$route:** update current route upon $route instantiation
+  ([2b344dbd](https://github.com/angular/angular.js/commit/2b344dbd20777fb1283b3a5bcf35a6ae8d09469d),
+   [#4957](https://github.com/angular/angular.js/issues/4957))
+
+
+## Features
+
+- **$animate:**
+  - provide support for DOM callbacks
+  ([dde1b294](https://github.com/angular/angular.js/commit/dde1b2949727c297e214c99960141bfad438d7a4))
+  - use requestAnimationFrame instead of a timeout to issue a reflow
+  ([4ae3184c](https://github.com/angular/angular.js/commit/4ae3184c5915aac9aa00889aa2153c8e84c14966),
+   [#4278](https://github.com/angular/angular.js/issues/4278), [#4225](https://github.com/angular/angular.js/issues/4225))
+
 <a name="1.2.8"></a>
 # 1.2.8 interdimensional-cartography (2014-01-10)
 
