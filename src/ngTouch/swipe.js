@@ -23,7 +23,7 @@
 
 ngTouch.factory('$swipe', [function() {
   // The total distance in any direction before we make the call on swipe vs. scroll.
-  var MOVE_BUFFER_RADIUS = 10;
+  var DEFAULT_THRESHOLD = 10;
 
   var POINTER_EVENTS = {
     'mouse': {
@@ -68,6 +68,18 @@ ngTouch.factory('$swipe', [function() {
      * @ngdoc method
      * @name $swipe#bind
      *
+     * @param {DOMElement} element Element to listen for swipes on.
+     * @param {object} eventHandlers An object of handlers to handle each of the
+     *   `start`, `move`, `end`, and `cancel` events
+     * @param {object|Array} configOrPointerTypes Either an optional config object, or an array
+     *   containing the pointer arrays to use. The configuration object supports three properties:
+     *
+     *   - **swipeThreshold** - `{number}` - Number of pixels to wait before the event is
+     *     determined to be a swipe. Default is 10 (see function description above for more).
+     *   - **scrollThreshold** - `{number}` - Number of pixels to wait before the event is
+     *     determined to be a scroll. Default is 10 (see function description above for more).
+     *   - **pointerTypes** - `{Array}` - Array of pointer event names to handle.
+     *
      * @description
      * The main method of `$swipe`. It takes an element to be watched for swipe motions, and an
      * object containing event handlers.
@@ -82,10 +94,16 @@ ngTouch.factory('$swipe', [function() {
      * watching for `touchmove` or `mousemove` events. These events are ignored until the total
      * distance moved in either dimension exceeds a small threshold.
      *
+     * The threshold is `10` (pixels) by default, but is configurable by passing in a `config`
+     * object with properties for the `x` and `y` thresholds respectively `swipeThreshold` and
+     * `scrollThreshold`.
+     *
      * Once this threshold is exceeded, either the horizontal or vertical delta is greater.
-     * - If the horizontal distance is greater, this is a swipe and `move` and `end` events follow.
-     * - If the vertical distance is greater, this is a scroll, and we let the browser take over.
-     *   A `cancel` event is sent.
+     *
+     * - If the horizontal distance is greater and you haven't moved vertically the
+     *   `scrollThreshold`, this is a swipe and `move` and `end` events follow.
+     * - If the vertical distance is greater (or you've met the vertical `scrollThreshold`),
+     *   this is a scroll, and we let the browser take over. A `cancel` event is sent.
      *
      * `move` is called on `mousemove` and `touchmove` after the above logic has determined that
      * a swipe is in progress.
@@ -96,17 +114,33 @@ ngTouch.factory('$swipe', [function() {
      * as described above.
      *
      */
-    bind: function(element, eventHandlers, pointerTypes) {
+    bind: function(element, eventHandlers, config) {
       // Absolute total movement, used to control swipe vs. scroll.
       var totalX, totalY;
       // Coordinates of the start position.
       var startCoords;
       // Last event's position.
       var lastPos;
-      // Whether a swipe is active.
+      // Whether an swipe is still being determined to be a scroll.
       var active = false;
+      // Whether a swipe is active.
+      var swipeActive = false;
 
-      pointerTypes = pointerTypes || ['mouse', 'touch'];
+      var pointerTypes = null;
+
+      if (isArray(config)) {
+        pointerTypes = config;
+        config = {};
+      }
+
+      // Set up config for threshold radii with fallback.
+      config = angular.extend({
+        swipeThreshold: DEFAULT_THRESHOLD,
+        scrollThreshold: DEFAULT_THRESHOLD,
+        pointerTypes: ['mouse', 'touch']
+      }, config);
+
+      pointerTypes = pointerTypes || config.pointerTypes;
       element.on(getEvents(pointerTypes, 'start'), function(event) {
         startCoords = getCoordinates(event);
         active = true;
@@ -135,23 +169,32 @@ ngTouch.factory('$swipe', [function() {
         if (!startCoords) return;
         var coords = getCoordinates(event);
 
-        totalX += Math.abs(coords.x - lastPos.x);
-        totalY += Math.abs(coords.y - lastPos.y);
+        totalX += coords.x - lastPos.x;
+        totalY += coords.y - lastPos.y;
+
+        // we want totalX/Y to be the amount move +/- from the original spot,
+        // but we need to compare against their absolute values in the
+        // comparisons below
+        var absTotalX = Math.abs(totalX);
+        var absTotalY = Math.abs(totalY);
 
         lastPos = coords;
 
-        if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
+        // don't do anything if neither threshold has been met
+        if (absTotalX < config.swipeThreshold && absTotalY < config.scrollThreshold) {
           return;
         }
 
-        // One of totalX or totalY has exceeded the buffer, so decide on swipe vs. scroll.
-        if (totalY > totalX) {
+        // One of absTotalX or absTotalY has exceeded the threshold, so decide on swipe vs. scroll.
+        if (!swipeActive && absTotalY > absTotalX && absTotalY > config.scrollThreshold) {
           // Allow native scrolling to take over.
           active = false;
+          swipeActive = false;
           eventHandlers['cancel'] && eventHandlers['cancel'](event);
           return;
         } else {
           // Prevent the browser from scrolling.
+          swipeActive = true;
           event.preventDefault();
           eventHandlers['move'] && eventHandlers['move'](coords, event);
         }
@@ -160,10 +203,13 @@ ngTouch.factory('$swipe', [function() {
       element.on(getEvents(pointerTypes, 'end'), function(event) {
         if (!active) return;
         active = false;
+        swipeActive = false;
         eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
       });
     }
   };
 }]);
 
-
+var isArray = Array.isArray || function isArrayPolyfill(obj) {
+  return Object.prototype.toString.call(obj) === '[object Array]';
+};
