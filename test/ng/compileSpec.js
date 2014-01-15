@@ -443,6 +443,17 @@ describe('$compile', function() {
       }));
 
 
+      it('should allow directives in SVG element classes', inject(function($compile, $rootScope, log) {
+        if (!window.SVGElement) return;
+        element = $compile('<svg><text class="greet: angular; log:123;"></text></svg>')($rootScope);
+        var text = element.children().eq(0);
+        // In old Safari, SVG elements don't have innerHTML, so element.html() won't work
+        // (https://bugs.webkit.org/show_bug.cgi?id=136903)
+        expect(text.text()).toEqual('Hello angular');
+        expect(log).toEqual('123');
+      }));
+
+
       it('should ignore not set CSS classes on SVG elements', inject(function($compile, $rootScope, log) {
         if (!window.SVGElement) return;
         // According to spec SVG element className property is readonly, but only FF
