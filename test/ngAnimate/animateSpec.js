@@ -328,7 +328,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
 
           if($sniffer.transitions) {
-            $timeout.flush();
+            $animate.triggerReflow();
             expect(contents.hasClass('ng-enter')).toBe(true);
             expect(contents.hasClass('ng-enter-active')).toBe(true);
             browserTrigger(contents, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
@@ -2626,7 +2626,7 @@ describe("ngAnimate", function() {
         if($sniffer.transitions) {
           expect(child1.hasClass('ng-enter')).toBe(true);
           expect(child2.hasClass('ng-enter')).toBe(true);
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(child1.hasClass('ng-enter-active')).toBe(true);
           expect(child2.hasClass('ng-enter')).toBe(true);
         }
@@ -2647,7 +2647,7 @@ describe("ngAnimate", function() {
         $animate.addClass(child1, 'something');
         $animate.addClass(child2, 'something');
         if($sniffer.transitions) {
-          $timeout.flush();
+          $animate.triggerReflow();
         }
         expect(animationState).toBe('addClass');
         if($sniffer.transitions) {
