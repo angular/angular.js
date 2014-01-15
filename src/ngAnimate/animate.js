@@ -250,14 +250,12 @@ angular.module('ngAnimate', ['ng'])
    */
   .factory('$$animateReflow', ['$window', '$timeout', function($window, $timeout) {
     var requestAnimationFrame = $window.requestAnimationFrame       ||
-                                $window.mozRequestAnimationFrame    ||
                                 $window.webkitRequestAnimationFrame ||
                                 function(fn) {
                                   return $timeout(fn, 10, false);
                                 };
 
     var cancelAnimationFrame = $window.cancelAnimationFrame       ||
-                               $window.mozCancelAnimationFrame    ||
                                $window.webkitCancelAnimationFrame ||
                                function(timer) {
                                  return $timeout.cancel(timer);
