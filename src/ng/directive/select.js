@@ -19,6 +19,12 @@ var ngOptionsMinErr = minErr('ngOptions');
  * represented by the selected option will be bound to the model identified by the `ngModel`
  * directive.
  *
+ * Note: JavaScript's object comparison rules can cause unexpected results using `ngModel` when
+ * `ngOptions` references an array of objects. JavaScript objects with the same key / value pairs
+ * are not considered equal, potentially causing problems when setting `ngModel` with the intent
+ * of having a specific `OPTION` selected. An example of this gotcha can be seen
+ * {@link http://jsfiddle.net/bluefocus/byzDL/ in this jsfiddle}.
+ *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
