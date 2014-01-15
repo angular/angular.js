@@ -143,6 +143,29 @@ describe('ngInclude', function() {
   }));
 
 
+  it('should fire $includeContentError event when content request fails', inject(
+      function($rootScope, $compile, $httpBackend, $templateCache) {
+    var contentLoadedSpy = jasmine.createSpy('content loaded'),
+        contentErrorSpy = jasmine.createSpy('content error');
+
+    $rootScope.$on('$includeContentLoaded', contentLoadedSpy);
+    $rootScope.$on('$includeContentError', contentErrorSpy);
+
+    $httpBackend.expect('GET', 'tpl.html').respond(400, 'nope');
+
+    element = $compile('<div><div ng-include="template"></div></div>')($rootScope);
+
+    $rootScope.$apply(function() {
+      $rootScope.template = 'tpl.html';
+    });
+    $httpBackend.flush();
+
+    expect(contentLoadedSpy).not.toHaveBeenCalled();
+    expect(contentErrorSpy).toHaveBeenCalledOnce();
+    expect(element.children('div').contents().length).toBe(0);
+  }));
+
+
   it('should evaluate onload expression when a partial is loaded', inject(
       putIntoCache('myUrl', 'my partial'),
       function($rootScope, $compile) {
