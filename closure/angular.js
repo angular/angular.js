@@ -34,7 +34,6 @@
  *     $rootScopeProvider
  *     $routeParams
  *     $sanitize
- *     $templateCache
  *     $window
  * TODO: Resolve two issues with angular.$http
  *         1) angular.$http cannot be declared as a callable type.
@@ -1967,6 +1966,14 @@ angular.$sce.trustAsJs = function(trustedValue) {};
  */
 angular.$sce.trustAsResourceUrl = function(trustedValue) {};
 
+/******************************************************************************
+ * $templateCache Service
+ *****************************************************************************/
+
+/**
+ * @typedef {!angular.$cacheFactory.Cache.<string>}
+ */
+angular.$templateCache;
 
 /******************************************************************************
  * $timeout Service
