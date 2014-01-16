@@ -77,7 +77,7 @@ directory.</p></li>
       </pre></li>
       <li><p>You will need an http server running on your system. Mac and Linux machines typically
 have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
-to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></li>
+to run a simple bundled http server: <code>node scripts/web-server.js</code>.</p></li>
     </ol>
   </div>
 
@@ -106,8 +106,8 @@ directory.</p>
       <p>Other commands like <code>test.bat</code> or <code>e2e-test.bat</code> should be
 executed from the Windows command line.</li>
       <li><p>You need an http server running on your system, but if you don't already have one
-already installed, you can use <code>node</code> to run <code>scripts\web-server.js</code>, a simple
-bundled http server.</p></li>
+already installed, you can use <code>node</code> to run a simple
+bundled http server: <code>node scripts\web-server.js</code>.</p></li>
     </ol>
   </div>
 
