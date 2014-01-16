@@ -964,11 +964,11 @@ angular.$cacheFactory.Options;
  */
 angular.$cacheFactory.Cache;
 
-angular.$cacheFactory.Cache.put = function(a, b) {};
+angular.$cacheFactory.Cache.put = function(key, value) {};
 
-angular.$cacheFactory.Cache.get = function(a) {};
+angular.$cacheFactory.Cache.get = function(key) {};
 
-angular.$cacheFactory.Cache.remove = function(a) {};
+angular.$cacheFactory.Cache.remove = function(key) {};
 
 angular.$cacheFactory.Cache.removeAll = function() {};
 
