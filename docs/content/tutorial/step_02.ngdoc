@@ -217,7 +217,7 @@ To run the test, do the following:
 
 * Create a new model property in the controller and bind to it from the template. For example:
 
-          $scope.name = "World"
+          $scope.name = "World";
 
   Then add a new binding to `index.html`:
 
