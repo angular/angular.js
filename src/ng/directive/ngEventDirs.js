@@ -37,7 +37,7 @@
  */
 var ngEventDirectives = {};
 forEach(
-  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste error'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
@@ -422,3 +422,25 @@ forEach(
      </doc:source>
    </doc:example>
  */
+ 
+ /**
+ * @ngdoc directive
+ * @name ng.directive:ngError
+ *
+ * @description
+ * Specify custom behavior on error event.
+ *
+ * @element img, object, script, style
+ * @param {expression} ngError {@link guide/expression Expression} to evaluate upon
+ * error. (Event object is available as `$event`)
+ *
+ * @example
+   <doc:example>
+     <doc:source>
+      <!-- Count increments when image url doesn't exist -->
+      <img src='image-does-not-exist.png' ng-error="count = count + 1" ng-init="count=0" />
+      count: {{count}}
+     </doc:source>
+   </doc:example>
+ */
+
