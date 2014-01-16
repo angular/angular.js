@@ -87,7 +87,8 @@ orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse){
   return function(array, sortPredicate, reverseOrder) {
     if (!isArray(array)) return array;
-    if (!sortPredicate) return array;
+    if (!sortPredicate || sortPredicate == '+') return array.sort();
+    if (sortPredicate == '-') return array.sort().reverse();
     sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
     sortPredicate = map(sortPredicate, function(predicate){
       var descending = false, get = predicate || identity;
