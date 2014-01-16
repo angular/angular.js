@@ -244,6 +244,24 @@ describe('filters', function() {
 
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+
+      expect(date(noon, "EEE, MMM do, yyyy")).
+                      toEqual('Fri, Sep 3rd, 2010');
+
+      var expectedDates = [
+        'Wed, Sep 1st, 2010',
+        'Thu, Sep 2nd, 2010',
+        'Fri, Sep 3rd, 2010',
+        'Sat, Sep 4rd, 2010'
+      ];
+
+      for (var ordinalDate, expectedDate, i = 1; i < 4; ++i) {
+        ordinalDate = new angular.mock.TzDate(+5, '2010-09-0'+i+'T17:05:08.012Z');
+        expectedDate = expectedDates[i-1];
+        expect(date(ordinalDate, "EEE, MMM do, yyyy")).
+                        toEqual(expectedDate);
+      }
+
     });
 
     it('should accept negative numbers as strings', function() {
