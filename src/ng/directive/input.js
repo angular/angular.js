@@ -1188,7 +1188,10 @@ var ngModelDirective = function() {
  * @name ng.directive:ngChange
  *
  * @description
- * Evaluate given expression when user changes the input.
+ * Evaluate the given expression when the user changes the input.
+ * The expression is evaluated immediately, unlike the JavaScript onchange event
+ * which only triggers at the end of a change (usually, when the user leaves the
+ * form element or presses the return key).
  * The expression is not evaluated when the value change is coming from the model.
  *
  * Note, this directive requires `ngModel` to be present.
@@ -1209,11 +1212,10 @@ var ngModelDirective = function() {
  *       }
  *     </script>
  *     <div ng-controller="Controller">
- *       <input type="checkbox" ng-model="confirmed" ng-change="change()" id="ng-change-example1" />
- *       <input type="checkbox" ng-model="confirmed" id="ng-change-example2" />
- *       <label for="ng-change-example2">Confirmed</label><br />
- *       debug = {{confirmed}}<br />
- *       counter = {{counter}}
+ *       <label for="a">Field a:</label> <input type="text" ng-model="text" id="a" ng-change="change()" /><br />
+ *       <label for="b">Field b:</label> <input type="text" ng-model="text" id="b" />
+ *       Text: {{text}}<br />
+ *       Number of changes through field a: {{counter}}
  *     </div>
  *   </doc:source>
  *   <doc:scenario>
