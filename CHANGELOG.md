@@ -20,9 +20,6 @@
 - **$rootScope:** prevent infinite $digest by checking if asyncQueue is empty when decrementing ttl
   ([2cd09c9f](https://github.com/angular/angular.js/commit/2cd09c9f0e7766bcd191662841b7b1ffc3b6dc3f),
    [#2622](https://github.com/angular/angular.js/issues/2622))
-- **$route:** update current route upon $route instantiation
-  ([2b344dbd](https://github.com/angular/angular.js/commit/2b344dbd20777fb1283b3a5bcf35a6ae8d09469d),
-   [#4957](https://github.com/angular/angular.js/issues/4957))
 
 
 ## Features
