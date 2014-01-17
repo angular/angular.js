@@ -430,7 +430,7 @@ forEach(
  * @description
  * Specify custom behavior on error event.
  *
- * @element img, object, script, style
+ * @element img
  * @param {expression} ngError {@link guide/expression Expression} to evaluate upon
  * error. (Event object is available as `$event`)
  *
