@@ -1,5 +1,10 @@
   //try to bind to jquery now so that one can write angular.element().read()
   //but we will rebind on bootstrap again.
+  if (window.angular.bootstrap) {
+    //already bootstrapped, so we can return here...
+    return;
+  }
+
   bindJQuery();
 
   publishExternalAPI(angular);
