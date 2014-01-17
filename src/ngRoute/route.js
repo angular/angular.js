@@ -421,6 +421,25 @@ function $RouteProvider(){
      * instance of the Controller.
      */
 
+    /**
+     * @ngdoc event
+     * @name ngRoute.$route#beforeRouteChange
+     * @eventOf ngRoute.$route
+     * @eventType broadcast on root scope
+     * @description
+     * Broadcasted at the same time as locationChangeStart, 
+     * passes through the event so the locationChange can be cancelled. 
+     * Passes two other objects that represent the Routes of the current location 
+     * and the one of the possible next. 
+     *
+     * `$beforeRouteChange` is fired.
+     *
+     * @param {Object} angularEvent Synthetic event object.
+     * @param {Route} currentRoute current route information.
+     * @param {Route}  nextRoute route information of the future route.
+     * @param {Object} angularEvent Synthetic event object of locationChangeStart.
+     */
+
     var forceReload = false,
         $route = {
           routes: routes,
@@ -444,6 +463,13 @@ function $RouteProvider(){
         };
 
     $rootScope.$on('$locationChangeSuccess', updateRoute);
+    
+    $rootScope.$on("$locationChangeStart", function (event, next, current) {
+        var nextRoute = parseRoute(),
+            lastRoute = $route.current;
+
+        $rootScope.$broadcast('$beforeRouteChange', lastRoute, nextRoute, event);
+    });
 
     return $route;
 
