@@ -437,10 +437,13 @@ forEach(
  * @example
    <doc:example>
      <doc:source>
-      <!-- Count increments when image url doesn't exist -->
-      <img src='image-does-not-exist.png' ng-error="count = count + 1" ng-init="count=0" />
-      count: {{count}}
+       <img src="some-url-that-should-404" ng-error="ngErrorString = 'error occurred.'" />
      </doc:source>
+     <doc:scenario>
+       it('should check ng-error', function() {
+         expect(binding('ngErrorString')).toMatch(/error occurred\./);
+       });
+     </doc:scenario>
    </doc:example>
  */
 
