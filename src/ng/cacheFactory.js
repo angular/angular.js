@@ -204,7 +204,9 @@ function $CacheFactoryProvider() {
  * 
  * Adding via the `script` tag:
  * <pre>
+ * <!doctype html>
  * <html ng-app>
+ * <script src="http://code.angularjs.org/1.2.9/angular.min.js"></script>
  * <head>
  * <script type="text/ng-template" id="templateId.html">
  *   This is the content of the template
