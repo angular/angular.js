@@ -16,6 +16,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
+   * 
    * @name ng.directive:input.text
    *
    * @description
