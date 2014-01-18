@@ -19,7 +19,7 @@
  * **Note**: If you have assignment in `ngInit` along with {@link api/ng.$filter `$filter`}, make
  * sure you have parenthesis for correct precedence:
  * <pre class="prettyprint">
- *   <ng-init="test1 = (data | orderBy:'name')">
+ *   <div ng-init="test1 = (data | orderBy:'name')"></div>
  * </pre>
  * </div>
  *
