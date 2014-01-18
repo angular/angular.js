@@ -245,6 +245,8 @@ describe('$httpBackend', function() {
       };
 
       this.getAllResponseHeaders = valueFn('');
+
+      this.upload = {};
     }
 
     callback.andCallFake(function(status, response) {

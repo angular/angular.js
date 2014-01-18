@@ -1653,6 +1653,8 @@ function MockXhr() {
     return lines.join('\n');
   };
 
+  this.upload = {};
+
   this.abort = angular.noop;
 }
 
