@@ -55,7 +55,7 @@ of which depend on other services that are provided by the Angular framework:
 
       function log() {
         if (messageQueue.length) {
-          $log('batchLog messages: ', messageQueue);
+          $log.log('batchLog messages: ', messageQueue);
           messageQueue = [];
         }
       }
