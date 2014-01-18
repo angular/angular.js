@@ -233,10 +233,9 @@ function ampmGetter(date, formats) {
 }
 
 function ordinalDateGetter (date) {
-  var ordinals = 'st nd rd th'.split(' ')
-    , d = date.getDate() - 1
-    , i = d > 3 ? 3 : d;
-  return ordinals[i];
+  var ordinals = 'st nd rd th'.split(' ');
+  var d = date.getDate() - 1;
+  return ordinals[d > 3 ? 3 : d];
 }
 
 var DATE_FORMATS = {
