@@ -15,6 +15,13 @@
  * should use {@link guide/controller controllers} rather than `ngInit`
  * to initialize values on a scope.
  * </div>
+ * <div class="alert alert-warning">
+ * **Note**: If you have assignment in `ngInit` along with {@link api/ng.$filter `$filter`}, make
+ * sure you have parenthesis for correct precedence:
+ * <pre class="prettyprint">
+ *   <ng-init="test1 = (data | orderBy:'name')">
+ * </pre>
+ * </div>
  *
  * @priority 450
  *
