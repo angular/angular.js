@@ -831,6 +831,7 @@ var VALID_CLASS = 'ng-valid',
  *
  * @property {boolean} $pristine True if user has not interacted with the control yet.
  * @property {boolean} $dirty True if user has already interacted with the control.
+ * @property {boolean} $dirtyAfter True if user has already interacted with any control positioned after this control.
  * @property {boolean} $valid True if there is no error.
  * @property {boolean} $invalid True if at least one error on the control.
  *
@@ -931,6 +932,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$viewChangeListeners = [];
   this.$pristine = true;
   this.$dirty = false;
+  this.$dirtyAfter = false;
   this.$valid = true;
   this.$invalid = false;
   this.$name = $attr.name;
