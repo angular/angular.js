@@ -6,7 +6,9 @@
  *
  * @description
  * The ngClick directive allows you to specify custom behavior when
- * an element is clicked.
+ * an element is clicked. 
+ * 
+ * @priority: 0
  *
  * @element ANY
  * @param {expression} ngClick {@link guide/expression Expression} to evaluate upon
@@ -64,6 +66,8 @@ forEach(
  * @description
  * The `ngDblclick` directive allows you to specify custom behavior on a dblclick event.
  *
+ * @priority: 0
+ * 
  * @element ANY
  * @param {expression} ngDblclick {@link guide/expression Expression} to evaluate upon
  * a dblclick. (The Event object is available as `$event`)
@@ -86,6 +90,8 @@ forEach(
  *
  * @description
  * The ngMousedown directive allows you to specify custom behavior on mousedown event.
+ *
+ * @priority: 0
  *
  * @element ANY
  * @param {expression} ngMousedown {@link guide/expression Expression} to evaluate upon
@@ -110,6 +116,8 @@ forEach(
  * @description
  * Specify custom behavior on mouseup event.
  *
+ * @priority: 0
+ *
  * @element ANY
  * @param {expression} ngMouseup {@link guide/expression Expression} to evaluate upon
  * mouseup. (Event object is available as `$event`)
@@ -131,6 +139,8 @@ forEach(
  *
  * @description
  * Specify custom behavior on mouseover event.
+ *
+ * @priority: 0
  *
  * @element ANY
  * @param {expression} ngMouseover {@link guide/expression Expression} to evaluate upon
@@ -155,6 +165,8 @@ forEach(
  * @description
  * Specify custom behavior on mouseenter event.
  *
+ * @priority: 0
+ *
  * @element ANY
  * @param {expression} ngMouseenter {@link guide/expression Expression} to evaluate upon
  * mouseenter. (Event object is available as `$event`)
@@ -177,6 +189,8 @@ forEach(
  *
  * @description
  * Specify custom behavior on mouseleave event.
+ *
+ * @priority: 0
  *
  * @element ANY
  * @param {expression} ngMouseleave {@link guide/expression Expression} to evaluate upon
@@ -201,6 +215,8 @@ forEach(
  * @description
  * Specify custom behavior on mousemove event.
  *
+ * @priority: 0
+ *
  * @element ANY
  * @param {expression} ngMousemove {@link guide/expression Expression} to evaluate upon
  * mousemove. (Event object is available as `$event`)
@@ -224,6 +240,8 @@ forEach(
  * @description
  * Specify custom behavior on keydown event.
  *
+ * @priority: 0
+ *
  * @element ANY
  * @param {expression} ngKeydown {@link guide/expression Expression} to evaluate upon
  * keydown. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
@@ -244,6 +262,8 @@ forEach(
  *
  * @description
  * Specify custom behavior on keyup event.
+ *
+ * @priority: 0
  *
  * @element ANY
  * @param {expression} ngKeyup {@link guide/expression Expression} to evaluate upon
@@ -286,6 +306,8 @@ forEach(
  *
  * @description
  * Enables binding angular expressions to onsubmit events.
+ *
+ * @priority: 0
  *
  * Additionally it prevents the default action (which for form means sending the request to the
  * server and reloading the current page) **but only if the form does not contain an `action`
@@ -340,6 +362,8 @@ forEach(
  * @description
  * Specify custom behavior on focus event.
  *
+ * @priority: 0
+ *
  * @element window, input, select, textarea, a
  * @param {expression} ngFocus {@link guide/expression Expression} to evaluate upon
  * focus. (Event object is available as `$event`)
@@ -355,6 +379,8 @@ forEach(
  * @description
  * Specify custom behavior on blur event.
  *
+ * @priority: 0
+ *
  * @element window, input, select, textarea, a
  * @param {expression} ngBlur {@link guide/expression Expression} to evaluate upon
  * blur. (Event object is available as `$event`)
@@ -369,6 +395,8 @@ forEach(
  *
  * @description
  * Specify custom behavior on copy event.
+ *
+ * @priority: 0
  *
  * @element window, input, select, textarea, a
  * @param {expression} ngCopy {@link guide/expression Expression} to evaluate upon
@@ -390,6 +418,8 @@ forEach(
  * @description
  * Specify custom behavior on cut event.
  *
+ * @priority: 0
+ *
  * @element window, input, select, textarea, a
  * @param {expression} ngCut {@link guide/expression Expression} to evaluate upon
  * cut. (Event object is available as `$event`)
@@ -409,6 +439,8 @@ forEach(
  *
  * @description
  * Specify custom behavior on paste event.
+ *
+ * @priority: 0
  *
  * @element window, input, select, textarea, a
  * @param {expression} ngPaste {@link guide/expression Expression} to evaluate upon
