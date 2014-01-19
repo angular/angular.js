@@ -460,8 +460,8 @@ scope: {
 ...
 ```
 
-Besides making it possible to bind different data to the scope inside a directive, using an isolated
-scope has another effect.
+Besides making it possible to bind multiple occurence of the same directive to different data on the scope, 
+the isolated scope feature has another effect, it does not inherit/pass-through the parent scope.
 
 We can show this by adding another property, `vojta`, to our scope and trying to access it from
 within our directive's template:
