@@ -345,11 +345,11 @@ element as a customer component.
 
 ### Isolating the Scope of a Directive
 
-Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
-given scope.
-
-In its current implementation, we'd need to create a different controller each time In order to
-re-use such a directive:
+Our `myCustomer` directive above is great, but it has a server restriction. It is tied to the specific
+variable, customer, in our scope. Consequently, because their under the controller and therefore referencing
+the same scope, each occurrence would show the same customer value. 
+One way to solve this is to create multiple controllers, dedicated to each 
+occurrence and offering their own 'customer':
 
 <example module="docsScopeProblemExample">
   <file name="script.js">
