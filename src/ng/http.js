@@ -790,7 +790,21 @@ function $HttpProvider() {
      * @param {Object=} config Optional configuration object
      * @returns {HttpPromise} Future object
      */
-    createShortMethodsWithData('post', 'put');
+
+     /**
+      * @ngdoc method
+      * @name ng.$http#patch
+      * @methodOf ng.$http
+      *
+      * @description
+      * Shortcut method to perform `PATCH` request.
+      *
+      * @param {string} url Relative or absolute URL specifying the destination of the request
+      * @param {*} data Request content
+      * @param {Object=} config Optional configuration object
+      * @returns {HttpPromise} Future object
+      */
+    createShortMethodsWithData('post', 'put', 'patch');
 
         /**
          * @ngdoc property
