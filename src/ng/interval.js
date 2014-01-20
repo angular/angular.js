@@ -143,7 +143,11 @@ function $IntervalProvider() {
       promise.then(null, null, fn);
 
       promise.$$intervalId = setInterval(function tick() {
-        deferred.notify(iteration++);
+        if (!skipApply) {
+          deferred.notify(iteration++);
+        } else {
+          fn(iteration++);
+        }
 
         if (count > 0 && iteration >= count) {
           deferred.resolve(iteration);
