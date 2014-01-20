@@ -128,8 +128,8 @@ var ngOptionsMinErr = minErr('ngOptions');
 var ngOptionsDirective = valueFn({ terminal: true });
 // jshint maxlen: false
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
-                         //000011111111110000000000022222222220000000000000000000003333333333000000000000004444444444444440000000005555555555555550000000666666666666666000000000000000777777777700000000000000000008888888888
-  var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/,
+                         //00001111100000000000222220000000000000000000003333300000000000000444444444444000000555555555555000000066666666666600000000000000777777777700000000000000000008888888888000000
+  var NG_OPTIONS_REGEXP = /^\s*(\S+)(?:\s+as\s+(\S+)|)(?:\s+group\s+by\s+(\S+)|)\s+for\s+(?:(\${0,2}\w*)|\(\s*(\${0,2}\w*)\s*,\s*(\${0,2}\w*)\s*\))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?)|)\s*$/,
       nullModelCtrl = {$setViewValue: noop};
 // jshint maxlen: 100
 
