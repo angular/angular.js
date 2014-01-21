@@ -1427,7 +1427,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 }
                 parentGet = $parse(attrs[attrName]);
                 if (parentGet.literal) {
-                  compare = equals;
+                  compare = angular.equals;
                 } else {
                   compare = function(a,b) { return a === b; };
                 }

@@ -589,7 +589,7 @@ function $RootScopeProvider(){
                   if (watch) {
                     if ((value = watch.get(current)) !== (last = watch.last) &&
                         !(watch.eq
-                            ? equals(value, last)
+                            ? angular.equals(value, last)
                             : (typeof value == 'number' && typeof last == 'number'
                                && isNaN(value) && isNaN(last)))) {
                       dirty = true;
