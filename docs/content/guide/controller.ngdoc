@@ -168,7 +168,7 @@ starts with capital letter and ends with "Ctrl" or "Controller".
 - Assigning a property to `$scope` creates or updates the model.
 - Controller methods can be created through direct assignment to scope (see the `chiliSpicy` method)
 - The Controller methods and properties are available in the template (for the `<div>` element and
-and its children).
+its children).
 
 ## Spicy Arguments Example
 
