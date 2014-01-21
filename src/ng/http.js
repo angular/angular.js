@@ -84,8 +84,8 @@ function isSuccess(status) {
 
 
 function $HttpProvider() {
-  var JSON_START = /^\s*(\[|\{[^\{])/,
-      JSON_END = /[\}\]]\s*$/,
+  var JSON_START = /^\s*(\[|\{[^{])/,
+      JSON_END = /[}\]]\s*$/,
       PROTECTION_PREFIX = /^\)\]\}',?\n/,
       CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json;charset=utf-8'};
 
