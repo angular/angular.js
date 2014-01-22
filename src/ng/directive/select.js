@@ -477,14 +477,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               selected: selected                   // determine if we should be selected
             });
           }
-          if (!multiple) {
-            if (nullOption || modelValue === null) {
-              // insert null option if we have a placeholder, or the model is null
-              optionGroups[''].unshift({id:'', label:'', selected:!selectedSet});
-            } else if (!selectedSet) {
-              // option could not be found, we have to insert the undefined item
-              optionGroups[''].unshift({id:'?', label:'', selected:true});
-            }
+          if (nullOption || modelValue === null) {
+            // insert null option if we have a placeholder, or the model is null
+            optionGroups[''].unshift({id:'', label:'', selected:!selectedSet});
+          } else if (!selectedSet) {
+            // option could not be found, we have to insert the undefined item
+            optionGroups[''].unshift({id:'?', label:'', selected:true});
           }
 
           // Now we need to update the list of DOM nodes to match the optionGroups we computed above
