@@ -968,22 +968,7 @@ describe('$location', function() {
         }
       );
     });
-
-
-    it('should rewrite when clicked span inside link', function() {
-      configureService('some/link', true, true, '', '<span>link</span>');
-      inject(
-        initBrowser(),
-        initLocation(),
-        function($browser) {
-          var span = jqLite(link).find('span');
-
-          browserTrigger(span, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/some/link');
-        }
-      );
-    });
-
+    
 
     it('should not rewrite when link to different base path when history enabled on new browser',
         function() {
