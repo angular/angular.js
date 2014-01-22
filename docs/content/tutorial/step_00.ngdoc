@@ -73,7 +73,7 @@ angular-seed, and run the application in the browser.
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
 The HTML page that displays "Nothing here yet!" was constructed with the HTML code shown below.
-The code contains some key Angular elements that we will need going forward.
+The code contains some key Angular elements that we will need as we progress.
 
 __`app/index.html`:__
 <pre>
@@ -104,7 +104,7 @@ __`app/index.html`:__
 
   The `ng-app` attribute represents an Angular directive named `ngApp` (Angular uses
   `name-with-dashes` for its custom attributes and `camelCase` for the corresponding directives
-  that implements them).
+  which implement them).
   This directive is used to flag the html element that Angular should consider to be the root element
   of our application.
   This gives application developers the freedom to tell Angular if the entire html page or only a

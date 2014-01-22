@@ -246,6 +246,10 @@ ul.events > li > h3 {
   text-decoration: none;
 }
 
+.tutorial-nav li {
+  margin-right: 5px;
+}
+
 .clear {
   clear: both;
 }
