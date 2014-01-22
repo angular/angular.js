@@ -828,7 +828,10 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function fireDoneCallbackAsync() {
-          doneCallback && async(doneCallback);
+          async(function() {
+            fireDOMCallback('close');
+            doneCallback && doneCallback();
+          });
         }
 
         //it is less complicated to use a flag than managing and cancelling
