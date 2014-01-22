@@ -55,7 +55,7 @@ The following also **matches** `ngModel`:
 
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
 directives. We typically refer to directives by their case-sensitive
-{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`). 
+{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`).
 However, since HTML is case-insensitive, we refer to directives in the DOM by lower-case
 forms, typically using {@link http://en.wikipedia.org/wiki/Letter_case#Computers dash-delimited}
 attributes on DOM elements (e.g. `ng-model`).
