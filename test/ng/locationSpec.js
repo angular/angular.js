@@ -775,7 +775,491 @@ describe('$location', function() {
   });
 
 
-  describe('link rewriting', function() {
+  describe('link (<area/>) rewriting', function() {
+
+    var root, link, originalBrowser, lastEventPreventDefault;
+
+    function configureService(linkHref, html5Mode, supportHist, attrs, content) {
+      module(function($provide, $locationProvider) {
+        attrs = attrs ? ' ' + attrs + ' ' : '';
+
+        // fake the base behavior
+        if (linkHref[0] == '/') {
+          linkHref = 'http://host.com' + linkHref;
+        } else if(!linkHref.match(/:\/\//)) {
+          linkHref = 'http://host.com/base/' + linkHref;
+        }
+
+        link = jqLite('<area href="' + linkHref + '"' + attrs + '>' + content + '</area>')[0];        
+
+        $provide.value('$sniffer', {history: supportHist});
+        $locationProvider.html5Mode(html5Mode);
+        $locationProvider.hashPrefix('!');
+        return function($rootElement, $document) {
+          $rootElement.append(link);
+          root = $rootElement[0];
+          // we need to do this otherwise we can't simulate events
+          $document.find('body').append($rootElement);
+        };
+      });
+    }
+
+    function initBrowser() {
+      return function($browser){
+        $browser.url('http://host.com/base');
+        $browser.$$baseHref = '/base/index.html';
+      };
+    }
+
+    function initLocation() {
+      return function($browser, $location, $rootElement) {
+        originalBrowser = $browser.url();
+        // we have to prevent the default operation, as we need to test absolute links (http://...)
+        // and navigating to these links would kill jstd
+        $rootElement.on('click', function(e) {
+          lastEventPreventDefault = e.isDefaultPrevented();
+          e.preventDefault();
+        });
+      };
+    }
+
+    function expectRewriteTo($browser, url) {
+      expect(lastEventPreventDefault).toBe(true);
+      expect($browser.url()).toBe(url);
+    }
+
+    function expectNoRewrite($browser) {
+      expect(lastEventPreventDefault).toBe(false);
+      expect($browser.url()).toBe(originalBrowser);
+    }
+
+    afterEach(function() {
+      dealoc(root);
+      dealoc(document.body);
+    });
+
+
+    it('should rewrite rel link to new url when history enabled on new browser', function() {
+      configureService('link?a#b', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
+
+
+    it('should do nothing if already on the same URL', function() {
+      configureService('/base/', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/');
+
+          jqLite(link).attr('href', 'http://host.com/base/foo');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/foo');
+
+          jqLite(link).attr('href', 'http://host.com/base/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/');
+
+          jqLite(link).
+              attr('href', 'http://host.com/base/foo').
+              on('click', function(e) { e.preventDefault(); });
+          browserTrigger(link, 'click');
+          expect($browser.url()).toBe('http://host.com/base/');
+        }
+      );
+    });
+
+
+    it('should rewrite abs link to new url when history enabled on new browser', function() {
+      configureService('/base/link?a#b', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
+
+
+    it('should rewrite rel link to hashbang url when history enabled on old browser', function() {
+      configureService('link?a#b', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+        }
+      );
+    });
+
+
+    it('should rewrite abs link to hashbang url when history enabled on old browser', function() {
+      configureService('/base/link?a#b', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+        }
+      );
+    });
+
+
+    it('should not rewrite full url links do different domain', function() {
+      configureService('http://www.dot.abc/a?b=c', true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite links with target="_blank"', function() {
+      configureService('/a?b=c', true, true, 'target="_blank"');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite links with target specified', function() {
+      configureService('/a?b=c', true, true, 'target="some-frame"');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should rewrite full url links to same domain and base path', function() {
+      configureService('http://host.com/base/new', true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/new');
+        }
+      );
+    });
+
+
+    it('should rewrite when clicked span inside link', function() {
+      configureService('some/link', true, true, '', '<span>link</span>');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          var span = jqLite(link).find('span');
+
+          browserTrigger(span, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/some/link');
+        }
+      );
+    });
+
+
+    it('should not rewrite when link to different base path when history enabled on new browser',
+        function() {
+      configureService('/other_base/link', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when link to different base path when history enabled on old browser',
+        function() {
+      configureService('/other_base/link', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when link to different base path when history disabled', function() {
+      configureService('/other_base/link', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when full link to different base path when history enabled on new browser',
+        function() {
+      configureService('http://host.com/other_base/link', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when full link to different base path when history enabled on old browser',
+        function() {
+      configureService('http://host.com/other_base/link', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when full link to different base path when history disabled', function() {
+      configureService('http://host.com/other_base/link', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
+    if (!(msie < 9)) {
+
+      it('should not rewrite when clicked with ctrl pressed', function() {
+        configureService('/a?b=c', true, true);
+        inject(
+          initBrowser(),
+          initLocation(),
+          function($browser) {
+            browserTrigger(link, 'click', ['ctrl']);
+            expectNoRewrite($browser);
+          }
+        );
+      });
+
+
+      it('should not rewrite when clicked with meta pressed', function() {
+        configureService('/a?b=c', true, true);
+        inject(
+          initBrowser(),
+          initLocation(),
+          function($browser) {
+            browserTrigger(link, 'click', ['meta']);
+            expectNoRewrite($browser);
+          }
+        );
+      });
+    }
+
+
+    it('should not mess up hash urls when clicking on links in hashbang mode', function() {
+      var base;
+      module(function() {
+        return function($browser) {
+          window.location.hash = 'someHash';
+          base = window.location.href
+          $browser.url(base);
+          base = base.split('#')[0];
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        var element = $compile('<a href="#/view1">v1</a><a href="#/view2">v2</a>')($rootScope);
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(base + '#/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(base + '#/view2');
+
+        $rootElement.remove();
+      });
+    });
+
+
+    it('should not mess up hash urls when clicking on links in hashbang mode with a prefix',
+        function() {
+      var base;
+      module(function($locationProvider) {
+        return function($browser) {
+          window.location.hash = '!someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+          $locationProvider.hashPrefix('!');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        var element = $compile('<a href="#!/view1">v1</a><a href="#!/view2">v2</a>')($rootScope);
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(base + '#!/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(base + '#!/view2');
+      });
+    });
+
+
+    it('should not intercept clicks outside the current hash prefix', function() {
+      var base, clickHandler;
+      module(function($provide) {
+        $provide.value('$rootElement', {
+          on: function(event, handler) {
+            expect(event).toEqual('click');
+            clickHandler = handler;
+          },
+          off: noop
+        });
+        return function($browser) {
+          $browser.url(base = 'http://server/');
+        }
+      });
+      inject(function($location) {
+        // make IE happy
+        jqLite(window.document.body).html('<a href="http://server/test.html">link</a>');
+
+        var event = {
+          target: jqLite(window.document.body).find('a')[0],
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+
+
+        clickHandler(event);
+        expect(event.preventDefault).not.toHaveBeenCalled();
+      });
+    });
+
+
+    it('should not intercept hash link clicks outside the app base url space', function() {
+      var base, clickHandler;
+      module(function($provide) {
+        $provide.value('$rootElement', {
+          on: function(event, handler) {
+            expect(event).toEqual('click');
+            clickHandler = handler;
+          },
+          off: angular.noop
+        });
+        return function($browser) {
+          $browser.url(base = 'http://server/');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // make IE happy
+        jqLite(window.document.body).html('<a href="http://server/index.html#test">link</a>');
+
+        var event = {
+          target: jqLite(window.document.body).find('a')[0],
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+
+
+        clickHandler(event);
+        expect(event.preventDefault).not.toHaveBeenCalled();
+      });
+    });
+
+
+    // regression https://github.com/angular/angular.js/issues/1058
+    it('should not throw if element was removed', inject(function($document, $rootElement, $location) {
+      // we need to do this otherwise we can't simulate events
+      $document.find('body').append($rootElement);
+
+      $rootElement.html('<button></button>');
+      var button = $rootElement.find('button');
+
+      button.on('click', function() {
+        button.remove();
+      });
+      browserTrigger(button, 'click');
+    }));
+
+
+    it('should not throw when clicking an SVGAElement link', function() {
+      var base;
+      module(function($locationProvider) {
+        return function($browser) {
+          window.location.hash = '!someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+          $locationProvider.hashPrefix('!');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+        var template = '<svg><g><a xlink:href="#!/view1"><circle r="50"></circle></a></g></svg>';
+        var element = $compile(template)($rootScope);
+
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        expect(function() {
+          browserTrigger(av1, 'click');
+        }).not.toThrow();
+      });
+    });
+  });
+
+
+  describe('link (<a/>) rewriting', function() {
 
     var root, link, originalBrowser, lastEventPreventDefault;
 
