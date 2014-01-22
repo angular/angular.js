@@ -964,6 +964,16 @@ angular.$cacheFactory.Options;
  */
 angular.$cacheFactory.Cache;
 
+angular.$cacheFactory.Cache.put = function(key, value) {};
+
+angular.$cacheFactory.Cache.get = function(key) {};
+
+angular.$cacheFactory.Cache.remove = function(key) {};
+
+angular.$cacheFactory.Cache.removeAll = function() {};
+
+angular.$cacheFactory.Cache.destroy = function() {};
+
 /**
  * @typedef {{
  *   id: string,
