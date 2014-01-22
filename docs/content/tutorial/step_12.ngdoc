@@ -115,7 +115,7 @@ __`app/partials/phone-list.html`.__
 
 </pre>
 
-Notice how we added the `phone-listing` CSS class? This is all we need in our HTML code to get animations working.
+Notice how we added the `phone` CSS class to the phone-list template `<ul>`? This is all we need in our HTML code to get animations working.
 
 Now for the actual CSS transition animation code:
 
