@@ -4,39 +4,43 @@ echo "#################################"
 echo "#### Cut release ################"
 echo "#################################"
 
-if [ "$1" != "patch" -a "$1" != "minor" -a "$1" != "major" ]; then
-  echo "Please specify the next version type: patch|minor|major"
-  exit 1
-fi
-BUMP_TYPE=$1
+ARG_DEFS=(
+  "--next-version-type=(patch|minor|major)"
+  "--next-version-name=(.+)"
+  # require the git dryrun flag so the script can't be run without
+  # thinking about this!
+  "--git-push-dryrun=(true|false)"
+  "[--no-test=(true|false)]"
+)
 
-# Enable tracing and exit on first failure
-set -xe
+function init {
+  NG_ARGS=("$@")
+  if [[ ! $VERBOSE ]]; then
+    VERBOSE=false
+  fi
+  if [[ ! $NO_TEST ]]; then
+    NO_TEST=false
+  fi
+  VERBOSE_ARG="--verbose=$VERBOSE"
+  NO_TEST_ARG="--no_test=$NO_TEST"
+}
 
-# Jump onto the master branch and make sure we are using the latest
-git checkout -f master
-git merge --ff-only origin/master
+function phase {
+  ACTION_ARG="--action=$1"
+  ../angular.js/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG \
+      --next-version-type=$NEXT_VERSION_TYPE --next-version-name=$NEXT_VERSION_NAME
+  ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG
+  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG
+}
 
+function run {
+  # First prepare all scripts (build, test, commit, tag, ...),
+  # so we are sure everything is all right
+  phase prepare
+  # only then publish to github
+  phase publish
+}
 
-# Normalize working dir to script dir
-cd `dirname $0`/../..
-
-
-# Bump versions: remove "-snapshot" suffix
-./scripts/jenkins/bump-remove-snapshot.sh
-
-# Build
-./jenkins_build.sh
-
-# Bump versions: Increment version and add "-snapshot"
-./scripts/jenkins/bump-increment.sh $BUMP_TYPE
-
-echo "-- push to Github"
-# push to github
-git push --all
-
-# Update code.angularjs.org
-./scripts/code.angularjs.org/publish.sh
-
-# Update bower
-./scripts/bower/publish.sh
+source $(dirname $0)/../utils.inc

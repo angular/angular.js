@@ -533,6 +533,23 @@ describe('input', function() {
       'event so that form auto complete works',function() {
       assertBrowserSupportsChangeEvent(true);
     });
+
+    if (!_jqLiteMode) {
+      it('should not cause the double $digest when triggering an event using jQuery', function() {
+        $sniffer.hasEvent = function(eventName) {
+          return eventName !== 'input';
+        };
+
+        compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+        scope.field = 'fake field';
+        scope.$watch('field', function() {
+          // We need to use _originalTrigger since trigger is modified by Angular Scenario.
+          inputElm._originalTrigger('change');
+        });
+        scope.$apply();
+      });
+    }
   });
 
   describe('"paste" and "cut" events', function() {
@@ -707,7 +724,7 @@ describe('input', function() {
 
   describe('minlength', function() {
 
-    it('should invalid shorter than given minlenght', function() {
+    it('should invalid shorter than given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
@@ -721,7 +738,7 @@ describe('input', function() {
 
   describe('maxlength', function() {
 
-    it('should invalid shorter than given maxlenght', function() {
+    it('should invalid shorter than given maxlength', function() {
       compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
@@ -927,7 +944,8 @@ describe('input', function() {
       it('should validate email', function() {
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
         expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
-        expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@B.c')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@.b.c')).toBe(false);
       });
     });
   });

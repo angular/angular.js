@@ -862,6 +862,31 @@ describe('ngMock', function() {
           expect(log).toEqual('module;inject;')
         });
       });
+
+
+      // We don't run the following tests on IE8.
+      // IE8 throws "Object does not support this property or method." error,
+      // when thrown from a function defined on window (which `inject` is).
+
+      it('should not change thrown Errors', inject(function($sniffer) {
+        if ($sniffer.msie <= 8) return;
+
+        expect(function() {
+          inject(function() {
+            throw new Error('test message');
+          });
+        }).toThrow('test message');
+      }));
+
+      it('should not change thrown strings', inject(function($sniffer) {
+        if ($sniffer.msie <= 8) return;
+
+        expect(function() {
+          inject(function() {
+            throw 'test message';
+          });
+        }).toThrow('test message');
+      }));
     });
   });
 

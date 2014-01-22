@@ -55,7 +55,7 @@ The following also **matches** `ngModel`:
 
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
 directives. We typically refer to directives by their case-sensitive
-{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`). 
+{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`).
 However, since HTML is case-insensitive, we refer to directives in the DOM by lower-case
 forms, typically using {@link http://en.wikipedia.org/wiki/Letter_case#Computers dash-delimited}
 attributes on DOM elements (e.g. `ng-model`).
@@ -174,9 +174,9 @@ For example, we could fix the example above by instead writing:
 
 ## Creating Directives
 
-First let's talk about the API for registering directives. Much like controllers, directives are
-registered on modules. To register a directive, you use the `module.directive` API.
-`module.directive` takes the
+First let's talk about the {@link api/ng.$compileProvider#methods_directive API for registering directives}. Much like
+controllers, directives are registered on modules. To register a directive, you use the
+`module.directive` API. `module.directive` takes the
 {@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
 followed by a **factory function.** This factory function should return an object with the different
 options to tell `$compile` how the directive should behave when matched.
@@ -280,7 +280,7 @@ using `templateUrl` instead:
 </example>
 
 Great! But what if we wanted to have our directive match the tag name `<my-customer>` instead?
-If we simply put a `<my-customer>` element into the HMTL, it doesn't work.
+If we simply put a `<my-customer>` element into the HTML, it doesn't work.
 
 <div class="alert alert-waring">
 **Note:** When you create a directive, it is restricted to attribute only by default. In order to
@@ -527,7 +527,8 @@ where:
 
 * `scope` is an Angular scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
-* `attrs` is an object with the normalized attribute names and their corresponding values.
+* `attrs` is a hash object with key-value pairs of normalized attribute names and their
+  corresponding attribute values.
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
@@ -734,13 +735,13 @@ own behavior to it.
 We want to run the function we pass by invoking it from the directive's scope, but have it run
 in the context of the scope where its registered.
 
-We saw earlier how to use `=prop` in the `scope` option, but in the above example, we're using
-`&prop` instead. `&` bindings expose a function to an isolated scope allowing the isolated scope
+We saw earlier how to use `=attr` in the `scope` option, but in the above example, we're using
+`&attr` instead. `&` bindings expose a function to an isolated scope allowing the isolated scope
 to invoke it, but maintaining the original scope of the function. So when a user clicks the
-`x` in the dialog, it runs `Ctrl`'s `close` function.
+`x` in the dialog, it runs `Ctrl`'s `hideDialog` function.
 
 <div class="alert alert-success">
-**Best Practice:** use `&prop` in the `scope` option when you want your directive
+**Best Practice:** use `&attr` in the `scope` option when you want your directive
 to expose an API for binding to behaviors.
 </div>
 

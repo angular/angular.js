@@ -150,6 +150,13 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
+  it('should not collapsed the url into an empty string', function() {
+    var R = $resource('/:foo/:bar/');
+
+    $httpBackend.when('GET', '/').respond('{}');
+
+    R.get({});
+  });
 
   it('should support escaping colons in url template', function() {
     var R = $resource('http://localhost\\:8080/Path/:a/\\:stillPath/:b');

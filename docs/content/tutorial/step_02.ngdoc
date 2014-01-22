@@ -191,8 +191,8 @@ You can do this by issuing `npm install` into your terminal.
 To run the test, do the following:
 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
-`./scripts/test.sh` to start the Karma server (the config file necessary to start the server
-is located at `./config/karma.conf.js`).
+   `./scripts/test.sh` (if you are on Windows, run scripts\test.bat) to start the Karma server (the
+   config file necessary to start the server is located at `./config/karma.conf.js`).
 
 2. Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
    the background. Karma will use this browser for test execution.
@@ -206,7 +206,7 @@ is located at `./config/karma.conf.js`).
 
   Yay! The test passed! Or not...
 
-4. To rerun the tests, just change any of the source or test files. Karma will notice the change
+4. To rerun the tests, just change any of the source or test .js files. Karma will notice the change
   and will rerun the tests for you. Now isn't that sweet?
 
 # Experiments
@@ -217,9 +217,13 @@ is located at `./config/karma.conf.js`).
 
 * Create a new model property in the controller and bind to it from the template. For example:
 
-          $scope.hello = "Hello, World!"
+          $scope.name = "World";
 
-  Refresh your browser to make sure it says, "Hello, World!"
+  Then add a new binding to `index.html`:
+
+          <p>Hello, {{name}}!</p>
+
+  Refresh your browser and verify that it says "Hello, World!".
 
 * Create a repeater that constructs a simple table:
 

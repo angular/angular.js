@@ -258,6 +258,31 @@ describe('Scope', function() {
     }));
 
 
+    it('should prevent infinite loop when creating and resolving a promise in a watched expression', function() {
+      module(function($rootScopeProvider) {
+          $rootScopeProvider.digestTtl(10);
+      });
+      inject(function($rootScope, $q) {
+          var d = $q.defer();
+
+          d.resolve('Hello, world.');
+          $rootScope.$watch(function () {
+              var $d2 = $q.defer();
+              $d2.resolve('Goodbye.');
+              $d2.promise.then(function () { });
+              return d.promise;
+          }, function () { return 0; });
+
+          expect(function() {
+              $rootScope.$digest();
+          }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n'+
+                  'Watchers fired in the last 5 iterations: []');
+
+          expect($rootScope.$$phase).toBeNull();
+      });
+      });
+
+
     it('should not fire upon $watch registration on initial $digest', inject(function($rootScope) {
       var log = '';
       $rootScope.a = 1;
@@ -323,41 +348,6 @@ describe('Scope', function() {
     }));
 
 
-    it('should return a function that allows listeners to be unregistered', inject(
-        function($rootScope) {
-      var listener = jasmine.createSpy('watch listener'),
-          listenerRemove;
-
-      listenerRemove = $rootScope.$watch('foo', listener);
-      $rootScope.$digest(); //init
-      expect(listener).toHaveBeenCalled();
-      expect(listenerRemove).toBeDefined();
-
-      listener.reset();
-      $rootScope.foo = 'bar';
-      $rootScope.$digest(); //triger
-      expect(listener).toHaveBeenCalledOnce();
-
-      listener.reset();
-      $rootScope.foo = 'baz';
-      listenerRemove();
-      $rootScope.$digest(); //trigger
-      expect(listener).not.toHaveBeenCalled();
-    }));
-
-    it('should allow a watch to be unregistered while in a digest', inject(function($rootScope) {
-      var remove1, remove2;
-      $rootScope.$watch('remove', function() {
-        remove1();
-        remove2();
-      });
-      remove1 = $rootScope.$watch('thing', function() {});
-      remove2 = $rootScope.$watch('thing', function() {});
-      expect(function() {
-        $rootScope.$apply('remove = true');
-      }).not.toThrow();
-    }));
-
     it('should allow a watch to be added while in a digest', inject(function($rootScope) {
       var watch1 = jasmine.createSpy('watch1'),
           watch2 = jasmine.createSpy('watch2');
@@ -401,6 +391,94 @@ describe('Scope', function() {
       $rootScope.$digest();
       expect(log).toEqual([]);
     }));
+
+
+    describe('$watch deregistration', function() {
+
+      it('should return a function that allows listeners to be deregistered', inject(
+          function($rootScope) {
+        var listener = jasmine.createSpy('watch listener'),
+            listenerRemove;
+
+        listenerRemove = $rootScope.$watch('foo', listener);
+        $rootScope.$digest(); //init
+        expect(listener).toHaveBeenCalled();
+        expect(listenerRemove).toBeDefined();
+
+        listener.reset();
+        $rootScope.foo = 'bar';
+        $rootScope.$digest(); //triger
+        expect(listener).toHaveBeenCalledOnce();
+
+        listener.reset();
+        $rootScope.foo = 'baz';
+        listenerRemove();
+        $rootScope.$digest(); //trigger
+        expect(listener).not.toHaveBeenCalled();
+      }));
+
+
+      it('should allow a watch to be deregistered while in a digest', inject(function($rootScope) {
+        var remove1, remove2;
+        $rootScope.$watch('remove', function() {
+          remove1();
+          remove2();
+        });
+        remove1 = $rootScope.$watch('thing', function() {});
+        remove2 = $rootScope.$watch('thing', function() {});
+        expect(function() {
+          $rootScope.$apply('remove = true');
+        }).not.toThrow();
+      }));
+
+
+      it('should not mess up the digest loop if deregistration happens during digest', inject(
+          function($rootScope, log) {
+
+        // we are testing this due to regression #5525 which is related to how the digest loops lastDirtyWatch
+        // short-circuiting optimization works
+
+        // scenario: watch1 deregistering watch1
+        var scope = $rootScope.$new();
+        var deregWatch1 = scope.$watch(log.fn('watch1'), function() { deregWatch1(); log('watchAction1'); });
+        scope.$watch(log.fn('watch2'), log.fn('watchAction2'));
+        scope.$watch(log.fn('watch3'), log.fn('watchAction3'));
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
+                             'watch2', 'watch3']);
+        scope.$destroy();
+        log.reset();
+
+
+        // scenario: watch1 deregistering watch2
+        scope = $rootScope.$new();
+        scope.$watch(log.fn('watch1'), function() { deregWatch2(); log('watchAction1'); });
+        var deregWatch2 = scope.$watch(log.fn('watch2'), log.fn('watchAction2'));
+        scope.$watch(log.fn('watch3'), log.fn('watchAction3'));
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch1', 'watch3', 'watchAction3',
+                             'watch1', 'watch3']);
+        scope.$destroy();
+        log.reset();
+
+
+        // scenario: watch2 deregistering watch1
+        scope = $rootScope.$new();
+        deregWatch1 = scope.$watch(log.fn('watch1'), log.fn('watchAction1'));
+        scope.$watch(log.fn('watch2'), function() { deregWatch1(); log('watchAction2'); });
+        scope.$watch(log.fn('watch3'), log.fn('watchAction3'));
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
+                             'watch2', 'watch3']);
+      }));
+    });
+
 
     describe('$watchCollection', function() {
       var log, $rootScope, deregister;
@@ -1183,7 +1261,7 @@ describe('Scope', function() {
           expect($rootScope.$$listenerCount).toEqual({event1: 2});
           expect(child1.$$listenerCount).toEqual({event1: 1});
           expect(child2.$$listenerCount).toEqual({});
-        }))
+        }));
       });
     });
 

@@ -59,3 +59,5 @@ The following is done automatically and should not be done manually:
 
 1. Unassign yourself from the issue
 
+
+[![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/TRIAGING.md?pixel)](https://github.com/igrigorik/ga-beacon)

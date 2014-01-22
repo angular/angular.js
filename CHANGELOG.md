@@ -1,3 +1,139 @@
+<a name="1.2.9"></a>
+# 1.2.9 enchanted-articulacy (2014-01-15)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure the final closing timeout respects staggering animations
+  ([ed53100a](https://github.com/angular/angular.js/commit/ed53100a0dbc9119d5dfc8b7248845d4f6989df2))
+  - prevent race conditions for class-based animations when animating on the same CSS class
+  ([4aa9df7a](https://github.com/angular/angular.js/commit/4aa9df7a7ae533531dfae1e3eb9646245d6b5ff4),
+   [#5588](https://github.com/angular/angular.js/issues/5588))
+  - correctly detect and handle CSS transition changes during class addition and removal
+  ([7d5d62da](https://github.com/angular/angular.js/commit/7d5d62dafe11620082c79da35958f8014eeb008c))
+  - avoid accidentally matching substrings when resolving the presence of className tokens
+  ([524650a4](https://github.com/angular/angular.js/commit/524650a40ed20f01571e5466475749874ee67288))
+- **$http:** ensure default headers PUT and POST are different objects
+  ([e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
+   [#5742](https://github.com/angular/angular.js/issues/5742), [#5747](https://github.com/angular/angular.js/issues/5747), [#5764](https://github.com/angular/angular.js/issues/5764))
+- **$rootScope:** prevent infinite $digest by checking if asyncQueue is empty when decrementing ttl
+  ([2cd09c9f](https://github.com/angular/angular.js/commit/2cd09c9f0e7766bcd191662841b7b1ffc3b6dc3f),
+   [#2622](https://github.com/angular/angular.js/issues/2622))
+
+
+## Features
+
+- **$animate:**
+  - provide support for DOM callbacks
+  ([dde1b294](https://github.com/angular/angular.js/commit/dde1b2949727c297e214c99960141bfad438d7a4))
+  - use requestAnimationFrame instead of a timeout to issue a reflow
+  ([4ae3184c](https://github.com/angular/angular.js/commit/4ae3184c5915aac9aa00889aa2153c8e84c14966),
+   [#4278](https://github.com/angular/angular.js/issues/4278), [#4225](https://github.com/angular/angular.js/issues/4225))
+
+<a name="1.2.8"></a>
+# 1.2.8 interdimensional-cartography (2014-01-10)
+
+
+## Bug Fixes
+
+- **$http:**
+  - return responseText on IE8 for requests with responseType set
+  ([a9cccbe1](https://github.com/angular/angular.js/commit/a9cccbe14f1bd9048f5dab4443f58c804d4259a1),
+   [#4464](https://github.com/angular/angular.js/issues/4464), [#4738](https://github.com/angular/angular.js/issues/4738), [#5636](https://github.com/angular/angular.js/issues/5636))
+  - Allow status code 0 from any protocol
+  ([28fc80bb](https://github.com/angular/angular.js/commit/28fc80bba0107075ab371fd0a7634a38891626b2),
+   [#1356](https://github.com/angular/angular.js/issues/1356), [#5547](https://github.com/angular/angular.js/issues/5547))
+  - cancelled JSONP requests will not print error in the console
+  ([95e1b2d6](https://github.com/angular/angular.js/commit/95e1b2d6121b4e26cf87dcf6746a7b8cb4c25e7f),
+   [#5615](https://github.com/angular/angular.js/issues/5615), [#5616](https://github.com/angular/angular.js/issues/5616))
+- **$location:** return '/' for root path in hashbang mode
+  ([63cd873f](https://github.com/angular/angular.js/commit/63cd873fef3207deef30c7a7ed66f4b8f647dc12),
+   [#5650](https://github.com/angular/angular.js/issues/5650), [#5712](https://github.com/angular/angular.js/issues/5712))
+- **$parse:** fix CSP nested property evaluation, and issue that prevented its tests from failing
+  ([3b1a4fe0](https://github.com/angular/angular.js/commit/3b1a4fe0c83c7898ecd7261ab4213998ee7be0ec),
+   [#5591](https://github.com/angular/angular.js/issues/5591), [#5592](https://github.com/angular/angular.js/issues/5592))
+- **closure:** add Closure externs for angular.$q.Promise.finally
+  ([caeb7402](https://github.com/angular/angular.js/commit/caeb7402651702cd13df2f1594e9827439a8b760),
+   [#4757](https://github.com/angular/angular.js/issues/4757))
+- **ngMock window.inject:** Remove Error 'stack' property changes
+  ([7e916455](https://github.com/angular/angular.js/commit/7e916455b36dc9ca4d4afc1e44cade90006d00e3))
+
+
+## Features
+
+- **select:** allow multiline ng-options
+  ([43a2f3d0](https://github.com/angular/angular.js/commit/43a2f3d0bf435e3626cd679caff4281cfb3415bd),
+   [#5602](https://github.com/angular/angular.js/issues/5602))
+
+<a name="1.2.7"></a>
+# 1.2.7 emoji-clairvoyance (2014-01-03)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensue class-based animations are always skipped before structural post-digest tasks are run
+  ([bc492c0f](https://github.com/angular/angular.js/commit/bc492c0fc17257ddf2bc5964e205379aa766b3d8),
+   [#5582](https://github.com/angular/angular.js/issues/5582))
+  - remove trailing `s` from computed transition duration styles
+  ([50bf0296](https://github.com/angular/angular.js/commit/50bf029625d603fc652f0f413e709f43803743db))
+- **$http:**
+  ([3d38fff8](https://github.com/angular/angular.js/commit/3d38fff8b4ea2fd60fadef2028ea4dcddfccb1a4))
+  - use ActiveX XHR when making PATCH requests on IE8
+  ([6c17d02b](https://github.com/angular/angular.js/commit/6c17d02bc4cc02f478775d62e1f9f77da9da82ad),
+   [#2518](https://github.com/angular/angular.js/issues/2518), [#5043](https://github.com/angular/angular.js/issues/5043))
+  - fix 'type mismatch' error on IE8 after each request
+  ([fd9a03e1](https://github.com/angular/angular.js/commit/fd9a03e147aac7e952c6dda1f381fd4662276ba2))
+  - Ignore multiple calls to onreadystatechange with readyState=4
+  ([4f572366](https://github.com/angular/angular.js/commit/4f57236614415eea919221ea5f99c4d8689b3267),
+   [#5426](https://github.com/angular/angular.js/issues/5426))
+- **$injector:** remove the `INSTANTIATING` flag properly when done
+  ([186a5912](https://github.com/angular/angular.js/commit/186a5912288acfff0ee59dae29af83c37c987921),
+   [#4361](https://github.com/angular/angular.js/issues/4361), [#5577](https://github.com/angular/angular.js/issues/5577))
+- **$location:**
+  - remove base href domain if the URL begins with '//'
+  ([760f2fb7](https://github.com/angular/angular.js/commit/760f2fb73178e56c37397b3c5876f7dac96f0455),
+   [#5606](https://github.com/angular/angular.js/issues/5606))
+  - fix $location.path() behaviour when $locationChangeStart is triggered by the browser
+  ([cf686285](https://github.com/angular/angular.js/commit/cf686285c22d528440e173fdb65ad1052d96df3c),
+   [#4989](https://github.com/angular/angular.js/issues/4989), [#5089](https://github.com/angular/angular.js/issues/5089), [#5118](https://github.com/angular/angular.js/issues/5118), [#5580](https://github.com/angular/angular.js/issues/5580))
+  - re-assign history after BFCache back on Android browser
+  ([bddd46c8](https://github.com/angular/angular.js/commit/bddd46c8ecf49cfe6c999cd6b4a69b7d7e1f9a33),
+   [#5425](https://github.com/angular/angular.js/issues/5425))
+- **$resource:** prevent URL template from collapsing into an empty string
+  ([131e4014](https://github.com/angular/angular.js/commit/131e4014b831ac81b7979c4523da81ebc5861c70),
+   [#5455](https://github.com/angular/angular.js/issues/5455), [#5493](https://github.com/angular/angular.js/issues/5493))
+- **$sanitize:** consider the `size` attribute as a valid/allowed attribute
+  ([056c8493](https://github.com/angular/angular.js/commit/056c8493521988dbb330c6636135b505737da918),
+   [#5522](https://github.com/angular/angular.js/issues/5522))
+- **Scope:** don't let watch deregistration mess up the dirty-checking digest loop
+  ([884ef0db](https://github.com/angular/angular.js/commit/884ef0dbcdfe614cedc824d079361b53e675d033),
+   [#5525](https://github.com/angular/angular.js/issues/5525))
+- **input:**
+  - use apply on the change event only when one isn't already in progress
+  ([a80049fd](https://github.com/angular/angular.js/commit/a80049fd0ac858eeeb645a4209cb2a661d0b4c33),
+   [#5293](https://github.com/angular/angular.js/issues/5293))
+  - prevent double $digest when using jQuery trigger.
+  ([1147f219](https://github.com/angular/angular.js/commit/1147f21999edf9a434cd8d24865a6455e744d858),
+   [#5293](https://github.com/angular/angular.js/issues/5293))
+- **ngRepeat:** allow for more flexible coding style in ngRepeat expression
+  ([c9705b75](https://github.com/angular/angular.js/commit/c9705b755645a4bfe066243f2ba15a733c3787e1),
+   [#5537](https://github.com/angular/angular.js/issues/5537), [#5598](https://github.com/angular/angular.js/issues/5598))
+- **ngRoute:** instantiate controller when template is empty
+  ([498365f2](https://github.com/angular/angular.js/commit/498365f219f65d6c29bdf2f03610a4d3646009bb),
+   [#5550](https://github.com/angular/angular.js/issues/5550))
+- **ngShow/ngHide, ngIf:** functions with zero args should be truthy
+  ([01c5be46](https://github.com/angular/angular.js/commit/01c5be4681e34cdc5f5c461b7a618fefe8038919),
+   [#5414](https://github.com/angular/angular.js/issues/5414))
+
+
+## Performance Improvements
+
+- **Scope:** limit propagation of $broadcast to scopes that have listeners for the event
+  ([80e7a455](https://github.com/angular/angular.js/commit/80e7a4558490f7ffd33d142844b9153a5ed00e86),
+   [#5341](https://github.com/angular/angular.js/issues/5341), [#5371](https://github.com/angular/angular.js/issues/5371))
+
 <a name="1.2.6"></a>
 # 1.2.6 taco-salsafication (2013-12-19)
 
@@ -4384,3 +4520,6 @@ with the `$route` service
 [module]: http://docs-next.angularjs.org/api/angular.mock.module
 [guide2.di]: http://docs-next.angularjs.org/guide/dev_guide.di
 [jqLite2]: http://docs.angularjs.org/#!/api/angular.element
+
+
+[![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CHANGELOG.md?pixel)](https://github.com/igrigorik/ga-beacon)
