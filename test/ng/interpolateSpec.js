@@ -276,80 +276,76 @@ describe('$interpolate', function() {
   describe('custom $$beWatched', function () {
     it('should call the listener correctly when values change during digest',
         inject(function ($rootScope, $interpolate) {
-      var nbCalls = 0, value;
+      var count = 0, value;
       $rootScope.$watch($interpolate('{{a}}-{{b}}'), function (_value) {
-        value = _value;
-        switch(++nbCalls) {
+        switch(++count) {
           case 1:
           case 2:
-            $rootScope.b++;
+            $rootScope.a++;
             break;
           case 3:
           case 4:
-            $rootScope.a++;
+            $rootScope.b++;
+            break;
+          case 5:
+            value = _value;
             break;
         }
       });
-      $rootScope.$apply(function () {
-        $rootScope.a = $rootScope.b = 0;
-      });
+      $rootScope.$apply("a=0;b=0");
       expect(value).toBe("2-2");
-      expect(nbCalls).toBe(5);
+      expect(count).toBe(5);
     }));
 
     it('should call the listener correctly when the interpolation is watched multiple times',
         inject(function ($rootScope, $interpolate) {
-      var interpolateFn = $interpolate('{{a}}-{{b}}'), nbCalls = 0;
+      var interpolateFn = $interpolate('{{a}}-{{b}}'), count = 0;
       $rootScope.$watch(interpolateFn, function(){
-        nbCalls++;
+        count++;
       });
       $rootScope.$watch(interpolateFn, function(){
-        nbCalls++;
+        count++;
       });
 
-      $rootScope.$apply(function () {
-        $rootScope.a = $rootScope.b = 0;
-      });
-      expect(nbCalls).toBe(2);
+      $rootScope.$apply("a=0;b=0");
+      expect(count).toBe(2);
 
-      $rootScope.$apply(function () {
-        $rootScope.a = $rootScope.b = 1;
-      });
-      expect(nbCalls).toBe(4);
+      $rootScope.$apply("a=1;b=1");
+      expect(count).toBe(4);
     }));
 
     it('should call the listener only once per whole text change', inject(function ($rootScope, $interpolate) {
-      var nbCalls = 0, value;
+      var count = 0, value;
       $rootScope.$watch($interpolate("{{a}}-{{b}}"), function (_value){
-        nbCalls++;
+        count++;
         value = _value;
       });
 
       $rootScope.$apply();
-      expect(nbCalls).toBe(1);
+      expect(count).toBe(1);
       expect(value).toBe('-');
 
       $rootScope.$apply('a=1;b=1');
-      expect(nbCalls).toBe(2);
+      expect(count).toBe(2);
       expect(value).toBe('1-1');
 
       // one changes
       $rootScope.$apply('a=2');
-      expect(nbCalls).toBe(3);
+      expect(count).toBe(3);
       expect(value).toBe('2-1');
 
       $rootScope.$apply('b=2');
-      expect(nbCalls).toBe(4);
+      expect(count).toBe(4);
       expect(value).toBe('2-2');
 
       // both change
       $rootScope.$apply('a=3;b=3');
-      expect(nbCalls).toBe(5);
+      expect(count).toBe(5);
       expect(value).toBe('3-3');
 
       // nothing changes
       $rootScope.$apply();
-      expect(nbCalls).toBe(5);
+      expect(count).toBe(5);
       expect(value).toBe('3-3');
     }));
   });
