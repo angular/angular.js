@@ -379,7 +379,7 @@ angular.mock.$LogProvider = function() {
        *
        * @example
        * <pre>
-       * $log.log('Some Error');
+       * $log.error('Some Error');
        * var first = $log.error.logs.unshift();
        * </pre>
        */
