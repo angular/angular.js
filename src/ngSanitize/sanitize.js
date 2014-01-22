@@ -395,14 +395,16 @@ function decodeEntities(value) {
  * @param value
  * @returns escaped text
  */
-function encodeEntities(value) {
-  return value.
-    replace(/&/g, '&amp;').
-    replace(NON_ALPHANUMERIC_REGEXP, function(value){
+function encodeEntities(value, replace_non_alphanumeric) {
+  value = value.replace(/&/g, '&amp;');
+
+  if(replace_non_alphanumeric) {
+    value = value.replace(NON_ALPHANUMERIC_REGEXP, function(value){
       return '&#' + value.charCodeAt(0) + ';';
-    }).
-    replace(/</g, '&lt;').
-    replace(/>/g, '&gt;');
+    });
+  }
+
+  return value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 /**
@@ -435,7 +437,7 @@ function htmlSanitizeWriter(buf, uriValidator){
             out(' ');
             out(key);
             out('="');
-            out(encodeEntities(value));
+            out(encodeEntities(value, true));
             out('"');
           }
         });
@@ -455,7 +457,7 @@ function htmlSanitizeWriter(buf, uriValidator){
       },
     chars: function(chars){
         if (!ignore) {
-          out(encodeEntities(chars));
+          out(encodeEntities(chars, false));
         }
       }
   };

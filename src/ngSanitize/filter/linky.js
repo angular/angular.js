@@ -70,10 +70,10 @@
      <doc:scenario>
        it('should linkify the snippet with urls', function() {
          expect(using('#linky-filter').binding('snippet | linky')).
-           toBe('Pretty text with some links:&#10;' +
-                '<a href="http://angularjs.org/">http://angularjs.org/</a>,&#10;' +
-                '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,&#10;' +
-                '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,&#10;' +
+           toBe('Pretty text with some links:\n' +
+                '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
+                '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,\n' +
+                '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,\n' +
                 'and one more: <a href="ftp://127.0.0.1/">ftp://127.0.0.1/</a>.');
        });
 
