@@ -820,7 +820,7 @@ function equals(o1, o2) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
           for(key=0; key<length; key++) {
-            if (!equals(o1[key], o2[key])) return false;
+            if (!angular.equals(o1[key], o2[key])) return false;
           }
           return true;
         }
@@ -833,7 +833,7 @@ function equals(o1, o2) {
         keySet = {};
         for(key in o1) {
           if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-          if (!equals(o1[key], o2[key])) return false;
+          if (!angular.equals(o1[key], o2[key])) return false;
           keySet[key] = true;
         }
         for(key in o2) {
