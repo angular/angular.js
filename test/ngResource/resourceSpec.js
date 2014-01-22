@@ -1,9 +1,14 @@
 'use strict';
 
 describe("resource", function() {
-  var $resource, CreditCard, callback, $httpBackend;
+  var $resource, CreditCard, callback, $httpBackend, resourceProvider;
 
   beforeEach(module('ngResource'));
+
+  beforeEach(module(function ($resourceProvider) {
+    resourceProvider = $resourceProvider;
+  }));
+
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
     $resource = $injector.get('$resource');
@@ -183,7 +188,6 @@ describe("resource", function() {
     R.get({a: 'doh!@foo', bar: 'baz#1'});
   });
 
-
   it('should not encode @ in url params', function() {
    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
    //with regards to the character set (pchar) allowed in path segments
@@ -194,7 +198,6 @@ describe("resource", function() {
    $httpBackend.expect('GET', '/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1').respond('{}');
    R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
   });
-
 
   it('should encode array params', function() {
     var R = $resource('/Path/:a');
@@ -207,6 +210,52 @@ describe("resource", function() {
    $httpBackend.expect('GET', '/Path/null').respond('{}');
    R.get({a: 'null'});
   });
+
+
+  it('should implicitly strip trailing slashes from URLs by default', function() {
+    var R = $resource('http://localhost:8080/Path/:a/');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support explicitly stripping trailing slashes from URLs', function() {
+    var R = $resource('http://localhost:8080/Path/:a/', {}, {}, {stripTrailingSlashes: true});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support explicitly keeping trailing slashes in URLs', function() {
+    var R = $resource('http://localhost:8080/Path/:a/', {}, {}, {stripTrailingSlashes: false});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo/').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support provider-level configuration to strip trailing slashes in URLs', function() {
+    // Set the new behavior for all new resources created by overriding the
+    // provider configuration
+    resourceProvider.defaults.stripTrailingSlashes = false;
+
+    var R = $resource('http://localhost:8080/Path/:a/');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo/').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support overriding provider default trailing-slash stripping configuration', function() {
+    // Set the new behavior for all new resources created by overriding the
+    // provider configuration
+    resourceProvider.defaults.stripTrailingSlashes = false;
+
+    // Specific instances of $resource can still override the provider's default
+    var R = $resource('http://localhost:8080/Path/:a/', {}, {}, {stripTrailingSlashes: true});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
 
   it('should allow relative paths in resource url', function () {
     var R = $resource(':relativePath');
