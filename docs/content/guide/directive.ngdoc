@@ -527,7 +527,8 @@ where:
 
 * `scope` is an Angular scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
-* `attrs` is an object with the normalized attribute names and their corresponding values.
+* `attrs` is a hash object with key-value pairs of normalized attribute names and their
+  corresponding attribute values.
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
