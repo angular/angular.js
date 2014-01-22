@@ -340,45 +340,58 @@ Although we could do that, let's take the opportunity to learn how to create Jav
 
 __`app/js/animations.js`.__
 <pre>
-angular.module('phonecatAnimations', ['ngAnimate'])
+var phonecatAnimations = angular.module('phonecatAnimations', ['ngAnimate']);
 
-  .animation('.phone', function() {
-    return {
-      addClass : function(element, className, done) {
-        if(className != 'active') {
-          return;
-        }
-        element.css({
-          position: 'absolute',
-          top: 500,
-          left: 0,
-          display: 'block'
-        });
-        jQuery(element).animate({
-          top: 0
-        }, done);
+phonecatAnimations.animation('.phone', function() {
 
-        return function(cancel) {
-          if(cancel) element.stop();
-        };
-      },
-      removeClass : function(element, className, done) {
-        if(className != 'active') return;
-        element.css({
-          position: 'absolute',
-          left: 0,
-          top: 0
-        });
-        jQuery(element).animate({
-          top: -500
-        }, done);
+  var animateUp = function(element, className, done) {
+    if(className != 'active') {
+      return;
+    }
+    element.css({
+      position: 'absolute',
+      top: 500,
+      left: 0,
+      display: 'block'
+    });
 
-        return function(cancel) {
-          if(cancel) element.stop();
-        };
+    jQuery(element).animate({
+      top: 0
+    }, done);
+
+    return function(cancel) {
+      if(cancel) {
+        element.stop();
       }
     };
-  });
+  }
+
+  var animateDown = function(element, className, done) {
+    if(className != 'active') {
+      return;
+    }
+    element.css({
+      position: 'absolute',
+      left: 0,
+      top: 0
+    });
+
+    jQuery(element).animate({
+      top: -500
+    }, done);
+
+    return function(cancel) {
+      if(cancel) {
+        element.stop();
+      }
+    };
+  }
+
+  return {
+    addClass: animateUp,
+    removeClass: animateDown
+  };
+});
 </pre>
 
 Note that we're using {@link http://jquery.com/ jQuery} to implement the animation. jQuery
