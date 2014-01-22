@@ -345,7 +345,7 @@ var formDirectiveFactory = function(isNgForm) {
 
               // unregister the preventDefault listener so that we don't not leak memory but in a
               // way that will achieve the prevention of the default action.
-              formElement.on('$destroy', function() {
+              scope.$on('$destroy', function() {
                 $timeout(function() {
                   removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
                 }, 0, false);
@@ -359,7 +359,7 @@ var formDirectiveFactory = function(isNgForm) {
               setter(scope, alias, controller, alias);
             }
             if (parentFormCtrl) {
-              formElement.on('$destroy', function() {
+              scope.$on('$destroy', function() {
                 parentFormCtrl.$removeControl(controller);
                 if (alias) {
                   setter(scope, alias, undefined, alias);
