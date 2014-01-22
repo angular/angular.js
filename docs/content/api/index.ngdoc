@@ -5,8 +5,8 @@
 # AngularJS API Docs
 Welcome to the AngularJS API docs page. These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
 
-The documentation is organized into **modules** which contain various components of an AngularJS application.
-These components are directives, services, filters, providers, types, global APIs and testing mocks.
+The documentation is organized into **{@link guide/module modules}** which contain various components of an AngularJS application.
+These components are {@link guide/directive directives}, {@link guide/dev_guide.services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates types}, global APIs and testing mocks.
 
 <div class="alert alert-info">
 **Angular Namespaces `$` and `$$`**
@@ -63,7 +63,7 @@ This module is provided by default and contains the core components of AngularJS
     </td>
     <td>
       <p>
-        The core filters available in the ng module are used to transform template data before it is renders within directives and expressions.
+        The core filters available in the ng module are used to transform template data before it is rendered within directives and expressions.
       </p>
       <p>
         Some examples include:

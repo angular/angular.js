@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.8-snapshot",
-  "cdnVersion": "1.2.7",
-  "codename": "interdimensional-cartography",
+  "version": "1.2.10-snapshot",
+  "cdnVersion": "1.2.9",
+  "codename": "augmented-serendipity",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
@@ -29,6 +29,7 @@
     "karma-sauce-launcher": "0.2.0",
     "karma-script-launcher": "0.1.0",
     "karma-browserstack-launcher": "0.0.7",
+    "protractor": "~0.16.1",
     "yaml-js": "~0.0.8",
     "marked": "0.2.9",
     "rewire": "1.1.3",

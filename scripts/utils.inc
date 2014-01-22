@@ -51,6 +51,8 @@
 # - serVar
 # - isFunction
 
+# always stop on errors
+set -e
 
 function usage {
   echo "Usage: ${0} ${ARG_DEFS[@]}"
@@ -202,7 +204,12 @@ function readJsonProp {
 # - note: propertyRegex will be automatically placed into a
 #   capturing group! -> all other groups start at index 2!
 function replaceJsonProp {
-  sed -i .tmp -E 's/"('$2')"[ ]*:[ ]*"'$3'"/"\1": "'$4'"/' $1
+  replaceInFile $1 '"('$2')"[ ]*:[ ]*"'$3'"' '"\1": "'$4'"'
+}
+
+# replaceInFile(file, findPattern, replacePattern)
+function replaceInFile {
+  sed -i .tmp -E "s/$2/$3/" $1
   rm $1.tmp
 }
 
@@ -249,9 +256,6 @@ function main {
   if [[ $GIT_PUSH_DRYRUN == "true" ]]; then
     git_push_dryrun_proxy
   fi
-
-  # stop on errors
-  set -e
 
   # --verbose argument
   if [[ $VERBOSE == "true" ]]; then

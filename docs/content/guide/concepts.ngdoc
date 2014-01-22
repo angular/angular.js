@@ -184,7 +184,7 @@ The following graphic shows how everything works together after we introduced th
 # View independent business logic: Services
 
 Right now, the `InvoiceController` contains all logic of our example. When the application grows it
-is a good practise to move view independent logic from the controller into a so called
+is a good practice to move view independent logic from the controller into a so called
 <a name="service">"{@link dev_guide.services service}"</a>, so it can be reused by other parts
 of the application as well. Later on, we could also change that service to load the exchange rates
 from the web, e.g. by calling the Yahoo Finance API, without changing the controller.
@@ -272,8 +272,8 @@ including the configuration of all modules that this module depends on.
 In the example above:
 The template contains the directive `ng-app="invoice2"`. This tells Angular
 to use the `invoice` module as the main module for the application.
-The code snippet `angular.module('invoice', ['finance'])`  specifies that the `invoice` module depends on the
-`finance` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
+The code snippet `angular.module('invoice2', ['finance2'])`  specifies that the `invoice2` module depends on the
+`finance2` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
 
 Now that Angular knows of all the parts of the application, it needs to create them.
 In the previous section we saw that controllers are created using a factory function.

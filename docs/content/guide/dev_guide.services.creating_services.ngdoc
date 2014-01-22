@@ -19,7 +19,7 @@ testable.
 To register a service, you must have a module that this service will be part of. Afterwards, you
 can register the service with the module either via the {@link api/angular.Module Module api} or
 by using the {@link api/AUTO.$provide $provide} service in the module configuration
-function.The following pseudo-code shows both approaches:
+function. The following pseudo-code shows both approaches:
 
 Using the angular.Module api:
 <pre>

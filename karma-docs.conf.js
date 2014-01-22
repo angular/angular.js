@@ -10,12 +10,12 @@ module.exports = function(config) {
 
       'build/angular.js',
       'build/angular-cookies.js',
-      'build/angular-mocks.js',
       'build/angular-resource.js',
       'build/angular-touch.js',
       'build/angular-sanitize.js',
       'build/angular-route.js',
       'build/angular-animate.js',
+      'build/angular-mocks.js',
 
       'build/docs/components/lunr.js',
       'build/docs/components/google-code-prettify.js',

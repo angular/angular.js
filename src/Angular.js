@@ -192,7 +192,8 @@ function isArrayLike(obj) {
  * is the value of an object property or an array element and `key` is the object property key or
  * array element index. Specifying a `context` for the function is optional.
  *
- * Note: this function was previously known as `angular.foreach`.
+ * It is worth nothing that `.forEach` does not iterate over inherited properties because it filters
+ * using the `hasOwnProperty` method.
  *
    <pre>
      var values = {name: 'misko', gender: 'male'};

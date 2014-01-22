@@ -1,5 +1,7 @@
 var ngdoc = require('../src/ngdoc.js');
 var DOM = require('../src/dom.js').DOM;
+var gruntUtil = require('../../lib/grunt/utils.js');
+
 
 describe('ngdoc', function() {
   var Doc = ngdoc.Doc;
@@ -286,6 +288,33 @@ describe('ngdoc', function() {
       expect(warningMsg).toContain('api/with-broken.link');
     });
   });
+
+
+  describe('api section', function() {
+
+    it('should render a "view source" button with link to the source in master', function() {
+      var doc = new Doc({
+        id: 'ng.abc',
+        name: 'ng.abc',
+        section: 'api',
+        ngdoc: 'service',
+        file: 'fooService.js',
+        line: '333'
+      });
+
+      if (gruntUtil.getVersion().full.indexOf('-') === -1) {
+        expect(doc.html().match(/^(<a .*?<\/a>)/)[1]).toMatch(
+          /<a href="http:\/\/github\.com\/angular\/angular\.js\/tree\/v\d+\.\d+\.\d+\/fooService\.js#L333" class="view-source/
+        );
+      } else {
+        expect(doc.html().match(/^(<a .*?<\/a>)/)[1]).toMatch(
+          /<a href="http:\/\/github\.com\/angular\/angular\.js\/tree\/[a-z0-9]{7}\/fooService\.js#L333" class="view-source/
+        );
+      }
+    });
+  });
+
+
 
   ////////////////////////////////////////
 

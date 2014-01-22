@@ -264,21 +264,45 @@ describe('$httpBackend', function() {
   });
 
 
-  it('should set responseType and return xhr.response', function() {
-    $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
+  describe('responseType', function() {
 
-    var xhrInstance = MockXhr.$$lastInstance;
-    expect(xhrInstance.responseType).toBe('blob');
+    it('should set responseType and return xhr.response', function() {
+      $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
 
-    callback.andCallFake(function(status, response) {
-      expect(response).toBe(xhrInstance.response);
+      var xhrInstance = MockXhr.$$lastInstance;
+      expect(xhrInstance.responseType).toBe('blob');
+
+      callback.andCallFake(function(status, response) {
+        expect(response).toBe(xhrInstance.response);
+      });
+
+      xhrInstance.response = {some: 'object'};
+      xhrInstance.readyState = 4;
+      xhrInstance.onreadystatechange();
+
+      expect(callback).toHaveBeenCalledOnce();
     });
 
-    xhrInstance.response = {some: 'object'};
-    xhrInstance.readyState = 4;
-    xhrInstance.onreadystatechange();
 
-    expect(callback).toHaveBeenCalledOnce();
+    it('should read responseText if response was not defined', function() {
+      //  old browsers like IE8, don't support responseType, so they always respond with responseText
+
+      $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
+
+      var xhrInstance = MockXhr.$$lastInstance;
+      var responseText = '{"some": "object"}';
+      expect(xhrInstance.responseType).toBe('blob');
+
+      callback.andCallFake(function(status, response) {
+        expect(response).toBe(responseText);
+      });
+
+      xhrInstance.responseText = responseText;
+      xhrInstance.readyState = 4;
+      xhrInstance.onreadystatechange();
+
+      expect(callback).toHaveBeenCalledOnce();
+    });
   });
 
 
@@ -421,7 +445,7 @@ describe('$httpBackend', function() {
     // TODO(vojta): test whether it fires "async-end" on both success and error
   });
 
-  describe('file protocol', function() {
+  describe('protocols that return 0 status code', function() {
 
     function respond(status, content) {
       xhr = MockXhr.$$lastInstance;
@@ -435,7 +459,7 @@ describe('$httpBackend', function() {
     it('should convert 0 to 200 if content', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
-      $backend('GET', 'file:///whatever/index.html', null, callback);
+      $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
 
       expect(callback).toHaveBeenCalled();
@@ -446,7 +470,7 @@ describe('$httpBackend', function() {
     it('should convert 0 to 404 if no content', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
-      $backend('GET', 'file:///whatever/index.html', null, callback);
+      $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
       respond(0, '');
 
       expect(callback).toHaveBeenCalled();
@@ -462,10 +486,10 @@ describe('$httpBackend', function() {
         hash : "#/C:/",
         host : "",
         hostname : "",
-        href : "file:///C:/base#!/C:/foo",
+        href : "someProtocol:///C:/base#!/C:/foo",
         pathname : "/C:/foo",
         port : "",
-        protocol : "file:",
+        protocol : "someProtocol:",
         search : "",
         setAttribute: angular.noop
       };
