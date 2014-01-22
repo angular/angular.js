@@ -1077,5 +1077,46 @@ describe('$route', function() {
         });
       });
     });
+    describe('regularExpressionRoute', function() {
+
+      it('should load regular expression route', function() {
+        var routeChangeSpy = jasmine.createSpy('route change');
+
+        module(function($routeProvider) {
+          $routeProvider.when('/route', {controller: angular.noop, reloadOnSearch: false});
+          $routeProvider.when(/^\/home$/, {controller: angular.noop, reloadOnSearch: false});
+          $routeProvider.when(/^\/home\/([0-9]+)$/, {controller: angular.noop, reloadOnSearch: false});
+          $routeProvider.when('/route/:abc', {controller: angular.noop, reloadOnSearch: false});
+        });
+
+        inject(function($route, $location, $rootScope, $routeParams) {
+          $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+          $location.path('/home');
+          $rootScope.$digest();
+          expect($routeParams).toEqual({});
+          expect(routeChangeSpy).toHaveBeenCalledOnce();
+          routeChangeSpy.reset();
+
+          $location.path('/home/123');
+          $rootScope.$digest();
+          expect($routeParams).toEqual({regexp_param1:'123'});
+          expect(routeChangeSpy).toHaveBeenCalledOnce();
+          routeChangeSpy.reset();
+
+          $location.path('/route');
+          $rootScope.$digest();
+          expect($routeParams).toEqual({});
+          expect(routeChangeSpy).toHaveBeenCalledOnce();
+          routeChangeSpy.reset();
+
+          $location.path('/route/1234');
+          $rootScope.$digest();
+          expect($routeParams).toEqual({abc: '1234'});
+          expect(routeChangeSpy).toHaveBeenCalledOnce();
+          routeChangeSpy.reset();
+        });
+      });
+    });
   });
 });
