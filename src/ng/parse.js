@@ -707,7 +707,7 @@ Parser.prototype = {
     var getter = getterFn(field, this.options, this.text);
 
     return extend(function(scope, locals, self) {
-      return getter(self || object(scope, locals), locals);
+      return getter(self || object(scope, locals));
     }, {
       assign: function(scope, value, locals) {
         return setter(object(scope, locals), field, value, parser.text, parser.options);
