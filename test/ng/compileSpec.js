@@ -4490,7 +4490,7 @@ describe('$compile', function() {
 
   describe('$animate animation hooks', function() {
 
-    beforeEach(module('mock.animate'));
+    beforeEach(module('ngAnimateMock'));
 
     it('should automatically fire the addClass and removeClass animation hooks',
       inject(function($compile, $animate, $rootScope) {

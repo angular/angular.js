@@ -3,6 +3,7 @@
 describe("ngAnimate", function() {
 
   beforeEach(module('ngAnimate'));
+  beforeEach(module('ngAnimateMock'));
 
 
   it("should disable animations on bootstrap for structural animations even after the first digest has passed", function() {
