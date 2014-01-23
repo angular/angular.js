@@ -5,7 +5,7 @@
 <ul doc-tutorial-nav="2"></ul>
 
 
-Now it's time to make the web page dynamic — with AngularJS. We'll also add a test that verifies the
+Now it's time to make the web page dynamic with AngularJS. We'll also add a test that verifies the
 code for the controller we are going to add.
 
 There are many ways to structure the code for an application. For Angular apps, we encourage the
