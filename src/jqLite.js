@@ -141,7 +141,7 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
   removePatch.$original = originalJqFn;
   jQuery.fn[name] = removePatch;
 
-  function removePatch(param) {
+  function removePatch(param, detachOnly) {
     // jshint -W040
     var list = filterElems && param ? [this.filter(param)] : [this],
         fireEvent = dispatchThis,
@@ -154,7 +154,11 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
         for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
           element = jqLite(set[setIndex]);
           if (fireEvent) {
-            element.triggerHandler('$destroy');
+            // If the DOM element is being detached only, the $destroy event would not be fired.
+            // jQuery.detach() calls jQuery.remove([selector], true) underneath
+            if (!(detachOnly && name === 'remove')){
+              element.triggerHandler('$destroy');
+            }
           } else {
             fireEvent = !fireEvent;
           }
