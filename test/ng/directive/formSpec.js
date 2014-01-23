@@ -319,7 +319,7 @@ describe('form', function() {
     });
 
 
-    it('should deregister a child form when its DOM is removed', function() {
+    it('should deregister a child form when its scope is destroyed', function() {
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
@@ -335,7 +335,7 @@ describe('form', function() {
       expect(parent).toBeDefined();
       expect(child).toBeDefined();
       expect(parent.$error.required).toEqual([child]);
-      doc.children().remove(); //remove child
+      scope.$destroy(); // destroy scope
 
       expect(parent.child).toBeUndefined();
       expect(scope.child).toBeUndefined();
@@ -343,7 +343,7 @@ describe('form', function() {
     });
 
 
-    it('should deregister a child form whose name is an expression when its DOM is removed', function() {
+    it('should deregister a child form whose name is an expression when its scope is destroyed', function() {
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child.form">' +
@@ -359,7 +359,7 @@ describe('form', function() {
       expect(parent).toBeDefined();
       expect(child).toBeDefined();
       expect(parent.$error.required).toEqual([child]);
-      doc.children().remove(); //remove child
+      scope.$destroy(); // destroy scope
 
       expect(parent.child).toBeUndefined();
       expect(scope.child.form).toBeUndefined();
