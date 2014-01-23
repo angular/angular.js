@@ -245,8 +245,9 @@ describe('ngIf animations', function () {
       $rootScope.$digest();
       $scope.$apply('value = true');
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('Hi');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('Hi');
 
       expect(element.children().length).toBe(1);
   }));
@@ -262,14 +263,16 @@ describe('ngIf animations', function () {
       ))($scope);
       $scope.$apply('value = true');
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('Hi');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('Hi');
 
-      $scope.$apply('value = false');
       expect(element.children().length).toBe(1);
+      $scope.$apply('value = false');
 
-      item = $animate.flushNext('leave').element;
-      expect(item.text()).toBe('Hi');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('leave');
+      expect(item.element.text()).toBe('Hi');
 
       expect(element.children().length).toBe(0);
   }));
