@@ -1,13 +1,19 @@
 'use strict';
 
 function createXhr(method) {
-  // IE8 doesn't support PATCH method, but the ActiveX object does
-  /* global ActiveXObject */
-  return ((msie <= 8 && lowercase(method) === 'patch') || isUndefined(window.XMLHttpRequest))
-      ? new ActiveXObject('Microsoft.XMLHTTP')
-      : new window.XMLHttpRequest();
-}
+    //if IE and the method is not RFC2616 compliant, or if XMLHttpRequest
+    //is not available, try getting an ActiveXObject. Otherwise, use XMLHttpRequest
+    //if it is available
+    if ((window.ActiveXObject && !method.match(/^(get|post|head|put|delete|options)$/i)) 
+        || !window.XMLHttpRequest) {
 
+        return new ActiveXObject("Microsoft.XMLHTTP");
+    } else if (window.XMLHttpRequest) {
+        return new window.XMLHttpRequest();
+    }
+
+    throw $httpMinErr('noxhr', 'This browser does not support XMLHttpRequest.');
+}
 
 /**
  * @ngdoc object
