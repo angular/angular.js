@@ -377,8 +377,7 @@ angular.scenario.dsl('element', function() {
         var href = elements.attr('href');
         var eventProcessDefault = elements.trigger('click')[0];
 
-        if (href && (elements[0].nodeName.toUpperCase() === 'A'
-            || elements[0].nodeName.toUpperCase() === 'AREA') && eventProcessDefault) {
+        if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
           this.application.navigateTo(href, function() {
             done();
           }, done);
@@ -395,8 +394,7 @@ angular.scenario.dsl('element', function() {
         var href = elements.attr('href');
         var eventProcessDefault = elements.trigger('dblclick')[0];
 
-        if (href && (elements[0].nodeName.toUpperCase() === 'A'
-            || elements[0].nodeName.toUpperCase() === 'AREA') && eventProcessDefault) {
+        if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
           this.application.navigateTo(href, function() {
             done();
           }, done);
