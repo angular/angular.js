@@ -309,7 +309,7 @@ describe('ngClass animations', function() {
   var body, element, $rootElement;
 
   it("should avoid calling addClass accidentally when removeClass is going on", function() {
-    module('mock.animate');
+    module('ngAnimateMock');
     inject(function($compile, $rootScope, $animate, $timeout) {
       var element = angular.element('<div ng-class="val"></div>');
       var body = jqLite(document.body);
@@ -416,7 +416,7 @@ describe('ngClass animations', function() {
   });
 
   it("should not remove classes if they're going to be added back right after", function() {
-    module('mock.animate');
+    module('ngAnimateMock');
 
     inject(function($rootScope, $compile, $animate) {
       var className;

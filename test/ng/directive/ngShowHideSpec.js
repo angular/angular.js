@@ -73,7 +73,7 @@ describe('ngShow / ngHide animations', function() {
     body.removeAttr('ng-animation-running');
   });
 
-  beforeEach(module('mock.animate'));
+  beforeEach(module('ngAnimateMock'));
 
   beforeEach(module(function($animateProvider, $provide) {
     return function(_$rootElement_) {

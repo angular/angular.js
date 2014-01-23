@@ -684,7 +684,7 @@ describe('ngView animations', function() {
 
   describe('hooks', function() {
     beforeEach(module('ngAnimate'));
-    beforeEach(module('mock.animate'));
+    beforeEach(module('ngAnimateMock'));
 
     it('should fire off the enter animation',
         inject(function($compile, $rootScope, $location, $timeout, $animate) {
@@ -702,7 +702,7 @@ describe('ngView animations', function() {
 
       var item;
       $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-      element = $compile(html('<ng-view></div>'))($rootScope);
+      element = $compile(html('<div ng-view></div>'))($rootScope);
 
       $location.path('/foo');
       $rootScope.$digest();
@@ -863,7 +863,7 @@ describe('ngView animations', function() {
       };
     }
 
-    beforeEach(module(spyOnAnchorScroll(), 'mock.animate'));
+    beforeEach(module(spyOnAnchorScroll(), 'ngAnimateMock'));
     beforeEach(inject(spyOnAnimateEnter()));
 
     it('should call $anchorScroll if autoscroll attribute is present', inject(
