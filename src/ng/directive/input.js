@@ -455,6 +455,8 @@ function addNativeHtml5Validators(ctrl, validatorName, element) {
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop('validity');
+  var placeholder = element[0].placeholder, noevent = {};
+
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
@@ -474,6 +476,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var listener = function() {
     if (composing) return;
     var value = element.val();
+
+    // IE (11 and under) seem to emit an 'input' event if the placeholder value changes. 
+    // We don't want to dirty the value when this happens, so we abort here. Unfortunately,
+    // IE also sends input events for other non-input-related things, (such as focusing on a
+    // form control), so this change is not entirely enough to solve this.
+    if (msie && (ev || noevent).type === 'input' && element[0].placeholder !== placeholder) {
+      placeholder = element[0].placeholder;
+      return;
+    }
 
     // By default we will trim the value
     // If the attribute ng-trim exists we will avoid trimming
