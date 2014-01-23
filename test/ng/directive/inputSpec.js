@@ -520,6 +520,23 @@ describe('input', function() {
     }
   });
 
+  it('should not dirty the model on an input event in response to a placeholder change', inject(function($sniffer) {
+    if (msie && $sniffer.hasEvent('input')) {
+      compileInput('<input type="text" ng-model="name" name="name" />');
+      inputElm.attr('placeholder', 'Test');
+      browserTrigger(inputElm, 'input');
+
+      expect(inputElm.attr('placeholder')).toBe('Test');
+      expect(inputElm).toBePristine();
+
+      inputElm.attr('placeholder', 'Test Again');
+      browserTrigger(inputElm, 'input');
+
+      expect(inputElm.attr('placeholder')).toBe('Test Again');
+      expect(inputElm).toBePristine();
+    }
+  }));
+
   describe('"change" event', function() {
     function assertBrowserSupportsChangeEvent(inputEventSupported) {
       // Force browser to report a lack of an 'input' event
