@@ -353,7 +353,7 @@ describe('ngInclude', function() {
       };
     }
 
-    beforeEach(module(spyOnAnchorScroll(), 'mock.animate'));
+    beforeEach(module(spyOnAnchorScroll(), 'ngAnimateMock'));
     beforeEach(inject(
         putIntoCache('template.html', 'CONTENT'),
         putIntoCache('another.html', 'CONTENT')));
@@ -589,7 +589,7 @@ describe('ngInclude animations', function() {
     dealoc(element);
   });
 
-  beforeEach(module('mock.animate'));
+  beforeEach(module('ngAnimateMock'));
 
   afterEach(function(){
     dealoc(element);
