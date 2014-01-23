@@ -236,7 +236,7 @@ function $InterpolateProvider() {
                   text, err.toString());
                 $exceptionHandler(newErr);
               }
-            }
+            };
           }
 
           function listenerOf(index) {
