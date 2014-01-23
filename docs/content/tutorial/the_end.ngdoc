@@ -8,8 +8,6 @@ previous steps using the `git checkout` command.
 For more details and examples of the Angular concepts we touched on in this tutorial, see the
 {@link guide/ Developer Guide}.
 
-For several more examples of code, see the {@link cookbook/ Cookbook}.
-
 When you are ready to start developing a project using Angular, we recommend that you bootstrap
 your development with the {@link https://github.com/angular/angular-seed angular-seed} project.
 
