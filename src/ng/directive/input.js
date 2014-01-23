@@ -435,7 +435,27 @@ function validate(ctrl, validatorName, validity, value){
   return validity ? value : undefined;
 }
 
+
+function addNativeHtml5Validators(ctrl, validatorName, element) {
+  var validity = element.prop('validity');
+  if (isObject(validity)) {
+    var validator = function(value) {
+      // Don't overwrite previous validation, don't consider valueMissing to apply (ng-required can
+      // perform the required validation)
+      if (!ctrl.$error[validatorName] && (validity.badInput || validity.customError ||
+          validity.typeMismatch) && !validity.valueMissing) {
+        ctrl.$setValidity(validatorName, false);
+        return;
+      }
+      return value;
+    };
+    ctrl.$parsers.push(validator);
+    ctrl.$formatters.push(validator);
+  }
+}
+
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  var validity = element.prop('validity');
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
@@ -463,7 +483,11 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       value = trim(value);
     }
 
-    if (ctrl.$viewValue !== value) {
+    if (ctrl.$viewValue !== value ||
+        // If the value is still empty/falsy, and there is no `required` error, run validators
+        // again. This enables HTML5 constraint validation errors to affect Angular validation
+        // even when the first character entered causes an error.
+        (validity && value === '' && !validity.valueMissing)) {
       if (scope.$$phase) {
         ctrl.$setViewValue(value);
       } else {
@@ -582,6 +606,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       return undefined;
     }
   });
+
+  addNativeHtml5Validators(ctrl, 'number', element);
 
   ctrl.$formatters.push(function(value) {
     return ctrl.$isEmpty(value) ? '' : '' + value;
