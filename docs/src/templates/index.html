@@ -26,7 +26,7 @@
       }
 
       var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', ''])[1],
-          rUrl = /(#!\/|api|guide|misc|tutorial|cookbook|error|index[^\.]*\.html).*$/,
+          rUrl = /(#!\/|api|guide|misc|tutorial|error|index[^\.]*\.html).*$/,
           baseUrl = location.href.replace(rUrl, indexFile),
           jQuery = /index-jq[^\.]*\.html$/.test(baseUrl),
           debug = /index[^\.]*-debug\.html$/.test(baseUrl),
