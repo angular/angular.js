@@ -1182,14 +1182,17 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
 
-    item = $animate.flushNext('enter').element;
-    expect(item.text()).toBe('1');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('enter');
+    expect(item.element.text()).toBe('1');
 
-    item = $animate.flushNext('enter').element;
-    expect(item.text()).toBe('2');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('enter');
+    expect(item.element.text()).toBe('2');
 
-    item = $animate.flushNext('enter').element;
-    expect(item.text()).toBe('3');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('enter');
+    expect(item.element.text()).toBe('3');
   }));
 
   it('should fire off the leave animation',
@@ -1207,20 +1210,24 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
 
-    item = $animate.flushNext('enter').element;
-    expect(item.text()).toBe('1');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('enter');
+    expect(item.element.text()).toBe('1');
 
-    item = $animate.flushNext('enter').element;
-    expect(item.text()).toBe('2');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('enter');
+    expect(item.element.text()).toBe('2');
 
-    item = $animate.flushNext('enter').element;
-    expect(item.text()).toBe('3');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('enter');
+    expect(item.element.text()).toBe('3');
 
     $rootScope.items = ['1','3'];
     $rootScope.$digest();
 
-    item = $animate.flushNext('leave').element;
-    expect(item.text()).toBe('2');
+    item = $animate.queue.shift();
+    expect(item.event).toBe('leave');
+    expect(item.element.text()).toBe('2');
   }));
 
   it('should fire off the move animation',
@@ -1239,23 +1246,28 @@ describe('ngRepeat animations', function() {
       $rootScope.items = ['1','2','3'];
       $rootScope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('1');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('1');
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('2');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('2');
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('3');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('3');
 
       $rootScope.items = ['2','3','1'];
       $rootScope.$digest();
 
-      item = $animate.flushNext('move').element;
-      expect(item.text()).toBe('2');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('move');
+      expect(item.element.text()).toBe('2');
 
-      item = $animate.flushNext('move').element;
-      expect(item.text()).toBe('1');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('move');
+      expect(item.element.text()).toBe('3');
   }));
 
 });

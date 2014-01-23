@@ -683,58 +683,64 @@ describe('ngView animations', function() {
   }));
 
   describe('hooks', function() {
+    beforeEach(module('ngAnimate'));
     beforeEach(module('mock.animate'));
 
     it('should fire off the enter animation',
-        inject(function($compile, $rootScope, $location, $animate) {
+        inject(function($compile, $rootScope, $location, $timeout, $animate) {
           element = $compile(html('<div ng-view></div>'))($rootScope);
 
           $location.path('/foo');
           $rootScope.$digest();
 
-          var item = $animate.flushNext('enter').element;
-          expect(item.text()).toBe('data');
+          var animation = $animate.queue.pop();
+          expect(animation.event).toBe('enter');
         }));
 
     it('should fire off the leave animation',
-        inject(function($compile, $rootScope, $location, $templateCache, $animate) {
+        inject(function($compile, $rootScope, $location, $templateCache, $timeout, $animate) {
 
       var item;
       $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-      element = $compile(html('<div ng-view></div>'))($rootScope);
+      element = $compile(html('<ng-view></div>'))($rootScope);
 
       $location.path('/foo');
       $rootScope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('foo');
+      $timeout.flush();
 
       $location.path('/');
       $rootScope.$digest();
 
-      item = $animate.flushNext('leave').element;
-      expect(item.text()).toBe('foo');
+      var animation = $animate.queue.pop();
+      expect(animation.event).toBe('leave');
     }));
 
     it('should animate two separate ngView elements',
-      inject(function($compile, $rootScope, $templateCache, $animate, $location) {
+      inject(function($compile, $rootScope, $templateCache, $location, $animate) {
         var item;
         $rootScope.tpl = 'one';
-        element = $compile(html('<div><div ng-view></div></div>'))($rootScope);
+        element = $compile(html('<div ng-view></div>'))($rootScope);
         $rootScope.$digest();
 
         $location.path('/foo');
         $rootScope.$digest();
 
-        item = $animate.flushNext('enter').element;
-        expect(item.text()).toBe('data');
+        //we don't care about the enter animation for the first element
+        $animate.queue.pop(); 
 
         $location.path('/bar');
         $rootScope.$digest();
 
-        var itemA = $animate.flushNext('enter').element;
+        var animationB = $animate.queue.pop();
+        expect(animationB.event).toBe('leave');
+        var itemB = animationB.args[0];
+
+        var animationA = $animate.queue.pop();
+        expect(animationA.event).toBe('enter');
+        var itemA = animationA.args[0];
+
         expect(itemA).not.toEqual(itemB);
-        var itemB = $animate.flushNext('leave').element;
     }));
 
     it('should render ngClass on ngView',
@@ -749,17 +755,20 @@ describe('ngView animations', function() {
         $location.path('/foo');
         $rootScope.$digest();
 
-        item = $animate.flushNext('enter').element;
+        //we don't care about the enter animation
+        $animate.queue.shift(); 
 
-        $animate.flushNext('addClass').element;
+        var animation = $animate.queue.shift();
+        expect(animation.event).toBe('addClass');
 
+        var item = animation.element;
         expect(item.hasClass('classy')).toBe(true);
 
         $rootScope.klass = 'boring';
         $rootScope.$digest();
 
-        $animate.flushNext('removeClass').element;
-        $animate.flushNext('addClass').element;
+        expect($animate.queue.shift().event).toBe('removeClass');
+        expect($animate.queue.shift().event).toBe('addClass');
 
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
@@ -767,68 +776,65 @@ describe('ngView animations', function() {
         $location.path('/bar');
         $rootScope.$digest();
 
-        $animate.flushNext('enter').element;
-        item = $animate.flushNext('leave').element;
+        //we don't care about the enter animation
+        $animate.queue.shift(); 
 
-        $animate.flushNext('addClass').element;
+        animation = $animate.queue.shift();
+        item = animation.element;
+        expect(animation.event).toBe('leave');
+
+        expect($animate.queue.shift().event).toBe('addClass');
 
         expect(item.hasClass('boring')).toBe(true);
       }));
-  });
 
-  it('should not double compile when the route changes', function() {
+      it('should not double compile when the route changes', function() {
 
-    module('ngAnimate');
-    module('mock.animate');
+        var window;
+        module(function($routeProvider, $animateProvider, $provide) {
+          $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
+          $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
+          $animateProvider.register('.my-animation', function() {
+            return {
+              leave: function(element, done) {
+                done();
+              }
+            };
+          });
+        });
 
-    var window;
-    module(function($routeProvider, $animateProvider, $provide) {
-      $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
-      $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
-      $animateProvider.register('.my-animation', function() {
-        return {
-          leave: function(element, done) {
-            done();
+        inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate) {
+          element = $compile(html('<div><ng:view onload="load()" class="my-animation"></ng:view></div>'))($rootScope);
+          $animate.enabled(true);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($animate.queue.shift().event).toBe('enter'); //ngView
+          expect($animate.queue.shift().event).toBe('enter'); //repeat 1
+          expect($animate.queue.shift().event).toBe('enter'); //repeat 2
+
+          expect(element.text()).toEqual('12');
+
+          $location.path('/bar');
+          $rootScope.$digest();
+
+          expect($animate.queue.shift().event).toBe('enter'); //ngView new
+          expect($animate.queue.shift().event).toBe('leave'); //ngView old
+
+          $rootScope.$digest();
+
+          expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 3
+          expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 4
+
+          expect(element.text()).toEqual('34');
+
+          function n(text) {
+            return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
           }
-        };
+        });
       });
     });
-
-    inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate) {
-      element = $compile(html('<div><ng:view onload="load()" class="my-animation"></ng:view></div>'))($rootScope);
-      $animate.enabled(true);
-
-      $location.path('/foo');
-      $rootScope.$digest();
-
-      $animate.flushNext('enter'); //ngView
-      $animate.flushNext('enter'); //repeat 1
-      $animate.flushNext('enter'); //repeat 2
-
-      expect(element.text()).toEqual('12');
-
-      $location.path('/bar');
-      $rootScope.$digest();
-
-      $animate.flushNext('enter'); //ngView new
-      $animate.flushNext('leave'); //ngView old
-
-      $rootScope.$digest();
-
-      expect(n(element.text())).toEqual(''); //this is midway during the animation
-
-      $animate.flushNext('enter'); //ngRepeat 3
-      $animate.flushNext('enter'); //ngRepeat 4
-
-      $rootScope.$digest();
-
-      expect(element.text()).toEqual('34');
-
-      function n(text) {
-        return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
-      }
-    });
-  });
 
 
   describe('autoscroll', function () {
@@ -866,7 +872,7 @@ describe('ngView animations', function() {
 
       $location.path('/foo');
       $rootScope.$digest();
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
@@ -880,7 +886,7 @@ describe('ngView animations', function() {
       $rootScope.value = true;
       $location.path('/foo');
       $rootScope.$digest();
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
@@ -893,7 +899,7 @@ describe('ngView animations', function() {
 
       $location.path('/foo');
       $rootScope.$digest();
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
@@ -907,7 +913,7 @@ describe('ngView animations', function() {
       $rootScope.value = false;
       $location.path('/foo');
       $rootScope.$digest();
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
@@ -924,7 +930,7 @@ describe('ngView animations', function() {
 
           expect(autoScrollSpy).not.toHaveBeenCalled();
 
-          $animate.flushNext('enter');
+          expect($animate.queue.shift().event).toBe('enter');
           $timeout.flush();
 
           expect($animate.enter).toHaveBeenCalledOnce();

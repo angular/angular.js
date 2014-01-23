@@ -4506,8 +4506,9 @@ describe('$compile', function() {
         $rootScope.val2 = 'rice';
         $rootScope.$digest();
 
-        data = $animate.flushNext('addClass');
-        expect(data.params[1]).toBe('ice rice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('addClass');
+        expect(data.args[1]).toBe('ice rice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('rice')).toBe(true);
@@ -4516,10 +4517,12 @@ describe('$compile', function() {
         $rootScope.val2 = 'dice';
         $rootScope.$digest();
 
-        data = $animate.flushNext('removeClass');
-        expect(data.params[1]).toBe('rice');
-        data = $animate.flushNext('addClass');
-        expect(data.params[1]).toBe('dice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('removeClass');
+        expect(data.args[1]).toBe('rice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('addClass');
+        expect(data.args[1]).toBe('dice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('dice')).toBe(true);
@@ -4529,8 +4532,9 @@ describe('$compile', function() {
         $rootScope.val2 = '';
         $rootScope.$digest();
 
-        data = $animate.flushNext('removeClass');
-        expect(data.params[1]).toBe('ice dice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('removeClass');
+        expect(data.args[1]).toBe('ice dice');
 
         expect(element.hasClass('ice')).toBe(false);
         expect(element.hasClass('dice')).toBe(false);
