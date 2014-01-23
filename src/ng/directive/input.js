@@ -435,6 +435,7 @@ function validate(ctrl, validatorName, validity, value){
 }
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  var placeholder = element[0].placeholder, noevent = {};
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
@@ -451,9 +452,17 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
   }
 
-  var listener = function() {
+  var listener = function(event) {
     if (composing) return;
     var value = element.val();
+
+    // Some versions of MSIE emit an 'input' event when the placeholder attribute/property
+    // change. This hack prevents an otherwise pristine field from being dirtied on IE
+    // browsers.
+    if (msie && (event || noevent).type === 'input' && element[0].placeholder !== placeholder) {
+      placeholder = element[0].placeholder;
+      return;
+    }
 
     // By default we will trim the value
     // If the attribute ng-trim exists we will avoid trimming
