@@ -790,37 +790,20 @@ if(animateLoaded) {
 angular.mock.animate = angular.module('mock.animate', ['ng'])
 
   .config(['$provide', function($provide) {
-
     $provide.decorator('$animate', function($delegate) {
       var animate = {
         queue : [],
         enabled : $delegate.enabled,
-        flushNext : function(name) {
-          var tick = animate.queue.shift();
-
-          if (!tick) throw new Error('No animation to be flushed');
-          if(tick.method !== name) {
-            throw new Error('The next animation is not "' + name +
-              '", but is "' + tick.method + '"');
-          }
-          tick.fn();
-          return tick;
-        }
       };
 
       angular.forEach(['enter','leave','move','addClass','removeClass'], function(method) {
         animate[method] = function() {
-          var params = arguments;
           animate.queue.push({
-            method : method,
-            params : params,
-            element : angular.isElement(params[0]) && params[0],
-            parent  : angular.isElement(params[1]) && params[1],
-            after   : angular.isElement(params[2]) && params[2],
-            fn : function() {
-              $delegate[method].apply($delegate, params);
-            }
+            event : method,
+            element : arguments[0],
+            args : arguments
           });
+          $delegate[method].apply($delegate, arguments);
         };
       });
 

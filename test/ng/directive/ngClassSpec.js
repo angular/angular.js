@@ -320,23 +320,23 @@ describe('ngClass animations', function() {
 
       $rootScope.val = 'one';
       $rootScope.$digest();
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = '';
       $rootScope.$digest();
-      $animate.flushNext('removeClass'); //only removeClass is called
+      expect($animate.queue.shift().event).toBe('removeClass'); //only removeClass is called
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = 'one';
       $rootScope.$digest();
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = 'two';
       $rootScope.$digest();
-      $animate.flushNext('removeClass');
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('removeClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
     });
   });
@@ -430,16 +430,18 @@ describe('ngClass animations', function() {
       $rootScope.$digest();
 
       //this fires twice due to the class observer firing
-      className = $animate.flushNext('addClass').params[1];
-      expect(className).toBe('one two three');
+      var item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.args[1]).toBe('one two three');
 
       expect($animate.queue.length).toBe(0);
 
       $rootScope.three = false;
       $rootScope.$digest();
 
-      className = $animate.flushNext('removeClass').params[1];
-      expect(className).toBe('three');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.args[1]).toBe('three');
 
       expect($animate.queue.length).toBe(0);
 
@@ -447,11 +449,13 @@ describe('ngClass animations', function() {
       $rootScope.three = true;
       $rootScope.$digest();
 
-      className = $animate.flushNext('removeClass').params[1];
-      expect(className).toBe('two');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.args[1]).toBe('two');
 
-      className = $animate.flushNext('addClass').params[1];
-      expect(className).toBe('three');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.args[1]).toBe('three');
 
       expect($animate.queue.length).toBe(0);
     });

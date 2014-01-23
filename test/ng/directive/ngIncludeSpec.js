@@ -367,7 +367,7 @@ describe('ngInclude', function() {
       });
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
@@ -384,7 +384,7 @@ describe('ngInclude', function() {
         $rootScope.value = true;
       });
 
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       $rootScope.$apply(function () {
@@ -392,8 +392,8 @@ describe('ngInclude', function() {
         $rootScope.value = 'some-string';
       });
 
-      $animate.flushNext('leave');
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('leave');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       $rootScope.$apply(function() {
@@ -401,8 +401,8 @@ describe('ngInclude', function() {
         $rootScope.value = 100;
       });
 
-      $animate.flushNext('leave');
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('leave');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       expect(autoScrollSpy).toHaveBeenCalled();
@@ -418,7 +418,7 @@ describe('ngInclude', function() {
         $rootScope.tpl = 'template.html';
       });
 
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -434,7 +434,7 @@ describe('ngInclude', function() {
         $rootScope.value = false;
       });
 
-      $animate.flushNext('enter');
+      expect($animate.queue.shift().event).toBe('enter');
       $timeout.flush();
 
       $rootScope.$apply(function () {
@@ -456,7 +456,7 @@ describe('ngInclude', function() {
           expect(autoScrollSpy).not.toHaveBeenCalled();
 
           $rootScope.$apply("tpl = 'template.html'");
-          $animate.flushNext('enter');
+          expect($animate.queue.shift().event).toBe('enter');
           $timeout.flush();
 
           expect(autoScrollSpy).toHaveBeenCalledOnce();
@@ -608,8 +608,9 @@ describe('ngInclude animations', function() {
       ))($rootScope);
       $rootScope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('data');
+      var animation = $animate.queue.pop();
+      expect(animation.event).toBe('enter');
+      expect(animation.element.text()).toBe('data');
   }));
 
   it('should fire off the leave animation',
@@ -624,14 +625,16 @@ describe('ngInclude animations', function() {
       ))($rootScope);
       $rootScope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('data');
+      var animation = $animate.queue.shift();
+      expect(animation.event).toBe('enter');
+      expect(animation.element.text()).toBe('data');
 
       $rootScope.tpl = '';
       $rootScope.$digest();
 
-      item = $animate.flushNext('leave').element;
-      expect(item.text()).toBe('data');
+      animation = $animate.queue.shift();
+      expect(animation.event).toBe('leave');
+      expect(animation.element.text()).toBe('data');
   }));
 
   it('should animate two separate ngInclude elements',
@@ -647,14 +650,14 @@ describe('ngInclude animations', function() {
       ))($rootScope);
       $rootScope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('one');
+      var item1 = $animate.queue.shift().element;
+      expect(item1.text()).toBe('one');
 
       $rootScope.tpl = 'two';
       $rootScope.$digest();
 
-      var itemA = $animate.flushNext('leave').element;
-      var itemB = $animate.flushNext('enter').element;
+      var itemA = $animate.queue.shift().element;
+      var itemB = $animate.queue.shift().element;
       expect(itemA.attr('ng-include')).toBe('tpl');
       expect(itemB.attr('ng-include')).toBe('tpl');
       expect(itemA).not.toEqual(itemB);
