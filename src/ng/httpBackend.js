@@ -36,7 +36,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
   var ABORTED = -1;
 
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, progressback, callback, headers, timeout, withCredentials, responseType) {
     var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
@@ -96,6 +96,14 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
               responseHeaders);
         }
       };
+
+      if (xhr.onprogress !== undefined) {
+        xhr.onprogress = progressback;
+
+        if (xhr.upload !== undefined) {
+          xhr.upload.onprogress = progressback;
+        }
+      }
 
       if (withCredentials) {
         xhr.withCredentials = true;

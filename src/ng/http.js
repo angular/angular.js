@@ -730,6 +730,13 @@ function $HttpProvider() {
         return promise;
       };
 
+      promise.notify = function(fn) {
+        promise.then(null, null, function(event) {
+          fn(event, config);
+        });
+        return promise;
+      };
+
       return promise;
 
       function transformResponse(response) {
@@ -959,7 +966,7 @@ function $HttpProvider() {
 
       // if we won't have the response in cache, send the request to the backend
       if (isUndefined(cachedResp)) {
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
+        $httpBackend(config.method, url, reqData, progress, done, reqHeaders, config.timeout,
             config.withCredentials, config.responseType);
       }
 
@@ -984,6 +991,13 @@ function $HttpProvider() {
 
         resolvePromise(response, status, headersString);
         if (!$rootScope.$$phase) $rootScope.$apply();
+      }
+
+      /**
+       * Progress callback for $httpBackend
+       */
+      function progress(event) {
+        deferred.notify(event);
       }
 
 

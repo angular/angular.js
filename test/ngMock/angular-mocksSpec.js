@@ -909,7 +909,7 @@ describe('ngMock', function() {
         expect(response).toBe('content');
       });
 
-      hb('GET', '/url1', null, callback);
+      hb('GET', '/url1', null, noop, callback);
       expect(callback).not.toHaveBeenCalled();
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
@@ -928,14 +928,14 @@ describe('ngMock', function() {
         response.a = 'c';
       });
 
-      hb('GET', '/url1', null, callback);
+      hb('GET', '/url1', null, noop, callback);
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
 
       // Fire it again and verify that the returned mock data has not been
       // modified.
       callback.reset();
-      hb('GET', '/url1', null, callback);
+      hb('GET', '/url1', null, noop, callback);
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
       expect(mockObject).toEqual({a: 'b'});
@@ -955,17 +955,17 @@ describe('ngMock', function() {
       hb.when('GET', '/url', null, {'X': 'val2'}).respond(202, 'content2');
       hb.when('GET', '/url').respond(203, 'content3');
 
-      hb('GET', '/url', null, function(status, response) {
+      hb('GET', '/url', null, noop, function(status, response) {
         expect(status).toBe(203);
         expect(response).toBe('content3');
       });
 
-      hb('GET', '/url', null, function(status, response) {
+      hb('GET', '/url', null, noop, function(status, response) {
         expect(status).toBe(201);
         expect(response).toBe('content1');
       }, {'X': 'val1'});
 
-      hb('GET', '/url', null, function(status, response) {
+      hb('GET', '/url', null, noop, function(status, response) {
         expect(status).toBe(202);
         expect(response).toBe('content2');
       }, {'X': 'val2'});
@@ -978,12 +978,12 @@ describe('ngMock', function() {
       hb.when('GET', '/a/b', '{a: true}').respond(201, 'content1');
       hb.when('GET', '/a/b').respond(202, 'content2');
 
-      hb('GET', '/a/b', '{a: true}', function(status, response) {
+      hb('GET', '/a/b', '{a: true}', noop, function(status, response) {
         expect(status).toBe(201);
         expect(response).toBe('content1');
       });
 
-      hb('GET', '/a/b', null, function(status, response) {
+      hb('GET', '/a/b', null, noop, function(status, response) {
         expect(status).toBe(202);
         expect(response).toBe('content2');
       });
@@ -996,17 +996,17 @@ describe('ngMock', function() {
       hb.when('GET', '/a/b', {a: 1, b: 2}).respond(201, 'content1');
       hb.when('GET', '/a/b').respond(202, 'content2');
 
-      hb('GET', '/a/b', '{"a":1,"b":2}', function(status, response) {
+      hb('GET', '/a/b', '{"a":1,"b":2}', noop, function(status, response) {
         expect(status).toBe(201);
         expect(response).toBe('content1');
       });
 
-      hb('GET', '/a/b', '{"b":2,"a":1}', function(status, response) {
+      hb('GET', '/a/b', '{"b":2,"a":1}', noop, function(status, response) {
         expect(status).toBe(201);
         expect(response).toBe('content1');
       });
 
-      hb('GET', '/a/b', null, function(status, response) {
+      hb('GET', '/a/b', null, noop, function(status, response) {
         expect(status).toBe(202);
         expect(response).toBe('content2');
       });
@@ -1022,9 +1022,9 @@ describe('ngMock', function() {
         expect(response).toBe('c');
       });
 
-      hb('GET', '/some', null, callback, {});
-      hb('GET', '/another', null, callback, {'X-Fake': 'Header'});
-      hb('GET', '/third', 'some-data', callback, {});
+      hb('GET', '/some', null, noop, callback, {});
+      hb('GET', '/another', null, noop, callback, {'X-Fake': 'Header'});
+      hb('GET', '/third', 'some-data', noop, callback, {});
       hb.flush();
 
       expect(callback).toHaveBeenCalled();
@@ -1035,8 +1035,8 @@ describe('ngMock', function() {
       hb.when('GET', '/url1').respond(200, 'first');
       hb.when('GET', '/url2').respond(201, 'second');
 
-      hb('GET', '/url2', null, callback);
-      hb('GET', '/url1', null, callback);
+      hb('GET', '/url2', null, noop, callback);
+      hb('GET', '/url1', null, noop, callback);
 
       hb.flush();
 
@@ -1049,7 +1049,7 @@ describe('ngMock', function() {
     describe('respond()', function() {
       it('should take values', function() {
         hb.expect('GET', '/url1').respond(200, 'first', {'header': 'val'});
-        hb('GET', '/url1', undefined, callback);
+        hb('GET', '/url1', undefined, noop, callback);
         hb.flush();
 
         expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val');
@@ -1060,7 +1060,7 @@ describe('ngMock', function() {
           return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}];
         });
 
-        hb('GET', '/some', 'data', callback, {a: 'b'});
+        hb('GET', '/some', 'data', noop, callback, {a: 'b'});
         hb.flush();
 
         expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive');
@@ -1074,8 +1074,8 @@ describe('ngMock', function() {
 
         hb.expect('GET', '/url1').respond('some-data');
         hb.expect('GET', '/url2').respond('some-data', {'X-Header': 'true'});
-        hb('GET', '/url1', null, callback);
-        hb('GET', '/url2', null, callback);
+        hb('GET', '/url1', null, noop, callback);
+        hb('GET', '/url2', null, noop, callback);
         hb.flush();
         expect(callback).toHaveBeenCalled();
         expect(callback.callCount).toBe(2);
@@ -1086,8 +1086,8 @@ describe('ngMock', function() {
         hb.expect('GET', '/url1').respond(200, 'first');
         hb.expect('GET', '/url2').respond('second');
 
-        hb('GET', '/url1', null, callback);
-        hb('GET', '/url2', null, callback);
+        hb('GET', '/url1', null, noop, callback);
+        hb('GET', '/url2', null, noop, callback);
 
         hb.flush();
 
@@ -1104,7 +1104,7 @@ describe('ngMock', function() {
         hb.expect('GET', '/url2').respond(200, '');
 
         expect(function() {
-          hb('GET', '/url2', null, noop, {});
+          hb('GET', '/url2', null, noop, noop, {});
         }).toThrow('Unexpected request: GET /url2\nExpected GET /url1');
       });
 
@@ -1118,7 +1118,7 @@ describe('ngMock', function() {
         hb.when('GET', '/url').respond(200, 'when');
         hb.expect('GET', '/url').respond(300, 'expect');
 
-        hb('GET', '/url', null, callback, {});
+        hb('GET', '/url', null, noop, callback, {});
         hb.flush();
         expect(callback).toHaveBeenCalledOnce();
       });
@@ -1129,7 +1129,7 @@ describe('ngMock', function() {
         hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
 
         expect(function() {
-          hb('GET', '/match', null, noop, {});
+          hb('GET', '/match', null, noop, noop, {});
         }).toThrow('Expected GET /match with different headers\n' +
                    'EXPECTED: {"Content-Type":"application/json"}\nGOT:      {}');
       });
@@ -1140,7 +1140,7 @@ describe('ngMock', function() {
         hb.expect('GET', '/match', 'some-data');
 
         expect(function() {
-          hb('GET', '/match', 'different', noop, {});
+          hb('GET', '/match', 'different', noop, noop, {});
         }).toThrow('Expected GET /match with different data\n' +
                    'EXPECTED: some-data\nGOT:      different');
       });
@@ -1151,12 +1151,12 @@ describe('ngMock', function() {
 
         hb.expect('GET', '/match', {a: 1, b: 2});
         expect(function() {
-          hb('GET', '/match', '{"a":1,"b":2}', noop, {});
+          hb('GET', '/match', '{"a":1,"b":2}', noop, noop, {});
         }).not.toThrow();
 
         hb.expect('GET', '/match', {a: 1, b: 2});
         expect(function() {
-          hb('GET', '/match', '{"b":2,"a":1}', noop, {});
+          hb('GET', '/match', '{"b":2,"a":1}', noop, noop, {});
         }).not.toThrow();
       });
 
@@ -1166,7 +1166,7 @@ describe('ngMock', function() {
         hb.expect('GET', '/match', {a: 1, b: 2});
 
         expect(function() {
-          hb('GET', '/match', '{"a":1,"b":3}', noop, {});
+          hb('GET', '/match', '{"a":1,"b":3}', noop, noop, {});
         }).toThrow('Expected GET /match with different data\n' +
                    'EXPECTED: {"a":1,"b":2}\nGOT:      {"a":1,"b":3}');
       });
@@ -1180,7 +1180,7 @@ describe('ngMock', function() {
 
         hb.when('GET', '/some').respond(201, 'data');
         hb.expect('GET', '/some');
-        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, noop, callback);
         hb.flush();
 
         expect(callback).toHaveBeenCalled();
@@ -1192,8 +1192,8 @@ describe('ngMock', function() {
     describe('flush()', function() {
       it('flush() should flush requests fired during callbacks', function() {
         hb.when('GET').respond(200, '');
-        hb('GET', '/some', null, function() {
-          hb('GET', '/other', null, callback);
+        hb('GET', '/some', null, noop, function() {
+          hb('GET', '/other', null, noop, callback);
         });
 
         hb.flush();
@@ -1203,9 +1203,9 @@ describe('ngMock', function() {
 
       it('should flush given number of pending requests', function() {
         hb.when('GET').respond(200, '');
-        hb('GET', '/some', null, callback);
-        hb('GET', '/some', null, callback);
-        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, noop, callback);
+        hb('GET', '/some', null, noop, callback);
+        hb('GET', '/some', null, noop, callback);
 
         hb.flush(2);
         expect(callback).toHaveBeenCalled();
@@ -1215,7 +1215,7 @@ describe('ngMock', function() {
 
       it('should throw exception when flushing more requests than pending', function() {
         hb.when('GET').respond(200, '');
-        hb('GET', '/url', null, callback);
+        hb('GET', '/url', null, noop, callback);
 
         expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
         expect(callback).toHaveBeenCalledOnce();
@@ -1226,7 +1226,7 @@ describe('ngMock', function() {
         expect(function() {hb.flush();}).toThrow('No pending request to flush !');
 
         hb.when('GET').respond(200, '');
-        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, noop, callback);
         hb.flush();
 
         expect(function() {hb.flush();}).toThrow('No pending request to flush !');
@@ -1237,7 +1237,7 @@ describe('ngMock', function() {
         hb.expect('GET', '/url1').respond();
         hb.expect('GET', '/url2').respond();
 
-        hb('GET', '/url1', null, angular.noop);
+        hb('GET', '/url1', null, noop, noop);
         expect(function() {hb.flush();}).toThrow('Unsatisfied requests: GET /url2');
       });
     });
@@ -1250,7 +1250,7 @@ describe('ngMock', function() {
         canceler = fn;
       });
 
-      hb('GET', '/url1', null, callback, null, {then: then});
+      hb('GET', '/url1', null, noop, callback, null, {then: then});
       expect(typeof canceler).toBe('function');
 
       canceler();  // simulate promise resolution
@@ -1264,7 +1264,7 @@ describe('ngMock', function() {
     it('should throw an exception if no response defined', function() {
       hb.when('GET', '/test');
       expect(function() {
-        hb('GET', '/test', null, callback);
+        hb('GET', '/test', null, noop, callback);
       }).toThrow('No response defined !');
     });
 
@@ -1272,7 +1272,7 @@ describe('ngMock', function() {
     it('should throw an exception if no response for exception and no definition', function() {
       hb.expect('GET', '/url');
       expect(function() {
-        hb('GET', '/url', null, callback);
+        hb('GET', '/url', null, noop, callback);
       }).toThrow('No response defined !');
     });
 
@@ -1292,13 +1292,12 @@ describe('ngMock', function() {
 
 
     describe('verifyExpectations', function() {
-
       it('should throw exception if not all expectations were satisfied', function() {
         hb.expect('POST', '/u1', 'ddd').respond(201, '', {});
         hb.expect('GET', '/u2').respond(200, '', {});
         hb.expect('POST', '/u3').respond(201, '', {});
 
-        hb('POST', '/u1', 'ddd', noop, {});
+        hb('POST', '/u1', 'ddd', noop, noop, {});
 
         expect(function() {hb.verifyNoOutstandingExpectation();}).
           toThrow('Unsatisfied requests: GET /u2, POST /u3');
@@ -1328,7 +1327,7 @@ describe('ngMock', function() {
 
       it('should throw exception if not all requests were flushed', function() {
         hb.when('GET').respond(200);
-        hb('GET', '/some', null, noop, {});
+        hb('GET', '/some', null, noop, noop, {});
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
@@ -1352,11 +1351,11 @@ describe('ngMock', function() {
         var cancelledClb = jasmine.createSpy('cancelled');
 
         hb.expect('GET', '/url').respond(200, '');
-        hb('GET', '/url', null, cancelledClb);
+        hb('GET', '/url', null, noop, cancelledClb);
         hb.resetExpectations();
 
         hb.expect('GET', '/url').respond(300, '');
-        hb('GET', '/url', null, callback, {});
+        hb('GET', '/url', null, noop, callback, {});
         hb.flush();
 
         expect(callback).toHaveBeenCalledOnce();
@@ -1368,10 +1367,10 @@ describe('ngMock', function() {
         var cancelledClb = jasmine.createSpy('cancelled');
 
         hb.when('GET', '/url').respond(200, 'success');
-        hb('GET', '/url', null, cancelledClb);
+        hb('GET', '/url', null, noop, cancelledClb);
         hb.resetExpectations();
 
-        hb('GET', '/url', null, callback, {});
+        hb('GET', '/url', null, noop, callback, {});
         hb.flush();
 
         expect(callback).toHaveBeenCalledOnce();
@@ -1386,7 +1385,7 @@ describe('ngMock', function() {
           var shortcut = prefix + method;
           it('should provide ' + shortcut + ' shortcut method', function() {
             hb[shortcut]('/foo').respond('bar');
-            hb(method, '/foo', undefined, callback);
+            hb(method, '/foo', null, noop, callback);
             hb.flush();
             expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '');
           });
@@ -1461,6 +1460,8 @@ describe('ngMock', function() {
 
 
 describe('ngMockE2E', function() {
+  var noop = angular.noop;
+
   describe('$httpBackend', function() {
     var hb, realHttpBackend, callback;
 
@@ -1480,10 +1481,10 @@ describe('ngMockE2E', function() {
     describe('passThrough()', function() {
       it('should delegate requests to the real backend when passThrough is invoked', function() {
         hb.when('GET', /\/passThrough\/.*/).passThrough();
-        hb('GET', '/passThrough/23', null, callback, {}, null, true);
+        hb('GET', '/passThrough/23', null, noop, callback, {}, null, true);
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true);
+            'GET', '/passThrough/23', null, noop, callback, {}, null, true);
       });
     });
 
@@ -1491,7 +1492,7 @@ describe('ngMockE2E', function() {
     describe('autoflush', function() {
       it('should flush responses via $browser.defer', inject(function($browser) {
         hb.when('GET', '/foo').respond('bar');
-        hb('GET', '/foo', null, callback);
+        hb('GET', '/foo', null, noop, callback);
 
         expect(callback).not.toHaveBeenCalled();
         $browser.defer.flush();
