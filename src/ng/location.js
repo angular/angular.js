@@ -654,6 +654,9 @@ function $LocationProvider(){
     // rewrite hashbang url <> html5 url
     if ($location.absUrl() != initialUrl) {
       $browser.url($location.absUrl(), true);
+      
+      // this stops the application loading any further
+      return;
     }
 
     // update $location when $browser url changes
