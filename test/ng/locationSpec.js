@@ -1487,6 +1487,30 @@ describe('$location', function() {
       expect(location.url()).toBe('/not-starting-with-slash');
       expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
+
+    describe("search()", function() {
+      it("should return a populated search object for search query when path is empty", function() {
+        location = new LocationHashbangUrl('http://server/pre/index.html', '!');
+
+        location.$$parse('http://server/pre/?foo=1&bar=2&baz=3');
+        expect(location.path()).toBe('');
+        expect(location.absUrl()).toBe('http://server/pre/index.html?foo=1&bar=2&baz=3')
+        expect(location.search()).toEqual({
+          foo: '1',
+          bar: '2',
+          baz: '3'
+        });
+
+        location.$$parse('http://server/pre/index.html?foo=1&bar=2&baz=3');
+        expect(location.path()).toBe('');
+        expect(location.absUrl()).toBe('http://server/pre/index.html?foo=1&bar=2&baz=3')
+        expect(location.search()).toEqual({
+          foo: '1',
+          bar: '2',
+          baz: '3'
+        });
+      });
+    });
   });
 
 
