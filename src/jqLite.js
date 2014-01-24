@@ -879,9 +879,11 @@ forEach({
 
   detach: function(element) {
     function triggerDestroy(element){
-      new JQLite(element).triggerHandler('$destroy');
-      for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
-        triggerDestroy(children[i]);
+      if(element){
+        new JQLite(element).triggerHandler('$destroy');
+        for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
+          triggerDestroy(children[i]);
+        }
       }
     }
 
