@@ -95,7 +95,7 @@ user picked an option from the drop down menu.
 browser, "Newest" is selected in the drop down menu. This is because we set `orderProp` to `'age'`
 in the controller. So the binding works in the direction from our model to the UI. Now if you
 select "Alphabetically" in the drop down menu, the model will be updated as well and the phones
-will be reordered. That is the data-binding doing its job in the opposite direction — from the UI
+will be reordered. That is the data-binding doing its job in the opposite direction from the UI
 to the model.
 
 
