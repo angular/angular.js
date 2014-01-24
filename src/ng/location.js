@@ -656,7 +656,9 @@ function $LocationProvider(){
       $browser.url($location.absUrl(), true);
 
       // this stops the application loading any further
-      return $location;
+      if (!$sniffer.history) {
+        return $location;
+      }
     }
 
     // update $location when $browser url changes
