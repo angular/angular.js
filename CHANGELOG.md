@@ -1,3 +1,30 @@
+<a name="1.2.10"></a>
+# 1.2.10 augmented-serendipity (2014-01-24)
+
+
+## Bug Fixes
+
+- **$parse:** do not use locals to resolve object properties
+  ([f09b6aa5](https://github.com/angular/angular.js/commit/f09b6aa5b58c090e3b8f8811fb7735e38d4b7623),
+   [#5838](https://github.com/angular/angular.js/issues/5838), [#5862](https://github.com/angular/angular.js/issues/5862))
+- **a:** don't call preventDefault on click when a SVGAElement has an xlink:href attribute
+  ([e0209169](https://github.com/angular/angular.js/commit/e0209169bf1463465ad07484421620748a4d3908),
+   [#5896](https://github.com/angular/angular.js/issues/5896), [#5897](https://github.com/angular/angular.js/issues/5897))
+- **input:** use Chromium's email validation regexp
+  ([79e519fe](https://github.com/angular/angular.js/commit/79e519fedaec54390a8bdacfb1926bfce57a1eb6),
+   [#5899](https://github.com/angular/angular.js/issues/5899), [#5924](https://github.com/angular/angular.js/issues/5924))
+- **ngRoute:** pipe preceding route param no longer masks ? or * operator
+  ([fd6bac7d](https://github.com/angular/angular.js/commit/fd6bac7de56f728a89782dc80c78f7d5c21bbc65),
+   [#5920](https://github.com/angular/angular.js/issues/5920))
+
+
+## Features
+
+- **$animate:** provide support for a close callback
+  ([ca6b7d0f](https://github.com/angular/angular.js/commit/ca6b7d0fa2e355ebd764230260758cee9a4ebe1e),
+   [#5685](https://github.com/angular/angular.js/issues/5685), [#5053](https://github.com/angular/angular.js/issues/5053), [#4993](https://github.com/angular/angular.js/issues/4993))
+
+
 <a name="1.2.9"></a>
 # 1.2.9 enchanted-articulacy (2014-01-15)
 
