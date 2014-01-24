@@ -145,11 +145,19 @@ docsApp.directive.docsSearchInput = ['$document',function($document) {
     var ESCAPE_KEY_KEYCODE = 27,
         FORWARD_SLASH_KEYCODE = 191;
     angular.element($document[0].body).bind('keydown', function(event) {
-      var input = element[0];
-      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
-        event.stopPropagation();
-        event.preventDefault();
-        input.focus();
+      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement) {
+        var activeElement = document.activeElement;
+        var activeTagName = activeElement.nodeName.toLowerCase();
+        var hasInputFocus = activeTagName == 'input'  || activeTagName == 'select' ||
+                            activeTagName == 'option' || activeTagName == 'textarea' ||
+                            activeElement.hasAttribute('contenteditable');
+        if(!hasInputFocus) {
+          event.stopPropagation();
+          event.preventDefault();
+
+          var input = element[0];
+          input.focus();
+        }
       }
     });
 
