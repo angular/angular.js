@@ -46,17 +46,19 @@ describe('form', function () {
 
         var form = scope.myForm;
         control.$setValidity('required', false);
+        control.$setValidating('asyncValidation');
         expect(form.alias).toBe(control);
         expect(form.$error.required).toEqual([control]);
+        expect(form.$validating).toBe(true);
 
         // remove nested control
         scope.inputPresent = false;
         scope.$apply();
 
+        expect(form.$validating).toBe(false);
         expect(form.$error.required).toBe(false);
         expect(form.alias).toBeUndefined();
     });
-
 
     it('should use ngForm value as form name', function () {
         doc = $compile(
@@ -139,6 +141,7 @@ describe('form', function () {
         expect(widget.$dirty).toBe(false);
         expect(widget.$valid).toBe(true);
         expect(widget.$invalid).toBe(false);
+        expect(widget.$validating).toBe(false);
     });
 
 
@@ -324,6 +327,12 @@ describe('form', function () {
             child.$setIdle();
             expect(parent.$working).toBe(false);
             expect(parent.$idle).toBeTruthy();
+
+            child.$setValidating();
+            expect(parent.$validating).toBeTruthy();
+
+            child.$clearValidating();
+            expect(parent.$validating).toBe(false);
         });
 
 
@@ -484,6 +493,11 @@ describe('form', function () {
             expect(doc.hasClass('ng-invalid-error')).toBe(false);
             expect(doc.hasClass('ng-valid-another')).toBe(true);
             expect(doc.hasClass('ng-invalid-another')).toBe(false);
+
+            control.$setValidating('async');
+            expect(doc.hasClass('ng-validating')).toBe(true);
+            control.$clearValidating('async');
+            expect(doc.hasClass('ng-validating')).toBe(false);
         });
 
 
@@ -644,7 +658,53 @@ describe('form', function () {
             formCtrl.$setIdle();
             expect(form).toBeIdle();
             expect(formCtrl.$idle).toBe(true);
-            expect(formCtrl.$working).toBe(false); 
+            expect(formCtrl.$working).toBe(false);
+        });
+    });
+
+    describe('$setValidating', function () {
+
+        it('should set $validating and ng-validating', function () {
+
+            doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named1" name="foo">' +
+            '<input ng-model="named2" name="bar">' +
+          '</form>')(scope);
+
+            scope.$digest();
+
+            var form = doc,
+            formCtrl = scope.testForm;
+
+
+            formCtrl.$setValidating();
+            expect(formCtrl.$validating).toBe(true);
+            expect(formCtrl.hasClass('ng-validating')).toBe(true);
+
+        });
+    });
+
+    describe('$clearValidating', function () {
+
+        it('should clear $validating and ng-validating', function () {
+
+            doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named1" name="foo">' +
+            '<input ng-model="named2" name="bar">' +
+          '</form>')(scope);
+
+            scope.$digest();
+
+            var form = doc,
+            formCtrl = scope.testForm;
+
+
+            formCtrl.$clearValidating();
+            expect(formCtrl.$validating).toBe(false);
+            expect(formCtrl.hasClass('ng-validating')).toBe(false);
+
         });
     });
 });
