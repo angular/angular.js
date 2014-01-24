@@ -260,9 +260,6 @@ describe('form', function() {
         // IE9 and IE10 are special and don't fire submit event when form was destroyed
         if (msie < 9) {
           expect(reloadPrevented).toBe(true);
-
-          // That invocation of flush method was giving a "No deferred tasks to be flushed" error
-          // $timeout.flush();
         }
 
         // prevent mem leak in test
