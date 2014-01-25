@@ -1660,6 +1660,26 @@ describe('jqLite', function() {
       data = pokeSpy.mostRecentCall.args[1];
       expect(data.hello).toBe("world");
     });
+
+
+    it('should support handlers that deregister themselves', function() {
+      var element = jqLite('<a>poke</a>'),
+          clickSpy = jasmine.createSpy('click'),
+          clickOnceSpy = jasmine.createSpy('clickOnce').andCallFake(function() {
+            element.off('click', clickOnceSpy);
+          });
+
+      element.on('click', clickOnceSpy);
+      element.on('click', clickSpy);
+
+      element.triggerHandler('click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy).toHaveBeenCalledOnce();
+
+      element.triggerHandler('click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy.callCount).toBe(2);
+    });
   });
 
 

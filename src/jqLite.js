@@ -953,7 +953,9 @@ forEach({
   clone: jqLiteClone,
 
   triggerHandler: function(element, eventName, eventData) {
-    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName];
+    // Copy event handlers in case event handlers array is modified during execution.
+    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName],
+        eventFnsCopy = shallowCopy(eventFns || []);
 
     eventData = eventData || [];
 
@@ -962,7 +964,7 @@ forEach({
       stopPropagation: noop
     }];
 
-    forEach(eventFns, function(fn) {
+    forEach(eventFnsCopy, function(fn) {
       fn.apply(element, event.concat(eventData));
     });
   }
