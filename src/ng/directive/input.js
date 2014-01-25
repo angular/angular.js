@@ -5,7 +5,9 @@
     -VALID_CLASS,
     -INVALID_CLASS,
     -PRISTINE_CLASS,
-    -DIRTY_CLASS
+    -DIRTY_CLASS,
+    -WORKING_CLASS,
+    -IDLE_CLASS
 */
 
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
@@ -795,7 +797,10 @@ var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
 var VALID_CLASS = 'ng-valid',
     INVALID_CLASS = 'ng-invalid',
     PRISTINE_CLASS = 'ng-pristine',
-    DIRTY_CLASS = 'ng-dirty';
+    DIRTY_CLASS = 'ng-dirty',
+    WORKING_CLASS = 'ng-working',
+    IDLE_CLASS = 'ng-idle',
+    VALIDATING_CLASS = 'ng-validating';
 
 /**
  * @ngdoc object
@@ -1027,12 +1032,56 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       this.$valid = false;
       invalidCount++;
     }
-
     $error[validationErrorKey] = !isValid;
     toggleValidCss(isValid, validationErrorKey);
 
     parentForm.$setValidity(validationErrorKey, isValid, this);
   };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:ngModel.NgModelController#$setValidating
+    * @methodOf ng.directive:ngModel.NgModelController
+    *
+    * @description
+    * Change the validating state, and notifies the form when the control changes to the validating state.
+    *
+    * This method should be called by validators that perform async validations
+    *
+    * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
+    *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
+    *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+    *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+    *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
+    */
+    this.$setValidating = function (validationErrorKey) {
+        $element.addClass(VALIDATING_CLASS);
+        this.$validating = true;
+        parentForm.$setValidating(validationErrorKey, this);
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:ngModel.NgModelController#$clearValidating
+    * @methodOf ng.directive:ngModel.NgModelController
+    *
+    * @description
+    * Clears the validating state, and notifies the form when the control changes from the validating state.
+    *
+    * This method should be called by validators that perform async validations
+    *
+    * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
+    *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
+    *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+    *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+    *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
+    */
+    this.$clearValidating = function (validationErrorKey) {
+        $element.removeClass(VALIDATING_CLASS);
+        this.$validating = false;
+        parentForm.$clearValidating(validationErrorKey, this);
+    };
+
 
   /**
    * @ngdoc function
