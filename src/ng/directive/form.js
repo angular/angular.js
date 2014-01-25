@@ -119,6 +119,10 @@ function FormController(element, attrs) {
       form.$setValidity(validationToken, true, control);
     });
 
+    forEach(pendingValidations, function (queue, validationToken) {
+      form.$clearValidating(validationToken, control);
+    });
+
     arrayRemove(controls, control);
 };
 
@@ -242,6 +246,58 @@ function FormController(element, attrs) {
         form.$working = false;
         form.$idle = true;
         parentForm.$setIdle();
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:form.FormController#$setValidating
+    * @methodOf ng.directive:form.FormController
+    *
+    * @description
+    * Sets the form to the validating state
+    *
+    */
+    form.$setValidating = function (validationToken, control) {
+        var queue = pendingValidations[validationToken];
+
+        if (!validatingCount) {
+            element.addClass(VALIDATING_CLASS);
+        }
+        if (queue) {
+            if (includes(queue, control)) return;
+        } else {
+            pendingValidations[validationToken] = queue = [];
+            validatingCount++;
+            parentForm.$setValidating(validationToken, form);
+        }
+        queue.push(control);
+        form.$validating = true;
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:form.FormController#$clearValidating
+    * @methodOf ng.directive:form.FormController
+    *
+    * @description
+    * Clears the form from the validating state
+    *
+    */
+    form.$clearValidating = function (validationToken, control) {
+        var queue = pendingValidations[validationToken];
+
+        if (queue) {
+            arrayRemove(queue, control);
+            if (!queue.length) {
+                validatingCount--;
+                if (!validatingCount) {
+                    element.removeClass(VALIDATING_CLASS);
+                    form.$validating = false;
+                }
+                pendingValidations[validationToken] = false;
+                parentForm.$clearValidating(validationToken, form);
+            }
+        }
     };
 }
 

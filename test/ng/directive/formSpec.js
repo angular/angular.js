@@ -644,7 +644,52 @@ describe('form', function () {
             formCtrl.$setIdle();
             expect(form).toBeIdle();
             expect(formCtrl.$idle).toBe(true);
-            expect(formCtrl.$working).toBe(false); 
+            expect(formCtrl.$working).toBe(false);
+        });
+    });
+
+    describe('$setValidating', function () {
+
+        it('should set $validating and ng-validating', function () {
+
+            doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named1" name="foo">' +
+            '<input ng-model="named2" name="bar">' +
+          '</form>')(scope);
+
+            scope.$digest();
+
+            var form = doc,
+            formCtrl = scope.testForm;
+
+
+            formCtrl.$setValidating();
+            expect(formCtrl.$validating).toBe(true);
+            expect(doc.hasClass('ng-validating')).toBe(true);
+
+        });
+    });
+
+    describe('$clearValidating', function () {
+
+        it('should clear $validating and ng-validating', function () {
+
+            doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named1" name="foo">' +
+            '<input ng-model="named2" name="bar">' +
+          '</form>')(scope);
+
+            scope.$digest();
+
+            var form = doc,
+            formCtrl = scope.testForm;
+
+
+            formCtrl.$clearValidating();
+            expect(formCtrl.$validating).toBe(false);
+            expect(doc.hasClass('ng-validating')).toBe(false);
         });
     });
 });
