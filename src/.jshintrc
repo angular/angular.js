@@ -157,6 +157,9 @@
     "INVALID_CLASS": false,
     "PRISTINE_CLASS": false,
     "DIRTY_CLASS": false,
+	"WORKING_CLASS": false,
+	"IDLE_CLASS": false,
+	"VALIDATING_CLASS": false,
 
     /* ng/directive/form.js */
     "nullFormCtrl": false

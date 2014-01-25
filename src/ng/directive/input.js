@@ -5,7 +5,10 @@
     -VALID_CLASS,
     -INVALID_CLASS,
     -PRISTINE_CLASS,
-    -DIRTY_CLASS
+    -DIRTY_CLASS,
+    -WORKING_CLASS,
+    -IDLE_CLASS,
+    -VALIDATING_CLASS
 */
 
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
@@ -795,7 +798,10 @@ var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
 var VALID_CLASS = 'ng-valid',
     INVALID_CLASS = 'ng-invalid',
     PRISTINE_CLASS = 'ng-pristine',
-    DIRTY_CLASS = 'ng-dirty';
+    DIRTY_CLASS = 'ng-dirty',
+    WORKING_CLASS = 'ng-working',
+    IDLE_CLASS = 'ng-idle',
+    VALIDATING_CLASS = 'ng-validating';
 
 /**
  * @ngdoc object
@@ -923,210 +929,256 @@ var VALID_CLASS = 'ng-valid',
  *
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-    function($scope, $exceptionHandler, $attr, $element, $parse) {
-  this.$viewValue = Number.NaN;
-  this.$modelValue = Number.NaN;
-  this.$parsers = [];
-  this.$formatters = [];
-  this.$viewChangeListeners = [];
-  this.$pristine = true;
-  this.$dirty = false;
-  this.$valid = true;
-  this.$invalid = false;
-  this.$name = $attr.name;
+    function ($scope, $exceptionHandler, $attr, $element, $parse) {
+        this.$viewValue = Number.NaN;
+        this.$modelValue = Number.NaN;
+        this.$parsers = [];
+        this.$formatters = [];
+        this.$viewChangeListeners = [];
+        this.$pristine = true;
+        this.$dirty = false;
+        this.$valid = true;
+        this.$invalid = false;
+        this.$validating = false;
+        this.$name = $attr.name;
 
-  var ngModelGet = $parse($attr.ngModel),
+        var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign;
 
-  if (!ngModelSet) {
-    throw minErr('ngModel')('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
+        if (!ngModelSet) {
+            throw minErr('ngModel')('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
         $attr.ngModel, startingTag($element));
-  }
+        }
 
-  /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$render
-   * @methodOf ng.directive:ngModel.NgModelController
-   *
-   * @description
-   * Called when the view needs to be updated. It is expected that the user of the ng-model
-   * directive will implement this method.
-   */
-  this.$render = noop;
+        /**
+        * @ngdoc function
+        * @name ng.directive:ngModel.NgModelController#$render
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * Called when the view needs to be updated. It is expected that the user of the ng-model
+        * directive will implement this method.
+        */
+        this.$render = noop;
 
-  /**
-   * @ngdoc function
-   * @name { ng.directive:ngModel.NgModelController#$isEmpty
-   * @methodOf ng.directive:ngModel.NgModelController
-   *
-   * @description
-   * This is called when we need to determine if the value of the input is empty.
-   *
-   * For instance, the required directive does this to work out if the input has data or not.
-   * The default `$isEmpty` function checks whether the value is `undefined`, `''`, `null` or `NaN`.
-   *
-   * You can override this for input directives whose concept of being empty is different to the
-   * default. The `checkboxInputType` directive does this because in its case a value of `false`
-   * implies empty.
-   */
-  this.$isEmpty = function(value) {
-    return isUndefined(value) || value === '' || value === null || value !== value;
-  };
+        /**
+        * @ngdoc function
+        * @name { ng.directive:ngModel.NgModelController#$isEmpty
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * This is called when we need to determine if the value of the input is empty.
+        *
+        * For instance, the required directive does this to work out if the input has data or not.
+        * The default `$isEmpty` function checks whether the value is `undefined`, `''`, `null` or `NaN`.
+        *
+        * You can override this for input directives whose concept of being empty is different to the
+        * default. The `checkboxInputType` directive does this because in its case a value of `false`
+        * implies empty.
+        */
+        this.$isEmpty = function (value) {
+            return isUndefined(value) || value === '' || value === null || value !== value;
+        };
 
-  var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
+        var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
       $error = this.$error = {}; // keep invalid keys here
 
 
-  // Setup initial state of the control
-  $element.addClass(PRISTINE_CLASS);
-  toggleValidCss(true);
+        // Setup initial state of the control
+        $element.addClass(PRISTINE_CLASS);
+        toggleValidCss(true);
 
-  // convenience method for easy toggling of classes
-  function toggleValidCss(isValid, validationErrorKey) {
-    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $element.
+        // convenience method for easy toggling of classes
+        function toggleValidCss(isValid, validationErrorKey) {
+            validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+            $element.
       removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
       addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
-  }
-
-  /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setValidity
-   * @methodOf ng.directive:ngModel.NgModelController
-   *
-   * @description
-   * Change the validity state, and notifies the form when the control changes validity. (i.e. it
-   * does not notify form if given validator is already marked as invalid).
-   *
-   * This method should be called by validators - i.e. the parser or formatter functions.
-   *
-   * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
-   *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
-   *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
-   *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
-   *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
-   * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
-   */
-  this.$setValidity = function(validationErrorKey, isValid) {
-    // Purposeful use of ! here to cast isValid to boolean in case it is undefined
-    // jshint -W018
-    if ($error[validationErrorKey] === !isValid) return;
-    // jshint +W018
-
-    if (isValid) {
-      if ($error[validationErrorKey]) invalidCount--;
-      if (!invalidCount) {
-        toggleValidCss(true);
-        this.$valid = true;
-        this.$invalid = false;
-      }
-    } else {
-      toggleValidCss(false);
-      this.$invalid = true;
-      this.$valid = false;
-      invalidCount++;
-    }
-
-    $error[validationErrorKey] = !isValid;
-    toggleValidCss(isValid, validationErrorKey);
-
-    parentForm.$setValidity(validationErrorKey, isValid, this);
-  };
-
-  /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setPristine
-   * @methodOf ng.directive:ngModel.NgModelController
-   *
-   * @description
-   * Sets the control to its pristine state.
-   *
-   * This method can be called to remove the 'ng-dirty' class and set the control to its pristine
-   * state (ng-pristine class).
-   */
-  this.$setPristine = function () {
-    this.$dirty = false;
-    this.$pristine = true;
-    $element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
-  };
-
-  /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setViewValue
-   * @methodOf ng.directive:ngModel.NgModelController
-   *
-   * @description
-   * Update the view value.
-   *
-   * This method should be called when the view value changes, typically from within a DOM event handler.
-   * For example {@link ng.directive:input input} and
-   * {@link ng.directive:select select} directives call it.
-   *
-   * It will update the $viewValue, then pass this value through each of the functions in `$parsers`,
-   * which includes any validators. The value that comes out of this `$parsers` pipeline, be applied to
-   * `$modelValue` and the **expression** specified in the `ng-model` attribute.
-   *
-   * Lastly, all the registered change listeners, in the `$viewChangeListeners` list, are called.
-   *
-   * Note that calling this function does not trigger a `$digest`.
-   *
-   * @param {string} value Value from the view.
-   */
-  this.$setViewValue = function(value) {
-    this.$viewValue = value;
-
-    // change to dirty
-    if (this.$pristine) {
-      this.$dirty = true;
-      this.$pristine = false;
-      $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
-      parentForm.$setDirty();
-    }
-
-    forEach(this.$parsers, function(fn) {
-      value = fn(value);
-    });
-
-    if (this.$modelValue !== value) {
-      this.$modelValue = value;
-      ngModelSet($scope, value);
-      forEach(this.$viewChangeListeners, function(listener) {
-        try {
-          listener();
-        } catch(e) {
-          $exceptionHandler(e);
         }
-      });
-    }
-  };
 
-  // model -> value
-  var ctrl = this;
+        /**
+        * @ngdoc function
+        * @name ng.directive:ngModel.NgModelController#$setValidity
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * Change the validity state, and notifies the form when the control changes validity. (i.e. it
+        * does not notify form if given validator is already marked as invalid).
+        *
+        * This method should be called by validators - i.e. the parser or formatter functions.
+        *
+        * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
+        *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
+        *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+        *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+        *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
+        * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
+        */
+        this.$setValidity = function (validationErrorKey, isValid) {
+            // Purposeful use of ! here to cast isValid to boolean in case it is undefined
+            // jshint -W018
+            if ($error[validationErrorKey] === !isValid) return;
+            // jshint +W018
 
-  $scope.$watch(function ngModelWatch() {
-    var value = ngModelGet($scope);
+            if (isValid) {
+                if ($error[validationErrorKey]) invalidCount--;
+                if (!invalidCount) {
+                    toggleValidCss(true);
+                    this.$valid = true;
+                    this.$invalid = false;
+                }
+            } else {
+                toggleValidCss(false);
+                this.$invalid = true;
+                this.$valid = false;
+                invalidCount++;
+            }
 
-    // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== value) {
+            $error[validationErrorKey] = !isValid;
+            toggleValidCss(isValid, validationErrorKey);
 
-      var formatters = ctrl.$formatters,
+            parentForm.$setValidity(validationErrorKey, isValid, this);
+        };
+
+        /**
+        * @ngdoc function
+        * @name ng.directive:ngModel.NgModelController#$setValidating
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * Change the validating state, and notifies the form when the control changes to the validating state.
+        *
+        * This method should be called by validators that perform async validations
+        *
+        * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
+        *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
+        *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+        *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+        *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
+        */
+        this.$setValidating = function (validationErrorKey) {
+            $element.addClass(VALIDATING_CLASS);
+            this.$validating = true;
+            parentForm.$setValidating(validationErrorKey, this);
+        };
+
+        /**
+        * @ngdoc function
+        * @name ng.directive:ngModel.NgModelController#$clearValidating
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * Clears the validating state, and notifies the form when the control changes from the validating state.
+        *
+        * This method should be called by validators that perform async validations
+        *
+        * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
+        *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
+        *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+        *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+        *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
+        */
+        this.$clearValidating = function (validationErrorKey) {
+            $element.removeClass(VALIDATING_CLASS);
+            this.$validating = false;
+            parentForm.$clearValidating(validationErrorKey, this);
+        };
+
+
+        /**
+        * @ngdoc function
+        * @name ng.directive:ngModel.NgModelController#$setPristine
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * Sets the control to its pristine state.
+        *
+        * This method can be called to remove the 'ng-dirty' class and set the control to its pristine
+        * state (ng-pristine class).
+        */
+        this.$setPristine = function () {
+            this.$dirty = false;
+            this.$pristine = true;
+            $element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+        };
+
+        /**
+        * @ngdoc function
+        * @name ng.directive:ngModel.NgModelController#$setViewValue
+        * @methodOf ng.directive:ngModel.NgModelController
+        *
+        * @description
+        * Update the view value.
+        *
+        * This method should be called when the view value changes, typically from within a DOM event handler.
+        * For example {@link ng.directive:input input} and
+        * {@link ng.directive:select select} directives call it.
+        *
+        * It will update the $viewValue, then pass this value through each of the functions in `$parsers`,
+        * which includes any validators. The value that comes out of this `$parsers` pipeline, be applied to
+        * `$modelValue` and the **expression** specified in the `ng-model` attribute.
+        *
+        * Lastly, all the registered change listeners, in the `$viewChangeListeners` list, are called.
+        *
+        * Note that calling this function does not trigger a `$digest`.
+        *
+        * @param {string} value Value from the view.
+        */
+        this.$setViewValue = function (value) {
+            this.$viewValue = value;
+
+            // change to dirty
+            if (this.$pristine) {
+                this.$dirty = true;
+                this.$pristine = false;
+                $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
+                parentForm.$setDirty();
+            }
+
+            forEach(this.$parsers, function (fn) {
+                value = fn(value);
+            });
+
+            if (this.$modelValue !== value) {
+                this.$modelValue = value;
+                ngModelSet($scope, value);
+                forEach(this.$viewChangeListeners, function (listener) {
+                    try {
+                        listener();
+                    } catch (e) {
+                        $exceptionHandler(e);
+                    }
+                });
+            }
+        };
+
+        // model -> value
+        var ctrl = this;
+
+        $scope.$watch(function ngModelWatch() {
+            var value = ngModelGet($scope);
+
+            // if scope model value and ngModel value are out of sync
+            if (ctrl.$modelValue !== value) {
+
+                var formatters = ctrl.$formatters,
           idx = formatters.length;
 
-      ctrl.$modelValue = value;
-      while(idx--) {
-        value = formatters[idx](value);
-      }
+                ctrl.$modelValue = value;
+                while (idx--) {
+                    value = formatters[idx](value);
+                }
 
-      if (ctrl.$viewValue !== value) {
-        ctrl.$viewValue = value;
-        ctrl.$render();
-      }
-    }
+                if (ctrl.$viewValue !== value) {
+                    ctrl.$viewValue = value;
+                    ctrl.$render();
+                }
+            }
 
-    return value;
-  });
-}];
+            return value;
+        });
+    } ];
 
 
 /**
