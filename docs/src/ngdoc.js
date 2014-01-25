@@ -1401,6 +1401,14 @@ function explainModuleInstallation(moduleName){
     modulePackage = 'angular-' + moduleName,
     modulePackageFile = modulePackage + '.js';
 
+  // Deal with inconsistent ngMock naming - doing it verbosely and explicitly here
+  // rather than cleverly interweaving it in the previous lines to make it obvious
+  // what is going on
+  if ( moduleName == 'mock' ) {
+    modulePackage = 'angular-mocks';
+    modulePackageFile = modulePackage + '.js';
+  }
+
   return '<h1>Installation</h1>' +
     '<p>First include <code>' + modulePackageFile +'</code> in your HTML:</p><pre><code>' +
     '    &lt;script src=&quot;angular.js&quot;&gt;\n' +

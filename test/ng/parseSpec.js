@@ -358,7 +358,7 @@ describe('parser', function() {
         forEach([2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 42, 99], function(pathLength) {
           it('should resolve nested paths of length ' + pathLength, function() {
             // Create a nested object {x2: {x3: {x4: ... {x[n]: 42} ... }}}.
-            var obj = 42;
+            var obj = 42, locals = {};
             for (var i = pathLength; i >= 2; i--) {
               var newObj = {};
               newObj['x' + i] = obj;
@@ -371,6 +371,8 @@ describe('parser', function() {
               path += '.x' + i;
             }
             expect(scope.$eval(path)).toBe(42);
+            locals['x' + pathLength] = 'not 42'
+            expect(scope.$eval(path, locals)).toBe(42);
           });
         });
 
@@ -937,6 +939,13 @@ describe('parser', function() {
             expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
             expect($parse('a.b.c')({a: null}, {a: {b: {c: 1}}})).toEqual(1);
+          }));
+
+          it('should not use locals to resolve object properties', inject(function($parse) {
+            expect($parse('a[0].b')({a: [ {b : 'scope'} ]}, {b : 'locals'})).toBe('scope');
+            expect($parse('a[0]["b"]')({a: [ {b : 'scope'} ]}, {b : 'locals'})).toBe('scope');
+            expect($parse('a[0][0].b')({a: [[{b : 'scope'}]]}, {b : 'locals'})).toBe('scope');
+            expect($parse('a[0].b.c')({a: [ {b: {c: 'scope'}}] }, {b : {c: 'locals'} })).toBe('scope');
           }));
         });
 

@@ -1519,7 +1519,13 @@ describe("ngAnimate", function() {
             steps.push(['after', data.className, data.event]);
           });
 
-          $animate.addClass(element, 'klass');
+          element.on('$animate:close', function(e, data) {
+            steps.push(['close', data.className, data.event]);
+          });
+
+          $animate.addClass(element, 'klass', function() {
+            steps.push(['done', 'klass', 'addClass']);
+          });
 
           $timeout.flush(1);
 
@@ -1529,6 +1535,13 @@ describe("ngAnimate", function() {
           $timeout.flush(1);
 
           expect(steps.pop()).toEqual(['after', 'klass', 'addClass']);
+
+          browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          $timeout.flush(1);
+
+          expect(steps.shift()).toEqual(['close', 'klass', 'addClass']);
+
+          expect(steps.shift()).toEqual(['done', 'klass', 'addClass']);
         })); 
 
         it('should fire the DOM callbacks even if no animation is rendered',
