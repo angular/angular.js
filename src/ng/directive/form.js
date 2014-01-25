@@ -8,9 +8,7 @@ var nullFormCtrl = {
   $setDirty: noop,
   $setPristine: noop,
   $setWorking: noop,
-  $setIdle: noop,
-  $setValidating: noop,
-  $clearValidating: noop
+  $setIdle: noop
 };
 
 /**
@@ -55,9 +53,7 @@ function FormController(element, attrs) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
-      validatingCount = 0, //used to easily determine if we are validating
       errors = form.$error = {},
-      pendingValidations = form.$pendingValidations = {},
       controls = [];
 
   // init state
@@ -68,7 +64,6 @@ function FormController(element, attrs) {
   form.$invalid = false;
   form.$working = false;
   form.$idle = true;
-  form.$validating = false;
 
   parentForm.$addControl(form);
 
@@ -122,9 +117,6 @@ function FormController(element, attrs) {
     }
     forEach(errors, function(queue, validationToken) {
       form.$setValidity(validationToken, true, control);
-    });
-    foreach(pendingValidations, function (queue, validationToken) {
-      form.$clearValidating(validationToken, control);
     });
 
     arrayRemove(controls, control);
@@ -251,58 +243,6 @@ function FormController(element, attrs) {
         form.$idle = true;
         parentForm.$setIdle();
     };
-
-    /**
-    * @ngdoc function
-    * @name ng.directive:form.FormController#$setValidating
-    * @methodOf ng.directive:form.FormController
-    *
-    * @description
-    * Sets the form to the validating state
-    *
-    */
-    form.$setValidating = function (validationToken, control) {
-        var queue = pendingValidations[validationToken];
-
-        if (!validatingCount) {
-            element.addClass(VALIDATING_CLASS);
-        }
-        if (queue) {
-            if (includes(queue, control)) return;
-        } else {
-            pendingValidations[validationToken] = queue = [];
-            validatingCount++;
-            parentForm.$setValidating(validationToken, form);
-        }
-        queue.push(control);
-        form.$validating = true;
-    }
-
-    /**
-    * @ngdoc function
-    * @name ng.directive:form.FormController#$clearValidating
-    * @methodOf ng.directive:form.FormController
-    *
-    * @description
-    * Clears the form from the validating state
-    *
-    */
-    form.$clearValidating = function (validationToken, control) {
-        var queue = pendingValidations[validationToken];
-
-        if (queue) {
-            arrayRemove(queue, control);
-            if (!queue.length) {
-                validatingCount--;
-                if (!validatingCount) {
-                    element.removeClass(VALIDATING_CLASS);
-                    form.$validating = false;
-                }
-                pendingValidations[validationToken] = false;
-                parentForm.$clearValidating(validationToken, form);
-            }
-        }
-    }
 }
 
 
@@ -350,9 +290,6 @@ function FormController(element, attrs) {
  *  - `ng-invalid` is set if the form is invalid.
  *  - `ng-pristine` is set if the form is pristine.
  *  - `ng-dirty` is set if the form is dirty.
- *  - `ng-working` is set if the form is working.
- *  - `ng-idle` is set if the form is idle.
- *  - `ng-validating` is set if the form is validating.
  *
  *
  * # Submitting a form and preventing the default action
