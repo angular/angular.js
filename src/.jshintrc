@@ -116,6 +116,7 @@
     "jqNextId": false,
     "camelCase": false,
     "jqLitePatchJQueryRemove": false,
+    "jqLitePatchJQueryInsert": false,
     "JQLite": false,
     "jqLiteClone": false,
     "jqLiteDealoc": false,
