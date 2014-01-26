@@ -2942,6 +2942,7 @@ describe("ngAnimate", function() {
 
       var node = element[0];
       node._setAttribute = node.setAttribute;
+      node._setAttribute = node.setAttribute;
       node.setAttribute = function(prop, val) {
         if(prop == 'class' && val.indexOf('trigger-class') >= 0) {
           var propertyKey = ($sniffer.vendorPrefix == 'Webkit' ? '-webkit-' : '') + 'transition-property';
@@ -2949,6 +2950,11 @@ describe("ngAnimate", function() {
         }
         node._setAttribute(prop, val);
       };
+      node.classList._add = node.classList.add;
+      node.classList.add = function(klass) {
+        capturedProperty = klass;
+        node.classList._add(klass);
+      }
 
       expect(capturedProperty).toBe('none');
       $animate.addClass(element, 'trigger-class');

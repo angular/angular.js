@@ -293,36 +293,57 @@ function jqLiteData(element, key, value) {
 }
 
 function jqLiteHasClass(element, selector) {
-  if (!element.getAttribute) return false;
-  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
-      indexOf( " " + selector + " " ) > -1);
+  if (msie <= 9) {
+    if (!element.getAttribute) return false;
+    return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
+        indexOf( " " + selector + " " ) > -1);
+  } else {
+    if (!element.classList) return false;
+    return element.classList.contains(selector);
+  }
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
-          (" " + (element.getAttribute('class') || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
-      );
-    });
+  if (msie <= 9) {
+    if (cssClasses && element.setAttribute) {
+      forEach(cssClasses.split(' '), function(cssClass) {
+        element.setAttribute('class', trim(
+            (" " + (element.getAttribute('class') || '') + " ")
+            .replace(/[\n\t]/g, " ")
+            .replace(" " + trim(cssClass) + " ", " "))
+        );
+      });
+    }
+  } else {
+    if (cssClasses && element.classList) {
+      forEach(cssClasses.split(' '), function (cssClass) {
+        if (cssClass) element.classList.remove(cssClass);
+      });
+    }
   }
 }
 
 function jqLiteAddClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+  if (msie <= 9) {
+    if (cssClasses && element.setAttribute) {
+      var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
                             .replace(/[\n\t]/g, " ");
 
-    forEach(cssClasses.split(' '), function(cssClass) {
-      cssClass = trim(cssClass);
-      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
-        existingClasses += cssClass + ' ';
-      }
-    });
+      forEach(cssClasses.split(' '), function(cssClass) {
+        cssClass = trim(cssClass);
+        if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+          existingClasses += cssClass + ' ';
+        }
+      });
 
-    element.setAttribute('class', trim(existingClasses));
+      element.setAttribute('class', trim(existingClasses));
+    }
+  } else {
+    if (cssClasses && element.classList) {
+      forEach(cssClasses.split(' '), function (cssClass) {
+        if (cssClass) element.classList.add(cssClass);
+      });
+    }
   }
 }
 
