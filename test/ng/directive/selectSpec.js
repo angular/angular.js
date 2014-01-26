@@ -733,6 +733,21 @@ describe('select', function() {
       expect(sortedHtml(options[2])).toEqual('<option value="1">3</option>');
     });
 
+    it('should ignore option object selected changes', function() {
+      createSingleSelect();
+
+      scope.$apply(function() {
+        scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
+        scope.selected = scope.values[0];
+      });
+
+      var options = element.find('option');
+      var optionToSelect = options.eq(1);
+      optionToSelect.prop('selected', true);
+      scope.$digest();
+      expect(optionToSelect.prop('selected')).toBe(true);
+    });
+
     describe('binding', function() {
 
       it('should bind to scope value', function() {
