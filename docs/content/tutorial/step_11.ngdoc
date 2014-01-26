@@ -22,8 +22,9 @@ The most important changes are listed below. You can see the full diff on [GitHu
 ## Template
 
 The custom service is defined in `app/js/services.js` so we need to include this file in our layout
-template. Additionally, we also need to load the `angular-resource.js` file, which contains the
-`ngResource` module and in it the `$resource` service, that we'll soon use:
+template. Additionally, we also need to load the `angular-resource.js` file, which contains the 
+{@link api/ngResource ngResource} module and in it the {@link api/ngResource.$resource $resource} 
+service, that we'll soon use:
 
 __`app/index.html`.__
 
