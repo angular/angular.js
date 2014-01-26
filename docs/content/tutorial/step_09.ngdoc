@@ -40,13 +40,13 @@ The name of our filter is "checkmark". The `input` evaluates to either `true` or
 return one of the two unicode characters we have chosen to represent true (`\u2713` -> ✓) or false (`\u2718` -> ✘).
 
 Now that our filter is ready, we need to register the `phonecatFilters` module as a dependency for
-our main `phonecat` module.
+our main `phonecatApp` module.
 
 __`app/js/app.js`:__
 
 ```js
 ...
-angular.module('phonecatApp', ['phonecatFilters']).
+angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']).
 ...
 ```
 
