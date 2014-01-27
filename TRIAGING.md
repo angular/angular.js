@@ -27,7 +27,7 @@ The following is done automatically and should not be done manually:
     * 1.2.x - everything else
 1. Label "GH: *" (to be automated via Mary Poppins)
     * PR - issue is a PR
-    * issue - otherwise 
+    * issue - otherwise
 1. Bugs:
     * Label "Type: Bug"
     * Label "Type: Regression" - if the bug is a regression
@@ -43,7 +43,7 @@ The following is done automatically and should not be done manually:
     * Goals of angular core? - Often new features should be implemented as a third-party module rather than an addition to the core.
 
 1. Label "component: *"
-    * In rare cases, it's ok to have multiple components. 
+    * In rare cases, it's ok to have multiple components.
 1. Label "impact: *"
    * small - obscure issue affecting one or handful of developers
    * medium - impacts some usage patterns
