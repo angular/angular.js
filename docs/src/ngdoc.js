@@ -207,12 +207,25 @@ Doc.prototype = {
   },
 
   shortDescription : function() {
-    if (!this.description) return this.description;
-    var text = this.description.split("\n")[0];
-    text = text.replace(/<.+?\/?>/g, '');
+    if (!this.description) return '';
+
+    var text = this.description.replace(/<.+?\/?>/g, '');
     text = text.replace(/{/g,'&#123;');
     text = text.replace(/}/g,'&#125;');
-    return text;
+    text = text.replace(/&amp/g,'&');
+
+    var i, newLine;
+    for(i=0; i < text.length;i++) {
+      var s = text.charAt(i);
+      newLine = newLine || s == "\n";
+      if(newLine && (s == "." || s == "!") && text[i+1] != '.') {
+        break;
+      }
+    }
+
+    return i < text.length ?
+      text.substring(0, i) + "." :
+      text;
   },
 
   getMinerrNamespace: function () {
