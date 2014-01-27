@@ -52,7 +52,7 @@ The following is done automatically and should not be done manually:
     * small - trivial change
     * medium - non-trivial but straightforward change
     * large - changes to many components in angular or any changes to $compile, ngRepeat or other "fun" components
-1. Label "PRs welcome" for "GH: issue"
+1. Label "PRs plz!" for "GH: issue"
     * if complexity is small or medium and the problem as well as solution are well captured in the issue
 1. Label "origin: google" for issues from Google
 1. Label "high priority" for security issues, major performance regressions or memory leaks
