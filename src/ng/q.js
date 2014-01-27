@@ -18,7 +18,7 @@
  * <pre>
  *   // for the purpose of this example let's assume that variables `$q`, `scope` and `okToGreet`
  *   // are available in the current lexical scope (they could have been injected or passed in).
- * 
+ *
  *   function asyncGreet(name) {
  *     var deferred = $q.defer();
  *
@@ -188,6 +188,8 @@ function $QProvider() {
  */
 function qFactory(nextTick, exceptionHandler) {
 
+  var service = {};
+
   /**
    * @ngdoc
    * @name ng.$q#defer
@@ -197,7 +199,7 @@ function qFactory(nextTick, exceptionHandler) {
    *
    * @returns {Deferred} Returns a new instance of deferred.
    */
-  var defer = function() {
+  service.defer = function() {
     var pending = [],
         value, deferred;
 
@@ -223,7 +225,7 @@ function qFactory(nextTick, exceptionHandler) {
 
 
       reject: function(reason) {
-        deferred.resolve(reject(reason));
+        deferred.resolve(service.reject(reason));
       },
 
 
@@ -246,7 +248,7 @@ function qFactory(nextTick, exceptionHandler) {
 
       promise: {
         then: function(callback, errback, progressback) {
-          var result = defer();
+          var result = service.defer();
 
           var wrappedCallback = function(value) {
             try {
@@ -290,7 +292,7 @@ function qFactory(nextTick, exceptionHandler) {
         "finally": function(callback) {
 
           function makePromise(value, resolved) {
-            var result = defer();
+            var result = service.defer();
             if (resolved) {
               result.resolve(value);
             } else {
@@ -334,7 +336,7 @@ function qFactory(nextTick, exceptionHandler) {
     if (value && isFunction(value.then)) return value;
     return {
       then: function(callback) {
-        var result = defer();
+        var result = service.defer();
         nextTick(function() {
           result.resolve(callback(value));
         });
@@ -379,10 +381,10 @@ function qFactory(nextTick, exceptionHandler) {
    * @param {*} reason Constant, message, exception or an object representing the rejection reason.
    * @returns {Promise} Returns a promise that was already resolved as rejected with the `reason`.
    */
-  var reject = function(reason) {
+  service.reject = function(reason) {
     return {
       then: function(callback, errback) {
-        var result = defer();
+        var result = service.defer();
         nextTick(function() {
           try {
             result.resolve((isFunction(errback) ? errback : defaultErrback)(reason));
@@ -409,8 +411,8 @@ function qFactory(nextTick, exceptionHandler) {
    * @param {*} value Value or a promise
    * @returns {Promise} Returns a promise of the passed value or promise
    */
-  var when = function(value, callback, errback, progressback) {
-    var result = defer(),
+  service.when = function(value, callback, errback, progressback) {
+    var result = service.defer(),
         done;
 
     var wrappedCallback = function(value) {
@@ -418,7 +420,7 @@ function qFactory(nextTick, exceptionHandler) {
         return (isFunction(callback) ? callback : defaultCallback)(value);
       } catch (e) {
         exceptionHandler(e);
-        return reject(e);
+        return service.reject(e);
       }
     };
 
@@ -427,7 +429,7 @@ function qFactory(nextTick, exceptionHandler) {
         return (isFunction(errback) ? errback : defaultErrback)(reason);
       } catch (e) {
         exceptionHandler(e);
-        return reject(e);
+        return service.reject(e);
       }
     };
 
@@ -464,7 +466,7 @@ function qFactory(nextTick, exceptionHandler) {
 
 
   function defaultErrback(reason) {
-    return reject(reason);
+    return service.reject(reason);
   }
 
 
@@ -482,8 +484,8 @@ function qFactory(nextTick, exceptionHandler) {
    *   If any of the promises is resolved with a rejection, this resulting promise will be rejected
    *   with the same rejection value.
    */
-  function all(promises) {
-    var deferred = defer(),
+  service.all = function(promises) {
+    var deferred = service.defer(),
         counter = 0,
         results = isArray(promises) ? [] : {};
 
@@ -504,12 +506,7 @@ function qFactory(nextTick, exceptionHandler) {
     }
 
     return deferred.promise;
-  }
-
-  return {
-    defer: defer,
-    reject: reject,
-    when: when,
-    all: all
   };
+
+  return service;
 }
