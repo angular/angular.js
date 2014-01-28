@@ -31,11 +31,11 @@ var $interpolateMinErr = minErr('$interpolate');
     //demo.label//
 </div>
 </doc:source>
-<doc:scenario>
- it('should interpolate binding with custom symbols', function() {
-  expect(binding('demo.label')).toBe('This binding is brought you by // interpolation symbols.');
- });
-</doc:scenario>
+<doc:protractor>
+  it('should interpolate binding with custom symbols', function() {
+    expect(element(by.binding('demo.label')).getText()).toBe('This binding is brought you by // interpolation symbols.');
+  });
+</doc:protractor>
 </doc:example>
  */
 function $InterpolateProvider() {

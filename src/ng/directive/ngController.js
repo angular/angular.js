@@ -82,22 +82,36 @@
        </ul>
       </div>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
        it('should check controller as', function() {
-         expect(element('#ctrl-as-exmpl>:input').val()).toBe('John Smith');
-         expect(element('#ctrl-as-exmpl li:nth-child(1) input').val())
-           .toBe('408 555 1212');
-         expect(element('#ctrl-as-exmpl li:nth-child(2) input').val())
-           .toBe('john.smith@example.org');
+         var container = element(by.id('ctrl-as-exmpl'));
 
-         element('#ctrl-as-exmpl li:first a:contains("clear")').click();
-         expect(element('#ctrl-as-exmpl li:first input').val()).toBe('');
+         expect(container.findElement(by.model('settings.name'))
+             .getAttribute('value')).toBe('John Smith');
 
-         element('#ctrl-as-exmpl li:last a:contains("add")').click();
-         expect(element('#ctrl-as-exmpl li:nth-child(3) input').val())
-           .toBe('yourname@example.org');
+         var firstRepeat =
+             container.findElement(by.repeater('contact in settings.contacts').row(0));
+         var secondRepeat =
+             container.findElement(by.repeater('contact in settings.contacts').row(1));
+
+         expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
+             .toBe('408 555 1212');
+         expect(secondRepeat.findElement(by.model('contact.value')).getAttribute('value'))
+             .toBe('john.smith@example.org');
+
+         firstRepeat.findElement(by.linkText('clear')).click()
+
+         expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
+             .toBe('');
+
+         container.findElement(by.linkText('add')).click();
+
+         expect(container.findElement(by.repeater('contact in settings.contacts').row(2))
+             .findElement(by.model('contact.value'))
+             .getAttribute('value'))
+             .toBe('yourname@example.org');
        });
-     </doc:scenario>
+     </doc:protractor>
    </doc:example>
     <doc:example>
      <doc:source>
@@ -145,22 +159,36 @@
        </ul>
       </div>
      </doc:source>
-     <doc:scenario>
+     <doc:protractor>
        it('should check controller', function() {
-         expect(element('#ctrl-exmpl>:input').val()).toBe('John Smith');
-         expect(element('#ctrl-exmpl li:nth-child(1) input').val())
-           .toBe('408 555 1212');
-         expect(element('#ctrl-exmpl li:nth-child(2) input').val())
-           .toBe('john.smith@example.org');
+         var container = element(by.id('ctrl-exmpl'));
 
-         element('#ctrl-exmpl li:first a:contains("clear")').click();
-         expect(element('#ctrl-exmpl li:first input').val()).toBe('');
+         expect(container.findElement(by.model('name'))
+             .getAttribute('value')).toBe('John Smith');
 
-         element('#ctrl-exmpl li:last a:contains("add")').click();
-         expect(element('#ctrl-exmpl li:nth-child(3) input').val())
-           .toBe('yourname@example.org');
+         var firstRepeat =
+             container.findElement(by.repeater('contact in contacts').row(0));
+         var secondRepeat =
+             container.findElement(by.repeater('contact in contacts').row(1));
+
+         expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
+             .toBe('408 555 1212');
+         expect(secondRepeat.findElement(by.model('contact.value')).getAttribute('value'))
+             .toBe('john.smith@example.org');
+
+         firstRepeat.findElement(by.linkText('clear')).click()
+
+         expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
+             .toBe('');
+
+         container.findElement(by.linkText('add')).click();
+
+         expect(container.findElement(by.repeater('contact in contacts').row(2))
+             .findElement(by.model('contact.value'))
+             .getAttribute('value'))
+             .toBe('yourname@example.org');
        });
-     </doc:scenario>
+     </doc:protractor>
    </doc:example>
 
  */

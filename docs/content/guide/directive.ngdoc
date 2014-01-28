@@ -84,10 +84,10 @@ Here are some equivalent examples of elements that match `ngBind`:
       <span x-ng-bind="name"></span> <br/>
     </div>
   </file>
-  <file name="scenario.js">
+  <file name="protractorTest.js">
     it('should show off bindings', function() {
-      expect(element('div[ng-controller="Ctrl1"] span[ng-bind]').text())
-        .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      expect(element(by.css('div[ng-controller="Ctrl1"] span[ng-bind]')).getText())
+          .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
     });
   </file>
 </example>

@@ -24,13 +24,12 @@
         <div>Normal: {{1 + 2}}</div>
         <div ng-non-bindable>Ignored: {{1 + 2}}</div>
       </doc:source>
-      <doc:scenario>
+      <doc:protractor>
        it('should check ng-non-bindable', function() {
-         expect(using('.doc-example-live').binding('1 + 2')).toBe('3');
-         expect(using('.doc-example-live').element('div:last').text()).
-           toMatch(/1 \+ 2/);
+         expect(element(by.binding('1 + 2')).getText()).toContain('3');
+         expect(element.all(by.css('.doc-example-live div')).last().getText()).toMatch(/1 \+ 2/);
        });
-      </doc:scenario>
+      </doc:protractor>
     </doc:example>
  */
 var ngNonBindableDirective = ngDirective({ terminal: true, priority: 1000 });
