@@ -1142,7 +1142,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           templateDirective = previousCompileContext.templateDirective,
           nonTlbTranscludeDirective = previousCompileContext.nonTlbTranscludeDirective,
           hasTranscludeDirective = false,
-          hasElementTranscludeDirective = false,
+          hasElementTranscludeDirective = previousCompileContext.hasElementTranscludeDirective,
           $compileNode = templateAttrs.$$element = jqLite(compileNode),
           directive,
           directiveName,
@@ -1316,6 +1316,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === true;
       nodeLinkFn.transclude = hasTranscludeDirective && childTranscludeFn;
+      previousCompileContext.hasElementTranscludeDirective = hasElementTranscludeDirective;
 
       // might be normal or delayed nodeLinkFn depending on if templateUrl is present
       return nodeLinkFn;
@@ -1712,8 +1713,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
               var oldClasses = beforeTemplateLinkNode.className;
-              // it was cloned therefore we have to clone as well.
-              linkNode = jqLiteClone(compileNode);
+
+              if (!(previousCompileContext.hasElementTranscludeDirective &&
+                  origAsyncDirective.replace)) {
+                // it was cloned therefore we have to clone as well.
+                linkNode = jqLiteClone(compileNode);
+              }
+
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
 
               // Copy in CSS classes from original node
