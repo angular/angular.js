@@ -878,13 +878,13 @@ forEach({
   },
 
   detach: function(element) {
-    function triggerDestroy(element){
-      if(element){
-        new JQLite(element).triggerHandler('$destroy');
-        for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
-          triggerDestroy(children[i]);
-        }
-      }
+    function triggerDestroy(el){
+     if(el.nodeType === 1){
+       new JQLite(el).triggerHandler('$destroy');
+       for ( var i = 0, children = el.childNodes || []; i < children.length; i++) {
+         triggerDestroy(children[i]);
+       }
+     }
     }
 
     // jQuery 'detach' method calls jQuery 'remvove' method with additional parameter
