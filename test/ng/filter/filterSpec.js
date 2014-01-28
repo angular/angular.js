@@ -60,6 +60,16 @@ describe('Filter: filter', function() {
     expect(filter(items, {first:'misko', last:'hevery'})[0]).toEqual(items[0]);
   });
 
+
+  it('should support predicat object with dots in the name', function() {
+    var items = [{'first.name': 'misko', 'last.name': 'hevery'},
+                 {'first.name': 'adam', 'last.name': 'abrons'}];
+
+    expect(filter(items, {'first.name':'', 'last.name':''}).length).toBe(2);
+    expect(filter(items, {'first.name':'misko', 'last.name':''})).toEqual([items[0]]);
+  });
+
+
   it('should match any properties for given "$" property', function() {
     var items = [{first: 'tom', last: 'hevery'},
                  {first: 'adam', last: 'hevery', alias: 'tom', done: false},
