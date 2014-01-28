@@ -3972,6 +3972,57 @@ describe('$compile', function() {
         });
       });
 
+      // issue #6006
+      it('should link directive with $element as a comment node', function() {
+        module(function($provide) {
+          directive('innerAgain', function(log) {
+            return {
+              transclude: 'element',
+              link: function(scope, element, attr, controllers, transclude) {
+                log('innerAgain:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+                transclude(scope, function(clone) {
+                  element.parent().append(clone);
+                });
+              }
+            };
+          });
+          directive('inner', function(log) {
+            return {
+              replace: true,
+              templateUrl: 'inner.html',
+              link: function(scope, element) {
+                log('inner:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+              }
+            };
+          });
+          directive('outer', function(log) {
+            return {
+              transclude: 'element',
+              link: function(scope, element, attrs, controllers, transclude) {
+                log('outer:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+                transclude(scope, function(clone) {
+                  element.parent().append(clone);
+                });
+              }
+            };
+          });
+        });
+        inject(function(log, $compile, $rootScope, $templateCache) {
+          $templateCache.put('inner.html', '<div inner-again><p>Content</p></div>');
+          element = $compile('<div><div outer><div inner></div></div></div>')($rootScope);
+          $rootScope.$digest();
+          var child = element.children();
+
+          expect(log.toArray()).toEqual([
+            "outer:#comment:outer:",
+            "innerAgain:#comment:innerAgain:",
+            "inner:#comment:innerAgain:"]);
+          expect(child.length).toBe(1);
+          expect(child.contents().length).toBe(2);
+          expect(lowercase(nodeName_(child.contents().eq(0)))).toBe('#comment');
+          expect(lowercase(nodeName_(child.contents().eq(1)))).toBe('div');
+        });
+      });
     });
 
     it('should safely create transclude comment node and not break with "-->"',
