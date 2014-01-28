@@ -252,7 +252,7 @@ function shallowClearAndCopy(src, dst) {
 
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});
-     var user = User.get({userId:123}, function() {
+     User.get({userId:123}, function(user) {
        user.abc = true;
        user.$save();
      });
@@ -271,6 +271,16 @@ function shallowClearAndCopy(src, dst) {
          //putResponseHeaders => $http header getter
        });
      });
+   </pre>
+ *
+ * You can also access the raw `$http` promise via the `$promise` property on the object returned
+ *
+   <pre>
+     var User = $resource('/user/:userId', {userId:'@id'});
+     User.get({userId:123})
+         .$promise.then(function(user) {
+           $scope.user = user;
+         });
    </pre>
 
  * # Creating a custom 'PUT' request
