@@ -879,7 +879,7 @@ forEach({
 
   detach: function(element) {
     function triggerDestroy(el){
-     if(el.nodeType === 1){
+     if(el && el.nodeType === 1){
        new JQLite(el).triggerHandler('$destroy');
        for ( var i = 0, children = el.childNodes || []; i < children.length; i++) {
          triggerDestroy(children[i]);
