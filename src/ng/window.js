@@ -28,7 +28,7 @@
        </script>
        <div ng-controller="Ctrl">
          <input type="text" ng-model="greeting" />
-         <button ng-click="doGreeting(greeting)">ALERT</button>
+         <button ng-click="doGreeting(greeting)" class="btn">ALERT</button>
        </div>
      </doc:source>
      <doc:scenario>
