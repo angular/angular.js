@@ -372,7 +372,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                   clone.on('$attach', function(event, origElem, origComment){
                     // should append the original corresponding comment element
                     if(origComment !== correspondingCommentElement){
-                      var parent = origElem.parentElement;
+                      var parent = origElem.parentNode;
                       if(parent){
                         if(origElem.nextSibling)
                           parent.insertBefore(correspondingCommentElement, origElem.nextSibling);
@@ -394,7 +394,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                   clone.on('$detach', function(event, origElem, origComment){
                     // should remove the original corresponding comment element
                     if(origComment !== correspondingCommentElement){
-                      var parent = correspondingCommentElement.parentElement;
+                      var parent = correspondingCommentElement.parentNode;
                       if(parent)
                         parent.removeChild(correspondingCommentElement);
                     }
