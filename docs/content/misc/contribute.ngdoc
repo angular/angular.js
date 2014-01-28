@@ -135,7 +135,7 @@ made available a local web server based on Node.js.
 
 ## Running the Unit Test Suite
 
-We write unit and integration tests with Jasmine and execute them with Karma. To run all of the
+We write unit tests with Jasmine and execute them with Karma. To run all of the
 tests once on Chrome run:
 
 ```shell
@@ -178,11 +178,11 @@ grunt --help
 
 ## Running the End-to-end Test Suite
 
-Simply run:
+Angular's end to end tests are run with Protractor. Simply run:
 
 ```shell
 grunt test:e2e
 ```
 
-This will start the webserver and run the tests.
+This will start the webserver and run the tests on Chrome.
 

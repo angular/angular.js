@@ -35,7 +35,6 @@ grunt test:docgen --no-color
 grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
-grunt test:e2e --browsers $BROWSERS_E2E --reporters=dots,junit --no-colors --no-color
 grunt test:protractor
 
 # Promises/A+ TESTS #
