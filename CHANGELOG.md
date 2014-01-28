@@ -82,6 +82,30 @@
   ([4ae3184c](https://github.com/angular/angular.js/commit/4ae3184c5915aac9aa00889aa2153c8e84c14966),
    [#4278](https://github.com/angular/angular.js/issues/4278), [#4225](https://github.com/angular/angular.js/issues/4225))
 
+## Breaking Changes
+
+- **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
+	   it is now necessary to seperately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
+		 
+	To migrate your code, follow the example below:
+	
+	Before:
+	
+		// Will apply to POST, PUT and PATCH methods
+		$httpProvider.defaults.headers.post = {
+			"X-MY-CSRF-HEADER": "..."
+		};
+
+	After:
+
+		// POST, PUT and PATCH default headers must be specified seperately,
+		// as they do not share data.
+		$httpProvider.defaults.headers.post =
+			$httpProvider.defaults.headers.put =
+			$httpProviders.defaults.headers.patch = {
+				"X-MY-CSRF-HEADER": "..."
+			};
+
 <a name="1.2.8"></a>
 # 1.2.8 interdimensional-cartography (2014-01-10)
 
