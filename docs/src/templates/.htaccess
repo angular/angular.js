@@ -16,4 +16,4 @@ RewriteCond %{HTTP_HOST}        ^docs-next\.angularjs\.org$
 RewriteRule appcache.manifest   http://code.angularjs.org/next/docs/appcache.manifest [R=301]
 
 ## HTML5 URL Support ##
-RewriteRule ^(guide|api|cookbook|misc|tutorial)(/.*)?$    index.html
+RewriteRule ^(guide|api|misc|tutorial)(/.*)?$    index.html
