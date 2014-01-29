@@ -11,7 +11,7 @@ For these reasons binding to event handler attributes (all attributes that start
 
 An example code that would allow XSS vulnerability by evaluating user input in the window context could look like this:
 ```
-<input ng-mode="username">
+<input ng-model="username">
 <div onclick="{{username}}">click me</div>
 ```
 
