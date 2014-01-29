@@ -337,6 +337,12 @@ We inject the $compile service and $rootScope before each jasmine test. The $com
 to render the aGreatEye directive. After rendering the directive we ensure that the directive has
 replaced the content and "lidless, wreathed in flame, 2 times" is present.
 
+### Testing Directives With External Templates
+
+If your directive uses `templateUrl`, consider using
+{@link https://github.com/karma-runner/karma-ng-html2js-preprocessor karma-ng-html2js-preprocessor}
+to pre-compile HTML templates and thus avoid having to load them over HTTP during test execution.
+Otherwise you may run into issues if the test directory hierarchy differs from the application's.
 
 ## Sample project
 See the [angular-seed](https://github.com/angular/angular-seed) project for an example.
