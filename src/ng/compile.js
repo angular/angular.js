@@ -1477,11 +1477,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         transcludeFn = boundTranscludeFn && controllersBoundTransclude;
         if (controllerDirectives) {
           forEach(controllerDirectives, function(directive) {
+          
+            var requiredControllers = directive.linkFn && directive.linkFn.require
+              && getControllers(directive.linkFn.require, $element, elementControllers);
+          
             var locals = {
               $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
               $element: $element,
               $attrs: attrs,
-              $transclude: transcludeFn
+              $transclude: transcludeFn,
+              $requiredControllers: requiredControllers
             }, controllerInstance;
 
             controller = directive.controller;

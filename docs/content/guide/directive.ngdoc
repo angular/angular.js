@@ -893,11 +893,10 @@ option. Just like `ngController`, this option attaches a controller to the templ
 
 Looking back at `myPane`'s definition, notice the last argument in its `link` function: `tabsCtrl`.
 When a directive requires a controller, it receives that controller as the fourth argument of its
-`link` function. Taking advantage of this, `myPane` can call the `addPane` function of `myTabs`.
+`link` function or will be injected in your controller as $requiredControllers. Taking advantage of this, `myPane` can call the `addPane` function of `myTabs`.
 
 Savvy readers may be wondering what the difference is between `link` and `controller`.
-The basic difference is that `controller` can expose an API, and `link` functions can interact with
-controllers using `require`.
+The basic difference is that `controller` can expose an API, and `link` functions not. They both can interact with controllers using `require`.
 
 <div class="alert alert-success">
 **Best Practice:** use `controller` when you want to expose an API to other directives.
