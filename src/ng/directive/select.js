@@ -322,8 +322,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             // We try to reuse these if possible
             // - optionGroupsCache[0] is the options with no option group
             // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-            optionGroupsCache = [[{element: selectElement, label:''}]],
-            changeEventFired = false;
+            optionGroupsCache = [[{element: selectElement, label:''}]];
 
         if (nullOption) {
           // compile the element since there might be bindings in it
@@ -342,7 +341,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         selectElement.empty();
 
         selectElement.on('change', function() {
-          changeEventFired = true;
           scope.$apply(function() {
             var optionGroup,
                 collection = valuesFn(scope) || [],
@@ -392,6 +390,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   locals[valueName] = collection[key];
                   if (keyName) locals[keyName] = key;
                   value = valueFn(scope, locals);
+                }
+              }
+              // Update the null option's selected property here so $render cleans it up correctly
+              if (optionGroupsCache[0].length > 1) {
+                if (optionGroupsCache[0][1].id !== key) {
+                  optionGroupsCache[0][1].selected = false;
                 }
               }
             }
@@ -531,10 +535,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   lastElement.val(existingOption.id = option.id);
                 }
                 // lastElement.prop('selected') provided by jQuery has side-effects
-                // FF will update selected property on DOM elements when hovering,
-                // so we shouldn't check those unless a change event has happened
-                if ((changeEventFired && lastElement[0].selected !== option.selected) ||
-                  existingOption.selected !== option.selected) {
+                if (existingOption.selected !== option.selected) {
                   lastElement.prop('selected', (existingOption.selected = option.selected));
                 }
               } else {
@@ -578,7 +579,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           while(optionGroupsCache.length > groupIndex) {
             optionGroupsCache.pop()[0].element.remove();
           }
-          changeEventFired = false;
         }
       }
     }
