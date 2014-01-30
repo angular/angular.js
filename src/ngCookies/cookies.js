@@ -160,7 +160,19 @@ angular.module('ngCookies', ['ng']).
           var value = $cookies[key];
           return value ? angular.fromJson(value) : value;
         },
-
+ 
+        /**
+         *
+         * @description
+         * check if a cookie key exists.
+         *
+         * @param {string} key Id to use for ckecking.
+         * @returns {Bool} Cookie existence.
+         */
+        exist: function(key) {
+            return 'undefined' !== typeof($cookies[key]);
+        },
+        
         /**
          * @ngdoc method
          * @name ngCookies.$cookieStore#put
