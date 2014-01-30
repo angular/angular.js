@@ -8,7 +8,7 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
+    "grunt": "~0.4.2",
     "bower": "~1.2.2",
     "grunt-bump": "~0.0.13",
     "grunt-contrib-clean": "~0.5.0",
@@ -41,7 +41,8 @@
     "grunt-shell": "~0.4.0",
     "semver": "~2.1.0",
     "lodash": "~2.1.0",
-    "browserstacktunnel-wrapper": "~1.1.1"
+    "browserstacktunnel-wrapper": "~1.1.1",
+    "grunt-jscs-checker": "~0.3.2"
   },
   "licenses": [
     {
