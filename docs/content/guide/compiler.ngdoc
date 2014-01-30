@@ -60,12 +60,12 @@ during the compilation process. The directives can be placed in element names, a
 names, as well as comments. Here are some equivalent examples of invoking the {@link
 api/ng.directive:ngBind `ng-bind`} directive.
 
-<pre>
+```html
   <span ng-bind="exp"></span>
   <span class="ng-bind: exp;"></span>
   <ng-bind></ng-bind>
   <!-- directive: ng-bind exp -->
-</pre>
+```
 
 A directive is just a function which executes when the compiler encounters it in the DOM. See {@link
 api/ng.$compileProvider#methods_directive directive API} for in-depth documentation on how
@@ -187,7 +187,7 @@ a model on the compiled scope will be reflected in the DOM.
 Below is the corresponding code using the `$compile` service.
 This should help give you an idea of what Angular does internally.
 
-<pre>
+```js
   var $compile = ...; // injected into your code
   var scope = ...;
   var parent = ...; // DOM element where the compiled template can be appended
@@ -205,7 +205,7 @@ This should help give you an idea of what Angular does internally.
   
   // Step 4: Append to DOM (optional)
   parent.appendChild(element);
-</pre>
+```
 
 ### The difference between Compile and Link
 
@@ -229,14 +229,14 @@ moved to the compile function for performance reasons.
 
 To understand, let's look at a real-world example with `ngRepeat`:
 
-<pre>
+```html
 Hello {{user}}, you have these actions:
 <ul>
   <li ng-repeat="action in user.actions">
     {{action.description}}
   </li>
 </ul>
-</pre>
+```
 
 When the above example is compiled, the compiler visits every node and looks for directives.
 
@@ -295,7 +295,7 @@ One of the most common use cases for directives is to create reusable components
 
 Below is a pseudo code showing how a simplified dialog component may work.
 
-<pre>
+```html
 <div>
   <button ng-click="show=true">show</button>
 
@@ -306,7 +306,7 @@ Below is a pseudo code showing how a simplified dialog component may work.
      Body goes here: {{username}} is {{title}}.
   </dialog>
 </div>
-</pre>
+```
 
 Clicking on the "show" button will open the dialog. The dialog will have a title, which is
 data bound to `username`, and it will also have a body which we would like to transclude
@@ -314,7 +314,7 @@ into the dialog.
 
 Here is an example of what the template definition for the `dialog` widget may look like.
 
-<pre>
+```html
 <div ng-show="visible">
   <h3>{{title}}</h3>
   <div class="body" ng-transclude></div>
@@ -323,7 +323,7 @@ Here is an example of what the template definition for the `dialog` widget may l
     <button ng-click="onCancel()">Close</button>
   </div>
 </div>
-</pre>
+```
 
 This will not render properly, unless we do some scope magic.
 
@@ -334,14 +334,14 @@ the `onOk` and `onCancel` functions to be present in the scope. This limits the 
 widget. To solve the mapping issue we use the `locals` to create local variables which the template
 expects as follows:
 
-<pre>
+```js
   scope: {
     title: '@',             // the title uses the data-binding from the parent scope
     onOk: '&',              // create a delegate onOk function
     onCancel: '&',          // create a delegate onCancel function
     visible: '='            // set up visible to accept data-binding
   }
-</pre>
+```
 
 Creating local properties on widget scope creates two problems:
 
@@ -367,7 +367,7 @@ surprise.
 
 Therefore the final directive definition looks something like this:
 
-<pre>
+```js
 transclude: true,
 scope: {
     title: '@',             // the title uses the data-binding from the parent scope
@@ -377,5 +377,5 @@ scope: {
 },
 restrict: 'E',
 replace: true
-</pre>
+```
 

@@ -26,7 +26,8 @@ The `app/phones/phones.json` file in your project is a dataset that contains a l
 stored in the JSON format.
 
 Following is a sample of the file:
-<pre>
+
+```js
 [
  {
   "age": 13,
@@ -37,7 +38,7 @@ Following is a sample of the file:
  },
 ...
 ]
-</pre>
+```
 
 
 ## Controller
@@ -53,7 +54,8 @@ and control) and loosely coupled (dependencies between components are not resolv
 components themselves, but by the DI subsystem).
 
 __`app/js/controllers.js:`__
-<pre>
+
+```js
 var phonecatApp = angular.module('phonecatApp', []);
 
 phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {
@@ -63,7 +65,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {
 
   $scope.orderProp = 'age';
 });
-</pre>
+```
 
 `$http` makes an HTTP GET request to our web server, asking for `phone/phones.json` (the url is
 relative to our `index.html` file). The server responds by providing the data in the json file.
@@ -117,31 +119,37 @@ There are two ways to overcome issues caused by minification:
 * You can create a `$inject` property on the controller function which holds an array of strings.
   Each string in the array is the name of the service to inject for the corresponding parameter.
   In the case of our example we would write:
-<pre>
+
+```js
     function PhoneListCtrl($scope, $http) {...}
     PhoneListCtrl.$inject = ['$scope', '$http'];
     phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
-</pre>
+```
+
 * Use the inline bracket notation which wraps the function to be injected into an array of strings
   (representing the dependency names) followed by the function to be injected:
-<pre>
+
+```js
     function PhoneListCtrl($scope, $http) {...}
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
-</pre>
+```
+
 Both of these methods work with any function that can be injected by Angular, so it's up to your
 project's style guide to decide which one you use.
 
 When using the second method, it is common to provide the constructor function inline as an
 anonymous function when registering the controller:
-<pre>
+
+```js
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
-</pre>
+```
 
 From this point onward, we're going to use the inline method in the tutorial. With that in mind,
 let's add the annotations to our `PhoneListCtrl`:
 
 __`app/js/controllers.js:`__
-<pre>
+
+```js
 var phonecatApp = angular.module('phonecatApp', []);
 
 phonecatApp.controller('PhoneListCtrl', ['$scope', '$http',
@@ -152,7 +160,7 @@ phonecatApp.controller('PhoneListCtrl', ['$scope', '$http',
 
     $scope.orderProp = 'age';
   }]);
-</pre>
+```
 
 ## Test
 
@@ -164,7 +172,7 @@ constructor with some kind of fake `$http` implementation. However, the recommen
 is to create a controller in the test environment in the same way that angular does it in the
 production code behind the scenes, as follows:
 
-<pre>
+```js
 describe('PhoneCat controllers', function() {
 
   describe('PhoneListCtrl', function(){
@@ -184,7 +192,7 @@ describe('PhoneCat controllers', function() {
       scope = $rootScope.$new();
       ctrl = $controller('PhoneListCtrl', {$scope: scope});
     }));
-</pre>
+```
 
 Note: Because we loaded Jasmine and `angular-mocks.js` in our test environment, we got two helper
 methods {@link api/angular.mock.module module} and {@link api/angular.mock.inject inject} that we'll
@@ -221,7 +229,7 @@ the `$httpBackend.flush` method.
 Now we will make assertions to verify that the `phones` model doesn't exist on `scope` before
 the response is received:
 
-<pre>
+```js
     it('should create "phones" model with 2 phones fetched from xhr', function() {
       expect(scope.phones).toBeUndefined();
       $httpBackend.flush();
@@ -229,7 +237,7 @@ the response is received:
       expect(scope.phones).toEqual([{name: 'Nexus S'},
                                    {name: 'Motorola DROID'}]);
     });
-</pre>
+```
 
 * We flush the request queue in the browser by calling `$httpBackend.flush()`. This causes the
 promise returned by the `$http` service to be resolved with the trained response.
@@ -238,11 +246,11 @@ promise returned by the `$http` service to be resolved with the trained response
 
 Finally, we verify that the default value of `orderProp` is set correctly:
 
-<pre>
+```js
     it('should set the default value of orderProp model', function() {
       expect(scope.orderProp).toBe('age');
     });
-</pre>
+```
 
 You should now see the following output in the Karma tab:
 

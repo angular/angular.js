@@ -30,7 +30,8 @@ We made no changes to the controller.
 ## Template
 
 __`app/index.html`:__
-<pre>
+
+```html
   <div class="container-fluid">
     <div class="row-fluid">
       <div class="span2">
@@ -52,7 +53,7 @@ __`app/index.html`:__
       </div>
     </div>
   </div>
-</pre>
+```
 
 We added a standard HTML `<input>` tag and used Angular's
 {@link api/ng.filter:filter filter} function to process the input for the
@@ -88,7 +89,8 @@ The search feature was fully implemented via templates and data-binding, so we'l
 end-to-end test, to verify that the feature works.
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 describe('PhoneCat App', function() {
 
   describe('Phone list view', function() {
@@ -109,7 +111,7 @@ describe('PhoneCat App', function() {
     });
   });
 });
-</pre>
+```
 
 Even though the syntax of this test looks very much like our controller unit test written with
 Jasmine, the end-to-end test uses APIs of {@link guide/dev_guide.e2e-testing Angular's end-to-end
@@ -168,7 +170,7 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
 
 * Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
 
-  <pre>
+  ```js
     it('should display the current filter value within an element with id "status"',
         function() {
       expect(element('#status').text()).toMatch(/Current filter: \s*$/);
@@ -180,7 +182,7 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
       //alternative version of the last assertion that tests just the value of the binding
       using('#status').expect(binding('query')).toBe('nexus');
     });
-  </pre>
+  ```
 
   Refresh the browser tab with the end-to-end test runner to see the test fail. To make the test
 pass, edit the `index.html` template to add a `div` or `p` element with `id` `"status"` and content

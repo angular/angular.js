@@ -12,37 +12,37 @@ dropped (see "Inferring `$inject`" but note that that is currently an experiment
 
 Using the array notation:
 
-<pre>
+```js
 function myModuleCfgFn($provide) {
   $provide.factory('myService', ['dep1', 'dep2', function(dep1, dep2) {}]);
 }
-</pre>
+```
 
 
 Using the $inject property:
 
-<pre>
+```js
 function myModuleCfgFn($provide) {
   var myServiceFactory = function(dep1, dep2) {};
   myServiceFactory.$inject = ['dep1', 'dep2'];
   $provide.factory('myService', myServiceFactory);
 }
-</pre>
+```
 
 
 Using DI inference (incompatible with minifiers):
 
-<pre>
+```js
 function myModuleCfgFn($provide) {
   $provide.factory('myService', function(dep1, dep2) {});
 }
-</pre>
+```
 
 
 Here is an example of two services, one of which depends on the other and both
 of which depend on other services that are provided by the Angular framework:
 
-<pre>
+```js
 /**
  * batchLog service allows for messages to be queued in memory and flushed
  * to the console.log every 50 seconds.
@@ -83,7 +83,7 @@ of which depend on other services that are provided by the Angular framework:
 
   // get the main service to kick off the application
   angular.injector([batchLogModule]).get('routeTemplateMonitor');
-</pre>
+```
 
 Things to notice in this example:
 

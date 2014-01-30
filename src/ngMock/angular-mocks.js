@@ -198,7 +198,7 @@ angular.mock.$Browser.prototype = {
  * information.
  *
  *
- * <pre>
+ * ```js
  *   describe('$exceptionHandlerProvider', function() {
  *
  *     it('should capture log messages and exceptions', function() {
@@ -219,7 +219,7 @@ angular.mock.$Browser.prototype = {
  *       });
  *     });
  *   });
- * </pre>
+ * ```
  */
 
 angular.mock.$ExceptionHandlerProvider = function() {
@@ -333,10 +333,10 @@ angular.mock.$LogProvider = function() {
        * Array of messages logged using {@link ngMock.$log#log}.
        *
        * @example
-       * <pre>
+       * ```js
        * $log.log('Some Log');
        * var first = $log.log.logs.unshift();
-       * </pre>
+       * ```
        */
       $log.log.logs = [];
       /**
@@ -348,10 +348,10 @@ angular.mock.$LogProvider = function() {
        * Array of messages logged using {@link ngMock.$log#info}.
        *
        * @example
-       * <pre>
+       * ```js
        * $log.info('Some Info');
        * var first = $log.info.logs.unshift();
-       * </pre>
+       * ```
        */
       $log.info.logs = [];
       /**
@@ -363,10 +363,10 @@ angular.mock.$LogProvider = function() {
        * Array of messages logged using {@link ngMock.$log#warn}.
        *
        * @example
-       * <pre>
+       * ```js
        * $log.warn('Some Warning');
        * var first = $log.warn.logs.unshift();
-       * </pre>
+       * ```
        */
       $log.warn.logs = [];
       /**
@@ -378,10 +378,10 @@ angular.mock.$LogProvider = function() {
        * Array of messages logged using {@link ngMock.$log#error}.
        *
        * @example
-       * <pre>
+       * ```js
        * $log.error('Some Error');
        * var first = $log.error.logs.unshift();
-       * </pre>
+       * ```
        */
       $log.error.logs = [];
         /**
@@ -393,10 +393,10 @@ angular.mock.$LogProvider = function() {
        * Array of messages logged using {@link ngMock.$log#debug}.
        *
        * @example
-       * <pre>
+       * ```js
        * $log.debug('Some Error');
        * var first = $log.debug.logs.unshift();
-       * </pre>
+       * ```
        */
       $log.debug.logs = [];
     };
@@ -617,7 +617,7 @@ function padNumber(num, digits, trim) {
  * incomplete we might be missing some non-standard methods. This can result in errors like:
  * "Date.prototype.foo called on incompatible Object".
  *
- * <pre>
+ * ```js
  * var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00Z');
  * newYearInBratislava.getTimezoneOffset() => -60;
  * newYearInBratislava.getFullYear() => 2010;
@@ -626,7 +626,7 @@ function padNumber(num, digits, trim) {
  * newYearInBratislava.getHours() => 0;
  * newYearInBratislava.getMinutes() => 0;
  * newYearInBratislava.getSeconds() => 0;
- * </pre>
+ * ```
  *
  */
 angular.mock.TzDate = function (offset, timestamp) {
@@ -1002,7 +1002,7 @@ angular.mock.dump = function(object) {
  * The following code shows how to setup and use the mock backend when unit testing a controller.
  * First we create the controller under test:
  *
-  <pre>
+  ```js
   // The controller code
   function MyController($scope, $http) {
     var authToken;
@@ -1023,11 +1023,11 @@ angular.mock.dump = function(object) {
       });
     };
   }
-  </pre>
+  ```
  *
  * Now we setup the mock backend and create the test specs:
  *
-  <pre>
+  ```js
     // testing controller
     describe('MyController', function() {
        var $httpBackend, $rootScope, createController;
@@ -1093,7 +1093,7 @@ angular.mock.dump = function(object) {
          $httpBackend.flush();
        });
     });
-   </pre>
+   ```
  */
 angular.mock.$HttpBackendProvider = function() {
   this.$get = ['$rootScope', createHttpBackendMock];
@@ -1499,9 +1499,9 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Typically, you would call this method following each test case that asserts requests using an
    * "afterEach" clause.
    *
-   * <pre>
+   * ```js
    *   afterEach($httpBackend.verifyNoOutstandingExpectation);
-   * </pre>
+   * ```
    */
   $httpBackend.verifyNoOutstandingExpectation = function() {
     $rootScope.$digest();
@@ -1521,9 +1521,9 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Typically, you would call this method following each test case that asserts requests using an
    * "afterEach" clause.
    *
-   * <pre>
+   * ```js
    *   afterEach($httpBackend.verifyNoOutstandingRequest);
-   * </pre>
+   * ```
    */
   $httpBackend.verifyNoOutstandingRequest = function() {
     if (responses.length) {
@@ -1786,7 +1786,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * To setup the application to run with this http backend, you have to create a module that depends
  * on the `ngMockE2E` and your application modules and defines the fake backend:
  *
- * <pre>
+ * ```js
  *   myAppDev = angular.module('myAppDev', ['myApp', 'ngMockE2E']);
  *   myAppDev.run(function($httpBackend) {
  *     phones = [{name: 'phone1'}, {name: 'phone2'}];
@@ -1801,7 +1801,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *     $httpBackend.whenGET(/^\/templates\//).passThrough();
  *     //...
  *   });
- * </pre>
+ * ```
  *
  * Afterwards, bootstrap your app with this new module.
  */
@@ -2070,7 +2070,7 @@ if(window.jasmine || window.mocha) {
    *
    * ## Example
    * Example of what a typical jasmine tests looks like with the inject method.
-   * <pre>
+   * ```js
    *
    *   angular.module('myApplicationModule', [])
    *       .value('mode', 'app')
@@ -2104,7 +2104,7 @@ if(window.jasmine || window.mocha) {
    *     });
    *   });
    *
-   * </pre>
+   * ```
    *
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */

@@ -23,7 +23,8 @@ GitHub}:
 ## Controller
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 ...
 var phonecatControllers = angular.module('phonecatControllers',[]);
 
@@ -38,7 +39,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$h
       $scope.mainImageUrl = imageUrl;
     }
   }]);
-</pre>
+```
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
 default value to the first phone image URL.
@@ -49,7 +50,8 @@ We also created a `setImage` event handler function that will change the value o
 ## Template
 
 __`app/partials/phone-detail.html`:__
-<pre>
+
+```html
 <img ng-src="{{mainImageUrl}}" class="phone">
 
 ...
@@ -60,7 +62,7 @@ __`app/partials/phone-detail.html`:__
   </li>
 </ul>
 ...
-</pre>
+```
 
 We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
 
@@ -81,7 +83,8 @@ to the first phone image by default. The second test clicks on several thumbnail
 verifies that the main image changed appropriately.
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 ...
   describe('Phone detail view', function() {
 
@@ -101,7 +104,7 @@ __`test/e2e/scenarios.js`:__
     });
   });
 });
-</pre>
+```
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
 runner to see the tests run, or you can see them running on {@link
