@@ -12,6 +12,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-ddescribe-iit');
   grunt.loadNpmTasks('grunt-jasmine-node');
+  grunt.loadNpmTasks("grunt-jscs-checker");
   grunt.loadNpmTasks('grunt-merge-conflict');
   grunt.loadNpmTasks('grunt-parallel');
   grunt.loadNpmTasks('grunt-shell');
@@ -142,6 +143,13 @@ module.exports = function(grunt) {
       },
       ngTouch: {
         files: { src: 'src/ngTouch/**/*.js' },
+      }
+    },
+
+    jscs: {
+      src: ['src/**/*.js', 'test/**/*.js'],
+      options: {
+        config: ".jscs.json"
       }
     },
 
@@ -301,6 +309,6 @@ module.exports = function(grunt) {
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('package-without-bower', ['clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'jscs']);
   grunt.registerTask('default', ['package']);
 };
