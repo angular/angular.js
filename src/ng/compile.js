@@ -1906,8 +1906,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 break;
 
               case '=':
-                if (optional && !attrs[attrName]) {
-                  return;
+                if (!attrs[attrName]) {
+                  if (optional) {
+                    return;
+                  }
+                  throw Error('Non-assignable model expression: ' + attrs[attrName]
+                    + ' (directive: ' + newIsolateScopeDirective.name + ')');
                 }
                 parentGet = $parse(attrs[attrName]);
                 if (parentGet.literal) {
