@@ -1,6 +1,6 @@
 // This is an incomplete TODO list of checks we want to start enforcing
 //
-// The goal is to enable this checks one by one into .jscs.json along with commits that
+// The goal is to enable this checks one by one by moving them to .jscs.json along with commits that
 // correct the existing code-base issues and make the check pass.
 
 {
