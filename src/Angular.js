@@ -1132,6 +1132,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
    <file name="index.html">
    <div ng-controller="ngAppDemoController">
      I can add: {{a}} + {{b}} =  {{ a+b }}
+   </div>
    </file>
    <file name="script.js">
    angular.module('ngAppDemo', []).controller('ngAppDemoController', function($scope) {
