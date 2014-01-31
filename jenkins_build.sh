@@ -13,12 +13,6 @@ then
   BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh,/Users/jenkins/bin/ie8.sh,/Users/jenkins/bin/ie9.sh"
 fi
 
-if [[ -z "$BROWSERS_E2E" ]]
-then
-  BROWSERS_E2E="Chrome,Firefox,/Users/jenkins/bin/safari.sh"
-fi
-
-
 # CLEAN #
 rm -f angular.min.js.gzip.size
 rm -f angular.js.size
@@ -28,6 +22,8 @@ rm -f angular.js.size
 npm install --color false
 grunt ci-checks package --no-color
 
+mkdir test_out
+
 # DOCS generator unit tests #
 grunt test:docgen --no-color
 
@@ -35,7 +31,9 @@ grunt test:docgen --no-color
 grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
-grunt test:protractor
+grunt test:ci-protractor
+grunt test:ci-protractor --browser safari
+grunt test:ci-protractor --browser firefox
 
 # Promises/A+ TESTS #
 grunt test:promises-aplus --no-color
