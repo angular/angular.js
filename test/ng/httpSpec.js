@@ -873,6 +873,15 @@ describe('$http', function() {
         $http.head('/url', {headers: {'Custom': 'Header'}});
       });
 
+      it('should have patch()', function() {
+        $httpBackend.expect('PATCH', '/url').respond('');
+        $http.patch('/url');
+      });
+
+      it('patch() should allow config param', function() {
+        $httpBackend.expect('PATCH', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
+        $http.patch('/url', {headers: {'Custom': 'Header'}});
+      });
 
       it('should have post()', function() {
         $httpBackend.expect('POST', '/url', 'some-data').respond('');
