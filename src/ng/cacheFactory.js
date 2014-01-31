@@ -203,16 +203,15 @@ function $CacheFactoryProvider() {
  * `$templateCache` service directly.
  * 
  * Adding via the `script` tag:
- * <pre>
- * <html ng-app>
- * <head>
+ * 
+ * <example>
+ * <file name="index.html">
  * <script type="text/ng-template" id="templateId.html">
  *   This is the content of the template
  * </script>
- * </head>
  *   ...
- * </html>
- * </pre>
+ * </file>
+ * </example>
  * 
  * **Note:** the `script` tag containing the template does not need to be included in the `head` of
  * the document, but it must be below the `ng-app` definition.
