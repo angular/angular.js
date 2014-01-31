@@ -135,7 +135,7 @@ made available a local web server based on Node.js.
 
 ## Running the Unit Test Suite
 
-We write unit tests with Jasmine and execute them with Karma. To run all of the
+We write unit and integration tests with Jasmine and execute them with Karma. To run all of the
 tests once on Chrome run:
 
 ```shell
