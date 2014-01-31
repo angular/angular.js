@@ -43,7 +43,9 @@
     "promises-aplus-tests": "~1.3.2",
     "semver": "~2.1.0",
     "lodash": "~2.1.0",
-    "browserstacktunnel-wrapper": "~1.1.1"
+    "browserstacktunnel-wrapper": "~1.1.1",
+    "grunt-jscs-checker": "~0.3.2",
+    "jasmine-reporters": "~0.2.1"
   },
   "licenses": [
     {
