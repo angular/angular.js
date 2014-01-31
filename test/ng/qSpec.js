@@ -959,6 +959,13 @@ describe('q', function() {
       mockNextTick.flush();
       expect(log).toEqual(['errorBroken(rejected)->throw(catch me!)', 'errorAffected(catch me!)->reject(catch me!)']);
     });
+
+
+    it('should have functions `finally` and `catch`', function() {
+      var rejectedPromise = q.reject('rejected');
+      expect(rejectedPromise['finally']).not.toBeUndefined();
+      expect(rejectedPromise['catch']).not.toBeUndefined();
+    });
   });
 
 
