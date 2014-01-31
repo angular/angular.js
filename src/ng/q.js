@@ -223,7 +223,7 @@ function qFactory(nextTick, exceptionHandler) {
 
 
       reject: function(reason) {
-        deferred.resolve(reject(reason));
+        deferred.resolve(createInternalRejectedPromise(reason));
       },
 
 
@@ -380,6 +380,12 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Promise} Returns a promise that was already resolved as rejected with the `reason`.
    */
   var reject = function(reason) {
+    var result = defer();
+    result.reject(reason);
+    return result.promise;
+  };
+
+  var createInternalRejectedPromise = function(reason) {
     return {
       then: function(callback, errback) {
         var result = defer();
