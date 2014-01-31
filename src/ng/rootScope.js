@@ -926,7 +926,7 @@ function $RootScopeProvider(){
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to emit.
-       * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @param {...*} args Optional one or more arguments which will be passed onto the event listeners.
        * @return {Object} Event object (see {@link ng.$rootScope.Scope#methods_$on}).
        */
       $emit: function(name, args) {
@@ -994,7 +994,7 @@ function $RootScopeProvider(){
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to broadcast.
-       * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @param {...*} args Optional one or more arguments which will be passed onto the event listeners.
        * @return {Object} Event object, see {@link ng.$rootScope.Scope#methods_$on}
        */
       $broadcast: function(name, args) {
