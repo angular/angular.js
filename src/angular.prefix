@@ -3,4 +3,14 @@
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
-(function(window, document, undefined) {
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('angular', [], function() {
+      return factory(root, document);
+    });
+  } else if (typeof exports === 'object') {
+    module.exports = factory(root, document);
+  } else {
+    factory(root, document);
+  }
+})(this, function(window, document, undefined) {

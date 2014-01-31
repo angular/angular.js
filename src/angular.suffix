@@ -8,4 +8,6 @@
     angularInit(document, bootstrap);
   });
 
-})(window, document);
+  return angular;
+
+});
