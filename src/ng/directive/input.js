@@ -852,8 +852,7 @@ var VALID_CLASS = 'ng-valid',
        the control reads value from the DOM.  Each function is called, in turn, passing the value
        through to the next. Used to sanitize / convert the value as well as validation.
        For validation, the parsers should update the validity state using
-       {@link ng.directive:ngModel.NgModelController#methods_$setValidity $setValidity()},
-       and return `undefined` for invalid values.
+       {@link ng.directive:ngModel.NgModelController#methods_$setValidity $setValidity()}.
 
  *
  * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
