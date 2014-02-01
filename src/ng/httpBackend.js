@@ -6,7 +6,7 @@ function createXhr(method) {
     //if it is available
     if (msie <= 8 && (!method.match(/^(get|post|head|put|delete|options)$/i) ||
       !window.XMLHttpRequest)) {
-      return new ActiveXObject("Microsoft.XMLHTTP");
+      return new window.ActiveXObject("Microsoft.XMLHTTP");
     } else if (window.XMLHttpRequest) {
       return new window.XMLHttpRequest();
     }
