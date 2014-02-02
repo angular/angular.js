@@ -51,7 +51,7 @@ exports.ngVersions = function() {
     });
 
   //match the future version of AngularJS that is set in the package.json file
-  return expandVersions(sortVersionsNatrually(versions), exports.ngCurrentVersion().full);
+  return expandVersions(sortVersionsNaturally(versions), exports.ngCurrentVersion().full);
 
   function expandVersions(versions, latestVersion) {
     var RC_VERSION = /rc\d/;
@@ -87,7 +87,7 @@ exports.ngVersions = function() {
     return expanded;
   };
 
-  function sortVersionsNatrually(versions) {
+  function sortVersionsNaturally(versions) {
     var versionMap = {},
         NON_RC_RELEASE_NUMBER = 999;
     for(var i = versions.length - 1; i >= 0; i--) {
