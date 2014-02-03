@@ -1,3 +1,27 @@
+<a name="1.2.11"></a>
+# 1.2.11 cryptocurrency-hyperdeflation (2014-02-03)
+
+## Bug Fixes
+
+- **$compile:** retain CSS classes added in cloneAttachFn on asynchronous directives
+  ([5ed721b9](https://github.com/angular/angular.js/commit/5ed721b9b5e95ae08450e1ae9d5202e7f3f79295),
+   [#5439](https://github.com/angular/angular.js/issues/5439), [#5617](https://github.com/angular/angular.js/issues/5617))
+- **$http:** update httpBackend to use ActiveXObject on IE8 if necessary
+  ([ef210e5e](https://github.com/angular/angular.js/commit/ef210e5e119db4f5bfc9d2428b19f9b335c4f976),
+   [#5677](https://github.com/angular/angular.js/issues/5677), [#5679](https://github.com/angular/angular.js/issues/5679))
+- **$q:** make $q.reject support `finally` and `catch`
+  ([074b0675](https://github.com/angular/angular.js/commit/074b0675a1f97dce07f520f1ae6198ed3c604000),
+   [#6048](https://github.com/angular/angular.js/issues/6048), [#6076](https://github.com/angular/angular.js/issues/6076))
+- **filterFilter:** don't interpret dots in predicate object fields as paths
+  ([339a1658](https://github.com/angular/angular.js/commit/339a1658cd9bfa5e322a01c45aa0a1df67e3a842),
+   [#6005](https://github.com/angular/angular.js/issues/6005), [#6009](https://github.com/angular/angular.js/issues/6009))
+- **mocks:** refactor currentSpec to work w/ Jasmine 2
+  ([95f0bf9b](https://github.com/angular/angular.js/commit/95f0bf9b526fda8964527c6d4aef1ad50a47f1f3),
+   [#5662](https://github.com/angular/angular.js/issues/5662))
+- **ngResource:** don't append number to '$' in url param value when encoding URI
+  ([ce1f1f97](https://github.com/angular/angular.js/commit/ce1f1f97f0ebf77941b2bdaf5e8352d33786524d),
+   [#6003](https://github.com/angular/angular.js/issues/6003), [#6004](https://github.com/angular/angular.js/issues/6004))
+
 <a name="1.2.10"></a>
 # 1.2.10 augmented-serendipity (2014-01-24)
 
