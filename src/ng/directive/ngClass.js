@@ -133,7 +133,6 @@ function classDirective(name, selector) {
          expect(ps.get(1).getAttribute('class')).toBe('');
          element(by.model('style')).clear();
          element(by.model('style')).sendKeys('red');
-         browser.debugger();
          expect(ps.get(1).getAttribute('class')).toBe('red');
        });
 
