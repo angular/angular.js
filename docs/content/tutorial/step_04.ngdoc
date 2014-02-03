@@ -23,7 +23,8 @@ The most important differences between Steps 3 and 4 are listed below. You can s
 ## Template
 
 __`app/index.html`:__
-<pre>
+
+```html
   Search: <input ng-model="query">
   Sort by:
   <select ng-model="orderProp">
@@ -38,7 +39,7 @@ __`app/index.html`:__
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
-</pre>
+```
 
 We made the following changes to the `index.html` template:
 
@@ -64,7 +65,8 @@ necessary!
 ## Controller
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 var phonecatApp = angular.module('phonecatApp', []);
 
 phonecatApp.controller('PhoneListCtrl', function ($scope) {
@@ -82,7 +84,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
 
   $scope.orderProp = 'age';
 });
-</pre>
+```
 
 * We modified the `phones` model - the array of phones - and added an `age` property to each phone
 record. This property is used to order phones by age.
@@ -106,7 +108,8 @@ The changes we made should be verified with both a unit test and an end-to-end t
 the unit test first.
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 describe('PhoneCat controllers', function() {
 
   describe('PhoneListCtrl', function(){
@@ -129,7 +132,7 @@ describe('PhoneCat controllers', function() {
     });
   });
 });
-</pre>
+```
 
 
 The unit test now verifies that the default ordering property is set.
@@ -145,7 +148,8 @@ You should now see the following output in the Karma tab:
 Let's turn our attention to the end-to-end test.
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 ...
     it('should be possible to control phone order via the drop down select box',
         function() {
@@ -163,7 +167,7 @@ __`test/e2e/scenarios.js`:__
                    "Motorola XOOM\u2122 with Wi-Fi"]);
     });
 ...
-</pre>
+```
 
 The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
 

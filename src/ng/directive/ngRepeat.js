@@ -30,7 +30,7 @@
  * up to and including the ending HTML tag where **ng-repeat-end** is placed.
  *
  * The example below makes use of this feature:
- * <pre>
+ * ```html
  *   <header ng-repeat-start="item in items">
  *     Header {{ item }}
  *   </header>
@@ -40,10 +40,10 @@
  *   <footer ng-repeat-end>
  *     Footer {{ item }}
  *   </footer>
- * </pre>
+ * ```
  *
  * And with an input of {@type ['A','B']} for the items variable in the example above, the output will evaluate to:
- * <pre>
+ * ```html
  *   <header>
  *     Header A
  *   </header>
@@ -62,7 +62,7 @@
  *   <footer>
  *     Footer B
  *   </footer>
- * </pre>
+ * ```
  *
  * The custom start and end points for ngRepeat also support all other HTML directive syntax flavors provided in AngularJS (such
  * as **data-ng-repeat-start**, **x-ng-repeat-start** and **ng:repeat-start**).

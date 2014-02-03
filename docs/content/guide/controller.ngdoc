@@ -28,32 +28,32 @@ is registered.
 The following example shows a very simple constructor function for a Controller, `GreetingCtrl`,
 which attaches a `greeting` property containing the string `'Hola!'` to the `$scope`:
 
-<pre>
+```js
     function GreetingCtrl($scope) {
         $scope.greeting = 'Hola!';
     }
-</pre>
+```
 
 Once the Controller has been attached to the DOM, the `greeting` property can be data-bound to the
 template:
 
-<pre>
+```js
     <div ng-controller="GreetingCtrl">
       {{ greeting }}
     </div>
-</pre>
+```
 
 **NOTE**: Although Angular allows you to create Controller functions in the global scope, this is
 not recommended.  In a real application you should use the `.controller` method of your
 {@link module Angular Module} for your application as follows:
 
-<pre>
+```js
     var myApp = angular.module('myApp',[]);
 
     myApp.controller('GreetingCtrl', ['$scope', function($scope) {
         $scope.greeting = 'Hola!';
     }]);
-</pre>
+```
 
 We have used an **inline injection annotation** to explicitly specify the dependency
 of the Controller on the `$scope` service provided by Angular. See the guide on 
@@ -68,22 +68,22 @@ then available to be called from the template/view.
 
 The following example uses a Controller to add a method to the scope, which doubles a number:
 
-<pre>
+```js
     var myApp = angular.module('myApp',[]);
 
     myApp.controller('DoubleCtrl', ['$scope', function($scope) {
         $scope.double = function(value) { return value * 2; };
     }]);
-</pre>
+```
 
 Once the Controller has been attached to the DOM, the `double` method can be invoked in an Angular
 expression in the template:
 
-<pre>
+```js
     <div ng-controller="DoubleCtrl">
       Two times <input ng-model="num"> equals {{ double(num) }}
     </div>
-</pre>
+```
 
 As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
@@ -270,7 +270,7 @@ Although there are many ways to test a Controller, one of the best conventions, 
 involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$controller $controller}:
 
 **Controller Definition:**
-<pre>
+```js
     var myApp = angular.module('myApp',[]);
 
     myApp.controller('MyController', function($scope) {
@@ -279,10 +279,10 @@ involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$c
                        {"name":"habanero", "spiceness":"LAVA HOT!!"}];
       $scope.spice = "habanero";
     });
-</pre>
+```
 
 **Controller Test:**
-<pre>
+```js
 describe('myController function', function() {
 
   describe('myController', function() {
@@ -304,13 +304,13 @@ describe('myController function', function() {
     });
   });
 });
-</pre>
+```
 
 
 If you need to test a nested Controller you need to create the same scope hierarchy
 in your test that exists in the DOM:
 
-<pre>
+```js
 describe('state', function() {
     var mainScope, childScope, grandChildScope;
 
@@ -334,7 +334,7 @@ describe('state', function() {
         expect(grandChildScope.name).toBe('Gingerbreak Baby');
     });
 });
-</pre>
+```
 
 
 

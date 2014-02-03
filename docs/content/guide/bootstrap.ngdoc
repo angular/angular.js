@@ -13,7 +13,7 @@ This example shows the recommended path for integrating Angular with what we cal
 initialization.
 
 
-<pre>
+```html
 <!doctype html>
 <html xmlns:ng="http://angularjs.org" ng-app>
   <body>
@@ -21,7 +21,7 @@ initialization.
     <script src="angular.js">
   </body>
 </html>
-</pre>
+```
 
   * Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
     improves app load time because the HTML loading is not blocked by loading of the `angular.js`
@@ -65,7 +65,7 @@ If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular w
     portion of the DOM as an Angular application.
 
 
-<pre>
+```html
 <!doctype html>
 <html ng-app="optionalModuleName">
   <body>
@@ -73,7 +73,7 @@ If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular w
     <script src="angular.js"></script>
   </body>
 </html>
-</pre>
+```
 
 
 
@@ -86,7 +86,7 @@ or the need to perform an operation before Angular compiles a page.
 
 Here is an example of manually initializing Angular:
 
-<pre>
+```html
 <!doctype html>
 <html xmlns:ng="http://angularjs.org">
   <body>
@@ -100,7 +100,7 @@ Here is an example of manually initializing Angular:
     </script>
   </body>
 </html>
-</pre>
+```
 
 Note that we have provided the name of our application module to be loaded into the injector as the second
 parameter of the {@link api/angular.bootstrap} function. Notice that `angular.bootstrap` will not create modules 

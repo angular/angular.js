@@ -28,17 +28,19 @@ template. Additionally, we also need to load the `angular-resource.js` file, whi
 `ngResource` module and in it the `$resource` service, that we'll soon use:
 
 __`app/index.html`.__
-<pre>
+
+```html
 ...
   <script src="js/services.js"></script>
   <script src="lib/angular/angular-resource.js"></script>
 ...
-</pre>
+```
 
 ## Service
 
 __`app/js/services.js`.__
-<pre>
+
+```js
 var phonecatServices = angular.module('phonecatServices', ['ngResource']);
 
 phonecatServices.factory('Phone', ['$resource',
@@ -47,7 +49,7 @@ phonecatServices.factory('Phone', ['$resource',
       query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
     });
   }]);
-</pre>
+```
 
 We used the module API to register a custom service using a factory function. We passed in the name
 of the service - 'Phone' - and the factory function. The factory function is similar to a
@@ -60,11 +62,12 @@ lines of code. This client can then be used in our application, instead of the l
 api/ng.$http $http} service.
 
 __`app/js/app.js`.__
-<pre>
+
+```js
 ...
 angular.module('phonecatApp', ['ngRoute', 'phonecatControllers','phonecatFilters', 'phonecatServices']).
 ...
-</pre>
+```
 
 We need to add the 'phonecatServices' module dependency to 'phonecatApp' module's requires array.
 
@@ -78,7 +81,8 @@ use than `$http` for interacting with data sources exposed as RESTful resources.
 now to understand what the code in our controllers is doing.
 
 __`app/js/controllers.js`.__
-<pre>
+
+```js
 ...
 
 phonecatApp.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
@@ -95,7 +99,7 @@ phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', fu
     $scope.mainImageUrl = imageUrl;
   }
 }]);
-</pre>
+```
 
 Notice how in `PhoneListCtrl` we replaced:
 
@@ -137,7 +141,8 @@ ignores methods.
 
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 describe('PhoneCat controllers', function() {
 
   beforeEach(function(){
@@ -208,7 +213,7 @@ describe('PhoneCat controllers', function() {
     });
   });
 });
-</pre>
+```
 
 You should now see the following output in the Karma tab:
 

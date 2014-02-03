@@ -101,25 +101,28 @@ To configure the `$location` service, retrieve the
   default: `""`
 
 ### Example configuration
-<pre>
+```js
 $locationProvider.html5Mode(true).hashPrefix('!');
-</pre>
+```
 
 ## Getter and setter methods
 
 `$location` service provides getter methods for read-only parts of the URL (absUrl, protocol, host,
 port) and getter / setter methods for url, path, search, hash:
-<pre>
+```js
 // get the current path
 $location.path();
 
 // change the path
 $location.path('/newValue')
-</pre>
+```
 
 All of the setter methods return the same `$location` object to allow chaining. For example, to
 change multiple segments in one go, chain setters like this:
-<pre>$location.path('/newValue').search({key: value});</pre>
+
+```js
+$location.path('/newValue').search({key: value});
+```
 
 ## Replace method
 
@@ -128,11 +131,12 @@ time the $location service is synced with the browser, the last history record s
 instead of creating a new one. This is useful when you want to implement redirection, which would
 otherwise break the back button (navigating back would retrigger the redirection). To change the
 current URL without creating a new browser history record you can call:
-<pre>
+
+```js
   $location.path('/someNewPath');
   $location.replace();
   // or you can chain these as: $location.path('/someNewPath').replace();
-</pre>
+```
 
 Note that the setters don't update `window.location` immediately. Instead, the `$location` service is
 aware of the {@link api/ng.$rootScope.Scope scope} life-cycle and coalesces multiple `$location`
@@ -210,7 +214,7 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 
 ### Example
 
-<pre>
+```js
 it('should show example', inject(
   function($locationProvider) {
     $locationProvider.html5Mode(false);
@@ -232,13 +236,16 @@ it('should show example', inject(
     $location.absUrl() == 'http://example.com/base/index.html#!/new?x=y'
   }
 ));
-</pre>
+```
 
 ### Crawling your app
 
 To allow indexing of your AJAX application, you have to add special meta tag in the head section of
 your document:
-<pre><meta name="fragment" content="!" /></pre>
+
+```html
+<meta name="fragment" content="!" />
+```
 
 This will cause crawler bot to request links with `_escaped_fragment_` param so that your server
 can recognize the crawler and serve a HTML snapshots. For more information about this technique,
@@ -259,7 +266,7 @@ having to worry about whether the browser displaying your app supports the histo
 
 ### Example
 
-<pre>
+```js
 it('should show example', inject(
   function($locationProvider) {
     $locationProvider.html5Mode(true);
@@ -294,7 +301,7 @@ it('should show example', inject(
     $location.absUrl() == 'http://example.com/#!/foo/bar?x=y'
   }
 ));
-</pre>
+```
 
 ### Fallback for legacy browsers
 
@@ -342,7 +349,10 @@ to entry point of your application (e.g. index.html)
 
 If you want your AJAX application to be indexed by web crawlers, you will need to add the following
 meta tag to the HEAD section of your document:
-<pre><meta name="fragment" content="!" /></pre>
+
+```html
+<meta name="fragment" content="!" />
+```
 
 This statement causes a crawler to request links with an empty `_escaped_fragment_` parameter so that
 your server can recognize the crawler and serve it HTML snapshots. For more information about this
@@ -526,7 +536,7 @@ hashPrefix.
 When using `$location` service during testing, you are outside of the angular's {@link
 api/ng.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
 
-<pre>
+```js
 describe('serviceUnderTest', function() {
   beforeEach(module(function($provide) {
     $provide.factory('serviceUnderTest', function($location){
@@ -542,7 +552,7 @@ describe('serviceUnderTest', function() {
 
   }));
 });
-</pre>
+```
 
 
 # Migrating from earlier AngularJS releases

@@ -30,7 +30,7 @@ In addition to the above elements, scenarios may also contain helper functions t
 code in the `it` blocks.
 
 Here is an example of a simple scenario:
-<pre>
+```js
 describe('Buzz Client', function() {
 it('should filter results', function() {
   input('user').enter('jacksparrow');
@@ -40,7 +40,7 @@ it('should filter results', function() {
   expect(repeater('ul li').count()).toEqual(1);
 });
 });
-</pre>
+```
 
 Note that
 [`input('user')`](https://github.com/angular/angular.js/blob/master/docs/content/guide/dev_guide.e2e-testing.ngdoc#L119)
@@ -189,7 +189,7 @@ be negated with `not()`. For instance: `expect(element('h1').text()).not().toEqu
 
 Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/matchers.js}
 
-<pre>
+```js
 // value and Object comparison following the rules of angular.equals().
 expect(value).toEqual(value)
 
@@ -218,7 +218,7 @@ expect(value).toContain(expected)
 // number comparison using < and >
 expect(value).toBeLessThan(expected)
 expect(value).toBeGreaterThan(expected)
-</pre>
+```
 
 # Example
 See the {@link https://github.com/angular/angular-seed angular-seed} project for more examples.
@@ -238,7 +238,7 @@ Imagine the application to be structured into two views:
  2. a *detail view* which shows the entries' details and contains a delete button. When clicking the
     delete button, the user is redirected back to the *overview page*.
 
-<pre>
+```js
 beforeEach(function () {
   var deleteEntry = function () {
     browser().navigateTo('/entries');
@@ -275,24 +275,24 @@ beforeEach(function () {
   // start deleting entries
   deleteEntry();
 });
-</pre>
+```
 
 In order to understand what is happening, we should emphasize that ngScenario calls are not
 immediately executed, but queued (in ngScenario terms, we would be talking about adding
 future actions). If we had only one entry in our table, then the following future actions
 would be queued:
 
-<pre>
+```js
 // delete entry 1
 browser().navigateTo('/entries');
 element('table tbody').query(function (tbody, done) { ... });
 element('table tbody a');
 element('.btn-danger').click();
-</pre>
+```
 
 For two entries, ngScenario would have to work on the following queue:
 
-<pre>
+```js
 // delete entry 1
 browser().navigateTo('/entries');
 element('table tbody').query(function (tbody, done) { ... });
@@ -305,7 +305,7 @@ element('.btn-danger').click();
     element('table tbody').query(function (tbody, done) { ... });
     element('table tbody a');
     element('.btn-danger').click();
-</pre>
+```
 
 # Caveats
 

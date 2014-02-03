@@ -26,7 +26,8 @@ To make your Angular application work on IE please make sure that:
   1. You polyfill JSON.stringify for IE7 and below. You can use
      [JSON2](https://github.com/douglascrockford/JSON-js) or
      [JSON3](http://bestiejs.github.com/json3/) polyfills for this.
-     <pre>
+     
+		 ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org">
          <head>
@@ -38,21 +39,23 @@ To make your Angular application work on IE please make sure that:
            ...
          </body>
        </html>
-     </pre>
+     ```
 
   2. add `id="ng-app"` to the root element in conjunction with `ng-app` attribute
-     <pre>
+     
+		 ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
          ...
        </html>
-     </pre>
+     ```
 
   3. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
      `<div ng-view>` instead), or
 
   4. if you **do use** custom element tags, then you must take these steps to make IE 8 and below happy:
-     <pre>
+     
+		 ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
          <head>
@@ -73,7 +76,7 @@ To make your Angular application work on IE please make sure that:
            ...
          </body>
        </html>
-     </pre>
+     ```
 
 The **important** parts are:
 
@@ -112,37 +115,37 @@ attribute names. So this requires no special handling in IE: `<div my-tag your:t
 Suppose you have HTML with unknown tag `mytag` (this could also be `my:tag` or `my-tag` with same
 result):
 
-<pre>
+```html
   <html>
     <body>
       <mytag>some text</mytag>
     </body>
   </html>
-</pre>
+```
 
 It should parse into the following DOM:
 
-<pre>
+```
 #document
   +- HTML
      +- BODY
         +- mytag
            +- #text: some text
-</pre>
+```
 
 The expected behavior is that the `BODY` element has a child element `mytag`, which in turn has
 the text `some text`.
 
 But this is not what IE does (if the above fixes are not included):
 
-<pre>
+```
 #document
   +- HTML
      +- BODY
         +- mytag
         +- #text: some text
         +- /mytag
-</pre>
+```
 
 In IE, the behavior is that the `BODY` element has three children:
 
@@ -162,7 +165,7 @@ In IE, the behavior is that the `BODY` element has three children:
 To make CSS selectors work with custom elements, the custom element name must be pre-created with 
 `document.createElement('my-tag')` regardless of XML namespace.
 
-<pre>
+```html
   <html xmlns:ng="needed for ng: namespace">
     <head>
       <!--[if lte IE 8]>
@@ -192,7 +195,7 @@ To make CSS selectors work with custom elements, the custom element name must be
       ...
     </body>
   </html>
-</pre>
+```
 
 
 

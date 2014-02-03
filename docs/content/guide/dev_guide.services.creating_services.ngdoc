@@ -22,17 +22,19 @@ by using the {@link api/AUTO.$provide $provide} service in the module configurat
 function. The following pseudo-code shows both approaches:
 
 Using the angular.Module api:
-<pre>
+
+```js
 var myModule = angular.module('myModule', []);
 myModule.factory('serviceId', function() {
   var shinyNewServiceInstance;
   //factory function body that constructs shinyNewServiceInstance
   return shinyNewServiceInstance;
 });
-</pre>
+```
 
 Using the $provide service:
-<pre>
+
+```js
 angular.module('myModule', [], function($provide) {
   $provide.factory('serviceId', function() {
     var shinyNewServiceInstance;
@@ -40,7 +42,7 @@ angular.module('myModule', [], function($provide) {
     return shinyNewServiceInstance;
   });
 });
-</pre>
+```
 
 Note that you are not registering a service instance, but rather a factory function that will
 create this instance when called.
@@ -58,7 +60,7 @@ Following is an example of a very simple service. This service depends on the `$
 stores all notifications; after the third one, the service displays all of the notifications by
 window alert.
 
-<pre>
+```js
 angular.module('myModule', [], function($provide) {
   $provide.factory('notify', ['$window', function(win) {
     var msgs = [];
@@ -71,7 +73,7 @@ angular.module('myModule', [], function($provide) {
     };
   }]);
 });
-</pre>
+```
 
 
 # Instantiating Angular Services

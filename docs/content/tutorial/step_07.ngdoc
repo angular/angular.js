@@ -73,7 +73,8 @@ both module systems can live side by side and fulfil their goals.
 ## The App Module
 
 __`app/js/app.js`:__
-<pre>
+
+```js
 var phonecatApp = angular.module('phonecatApp', [
   'ngRoute',
   'phonecatControllers'
@@ -94,7 +95,7 @@ phonecatApp.config(['$routeProvider',
         redirectTo: '/phones'
       });
   }]);
-</pre>
+```
 
 In order to configure our application with routes, we need to create a module for our application.
 We call this module `phonecatApp`. Notice the second argument passed to `angular.module`:
@@ -135,17 +136,19 @@ the module name as the value of the {@link api/ng.directive:ngApp ngApp}
 directive:
 
 __`app/index.html`:__
-<pre>
+
+```html
 <!doctype html>
 <html lang="en" ng-app="phonecatApp">
 ...
-</pre>
+```
 
 
 ## Controllers
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 var phonecatControllers = angular.module('phonecatControllers', []);
 
 phonecatControllers.controller('PhoneListCtrl', ['$scope', '$http',
@@ -161,7 +164,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
   function($scope, $routeParams) {
     $scope.phoneId = $routeParams.phoneId;
   }]);
-</pre>
+```
 
 Again, note that we created a new module called `phonecatControllers`. For small AngularJS applications,
 it's common to create just one module for all of your controllers if there are just a few. For larger apps,
@@ -182,7 +185,8 @@ tag to your `index.html` file as shown below.
 </div>
 
 __`app/index.html`:__
-<pre>
+
+```html
 <!doctype html>
 <html lang="en" ng-app="phonecatApp">
 <head>
@@ -198,14 +202,15 @@ __`app/index.html`:__
 
 </body>
 </html>
-</pre>
+```
 
 Note that we removed most of the code in the `index.html` template and replaced it with a single
 line containing a div with the `ng-view` attribute. The code that we removed was placed into the
 `phone-list.html` template:
 
 __`app/partials/phone-list.html`:__
-<pre>
+
+```html
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span2">
@@ -233,7 +238,7 @@ __`app/partials/phone-list.html`:__
     </div>
   </div>
 </div>
-</pre>
+```
 
 <div style="display:none">
 TODO!
@@ -243,9 +248,10 @@ TODO!
 We also added a placeholder template for the phone details view:
 
 __`app/partials/phone-detail.html`:__
-<pre>
+
+```html
 TBD: detail view for {{phoneId}}
-</pre>
+```
 
 Note how we are using `phoneId` model defined in the `PhoneDetailCtrl` controller.
 
@@ -255,7 +261,7 @@ Note how we are using `phoneId` model defined in the `PhoneDetailCtrl` controlle
 To automatically verify that everything is wired properly, we wrote end-to-end tests that navigate
 to various URLs and verify that the correct view was rendered.
 
-<pre>
+```js
 ...
   it('should redirect index.html to index.html#/phones', function() {
     browser().navigateTo('app/index.html');
@@ -274,7 +280,7 @@ to various URLs and verify that the correct view was rendered.
       expect(binding('phoneId')).toBe('nexus-s');
     });
  });
-</pre>
+```
 
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test

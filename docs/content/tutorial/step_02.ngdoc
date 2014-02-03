@@ -32,7 +32,8 @@ view.
 The view component is constructed by Angular from this template:
 
 __`app/index.html`:__
-<pre>
+
+```html
 <html ng-app="phonecatApp">
 <head>
   ...
@@ -50,7 +51,7 @@ __`app/index.html`:__
 
 </body>
 </html>
-</pre>
+```
 
 We replaced the hard-coded phone list with the
 {@link api/ng.directive:ngRepeat ngRepeat directive} and two
@@ -77,7 +78,8 @@ the `PhoneListCtrl` __controller__. The __controller__ is simply a constructor f
 `$scope` parameter:
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 
 var phonecatApp = angular.module('phonecatApp', []);
 
@@ -92,7 +94,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
   ];
 });
 
-</pre>
+```
 
 Here we declared a controller called `PhoneListCtrl` and registered it in an AngularJS
 module, `phonecatApp`. Notice that our `ng-app` directive (on the `<html>` tag) now specifies the `phonecatApp`
@@ -130,7 +132,8 @@ developed. If our controller is available on the global namespace then we can si
 with a mock `scope` object. Take a look at the following unit test for our controller:
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 describe('PhoneCat controllers', function() {
 
   describe('PhoneListCtrl', function(){
@@ -143,7 +146,7 @@ describe('PhoneCat controllers', function() {
     });
   });
 });
-</pre>
+```
 
 The test instantiates `PhoneListCtrl` and verifies that the phones array property on the scope
 contains three records. This example demonstrates how easy it is to create a unit test for code in
@@ -157,7 +160,8 @@ service, `$controller`, which will retrieve your controller by name.  Here is th
 `$controller`:
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 describe('PhoneCat controllers', function() {
   beforeEach(module('phonecatApp'));
 
@@ -171,7 +175,7 @@ describe('PhoneCat controllers', function() {
     }));
   });
 });
-</pre>
+```
 
 Don't forget that we need to load up the `phonecatApp` module into the test so that the controller
 is available to be injected.
