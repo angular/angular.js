@@ -61,21 +61,21 @@ describe('Filter: filter', function() {
   });
 
 
-  it('should also support nested objects in predicate', function() {
-    var items = [{'person': 'misko hevery', 'job': {name: 'bit jockey'}},
-                 {'person': 'adam abrons', 'job': {name: 'pixelmancer'}}];
-
-    expect(filter(items, {'job.name':''}).length).toBe(2);
-    expect(filter(items, {'job.name':'bit'})).toEqual([items[0]]);
-  });
-
-
   it('should support predicate object with dots in the name', function() {
     var items = [{'first.name': 'misko', 'last.name': 'hevery'},
                  {'first.name': 'adam', 'last.name': 'abrons'}];
 
     expect(filter(items, {'first.name':'', 'last.name':''}).length).toBe(2);
     expect(filter(items, {'first.name':'misko', 'last.name':''})).toEqual([items[0]]);
+  }); 
+  
+
+  it('should also support nested objects in predicate', function() {
+    var items = [{'person': 'misko hevery', 'job': {name: 'bit jockey'}},
+                 {'person': 'adam abrons', 'job': {name: 'pixelmancer'}}];
+
+    expect(filter(items, {'job.name':''}).length).toBe(2);
+    expect(filter(items, {'job.name':'bit'})).toEqual([items[0]]);
   }); 
 
 
