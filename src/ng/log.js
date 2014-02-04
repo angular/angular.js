@@ -51,7 +51,7 @@ function $LogProvider(){
    * @name ng.$logProvider#debugEnabled
    * @methodOf ng.$logProvider
    * @description
-   * @param {string=} flag enable or disable debug level messages
+   * @param {boolean=} flag enable or disable debug level messages
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.debugEnabled = function(flag) {
