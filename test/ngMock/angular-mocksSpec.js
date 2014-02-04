@@ -864,6 +864,25 @@ describe('ngMock', function() {
       });
 
 
+      describe('this', function() {
+
+        it('should set `this` to be the jasmine context', inject(function() {
+          expect(this instanceof jasmine.Spec).toBe(true);
+        }));
+
+        it('should set `this` to be the jasmine context when inlined in a test', function() {
+          var tested = false;
+
+          inject(function() {
+            expect(this instanceof jasmine.Spec).toBe(true);
+            tested = true;
+          });
+
+          expect(tested).toBe(true);
+        });
+      });
+
+
       // We don't run the following tests on IE8.
       // IE8 throws "Object does not support this property or method." error,
       // when thrown from a function defined on window (which `inject` is).
