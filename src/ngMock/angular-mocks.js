@@ -504,6 +504,7 @@ angular.mock.$IntervalProvider = function() {
     };
 
     $interval.cancel = function(promise) {
+      if(!promise) return false;
       var fnIndex;
 
       angular.forEach(repeatFns, function(fn, index) {
