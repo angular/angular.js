@@ -1,38 +1,63 @@
 #!/bin/bash
 
+# tags the current commit as a release and publishes all artifacts to
+# the different repositories.
+# Note: This will also works if the commit is in the past!
+
 echo "#################################"
-echo "#### Cut release ################"
+echo "#### cut release     ############"
 echo "#################################"
 
 ARG_DEFS=(
-  "--next-version-type=(patch|minor|major)"
-  "--next-version-name=(.+)"
   # require the git dryrun flag so the script can't be run without
   # thinking about this!
   "--git-push-dryrun=(true|false)"
-  "[--no-test=(true|false)]"
+  # The sha to release. Needs to be the same as HEAD.
+  # given as parameter to double check.
+  "--commit-sha=(.*)"
+  # the version number of the release.
+  # e.g. 1.2.12 or 1.2.12-rc.1
+  "--version-number=([0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?)"
+  # the codename of the release
+  "--version-name=(.+)"
 )
 
 function init {
-  NG_ARGS=("$@")
+  if [[ $(git rev-parse --short HEAD) != $COMMIT_SHA ]]; then
+    echo "HEAD is not at $COMMIT_SHA"
+    usage
+  fi
+
   if [[ ! $VERBOSE ]]; then
     VERBOSE=false
   fi
-  if [[ ! $NO_TEST ]]; then
-    NO_TEST=false
-  fi
   VERBOSE_ARG="--verbose=$VERBOSE"
-  NO_TEST_ARG="--no_test=$NO_TEST"
+}
+
+function build {
+  cd ../..
+
+  npm install --color false
+  grunt ci-checks package --no-color
+
+  cd $SCRIPT_DIR
 }
 
 function phase {
   ACTION_ARG="--action=$1"
-  ../angular.js/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG \
-      --next-version-type=$NEXT_VERSION_TYPE --next-version-name=$NEXT_VERSION_NAME
+  ../angular.js/tag-release.sh $ACTION_ARG $VERBOSE_ARG\
+    --version-number=$VERSION_NUMBER --version-name=$VERSION_NAME\
+    --commit-sha=$COMMIT_SHA
+
+  if [[ $1 == "prepare" ]]; then
+    # The build requires the tag to be set already!
+    build
+  fi
+
   ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
   ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
-  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG
-  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG $NO_TEST_ARG
+  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
+  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
 }
 
 function run {
