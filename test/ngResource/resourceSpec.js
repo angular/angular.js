@@ -93,6 +93,31 @@ describe("resource", function() {
     expect(typeof CreditCard.query).toBe('function');
   });
 
+  describe('shallow copy', function() {
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowClearAndCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+
+    it('should not copy $$ properties nor prototype properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
+
+    it('should not remove $ properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
+  });
 
   it('should default to empty parameters', function() {
     $httpBackend.expect('GET', 'URL').respond({});

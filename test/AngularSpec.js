@@ -198,6 +198,14 @@ describe('angular', function() {
       expect(clone.$$some).toBeUndefined();
       expect(clone.$$).toBeUndefined();
     });
+
+    it('should not remove $ properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
   });
 
   describe('elementHTML', function() {
