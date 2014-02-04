@@ -752,6 +752,122 @@ describe('input', function() {
 
   // INPUT TYPES
 
+  describe('date', function () {
+    it('should set the view if the model is valid ISO8601 date', function() {
+        compileInput('<input type="date" ng-model="birthday"/>');
+
+        scope.$apply(function(){
+            scope.birthday = '1977-10-22';
+        });
+
+        expect(inputElm.val()).toBe('1977-10-22');
+    });
+
+    it('should set the view if the model if a valid Date object.', function(){
+        compileInput('<input type="date" ng-model="christmas"/>');
+
+        scope.$apply(function (){
+            scope.christmas = new Date(2013, 11, 25);
+        });
+
+        expect(inputElm.val()).toBe('2013-12-25');
+    });
+
+    it('should set the model undefined if the view is invalid', function (){
+        compileInput('<input type="date" ng-model="arrMatey"/>');
+
+        scope.$apply(function (){
+            scope.arrMatey = new Date(2014, 8, 14);
+        });
+
+        expect(inputElm.val()).toBe('2014-09-14');
+
+        try {
+            //set to text for browsers with date validation.
+            inputElm[0].setAttribute('type', 'text');
+        } catch(e) {
+            //for IE8
+        }
+
+        changeInputValueTo('1-2-3');
+        expect(inputElm.val()).toBe('1-2-3');
+        expect(scope.arrMatey).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+    });
+
+    describe('min', function (){
+        beforeEach(function (){
+           compileInput('<input type="date" ng-model="value" name="alias" min="2000-01-01" />');
+           scope.$digest();
+        });
+
+        it('should invalidate', function (){
+           changeInputValueTo('1999-12-31');
+           expect(inputElm).toBeInvalid();
+           expect(scope.value).toBeFalsy();
+           expect(scope.form.alias.$error.min).toBeTruthy();
+        });
+
+        it('should validate', function (){
+            changeInputValueTo('2000-01-01');
+            expect(inputElm).toBeValid();
+            expect(+scope.value).toBe(+new Date(2000, 0, 1));
+            expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+    });
+
+    describe('max', function (){
+        beforeEach(function (){
+           compileInput('<input type="date" ng-model="value" name="alias" max="2019-01-01" />');
+           scope.$digest();
+        });
+
+        it('should invalidate', function (){
+            changeInputValueTo('2019-12-31');
+            expect(inputElm).toBeInvalid();
+            expect(scope.value).toBeFalsy();
+            expect(scope.form.alias.$error.max).toBeTruthy();
+        });
+
+        it('should validate', function() {
+            changeInputValueTo('2000-01-01');
+            expect(inputElm).toBeValid();
+            expect(+scope.value).toBe(+new Date(2000, 0, 1));
+            expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+    });
+
+    it('should validate even if max value changes on-the-fly', function(done) {
+      scope.max = '2013-01-01';
+      compileInput('<input type="date" ng-model="value" name="alias" max="{{max}}" />');
+      scope.$digest();
+
+      changeInputValueTo('2014-01-01');
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2001-01-01';
+      scope.$digest(function () {
+         expect(inputElm).toBeValid();
+         done();
+      });
+    });
+
+    it('should validate even if min value changes on-the-fly', function(done) {
+       scope.min = '2013-01-01';
+       compileInput('<input type="date" ng-model="value" name="alias" min="{{min}}" />');
+       scope.$digest();
+
+       changeInputValueTo('2010-01-01');
+       expect(inputElm).toBeInvalid();
+
+       scope.min = '2014-01-01';
+       scope.$digest(function () {
+          expect(inputElm).toBeValid();
+          done();
+       });
+    });
+  });
+
   describe('number', function() {
 
     it('should reset the model if view is invalid', function() {
