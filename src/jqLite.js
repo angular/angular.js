@@ -299,30 +299,52 @@ function jqLiteHasClass(element, selector) {
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
-          (" " + (element.getAttribute('class') || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
-      );
-    });
+  if (msie && msie < 8) {
+    if (cssClasses) {
+      forEach(cssClasses.split(' '), function(cssClass) {
+        element.className = trim(
+            (" " + element.className + " ")
+            .replace(/[\n\t]/g, " ")
+            .replace(" " + trim(cssClass) + " ", " ")
+        );
+      });
+    }
+  } else {
+    if (cssClasses && element.setAttribute) {
+      forEach(cssClasses.split(' '), function(cssClass) {
+        element.setAttribute('class', trim(
+            (" " + (element.getAttribute('class') || '') + " ")
+            .replace(/[\n\t]/g, " ")
+            .replace(" " + trim(cssClass) + " ", " "))
+        );
+      });
+    }
   }
 }
 
 function jqLiteAddClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
-                            .replace(/[\n\t]/g, " ");
+  if (msie && msie < 8) {
+    if (cssClasses) {
+      forEach(cssClasses.split(' '), function(cssClass) {
+        if (!jqLiteHasClass(element, cssClass)) {
+          element.className = trim(element.className + ' ' + trim(cssClass));
+        }
+      });
+    }
+  } else {
+    if (cssClasses && element.setAttribute) {
+      var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+                              .replace(/[\n\t]/g, " ");
 
-    forEach(cssClasses.split(' '), function(cssClass) {
-      cssClass = trim(cssClass);
-      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
-        existingClasses += cssClass + ' ';
-      }
-    });
+      forEach(cssClasses.split(' '), function(cssClass) {
+        cssClass = trim(cssClass);
+        if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+          existingClasses += cssClass + ' ';
+        }
+      });
 
-    element.setAttribute('class', trim(existingClasses));
+      element.setAttribute('class', trim(existingClasses));
+    }
   }
 }
 
