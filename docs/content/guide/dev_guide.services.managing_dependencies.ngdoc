@@ -8,7 +8,7 @@ instances.
 To declare dependencies, you specify them in the factory function signature and annotate the
 function with the inject annotations either using by setting the `$inject` property, as an array of
 string identifiers or using the array notation. Optionally the `$inject` property declaration can be
-dropped (see "Inferring `$inject`" but note that that is currently an experimental feature).
+dropped (see "Inferring `$inject`" but note that is currently an experimental feature).
 
 Using the array notation:
 
