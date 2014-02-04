@@ -107,11 +107,21 @@ function $LogProvider(){
       
       /**
        * @ngdoc method
-       * @name ng.$log#debug
+       * @name ng.$log#error
+       * @methodOf ng.$log
+       *
+       * @description
+       * Write an error message
+       */
+      table: consoleLog('table'),
+
+      /**
+       * @ngdoc method
+       * @name ng.$log#table
        * @methodOf ng.$log
        * 
        * @description
-       * Write a debug message
+       * Write a table
        */
       debug: (function () {
         var fn = consoleLog('debug');

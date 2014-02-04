@@ -7,7 +7,7 @@ function initService(debugEnabled) {
   }
 
 describe('$log', function() {
-  var $window, logger, log, warn, info, error, debug;
+  var $window, logger, log, warn, info, error, table, debug;
 
 
 
@@ -18,6 +18,7 @@ describe('$log', function() {
     warn = function() { logger+= 'warn;'; };
     info = function() { logger+= 'info;'; };
     error = function() { logger+= 'error;'; };
+    table = function() { logger+= 'table;'; };
     debug = function() { logger+= 'debug;'; };
 
     $provide.provider('$log', $LogProvider);
@@ -31,6 +32,7 @@ describe('$log', function() {
                          warn: warn,
                          info: info,
                          error: error,
+                         table: table,
                          debug: debug};
     },
     function($log) {
@@ -38,8 +40,9 @@ describe('$log', function() {
       $log.warn();
       $log.info();
       $log.error();
+      $log.table();
       $log.debug();
-      expect(logger).toEqual('log;warn;info;error;debug;');
+      expect(logger).toEqual('log;warn;info;error;table;debug;');
     }
   ));
 
@@ -53,8 +56,9 @@ describe('$log', function() {
       $log.warn();
       $log.info();
       $log.error();
+      $log.table();
       $log.debug();
-      expect(logger).toEqual('log;log;log;log;log;');
+      expect(logger).toEqual('log;log;log;log;log;log;');
     }
   ));
 
@@ -65,6 +69,7 @@ describe('$log', function() {
       $log.warn();
       $log.info();
       $log.error();
+      $log.table();
       $log.debug();
     }
   ));
@@ -75,12 +80,14 @@ describe('$log', function() {
         warn.apply = warn.call =
         info.apply = info.call =
         error.apply = error.call =
+        table.apply = table.call =
         debug.apply = debug.call = null;
 
       $window.console = {log: log,
         warn: warn,
         info: info,
         error: error,
+        table: table,
         debug: debug};
     }
 
@@ -91,8 +98,9 @@ describe('$log', function() {
         $log.warn.apply($log);
         $log.info.apply($log);
         $log.error.apply($log);
+        $log.table.apply($log);
         $log.debug.apply($log);
-        expect(logger).toEqual('log;warn;info;error;debug;');
+        expect(logger).toEqual('log;warn;info;error;table;debug;');
       })
     );
 
@@ -102,6 +110,7 @@ describe('$log', function() {
         warn = function(arg1, arg2) { logger+= 'warn;' + arg2; };
         info = function(arg1, arg2) { logger+= 'info;' + arg2; };
         error = function(arg1, arg2) { logger+= 'error;' + arg2; };
+        table = function(arg1, arg2) { logger+= 'table;' + arg2; };
         debug = function(arg1, arg2) { logger+= 'debug;' + arg2; };
       },
       removeApplyFunctionForIE,
@@ -110,8 +119,9 @@ describe('$log', function() {
         $log.warn();
         $log.info();
         $log.error();
+        $log.table();
         $log.debug();
-        expect(logger).toEqual('log;warn;info;error;debug;');
+        expect(logger).toEqual('log;warn;info;error;table;debug;');
       })
     );
   });
@@ -126,6 +136,7 @@ describe('$log', function() {
 	                         warn: warn,
 	                         info: info,
 	                         error: error,
+                           table: table,
 	                         debug: debug};
 	    },
 	    function($log) {
@@ -133,8 +144,9 @@ describe('$log', function() {
 	      $log.warn();
 	      $log.info();
 	      $log.error();
+        $log.table();
 	      $log.debug();
-	      expect(logger).toEqual('log;warn;info;error;');
+	      expect(logger).toEqual('log;warn;info;error;table;');
 	    }
   ));
 
