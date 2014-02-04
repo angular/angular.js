@@ -171,7 +171,7 @@ we are also able to bind the result of that function to the DOM using `{{ invoic
 
 Again, this binding is live, i.e. the DOM will be automatically updated
 whenever the result of the function changes.
-The button to pay the invoice uses the directive {@link api/ng.directive:ngClick `ngClick`}. This will evaluate the
+The button to pay the invoice uses the directive {@link api/ng.directive:ngClick `ng-click`}. This will evaluate the
 corresponding expression whenever the button is clicked.
 
 In the new JavaScript file we are also creating a {@link concepts#module module}
