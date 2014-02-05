@@ -201,7 +201,7 @@ function isArrayLike(obj) {
      angular.forEach(values, function(value, key){
        this.push(key + ': ' + value);
      }, log);
-     expect(log).toEqual(['name: misko', 'gender:male']);
+     expect(log).toEqual(['name: misko', 'gender: male']);
    </pre>
  *
  * @param {Object|Array} obj Object to iterate over.
