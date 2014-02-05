@@ -22,7 +22,7 @@ rm -f angular.js.size
 npm install --color false
 grunt ci-checks package --no-color
 
-mkdir test_out
+mkdir -p test_out
 
 # DOCS generator unit tests #
 grunt test:docgen --no-color
