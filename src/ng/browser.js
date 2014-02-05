@@ -1,4 +1,5 @@
 'use strict';
+var BASE_HREF_REGEXP = /^(https?\:)?\/\/[^\/]*/;
 
 /**
  * ! This is a private undocumented service !
@@ -253,7 +254,7 @@ function Browser(window, document, $log, $sniffer) {
    */
   self.baseHref = function() {
     var href = baseElement.attr('href');
-    return href ? href.replace(/^(https?\:)?\/\/[^\/]*/, '') : '';
+    return href ? href.replace(BASE_HREF_REGEXP, '') : '';
   };
 
   //////////////////////////////////////////////////////////////

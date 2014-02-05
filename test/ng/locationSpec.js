@@ -1256,6 +1256,23 @@ describe('$location', function() {
         }).not.toThrow();
       });
     });
+
+
+    it('should use $locationProvider.baseHref() as base url if available', function() {
+      module(function($locationProvider) {
+        $locationProvider.baseHref("http://host.com/ngApp/");
+        $locationProvider.html5Mode(true);
+        return function($browser, $rootElement, $document){
+          $browser.url("http://host.com/ngApp/");
+          $browser.$$baseHref = "http://server/assets";
+        };
+      });
+
+      inject(function($rootScope, $location, $browser) {
+        expect(function() { $location.$$parse($location.$$rewrite("http://host.com/ngApp/routeA")); }).not.toThrow();
+        expect($location.path()).toBe('/routeA');       
+      });
+    });
   });
 
 
