@@ -646,8 +646,8 @@ function createEventHandler(element, events) {
     }
 
     event.isDefaultPrevented = function() {
-      return event.defaultPrevented || event.returnValue === false;
-    };
+      return event.defaultPrevented;
+    }
 
     // Copy event handlers in case event handlers array is modified during execution.
     var eventHandlersCopy = shallowCopy(events[type || event.type] || []);
