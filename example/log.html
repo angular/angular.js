@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" ng-app="logApp">
+  <head>
+    <script type="text/javascript" src="../../build/angular.js"></script>
+  </head>
+  <body ng-controller="MainCtrl">
+    <table>
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>City</th>
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="person in people">
+          <td>{{person.firstName}}</td>
+          <td>{{person.lastName}}</td>
+          <td>{{person.city}}</td>
+          <td>{{person.state}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <script type="text/javascript">
+    var app = angular.module('logApp',[]);
+    app.controller('MainCtrl',function($scope,$log) {
+      $scope.people = [
+        {firstName: 'Jeremy', lastName: 'Dowell', city: 'Dallas', state:'TX'},
+        {firstName: 'Bob', lastName: 'Newhart', city: 'Chicago', state:'IL'},
+        {firstName: 'Amy', lastName: 'Poehler', city: 'Burlington', state:'MA'}
+      ]
+      $log.table($scope.people);
+      $log.table($scope.people, ['lastName','city']);
+    });
+    </script>
+  </body>
+</html>
