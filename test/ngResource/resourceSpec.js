@@ -1200,6 +1200,97 @@ describe("resource", function() {
       expect(item).toEqualData({id: 'abc'});
     });
   });
+
+  describe('wrapped responses', function()
+  {
+    var objectResponse = {meta: {metaField: 'value'}, data: {id: 123}};
+    var listResponse = {meta: {metaField: 'value'}, items: [{id: 123}]};
+
+    it('should get resource object from wrapped response via a string', function() {
+      var Person = $resource('/Person/:id', {id: '@id'}, {
+        get: {
+          method: 'GET',
+          resourceData: 'data'
+        }
+      });
+
+      $httpBackend.expect('GET', '/Person/123').respond(objectResponse);
+
+      var p = Person.get({id: 123});
+      $httpBackend.flush();
+
+      expect(p.meta).not.toBeDefined();
+      expect(p.id).toEqual(123);
+      expect(p.$save).toBeDefined();
+    });
+
+    it('should get resource object from wrapped response via a function', function()
+    {
+      var Person = $resource('/Person/:id', {id: '@id'}, {
+        get: {
+          method: 'GET',
+          resourceData: function(response)
+          {
+            return response.data;
+          }
+        }
+      });
+
+      $httpBackend.expect('GET', '/Person/123').respond(objectResponse);
+
+      var p = Person.get({id: 123});
+      $httpBackend.flush();
+
+      expect(p.meta).not.toBeDefined();
+      expect(p.id).toEqual(123);
+      expect(p.$save).toBeDefined();
+    });
+
+    it('should get resource list from wrapped response via string', function()
+    {
+      var Person = $resource('/Person/:id', {id: '@id'}, {
+        query: {
+          method: 'GET',
+          isArray: true,
+          resourceData: 'items'
+        }
+      });
+
+      $httpBackend.expect('GET', '/Person').respond(listResponse);
+
+      var people = Person.query();
+      $httpBackend.flush();
+
+      var p = people[0];
+
+      expect(p.id).toEqual(123);
+      expect(p.$save).toBeDefined();
+    });
+
+    it('should get resource list from wrapped response via function', function()
+    {
+      var Person = $resource('/Person/:id', {id: '@id'}, {
+        query: {
+          method: 'GET',
+          isArray: true,
+          resourceData: function(response)
+          {
+            return response.items;
+          }
+        }
+      });
+
+      $httpBackend.expect('GET', '/Person').respond(listResponse);
+
+      var people = Person.query();
+      $httpBackend.flush();
+
+      var p = people[0];
+
+      expect(p.id).toEqual(123);
+      expect(p.$save).toBeDefined();
+    });
+  });
 });
 
 describe('resource', function() {
@@ -1251,5 +1342,73 @@ describe('resource', function() {
       )
   });
 
+  it('should fail if responseData is an object', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Person/123').respond({meta: {metaField: 'value'}, data: {id: 123}});
+
+    var Person = $resource('/Person/:id', {id: '@id'}, {
+      get: {
+        method: 'GET',
+        resourceData: {}
+      }
+    });
+
+    Person.get({id: 123}).$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalled();
+    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+      /^\[\$resource:badresourceloc\] Error in resource data configuration\. Expected string or function, got object/
+    );
+  });
+
+  it('should fail if responseData is an array', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Person/123').respond({meta: {metaField: 'value'}, data: {id: 123}});
+
+    var Person = $resource('/Person/:id', {id: '@id'}, {
+      get: {
+        method: 'GET',
+        resourceData: []
+      }
+    });
+
+    Person.get({id: 123}).$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalled();
+    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+      /^\[\$resource:badresourceloc\] Error in resource data configuration\. Expected string or function, got object/
+    );
+  });
+
+  it('should fail if responseData is a number', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Person/123').respond({meta: {metaField: 'value'}, data: {id: 123}});
+
+    var Person = $resource('/Person/:id', {id: '@id'}, {
+      get: {
+        method: 'GET',
+        resourceData: 123
+      }
+    });
+
+    Person.get({id: 123}).$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalled();
+    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+      /^\[\$resource:badresourceloc\] Error in resource data configuration\. Expected string or function, got number/
+    );
+  });
 
 });

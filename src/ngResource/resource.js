@@ -141,6 +141,9 @@ function shallowClearAndCopy(src, dst) {
  *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
  *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
  *     with `http response` object. See {@link ng.$http $http interceptors}.
+ *   - **`resourceData`** - `{string=|function(data)=}` - A string specifying which field in the
+ *      response should be converted to a Resource object or a function which is passed the
+ *      data from the request and should return the object to be converted to a Resource object.
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -511,6 +514,20 @@ angular.module('ngResource', ['ng']).
           var promise = $http(httpConfig).then(function(response) {
             var data = response.data,
                 promise = value.$promise;
+
+            if(action.resourceData) {
+                if(isFunction(action.resourceData)) {
+                    data = action.resourceData(response.data);
+                }
+                else if(angular.isString(action.resourceData)) {
+                    data = data[action.resourceData];
+                }
+                else {
+                    throw $resourceMinErr('badresourceloc',
+                        "Error in resource data configuration. " +
+                          "Expected string or function, got {0}", typeof action.resourceData);
+                }
+            }
 
             if (data) {
               // Need to convert action.isArray to boolean in case it is undefined
