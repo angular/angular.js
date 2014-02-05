@@ -31,7 +31,7 @@
  * leave - happens just after the ngSwitch contents change and just before the former contents are removed from the DOM
  *
  * @usage
- * <ANY ng-switch="expression">
+ * <ANY ng-switch on="expression">
  *   <ANY ng-switch-when="matchValue1">...</ANY>
  *   <ANY ng-switch-when="matchValue2">...</ANY>
  *   <ANY ng-switch-default>...</ANY>
