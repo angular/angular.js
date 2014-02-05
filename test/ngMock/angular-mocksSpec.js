@@ -509,6 +509,11 @@ describe('ngMock', function() {
 
       it('should not throw a runtime exception when given an undefined promise',
           inject(function($interval) {
+        var task1 = jasmine.createSpy('task1'),
+            promise1;
+
+        promise1 = $interval(task1, 1000, 1);
+
         expect($interval.cancel()).toBe(false);
       }));
     });
