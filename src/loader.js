@@ -62,7 +62,7 @@ function setupModuleLoader(window) {
      * Then you can create an injector and load your modules like this:
      *
      * <pre>
-     * var injector = angular.injector(['ng', 'MyModule'])
+     * var injector = angular.injector(['ng', 'myModule'])
      * </pre>
      *
      * However it's more likely that you'll just use
