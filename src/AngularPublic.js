@@ -79,6 +79,7 @@
 /**
  * @ngdoc property
  * @name angular.version
+ * @module ng
  * @description
  * An object that contains information about the current AngularJS version. This object has the
  * following properties:

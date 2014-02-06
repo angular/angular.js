@@ -3,6 +3,7 @@
 /**
  * @ngdoc interface
  * @name angular.Module
+ * @module ng
  * @description
  *
  * Interface for configuring angular {@link angular.module modules}.
@@ -29,6 +30,7 @@ function setupModuleLoader(window) {
     /**
      * @ngdoc function
      * @name angular.module
+     * @module ng
      * @description
      *
      * The `angular.module` is a global place for creating, registering and retrieving Angular
@@ -111,6 +113,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc property
            * @name angular.Module#requires
+           * @module ng
            * @propertyOf angular.Module
            * @returns {Array.<string>} List of module names which must be loaded before this module.
            * @description
@@ -122,6 +125,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc property
            * @name angular.Module#name
+           * @module ng
            * @propertyOf angular.Module
            * @returns {string} Name of the module.
            * @description
@@ -132,6 +136,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#provider
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name service name
            * @param {Function} providerType Construction function for creating new instance of the
@@ -144,6 +149,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#factory
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name service name
            * @param {Function} providerFunction Function for creating new instance of the service.
@@ -155,6 +161,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#service
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name service name
            * @param {Function} constructor A constructor function that will be instantiated.
@@ -166,6 +173,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#value
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name service name
            * @param {*} object Service instance object.
@@ -177,6 +185,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#constant
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name constant name
            * @param {*} object Constant value.
@@ -189,6 +198,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#animation
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name animation name
            * @param {Function} animationFactory Factory function for creating new instance of an
@@ -223,6 +233,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#filter
+           * @module ng
            * @methodOf angular.Module
            * @param {string} name Filter name.
            * @param {Function} filterFactory Factory function for creating new instance of filter.
@@ -234,6 +245,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#controller
+           * @module ng
            * @methodOf angular.Module
            * @param {string|Object} name Controller name, or an object map of controllers where the
            *    keys are the names and the values are the constructors.
@@ -246,6 +258,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#directive
+           * @module ng
            * @methodOf angular.Module
            * @param {string|Object} name Directive name, or an object map of directives where the
            *    keys are the names and the values are the factories.
@@ -259,6 +272,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#config
+           * @module ng
            * @methodOf angular.Module
            * @param {Function} configFn Execute this function on module load. Useful for service
            *    configuration.
@@ -270,6 +284,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#run
+           * @module ng
            * @methodOf angular.Module
            * @param {Function} initializationFn Execute this function after injector creation.
            *    Useful for application initialization.
