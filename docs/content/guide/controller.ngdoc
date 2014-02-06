@@ -28,7 +28,7 @@ is registered.
 The following example shows a very simple constructor function for a Controller, `GreetingCtrl`,
 which attaches a `greeting` property containing the string `'Hola!'` to the `$scope`:
 
-```
+```js
     function GreetingCtrl($scope) {
         $scope.greeting = 'Hola!';
     }
@@ -37,22 +37,22 @@ which attaches a `greeting` property containing the string `'Hola!'` to the `$sc
 Once the Controller has been attached to the DOM, the `greeting` property can be data-bound to the
 template:
 
-```
-<div ng-controller="GreetingCtrl">
-  {{ greeting }}
-</div>
+```js
+    <div ng-controller="GreetingCtrl">
+      {{ greeting }}
+    </div>
 ```
 
 **NOTE**: Although Angular allows you to create Controller functions in the global scope, this is
 not recommended.  In a real application you should use the `.controller` method of your
 {@link module Angular Module} for your application as follows:
 
-```
-var myApp = angular.module('myApp',[]);
+```js
+    var myApp = angular.module('myApp',[]);
 
-myApp.controller('GreetingCtrl', ['$scope', function($scope) {
-    $scope.greeting = 'Hola!';
-}]);
+    myApp.controller('GreetingCtrl', ['$scope', function($scope) {
+        $scope.greeting = 'Hola!';
+    }]);
 ```
 
 We have used an **inline injection annotation** to explicitly specify the dependency
@@ -68,21 +68,21 @@ then available to be called from the template/view.
 
 The following example uses a Controller to add a method to the scope, which doubles a number:
 
-```
-var myApp = angular.module('myApp',[]);
+```js
+    var myApp = angular.module('myApp',[]);
 
-myApp.controller('DoubleCtrl', ['$scope', function($scope) {
-    $scope.double = function(value) { return value * 2; };
-}]);
+    myApp.controller('DoubleCtrl', ['$scope', function($scope) {
+        $scope.double = function(value) { return value * 2; };
+    }]);
 ```
 
 Once the Controller has been attached to the DOM, the `double` method can be invoked in an Angular
 expression in the template:
 
-```
-<div ng-controller="DoubleCtrl">
-  Two times <input ng-model="num"> equals {{ double(num) }}
-</div>
+```js
+    <div ng-controller="DoubleCtrl">
+      Two times <input ng-model="num"> equals {{ double(num) }}
+    </div>
 ```
 
 As discussed in the {@link concepts Concepts} section of this guide, any
@@ -270,7 +270,7 @@ Although there are many ways to test a Controller, one of the best conventions, 
 involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$controller $controller}:
 
 **Controller Definition:**
-```
+```js
     var myApp = angular.module('myApp',[]);
 
     myApp.controller('MyController', function($scope) {
@@ -282,7 +282,7 @@ involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$c
 ```
 
 **Controller Test:**
-```
+```js
 describe('myController function', function() {
 
   describe('myController', function() {
@@ -310,7 +310,7 @@ describe('myController function', function() {
 If you need to test a nested Controller you need to create the same scope hierarchy
 in your test that exists in the DOM:
 
-```
+```js
 describe('state', function() {
     var mainScope, childScope, grandChildScope;
 

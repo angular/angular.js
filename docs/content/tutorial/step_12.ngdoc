@@ -41,7 +41,8 @@ as the `angular-animate.js` file. The animation module, known as `ngAnimate`, is
 Here's what needs to changed in the index file:
 
 __`app/index.html`.__
-<pre>
+
+```html
 ...
   <!-- jQuery is used for JavaScript animations (include this before angular.js) -->
   <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -55,7 +56,7 @@ __`app/index.html`.__
   <!-- for CSS Transitions and/or Keyframe Animations -->
   <link rel="stylesheet" href="css/animations.css">
 ...
-</pre>
+```
 
 <div class="alert alert-error">
   **Important:** Be sure to use jQuery version `1.10.x`. AngularJS does not yet support jQuery `2.x`.
@@ -68,17 +69,19 @@ with `ngResource`.
 ## Module & Animations
 
 __`app/js/animations.js`.__
-<pre>
+
+```js
 angular.module('phonecatAnimations', ['ngAnimate']).
   // ...
   // this module will later be used to define animations
   // ...
-</pre>
+```
 
 And now let's attach this module to our application module...
 
 __`app/js/app.js`.__
-<pre>
+
+```js
 // ...
 angular.module('phonecat', [
   'ngRoute',
@@ -89,7 +92,7 @@ angular.module('phonecat', [
   'phonecatServices',
 ]).
 // ...
-</pre>
+```
 
 Now, the phonecat module is animation aware. Let's make some animations!
 
@@ -100,7 +103,8 @@ We'll start off by adding CSS transition animations to our `ngRepeat` directive 
 First let's add an extra CSS class to our repeated element so that we can hook into it with our CSS animation code.
 
 __`app/partials/phone-list.html`.__
-<pre>
+
+```html
 <!--
   Let's change the repeater HTML to include a new CSS class
   which we will later use for animations:
@@ -114,14 +118,15 @@ __`app/partials/phone-list.html`.__
   </li>
 </ul>
 
-</pre>
+```
 
 Notice how we added the `phone-listing` CSS class? This is all we need in our HTML code to get animations working.
 
 Now for the actual CSS transition animation code:
 
 __`app/css/animations.css`__
-<pre>
+
+```css
 .phone-listing.ng-enter,
 .phone-listing.ng-leave,
 .phone-listing.ng-move {
@@ -155,7 +160,7 @@ __`app/css/animations.css`__
   padding-top: 0;
   padding-bottom: 0;
 }
-</pre>
+```
 
 As you can see our `phone-listing` CSS class is combined together with the animation hooks that occur when items are
 inserted into and removed from the list:
@@ -200,11 +205,12 @@ In order to do this, we'll have to make some small changes to the HTML code so t
 animations between view changes.
 
 __`app/index.html`.__
-<pre>
+
+```html
 <div class="view-container">
   <div ng-view class="view-frame"></div>
 </div>
-</pre>
+```
 
 With this change, the `ng-view` directive is nested inside a parent element with
 a `view-container` CSS class. This class adds a `position: relative` style so that the positioning of the `ng-view`
@@ -213,7 +219,8 @@ is relative to this parent as it animates transitions.
 With this in place, let's add the CSS for this transition animation to our `animations.css` file:
 
 __`app/css/animations.css`.__
-<pre>
+
+```css
 .view-container {
   position: relative;
 }
@@ -242,34 +249,34 @@ __`app/css/animations.css`.__
   z-index:99;
 }
 
-&#64;keyframes fade-in {
+@keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-&#64;-moz-keyframes fade-in {
+@-moz-keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-&#64;-webkit-keyframes fade-in {
+@-webkit-keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-&#64;keyframes fade-out {
+@keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
-&#64;-moz-keyframes fade-out {
+@-moz-keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
-&#64;-webkit-keyframes fade-out {
+@-webkit-keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
 
-&#47;&#42; don't forget about the vendor-prefixes! &#42;&#47;
-</pre>
+/* don't forget about the vendor-prefixes! */
+```
 
 Nothing crazy here! Just a simple fade in and fade out effect between pages. The only out of the ordinary thing
 here is that we're using absolute positioning to position the next page (identified via `ng-enter`) on top of the
@@ -306,7 +313,8 @@ profile image and the animation plays.
 Let's get started and tweak our HTML code on the `phone-detail.html` page first:
 
 __`app/partials/phone-detail.html`.__
-<pre>
+
+```html
 <!-- We're only changing the top of the file -->
 <div class="phone-images">
   <img ng-src="{{img}}"
@@ -324,7 +332,7 @@ __`app/partials/phone-detail.html`.__
     <img ng-src="{{img}}" ng-mouseenter="setImage(img)">
   </li>
 </ul>
-</pre>
+```
 
 Just like with the thumbnails, we're using a repeater to display **all** the profile images as a list, however we're
 not animating any repeat-related animations. Instead, we're keeping our eye on the ng-class directive since whenever
@@ -340,7 +348,8 @@ You may be thinking that we're just going to create another CSS-enabled animatio
 Although we could do that, let's take the opportunity to learn how to create JavaScript-enabled animations with the `animation()` module method.
 
 __`app/js/animations.js`.__
-<pre>
+
+```js
 var phonecatAnimations = angular.module('phonecatAnimations', ['ngAnimate']);
 
 phonecatAnimations.animation('.phone', function() {
@@ -393,7 +402,7 @@ phonecatAnimations.animation('.phone', function() {
     removeClass: animateDown
   };
 });
-</pre>
+```
 
 Note that we're using [jQuery](http://jquery.com/) to implement the animation. jQuery
 isn't required to do JavaScript animations with AngularJS, but we're going to use it because writing

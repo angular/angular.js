@@ -11,13 +11,13 @@
  * in AngularJS and sets the display style to none (using an !important flag).
  * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
- * <pre>
+ * ```html
  * <!-- when $scope.myValue is truthy (element is visible) -->
  * <div ng-show="myValue"></div>
  *
  * <!-- when $scope.myValue is falsy (element is hidden) -->
  * <div ng-show="myValue" class="ng-hide"></div>
- * </pre>
+ * ```
  *
  * When the ngShow expression evaluates to false then the ng-hide CSS class is added to the class attribute
  * on the element causing it to become hidden. When true, the ng-hide CSS class is removed
@@ -38,7 +38,7 @@
  *
  * If you wish to change the hide behavior with ngShow/ngHide then this can be achieved by
  * restating the styles for the .ng-hide class in CSS:
- * <pre>
+ * ```css
  * .ng-hide {
  *   //!annotate CSS Specificity|Not to worry, this will override the AngularJS default...
  *   display:block!important;
@@ -48,7 +48,7 @@
  *   top:-9999px;
  *   left:-9999px;
  * }
- * </pre>
+ * ```
  *
  * Just remember to include the important flag so the CSS override will function.
  *
@@ -64,7 +64,7 @@
  * you must also include the !important flag to override the display property
  * so that you can perform an animation when the element is hidden during the time of the animation.
  *
- * <pre>
+ * ```css
  * //
  * //a working example can be found at the bottom of this page
  * //
@@ -77,7 +77,7 @@
  * .my-element.ng-hide-add.ng-hide-add-active { ... }
  * .my-element.ng-hide-remove { ... }
  * .my-element.ng-hide-remove.ng-hide-remove-active { ... }
- * </pre>
+ * ```
  *
  * @animations
  * addClass: .ng-hide - happens after the ngShow expression evaluates to a truthy value and the just before contents are set to visible
@@ -168,13 +168,13 @@ var ngShowDirective = ['$animate', function($animate) {
  * in AngularJS and sets the display style to none (using an !important flag).
  * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
- * <pre>
+ * ```hrml
  * <!-- when $scope.myValue is truthy (element is hidden) -->
  * <div ng-hide="myValue"></div>
  *
  * <!-- when $scope.myValue is falsy (element is visible) -->
  * <div ng-hide="myValue" class="ng-hide"></div>
- * </pre>
+ * ```
  *
  * When the ngHide expression evaluates to true then the .ng-hide CSS class is added to the class attribute
  * on the element causing it to become hidden. When false, the ng-hide CSS class is removed
@@ -195,7 +195,7 @@ var ngShowDirective = ['$animate', function($animate) {
  *
  * If you wish to change the hide behavior with ngShow/ngHide then this can be achieved by
  * restating the styles for the .ng-hide class in CSS:
- * <pre>
+ * ```css
  * .ng-hide {
  *   //!annotate CSS Specificity|Not to worry, this will override the AngularJS default...
  *   display:block!important;
@@ -205,7 +205,7 @@ var ngShowDirective = ['$animate', function($animate) {
  *   top:-9999px;
  *   left:-9999px;
  * }
- * </pre>
+ * ```
  *
  * Just remember to include the important flag so the CSS override will function.
  * 
@@ -221,7 +221,7 @@ var ngShowDirective = ['$animate', function($animate) {
  * you must also include the !important flag to override the display property so
  * that you can perform an animation when the element is hidden during the time of the animation.
  *
- * <pre>
+ * ```css
  * //
  * //a working example can be found at the bottom of this page
  * //
@@ -234,7 +234,7 @@ var ngShowDirective = ['$animate', function($animate) {
  * .my-element.ng-hide-add.ng-hide-add-active { ... }
  * .my-element.ng-hide-remove { ... }
  * .my-element.ng-hide-remove.ng-hide-remove-active { ... }
- * </pre>
+ * ```
  *
  * @animations
  * removeClass: .ng-hide - happens after the ngHide expression evaluates to a truthy value and just before the contents are set to hidden

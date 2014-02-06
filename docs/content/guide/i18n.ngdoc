@@ -66,7 +66,7 @@ starts, Angular is automatically pre-configured with localization rules for the 
 You can also include the locale specific js file in the index.html page. For example, if one client
 requires German locale, you would serve index_de-de.html which will look something like this:
 
-<pre>
+```html
 <html ng-app>
  <head>
 ….
@@ -75,7 +75,7 @@ requires German locale, you would serve index_de-de.html which will look somethi
 ….
  </head>
 </html>
-</pre>
+```
 
 **Comparison of the two approaches**
 Both approaches described above requires you to prepare different index.html pages or js files for

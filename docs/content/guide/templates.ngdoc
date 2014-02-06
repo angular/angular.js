@@ -24,7 +24,7 @@ The following code snippet shows a simple Angular template made up of standard H
 Angular {@link guide/directive directives} and curly-brace bindings
 with {@link expression expressions}:
 
-<pre>
+```html
 <html ng-app>
  <!-- Body tag augmented with ngController directive  -->
  <body ng-controller="MyController">
@@ -36,7 +36,7 @@ with {@link expression expressions}:
    <script src="angular.js">
  </body>
 </html>
-</pre>
+```
 
 In a simple single-page app, the template consists of HTML, CSS, and angular directives contained
 in just one HTML file (usually `index.html`). In a more complex app, you can display multiple views

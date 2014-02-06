@@ -13,7 +13,7 @@ IDs matters: the order of the services in the array will be used when calling th
 with injected parameters. The names of parameters in factory function don't matter, but by
 convention they match the service IDs, which has added benefits discussed below.
 
-<pre>
+```js
 function myController($loc, $log) {
   this.firstMethod = function() {
     // use $location service
@@ -26,7 +26,7 @@ function myController($loc, $log) {
 }
 // which services to inject ?
 myController.$inject = ['$location', '$log'];
-</pre>
+```
 
 <doc:example module="MyServiceModule">
 <doc:source>

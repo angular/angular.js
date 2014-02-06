@@ -77,7 +77,8 @@ The HTML page that displays "Nothing here yet!" was constructed with the HTML co
 The code contains some key Angular elements that we will need as we progress.
 
 __`app/index.html`:__
-<pre>
+
+```html
 <!doctype html>
 <html lang="en" ng-app>
 <head>
@@ -93,7 +94,7 @@ __`app/index.html`:__
 
 </body>
 </html>
-</pre>
+```
 
 
 
