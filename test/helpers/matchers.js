@@ -46,6 +46,8 @@ beforeEach(function() {
     toBeValid: cssMatcher('ng-valid', 'ng-invalid'),
     toBeDirty: cssMatcher('ng-dirty', 'ng-pristine'),
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
+    toBeWorking: cssMatcher('ng-working', 'ng-idle'),
+    toBeIdle: cssMatcher('ng-idle', 'ng-working'),
     toBeShown: function() {
       this.message = valueFn(
           "Expected element " + (this.isNot ? "": "not ") + "to have 'ng-hide' class");

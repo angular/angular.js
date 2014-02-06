@@ -6,7 +6,11 @@ var nullFormCtrl = {
   $removeControl: noop,
   $setValidity: noop,
   $setDirty: noop,
-  $setPristine: noop
+  $setPristine: noop,
+  $setWorking: noop,
+  $setIdle: noop,
+  $setValidating: noop,
+  $clearValidating: noop
 };
 
 /**
@@ -51,7 +55,9 @@ function FormController(element, attrs) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
+      validatingCount = 0, //used to easily determine if we are validating
       errors = form.$error = {},
+      pendingValidations = form.$pendingValidations = {},
       controls = [];
 
   // init state
@@ -60,11 +66,15 @@ function FormController(element, attrs) {
   form.$pristine = true;
   form.$valid = true;
   form.$invalid = false;
+  form.$working = false;
+  form.$idle = true;
+  form.$validating = false;
 
   parentForm.$addControl(form);
 
   // Setup initial state of the control
   element.addClass(PRISTINE_CLASS);
+  element.addClass(IDLE_CLASS);
   toggleValidCss(true);
 
   // convenience method for easy toggling of classes
@@ -94,7 +104,7 @@ function FormController(element, attrs) {
     if (control.$name) {
       form[control.$name] = control;
     }
-  };
+    };
 
   /**
    * @ngdoc function
@@ -113,9 +123,12 @@ function FormController(element, attrs) {
     forEach(errors, function(queue, validationToken) {
       form.$setValidity(validationToken, true, control);
     });
+    forEach(pendingValidations, function (queue, validationToken) {
+      form.$clearValidating(validationToken, control);
+    });
 
     arrayRemove(controls, control);
-  };
+};
 
   /**
    * @ngdoc function
@@ -205,7 +218,91 @@ function FormController(element, attrs) {
     forEach(controls, function(control) {
       control.$setPristine();
     });
-  };
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:form.FormController#$setWorking
+    * @methodOf ng.directive:form.FormController
+    *
+    * @description
+    * Sets the form to the working state
+    *
+    */
+    form.$setWorking = function () {
+        element.removeClass(IDLE_CLASS).addClass(WORKING_CLASS);
+        form.$working = true;
+        form.$idle = false;
+        parentForm.$setWorking();
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:form.FormController#$setIdle
+    * @methodOf ng.directive:form.FormController
+    *
+    * @description
+    * Sets the form to the idle state
+    *
+    */
+    form.$setIdle = function () {
+        element.removeClass(WORKING_CLASS).addClass(IDLE_CLASS);
+        form.$working = false;
+        form.$idle = true;
+        parentForm.$setIdle();
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:form.FormController#$setValidating
+    * @methodOf ng.directive:form.FormController
+    *
+    * @description
+    * Sets the form to the validating state
+    *
+    */
+    form.$setValidating = function (validationToken, control) {
+        var queue = pendingValidations[validationToken];
+
+        if (!validatingCount) {
+            element.addClass(VALIDATING_CLASS);
+        }
+        if (queue) {
+            if (includes(queue, control)) return;
+        } else {
+            pendingValidations[validationToken] = queue = [];
+            validatingCount++;
+            parentForm.$setValidating(validationToken, form);
+        }
+        queue.push(control);
+        form.$validating = true;
+    };
+
+    /**
+    * @ngdoc function
+    * @name ng.directive:form.FormController#$clearValidating
+    * @methodOf ng.directive:form.FormController
+    *
+    * @description
+    * Clears the form from the validating state
+    *
+    */
+    form.$clearValidating = function (validationToken, control) {
+        var queue = pendingValidations[validationToken];
+
+        if (queue) {
+            arrayRemove(queue, control);
+            if (!queue.length) {
+                validatingCount--;
+                if (!validatingCount) {
+                    element.removeClass(VALIDATING_CLASS);
+                    form.$validating = false;
+                }
+                pendingValidations[validationToken] = false;
+                parentForm.$clearValidating(validationToken, form);
+            }
+        }
+    };
 }
 
 
@@ -253,6 +350,9 @@ function FormController(element, attrs) {
  *  - `ng-invalid` is set if the form is invalid.
  *  - `ng-pristine` is set if the form is pristine.
  *  - `ng-dirty` is set if the form is dirty.
+ *  - `ng-working` is set if the form is working.
+ *  - `ng-idle` is set if the form is idle.
+ *  - `ng-validating` is set if the form is validating.
  *
  *
  * # Submitting a form and preventing the default action
@@ -328,61 +428,61 @@ function FormController(element, attrs) {
       </doc:protractor>
     </doc:example>
  */
-var formDirectiveFactory = function(isNgForm) {
-  return ['$timeout', function($timeout) {
-    var formDirective = {
-      name: 'form',
-      restrict: isNgForm ? 'EAC' : 'E',
-      controller: FormController,
-      compile: function() {
-        return {
-          pre: function(scope, formElement, attr, controller) {
-            if (!attr.action) {
-              // we can't use jq events because if a form is destroyed during submission the default
-              // action is not prevented. see #1238
-              //
-              // IE 9 is not affected because it doesn't fire a submit event and try to do a full
-              // page reload if the form was destroyed by submission of the form via a click handler
-              // on a button in the form. Looks like an IE9 specific bug.
-              var preventDefaultListener = function(event) {
-                event.preventDefault
+var formDirectiveFactory = function (isNgForm) {
+    return ['$timeout', function ($timeout) {
+        var formDirective = {
+            name: 'form',
+            restrict: isNgForm ? 'EAC' : 'E',
+            controller: FormController,
+            compile: function () {
+                return {
+                    pre: function (scope, formElement, attr, controller) {
+                        if (!attr.action) {
+                            // we can't use jq events because if a form is destroyed during submission the default
+                            // action is not prevented. see #1238
+                            //
+                            // IE 9 is not affected because it doesn't fire a submit event and try to do a full
+                            // page reload if the form was destroyed by submission of the form via a click handler
+                            // on a button in the form. Looks like an IE9 specific bug.
+                            var preventDefaultListener = function (event) {
+                                event.preventDefault
                   ? event.preventDefault()
                   : event.returnValue = false; // IE
-              };
+                            };
 
-              addEventListenerFn(formElement[0], 'submit', preventDefaultListener);
+                            addEventListenerFn(formElement[0], 'submit', preventDefaultListener);
 
-              // unregister the preventDefault listener so that we don't not leak memory but in a
-              // way that will achieve the prevention of the default action.
-              formElement.on('$destroy', function() {
-                $timeout(function() {
-                  removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
-                }, 0, false);
-              });
-            }
+                            // unregister the preventDefault listener so that we don't not leak memory but in a
+                            // way that will achieve the prevention of the default action.
+                            formElement.on('$destroy', function () {
+                                $timeout(function () {
+                                    removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
+                                }, 0, false);
+                            });
+                        }
 
-            var parentFormCtrl = formElement.parent().controller('form'),
+                        var parentFormCtrl = formElement.parent().controller('form'),
                 alias = attr.name || attr.ngForm;
 
-            if (alias) {
-              setter(scope, alias, controller, alias);
+                        if (alias) {
+                            setter(scope, alias, controller, alias);
+                        }
+                        if (parentFormCtrl) {
+                            formElement.on('$destroy', function () {
+                                parentFormCtrl.$removeControl(controller);
+                                if (alias) {
+                                    setter(scope, alias, undefined, alias);
+                                }
+                                extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+                            });
+                        }
+                    }
+                };
             }
-            if (parentFormCtrl) {
-              formElement.on('$destroy', function() {
-                parentFormCtrl.$removeControl(controller);
-                if (alias) {
-                  setter(scope, alias, undefined, alias);
-                }
-                extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
-              });
-            }
-          }
         };
-      }
-    };
 
-    return formDirective;
-  }];
+        return formDirective;
+    } ];
 };
 
 var formDirective = formDirectiveFactory();
