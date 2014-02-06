@@ -55,7 +55,7 @@ the only button on the page, and then it verifies that there are 10 items listed
 The API section below lists the available commands and expectations for the Runner.
 
 # API
-Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js}
+Source: https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js
 
 ## pause()
 Pauses the execution of the tests until you call `resume()` in the console (or click the resume
@@ -188,7 +188,7 @@ Executes the `method` passing in `key` and `value` on the element matching the g
 Matchers are used in combination with the `expect(...)` function as described above and can
 be negated with `not()`. For instance: `expect(element('h1').text()).not().toEqual('Error')`.
 
-Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/matchers.js}
+Source: https://github.com/angular/angular.js/blob/master/src/ngScenario/matchers.js
 
 <pre>
 // value and Object comparison following the rules of angular.equals().
@@ -222,7 +222,7 @@ expect(value).toBeGreaterThan(expected)
 </pre>
 
 # Example
-See the {@link https://github.com/angular/angular-seed angular-seed} project for more examples.
+See the [angular-seed](https://github.com/angular/angular-seed) project for more examples.
 
 ## Conditional actions with element(...).query(fn)
 

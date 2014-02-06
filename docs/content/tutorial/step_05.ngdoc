@@ -16,9 +16,7 @@ injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
 You should now see a list of 20 phones.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-4...step-5
-GitHub}:
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-4...step-5):
 
 ## Data
 
@@ -108,8 +106,7 @@ properties are considered private, and should not be accessed or modified.
 ### A Note on Minification
 
 Since Angular infers the controller's dependencies from the names of arguments to the controller's
-constructor function, if you were to {@link http://en.wikipedia.org/wiki/Minification_(programming)
-minify} the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
+constructor function, if you were to [minify](http://en.wikipedia.org/wiki/Minification_(programming)) the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
 minified as well, and the dependency injector would not be able to identify services correctly.
 
 There are two ways to overcome issues caused by minification:

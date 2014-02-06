@@ -28,36 +28,36 @@ is registered.
 The following example shows a very simple constructor function for a Controller, `GreetingCtrl`,
 which attaches a `greeting` property containing the string `'Hola!'` to the `$scope`:
 
-<pre>
+```
     function GreetingCtrl($scope) {
         $scope.greeting = 'Hola!';
     }
-</pre>
+```
 
 Once the Controller has been attached to the DOM, the `greeting` property can be data-bound to the
 template:
 
-<pre>
-    <div ng-controller="GreetingCtrl">
-      {{ greeting }}
-    </div>
-</pre>
+```
+<div ng-controller="GreetingCtrl">
+  {{ greeting }}
+</div>
+```
 
 **NOTE**: Although Angular allows you to create Controller functions in the global scope, this is
 not recommended.  In a real application you should use the `.controller` method of your
 {@link module Angular Module} for your application as follows:
 
-<pre>
-    var myApp = angular.module('myApp',[]);
+```
+var myApp = angular.module('myApp',[]);
 
-    myApp.controller('GreetingCtrl', ['$scope', function($scope) {
-        $scope.greeting = 'Hola!';
-    }]);
-</pre>
+myApp.controller('GreetingCtrl', ['$scope', function($scope) {
+    $scope.greeting = 'Hola!';
+}]);
+```
 
 We have used an **inline injection annotation** to explicitly specify the dependency
 of the Controller on the `$scope` service provided by Angular. See the guide on 
-{@link http://docs.angularjs.org/guide/di Dependency Injection} for more information.
+[Dependency Injection](http://docs.angularjs.org/guide/di) for more information.
 
 
 # Adding Behavior to a Scope Object
@@ -68,22 +68,22 @@ then available to be called from the template/view.
 
 The following example uses a Controller to add a method to the scope, which doubles a number:
 
-<pre>
-    var myApp = angular.module('myApp',[]);
+```
+var myApp = angular.module('myApp',[]);
 
-    myApp.controller('DoubleCtrl', ['$scope', function($scope) {
-        $scope.double = function(value) { return value * 2; };
-    }]);
-</pre>
+myApp.controller('DoubleCtrl', ['$scope', function($scope) {
+    $scope.double = function(value) { return value * 2; };
+}]);
+```
 
 Once the Controller has been attached to the DOM, the `double` method can be invoked in an Angular
 expression in the template:
 
-<pre>
-    <div ng-controller="DoubleCtrl">
-      Two times <input ng-model="num"> equals {{ double(num) }}
-    </div>
-</pre>
+```
+<div ng-controller="DoubleCtrl">
+  Two times <input ng-model="num"> equals {{ double(num) }}
+</div>
+```
 
 As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
@@ -134,30 +134,30 @@ The message in our template contains a binding to the `spice` model, which by de
 string "very". Depending on which button is clicked, the `spice` model is set to `chili` or
 `jalapeño`, and the message is automatically updated by data-binding.
 
-<doc:example module="spicyApp1">
-  <doc:source>
+<example module="spicyApp1">
+  <file name="index.html">
     <div ng-app="spicyApp1" ng-controller="SpicyCtrl">
      <button ng-click="chiliSpicy()">Chili</button>
      <button ng-click="jalapenoSpicy()">Jalapeño</button>
      <p>The food is {{spice}} spicy!</p>
     </div>
-    <script>
-      var myApp = angular.module('spicyApp1', []);
+  </file>
+  <file name="app.js">
+    var myApp = angular.module('spicyApp1', []);
 
-      myApp.controller('SpicyCtrl', ['$scope', function($scope){
-          $scope.spice = 'very';
-          
-          $scope.chiliSpicy = function() {
-              $scope.spice = 'chili';
-          };
-          
-          $scope.jalapenoSpicy = function() {
-              $scope.spice = 'jalapeño';
-          };
-      }]);
-    </script>
-  </doc:source>
-</doc:example>
+    myApp.controller('SpicyCtrl', ['$scope', function($scope){
+        $scope.spice = 'very';
+        
+        $scope.chiliSpicy = function() {
+            $scope.spice = 'chili';
+        };
+        
+        $scope.jalapenoSpicy = function() {
+            $scope.spice = 'jalapeño';
+        };
+    }]);
+  </file>
+</example>
 
 Things to notice in the example above:
 
@@ -175,15 +175,16 @@ its children).
 Controller methods can also take arguments, as demonstrated in the following variation of the
 previous example.
 
-<doc:example module="spicyApp2">
-  <doc:source>
+<example module="spicyApp2">
+  <file name="index.html">
   <div ng-app="spicyApp2" ng-controller="SpicyCtrl">
    <input ng-model="customSpice">
    <button ng-click="spicy('chili')">Chili</button>
    <button ng-click="spicy(customSpice)">Custom spice</button>
    <p>The food is {{spice}} spicy!</p>
   </div>
-  <script>
+  </file>
+  <file name="app.js">
     var myApp = angular.module('spicyApp2', []);
 
     myApp.controller('SpicyCtrl', ['$scope', function($scope){
@@ -194,9 +195,8 @@ previous example.
             $scope.spice = spice;
         };
     }]);
-  </script>
-</doc:source>
-</doc:example>
+  </file>
+</example>
 
 Notice that the `SpicyCtrl` Controller now defines just one method called `spicy`, which takes one
 argument called `spice`. The template then refers to this Controller method and passes in a string
@@ -209,11 +209,11 @@ It is common to attach Controllers at different levels of the DOM hierarchy.  Si
 {@link api/ng.directive:ngController ng-controller} directive creates a new child scope, we get a
 hierarchy of scopes that inherit from each other.  The `$scope` that each Controller receives will
 have access to properties and methods defined by Controllers higher up the hierarchy.
-See {@link https://github.com/angular/angular.js/wiki/Understanding-Scopes Understanding Scopes} for
+See [Understanding Scopes](https://github.com/angular/angular.js/wiki/Understanding-Scopes) for
 more information about scope inheritance.
 
-<doc:example module="scopeInheritance">
-  <doc:source>
+<example module="scopeInheritance">
+  <file name="index.html">
     <div ng-app="scopeInheritance" class="spicy">
       <div ng-controller="MainCtrl">
         <p>Good {{timeOfDay}}, {{name}}!</p>
@@ -227,13 +227,14 @@ more information about scope inheritance.
         </div>
       </div>
     </div>
-    <style>
-      div.spicy div {
-        padding: 10px;
-        border: solid 2px blue;
-      }
-    </style>
-    <script>
+  </file>
+  <file name="app.css">
+    div.spicy div {
+      padding: 10px;
+      border: solid 2px blue;
+    }
+  </file>
+  <file name="app.js">
       var myApp = angular.module('scopeInheritance', []);
       myApp.controller('MainCtrl', ['$scope', function($scope){
         $scope.timeOfDay = 'morning';
@@ -246,9 +247,8 @@ more information about scope inheritance.
         $scope.timeOfDay = 'evening';
         $scope.name = 'Gingerbreak Baby';
       }]);
-    </script>
-  </doc:source>
-</doc:example>
+  </file>
+</example>
 
 Notice how we nested three `ng-controller` directives in our template. This will result in four
 scopes being created for our view:
@@ -270,7 +270,7 @@ Although there are many ways to test a Controller, one of the best conventions, 
 involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$controller $controller}:
 
 **Controller Definition:**
-<pre>
+```
     var myApp = angular.module('myApp',[]);
 
     myApp.controller('MyController', function($scope) {
@@ -279,10 +279,10 @@ involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$c
                        {"name":"habanero", "spiceness":"LAVA HOT!!"}];
       $scope.spice = "habanero";
     });
-</pre>
+```
 
 **Controller Test:**
-<pre>
+```
 describe('myController function', function() {
 
   describe('myController', function() {
@@ -304,13 +304,13 @@ describe('myController function', function() {
     });
   });
 });
-</pre>
+```
 
 
 If you need to test a nested Controller you need to create the same scope hierarchy
 in your test that exists in the DOM:
 
-<pre>
+```
 describe('state', function() {
     var mainScope, childScope, grandChildScope;
 
@@ -334,7 +334,7 @@ describe('state', function() {
         expect(grandChildScope.name).toBe('Gingerbreak Baby');
     });
 });
-</pre>
+```
 
 
 

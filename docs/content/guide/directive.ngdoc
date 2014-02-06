@@ -32,7 +32,7 @@ When Angular {@link guide/bootstrap bootstraps} your application, the
 For AngularJS, "compilation" means attaching event listeners to the HTML to make it interactive.
 The reason we use the term "compile" is that the recursive process of attaching directives
 mirrors the process of compiling source code in
-{@link http://en.wikipedia.org/wiki/Compiled_languages compiled programming languages}.
+[compiled programming languages](http://en.wikipedia.org/wiki/Compiled_languages).
 </div>
 
 
@@ -55,9 +55,9 @@ The following also **matches** `ngModel`:
 
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
 directives. We typically refer to directives by their case-sensitive
-{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`).
+[camelCase](http://en.wikipedia.org/wiki/CamelCase) **normalized** name (e.g. `ngModel`).
 However, since HTML is case-insensitive, we refer to directives in the DOM by lower-case
-forms, typically using {@link http://en.wikipedia.org/wiki/Letter_case#Computers dash-delimited}
+forms, typically using [dash-delimited](http://en.wikipedia.org/wiki/Letter_case#Computers)
 attributes on DOM elements (e.g. `ng-model`).
 
 The **normalization** process is as follows:

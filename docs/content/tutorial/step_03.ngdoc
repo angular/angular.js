@@ -18,8 +18,7 @@ The app now has a search box. Notice that the phone list on the page changes dep
 user types into the search box.
 
 The most important differences between Steps 2 and 3 are listed below. You can see the full diff on
-{@link https://github.com/angular/angular-phonecat/compare/step-2...step-3
- GitHub}:
+[GitHub](https://github.com/angular/angular-phonecat/compare/step-2...step-3):
 
 
 ## Controller
@@ -117,10 +116,10 @@ test runner}.
 
 To run the end-to-end test, open one of the following in a new browser tab:
 
-* node.js users: {@link http://localhost:8000/test/e2e/runner.html}
+* node.js users: http://localhost:8000/test/e2e/runner.html
 * users with other http servers:
 `http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
-* casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
+* casual reader: http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html
 
 Previously we've seen how Karma can be used to execute unit tests. Well, it can also run the
 end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike

@@ -17,7 +17,7 @@ You should see that in addition to the search box, the app displays a drop down 
 users to control the order in which the phones are listed.
 
 The most important differences between Steps 3 and 4 are listed below. You can see the full diff on
-{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 GitHub}:
+[GitHub](https://github.com/angular/angular-phonecat/compare/step-3...step-4):
 
 
 ## Template
@@ -168,9 +168,7 @@ __`test/e2e/scenarios.js`:__
 The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-`runner.html` to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html
-Angular's server}.
+`runner.html` to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html).
 
 # Experiments
 

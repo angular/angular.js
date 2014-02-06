@@ -19,8 +19,8 @@ api/ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist}/ {@link
 api/ng.$sceDelegateProvider#methods_resourceUrlBlacklist blacklist} or wrap the URL with a call to {@link
 api/ng.$sce#methods_trustAsResourceUrl $sce.trustAsResourceUrl}.
 
-**Note**: The browser's {@link
-https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest Same Origin
-Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing (CORS)} policy apply
+**Note**: The browser's [Same Origin
+Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest) and
+[Cross-Origin Resource Sharing (CORS)](http://www.w3.org/TR/cors/) policy apply
 that may further restrict whether the template is successfully loaded.  (e.g.  neither cross-domain
 requests won't work on all browsers nor `file://` requests on some browsers)

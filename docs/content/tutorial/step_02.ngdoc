@@ -9,8 +9,8 @@ Now it's time to make the web page dynamic — with AngularJS. We'll also add a 
 code for the controller we are going to add.
 
 There are many ways to structure the code for an application. For Angular apps, we encourage the
-use of {@link http://en.wikipedia.org/wiki/Model–View–Controller the Model-View-Controller (MVC)
-design pattern} to decouple the code and to separate concerns. With that in mind, let's use a
+use of [the Model-View-Controller (MVC)
+design pattern](http://en.wikipedia.org/wiki/Model–View–Controller) to decouple the code and to separate concerns. With that in mind, let's use a
 little Angular and JavaScript to add model, view, and controller components to our app.
 
 
@@ -19,8 +19,7 @@ little Angular and JavaScript to add model, view, and controller components to o
 
 The app now contains a list with three phones.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-1...step-2 GitHub}:
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-1...step-2):
 
 
 ## View and Template
@@ -179,12 +178,9 @@ is available to be injected.
 ### Writing and Running Tests
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
-this tutorial in Jasmine. You can learn about Jasmine on the {@link
-http://pivotal.github.com/jasmine/ Jasmine home page} and at the {@link
-http://pivotal.github.io/jasmine/ Jasmine docs}.
+this tutorial in Jasmine. You can learn about Jasmine on the [Jasmine home page](http://pivotal.github.com/jasmine/) and at the [Jasmine docs](http://pivotal.github.io/jasmine/).
 
-The angular-seed project is pre-configured to run all unit tests using {@link
-http://karma-runner.github.io/ Karma}. Ensure that the necessary karma plugins are installed.
+The angular-seed project is pre-configured to run all unit tests using [Karma](http://karma-runner.github.io/). Ensure that the necessary karma plugins are installed.
 You can do this by issuing `npm install` into your terminal.
 
 

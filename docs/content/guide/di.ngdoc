@@ -7,10 +7,10 @@
 Dependency Injection (DI) is a software design pattern that deals with how code gets hold of its
 dependencies.
 
-For in-depth discussion about DI, see {@link http://en.wikipedia.org/wiki/Dependency_injection
-Dependency Injection} at Wikipedia, {@link http://martinfowler.com/articles/injection.html
-Inversion of Control} by Martin Fowler, or read about DI in your favorite software design pattern
-book.
+For in-depth discussion about DI, see
+[Dependency Injection](http://en.wikipedia.org/wiki/Dependency_injection) at Wikipedia,
+[Inversion of Control](http://martinfowler.com/articles/injection.html) by Martin Fowler,
+or read about DI in your favorite software design pattern book.
 
 ## DI in a nutshell
 
@@ -80,8 +80,7 @@ Here is an example of using the injector service:
 </pre>
 
 Asking for dependencies solves the issue of hard coding, but it also means that the injector needs
-to be passed throughout the application. Passing the injector breaks the {@link
-http://en.wikipedia.org/wiki/Law_of_Demeter Law of Demeter}. To remedy this, we turn the
+to be passed throughout the application. Passing the injector breaks the [Law of Demeter](http://en.wikipedia.org/wiki/Law_of_Demeter). To remedy this, we turn the
 dependency lookup responsibility to the injector by declaring the dependencies as in this example:
 
 <pre>
@@ -133,8 +132,7 @@ function declaration and extracting the parameter names. In the above example `$
 `greeter` are two services which need to be injected into the function.
 
 While straightforward, this method will not work with JavaScript minifiers/obfuscators as they
-rename the method parameter names. This makes this way of annotating only useful for {@link
-http://www.pretotyping.org/ pretotyping}, and demo applications.
+rename the method parameter names. This makes this way of annotating only useful for [pretotyping](http://www.pretotyping.org/), and demo applications.
 
 ### `$inject` Annotation
 

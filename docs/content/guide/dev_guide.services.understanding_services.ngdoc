@@ -18,7 +18,7 @@ care of the rest. The Angular injector subsystem is in charge of service instant
 of dependencies, and provision of dependencies to components as requested.
 
 Angular injects dependencies using
-{@link http://misko.hevery.com/2009/02/19/constructor-injection-vs-setter-injection/ "constructor" injection}.
+["constructor" injection](http://misko.hevery.com/2009/02/19/constructor-injection-vs-setter-injection/).
 The dependency is passed to the component's factory/constructor function. Because JavaScript is a dynamically
 typed language, Angular's dependency injection subsystem cannot use static types to identify service
 dependencies. For this reason a component must, explicitly, define its dependencies by using one of the
