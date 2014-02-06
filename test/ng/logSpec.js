@@ -1,15 +1,13 @@
 'use strict';
 
-function initService(debugEnabled) {
+function initService(debugEnabled, msgEnabled) {
     return module(function($logProvider){
       $logProvider.debugEnabled(debugEnabled);
+	  $logProvider.enableMessages(msgEnabled);
     });
   }
-
 describe('$log', function() {
   var $window, logger, log, warn, info, error, debug;
-
-
 
   beforeEach(module(function($provide){
     $window = {navigator: {}, document: {}};
@@ -139,6 +137,30 @@ describe('$log', function() {
   ));
 
   });
+
+	describe("$log.info", function () {
+
+		beforeEach(initService(false, false));
+
+		it("should skip info messages output if disabled", inject(
+			function(){
+				$window.console = {log: log,
+					warn: warn,
+					info: info,
+					error: error,
+					debug: debug};
+			},
+			function($log) {
+				$log.log();
+				$log.warn();
+				$log.info();
+				$log.error();
+				$log.debug();
+				expect(logger).toEqual('log;warn;error;');
+			}
+		));
+
+	});
 
   describe('$log.error', function() {
     var e, $log, errorArgs;
