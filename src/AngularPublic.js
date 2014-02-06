@@ -77,7 +77,7 @@
 
 
 /**
- * @ngdoc property
+ * @ngdoc object
  * @name angular.version
  * @module ng
  * @description

@@ -171,8 +171,9 @@ function $HttpProvider() {
 
 
     /**
-     * @ngdoc function
-     * @name ng.$http
+     * @ngdoc service
+     * @kind function
+     * @name $http
      * @requires $httpBackend
      * @requires $browser
      * @requires $cacheFactory
@@ -797,8 +798,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#get
-     * @methodOf ng.$http
+     * @name $http#get
      *
      * @description
      * Shortcut method to perform `GET` request.
@@ -810,8 +810,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#delete
-     * @methodOf ng.$http
+     * @name $http#delete
      *
      * @description
      * Shortcut method to perform `DELETE` request.
@@ -823,8 +822,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#head
-     * @methodOf ng.$http
+     * @name $http#head
      *
      * @description
      * Shortcut method to perform `HEAD` request.
@@ -836,8 +834,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#jsonp
-     * @methodOf ng.$http
+     * @name $http#jsonp
      *
      * @description
      * Shortcut method to perform `JSONP` request.
@@ -851,8 +848,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#post
-     * @methodOf ng.$http
+     * @name $http#post
      *
      * @description
      * Shortcut method to perform `POST` request.
@@ -865,8 +861,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#put
-     * @methodOf ng.$http
+     * @name $http#put
      *
      * @description
      * Shortcut method to perform `PUT` request.
@@ -880,7 +875,7 @@ function $HttpProvider() {
 
         /**
          * @ngdoc property
-         * @name ng.$http#defaults
+         * @name $http#defaults
          * @propertyOf ng.$http
          *
          * @description
