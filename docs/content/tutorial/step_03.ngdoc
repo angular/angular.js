@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 3 - Filtering Repeaters
+@ngdoc tutorial
+@name 3 - Filtering Repeaters
+@step 3
 @description
 
 <ul doc-tutorial-nav="3"></ul>

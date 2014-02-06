@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 10 - Event Handlers
+@ngdoc tutorial
+@name 10 - Event Handlers
+@step 10
 @description
 
 <ul doc-tutorial-nav="10"></ul>
