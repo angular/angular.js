@@ -22,9 +22,12 @@ function readSymbols() {
     .then(function(content) {
       var currencySymbols = closureI18nExtractor.extractCurrencySymbols(content);
       return qfs.read(__dirname + '/../closure/numberSymbols.js', 'b').then(function(content) {
+        closureI18nExtractor.extractNumberSymbols(content, localeInfo, currencySymbols);
+        return qfs.read(__dirname + '/../closure/numberSymbolsExt.js', 'b').then(function(content) {
           closureI18nExtractor.extractNumberSymbols(content, localeInfo, currencySymbols);
         });
       });
+    });
 
   console.log("Processing datetime symbols ...");
   var datetimeStagePromise = qfs.read(__dirname + '/../closure/datetimeSymbols.js', 'b')
