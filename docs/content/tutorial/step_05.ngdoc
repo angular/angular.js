@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 5 - XHRs & Dependency Injection
+@ngdoc tutorial
+@name 5 - XHRs & Dependency Injection
+@step 5
 @description
 
 <ul doc-tutorial-nav="5"></ul>

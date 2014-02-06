@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 2 - Angular Templates
+@ngdoc tutorial
+@name 2 - Angular Templates
+@step 2
 @description
 
 <ul doc-tutorial-nav="2"></ul>

@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 6 - Templating Links & Images
+@ngdoc tutorial
+@name 6 - Templating Links & Images
+@step 6
 @description
 
 <ul doc-tutorial-nav="6"></ul>

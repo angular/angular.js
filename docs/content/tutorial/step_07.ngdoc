@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 7 - Routing & Multiple Views
+@ngdoc tutorial
+@name 7 - Routing & Multiple Views
+@step 7
 @description
 
 <ul doc-tutorial-nav="7"></ul>

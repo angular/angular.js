@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: The End
+@ngdoc tutorial
+@name The End
+@step 99
 @description
 
 Our application is now complete. Feel free to experiment with the code further, and jump back to
