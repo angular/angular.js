@@ -115,14 +115,14 @@ exports.Example.prototype.toHtmlTabs = function() {
   htmlTabs(this.html);
   htmlTabs(this.css);
   htmlTabs(this.js);
-  htmlTabs(this.json);
+  htmlTabs(this.json, 'application/json');
   htmlTabs(this.unit);
   htmlTabs(this.scenario);
   htmlTabs(this.protractorTest);
   out.push('</div>');
   return out.join('');
 
-  function htmlTabs(sources) {
+  function htmlTabs(sources, contentType) {
     sources.forEach(function(source) {
       var wrap = '',
           isCss = source.name.match(/\.css$/),
@@ -139,7 +139,9 @@ exports.Example.prototype.toHtmlTabs = function() {
           '<pre class="prettyprint linenums" ng-set-text="' + source.id + '"' + wrap + '></pre>\n' +
           (isCss
              ? ('<style type="text/css" id="' + source.id + '">' + source.content + '</style>\n')
-             : ('<script type="text/ng-template" id="' + source.id + '">' + source.content + '</script>\n') ) +
+             : ('<script type="text/ng-template"' + (' id="' + source.id + '"') +
+                (contentType ? ' content-type="' + contentType + '"' : '') + '>' +
+               source.content + '</script>\n') ) +
         '</div>\n');
     });
   }

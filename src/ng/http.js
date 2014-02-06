@@ -89,17 +89,40 @@ function $HttpProvider() {
       PROTECTION_PREFIX = /^\)\]\}',?\n/,
       CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json;charset=utf-8'};
 
+  var parseJsonSelectively = function(data, headers) {
+    if (isString(data)) {
+      // strip json vulnerability protection prefix
+      var contentType = isFunction(headers) && headers('Content-Type');
+      data = data.replace(PROTECTION_PREFIX, '');
+      if (JSON_START.test(data) && JSON_END.test(data) &&
+          (contentType && contentType.indexOf('json') >= 0))
+        data = fromJson(data);
+    }
+    return data;
+  };
+
+  var autoParseJSON = function(data) {
+    if (isString(data)) {
+      // strip json vulnerability protection prefix
+      data = data.replace(PROTECTION_PREFIX, '');
+      if (JSON_START.test(data) && JSON_END.test(data))
+        data = fromJson(data);
+    }
+    return data;
+  };
+
+  var parseMode = parseJsonSelectively;
+
+  this.autoParseJSON = function(value) {
+    var i = indexOf(defaults.transformResponse, value ? parseJsonSelectively : autoParseJSON);
+    if (i >= 0) {
+      defaults.transformResponse.splice(i, 1, value ? autoParseJSON : parseJsonSelectively);
+    }
+  };
+
   var defaults = this.defaults = {
     // transform incoming response data
-    transformResponse: [function(data) {
-      if (isString(data)) {
-        // strip json vulnerability protection prefix
-        data = data.replace(PROTECTION_PREFIX, '');
-        if (JSON_START.test(data) && JSON_END.test(data))
-          data = fromJson(data);
-      }
-      return data;
-    }],
+    transformResponse: [parseJsonSelectively],
 
     // transform outgoing request data
     transformRequest: [function(d) {
