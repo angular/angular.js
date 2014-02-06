@@ -1,6 +1,37 @@
 'use strict';
 
-var ngAnimationdetectDirective = ngDirective(function(scope, element, attr) {
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngAnimationDetect
+ * @restrict A
+ *
+ * @description
+ * The `ngAnimationDetect` attribute tells Angular to when the CSS3 Transition animation has
+ * started, is in iteration and ended.
+ *
+ *
+ * @element ANY
+ * @param {expression} ngAnimationDetect {@link guide/expression Expression} to evaluate.
+ *
+ * @sample
+   <doc:sample>
+     <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.name = 'Whirled';
+         }
+       </script>
+       <div ng-controller="Ctrl">
+          <span ng-animation-detect='{"start": "start()", "end": "end()"}'>
+            ... <!-- some css3 transition animation here-->
+          </span>
+       </div>
+     </doc:source>
+   </doc:sample>
+ */
+var ngAnimationDetectDirective = ngDirective(function(scope, element, attrs) {
+
+    var methods = JSON.parse(attrs.ngAnimationdetect);
     var el = element;
     var pfx = ["webkit", "moz", "MS", "o", ""];
     var PrefixedEvent = function(element, type, callback) {
@@ -10,14 +41,18 @@ var ngAnimationdetectDirective = ngDirective(function(scope, element, attr) {
         }
     }
     // handle animation events
-    var AnimationListener = function(e) {
-        console.log("Animation '" + e.animationName + "' type '" + e.type + "' at " + e.elapsedTime.toFixed(2) + " seconds");
-        if (e.type.toLowerCase().indexOf("animationend") >= 0) {
-
-        }
+    var AnimationStartListener = function(e) {
+        scope.$eval(methods.start);
+    }
+    var AnimationIterationListener = function(e) {
+        scope.$eval(methods.iterate);
+    }
+    var AnimationEndListener = function(e) {
+        scope.$eval(methods.end);
     }
 
-    PrefixedEvent(el, "AnimationStart", AnimationListener);
-    PrefixedEvent(el, "AnimationIteration", AnimationListener);
-    PrefixedEvent(el, "AnimationEnd", AnimationListener);
+    PrefixedEvent(el, "AnimationStart", AnimationStartListener);
+    PrefixedEvent(el, "AnimationIteration", AnimationIterationListener);
+    PrefixedEvent(el, "AnimationEnd", AnimationEndListener);
+
 });
