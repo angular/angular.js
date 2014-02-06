@@ -22,7 +22,7 @@ then the animation will run in between the standard DOM operation that is being 
 the given time (e.g. inserting and removing nodes on ngRepeat or adding and removing classes on ngClass).
 
 The most important changes are listed below. You can see the full diff on
-{@link https://github.com/angular/angular-phonecat/compare/step-11...step-12 GitHub}:
+[GitHub](https://github.com/angular/angular-phonecat/compare/step-11...step-12):
 
 
 ## How Animations work with `ngAnimate`
@@ -183,8 +183,8 @@ around and collapsing the items before removing them from the list.
 There's also a nice fade-in and fade-out effect that also occurs at the same time. All of this is handled
 by the CSS transition declarations at the top of the example code above.
 
-Although most modern browsers have good support for {@link http://caniuse.com/#feat=css-transitions CSS transitions}
-and {@link http://caniuse.com/#feat=css-animation CSS animations}, IE9 and earlier do not.
+Although most modern browsers have good support for [CSS transitions](http://caniuse.com/#feat=css-transitions)
+and [CSS animations](http://caniuse.com/#feat=css-animation), IE9 and earlier do not.
 If you want animations that are backwards-compatible with older browsers, consider using JavaScript-based animations,
 which are described in detail below.
 
@@ -284,7 +284,7 @@ loaded the ng-view directive will create a copy of itself, download the template
 ensures that all views are contained within a single HTML element which allows for easy animation control.
 
 For more on CSS animations, see the
-{@link http://docs.webplatform.org/wiki/css/properties/animations Web Platform documentation}.
+[Web Platform documentation](http://docs.webplatform.org/wiki/css/properties/animations).
 
 
 ## Animating `ngClass` with JavaScript
@@ -394,10 +394,10 @@ phonecatAnimations.animation('.phone', function() {
 });
 </pre>
 
-Note that we're using {@link http://jquery.com/ jQuery} to implement the animation. jQuery
+Note that we're using [jQuery](http://jquery.com/) to implement the animation. jQuery
 isn't required to do JavaScript animations with AngularJS, but we're going to use it because writing
 your own JavaScript animation library is beyond the scope of this tutorial. For more on
-`jQuery.animate`, see the {@link http://api.jquery.com/animate/ jQuery documentation}.
+`jQuery.animate`, see the [jQuery documentation](http://api.jquery.com/animate/).
 
 The `addClass` and `removeClass` callback functions are called whenever an a class is added or removed
 on the element that contains the class we registered, which is in this case `.phone`. When the `.active`

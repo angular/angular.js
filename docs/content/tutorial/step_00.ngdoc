@@ -169,8 +169,7 @@ and one static binding, and our model is empty. That will soon change!
 
 ## What are all these files in my working directory?
 
-Most of the files in your working directory come from the {@link
-https://github.com/angular/angular-seed angular-seed project} which is typically used to bootstrap
+Most of the files in your working directory come from the [angular-seed project](https://github.com/angular/angular-seed) which is typically used to bootstrap
 new Angular projects. The seed project includes the latest Angular libraries, test libraries,
 scripts and a simple example app, all pre-configured for developing a typical web app.
 

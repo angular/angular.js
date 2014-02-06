@@ -105,7 +105,7 @@ function myController($scope, notify) {
 </doc:source>
 </doc:example>
 
-However, if you plan to {@link http://en.wikipedia.org/wiki/Minification_(programming) minify} your
+However, if you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming)) your
 code, your variable names will get renamed in which case you will still need to explicitly specify
 dependencies with the `$inject` property.
 

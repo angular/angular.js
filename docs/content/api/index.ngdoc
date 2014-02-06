@@ -32,9 +32,9 @@ This module is provided by default and contains the core components of AngularJS
 
       <p>
         Some examples include:
-          {@link ng.directive:ngClick ngClick},
-          {@link ng.directive:ngInclude ngInclude},
-          {@link ng.directive:ngRepeat ngRepeat},
+          {@link directive:ngClick ngClick},
+          {@link directive:ngInclude ngInclude},
+          {@link directive:ngRepeat ngRepeat},
           etc… <br />
       </p>
     </td>

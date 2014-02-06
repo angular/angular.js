@@ -17,9 +17,7 @@ and the same phone list appears in the browser. When you click on a phone link t
 detail page is displayed.
 
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-6...step-7
-GitHub}.
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-6...step-7).
 
 
 ## Multiple Views, Routing and Layout Template
@@ -39,8 +37,7 @@ Application routes in Angular are declared via the
 {@link api/ngRoute.$routeProvider $routeProvider}, which is the provider of the
 {@link api/ngRoute.$route $route service}. This service makes it easy to wire together
 controllers, view templates, and the current
-URL location in the browser. Using this feature we can implement {@link
-http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
+URL location in the browser. Using this feature we can implement [deep linking](http://en.wikipedia.org/wiki/Deep_linking), which lets us utilize the browser's
 history (back and forward navigation) and bookmarks.
 
 
@@ -107,7 +104,7 @@ module `phonecatControllers`. By listing these two modules as dependencies of `p
 can use the directives and services they provide.
 
 Thus using the `config` API we request the `$routeProvider` to be injected into our config function
-and use the {@link api/ngRoute.$routeProvider#methods_when `$routeProvider.when`} API to define our routes.
+and use the {@link api/ngRoute.$routeProvider#when `$routeProvider.when`} API to define our routes.
 
 Our application routes are defined as follows:
 
@@ -278,9 +275,7 @@ to various URLs and verify that the correct view was rendered.
 
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
-Angular's server}.
+runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html).
 
 
 # Experiments

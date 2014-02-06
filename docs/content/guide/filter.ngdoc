@@ -123,4 +123,4 @@ text upper-case.
 
 ## Testing custom filters
 
-See the {@link http://docs.angularjs.org/tutorial/step_09#test phonecat tutorial} for an example.
+See the [phonecat tutorial](http://docs.angularjs.org/tutorial/step_09#test) for an example.
