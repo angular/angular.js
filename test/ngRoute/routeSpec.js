@@ -723,6 +723,62 @@ describe('$route', function() {
         expect($exceptionHandler.errors).toEqual([myError]);
       });
     });
+
+
+    it('should broadcast $routeChangeCancelled if $routeChangeSuccess.defaultPrevented', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/r1', {
+          templateUrl: 'r1.html'
+        });
+      });
+      inject(function($route, $httpBackend, $location, $rootScope, $browser) {
+        var success = jasmine.createSpy('$routeChangeSuccess'),
+            error = jasmine.createSpy('$routeChangeError'),
+            cancelled = jasmine.createSpy('$routeChangeCancelled');
+        $rootScope.$on('$routeChangeStart', function($event) { $event.preventDefault(); });
+        $rootScope.$on('$routeChangeSuccess', success);
+        $rootScope.$on('$routeChangeError', error);
+        $rootScope.$on('$routeChangeCancelled', cancelled);          
+
+        $location.path('/r1');
+        $rootScope.$digest();
+
+        expect(success).not.toHaveBeenCalled();
+        expect(error).not.toHaveBeenCalled();
+        expect(cancelled).toHaveBeenCalled();
+        expect($location.absUrl()).toBe('http://server/');
+      });
+    });
+
+
+    it('should not broadcast $routeChangeCancelled if force-reloading', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/r1', {
+          templateUrl: 'foo.html'
+        });
+      });
+      inject(function($route, $httpBackend, $location, $rootScope) {
+        var success = jasmine.createSpy('$routeChangeSuccess'),
+            error = jasmine.createSpy('$routeChangeError'),
+            cancelled = jasmine.createSpy('$routeChangeCancelled');
+
+        $location.path('/r1');
+        $rootScope.$digest();
+        $httpBackend.flush();
+
+        $rootScope.$on('$routeChangeStart', function($event) { $event.preventDefault(); });
+        $rootScope.$on('$routeChangeSuccess', success);
+        $rootScope.$on('$routeChangeError', error);
+        $rootScope.$on('$routeChangeCancelled', cancelled);          
+
+        $route.reload();
+        $rootScope.$digest();
+
+        expect(cancelled).not.toHaveBeenCalled();
+        expect(error).not.toHaveBeenCalled();
+        expect(success).toHaveBeenCalled();
+      });
+    });
   });
 
 

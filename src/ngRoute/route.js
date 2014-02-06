@@ -375,8 +375,28 @@ function $RouteProvider(){
      * defined in `resolve` route property. Once  all of the dependencies are resolved
      * `$routeChangeSuccess` is fired.
      *
+     * The route change may be cancelled with angularEvent.preventDefault(), which will
+     * in turn trigger a {@link ngRoute.$route#events_$routeChangeCancelled $routeChangeCancelled}
+     * event.
+     *
      * @param {Object} angularEvent Synthetic event object.
      * @param {Route} next Future route information.
+     * @param {Route} current Current route information.
+     */
+
+    /**
+     * @ngdoc event
+     * @name ngRoute.$route#$routeChangeCancelled
+     * @eventOf ngRoute.$route
+     * @eventType broadcast on root scope
+     * @description
+     * Broadcasted after a route has been cancelled during
+     * {@link ngRoute.$route#events_$routeChangeStart $routeChangStart}, using the
+     * angularEvent.preventDefault() method. This method enables applications to prevent
+     * a route change from occurring without any additional work.
+     *
+     * @param {Object} angularEvent Synthetic event object.
+     * @param {Route} cancelled The cancelled route information.
      * @param {Route} current Current route information.
      */
 
@@ -483,7 +503,7 @@ function $RouteProvider(){
       return params;
     }
 
-    function updateRoute() {
+    function updateRoute($event, newUrl, oldUrl) {
       var next = parseRoute(),
           last = $route.current;
 
@@ -494,8 +514,13 @@ function $RouteProvider(){
         angular.copy(last.params, $routeParams);
         $rootScope.$broadcast('$routeUpdate', last);
       } else if (next || last) {
+        if ($rootScope.$broadcast('$routeChangeStart', next, last).defaultPrevented &&
+            !forceReload) {
+          $location.$$parse($location.$$rewrite(oldUrl));
+          $rootScope.$broadcast('$routeChangeCancelled', next, last);
+          return;
+        }
         forceReload = false;
-        $rootScope.$broadcast('$routeChangeStart', next, last);
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
