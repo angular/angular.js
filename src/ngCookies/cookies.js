@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngCookies
  * @description
  *
@@ -20,8 +20,8 @@
 
 angular.module('ngCookies', ['ng']).
   /**
-   * @ngdoc object
-   * @name ngCookies.$cookies
+   * @ngdoc service
+   * @name $cookies
    * @requires $browser
    *
    * @description
@@ -129,8 +129,8 @@ angular.module('ngCookies', ['ng']).
 
 
   /**
-   * @ngdoc object
-   * @name ngCookies.$cookieStore
+   * @ngdoc service
+   * @name $cookieStore
    * @requires $cookies
    *
    * @description
@@ -147,8 +147,7 @@ angular.module('ngCookies', ['ng']).
       return {
         /**
          * @ngdoc method
-         * @name ngCookies.$cookieStore#get
-         * @methodOf ngCookies.$cookieStore
+         * @name $cookieStore#get
          *
          * @description
          * Returns the value of given cookie key
@@ -163,8 +162,7 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
-         * @name ngCookies.$cookieStore#put
-         * @methodOf ngCookies.$cookieStore
+         * @name $cookieStore#put
          *
          * @description
          * Sets a value for given cookie key
@@ -178,8 +176,7 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
-         * @name ngCookies.$cookieStore#remove
-         * @methodOf ngCookies.$cookieStore
+         * @name $cookieStore#remove
          *
          * @description
          * Remove given cookie

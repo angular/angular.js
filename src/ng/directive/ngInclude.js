@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngInclude
+ * @name ngInclude
  * @restrict ECA
  *
  * @description
@@ -145,7 +145,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentRequested
+ * @name ngInclude#$includeContentRequested
  * @eventOf ng.directive:ngInclude
  * @eventType emit on the scope ngInclude was declared in
  * @description
@@ -155,7 +155,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentLoaded
+ * @name ngInclude#$includeContentLoaded
  * @eventOf ng.directive:ngInclude
  * @eventType emit on the current ngInclude scope
  * @description

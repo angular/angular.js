@@ -3,8 +3,8 @@
 var $interpolateMinErr = minErr('$interpolate');
 
 /**
- * @ngdoc object
- * @name ng.$interpolateProvider
+ * @ngdoc provider
+ * @name $interpolateProvider
  * @function
  *
  * @description
@@ -44,8 +44,7 @@ function $InterpolateProvider() {
 
   /**
    * @ngdoc method
-   * @name ng.$interpolateProvider#startSymbol
-   * @methodOf ng.$interpolateProvider
+   * @name $interpolateProvider#startSymbol
    * @description
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
@@ -63,8 +62,7 @@ function $InterpolateProvider() {
 
   /**
    * @ngdoc method
-   * @name ng.$interpolateProvider#endSymbol
-   * @methodOf ng.$interpolateProvider
+   * @name $interpolateProvider#endSymbol
    * @description
    * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
    *
@@ -86,8 +84,8 @@ function $InterpolateProvider() {
         endSymbolLength = endSymbol.length;
 
     /**
-     * @ngdoc function
-     * @name ng.$interpolate
+     * @ngdoc service
+     * @name $interpolate
      * @function
      *
      * @requires $parse
@@ -205,8 +203,7 @@ function $InterpolateProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$interpolate#startSymbol
-     * @methodOf ng.$interpolate
+     * @name $interpolate#startSymbol
      * @description
      * Symbol to denote the start of expression in the interpolated string. Defaults to `{{`.
      *
@@ -222,8 +219,7 @@ function $InterpolateProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$interpolate#endSymbol
-     * @methodOf ng.$interpolate
+     * @name $interpolate#endSymbol
      * @description
      * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
      *

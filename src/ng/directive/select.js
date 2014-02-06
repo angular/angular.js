@@ -3,7 +3,7 @@
 var ngOptionsMinErr = minErr('ngOptions');
 /**
  * @ngdoc directive
- * @name ng.directive:select
+ * @name select
  * @restrict E
  *
  * @description

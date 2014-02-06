@@ -3,7 +3,7 @@
 var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngSanitize
  * @description
  *
@@ -37,7 +37,7 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
  * @ngdoc service
- * @name ngSanitize.$sanitize
+ * @name $sanitize
  * @function
  *
  * @description

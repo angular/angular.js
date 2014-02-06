@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.$exceptionHandler
+ * @ngdoc service
+ * @name $exceptionHandler
  * @requires $log
  *
  * @description

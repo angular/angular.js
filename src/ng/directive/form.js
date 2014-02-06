@@ -10,8 +10,8 @@ var nullFormCtrl = {
 };
 
 /**
- * @ngdoc object
- * @name ng.directive:form.FormController
+ * @ngdoc type
+ * @name form.FormController
  *
  * @property {boolean} $pristine True if user has not interacted with the form yet.
  * @property {boolean} $dirty True if user has already interacted with the form.
@@ -76,9 +76,8 @@ function FormController(element, attrs) {
   }
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$addControl
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$addControl
    *
    * @description
    * Register a control with the form.
@@ -97,9 +96,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$removeControl
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$removeControl
    *
    * @description
    * Deregister a control from the form.
@@ -118,9 +116,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setValidity
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$setValidity
    *
    * @description
    * Sets the validity of a form control.
@@ -166,9 +163,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setDirty
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$setDirty
    *
    * @description
    * Sets the form to a dirty state.
@@ -184,9 +180,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setPristine
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$setPristine
    *
    * @description
    * Sets the form to its pristine state.
@@ -211,7 +206,7 @@ function FormController(element, attrs) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngForm
+ * @name ngForm
  * @restrict EAC
  *
  * @description
@@ -226,7 +221,7 @@ function FormController(element, attrs) {
 
  /**
  * @ngdoc directive
- * @name ng.directive:form
+ * @name form
  * @restrict E
  *
  * @description

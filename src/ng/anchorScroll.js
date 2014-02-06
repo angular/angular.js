@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.$anchorScroll
+ * @ngdoc service
+ * @name $anchorScroll
+ * @kind function
  * @requires $window
  * @requires $location
  * @requires $rootScope
