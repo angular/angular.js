@@ -517,6 +517,14 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+
+          directive('svgCircle', valueFn({
+            replace: true,
+            template: jqLite('<svg><circle></circle></svg>').children()
+          }));
+          directive('domNodeTemplate', valueFn({
+            template: jqLite('<p>Hello!</p><p>world!</p>')
+          }));
         }));
 
 
@@ -680,6 +688,17 @@ describe('$compile', function() {
             }).not.toThrow();
           });
         });
+
+
+        it('should accept DOM nodes as a template', inject(function($compile, $rootScope) {
+          if (!(msie < 9)) {
+            element = $compile('<svg><g svg-circle></g></svg>')($rootScope);
+            expect(element.find('g').length).toBe(0);
+            expect(element.find('circle').length).toBe(1);
+          }
+          element = $compile('<div dom-node-template></div>')($rootScope);
+          expect(element.find('p').length).toBe(2);
+        }));
       });
 
 
@@ -698,6 +717,17 @@ describe('$compile', function() {
               expect($attrs.id).toBe('templateContent');
             }
           }));
+          directive('svgCircle', valueFn({
+            replace: true,
+            template: function() {
+              return jqLite('<svg><circle></circle></svg>').children();
+            }
+          }));
+          directive('domNodeTemplate', valueFn({
+            template: function() {
+              return jqLite('<p>Hello!</p><p>world!</p>');
+            }
+          }));
         }));
 
 
@@ -705,6 +735,17 @@ describe('$compile', function() {
             function($compile, $rootScope) {
           element = $compile('<div my-directive="some value">original content<div>')($rootScope);
           expect(element.text()).toEqual('template content');
+        }));
+
+
+        it('should accept DOM nodes as a template', inject(function($compile, $rootScope) {
+          if (!(msie < 9)) {
+            element = $compile('<svg><g svg-circle></g></svg>')($rootScope);
+            expect(element.find('g').length).toBe(0);
+            expect(element.find('circle').length).toBe(1);
+          }
+          element = $compile('<div dom-node-template></div>')($rootScope);
+          expect(element.find('p').length).toBe(2);
         }));
       });
 
