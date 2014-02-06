@@ -165,7 +165,7 @@ function $SceDelegateProvider() {
 
   /**
    * @ngdoc method
-   * @name sceDelegateProvider#resourceUrlBlacklist
+   * @name $sceDelegateProvider#resourceUrlBlacklist
    * @function
    *
    * @param {Array=} blacklist When provided, replaces the resourceUrlBlacklist with the value
