@@ -59,7 +59,14 @@
 
           element(by.id('link-3')).click();
 
-          expect(browser.driver.getCurrentUrl()).toMatch(/\/123$/);
+          // At this point, we navigate away from an Angular page, so we need
+          // to use browser.driver to get the base webdriver.
+
+          browser.wait(function() {
+            return browser.driver.getCurrentUrl().then(function(url) {
+              return url.match(/\/123$/);
+            });
+          }, 1000, 'page should navigate to /123');
         });
 
         it('should execute ng-click but not reload when href empty string and name specified', function() {
