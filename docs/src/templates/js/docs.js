@@ -233,7 +233,7 @@ docsApp.directive.docModuleComponents = function() {
               '        </tr>' +
               '        <tr ng-repeat="component in section.components">' +
               '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' +
-              '          <td>{{ component.shortDescription }}</td>' +
+              '          <td ng-bind-html="component.shortDescription"></td>' +
               '        </tr>' +
               '      </table>' +
               '    </div>' +
