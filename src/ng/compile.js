@@ -260,12 +260,13 @@
  *   function compile(tElement, tAttrs, transclude) { ... }
  * </pre>
  *
- * The compile function deals with transforming the template DOM. Since most directives do not do
- * template transformation, it is not used often. Examples that require compile functions are
- * directives that transform template DOM, such as {@link
- * api/ng.directive:ngRepeat ngRepeat}, or load the contents
- * asynchronously, such as {@link api/ngRoute.directive:ngView ngView}. The
- * compile function takes the following arguments.
+ * The compile function deals with the template DOM. Examples that require compile functions are 
+ * directives that have a need to store pre-interpolated values or expressions in memory, such as {@link
+ * api/ng.directive:ngClick ngClick}, apply conditional logic based on the semantic markup, 
+ * such as {@link api/ng.directive:ngValue ngValue} or do template transformations on DOM (that will 
+ * never have a need for interpolation), such as {@link api/ng.directive:option option}. 
+ * 
+ * The compile function takes the following arguments.
  *
  *   * `tElement` - template element - The element where the directive has been declared. It is
  *     safe to do template transformation on the element and child elements only.
