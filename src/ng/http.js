@@ -178,7 +178,7 @@ function $HttpProvider() {
      * @requires $cacheFactory
      * @requires $rootScope
      * @requires $q
-     * @requires $injector
+     * @requires AUTO.$injector
      *
      * @description
      * The `$http` service is a core Angular service that facilitates communication with the remote

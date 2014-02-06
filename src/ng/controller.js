@@ -39,7 +39,7 @@ function $ControllerProvider() {
     /**
      * @ngdoc function
      * @name ng.$controller
-     * @requires $injector
+     * @requires AUTO.$injector
      *
      * @param {Function|string} constructor If called with a function then it's considered to be the
      *    controller constructor function. Otherwise it's considered to be a string which is used
