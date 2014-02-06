@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 0 - Bootstrapping
+@ngdoc tutorial
+@name 0 - Bootstrapping
+@step 0
 @description
 
 <ul doc-tutorial-nav="0"></ul>

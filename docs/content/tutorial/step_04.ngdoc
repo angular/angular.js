@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 4 - Two-way Data Binding
+@ngdoc tutorial
+@name 4 - Two-way Data Binding
+@step 4
 @description
 
 <ul doc-tutorial-nav="4"></ul>
