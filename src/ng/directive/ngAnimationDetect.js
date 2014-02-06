@@ -1,0 +1,1 @@
+ngAnimationDetect.js
