@@ -130,7 +130,11 @@ exports.ngVersions = function() {
     for(var key in obj) {
       keys.push(key);
     };
-    keys.sort(true);
+    keys.sort(function (a, b) {
+      var aa = a.split(/\./),
+        bb = b.split(/\./);
+      return aa[0] - bb[0] || aa[1] - bb[1] || aa[2] - bb[2];
+    });
     return keys;
   };
 };
