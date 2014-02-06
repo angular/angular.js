@@ -23,24 +23,24 @@ for how to contribute your own code to AngularJS.
 Before you can build AngularJS, you must install and configure the following dependencies on your
 machine:
 
-* {@link http://git-scm.com/ Git}: The {@link https://help.github.com/articles/set-up-git Github Guide to
-Installing Git} is a good source of information.
+* [Git](http://git-scm.com/): The [Github Guide to
+Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* {@link http://nodejs.org Node.js}: We use Node to generate the documentation, run a
+* [Node.js](http://nodejs.org): We use Node to generate the documentation, run a
 development web server, run tests, and generate distributable files. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
-* {@link http://www.java.com Java}: We minify JavaScript using our
-{@link https://developers.google.com/closure/ Closure Tools} jar. Make sure you have Java (version 6 or higher) installed
-and included in your {@link http://docs.oracle.com/javase/tutorial/essential/environment/paths.html PATH} variable.
+* [Java](http://www.java.com): We minify JavaScript using our
+[Closure Tools](https://developers.google.com/closure/) jar. Make sure you have Java (version 6 or higher) installed
+and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/environment/paths.html) variable.
 
-* {@link http://gruntjs.com Grunt}: We use Grunt as our build system. Install the grunt command-line tool globally with:
+* [Grunt](http://gruntjs.com): We use Grunt as our build system. Install the grunt command-line tool globally with:
 
   ```shell
   npm install -g grunt-cli
   ```
 
-* {@link http://bower.io/ Bower}: We use Bower to manage client-side packages for the docs. Install the `bower` command-line tool globally with:
+* [Bower](http://bower.io/): We use Bower to manage client-side packages for the docs. Install the `bower` command-line tool globally with:
 
   ```shell
   npm install -g bower
@@ -51,9 +51,8 @@ Bower globally.
 
 ## Forking Angular on Github
 
-To create a Github account, follow the instructions {@link https://github.com/signup/free here}.
-Afterwards, go ahead and {@link http://help.github.com/forking fork} the {@link
-https://github.com/angular/angular.js main AngularJS repository}.
+To create a Github account, follow the instructions [here](https://github.com/signup/free).
+Afterwards, go ahead and [fork](http://help.github.com/forking) the [main AngularJS repository](https://github.com/angular/angular.js).
 
 
 ## Building AngularJS

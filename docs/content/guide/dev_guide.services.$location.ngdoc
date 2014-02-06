@@ -4,8 +4,7 @@
 
 # What does it do?
 
-The `$location` service parses the URL in the browser address bar (based on the {@link
-https://developer.mozilla.org/en/window.location window.location}) and makes the URL available to
+The `$location` service parses the URL in the browser address bar (based on the [window.location](https://developer.mozilla.org/en/window.location)) and makes the URL available to
 your application. Changes to the URL in the address bar are reflected into $location service and
 changes to $location are reflected into the browser address bar.
 
@@ -145,7 +144,7 @@ unless `replace()` is called again.
 
 ### Setters and character encoding
 You can pass special characters to `$location` service and it will encode them according to rules
-specified in {@link http://www.ietf.org/rfc/rfc3986.txt RFC 3986}. When you access the methods:
+specified in [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt). When you access the methods:
 
 - All values that are passed to `$location` setter methods, `path()`, `search()`, `hash()`, are
 encoded.
@@ -160,7 +159,7 @@ encoded.
 
 `$location` service has two configuration modes which control the format of the URL in the browser
 address bar: **Hashbang mode** (the default) and the **HTML5 mode** which is based on using the
-HTML5 {@link http://www.w3.org/TR/html5/browsers.html#history History API}. Applications use the same API in
+HTML5 [History API](http://www.w3.org/TR/html5/history.html). Applications use the same API in
 both modes and the `$location` service will work with appropriate URL segments and browser APIs to
 facilitate the browser URL change and history management.
 
@@ -242,8 +241,8 @@ your document:
 
 This will cause crawler bot to request links with `_escaped_fragment_` param so that your server
 can recognize the crawler and serve a HTML snapshots. For more information about this technique,
-see {@link http://code.google.com/web/ajaxcrawling/docs/specification.html Making AJAX Applications
-Crawlable}.
+see [Making AJAX Applications
+Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
 
 ## HTML5 mode
 
@@ -346,8 +345,8 @@ meta tag to the HEAD section of your document:
 
 This statement causes a crawler to request links with an empty `_escaped_fragment_` parameter so that
 your server can recognize the crawler and serve it HTML snapshots. For more information about this
-technique, see {@link http://code.google.com/web/ajaxcrawling/docs/specification.html Making AJAX
-Applications Crawlable}.
+technique, see [Making AJAX
+Applications Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
 
 ### Relative links
 
@@ -625,8 +624,7 @@ then uses the information it obtains to compose hashbang URLs (such as
 
 ## Two-way binding to $location
 
-The Angular's compiler currently does not support two-way binding for methods (see {@link
-https://github.com/angular/angular.js/issues/404 issue}).  If you should require two-way binding
+The Angular's compiler currently does not support two-way binding for methods (see [issue](https://github.com/angular/angular.js/issues/404)).  If you should require two-way binding
 to the $location object (using {@link api/ng.directive:input.text
 ngModel} directive on an input field), you will need to specify an extra model property
 (e.g. `locationPath`) with two watchers which push $location updates in both directions. For

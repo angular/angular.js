@@ -18,9 +18,7 @@ is displayed.
 To implement the phone details view we will use {@link api/ng.$http $http} to fetch
 our data, and we'll flesh out the `phone-detail.html` view template.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-7...step-8
-GitHub}:
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-7...step-8):
 
 ## Data
 
@@ -175,9 +173,7 @@ __`test/e2e/scenarios.js`:__
 
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
-Angular's server}.
+runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html).
 
 
 # Experiments

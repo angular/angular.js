@@ -97,9 +97,8 @@ function MyClass() {
 While no new dependency instance is created, it is fundamentally the same as `new` in
 that no  way exists to intercept the call to `global.xhr` for testing purposes, other then
 through monkey patching. The basic issue for testing is that a global variable needs to be mutated in
-order to replace it with call to a mock method. For further explanation of why this is bad see: {@link
-http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/ Brittle Global
-State & Singletons}
+order to replace it with call to a mock method. For further explanation of why this is bad see: [Brittle Global
+State & Singletons](http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/)
 
 The class above is hard to test since we have to change the global state:
 <pre>
@@ -336,5 +335,5 @@ replaced the content and "lidless, wreathed in flame, 2 times" is present.
 
 
 ## Sample project
-See the {@link https://github.com/angular/angular-seed angular-seed} project for an example.
+See the [angular-seed](https://github.com/angular/angular-seed) project for an example.
 
