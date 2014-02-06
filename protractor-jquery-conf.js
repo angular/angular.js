@@ -2,13 +2,13 @@ exports.config = {
   allScriptsTimeout: 11000,
 
   specs: [
-    'build/docs/ptore2e/**/*jqlite_test.js',
+    'build/docs/ptore2e/**/*jquery_test.js',
     'test/e2e/docsAppE2E.js'
   ],
 
   capabilities: {
     'browserName': 'chrome',
-    'name': 'Angular E2E: jqlite'
+    'name': 'Angular E2E: jquery'
   },
 
   baseUrl: 'http://localhost:8000/build/docs/',
