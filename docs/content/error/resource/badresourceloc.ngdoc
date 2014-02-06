@@ -1,0 +1,7 @@
+@ngdoc error
+@name $resource:badresourceloc
+@fullName responseData is not a function or string
+@description
+
+This error occurs when a {@link api/ngResource.$resource `$resource`} service action's responseData field
+is not a string or a function.
