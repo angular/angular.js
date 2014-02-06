@@ -16,7 +16,7 @@
  *
  * @example
  * Typical usage
- * <pre>
+ * ```js
  *   // create an injector
  *   var $injector = angular.injector(['ng']);
  *
@@ -26,7 +26,7 @@
  *     $compile($document)($rootScope);
  *     $rootScope.$digest();
  *   });
- * </pre>
+ * ```
  *
  * Sometimes you want to get access to the injector of a currently running Angular app
  * from outside Angular. Perhaps, you want to inject and compile some markup after the
@@ -40,7 +40,7 @@
  * directive is added to the end of the document body by JQuery. We then compile and link
  * it into the current AngularJS scope.
  *
- * <pre>
+ * ```js
  * var $div = $('<div ng-controller="MyCtrl">{{content.label}}</div>');
  * $(document.body).append($div);
  *
@@ -48,7 +48,7 @@
  *   var scope = angular.element($div).scope();
  *   $compile($div)(scope);
  * });
- * </pre>
+ * ```
  */
 
 
@@ -110,20 +110,20 @@ function annotate(fn) {
  *
  * The following always holds true:
  *
- * <pre>
+ * ```js
  *   var $injector = angular.injector();
  *   expect($injector.get('$injector')).toBe($injector);
  *   expect($injector.invoke(function($injector){
  *     return $injector;
  *   }).toBe($injector);
- * </pre>
+ * ```
  *
  * # Injection Function Annotation
  *
  * JavaScript does not have annotations, and annotations are needed for dependency injection. The
  * following are all valid ways of annotating function with injection arguments and are equivalent.
  *
- * <pre>
+ * ```js
  *   // inferred (only works if code not minified/obfuscated)
  *   $injector.invoke(function(serviceA){});
  *
@@ -134,7 +134,7 @@ function annotate(fn) {
  *
  *   // inline
  *   $injector.invoke(['serviceA', function(serviceA){}]);
- * </pre>
+ * ```
  *
  * ## Inference
  *
@@ -215,7 +215,7 @@ function annotate(fn) {
  * The simplest form is to extract the dependencies from the arguments of the function. This is done
  * by converting the function into a string using `toString()` method and extracting the argument
  * names.
- * <pre>
+ * ```js
  *   // Given
  *   function MyController($scope, $route) {
  *     // ...
@@ -223,7 +223,7 @@ function annotate(fn) {
  *
  *   // Then
  *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
- * </pre>
+ * ```
  *
  * This method does not work with code minification / obfuscation. For this reason the following
  * annotation strategies are supported.
@@ -232,7 +232,7 @@ function annotate(fn) {
  *
  * If a function has an `$inject` property and its value is an array of strings, then the strings
  * represent names of services to be injected into the function.
- * <pre>
+ * ```js
  *   // Given
  *   var MyController = function(obfuscatedScope, obfuscatedRoute) {
  *     // ...
@@ -242,7 +242,7 @@ function annotate(fn) {
  *
  *   // Then
  *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
- * </pre>
+ * ```
  *
  * # The array notation
  *
@@ -250,7 +250,7 @@ function annotate(fn) {
  * is very inconvenient. In these situations using the array notation to specify the dependencies in
  * a way that survives minification is a better choice:
  *
- * <pre>
+ * ```js
  *   // We wish to write this (not minification / obfuscation safe)
  *   injector.invoke(function($compile, $rootScope) {
  *     // ...
@@ -272,7 +272,7 @@ function annotate(fn) {
  *   expect(injector.annotate(
  *      ['$compile', '$rootScope', function(obfus_$compile, obfus_$rootScope) {}])
  *    ).toEqual(['$compile', '$rootScope']);
- * </pre>
+ * ```
  *
  * @param {function|Array.<string|Function>} fn Function for which dependent service names need to
  * be retrieved as described above.
@@ -359,7 +359,7 @@ function annotate(fn) {
  * The following example shows how to create a simple event tracking service and register it using
  * {@link auto.$provide#methods_provider $provide.provider()}.
  *
- * <pre>
+ * ```js
  *  // Define the eventTracker provider
  *  function EventTrackerProvider() {
  *    var trackingUrl = '/track';
@@ -416,7 +416,7 @@ function annotate(fn) {
  *      expect(postSpy.mostRecentCall.args[1]).toEqual({ 'login': 1 });
  *    }));
  *  });
- * </pre>
+ * ```
  */
 
 /**
@@ -437,19 +437,19 @@ function annotate(fn) {
  *
  * @example
  * Here is an example of registering a service
- * <pre>
+ * ```js
  *   $provide.factory('ping', ['$http', function($http) {
  *     return function ping() {
  *       return $http.send('/ping');
  *     };
  *   }]);
- * </pre>
+ * ```
  * You would then inject and use this service like this:
- * <pre>
+ * ```js
  *   someModule.controller('Ctrl', ['ping', function(ping) {
  *     ping();
  *   }]);
- * </pre>
+ * ```
  */
 
 
@@ -473,7 +473,7 @@ function annotate(fn) {
  * @example
  * Here is an example of registering a service using
  * {@link auto.$provide#methods_service $provide.service(class)}.
- * <pre>
+ * ```js
  *   var Ping = function($http) {
  *     this.$http = $http;
  *   };
@@ -484,13 +484,13 @@ function annotate(fn) {
  *     return this.$http.get('/ping');
  *   };
  *   $provide.service('ping', Ping);
- * </pre>
+ * ```
  * You would then inject and use this service like this:
- * <pre>
+ * ```js
  *   someModule.controller('Ctrl', ['ping', function(ping) {
  *     ping.send();
  *   }]);
- * </pre>
+ * ```
  */
 
 
@@ -515,7 +515,7 @@ function annotate(fn) {
  *
  * @example
  * Here are some examples of creating value services.
- * <pre>
+ * ```js
  *   $provide.value('ADMIN_USER', 'admin');
  *
  *   $provide.value('RoleLookup', { admin: 0, writer: 1, reader: 2 });
@@ -523,7 +523,7 @@ function annotate(fn) {
  *   $provide.value('halfOf', function(value) {
  *     return value / 2;
  *   });
- * </pre>
+ * ```
  */
 
 
@@ -543,7 +543,7 @@ function annotate(fn) {
  *
  * @example
  * Here a some examples of creating constants:
- * <pre>
+ * ```js
  *   $provide.constant('SHARD_HEIGHT', 306);
  *
  *   $provide.constant('MY_COLOURS', ['red', 'blue', 'grey']);
@@ -551,7 +551,7 @@ function annotate(fn) {
  *   $provide.constant('double', function(value) {
  *     return value * 2;
  *   });
- * </pre>
+ * ```
  */
 
 
@@ -577,12 +577,12 @@ function annotate(fn) {
  * @example
  * Here we decorate the {@link ng.$log $log} service to convert warnings to errors by intercepting
  * calls to {@link ng.$log#error $log.warn()}.
- * <pre>
+ * ```js
  *   $provide.decorator('$log', ['$delegate', function($delegate) {
  *     $delegate.warn = $delegate.error;
  *     return $delegate;
  *   }]);
- * </pre>
+ * ```
  */
 
 

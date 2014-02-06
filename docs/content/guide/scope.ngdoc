@@ -88,7 +88,7 @@ scope is the single source-of-truth for all things view related.
 From a testability point of view, the separation of the controller and the view is desirable, because it allows us
 to test the behavior without being distracted by the rendering details.
 
-<pre>
+```js
   it('should say hello', function() {
     var scopeMock = {};
     var cntl = new MyController(scopeMock);
@@ -101,7 +101,7 @@ to test the behavior without being distracted by the rendering details.
     scopeMock.sayHello();
     expect(scopeMock.greeting).toEqual('Hello angular!');
   });
-</pre>
+```
 
 
 ## Scope Hierarchies
