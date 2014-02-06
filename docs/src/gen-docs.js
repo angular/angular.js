@@ -57,7 +57,10 @@ writer.makeDir('build/docs/', true).then(function() {
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
     // If it has a sample Protractor test, output that as well.
     if (doc.protractorTests.length) {
-      fileFutures.push(writer.output('ptore2e/' + doc.section + '/' + id + '_test.js', ngdoc.writeProtractorTest(doc)));
+      fileFutures.push(writer.output('ptore2e/' + doc.section + '/' + id + '.jquery_test.js',
+          ngdoc.writeProtractorTest(doc, 'index-jq-nocache.html#!/')));
+      fileFutures.push(writer.output('ptore2e/' + doc.section + '/' + id + '.jqlite_test.js',
+          ngdoc.writeProtractorTest(doc, 'index-nocache.html#!/')));
     }
   });
 
