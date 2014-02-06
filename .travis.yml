@@ -18,9 +18,7 @@ before_script:
   - mkdir -p $LOGS_DIR
   - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
-  - grunt bower
-  - grunt bower
-  - grunt package-without-bower
+  - grunt package
   - ./scripts/travis/wait_for_browser_provider.sh
 
 script:
