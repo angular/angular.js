@@ -121,6 +121,7 @@ function $FilterProvider($provide) {
     uppercaseFilter: false,
   */
 
+  register('bind', bindFilter);
   register('currency', currencyFilter);
   register('date', dateFilter);
   register('filter', filterFilter);
