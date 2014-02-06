@@ -5,9 +5,12 @@ node_js:
 env:
   matrix:
     - JOB=unit
-    - JOB=e2e-chrome
-    - JOB=e2e-firefox
-    - JOB=e2e-safari
+    - JOB=e2e BROWSER=chrome JQVERSION=jqlite
+    - JOB=e2e BROWSER=firefox JQVERSION=jqlite
+    - JOB=e2e BROWSER=safari JQVERSION=jqlite
+    - JOB=e2e BROWSER=chrome JQVERSION=jquery
+    - JOB=e2e BROWSER=firefox JQVERSION=jquery
+    - JOB=e2e BROWSER=safari JQVERSION=jquery
   global:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
