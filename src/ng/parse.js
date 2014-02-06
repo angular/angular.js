@@ -1091,7 +1091,7 @@ function getterFn(path, options, fullExp) {
  *
  * Converts Angular {@link guide/expression expression} into a function.
  *
- * <pre>
+ * ```js
  *   var getter = $parse('user.name');
  *   var setter = getter.assign;
  *   var context = {user:{name:'angular'}};
@@ -1101,7 +1101,7 @@ function getterFn(path, options, fullExp) {
  *   setter(context, 'newValue');
  *   expect(context.user.name).toEqual('newValue');
  *   expect(getter(context, locals)).toEqual('local');
- * </pre>
+ * ```
  *
  *
  * @param {string} expression String expression to compile.

@@ -214,14 +214,14 @@ function isArrayLike(obj) {
  * It is worth noting that `.forEach` does not iterate over inherited properties because it filters
  * using the `hasOwnProperty` method.
  *
-   <pre>
+   ```js
      var values = {name: 'misko', gender: 'male'};
      var log = [];
      angular.forEach(values, function(value, key){
        this.push(key + ': ' + value);
      }, log);
      expect(log).toEqual(['name: misko', 'gender: male']);
-   </pre>
+   ```
  *
  * @param {Object|Array} obj Object to iterate over.
  * @param {Function} iterator Iterator function.
@@ -374,12 +374,12 @@ function inherit(parent, extra) {
  * @description
  * A function that performs no operations. This function can be useful when writing code in the
  * functional style.
-   <pre>
+   ```js
      function foo(callback) {
        var result = calculateResult();
        (callback || angular.noop)(result);
      }
-   </pre>
+   ```
  */
 function noop() {}
 noop.$inject = [];
@@ -395,11 +395,11 @@ noop.$inject = [];
  * A function that returns its first argument. This function is useful when writing code in the
  * functional style.
  *
-   <pre>
+   ```js
      function transformer(transformationFn, value) {
        return (transformationFn || angular.identity)(value);
      };
-   </pre>
+   ```
  */
 function identity($) {return $;}
 identity.$inject = [];

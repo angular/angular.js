@@ -47,7 +47,7 @@ function setupModuleLoader(window) {
      * A module is a collection of services, directives, filters, and configuration information.
      * `angular.module` is used to configure the {@link auto.$injector $injector}.
      *
-     * <pre>
+     * ```js
      * // Create a new module
      * var myModule = angular.module('myModule', []);
      *
@@ -59,13 +59,13 @@ function setupModuleLoader(window) {
      *   // Configure existing providers
      *   $locationProvider.hashPrefix('!');
      * });
-     * </pre>
+     * ```
      *
      * Then you can create an injector and load your modules like this:
      *
-     * <pre>
+     * ```js
      * var injector = angular.injector(['ng', 'MyModule'])
-     * </pre>
+     * ```
      *
      * However it's more likely that you'll just use
      * {@link ng.directive:ngApp ngApp} or
@@ -205,7 +205,7 @@ function setupModuleLoader(window) {
            * Defines an animation hook that can be later used with
            * {@link ngAnimate.$animate $animate} service and directives that use this service.
            *
-           * <pre>
+           * ```js
            * module.animation('.animation-name', function($inject1, $inject2) {
            *   return {
            *     eventName : function(element, done) {
@@ -217,7 +217,7 @@ function setupModuleLoader(window) {
            *     }
            *   }
            * })
-           * </pre>
+           * ```
            *
            * See {@link ngAnimate.$animateProvider#register $animateProvider.register()} and
            * {@link ngAnimate ngAnimate module} for more information.

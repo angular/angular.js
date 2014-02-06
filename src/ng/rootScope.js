@@ -93,13 +93,13 @@ function $RootScopeProvider(){
      * compiled HTML template is executed.)
      *
      * Here is a simple scope snippet to show how you can interact with the scope.
-     * <pre>
+     * ```html
      * <file src="./test/ng/rootScopeSpec.js" tag="docs1" />
-     * </pre>
+     * ```
      *
      * # Inheritance
      * A scope can inherit from a parent scope, as in this example:
-     * <pre>
+     * ```js
          var parent = $rootScope;
          var child = parent.$new();
 
@@ -110,7 +110,7 @@ function $RootScopeProvider(){
          child.salutation = "Welcome";
          expect(child.salutation).toEqual('Welcome');
          expect(parent.salutation).toEqual('Hello');
-     * </pre>
+     * ```
      *
      *
      * @param {Object.<string, function()>=} providers Map of service factory which need to be
@@ -244,7 +244,7 @@ function $RootScopeProvider(){
        *
        *
        * # Example
-       * <pre>
+       * ```js
            // let's assume that scope was dependency injected as the $rootScope
            var scope = $rootScope;
            scope.name = 'misko';
@@ -293,7 +293,7 @@ function $RootScopeProvider(){
            scope.$digest();
            expect(scope.foodCounter).toEqual(1);
 
-       * </pre>
+       * ```
        *
        *
        *
@@ -372,7 +372,7 @@ function $RootScopeProvider(){
        *
        *
        * # Example
-       * <pre>
+       * ```js
           $scope.names = ['igor', 'matias', 'misko', 'james'];
           $scope.dataCount = 4;
 
@@ -391,7 +391,7 @@ function $RootScopeProvider(){
 
           //now there's been a change
           expect($scope.dataCount).toEqual(3);
-       * </pre>
+       * ```
        *
        *
        * @param {string|Function(scope)} obj Evaluated as {@link guide/expression expression}. The
@@ -520,7 +520,7 @@ function $RootScopeProvider(){
        * In unit tests, you may need to call `$digest()` to simulate the scope life cycle.
        *
        * # Example
-       * <pre>
+       * ```js
            var scope = ...;
            scope.name = 'misko';
            scope.counter = 0;
@@ -538,7 +538,7 @@ function $RootScopeProvider(){
            scope.name = 'adam';
            scope.$digest();
            expect(scope.counter).toEqual(1);
-       * </pre>
+       * ```
        *
        */
       $digest: function() {
@@ -717,14 +717,14 @@ function $RootScopeProvider(){
        * expressions.
        *
        * # Example
-       * <pre>
+       * ```js
            var scope = ng.$rootScope.Scope();
            scope.a = 1;
            scope.b = 2;
 
            expect(scope.$eval('a+b')).toEqual(3);
            expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
-       * </pre>
+       * ```
        *
        * @param {(string|function())=} expression An angular expression to be executed.
        *
@@ -800,7 +800,7 @@ function $RootScopeProvider(){
        * ## Life cycle
        *
        * # Pseudo-Code of `$apply()`
-       * <pre>
+       * ```js
            function $apply(expr) {
              try {
                return $eval(expr);
@@ -810,7 +810,7 @@ function $RootScopeProvider(){
                $root.$digest();
              }
            }
-       * </pre>
+       * ```
        *
        *
        * Scope's `$apply()` method transitions through the following stages:

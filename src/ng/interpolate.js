@@ -99,11 +99,11 @@ function $InterpolateProvider() {
      * interpolation markup.
      *
      *
-       <pre>
+       ```js
          var $interpolate = ...; // injected
          var exp = $interpolate('Hello {{name | uppercase}}!');
          expect(exp({name:'Angular'}).toEqual('Hello ANGULAR!');
-       </pre>
+       ```
      *
      *
      * @param {string} text The text with markup to interpolate.

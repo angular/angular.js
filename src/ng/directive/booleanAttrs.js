@@ -16,14 +16,14 @@
  * The `ngHref` directive solves this problem.
  *
  * The wrong way to write it:
- * <pre>
+ * ```html
  * <a href="http://www.gravatar.com/avatar/{{hash}}"/>
- * </pre>
+ * ```
  *
  * The correct way to write it:
- * <pre>
+ * ```html
  * <a ng-href="http://www.gravatar.com/avatar/{{hash}}"/>
- * </pre>
+ * ```
  *
  * @element A
  * @param {template} ngHref any string which can contain `{{}}` markup.
@@ -106,14 +106,14 @@
  * `{{hash}}`. The `ngSrc` directive solves this problem.
  *
  * The buggy way to write it:
- * <pre>
+ * ```html
  * <img src="http://www.gravatar.com/avatar/{{hash}}"/>
- * </pre>
+ * ```
  *
  * The correct way to write it:
- * <pre>
+ * ```html
  * <img ng-src="http://www.gravatar.com/avatar/{{hash}}"/>
- * </pre>
+ * ```
  *
  * @element IMG
  * @param {template} ngSrc any string which can contain `{{}}` markup.
@@ -132,14 +132,14 @@
  * `{{hash}}`. The `ngSrcset` directive solves this problem.
  *
  * The buggy way to write it:
- * <pre>
+ * ```html
  * <img srcset="http://www.gravatar.com/avatar/{{hash}} 2x"/>
- * </pre>
+ * ```
  *
  * The correct way to write it:
- * <pre>
+ * ```html
  * <img ng-srcset="http://www.gravatar.com/avatar/{{hash}} 2x"/>
- * </pre>
+ * ```
  *
  * @element IMG
  * @param {template} ngSrcset any string which can contain `{{}}` markup.
@@ -154,11 +154,11 @@
  * @description
  *
  * The following markup will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
- * <pre>
+ * ```html
  * <div ng-init="scope = { isDisabled: false }">
  *  <button disabled="{{scope.isDisabled}}">Disabled</button>
  * </div>
- * </pre>
+ * ```
  *
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as disabled. (Their presence means true and their absence means false.)

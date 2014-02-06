@@ -36,7 +36,7 @@ var $AnimateProvider = ['$provide', function($provide) {
    *   triggered.
    *
    *
-   *<pre>
+   * ```js
    *   return {
      *     eventFn : function(element, done) {
      *       //code to run the animation
@@ -46,7 +46,7 @@ var $AnimateProvider = ['$provide', function($provide) {
      *       }
      *     }
      *   }
-   *</pre>
+   * ```
    *
    * @param {string} name The name of the animation.
    * @param {function} factory The factory function that will be executed to return the animation
