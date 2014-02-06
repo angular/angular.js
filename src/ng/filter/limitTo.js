@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.filter:limitTo
+ * @ngdoc filter
+ * @name limitTo
  * @function
  *
  * @description

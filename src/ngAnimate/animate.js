@@ -2,7 +2,7 @@
 /* jshint maxlen: false */
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngAnimate
  * @description
  *
@@ -235,8 +235,8 @@
 angular.module('ngAnimate', ['ng'])
 
   /**
-   * @ngdoc object
-   * @name ngAnimate.$animateProvider
+   * @ngdoc provider
+   * @name $animateProvider
    * @description
    *
    * The `$animateProvider` allows developers to register JavaScript animation event handlers directly inside of a module.
@@ -367,8 +367,8 @@ angular.module('ngAnimate', ['ng'])
       }
 
       /**
-       * @ngdoc object
-       * @name ngAnimate.$animate
+       * @ngdoc service
+       * @name $animate
        * @function
        *
        * @description
@@ -387,9 +387,8 @@ angular.module('ngAnimate', ['ng'])
        */
       return {
         /**
-         * @ngdoc function
-         * @name ngAnimate.$animate#enter
-         * @methodOf ngAnimate.$animate
+         * @ngdoc method
+         * @name $animate#enter
          * @function
          *
          * @description
@@ -426,9 +425,8 @@ angular.module('ngAnimate', ['ng'])
         },
 
         /**
-         * @ngdoc function
-         * @name ngAnimate.$animate#leave
-         * @methodOf ngAnimate.$animate
+         * @ngdoc method
+         * @name $animate#leave
          * @function
          *
          * @description
@@ -465,9 +463,8 @@ angular.module('ngAnimate', ['ng'])
         },
 
         /**
-         * @ngdoc function
-         * @name ngAnimate.$animate#move
-         * @methodOf ngAnimate.$animate
+         * @ngdoc method
+         * @name $animate#move
          * @function
          *
          * @description
@@ -506,9 +503,8 @@ angular.module('ngAnimate', ['ng'])
         },
 
         /**
-         * @ngdoc function
-         * @name ngAnimate.$animate#addClass
-         * @methodOf ngAnimate.$animate
+         * @ngdoc method
+         * @name $animate#addClass
          *
          * @description
          * Triggers a custom animation event based off the className variable and then attaches the className value to the element as a CSS class.
@@ -543,9 +539,8 @@ angular.module('ngAnimate', ['ng'])
         },
 
         /**
-         * @ngdoc function
-         * @name ngAnimate.$animate#removeClass
-         * @methodOf ngAnimate.$animate
+         * @ngdoc method
+         * @name $animate#removeClass
          *
          * @description
          * Triggers a custom animation event based off the className variable and then removes the CSS class provided by the className value
@@ -602,9 +597,8 @@ angular.module('ngAnimate', ['ng'])
         },
 
         /**
-         * @ngdoc function
-         * @name ngAnimate.$animate#enabled
-         * @methodOf ngAnimate.$animate
+         * @ngdoc method
+         * @name $animate#enabled
          * @function
          *
          * @param {boolean=} value If provided then set the animation on or off.

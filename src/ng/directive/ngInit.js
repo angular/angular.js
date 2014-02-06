@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngInit
+ * @name ngInit
  * @restrict AC
  *
  * @description

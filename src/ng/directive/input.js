@@ -15,8 +15,8 @@ var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var inputType = {
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.text
+   * @ngdoc input
+   * @name input[text]
    *
    * @description
    * Standard HTML text input with angular data binding.
@@ -93,8 +93,8 @@ var inputType = {
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.number
+   * @ngdoc input
+   * @name input[number]
    *
    * @description
    * Text input with number validation and transformation. Sets the `number` validation
@@ -170,8 +170,8 @@ var inputType = {
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.url
+   * @ngdoc input
+   * @name input[url]
    *
    * @description
    * Text input with URL validation. Sets the `url` validation error key if the content is not a
@@ -246,8 +246,8 @@ var inputType = {
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.email
+   * @ngdoc input
+   * @name input[email]
    *
    * @description
    * Text input with email validation. Sets the `email` validation error key if not a valid email
@@ -321,8 +321,8 @@ var inputType = {
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.radio
+   * @ngdoc input
+   * @name input[radio]
    *
    * @description
    * HTML radio button.
@@ -372,8 +372,8 @@ var inputType = {
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.checkbox
+   * @ngdoc input
+   * @name input[checkbox]
    *
    * @description
    * HTML checkbox.
@@ -690,7 +690,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:textarea
+ * @name textarea
  * @restrict E
  *
  * @description
@@ -718,7 +718,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:input
+ * @name input
  * @restrict E
  *
  * @description
@@ -845,8 +845,8 @@ var VALID_CLASS = 'ng-valid',
     DIRTY_CLASS = 'ng-dirty';
 
 /**
- * @ngdoc object
- * @name ng.directive:ngModel.NgModelController
+ * @ngdoc type
+ * @name ngModel.NgModelController
  *
  * @property {string} $viewValue Actual string value in the view.
  * @property {*} $modelValue The value in the model, that the control is bound to.
@@ -1000,9 +1000,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   }
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$render
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$render
    *
    * @description
    * Called when the view needs to be updated. It is expected that the user of the ng-model
@@ -1011,9 +1010,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$render = noop;
 
   /**
-   * @ngdoc function
-   * @name { ng.directive:ngModel.NgModelController#$isEmpty
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$isEmpty
    *
    * @description
    * This is called when we need to determine if the value of the input is empty.
@@ -1050,9 +1048,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   }
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setValidity
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setValidity
    *
    * @description
    * Change the validity state, and notifies the form when the control changes validity. (i.e. it
@@ -1094,9 +1091,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setPristine
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setPristine
    *
    * @description
    * Sets the control to its pristine state.
@@ -1111,9 +1107,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setViewValue
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setViewValue
    *
    * @description
    * Update the view value.
@@ -1190,7 +1185,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngModel
+ * @name ngModel
  *
  * @element input
  *
@@ -1251,7 +1246,7 @@ var ngModelDirective = function() {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngChange
+ * @name ngChange
  *
  * @description
  * Evaluate the given expression when the user changes the input.
@@ -1347,7 +1342,7 @@ var requiredDirective = function() {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngList
+ * @name ngList
  *
  * @description
  * Text input that converts between a delimited string and an array of strings. The delimiter
@@ -1442,7 +1437,7 @@ var ngListDirective = function() {
 var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 /**
  * @ngdoc directive
- * @name ng.directive:ngValue
+ * @name ngValue
  *
  * @description
  * Binds the given expression to the value of `input[select]` or `input[radio]`, so

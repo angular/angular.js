@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name ng.$filterProvider
+ * @ngdoc provider
+ * @name $filterProvider
  * @description
  *
  * Filters are just functions which transform input to an output. However filters need to be
@@ -51,8 +51,7 @@
  */
 /**
  * @ngdoc method
- * @name ng.$filterProvider#register
- * @methodOf ng.$filterProvider
+ * @name $filterProvider#register
  * @description
  * Register filter factory function.
  *
@@ -62,8 +61,8 @@
 
 
 /**
- * @ngdoc function
- * @name ng.$filter
+ * @ngdoc service
+ * @name $filter
  * @function
  * @description
  * Filters are used for formatting data displayed to the user.
@@ -80,9 +79,8 @@ function $FilterProvider($provide) {
   var suffix = 'Filter';
 
   /**
-   * @ngdoc function
-   * @name ng.$controllerProvider#register
-   * @methodOf ng.$controllerProvider
+   * @ngdoc method
+   * @name $controllerProvider#register
    * @param {string|Object} name Name of the filter function, or an object map of filters where
    *    the keys are the filter names and the values are the filter factories.
    * @returns {Object} Registered filter instance, or if a map of filters was provided then a map

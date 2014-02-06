@@ -12,7 +12,7 @@
 
  * @param {Array.<string|Function>} modules A list of module functions or their aliases. See
  *        {@link angular.module}. The `ng` module must be explicitly added.
- * @returns {function()} Injector function. See {@link AUTO.$injector $injector}.
+ * @returns {function()} Injector function. See {@link auto.$injector $injector}.
  *
  * @example
  * Typical usage
@@ -53,11 +53,11 @@
 
 
 /**
- * @ngdoc overview
- * @name AUTO
+ * @ngdoc module
+ * @name auto
  * @description
  *
- * Implicit module which gets automatically added to each {@link AUTO.$injector $injector}.
+ * Implicit module which gets automatically added to each {@link auto.$injector $injector}.
  */
 
 var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
@@ -98,14 +98,14 @@ function annotate(fn) {
 ///////////////////////////////////////
 
 /**
- * @ngdoc object
- * @name AUTO.$injector
+ * @ngdoc service
+ * @name $injector
  * @function
  *
  * @description
  *
  * `$injector` is used to retrieve object instances as defined by
- * {@link AUTO.$provide provider}, instantiate types, invoke methods,
+ * {@link auto.$provide provider}, instantiate types, invoke methods,
  * and load modules.
  *
  * The following always holds true:
@@ -151,8 +151,7 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$injector#get
- * @methodOf AUTO.$injector
+ * @name $injector#get
  *
  * @description
  * Return an instance of the service.
@@ -163,8 +162,7 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$injector#invoke
- * @methodOf AUTO.$injector
+ * @name $injector#invoke
  *
  * @description
  * Invoke the method and supply the method arguments from the `$injector`.
@@ -179,8 +177,7 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$injector#has
- * @methodOf AUTO.$injector
+ * @name $injector#has
  *
  * @description
  * Allows the user to query if the particular service exist.
@@ -191,8 +188,7 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$injector#instantiate
- * @methodOf AUTO.$injector
+ * @name $injector#instantiate
  * @description
  * Create a new instance of JS type. The method takes a constructor function invokes the new
  * operator and supplies all of the arguments to the constructor function as specified by the
@@ -206,8 +202,7 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$injector#annotate
- * @methodOf AUTO.$injector
+ * @name $injector#annotate
  *
  * @description
  * Returns an array of service names which the function is requesting for injection. This API is
@@ -290,12 +285,12 @@ function annotate(fn) {
 
 /**
  * @ngdoc object
- * @name AUTO.$provide
+ * @name $provide
  *
  * @description
  *
- * The {@link AUTO.$provide $provide} service has a number of methods for registering components
- * with the {@link AUTO.$injector $injector}. Many of these functions are also exposed on
+ * The {@link auto.$provide $provide} service has a number of methods for registering components
+ * with the {@link auto.$injector $injector}. Many of these functions are also exposed on
  * {@link angular.Module}.
  *
  * An Angular **service** is a singleton object created by a **service factory**.  These **service
@@ -303,25 +298,25 @@ function annotate(fn) {
  * The **service providers** are constructor functions. When instantiated they must contain a
  * property called `$get`, which holds the **service factory** function.
  *
- * When you request a service, the {@link AUTO.$injector $injector} is responsible for finding the
+ * When you request a service, the {@link auto.$injector $injector} is responsible for finding the
  * correct **service provider**, instantiating it and then calling its `$get` **service factory**
  * function to get the instance of the **service**.
  *
  * Often services have no configuration options and there is no need to add methods to the service
  * provider.  The provider will be no more than a constructor function with a `$get` property. For
- * these cases the {@link AUTO.$provide $provide} service has additional helper methods to register
+ * these cases the {@link auto.$provide $provide} service has additional helper methods to register
  * services without specifying a provider.
  *
- * * {@link AUTO.$provide#methods_provider provider(provider)} - registers a **service provider** with the
- *     {@link AUTO.$injector $injector}
- * * {@link AUTO.$provide#methods_constant constant(obj)} - registers a value/object that can be accessed by
+ * * {@link auto.$provide#methods_provider provider(provider)} - registers a **service provider** with the
+ *     {@link auto.$injector $injector}
+ * * {@link auto.$provide#methods_constant constant(obj)} - registers a value/object that can be accessed by
  *     providers and services.
- * * {@link AUTO.$provide#methods_value value(obj)} - registers a value/object that can only be accessed by
+ * * {@link auto.$provide#methods_value value(obj)} - registers a value/object that can only be accessed by
  *     services, not providers.
- * * {@link AUTO.$provide#methods_factory factory(fn)} - registers a service **factory function**, `fn`,
+ * * {@link auto.$provide#methods_factory factory(fn)} - registers a service **factory function**, `fn`,
  *     that will be wrapped in a **service provider** object, whose `$get` property will contain the
  *     given factory function.
- * * {@link AUTO.$provide#methods_service service(class)} - registers a **constructor function**, `class` that
+ * * {@link auto.$provide#methods_service service(class)} - registers a **constructor function**, `class` that
  *     that will be wrapped in a **service provider** object, whose `$get` property will instantiate
  *      a new object using the given constructor function.
  *
@@ -330,11 +325,10 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$provide#provider
- * @methodOf AUTO.$provide
+ * @name $provide#provider
  * @description
  *
- * Register a **provider function** with the {@link AUTO.$injector $injector}. Provider functions
+ * Register a **provider function** with the {@link auto.$injector $injector}. Provider functions
  * are constructor functions, whose instances are responsible for "providing" a factory for a
  * service.
  *
@@ -354,16 +348,16 @@ function annotate(fn) {
  * @param {(Object|function())} provider If the provider is:
  *
  *   - `Object`: then it should have a `$get` method. The `$get` method will be invoked using
- *     {@link AUTO.$injector#invoke $injector.invoke()} when an instance needs to be created.
+ *     {@link auto.$injector#invoke $injector.invoke()} when an instance needs to be created.
  *   - `Constructor`: a new instance of the provider will be created using                     
- *     {@link AUTO.$injector#instantiate $injector.instantiate()}, then treated as `object`.
+ *     {@link auto.$injector#instantiate $injector.instantiate()}, then treated as `object`.
  *
  * @returns {Object} registered provider instance
 
  * @example
  *
  * The following example shows how to create a simple event tracking service and register it using
- * {@link AUTO.$provide#methods_provider $provide.provider()}.
+ * {@link auto.$provide#methods_provider $provide.provider()}.
  *
  * <pre>
  *  // Define the eventTracker provider
@@ -427,14 +421,13 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$provide#factory
- * @methodOf AUTO.$provide
+ * @name $provide#factory
  * @description
  *
  * Register a **service factory**, which will be called to return the service instance.
  * This is short for registering a service where its provider consists of only a `$get` property,
  * which is the given service factory function.
- * You should use {@link AUTO.$provide#factory $provide.factory(getFn)} if you do not need to
+ * You should use {@link auto.$provide#factory $provide.factory(getFn)} if you do not need to
  * configure your service in a provider.
  *
  * @param {string} name The name of the instance.
@@ -462,8 +455,7 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$provide#service
- * @methodOf AUTO.$provide
+ * @name $provide#service
  * @description
  *
  * Register a **service constructor**, which will be invoked with `new` to create the service
@@ -471,7 +463,7 @@ function annotate(fn) {
  * This is short for registering a service where its provider's `$get` property is the service
  * constructor function that will be used to instantiate the service instance.
  *
- * You should use {@link AUTO.$provide#methods_service $provide.service(class)} if you define your service
+ * You should use {@link auto.$provide#methods_service $provide.service(class)} if you define your service
  * as a type/class.
  *
  * @param {string} name The name of the instance.
@@ -480,7 +472,7 @@ function annotate(fn) {
  *
  * @example
  * Here is an example of registering a service using
- * {@link AUTO.$provide#methods_service $provide.service(class)}.
+ * {@link auto.$provide#methods_service $provide.service(class)}.
  * <pre>
  *   var Ping = function($http) {
  *     this.$http = $http;
@@ -504,11 +496,10 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$provide#value
- * @methodOf AUTO.$provide
+ * @name $provide#value
  * @description
  *
- * Register a **value service** with the {@link AUTO.$injector $injector}, such as a string, a
+ * Register a **value service** with the {@link auto.$injector $injector}, such as a string, a
  * number, an array, an object or a function.  This is short for registering a service where its
  * provider's `$get` property is a factory function that takes no arguments and returns the **value
  * service**.
@@ -516,7 +507,7 @@ function annotate(fn) {
  * Value services are similar to constant services, except that they cannot be injected into a
  * module configuration function (see {@link angular.Module#config}) but they can be overridden by
  * an Angular
- * {@link AUTO.$provide#decorator decorator}.
+ * {@link auto.$provide#decorator decorator}.
  *
  * @param {string} name The name of the instance.
  * @param {*} value The value.
@@ -538,14 +529,13 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$provide#constant
- * @methodOf AUTO.$provide
+ * @name $provide#constant
  * @description
  *
  * Register a **constant service**, such as a string, a number, an array, an object or a function,
- * with the {@link AUTO.$injector $injector}. Unlike {@link AUTO.$provide#value value} it can be
+ * with the {@link auto.$injector $injector}. Unlike {@link auto.$provide#value value} it can be
  * injected into a module configuration function (see {@link angular.Module#config}) and it cannot
- * be overridden by an Angular {@link AUTO.$provide#decorator decorator}.
+ * be overridden by an Angular {@link auto.$provide#decorator decorator}.
  *
  * @param {string} name The name of the constant.
  * @param {*} value The constant value.
@@ -567,11 +557,10 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
- * @name AUTO.$provide#decorator
- * @methodOf AUTO.$provide
+ * @name $provide#decorator
  * @description
  *
- * Register a **service decorator** with the {@link AUTO.$injector $injector}. A service decorator
+ * Register a **service decorator** with the {@link auto.$injector $injector}. A service decorator
  * intercepts the creation of a service, allowing it to override or modify the behaviour of the
  * service. The object returned by the decorator may be the original service, or a new service
  * object which replaces or wraps and delegates to the original service.
@@ -579,7 +568,7 @@ function annotate(fn) {
  * @param {string} name The name of the service to decorate.
  * @param {function()} decorator This function will be invoked when the service needs to be
  *    instantiated and should return the decorated service instance. The function is called using
- *    the {@link AUTO.$injector#invoke injector.invoke} method and is therefore fully injectable.
+ *    the {@link auto.$injector#invoke injector.invoke} method and is therefore fully injectable.
  *    Local injection arguments:
  *
  *    * `$delegate` - The original service instance, which can be monkey patched, configured,

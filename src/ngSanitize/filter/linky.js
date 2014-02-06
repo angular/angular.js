@@ -4,7 +4,7 @@
 
 /**
  * @ngdoc filter
- * @name ngSanitize.filter:linky
+ * @name linky
  * @function
  *
  * @description

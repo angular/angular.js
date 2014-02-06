@@ -8,8 +8,8 @@ function $TimeoutProvider() {
 
 
      /**
-      * @ngdoc function
-      * @name ng.$timeout
+      * @ngdoc service
+      * @name $timeout
       * @requires $browser
       *
       * @description
@@ -61,9 +61,8 @@ function $TimeoutProvider() {
 
 
      /**
-      * @ngdoc function
-      * @name ng.$timeout#cancel
-      * @methodOf ng.$timeout
+      * @ngdoc method
+      * @name $timeout#cancel
       *
       * @description
       * Cancels a task associated with the `promise`. As a result of this, the promise will be

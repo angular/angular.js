@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngRoute
  * @description
  *
@@ -21,8 +21,8 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
                         provider('$route', $RouteProvider);
 
 /**
- * @ngdoc object
- * @name ngRoute.$routeProvider
+ * @ngdoc provider
+ * @name $routeProvider
  * @function
  *
  * @description
@@ -44,8 +44,7 @@ function $RouteProvider(){
 
   /**
    * @ngdoc method
-   * @name ngRoute.$routeProvider#when
-   * @methodOf ngRoute.$routeProvider
+   * @name $routeProvider#when
    *
    * @param {string} path Route path (matched against `$location.path`). If `$location.path`
    *    contains redundant trailing slash or is missing one, the route will still match and the
@@ -107,7 +106,7 @@ function $RouteProvider(){
    *
    *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
-   *        Otherwise if function, then it is {@link api/AUTO.$injector#invoke injected}
+   *        Otherwise if function, then it is {@link api/auto.$injector#invoke injected}
    *        and the return value is treated as the dependency. If the result is a promise, it is
    *        resolved before its value is injected into the controller. Be aware that
    *        `ngRoute.$routeParams` will still refer to the previous route within these resolve
@@ -207,8 +206,7 @@ function $RouteProvider(){
 
   /**
    * @ngdoc method
-   * @name ngRoute.$routeProvider#otherwise
-   * @methodOf ngRoute.$routeProvider
+   * @name $routeProvider#otherwise
    *
    * @description
    * Sets route definition that will be used on route change when no other route definition
@@ -234,8 +232,8 @@ function $RouteProvider(){
       function($rootScope, $location, $routeParams, $q, $injector, $http, $templateCache, $sce) {
 
     /**
-     * @ngdoc object
-     * @name ngRoute.$route
+     * @ngdoc service
+     * @name $route
      * @requires $location
      * @requires $routeParams
      *
@@ -365,8 +363,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ngRoute.$route#$routeChangeStart
-     * @eventOf ngRoute.$route
+     * @name $route#$routeChangeStart
      * @eventType broadcast on root scope
      * @description
      * Broadcasted before a route change. At this  point the route services starts
@@ -382,8 +379,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ngRoute.$route#$routeChangeSuccess
-     * @eventOf ngRoute.$route
+     * @name $route#$routeChangeSuccess
      * @eventType broadcast on root scope
      * @description
      * Broadcasted after a route dependencies are resolved.
@@ -398,8 +394,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ngRoute.$route#$routeChangeError
-     * @eventOf ngRoute.$route
+     * @name $route#$routeChangeError
      * @eventType broadcast on root scope
      * @description
      * Broadcasted if any of the resolve promises are rejected.
@@ -412,8 +407,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ngRoute.$route#$routeUpdate
-     * @eventOf ngRoute.$route
+     * @name $route#$routeUpdate
      * @eventType broadcast on root scope
      * @description
      *
@@ -427,8 +421,7 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name ngRoute.$route#reload
-           * @methodOf ngRoute.$route
+           * @name $route#reload
            *
            * @description
            * Causes `$route` service to reload the current route even if

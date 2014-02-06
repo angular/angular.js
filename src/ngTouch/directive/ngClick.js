@@ -4,7 +4,7 @@
 
 /**
  * @ngdoc directive
- * @name ngTouch.directive:ngClick
+ * @name ngClick
  *
  * @description
  * A more powerful replacement for the default ngClick designed to be used on touchscreen
