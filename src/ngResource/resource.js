@@ -147,20 +147,21 @@ function shallowClearAndCopy(src, dst) {
  *
  *       { 'get':    {method:'GET'},
  *         'save':   {method:'POST'},
+ *         'update': {method:'PUT'},
  *         'query':  {method:'GET', isArray:true},
  *         'remove': {method:'DELETE'},
  *         'delete': {method:'DELETE'} };
  *
  *   Calling these methods invoke an {@link ng.$http} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
- *   instance of the resource class. The actions `save`, `remove` and `delete` are available on it
+ *   instance of the resource class. The actions `save`, `update`, `remove` and `delete` are available on it
  *   as  methods with the `$` prefix. This allows you to easily perform CRUD operations (create,
  *   read, update, delete) on server-side data like this:
  *   <pre>
         var User = $resource('/user/:userId', {userId:'@id'});
         var user = User.get({userId:123}, function() {
           user.abc = true;
-          user.$save();
+          user.$update();
         });
      </pre>
  *
@@ -223,8 +224,8 @@ function shallowClearAndCopy(src, dst) {
        expect(card instanceof CreditCard).toEqual(true);
        card.name = "J. Smith";
        // non GET methods are mapped onto the instances
-       card.$save();
-       // POST: /user/123/card/456 {id:456, number:'1234', name:'J. Smith'}
+       card.$update();
+       // PUT: /user/123/card/456 {id:456, number:'1234', name:'J. Smith'}
        // server returns: {id:456, number:'1234', name: 'J. Smith'};
 
        // our custom method is mapped as well.
@@ -254,7 +255,7 @@ function shallowClearAndCopy(src, dst) {
      var User = $resource('/user/:userId', {userId:'@id'});
      var user = User.get({userId:123}, function() {
        user.abc = true;
-       user.$save();
+       user.$update();
      });
    </pre>
  *
@@ -266,8 +267,8 @@ function shallowClearAndCopy(src, dst) {
      var User = $resource('/user/:userId', {userId:'@id'});
      User.get({userId:123}, function(u, getResponseHeaders){
        u.abc = true;
-       u.$save(function(u, putResponseHeaders) {
-         //u => saved user object
+       u.$update(function(u, putResponseHeaders) {
+         //u => updated user object
          //putResponseHeaders => $http header getter
        });
      });
@@ -308,6 +309,7 @@ angular.module('ngResource', ['ng']).
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
       'save':   {method:'POST'},
+      'update':   {method:'PUT'},
       'query':  {method:'GET', isArray:true},
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'}

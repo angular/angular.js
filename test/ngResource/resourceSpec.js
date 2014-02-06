@@ -88,6 +88,7 @@ describe("resource", function() {
     expect(typeof CreditCard).toBe('function');
     expect(typeof CreditCard.get).toBe('function');
     expect(typeof CreditCard.save).toBe('function');
+    expect(typeof CreditCard.update).toBe('function');
     expect(typeof CreditCard.remove).toBe('function');
     expect(typeof CreditCard['delete']).toBe('function');
     expect(typeof CreditCard.query).toBe('function');
@@ -416,10 +417,10 @@ describe("resource", function() {
 
 
   it("should update resource", function() {
-    $httpBackend.expect('POST', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
+    $httpBackend.expect('PUT', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
                  respond({id: {key: 123}, name: 'rama'});
 
-    var cc = CreditCard.save({id: {key: 123}, name: 'misko'}, callback);
+    var cc = CreditCard.update({id: {key: 123}, name: 'misko'}, callback);
     expect(cc).toEqualData({id:{key:123}, name:'misko'});
     expect(callback).not.toHaveBeenCalled();
     $httpBackend.flush();
@@ -508,6 +509,7 @@ describe("resource", function() {
     expect(cc.$get).toBeDefined();
     expect(cc.$query).toBeDefined();
     expect(cc.$remove).toBeDefined();
+    expect(cc.$update).toBeDefined();
     expect(cc.$save).toBeDefined();
 
     cc.name = 'misko';
@@ -529,10 +531,10 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(cc instanceof CreditCard).toBe(true);
 
-    $httpBackend.expect('POST', '/CreditCard/123', angular.toJson(data)).respond('');
+    $httpBackend.expect('PUT', '/CreditCard/123', angular.toJson(data)).respond('');
     var idBefore = cc.id;
 
-    cc.$save();
+    cc.$update();
     $httpBackend.flush();
     expect(idBefore).toEqual(cc.id);
   });
@@ -642,13 +644,13 @@ describe("resource", function() {
 
       it('should keep the original promise after instance action', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
-        $httpBackend.expect('POST', '/CreditCard/123').respond({id: 123, number: '9876'});
+        $httpBackend.expect('PUT', '/CreditCard/123').respond({id: 123, number: '9876'});
 
         var cc = CreditCard.get({id: 123});
         var originalPromise = cc.$promise;
 
         cc.number = '666';
-        cc.$save({id: 123});
+        cc.$update({id: 123});
 
         expect(cc.$promise).toBe(originalPromise);
       });
@@ -711,8 +713,8 @@ describe("resource", function() {
         $httpBackend.flush();
         expect(cc.$resolved).toBe(true);
 
-        $httpBackend.expect('POST', '/CreditCard/123').respond();
-        cc.$save({id: 123});
+        $httpBackend.expect('PUT', '/CreditCard/123').respond();
+        cc.$update({id: 123});
         expect(cc.$resolved).toBe(true);
         $httpBackend.flush();
         expect(cc.$resolved).toBe(true);
@@ -732,9 +734,9 @@ describe("resource", function() {
         expect(cc).toEqualData({id: 123, number: '9876'});
         callback.reset();
 
-        $httpBackend.expect('POST', '/CreditCard').respond({id: 1, number: '9'});
+        $httpBackend.expect('PUT', '/CreditCard').respond({id: 1, number: '9'});
 
-        cc.$save().then(callback);
+        cc.$update().then(callback);
 
         $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnce();
@@ -977,8 +979,8 @@ describe("resource", function() {
 
   it('should transform request/response', function() {
     var Person = $resource('/Person/:id', {}, {
-      save: {
-          method: 'POST',
+      update: {
+          method: 'PUT',
           params: {id: '@id'},
           transformRequest: function(data) {
             return angular.toJson({ __id: data.id });
@@ -989,9 +991,9 @@ describe("resource", function() {
       }
     });
 
-    $httpBackend.expect('POST', '/Person/123', { __id: 123 }).respond({ __id: 456 });
+    $httpBackend.expect('PUT', '/Person/123', { __id: 123 }).respond({ __id: 456 });
     var person = new Person({id:123});
-    person.$save();
+    person.$update();
     $httpBackend.flush();
     expect(person.id).toEqual(456);
   });
@@ -1098,11 +1100,13 @@ describe("resource", function() {
         expect(callback.mostRecentCall.args[0]).toEqual(user);
         expect(callback.mostRecentCall.args[1]()).toEqual({});
       });
+    });
 
-      it('should append when an id is supplied', function() {
-        $httpBackend.expect('POST', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
+    describe("update", function() {
+      it('should append the suffix when an id is supplied', function() {
+        $httpBackend.expect('PUT', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
         var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
-        var user = UserService.save({id: 123, name: 'newName'}, callback);
+        var user = UserService.update({id: 123, name: 'newName'}, callback);
         expect(callback).not.toHaveBeenCalled();
         $httpBackend.flush();
         expect(user).toEqualData({id: 123, name: 'newName'});
@@ -1111,10 +1115,10 @@ describe("resource", function() {
         expect(callback.mostRecentCall.args[1]()).toEqual({});
       });
 
-      it('should append when an id is supplied and the format is a parameter', function() {
-        $httpBackend.expect('POST', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
+      it('should append the suffix when an id is supplied and the format is a parameter', function() {
+        $httpBackend.expect('PUT', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
         var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
-        var user = UserService.save({id: 123, name: 'newName'}, callback);
+        var user = UserService.update({id: 123, name: 'newName'}, callback);
         expect(callback).not.toHaveBeenCalled();
         $httpBackend.flush();
         expect(user).toEqualData({id: 123, name: 'newName'});
@@ -1136,6 +1140,10 @@ describe("resource", function() {
       it('should work with save()', function() {
         $httpBackend.expect('POST', '/users/.json').respond();
         $resource('/users/\\.json').save({});
+      });
+      it('should work with update()', function() {
+        $httpBackend.expect('PUT', '/users/.json').respond();
+        $resource('/users/\\.json').update({});
       });
     });
   });
