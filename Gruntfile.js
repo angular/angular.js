@@ -92,6 +92,7 @@ module.exports = function(grunt) {
 
     protractor: {
       normal: 'protractor-conf.js',
+      jquery: 'protractor-jquery-conf.js',
       jenkins: 'protractor-jenkins-conf.js'
     },
 
@@ -292,6 +293,7 @@ module.exports = function(grunt) {
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
   grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
+  grunt.registerTask('test:jq-protractor', 'Run the end to end tests against jquery with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:jquery']);
   grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
   grunt.registerTask('test:e2e', 'Alias for test:protractor', ['test:protractor']);
   grunt.registerTask('test:docgen', ['jasmine_node']);
