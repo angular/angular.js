@@ -71,5 +71,5 @@ var ngTranscludeDirective = function() {
         element.append(clone);
       });
     }
-  }
+  };
 };
