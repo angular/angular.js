@@ -58,8 +58,8 @@ $provide.value("$locale", {
     "medium": "dd MMM y HH:mm:ss",
     "mediumDate": "dd MMM y",
     "mediumTime": "HH:mm:ss",
-    "short": "dd/MM/yyyy HH:mm",
-    "shortDate": "dd/MM/yyyy",
+    "short": "dd/MM/y HH:mm",
+    "shortDate": "dd/MM/y",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "mt-mt",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  if (n == 0 || n == (n | 0) && n % 100 >= 2 && n % 100 <= 10) {   return PLURAL_CATEGORY.FEW;  }  if (n == (n | 0) && n % 100 >= 11 && n % 100 <= 19) {   return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  if (n == 0 || n % 100 >= 2 && n % 100 <= 10) {    return PLURAL_CATEGORY.FEW;  }  if (n % 100 >= 11 && n % 100 <= 19) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

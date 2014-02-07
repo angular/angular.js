@@ -55,8 +55,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, dd. MMMM y",
     "longDate": "dd. MMMM y",
-    "medium": "d. MMM yyyy HH:mm:ss",
-    "mediumDate": "d. MMM yyyy",
+    "medium": "d. MMM y HH:mm:ss",
+    "mediumDate": "d. MMM y",
     "mediumTime": "HH:mm:ss",
     "short": "d. MM. yy HH:mm",
     "shortDate": "d. MM. yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "sl-si",
-  "pluralCat": function (n) {  if (n % 100 == 1) {   return PLURAL_CATEGORY.ONE;  }  if (n % 100 == 2) {   return PLURAL_CATEGORY.TWO;  }  if (n % 100 == 3 || n % 100 == 4) {   return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (vf.v == 0 && i % 100 == 1) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 100 == 2) {    return PLURAL_CATEGORY.TWO;  }  if (vf.v == 0 && i % 100 >= 3 && i % 100 <= 4 || vf.v != 0) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -34,9 +34,9 @@ $provide.value("$locale", {
       "Lin",
       "Lun",
       "Mar",
-      "Mye",
+      "Miy",
       "Huw",
-      "Bye",
+      "Biy",
       "Sab"
     ],
     "SHORTMONTH": [
@@ -53,14 +53,14 @@ $provide.value("$locale", {
       "Nob",
       "Dis"
     ],
-    "fullDate": "EEEE, MMMM dd y",
+    "fullDate": "EEEE, MMMM d, y",
     "longDate": "MMMM d, y",
-    "medium": "MMM d, y HH:mm:ss",
+    "medium": "MMM d, y h:mm:ss a",
     "mediumDate": "MMM d, y",
-    "mediumTime": "HH:mm:ss",
-    "short": "M/d/yy HH:mm",
+    "mediumTime": "h:mm:ss a",
+    "short": "M/d/yy h:mm a",
     "shortDate": "M/d/yy",
-    "shortTime": "HH:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20b1",
@@ -86,14 +86,14 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
+        "negPre": "\u00a4-",
+        "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
       }
     ]
   },
   "id": "fil",
-  "pluralCat": function (n) {  if (n == 0 || n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (i >= 0 && i <= 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

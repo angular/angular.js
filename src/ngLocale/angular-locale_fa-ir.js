@@ -58,8 +58,8 @@ $provide.value("$locale", {
     "medium": "d MMM y H:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "H:mm:ss",
-    "short": "yyyy/M/d H:mm",
-    "shortDate": "yyyy/M/d",
+    "short": "y/M/d H:mm",
+    "shortDate": "y/M/d",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
@@ -86,14 +86,14 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u200e(\u00a4",
-        "negSuf": ")",
+        "negPre": "\u200e\u00a4-",
+        "negSuf": "",
         "posPre": "\u200e\u00a4",
         "posSuf": ""
       }
     ]
   },
   "id": "fa-ir",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);
