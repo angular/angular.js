@@ -1211,9 +1211,17 @@ angular.module('ngAnimate', ['ng'])
       function animateRun(element, className, activeAnimationComplete) {
         var elementData = element.data(NG_ANIMATE_CSS_DATA_KEY);
         var node = extractElementNode(element);
-        if(node.className.indexOf(className) == -1 || !elementData) {
-          activeAnimationComplete();
-          return;
+        if(node.className instanceof SVGAnimatedString) {
+          if (node.className.animVal.indexOf(className) == -1 || !elementData) {
+            activeAnimationComplete();
+            return;
+          }
+        }
+        else {
+          if (node.className.indexOf(className) == -1 || !elementData) {
+            activeAnimationComplete();
+            return;
+          }
         }
 
         var timings = elementData.timings;
@@ -1284,7 +1292,7 @@ angular.module('ngAnimate', ['ng'])
           event.stopPropagation();
           var ev = event.originalEvent || event;
           var timeStamp = ev.$manualTimeStamp || ev.timeStamp || Date.now();
-          
+
           /* Firefox (or possibly just Gecko) likes to not round values up
            * when a ms measurement is used for the animation */
           var elapsedTime = parseFloat(ev.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES));
