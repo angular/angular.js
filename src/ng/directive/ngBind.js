@@ -26,8 +26,8 @@
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.name = 'Whirled';
@@ -37,8 +37,8 @@
          Enter name: <input type="text" ng-model="name"><br>
          Hello <span ng-bind="name"></span>!
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     </file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
          var exampleContainer = $('.doc-example-live');
          var nameInput = element(by.model('name'));
@@ -48,8 +48,8 @@
          nameInput.sendKeys('world');
          expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('world');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngBindDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBind);
@@ -80,8 +80,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
  *
  * @example
  * Try it here: enter text in text box and watch the greeting change.
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.salutation = 'Hello';
@@ -93,8 +93,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
         Name: <input type="text" ng-model="name"><br>
         <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     </file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
          var salutationElem = element(by.binding('salutation'));
          var salutationInput = element(by.model('salutation'));
@@ -109,8 +109,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
 
          expect(salutationElem.getText()).toBe('Greetings user!');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {

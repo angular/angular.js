@@ -283,8 +283,8 @@ function FormController(element, attrs) {
  *                       related scope, under this name.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.userType = 'guest';
@@ -299,8 +299,8 @@ function FormController(element, attrs) {
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
          <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
         </form>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         it('should initialize to model', function() {
           var userType = element(by.binding('userType'));
           var valid = element(by.binding('myForm.input.$valid'));
@@ -320,8 +320,8 @@ function FormController(element, attrs) {
           expect(userType.getText()).toEqual('userType =');
           expect(valid.getText()).toContain('false');
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {
