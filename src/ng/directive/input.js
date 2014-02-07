@@ -39,8 +39,8 @@ var inputType = {
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example>
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.text = 'guest';
@@ -61,8 +61,8 @@ var inputType = {
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:protractor>
+        </file>
+        </file name="protractor.js" type="protractor">
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
@@ -86,8 +86,8 @@ var inputType = {
 
             expect(valid.getText()).toContain('false');
           });
-        </doc:protractor>
-      </doc:example>
+        </file>
+      </example>
    */
   'text': textInputType,
 
@@ -119,8 +119,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example>
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.value = 12;
@@ -139,8 +139,8 @@ var inputType = {
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:protractor>
+        </file>
+        </file name="protractor.js" type="protractor">
           var value = element(by.binding('value'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('value'));
@@ -163,8 +163,8 @@ var inputType = {
             expect(value.getText()).toEqual('value =');
             expect(valid.getText()).toContain('false');
           });
-        </doc:protractor>
-      </doc:example>
+        </file>
+      </example>
    */
   'number': numberInputType,
 
@@ -194,8 +194,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example>
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.text = 'http://google.com';
@@ -214,8 +214,8 @@ var inputType = {
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
            <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:protractor>
+        </file>
+        </file name="protractor.js" type="protractor">
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
@@ -239,8 +239,8 @@ var inputType = {
 
             expect(valid.getText()).toContain('false');
           });
-        </doc:protractor>
-      </doc:example>
+        </file>
+      </example>
    */
   'url': urlInputType,
 
@@ -270,8 +270,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example>
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.text = 'me@example.com';
@@ -290,8 +290,8 @@ var inputType = {
              <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
              <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
            </form>
-        </doc:source>
-        <doc:protractor>
+        </file>
+        </file name="protractor.js" type="protractor">
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
@@ -314,8 +314,8 @@ var inputType = {
 
             expect(valid.getText()).toContain('false');
           });
-        </doc:protractor>
-      </doc:example>
+        </file>
+      </example>
    */
   'email': emailInputType,
 
@@ -336,8 +336,8 @@ var inputType = {
    *    be set when selected.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example>
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.color = 'blue';
@@ -354,8 +354,8 @@ var inputType = {
            <tt>color = {{color | json}}</tt><br/>
           </form>
           Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.
-        </doc:source>
-        <doc:protractor>
+        </file>
+        </file name="protractor.js" type="protractor">
           it('should change state', function() {
             var color = element(by.binding('color'));
 
@@ -365,8 +365,8 @@ var inputType = {
 
             expect(color.getText()).toContain('red');
           });
-        </doc:protractor>
-      </doc:example>
+        </file>
+      </example>
    */
   'radio': radioInputType,
 
@@ -386,8 +386,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example>
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.value1 = true;
@@ -401,8 +401,8 @@ var inputType = {
            <tt>value1 = {{value1}}</tt><br/>
            <tt>value2 = {{value2}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:protractor>
+        </file>
+        </file name="protractor.js" type="protractor">
           it('should change state', function() {
             var value1 = element(by.binding('value1'));
             var value2 = element(by.binding('value2'));
@@ -416,8 +416,8 @@ var inputType = {
             expect(value1.getText()).toContain('false');
             expect(value2.getText()).toContain('NO');
           });
-        </doc:protractor>
-      </doc:example>
+        </file>
+      </example>
    */
   'checkbox': checkboxInputType,
 
@@ -740,8 +740,8 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *    interaction with the input element.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.user = {name: 'guest', last: 'visitor'};
@@ -770,8 +770,8 @@ function checkboxInputType(scope, element, attr, ctrl) {
          <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br>
          <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
        </div>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         var user = element(by.binding('{{user}}'));
         var userNameValid = element(by.binding('myForm.userName.$valid'));
         var lastNameValid = element(by.binding('myForm.lastName.$valid'));
@@ -823,8 +823,8 @@ function checkboxInputType(scope, element, attr, ctrl) {
           expect(lastNameError.getText()).toContain('maxlength');
           expect(formValid.getText()).toContain('false');
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  */
 var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
   return {
@@ -1262,8 +1262,8 @@ var ngModelDirective = function() {
  * in input value.
  *
  * @example
- * <doc:example>
- *   <doc:source>
+ * <example>
+ *   <file name="index.html">
  *     <script>
  *       function Controller($scope) {
  *         $scope.counter = 0;
@@ -1279,8 +1279,8 @@ var ngModelDirective = function() {
  *       <tt>debug = {{confirmed}}</tt><br/>
  *       <tt>counter = {{counter}}</tt><br/>
  *     </div>
- *   </doc:source>
- *   <doc:protractor>
+ *   </file>
+ *   </file name="protractor.js" type="protractor">
  *     var counter = element(by.binding('counter'));
  *     var debug = element(by.binding('confirmed'));
  *
@@ -1299,8 +1299,8 @@ var ngModelDirective = function() {
  *       expect(counter.getText()).toContain('0');
  *       expect(debug.getText()).toContain('true');
  *     });
- *   </doc:protractor>
- * </doc:example>
+ *   </file>
+ * </example>
  */
 var ngChangeDirective = valueFn({
   require: 'ngModel',
@@ -1353,8 +1353,8 @@ var requiredDirective = function() {
  *   specified in form `/something/` then the value will be converted into a regular expression.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.names = ['igor', 'misko', 'vojta'];
@@ -1371,8 +1371,8 @@ var requiredDirective = function() {
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
          <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
         </form>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         var listInput = element(by.model('names'));
         var names = element(by.binding('{{names}}'));
         var valid = element(by.binding('myForm.namesInput.$valid'));
@@ -1391,8 +1391,8 @@ var requiredDirective = function() {
           expect(names.getText()).toContain('');
           expect(valid.getText()).toContain('false');
           expect(error.getCssValue('display')).not.toBe('none');        });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  */
 var ngListDirective = function() {
   return {
@@ -1452,8 +1452,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  *   of the `input` element
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
        <script>
           function Ctrl($scope) {
             $scope.names = ['pizza', 'unicorns', 'robots'];
@@ -1472,8 +1472,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
             </label>
           <div>You chose {{my.favorite}}</div>
         </form>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         var favorite = element(by.binding('my.favorite'));
 
         it('should initialize to model', function() {
@@ -1483,8 +1483,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
           element.all(by.model('my.favorite')).get(0).click();
           expect(favorite.getText()).toContain('pizza');
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  */
 var ngValueDirective = function() {
   return {

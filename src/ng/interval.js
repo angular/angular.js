@@ -42,8 +42,8 @@ function $IntervalProvider() {
       * @returns {promise} A promise which will be notified on each iteration.
       *
       * @example
-      <doc:example module="time">
-        <doc:source>
+      <example module="time">
+        <file name="index.html">
           <script>
             function Ctrl2($scope,$interval) {
               $scope.format = 'M/d/yy h:mm:ss a';
@@ -127,8 +127,8 @@ function $IntervalProvider() {
             </div>
           </div>
 
-        </doc:source>
-      </doc:example>
+        </file>
+      </example>
       */
     function interval(fn, delay, count, invokeApply) {
       var setInterval = $window.setInterval,
