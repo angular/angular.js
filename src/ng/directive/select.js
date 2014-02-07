@@ -21,7 +21,7 @@ var ngOptionsMinErr = minErr('ngOptions');
  *
  * <div class="alert alert-warning">
  * **Note:** `ngModel` compares by reference, not value. This is important when binding to an
- * array of objects. See an example {@link http://jsfiddle.net/qWzTb/ in this jsfiddle}.
+ * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/).
  * </div>
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can

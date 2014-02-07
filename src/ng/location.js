@@ -295,7 +295,7 @@ LocationHashbangInHtml5Url.prototype =
    * This method is getter only.
    *
    * Return full url representation with all segments encoded according to rules specified in
-   * {@link http://www.ietf.org/rfc/rfc3986.txt RFC 3986}.
+   * [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt).
    *
    * @return {string} full url
    */
@@ -495,7 +495,7 @@ function locationGetterSetter(property, preprocess) {
  *
  * @description
  * The $location service parses the URL in the browser address bar (based on the
- * {@link https://developer.mozilla.org/en/window.location window.location}) and makes the URL
+ * [window.location](https://developer.mozilla.org/en/window.location)) and makes the URL
  * available to your application. Changes to the URL in the address bar are reflected into
  * $location service and changes to $location are reflected into the browser address bar.
  *
