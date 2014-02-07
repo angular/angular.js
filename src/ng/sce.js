@@ -136,7 +136,7 @@ function $SceDelegateProvider() {
 
   /**
    * @ngdoc method
-   * @name sceDelegateProvider#resourceUrlWhitelist
+   * @name $sceDelegateProvider#resourceUrlWhitelist
    * @function
    *
    * @param {Array=} whitelist When provided, replaces the resourceUrlWhitelist with the value
@@ -663,7 +663,7 @@ function $SceProvider() {
 
   /**
    * @ngdoc method
-   * @name sceProvider#enabled
+   * @name $sceProvider#enabled
    * @function
    *
    * @param {boolean=} value If provided, then enables/disables SCE.
@@ -741,7 +741,7 @@ function $SceProvider() {
 
     /**
      * @ngdoc method
-     * @name sce#isEnabled
+     * @name $sce#isEnabled
      * @function
      *
      * @return {Boolean} true if SCE is enabled, false otherwise.  If you want to set the value, you
