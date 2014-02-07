@@ -1,3 +1,64 @@
+<a name="1.2.12"></a>
+# 1.2.12 cauliflower-eradication (2014-02-07)
+
+
+## Bug Fixes
+
+- **$compile:** retain CSS classes added in cloneAttachFn on asynchronous directives
+  ([5ed721b9](https://github.com/angular/angular.js/commit/5ed721b9b5e95ae08450e1ae9d5202e7f3f79295),
+   [#5439](https://github.com/angular/angular.js/issues/5439), [#5617](https://github.com/angular/angular.js/issues/5617))
+- **$http:**
+  - ignore xhr.responseType setter exception if value is "json"
+  ([24699ee8](https://github.com/angular/angular.js/commit/24699ee8f04c1f1459be1d36207e654421d58ff0),
+   [#6115](https://github.com/angular/angular.js/issues/6115), [#6122](https://github.com/angular/angular.js/issues/6122))
+  - update httpBackend to use ActiveXObject on IE8 if necessary
+  ([ef210e5e](https://github.com/angular/angular.js/commit/ef210e5e119db4f5bfc9d2428b19f9b335c4f976),
+   [#5677](https://github.com/angular/angular.js/issues/5677), [#5679](https://github.com/angular/angular.js/issues/5679))
+- **$locale:** minor grammar amends for the locale `locale_lt`
+  ([95be253f](https://github.com/angular/angular.js/commit/95be253fe55d35336d425d3d600a36158fc3519d),
+   [#6164](https://github.com/angular/angular.js/issues/6164))
+- **$q:** make $q.reject support `finally` and `catch`
+  ([074b0675](https://github.com/angular/angular.js/commit/074b0675a1f97dce07f520f1ae6198ed3c604000),
+   [#6048](https://github.com/angular/angular.js/issues/6048), [#6076](https://github.com/angular/angular.js/issues/6076))
+- **docs:** clarify doc for "args" in $broadcast and $emit
+  ([caed2dfe](https://github.com/angular/angular.js/commit/caed2dfe4feeac5d19ecea2dbb1456b7fde21e6d),
+   [#6047](https://github.com/angular/angular.js/issues/6047))
+- **filterFilter:** don't interpret dots in predicate object fields as paths
+  ([339a1658](https://github.com/angular/angular.js/commit/339a1658cd9bfa5e322a01c45aa0a1df67e3a842),
+   [#6005](https://github.com/angular/angular.js/issues/6005), [#6009](https://github.com/angular/angular.js/issues/6009))
+- **http:** make jshint happy
+  ([6609e3da](https://github.com/angular/angular.js/commit/6609e3da76dd898cfe85f75f23ab2e39fee65fe5))
+- **jqLite:** trim HTML string in jqLite constructor
+  ([36d37c0e](https://github.com/angular/angular.js/commit/36d37c0e3880c774d20c014ade60d2331beefa15),
+   [#6053](https://github.com/angular/angular.js/issues/6053))
+- **mocks:**
+  - rename mock.animate to ngAnimateMock and ensure it contains all test helper code for ngAnimate
+  ([4224cd51](https://github.com/angular/angular.js/commit/4224cd5182bc93e4a210f75e0a4e4de7f3c544e8),
+   [#5822](https://github.com/angular/angular.js/issues/5822), [#5917](https://github.com/angular/angular.js/issues/5917))
+  - remove usage of $animate.flushNext in favour of queing
+  ([906fdad0](https://github.com/angular/angular.js/commit/906fdad0f95465842e336e057ea97d0633712189))
+  - always call functions injected with `inject` with `this` set to the current spec
+  ([3bf43903](https://github.com/angular/angular.js/commit/3bf43903397c703aa2e9ba1e1a48dbc9e8286ee2),
+   [#6102](https://github.com/angular/angular.js/issues/6102))
+  - refactor currentSpec to work w/ Jasmine 2
+  ([95f0bf9b](https://github.com/angular/angular.js/commit/95f0bf9b526fda8964527c6d4aef1ad50a47f1f3),
+   [#5662](https://github.com/angular/angular.js/issues/5662))
+- **ngMock:** return false from mock $interval.cancel() when no argument is supplied
+  ([dd24c783](https://github.com/angular/angular.js/commit/dd24c78373b5d24ecb3b9d19e61e1b3b6c74d155),
+   [#6103](https://github.com/angular/angular.js/issues/6103))
+- **ngResource:**
+  - don't filter "$"-prefixed properties from ngResource requests/responses
+  ([d2e4e499](https://github.com/angular/angular.js/commit/d2e4e499862aeca157dbe7a7422c465e7c79205e),
+   [#5666](https://github.com/angular/angular.js/issues/5666), [#6080](https://github.com/angular/angular.js/issues/6080), [#6033](https://github.com/angular/angular.js/issues/6033))
+  - don't append number to '$' in url param value when encoding URI
+  ([ce1f1f97](https://github.com/angular/angular.js/commit/ce1f1f97f0ebf77941b2bdaf5e8352d33786524d),
+   [#6003](https://github.com/angular/angular.js/issues/6003), [#6004](https://github.com/angular/angular.js/issues/6004))
+
+## Breaking Changes
+
+The animation mock module has been renamed from `mock.animate` to `ngAnimateMock`. In addition to the rename, animations will not block within test code even when ngAnimateMock is used. However, all function calls to $animate will be recorded into `$animate.queue` and are available within test code to assert animation calls. In addition, `$animate.triggerReflow()` is now only available when `ngAnimateMock` is used.
+
+
 <a name="1.2.11"></a>
 # 1.2.11 cryptocurrency-hyperdeflation (2014-02-03)
 
