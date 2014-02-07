@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a.m.",
-      "p.m."
+      "a. m.",
+      "p. m."
     ],
     "DAY": [
       "diumenge",
@@ -17,18 +17,18 @@ $provide.value("$locale", {
       "dissabte"
     ],
     "MONTH": [
-      "de gener",
-      "de febrer",
-      "de mar\u00e7",
-      "d\u2019abril",
-      "de maig",
-      "de juny",
-      "de juliol",
-      "d\u2019agost",
-      "de setembre",
-      "d\u2019octubre",
-      "de novembre",
-      "de desembre"
+      "gener",
+      "febrer",
+      "mar\u00e7",
+      "abril",
+      "maig",
+      "juny",
+      "juliol",
+      "agost",
+      "setembre",
+      "octubre",
+      "novembre",
+      "desembre"
     ],
     "SHORTDAY": [
       "dg.",
@@ -40,27 +40,27 @@ $provide.value("$locale", {
       "ds."
     ],
     "SHORTMONTH": [
-      "de gen.",
-      "de febr.",
-      "de mar\u00e7",
-      "d\u2019abr.",
-      "de maig",
-      "de juny",
-      "de jul.",
-      "d\u2019ag.",
-      "de set.",
-      "d\u2019oct.",
-      "de nov.",
-      "de des."
+      "gen.",
+      "feb.",
+      "mar\u00e7",
+      "abr.",
+      "maig",
+      "juny",
+      "jul.",
+      "ag.",
+      "set.",
+      "oct.",
+      "nov.",
+      "des."
     ],
-    "fullDate": "EEEE d MMMM 'de' y",
+    "fullDate": "EEEE, d MMMM 'de' y",
     "longDate": "d MMMM 'de' y",
-    "medium": "dd/MM/yyyy H:mm:ss",
-    "mediumDate": "dd/MM/yyyy",
-    "mediumTime": "H:mm:ss",
-    "short": "dd/MM/yy H:mm",
-    "shortDate": "dd/MM/yy",
-    "shortTime": "H:mm"
+    "medium": "dd/MM/y H.mm.ss",
+    "mediumDate": "dd/MM/y",
+    "mediumTime": "H.mm.ss",
+    "short": "d/M/yy H.mm",
+    "shortDate": "d/M/yy",
+    "shortTime": "H.mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20ac",
@@ -86,14 +86,14 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
-        "posPre": "\u00a4",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "ca-es",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

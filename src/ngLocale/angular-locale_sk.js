@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "dopoludnia",
-      "popoludn\u00ed"
+      "AM",
+      "PM"
     ],
     "DAY": [
       "nede\u013ea",
@@ -55,11 +55,11 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d.M.yyyy H:mm:ss",
-    "mediumDate": "d.M.yyyy",
+    "medium": "d.M.y H:mm:ss",
+    "mediumDate": "d.M.y",
     "mediumTime": "H:mm:ss",
-    "short": "d.M.yyyy H:mm",
-    "shortDate": "d.M.yyyy",
+    "short": "d.M.y H:mm",
+    "shortDate": "d.M.y",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "sk",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  if (n == (n | 0) && n >= 2 && n <= 4) {   return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i >= 2 && i <= 4 && vf.v == 0) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v != 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

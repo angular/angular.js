@@ -53,10 +53,10 @@ $provide.value("$locale", {
       "\u043d\u043e\u044f\u0431.",
       "\u0434\u0435\u043a."
     ],
-    "fullDate": "EEEE, d MMMM y\u00a0'\u0433'.",
-    "longDate": "d MMMM y\u00a0'\u0433'.",
-    "medium": "dd.MM.yyyy H:mm:ss",
-    "mediumDate": "dd.MM.yyyy",
+    "fullDate": "EEEE, d MMMM y '\u0433'.",
+    "longDate": "d MMMM y '\u0433'.",
+    "medium": "dd MMM y '\u0433'. H:mm:ss",
+    "mediumDate": "dd MMM y '\u0433'.",
     "mediumTime": "H:mm:ss",
     "short": "dd.MM.yy H:mm",
     "shortDate": "dd.MM.yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "ru-ru",
-  "pluralCat": function (n) {  if (n % 10 == 1 && n % 100 != 11) {   return PLURAL_CATEGORY.ONE;  }  if (n == (n | 0) && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) {   return PLURAL_CATEGORY.FEW;  }  if (n % 10 == 0 || n == (n | 0) && n % 10 >= 5 && n % 10 <= 9 || n == (n | 0) && n % 100 >= 11 && n % 100 <= 14) {   return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 && i % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v == 0 && i % 10 == 0 || vf.v == 0 && i % 10 >= 5 && i % 10 <= 9 || vf.v == 0 && i % 100 >= 11 && i % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

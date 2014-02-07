@@ -4,17 +4,17 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a.m.",
-      "p.m."
+      "da manh\u00e3",
+      "da tarde"
     ],
     "DAY": [
-      "Domingo",
-      "Segunda-feira",
-      "Ter\u00e7a-feira",
-      "Quarta-feira",
-      "Quinta-feira",
-      "Sexta-feira",
-      "S\u00e1bado"
+      "domingo",
+      "segunda-feira",
+      "ter\u00e7a-feira",
+      "quarta-feira",
+      "quinta-feira",
+      "sexta-feira",
+      "s\u00e1bado"
     ],
     "MONTH": [
       "Janeiro",
@@ -55,8 +55,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "dd/MM/yyyy HH:mm:ss",
-    "mediumDate": "dd/MM/yyyy",
+    "medium": "dd/MM/y HH:mm:ss",
+    "mediumDate": "dd/MM/y",
     "mediumTime": "HH:mm:ss",
     "short": "dd/MM/yy HH:mm",
     "shortDate": "dd/MM/yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "pt-pt",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  var wt = goog.i18n.pluralRules.get_wt_(vf.v, vf.f);  if (i == 1 && vf.v == 0 || i == 0 && wt.t == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

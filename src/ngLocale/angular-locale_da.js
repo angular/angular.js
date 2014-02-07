@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "f.m.",
-      "e.m."
+      "AM",
+      "PM"
     ],
     "DAY": [
       "s\u00f8ndag",
@@ -31,13 +31,13 @@ $provide.value("$locale", {
       "december"
     ],
     "SHORTDAY": [
-      "s\u00f8n",
-      "man",
-      "tir",
-      "ons",
-      "tor",
-      "fre",
-      "l\u00f8r"
+      "s\u00f8n.",
+      "man.",
+      "tir.",
+      "ons.",
+      "tor.",
+      "fre.",
+      "l\u00f8r."
     ],
     "SHORTMONTH": [
       "jan.",
@@ -55,8 +55,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE 'den' d. MMMM y",
     "longDate": "d. MMM y",
-    "medium": "dd/MM/yyyy HH.mm.ss",
-    "mediumDate": "dd/MM/yyyy",
+    "medium": "dd/MM/y HH.mm.ss",
+    "mediumDate": "dd/MM/y",
     "mediumTime": "HH.mm.ss",
     "short": "dd/MM/yy HH.mm",
     "shortDate": "dd/MM/yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "da",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  var wt = goog.i18n.pluralRules.get_wt_(vf.v, vf.f);  if (n == 1 || wt.t != 0 && (i == 0 || i == 1)) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

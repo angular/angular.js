@@ -55,8 +55,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d \u05d1MMMM y",
     "longDate": "d \u05d1MMMM y",
-    "medium": "d \u05d1MMM yyyy HH:mm:ss",
-    "mediumDate": "d \u05d1MMM yyyy",
+    "medium": "d \u05d1MMM y HH:mm:ss",
+    "mediumDate": "d \u05d1MMM y",
     "mediumTime": "HH:mm:ss",
     "short": "dd/MM/yy HH:mm",
     "shortDate": "dd/MM/yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "he",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i == 2 && vf.v == 0) {    return PLURAL_CATEGORY.TWO;  }  if (vf.v == 0 && (n < 0 || n > 10) && n % 10 == 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

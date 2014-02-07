@@ -53,14 +53,14 @@ $provide.value("$locale", {
       "Nov",
       "Des"
     ],
-    "fullDate": "EEEE, dd MMMM yyyy",
-    "longDate": "d MMMM yyyy",
-    "medium": "d MMM yyyy HH:mm:ss",
-    "mediumDate": "d MMM yyyy",
-    "mediumTime": "HH:mm:ss",
-    "short": "dd/MM/yy HH:mm",
+    "fullDate": "EEEE, dd MMMM y",
+    "longDate": "d MMMM y",
+    "medium": "d MMM y HH.mm.ss",
+    "mediumDate": "d MMM y",
+    "mediumTime": "HH.mm.ss",
+    "short": "dd/MM/yy HH.mm",
     "shortDate": "dd/MM/yy",
-    "shortTime": "HH:mm"
+    "shortTime": "HH.mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Rp",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "in",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

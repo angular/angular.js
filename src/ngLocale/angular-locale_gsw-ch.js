@@ -55,8 +55,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "dd.MM.yyyy HH:mm:ss",
-    "mediumDate": "dd.MM.yyyy",
+    "medium": "dd.MM.y HH:mm:ss",
+    "mediumDate": "dd.MM.y",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "gsw-ch",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

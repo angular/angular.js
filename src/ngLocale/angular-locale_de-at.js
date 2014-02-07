@@ -40,23 +40,23 @@ $provide.value("$locale", {
       "Sa."
     ],
     "SHORTMONTH": [
-      "J\u00e4n",
-      "Feb",
-      "M\u00e4r",
-      "Apr",
+      "J\u00e4n.",
+      "Feb.",
+      "M\u00e4rz",
+      "Apr.",
       "Mai",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Dez"
+      "Juni",
+      "Juli",
+      "Aug.",
+      "Sep.",
+      "Okt.",
+      "Nov.",
+      "Dez."
     ],
     "fullDate": "EEEE, dd. MMMM y",
     "longDate": "dd. MMMM y",
-    "medium": "dd.MM.yyyy HH:mm:ss",
-    "mediumDate": "dd.MM.yyyy",
+    "medium": "dd.MM.y HH:mm:ss",
+    "mediumDate": "dd.MM.y",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "de-at",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = goog.i18n.pluralRules.get_vf_(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);
