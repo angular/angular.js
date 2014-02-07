@@ -33,12 +33,10 @@ __`app/index.html`:__
 <pre>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span2">
-        <!--Sidebar content-->
+      <!--Sidebar content-->
 
         Search: <input ng-model="query">
 
-      </div>
       <div class="span10">
         <!--Body content-->
 
