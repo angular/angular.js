@@ -15,3 +15,13 @@ myApp.config(function($locationProvider) {
 If you enter the app at url `http:/myapp.com/#/myView` this error will be throw.
 
 The correct url for this configuration is `http:/myapp.com/#!/myView` (note the `'!'` after `'#'` symbol).
+
+If you have recently converted your app to use hashbangs and need to support links to the old format, 
+you can add this code somewhere prior to the myApp.config() call:
+```
+//if hash prefix mising, redirect.
+var loc = window.location.href
+        if (loc.indexOf("#") != -1 && loc.indexOf("#!") == -1) {
+	window.location.href = loc.replace("#", "#!");
+}
+```
