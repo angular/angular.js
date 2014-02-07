@@ -31,8 +31,8 @@
  * @example
  * This example shows various combinations of `href`, `ng-href` and `ng-click` attributes
  * in links and their different behaviors:
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <input ng-model="value" /><br />
         <a id="link-1" href ng-click="value = 1">link 1</a> (link, don't reload)<br />
         <a id="link-2" href="" ng-click="value = 2">link 2</a> (link, don't reload)<br />
@@ -40,8 +40,8 @@
         <a id="link-4" href="" name="xx" ng-click="value = 4">anchor</a> (link, don't reload)<br />
         <a id="link-5" name="xxx" ng-click="value = 5">anchor</a> (no link)<br />
         <a id="link-6" ng-href="{{value}}">link</a> (link, change location)
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         it('should execute ng-click but not reload when href without value', function() {
           element(by.id('link-1')).click();
           expect(element(by.model('value')).getAttribute('value')).toEqual('1');
@@ -89,8 +89,8 @@
           element(by.id('link-6')).click();
           expect(browser.getCurrentUrl()).toMatch(/\/6$/);
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  */
 
 /**
@@ -169,19 +169,19 @@
  * a permanent reliable place to store the binding information.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         Click me to toggle: <input type="checkbox" ng-model="checked"><br/>
         <button ng-model="button" ng-disabled="checked">Button</button>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         it('should toggle button', function() {
           expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeFalsy();
           element(by.model('checked')).click();
           expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeTruthy();
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  *
  * @element INPUT
  * @param {expression} ngDisabled If the {@link guide/expression expression} is truthy, 
@@ -204,19 +204,19 @@
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         Check me to check both: <input type="checkbox" ng-model="master"><br/>
         <input id="checkSlave" type="checkbox" ng-checked="master">
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         it('should check both checkBoxes', function() {
           expect(element(by.id('checkSlave')).getAttribute('checked')).toBeFalsy();
           element(by.model('master')).click();
           expect(element(by.id('checkSlave')).getAttribute('checked')).toBeTruthy();
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  *
  * @element INPUT
  * @param {expression} ngChecked If the {@link guide/expression expression} is truthy, 
@@ -239,19 +239,19 @@
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         Check me to make text readonly: <input type="checkbox" ng-model="checked"><br/>
         <input type="text" ng-readonly="checked" value="I'm Angular"/>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         it('should toggle readonly attr', function() {
           expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeFalsy();
           element(by.model('checked')).click();
           expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeTruthy();
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  *
  * @element INPUT
  * @param {expression} ngReadonly If the {@link guide/expression expression} is truthy, 
@@ -275,22 +275,22 @@
  * a permanent reliable place to store the binding information.
  * 
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         Check me to select: <input type="checkbox" ng-model="selected"><br/>
         <select>
           <option>Hello!</option>
           <option id="greet" ng-selected="selected">Greetings!</option>
         </select>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      </file name="protractor.js" type="protractor">
         it('should select Greetings!', function() {
           expect(element(by.id('greet')).getAttribute('selected')).toBeFalsy();
           element(by.model('selected')).click();
           expect(element(by.id('greet')).getAttribute('selected')).toBeTruthy();
         });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  *
  * @element OPTION
  * @param {expression} ngSelected If the {@link guide/expression expression} is truthy, 
@@ -312,21 +312,21 @@
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
  * @example
-     <doc:example>
-       <doc:source>
+     <example>
+       <file name="index.html">
          Check me check multiple: <input type="checkbox" ng-model="open"><br/>
          <details id="details" ng-open="open">
             <summary>Show/Hide me</summary>
          </details>
-       </doc:source>
-       <doc:protractor>
+       </file>
+       </file name="protractor.js" type="protractor">
          it('should toggle open', function() {
            expect(element(by.id('details')).getAttribute('open')).toBeFalsy();
            element(by.model('open')).click();
            expect(element(by.id('details')).getAttribute('open')).toBeTruthy();
          });
-       </doc:protractor>
-     </doc:example>
+       </file>
+     </example>
  *
  * @element DETAILS
  * @param {expression} ngOpen If the {@link guide/expression expression} is truthy, 
