@@ -1,4 +1,4 @@
-AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.png?branch=master)](https://travis-ci.org/angular/angular.js)
+AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.png?branch=master)](https://travis-ci.org/angular/angular.js) [![dependency Status](https://david-dm.org/angular/angular.js/status.png?theme=shields.io)](https://david-dm.org/angular/angular.js#info=dependencies) [![devDependency Status](https://david-dm.org/angular/angular.js/dev-status.png?theme=shields.io)](https://david-dm.org/angular/angular.js#info=devDependencies) 
 =========
 
 AngularJS lets you write client-side web applications as if you had a smarter browser.  It lets you
