@@ -378,6 +378,35 @@ noop.$inject = [];
        return (transformationFn || angular.identity)(value);
      };
    </pre>
+ *
+ * @example
+ <doc:example>
+ <doc:source>
+ <div ng-controller="Controller">
+ <p><strong>Transformer Function Return Results</strong></p>
+ <p>With TransformationFn: <em>{{withTransformationFn}}</em></p>
+ <p>Without TransformationFn: <em>{{withoutTransformationFn}}</em></p>
+ </div>
+
+ <script>
+
+ var EXAMPLE_VALUE = 'example value';
+
+ function transformer(transformationFn, value) {
+   return (transformationFn || angular.identity)(value);
+ }
+
+ function transformationFn(value) {
+   return 'The transformation function and the ' + value;
+ }
+
+ function Controller($scope) {
+   $scope.withTransformationFn = transformer(transformationFn, EXAMPLE_VALUE);
+   $scope.withoutTransformationFn = transformer(null, EXAMPLE_VALUE);
+ }
+ </script>
+ </doc:source>
+ </doc:example>
  */
 function identity($) {return $;}
 identity.$inject = [];
