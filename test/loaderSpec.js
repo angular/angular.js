@@ -86,7 +86,7 @@ describe('module loader', function() {
   it('should log warning when overriding module', function() {
     var warnings = [];
     spyOn(window.console, 'log').andCallFake(function(msg) {
-      warnings.push(msg); // uncolor
+      warnings.push(msg);
     });
 
     window.angular.module('randomModule', []);
