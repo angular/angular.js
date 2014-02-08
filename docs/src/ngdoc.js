@@ -1110,28 +1110,17 @@ function scenarios(docs){
   }
 }
 
-function writeProtractorTest(doc){
+function writeProtractorTest(doc, pathPrefix){
   var lines = [];
   lines.push('describe("' + doc.section + '/' + doc.id + '", function() {');
-  lines.push('  describe("angular+jqLite", function() {')
-  lines.push('    beforeEach(function() {');
-  lines.push('      browser.get("index-nocache.html#!/' + doc.section + '/' + doc.id + '");');
-  lines.push('    });');
+  lines.push('  beforeEach(function() {');
+  lines.push('    browser.get("' + pathPrefix + doc.section + '/' + doc.id + '");');
+  lines.push('  });');
   lines.push('');
   doc.protractorTests.forEach(function(test){
-    lines.push(indentCode(trim(test), 4));
+    lines.push(indentCode(trim(test), 0));
     lines.push('');
   });
-  lines.push('  });');
-  lines.push('  describe("angular+jQuery", function() {')
-  lines.push('    beforeEach(function() {');
-  lines.push('      browser.get("index-jq-nocache.html#!/' + doc.section + '/' + doc.id + '");');
-  lines.push('    });');
-  doc.protractorTests.forEach(function(test){
-    lines.push(indentCode(trim(test), 4));
-    lines.push('');
-  });
-  lines.push('  });');
   lines.push('});');
   lines.push('');
   return lines.join('\n');
