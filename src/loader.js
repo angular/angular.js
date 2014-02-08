@@ -87,7 +87,7 @@ function setupModuleLoader(window) {
       if (requires && modules.hasOwnProperty(name)) {
 
         if (window.console && window.console.log) {
-          window.console.log('Module ', name, ' will be overwritten by another implementation. ');
+          window.console.log('Module ', name, ' is being replaced by another implementation. ');
         }
         modules[name] = null;
       }
