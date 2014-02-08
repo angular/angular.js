@@ -32,8 +32,6 @@ grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-col
 
 # END TO END TESTS #
 grunt test:ci-protractor
-grunt test:ci-protractor --browser safari
-grunt test:ci-protractor --browser firefox
 
 # Promises/A+ TESTS #
 grunt test:promises-aplus --no-color
