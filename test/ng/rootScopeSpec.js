@@ -603,6 +603,10 @@ describe('Scope', function() {
           expect(log.empty()).toEqual([{newVal: [{}, []], oldVal: ['b', {}, []]}]);
         });
 
+        it('should not infinitely digest when current value is NaN', function() {
+          $rootScope.obj = [NaN];
+          $rootScope.$digest();
+        });
 
         it('should watch array-like objects like arrays', function () {
           var arrayLikelog = [];
