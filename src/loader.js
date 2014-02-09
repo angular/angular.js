@@ -86,8 +86,8 @@ function setupModuleLoader(window) {
       assertNotHasOwnProperty(name, 'module');
       if (requires && modules.hasOwnProperty(name)) {
 
-        if (window.console && window.console.log) {
-          window.console.log('Module ', name, ' is being replaced by another implementation. ');
+        if (window.console && window.console.warn) {
+          window.console.warn('Module ', name, ' is being replaced by another implementation. ');
         }
         modules[name] = null;
       }

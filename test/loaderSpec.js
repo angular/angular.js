@@ -4,7 +4,7 @@ describe('module loader', function() {
   var window;
 
   beforeEach(function () {
-    window = { console: { log: function() {} } };
+    window = { console: { warn: function() {} } };
     setupModuleLoader(window);
   });
 
@@ -85,13 +85,13 @@ describe('module loader', function() {
 
   it('should log warning when overriding module', function() {
     var warnings = [];
-    spyOn(window.console, 'log').andCallFake(function(msg) {
+    spyOn(window.console, 'warn').andCallFake(function(msg) {
       warnings.push(msg);
     });
 
     window.angular.module('randomModule', []);
     window.angular.module('randomModule', []);
 
-    expect(warnings.length).toEqual(window.angular.msie <= 8 ? 0 : 1);
+    expect(warnings.length).toEqual(1);
   })
 });
