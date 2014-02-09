@@ -584,8 +584,6 @@ describe('Scope', function() {
           $rootScope.obj[0] = NaN;
           $rootScope.$digest();
           expect(isNaN(log.shift())).toBe(true); //jasmine's toBe and toEqual don't work well with NaNs
-          //expect(log).toEqual([ ]);
-
         });
 
         it('should watch array-like objects like arrays', function () {
