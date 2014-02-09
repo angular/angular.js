@@ -92,6 +92,6 @@ describe('module loader', function() {
     window.angular.module('randomModule', []);
     window.angular.module('randomModule', []);
 
-    expect(warnings.length).toEqual(1);
+    expect(warnings.length).toEqual(angular.msie <= 8 ? 0 : 1);
   })
 });
