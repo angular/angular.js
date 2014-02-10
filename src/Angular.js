@@ -820,7 +820,7 @@ function equals(o1, o2, diff) {
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
-          if (!Array.isArray(diff)) {
+          if (!isArray(diff)) {
             skipDiff = true;
           }
           for(key=0; key<length; key++) {
@@ -844,7 +844,7 @@ function equals(o1, o2, diff) {
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2) || isArray(o2)) return false;
         keySet = {};
-        if (!Array.isArray(diff)) {
+        if (!isArray(diff)) {
           skipDiff = true;
         }
         for(key in o1) {
