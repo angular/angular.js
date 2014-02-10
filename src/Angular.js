@@ -380,33 +380,43 @@ noop.$inject = [];
    </pre>
  *
  * @example
- <doc:example>
- <doc:source>
- <div ng-controller="Controller">
- <p><strong>Transformer Function Return Results</strong></p>
- <p>With TransformationFn: <em>{{withTransformationFn}}</em></p>
- <p>Without TransformationFn: <em>{{withoutTransformationFn}}</em></p>
- </div>
+<example module="identityExample">
+ <file name="index.html">
+     <div ng-controller="identityExampleCtrl">
+     <p><strong>Transformer Function Return Results</strong></p>
+     <p>With TransformationFn: <em>{{withTransformationFn}}</em></p>
+     <p>Without TransformationFn: <em>{{withoutTransformationFn}}</em></p>
+     </div>
+ </file>
 
- <script>
+ <file name="script.js">
+     angular.module('identityExample', []).controller('identityExampleCtrl', ['$scope', function($scope){
 
- var EXAMPLE_VALUE = 'example value';
+       var EXAMPLE_VALUE = 'example value';
 
- function transformer(transformationFn, value) {
-   return (transformationFn || angular.identity)(value);
- }
+       function transformer(transformationFn, value) {
+         return (transformationFn || angular.identity)(value);
+       }
 
- function transformationFn(value) {
-   return 'The transformation function and the ' + value;
- }
+       function transformationFn(value) {
+         return 'The transformation function and the ' + value;
+       }
 
- function Controller($scope) {
-   $scope.withTransformationFn = transformer(transformationFn, EXAMPLE_VALUE);
-   $scope.withoutTransformationFn = transformer(null, EXAMPLE_VALUE);
- }
- </script>
- </doc:source>
- </doc:example>
+       $scope.withTransformationFn = transformer(transformationFn, EXAMPLE_VALUE);
+       $scope.withoutTransformationFn = transformer(null, EXAMPLE_VALUE);
+     }]);
+ </file>
+
+ <file name="protractorTest.js">
+     it('should check identity', function() {
+       var withTransformationFnElement = element(by.binding('withTransformationFn'));
+       var withoutTransformationFnElement = element(by.binding('withoutTransformationFn'));
+
+       expect(withTransformationFnElement.getText()).toBe('The transformation function and the example value');
+       expect(withoutTransformationFnElement.getText()).toBe('example value');
+     });
+ </file>
+</example>
  */
 function identity($) {return $;}
 identity.$inject = [];
