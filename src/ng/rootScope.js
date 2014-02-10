@@ -554,6 +554,7 @@ function $RootScopeProvider(){
             length,
             dirty, ttl = TTL,
             next, current, target = this,
+            diff = [],
             watchLog = [],
             logIdx, logMsg, asyncTask;
 
@@ -589,13 +590,17 @@ function $RootScopeProvider(){
                   if (watch) {
                     if ((value = watch.get(current)) !== (last = watch.last) &&
                         !(watch.eq
-                            ? equals(value, last)
+                            ? equals(value, last, diff)
                             : (typeof value == 'number' && typeof last == 'number'
                                && isNaN(value) && isNaN(last)))) {
                       dirty = true;
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value) : value;
-                      watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                      if (diff.length > 0) {
+                        watch.fn(value, ((last === initWatchVal) ? value : last), current, diff);
+                      } else {
+                        watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                      }
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
                         if (!watchLog[logIdx]) watchLog[logIdx] = [];
