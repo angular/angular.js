@@ -298,8 +298,8 @@ forEach(
  * Enables binding angular expressions to onsubmit events.
  *
  * Additionally it prevents the default action (which for form means sending the request to the
- * server and reloading the current page) **but only if the form does not contain an `action`
- * attribute**.
+ * server and reloading the current page), but only if the form does not contain `action`,
+ * `data-action`, or `x-action` attributes.
  *
  * @element form
  * @priority 0
