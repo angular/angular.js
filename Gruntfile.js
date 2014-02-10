@@ -4,17 +4,8 @@ var path = require('path');
 
 module.exports = function(grunt) {
   //grunt plugins
-  grunt.loadNpmTasks('grunt-bump');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-compress');
-  grunt.loadNpmTasks('grunt-jasmine-node');
-  grunt.loadNpmTasks('grunt-ddescribe-iit');
-  grunt.loadNpmTasks('grunt-merge-conflict');
-  grunt.loadNpmTasks('grunt-parallel');
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+  require('load-grunt-tasks')(grunt);
+
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
@@ -87,9 +78,7 @@ module.exports = function(grunt) {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
       docs: 'karma-docs.conf.js',
-      modules: 'karma-modules.conf.js',
-      //NOTE run grunt test:e2e instead and it will start a webserver for you
-      end2end: 'karma-e2e.conf.js'
+      modules: 'karma-modules.conf.js'
     },
 
 
@@ -101,8 +90,10 @@ module.exports = function(grunt) {
     },
 
 
-    runprotractor: {
-      normal: 'protractor-conf.js'
+    protractor: {
+      normal: 'protractor-conf.js',
+      jquery: 'protractor-jquery-conf.js',
+      jenkins: 'protractor-jenkins-conf.js'
     },
 
 
@@ -144,6 +135,13 @@ module.exports = function(grunt) {
       },
       ngTouch: {
         files: { src: 'src/ngTouch/**/*.js' },
+      }
+    },
+
+    jscs: {
+      src: ['src/**/*.js', 'test/**/*.js'],
+      options: {
+        config: ".jscs.json"
       }
     },
 
@@ -288,22 +286,22 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:e2e', 'webdriver', 'runprotractor:normal']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
-  grunt.registerTask('test:e2e', 'Run the end to end tests with Karma and keep a test server running in the background', ['connect:testserver', 'tests:end2end']);
-  // This should eventually replace test:e2e
-  grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'runprotractor:normal']);
+  grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
+  grunt.registerTask('test:jq-protractor', 'Run the end to end tests against jquery with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:jquery']);
+  grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
+  grunt.registerTask('test:e2e', 'Alias for test:protractor', ['test:protractor']);
   grunt.registerTask('test:docgen', ['jasmine_node']);
   grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter','shell:promises-aplus-tests']);
 
   grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('package-without-bower', ['clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'jscs']);
   grunt.registerTask('default', ['package']);
 };

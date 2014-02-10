@@ -3,6 +3,9 @@
 We'd love for you to contribute to our source code and to make AngularJS even better than it is
 today! Here are the guidelines we'd like you to follow:
 
+## Code of Conduct
+Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
+
 ## Got a Question or Problem?
 
 If you have questions about how to use AngularJS, please direct these to the [Google Group][groups]
@@ -258,5 +261,6 @@ You can find out more detailed information about contributing in the
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [github-pr-helper]: https://chrome.google.com/webstore/detail/github-pr-helper/mokbklfnaddkkbolfldepnkfmanfhpen
+[coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)

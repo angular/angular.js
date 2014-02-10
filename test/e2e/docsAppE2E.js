@@ -30,7 +30,6 @@ describe('docs.angularjs.org', function () {
       browser.sleep(500);
 
       var nameInput = element(by.input('user.name'));
-      nameInput.click();
       nameInput.sendKeys('!!!');
 
       var code = element(by.css('.doc-example-live tt'));

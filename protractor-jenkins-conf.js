@@ -2,13 +2,12 @@ exports.config = {
   allScriptsTimeout: 11000,
 
   specs: [
-    'build/docs/ptore2e/**/*jqlite_test.js',
+    'build/docs/ptore2e/**/*.js',
     'test/e2e/docsAppE2E.js'
   ],
 
   capabilities: {
-    'browserName': 'chrome',
-    'name': 'Angular E2E: jqlite'
+    'browserName': 'chrome'
   },
 
   baseUrl: 'http://localhost:8000/build/docs/',
@@ -24,9 +23,14 @@ exports.config = {
     };
 
     browser.addMockModule('disableNgAnimate', disableNgAnimate);
+
+    require('jasmine-reporters');
+    jasmine.getEnv().addReporter(
+      new jasmine.JUnitXmlReporter('test_out/e2e-' + this.capabilities.browserName + '-', true, true));
   },
 
   jasmineNodeOpts: {
-    defaultTimeoutInterval: 30000
+    defaultTimeoutInterval: 30000,
+    showColors: false
   }
 };

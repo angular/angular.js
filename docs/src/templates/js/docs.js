@@ -111,9 +111,6 @@ docsApp.serviceFactory.docsSearch = ['$rootScope','lunrSearch', 'NG_PAGES',
     angular.forEach(index.search(q), function(result) {
       var item = NG_PAGES[result.ref];
       var section = item.section;
-      if(section == 'cookbook') {
-        section = 'tutorial';
-      }
       results[section] = results[section] || [];
       if(results[section].length < 15) {
         results[section].push(item);
@@ -630,7 +627,6 @@ docsApp.serviceFactory.sections = ['NG_PAGES', function sections(NG_PAGES) {
     api: [],
     tutorial: [],
     misc: [],
-    cookbook: [],
     error: [],
     getPage: function(sectionId, partialId) {
       var pages = sections[sectionId];
@@ -675,7 +671,7 @@ docsApp.controller.DocsController = function($scope, $rootScope, $location, $win
     }
   };
   var OFFLINE_COOKIE_NAME = 'ng-offline',
-      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)|(error)/,
+      DOCS_PATH = /^\/(api)|(guide)|(misc)|(tutorial)|(error)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
       GLOBALS = /^angular\.([^\.]+)$/,
       ERROR = /^([a-zA-Z0-9_$]+:)?([a-zA-Z0-9_$]+)$/,
@@ -737,7 +733,6 @@ docsApp.controller.DocsController = function($scope, $rootScope, $location, $win
     guide: 'Developer Guide',
     misc: 'Miscellaneous',
     tutorial: 'Tutorial',
-    cookbook: 'Examples',
     error: 'Error Reference'
   };
 

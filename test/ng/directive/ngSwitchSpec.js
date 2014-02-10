@@ -223,7 +223,7 @@ describe('ngSwitch animations', function() {
     return element;
   }
 
-  beforeEach(module('mock.animate'));
+  beforeEach(module('ngAnimateMock'));
 
   beforeEach(module(function() {
     // we need to run animation on attached elements;
@@ -255,8 +255,9 @@ describe('ngSwitch animations', function() {
       $scope.val = 'one';
       $scope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('one');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('one');
   }));
 
 
@@ -276,17 +277,20 @@ describe('ngSwitch animations', function() {
       $scope.val = 'two';
       $scope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('two');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('two');
 
       $scope.val = 'three';
       $scope.$digest();
 
-      item = $animate.flushNext('leave').element;
-      expect(item.text()).toBe('two');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('leave');
+      expect(item.element.text()).toBe('two');
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('three');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('three');
   }));
 
 });

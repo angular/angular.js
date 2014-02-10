@@ -175,6 +175,9 @@ function JQLite(element) {
   if (element instanceof JQLite) {
     return element;
   }
+  if (isString(element)) {
+    element = trim(element);
+  }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
       throw jqLiteMinErr('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');

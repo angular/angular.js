@@ -51,7 +51,7 @@ exports.ngVersions = function() {
     });
 
   //match the future version of AngularJS that is set in the package.json file
-  return expandVersions(sortVersionsNatrually(versions), exports.ngCurrentVersion().full);
+  return expandVersions(sortVersionsNaturally(versions), exports.ngCurrentVersion().full);
 
   function expandVersions(versions, latestVersion) {
     var RC_VERSION = /rc\d/;
@@ -87,7 +87,7 @@ exports.ngVersions = function() {
     return expanded;
   };
 
-  function sortVersionsNatrually(versions) {
+  function sortVersionsNaturally(versions) {
     var versionMap = {},
         NON_RC_RELEASE_NUMBER = 999;
     for(var i = versions.length - 1; i >= 0; i--) {
@@ -1110,15 +1110,15 @@ function scenarios(docs){
   }
 }
 
-function writeProtractorTest(doc){
+function writeProtractorTest(doc, pathPrefix){
   var lines = [];
   lines.push('describe("' + doc.section + '/' + doc.id + '", function() {');
   lines.push('  beforeEach(function() {');
-  lines.push('    browser.get("index-nocache.html#!/' + doc.section + '/' + doc.id + '");');
+  lines.push('    browser.get("' + pathPrefix + doc.section + '/' + doc.id + '");');
   lines.push('  });');
   lines.push('');
   doc.protractorTests.forEach(function(test){
-    lines.push(indentCode(trim(test), 2));
+    lines.push(indentCode(trim(test), 0));
     lines.push('');
   });
   lines.push('});');

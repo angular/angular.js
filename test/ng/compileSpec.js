@@ -1128,6 +1128,26 @@ describe('$compile', function() {
         });
 
 
+        it('should copy classes from pre-template node into linked element', function() {
+          module(function() {
+            directive('test', valueFn({
+              templateUrl: 'test.html',
+              replace: true
+            }));
+          });
+          inject(function($compile, $templateCache, $rootScope) {
+            var child;
+            $templateCache.put('test.html', '<p class="template-class">Hello</p>');
+            element = $compile('<div test></div>')($rootScope, function(node) {
+              node.addClass('clonefn-class');
+            });
+            $rootScope.$digest();
+            expect(element).toHaveClass('template-class');
+            expect(element).toHaveClass('clonefn-class');
+          });
+        });
+
+
         describe('delay compile / linking functions until after template is resolved', function(){
           var template;
           beforeEach(module(function() {
@@ -4470,7 +4490,7 @@ describe('$compile', function() {
 
   describe('$animate animation hooks', function() {
 
-    beforeEach(module('mock.animate'));
+    beforeEach(module('ngAnimateMock'));
 
     it('should automatically fire the addClass and removeClass animation hooks',
       inject(function($compile, $animate, $rootScope) {
@@ -4486,8 +4506,9 @@ describe('$compile', function() {
         $rootScope.val2 = 'rice';
         $rootScope.$digest();
 
-        data = $animate.flushNext('addClass');
-        expect(data.params[1]).toBe('ice rice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('addClass');
+        expect(data.args[1]).toBe('ice rice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('rice')).toBe(true);
@@ -4496,10 +4517,12 @@ describe('$compile', function() {
         $rootScope.val2 = 'dice';
         $rootScope.$digest();
 
-        data = $animate.flushNext('removeClass');
-        expect(data.params[1]).toBe('rice');
-        data = $animate.flushNext('addClass');
-        expect(data.params[1]).toBe('dice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('removeClass');
+        expect(data.args[1]).toBe('rice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('addClass');
+        expect(data.args[1]).toBe('dice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('dice')).toBe(true);
@@ -4509,8 +4532,9 @@ describe('$compile', function() {
         $rootScope.val2 = '';
         $rootScope.$digest();
 
-        data = $animate.flushNext('removeClass');
-        expect(data.params[1]).toBe('ice dice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('removeClass');
+        expect(data.args[1]).toBe('ice dice');
 
         expect(element.hasClass('ice')).toBe(false);
         expect(element.hasClass('dice')).toBe(false);
