@@ -195,20 +195,20 @@ Let's refactor our example and move the currency conversion into a service in an
   <file name="finance2.js">
     angular.module('finance2', [])
       .factory('currencyConverter', function() {
-        var currencies = ['USD', 'EUR', 'CNY'],
-            usdToForeignRates = {
+        var currencies = ['USD', 'EUR', 'CNY'];
+        var usdToForeignRates = {
           USD: 1,
           EUR: 0.74,
           CNY: 6.09
         };
+        var convert = function (amount, inCurr, outCurr) {
+          return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
+        }
+
         return {
           currencies: currencies,
           convert: convert
         };
-
-        function convert(amount, inCurr, outCurr) {
-          return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
-        }
       });
   </file>
   <file name="invoice2.js">
@@ -325,21 +325,15 @@ The following example shows how this is done with Angular:
         var YAHOO_FINANCE_URL_PATTERN =
               'http://query.yahooapis.com/v1/public/yql?q=select * from '+
               'yahoo.finance.xchange where pair in ("PAIRS")&format=json&'+
-              'env=store://datatables.org/alltableswithkeys&callback=JSON_CALLBACK',
-            currencies = ['USD', 'EUR', 'CNY'],
-            usdToForeignRates = {};
-        refresh();
-        return {
-          currencies: currencies,
-          convert: convert,
-          refresh: refresh
-        };
+              'env=store://datatables.org/alltableswithkeys&callback=JSON_CALLBACK';
+        var currencies = ['USD', 'EUR', 'CNY'];
+        var usdToForeignRates = {};
 
-        function convert(amount, inCurr, outCurr) {
+        var convert = function (amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
         }
 
-        function refresh() {
+        var refresh = function() {
           var url = YAHOO_FINANCE_URL_PATTERN.
                      replace('PAIRS', 'USD' + currencies.join('","USD'));
           return $http.jsonp(url).success(function(data) {
@@ -351,6 +345,14 @@ The following example shows how this is done with Angular:
             usdToForeignRates = newUsdToForeignRates;
           });
         }
+
+        refresh();
+
+        return {
+          currencies: currencies,
+          convert: convert,
+          refresh: refresh
+        };
       }]);
   </file>
   <file name="index.html">
