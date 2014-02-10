@@ -120,7 +120,7 @@ different currencies and also pay the invoice.
           return this.convertCurrency(this.qty * this.cost, this.inCurr, outCurr);
         };
         this.convertCurrency = function convertCurrency(amount, inCurr, outCurr) {
-          return amount * this.usdToForeignRates[outCurr] * 1 / this.usdToForeignRates[inCurr];
+          return amount * this.usdToForeignRates[outCurr] / this.usdToForeignRates[inCurr];
         };
         this.pay = function pay() {
           window.alert("Thanks!");
@@ -207,7 +207,7 @@ Let's refactor our example and move the currency conversion into a service in an
         };
 
         function convert(amount, inCurr, outCurr) {
-          return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
+          return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
         }
       });
   </file>
@@ -336,7 +336,7 @@ The following example shows how this is done with Angular:
         };
 
         function convert(amount, inCurr, outCurr) {
-          return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
+          return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
         }
 
         function refresh() {
