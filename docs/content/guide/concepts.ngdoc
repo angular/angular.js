@@ -195,20 +195,23 @@ Let's refactor our example and move the currency conversion into a service in an
   <file name="finance2.js">
     angular.module('finance2', [])
       .factory('currencyConverter', function() {
+        
         var currencies = ['USD', 'EUR', 'CNY'],
             usdToForeignRates = {
           USD: 1,
           EUR: 0.74,
           CNY: 6.09
         };
+        
+        function convert(amount, inCurr, outCurr) {
+          return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
+        }
+        
         return {
           currencies: currencies,
           convert: convert
         };
-
-        function convert(amount, inCurr, outCurr) {
-          return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
-        }
+        
       });
   </file>
   <file name="invoice2.js">
@@ -329,12 +332,7 @@ The following example shows how this is done with Angular:
             currencies = ['USD', 'EUR', 'CNY'],
             usdToForeignRates = {};
         refresh();
-        return {
-          currencies: currencies,
-          convert: convert,
-          refresh: refresh
-        };
-
+        
         function convert(amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
         }
@@ -351,6 +349,13 @@ The following example shows how this is done with Angular:
             usdToForeignRates = newUsdToForeignRates;
           });
         }
+        
+        return {
+          currencies: currencies,
+          convert: convert,
+          refresh: refresh
+        };
+
       }]);
   </file>
   <file name="index.html">
