@@ -333,7 +333,7 @@ information.
 
 Dirty checking the scope for property changes is a common operation in Angular and for this reason
 the dirty checking function must be efficient. Care should be taken that the dirty checking
-function does not do any DOM access, as DOM access is orders of magnitude slower then property
+function does not do any DOM access, as DOM access is orders of magnitude slower than property
 access on JavaScript object.
 
 ## Integration with the browser event loop
