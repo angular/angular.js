@@ -54,18 +54,18 @@ Try out the Live Preview above, and then let's walk through the example and desc
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-databinding1.png">
 
 This looks like normal HTML, with some new markup. In Angular, a file like this is called a
-<a name="template">"{@link templates template}"</a>. When Angular starts your application, it parses and 
+<a name="template">"{@link templates template}"</a>. When Angular starts your application, it parses and
 processes this new markup from the template using the so called <a name="compiler">"{@link compiler compiler}"</a>.
 The loaded, transformed and rendered DOM is then called the <a name="view">"view"</a>.
 
 The first kind of new markup are the so called <a name="directive">"{@link directive directives}"</a>.
-They apply special behavior to attributes or elements in the HTML. In the example above we use the 
+They apply special behavior to attributes or elements in the HTML. In the example above we use the
 {@link api/ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
 initializes our application. Angular also defines a directive for the {@link api/ng.directive:input `input`}
-element that adds extra behavior to the element. E.g. it is able to automatically validate that the entered 
-text is non empty by evaluating the `required` attribute. 
+element that adds extra behavior to the element. E.g. it is able to automatically validate that the entered
+text is non empty by evaluating the `required` attribute.
 The {@link api/ng.directive:ngModel `ng-model`} directive stores/updates
-the value of the input field into/from a variable and shows the validation state of the input field by 
+the value of the input field into/from a variable and shows the validation state of the input field by
 adding css classes. In the example we use these css classes to mark an empty input field with a red border.
 
 <div class="alert alert-info">
