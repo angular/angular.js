@@ -70,6 +70,17 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should support deep predicate objects', function() {
+    var items = [{person: {name: 'John'}},
+                 {person: {name: 'Rita'}},
+                 {person: {name: 'Billy'}},
+                 {person: {name: 'Joan'}}];
+    expect(filter(items, {person: {name: 'Jo'}}).length).toBe(2);
+    expect(filter(items, {person: {name: 'Jo'}})).toEqual([
+      {person: {name: 'John'}}, {person: {name: 'Joan'}}]);
+  });
+
+
   it('should match any properties for given "$" property', function() {
     var items = [{first: 'tom', last: 'hevery'},
                  {first: 'adam', last: 'hevery', alias: 'tom', done: false},
