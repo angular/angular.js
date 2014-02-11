@@ -148,7 +148,7 @@ describe('PhoneCat controllers', function() {
     });
   });
 
-
+  beforeEach(module('phonecatApp'));
   beforeEach(module('phonecatServices'));
 
 
