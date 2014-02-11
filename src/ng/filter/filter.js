@@ -136,6 +136,15 @@ function filterFilter() {
         };
       } else {
         comparator = function(obj, text) {
+          if (obj && text && typeof obj === 'object' && typeof text === 'object') {
+            for (var objKey in obj) {
+              if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey) &&
+                  comparator(obj[objKey], text[objKey])) {
+                return true;
+              }
+            }
+            return false;
+          }
           text = (''+text).toLowerCase();
           return (''+obj).toLowerCase().indexOf(text) > -1;
         };
