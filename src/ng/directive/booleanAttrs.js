@@ -176,9 +176,9 @@
       </file>
       <file name="protractor.js" type="protractor">
         it('should toggle button', function() {
-          expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeFalsy();
+          expect(element(by.css('button')).getAttribute('disabled')).toBeFalsy();
           element(by.model('checked')).click();
-          expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeTruthy();
+          expect(element(by.css('button')).getAttribute('disabled')).toBeTruthy();
         });
       </file>
     </example>
@@ -246,9 +246,9 @@
       </file>
       <file name="protractor.js" type="protractor">
         it('should toggle readonly attr', function() {
-          expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeFalsy();
+          expect(element(by.css('[type="text"]')).getAttribute('readonly')).toBeFalsy();
           element(by.model('checked')).click();
-          expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeTruthy();
+          expect(element(by.css('[type="text"]')).getAttribute('readonly')).toBeTruthy();
         });
       </file>
     </example>

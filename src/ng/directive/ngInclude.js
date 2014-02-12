@@ -110,9 +110,9 @@
         top:50px;
       }
     </file>
-    <file name="protractorTest.js">
+    <file name="protractor.js" type="protractor">
       var templateSelect = element(by.model('template'));
-      var includeElem = element(by.css('.doc-example-live [ng-include]'));
+      var includeElem = element(by.css('[ng-include]'));
 
       it('should load template1.html', function() {
         expect(includeElem.getText()).toMatch(/Content of template1.html/);
