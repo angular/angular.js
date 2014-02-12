@@ -99,7 +99,7 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
        </table>
        </div>
    </file>
-   </file name="protractor.js" type="protractor">
+   <file name="protractor.js" type="protractor">
      it('should sanitize the html snippet by default', function() {
        expect(element(by.css('#bind-html-with-sanitize div')).getInnerHtml()).
          toBe('<p>an html\n<em>click here</em>\nsnippet</p>');

@@ -123,7 +123,7 @@
           </ng-pluralize>
         </div>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         it('should show correct pluralized string', function() {
           var withoutOffset = element.all(by.css('ng-pluralize')).get(0);
           var withOffset = element.all(by.css('ng-pluralize')).get(1);

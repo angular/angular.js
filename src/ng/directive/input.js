@@ -62,7 +62,7 @@ var inputType = {
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
         </file>
-        </file name="protractor.js" type="protractor">
+        <file name="protractor.js" type="protractor">
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
@@ -140,7 +140,7 @@ var inputType = {
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
         </file>
-        </file name="protractor.js" type="protractor">
+        <file name="protractor.js" type="protractor">
           var value = element(by.binding('value'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('value'));
@@ -215,7 +215,7 @@ var inputType = {
            <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
           </form>
         </file>
-        </file name="protractor.js" type="protractor">
+        <file name="protractor.js" type="protractor">
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
@@ -291,7 +291,7 @@ var inputType = {
              <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
            </form>
         </file>
-        </file name="protractor.js" type="protractor">
+        <file name="protractor.js" type="protractor">
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
@@ -355,7 +355,7 @@ var inputType = {
           </form>
           Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.
         </file>
-        </file name="protractor.js" type="protractor">
+        <file name="protractor.js" type="protractor">
           it('should change state', function() {
             var color = element(by.binding('color'));
 
@@ -402,7 +402,7 @@ var inputType = {
            <tt>value2 = {{value2}}</tt><br/>
           </form>
         </file>
-        </file name="protractor.js" type="protractor">
+        <file name="protractor.js" type="protractor">
           it('should change state', function() {
             var value1 = element(by.binding('value1'));
             var value2 = element(by.binding('value2'));
@@ -771,7 +771,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
          <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
        </div>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         var user = element(by.binding('{{user}}'));
         var userNameValid = element(by.binding('myForm.userName.$valid'));
         var lastNameValid = element(by.binding('myForm.lastName.$valid'));
@@ -1280,7 +1280,7 @@ var ngModelDirective = function() {
  *       <tt>counter = {{counter}}</tt><br/>
  *     </div>
  *   </file>
- *   </file name="protractor.js" type="protractor">
+ *   <file name="protractor.js" type="protractor">
  *     var counter = element(by.binding('counter'));
  *     var debug = element(by.binding('confirmed'));
  *
@@ -1372,7 +1372,7 @@ var requiredDirective = function() {
          <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
         </form>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         var listInput = element(by.model('names'));
         var names = element(by.binding('{{names}}'));
         var valid = element(by.binding('myForm.namesInput.$valid'));
@@ -1473,7 +1473,7 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
           <div>You chose {{my.favorite}}</div>
         </form>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         var favorite = element(by.binding('my.favorite'));
 
         it('should initialize to model', function() {

@@ -21,7 +21,7 @@
       </button>
       count: {{count}}
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should check ng-click', function() {
          expect(element(by.binding('count')).getText()).toMatch('0');
          element(by.css('.doc-example-live button')).click();
@@ -327,7 +327,7 @@ forEach(
         <pre>list={{list}}</pre>
       </form>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should check ng-submit', function() {
          expect(element(by.binding('list')).getText()).toBe('list=[]');
          element(by.css('.doc-example-live #submit')).click();

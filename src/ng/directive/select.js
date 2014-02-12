@@ -120,7 +120,7 @@ var ngOptionsMinErr = minErr('ngOptions');
           </div>
         </div>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
          it('should check ng-options', function() {
            expect(element(by.binding('{selected_color:color}')).getText()).toMatch('red');
            element.all(by.select('color')).first().click();

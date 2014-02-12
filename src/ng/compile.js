@@ -424,7 +424,7 @@
       <div compile="html"></div>
     </div>
    </file>
-   </file name="protractor.js" type="protractor">
+   <file name="protractor.js" type="protractor">
      it('should auto compile', function() {
        var textarea = $('textarea');
        var output = $('div[compile]');
