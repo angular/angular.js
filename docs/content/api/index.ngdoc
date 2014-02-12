@@ -51,7 +51,6 @@ This module is provided by default and contains the core components of AngularJS
         Some examples include:
           {@link ng.$compile $compile},
           {@link ng.$http $http},
-          {@link ngRoute.$routeParams $routeParams},
           {@link ng.$location $location},
           etc…
       <p>
