@@ -40,7 +40,8 @@
            return;
          }
          element(by.model('amount')).clear();
-         element(by.model('amount')).sendKeys('-1234');         expect(element(by.id('currency-default')).getText()).toBe('($1,234.00)');
+         element(by.model('amount')).sendKeys('-1234');
+         expect(element(by.id('currency-default')).getText()).toBe('($1,234.00)');
          expect(element(by.binding('amount | currency:"USD$"')).getText()).toBe('(USD$1,234.00)');
        });
      </doc:protractor>
