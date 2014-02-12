@@ -619,7 +619,7 @@ function $SceDelegateProvider() {
 ]
 </file>
 
-<file name="protractorTest.js">
+<file name="protractor.js" type="protractor">
   describe('SCE doc demo', function() {
     it('should sanitize untrusted values', function() {
       expect(element(by.css('.htmlComment')).getInnerHtml())

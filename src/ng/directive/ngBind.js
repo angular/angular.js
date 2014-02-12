@@ -40,13 +40,12 @@
      </file>
      <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
-         var exampleContainer = $('.doc-example-live');
          var nameInput = element(by.model('name'));
 
-         expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('Whirled');
+         expect(element(by.binding('name')).getText()).toBe('Whirled');
          nameInput.clear();
          nameInput.sendKeys('world');
-         expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('world');
+         expect(element(by.binding('name')).getText()).toBe('world');
        });
      </file>
    </example>
@@ -162,7 +161,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
        }]);
      </file>
 
-     <file name="protractorTest.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind-html', function() {
          expect(element(by.binding('myHTML')).getText()).toBe(
              'I am an HTMLstring with links! and other stuff');

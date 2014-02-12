@@ -343,17 +343,17 @@ function $RouteProvider(){
          }
        </file>
 
-       <file name="protractorTest.js">
+       <file name="protractor.js" type="protractor">
          it('should load and compile correct template', function() {
            element(by.linkText('Moby: Ch1')).click();
-           var content = element(by.css('.doc-example-live [ng-view]')).getText();
+           var content = element(by.css('[ng-view]')).getText();
            expect(content).toMatch(/controller\: ChapterCntl/);
            expect(content).toMatch(/Book Id\: Moby/);
            expect(content).toMatch(/Chapter Id\: 1/);
 
            element(by.partialLinkText('Scarlet')).click();
 
-           content = element(by.css('.doc-example-live [ng-view]')).getText();
+           content = element(by.css('[ng-view]')).getText();
            expect(content).toMatch(/controller\: BookCntl/);
            expect(content).toMatch(/Book Id\: Scarlet/);
          });
