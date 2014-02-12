@@ -71,4 +71,4 @@ myApp.directive('myDirective', function() {
 
 ```
 
-To learn more about Angular processing model please check out the {@link guide/concepts concepts doc} as well as the {@link api/ng.$rootScope.Scope api} doc.
+To learn more about Angular processing model please check out the {@link guide/concepts concepts doc} as well as the {@link ng.$rootScope.Scope api} doc.

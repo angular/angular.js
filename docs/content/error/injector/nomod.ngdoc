@@ -5,7 +5,7 @@
 
 This error occurs when trying to "re-open" a module that has not yet been defined.
 
-To define a new module, call {@link api/angular.module angular.module} with a name
+To define a new module, call {@link angular.module angular.module} with a name
 and an array of dependent modules, like so:
 
 ```

@@ -113,7 +113,7 @@ our filter tests execute. This call loads our `phonecatFilters` module into the 
 for this test run.
 
 Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
-access to the filter that we want to test.  See {@link api/angular.mock.inject angular.mock.inject()}.
+access to the filter that we want to test.  See {@link angular.mock.inject angular.mock.inject()}.
 
 You should now see the following output in the Karma tab:
 
@@ -122,7 +122,7 @@ You should now see the following output in the Karma tab:
 
 # Experiments
 
-* Let's experiment with some of the {@link api/ng.$filterProvider built-in Angular filters} and add the
+* Let's experiment with some of the {@link ng.$filterProvider built-in Angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`

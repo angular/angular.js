@@ -36,4 +36,4 @@ tutorials.
 ##Read more
 
 The AngularJS documentation includes the {@link guide/index Developer Guide} covering concepts and the
-{@link api/ API Reference} for syntax and usage.
+{@link ./api API Reference} for syntax and usage.

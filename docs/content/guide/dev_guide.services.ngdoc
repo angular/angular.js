@@ -17,4 +17,4 @@ objects that are wired together using {@link di dependency injection (DI)}.
 
 ## Related API
 
-* {@link api/ng Angular Service API}
+* {@link ./ng Angular Service API}
