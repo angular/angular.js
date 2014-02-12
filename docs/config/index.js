@@ -12,6 +12,7 @@ module.exports = function(config) {
     require('./processors/keywords'),
     require('./processors/versions-data'),
     require('./processors/pages-data'),
+    require('./processors/protractor-generate'),
     require('./processors/index-page')
   ]);
 
