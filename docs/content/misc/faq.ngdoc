@@ -79,7 +79,7 @@ in Angular.
 
 Yes, Angular can use [jQuery](http://jquery.com/) if it's present in your app when the
 application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
-to its own implementation of the subset of jQuery that we call {@link api/angular.element  jQLite}.
+to its own implementation of the subset of jQuery that we call {@link angular.element  jQLite}.
 
 Due to a change to use `on()`/`off()` rather than `bind()`/`unbind()`, Angular 1.2 only operates with
 jQuery 1.7.1 or above.
@@ -89,7 +89,7 @@ jQuery 1.7.1 or above.
 
 Very testable and designed this way from ground up. It has an integrated dependency injection
 framework, provides mocks for many heavy dependencies (server-side communication). See
-{@link api/ng service} for details.
+{@link ngMock} for details.
 
 
 ### How can I learn more about Angular?

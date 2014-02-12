@@ -9,4 +9,4 @@ it hard to reason about whether some combination of concatenated values are
 unsafe to use and could easily lead to XSS.
 
 For more information about how AngularJS helps keep your app secure, refer to
-the {@link api/ng.$sce $sce} API doc.
+the {@link ng.$sce $sce} API doc.

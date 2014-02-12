@@ -14,4 +14,4 @@ $scope.$watch('foo', function() {
 });
 ```
 
-The maximum number of allowed iterations of the `$digest` cycle is controlled via TTL setting which can be configured via {@link api/ng.$rootScopeProvider $rootScopeProvider}.
+The maximum number of allowed iterations of the `$digest` cycle is controlled via TTL setting which can be configured via {@link ng.$rootScopeProvider $rootScopeProvider}.

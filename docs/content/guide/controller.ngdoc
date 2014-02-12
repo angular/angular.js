@@ -7,7 +7,7 @@
 In Angular, a Controller is a JavaScript **constructor function** that is used to augment the 
 {@link scope Angular Scope}.
 
-When a Controller is attached to the DOM via the {@link api/ng.directive:ngController ng-controller}
+When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
 directive, Angular will instantiate a new Controller object, using the specified Controller's
 **constructor function**.  A new **child scope** will be available as an injectable parameter to the
 Controller's constructor function as `$scope`.
@@ -88,7 +88,7 @@ expression in the template:
 As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
 the scope are available in the template/view, and can be invoked via angular expressions
-and `ng` event handler directives (e.g. {@link api/ng.directive:ngClick ngClick}).
+and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
 
 # Using Controllers Correctly
 
@@ -117,8 +117,8 @@ services} instead.
 
 # Associating Controllers with Angular Scope Objects
 
-You can associate Controllers with scope objects implicitly via the {@link api/ng.directive:ngController ngController
-directive} or {@link api/ngRoute.$route $route service}.
+You can associate Controllers with scope objects implicitly via the {@link ng.directive:ngController ngController
+directive} or {@link ngRoute.$route $route service}.
 
 
 ## Simple Spicy Controller Example
@@ -206,7 +206,7 @@ input box) in the second button.
 ## Scope Inheritance Example
 
 It is common to attach Controllers at different levels of the DOM hierarchy.  Since the 
-{@link api/ng.directive:ngController ng-controller} directive creates a new child scope, we get a
+{@link ng.directive:ngController ng-controller} directive creates a new child scope, we get a
 hierarchy of scopes that inherit from each other.  The `$scope` that each Controller receives will
 have access to properties and methods defined by Controllers higher up the hierarchy.
 See [Understanding Scopes](https://github.com/angular/angular.js/wiki/Understanding-Scopes) for
@@ -267,7 +267,7 @@ examples, all of the properties could be replaced with methods that return strin
 ## Testing Controllers
 
 Although there are many ways to test a Controller, one of the best conventions, shown below,
-involves injecting the {@link api/ng.$rootScope $rootScope} and {@link api/ng.$controller $controller}:
+involves injecting the {@link ng.$rootScope $rootScope} and {@link ng.$controller $controller}:
 
 **Controller Definition:**
 ```js

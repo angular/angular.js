@@ -106,7 +106,7 @@ function $RouteProvider(){
    *
    *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
-   *        Otherwise if function, then it is {@link api/auto.$injector#invoke injected}
+   *        Otherwise if function, then it is {@link auto.$injector#invoke injected}
    *        and the return value is treated as the dependency. If the result is a promise, it is
    *        resolved before its value is injected into the controller. Be aware that
    *        `ngRoute.$routeParams` will still refer to the previous route within these resolve

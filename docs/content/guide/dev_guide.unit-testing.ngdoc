@@ -261,7 +261,7 @@ Notice that the test is not only much shorter, it is also easier to follow what 
 that such a test tells a story, rather then asserting random bits which don't seem to be related.
 
 ## Filters
-{@link api/ng.$filterProvider Filters} are functions which transform the data into a user readable
+{@link ng.$filterProvider Filters} are functions which transform the data into a user readable
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 

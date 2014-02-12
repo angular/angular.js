@@ -13,10 +13,10 @@ If you want a deeper look into Angular's compilation process, you're in the righ
 
 # Overview
 
-Angular's {@link api/ng.$compile HTML compiler} allows the developer to teach the
+Angular's {@link ng.$compile HTML compiler} allows the developer to teach the
 browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
 and even create new HTML elements or attributes with custom behavior. Angular calls these behavior
-extensions {@link api/ng.$compileProvider#methods_directive directives}.
+extensions {@link ng.$compileProvider#methods_directive directives}.
 
 HTML has a lot of constructs for formatting the HTML for static documents in a declarative fashion.
 For example if something needs to be centered, there is no need to provide instructions to the
@@ -48,7 +48,7 @@ process happens in two phases.
   scope model are reflected in the view, and any user interactions with the view are reflected
   in the scope model. This makes the scope model the single source of truth.
 
-Some directives such as {@link api/ng.directive:ngRepeat `ng-repeat`} clone DOM elements once
+Some directives such as {@link ng.directive:ngRepeat `ng-repeat`} clone DOM elements once
 for each item in a collection. Having a compile and link phase improves performance since the
 cloned template only needs to be compiled once, and then linked once for each clone instance.
 
@@ -164,7 +164,7 @@ Angular's `$compile` service.
 
 HTML compilation happens in three phases:
 
-  1. {@link api/ng.$compile `$compile`} traverses the DOM and matches directives.
+  1. {@link ng.$compile `$compile`} traverses the DOM and matches directives.
 
   If the compiler finds that an element matches a directive, then the directive is added to the list of
   directives that match the DOM element. A single element may match multiple directives.
@@ -178,7 +178,7 @@ HTML compilation happens in three phases:
 
   3. `$compile` links the template with the scope by calling the combined linking function from the previous step.
   This in turn will call the linking function of the individual directives, registering listeners on the elements
-  and setting up {@link api/ng.$rootScope.Scope#methods_$watch `$watch`s} with the {@link api/ng.$rootScope.Scope `scope`}
+  and setting up {@link ng.$rootScope.Scope#methods_$watch `$watch`s} with the {@link ng.$rootScope.Scope `scope`}
   as each directive is configured to do.
 
 The result of this is a live binding between the scope and the DOM. So at this point, a change in
@@ -240,10 +240,10 @@ Hello {{user}}, you have these actions:
 
 When the above example is compiled, the compiler visits every node and looks for directives.
 
-`{{user}}` matches the {@link api/ng.$interpolate interpolation directive}
-and `ng-repeat` matches the {@link api/ng.directive:ngRepeat `ngRepeat` directive}.
+`{{user}}` matches the {@link ng.$interpolate interpolation directive}
+and `ng-repeat` matches the {@link ng.directive:ngRepeat `ngRepeat` directive}.
 
-But {@link api/ng.directive:ngRepeat ngRepeat} has a dilemma.
+But {@link ng.directive:ngRepeat ngRepeat} has a dilemma.
 
 It needs to be able to clone new `<li>` elements for every `action` in `user.actions`.
 This initially seems trivial, but it becomes more complicated when you consider that `user.actions`
@@ -252,7 +252,7 @@ element for cloning purposes.
 
 As new `action`s are inserted, the template `<li>` element needs to be cloned and inserted into `ul`.
 But cloning the `<li>` element is not enough. It also needs to compile the `<li>` so that its
-directives, like `{{action.description}}`, evaluate against the right {@link api/ng.$rootScope.Scope scope}.
+directives, like `{{action.description}}`, evaluate against the right {@link ng.$rootScope.Scope scope}.
 
 
 A naive approach to solving this problem would be to simply insert a copy of the `<li>` element and
@@ -266,25 +266,25 @@ The solution is to break the compilation process into two phases:
 
 the **compile phase** where all of the directives are identified and sorted by priority,
 and a **linking phase** where any work which "links" a specific instance of the
-{@link api/ng.$rootScope.Scope scope} and the specific instance of an `<li>` is performed.
+{@link ng.$rootScope.Scope scope} and the specific instance of an `<li>` is performed.
 
 <div class="alert alert-warning">
 **Note:** *Link* means setting up listeners on the DOM and setting up `$watch` on the Scope to
 keep the two in sync.
 </div>
 
-{@link api/ng.directive:ngRepeat `ngRepeat`} works by preventing the compilation process from
+{@link ng.directive:ngRepeat `ngRepeat`} works by preventing the compilation process from
 descending into the `<li>` element so it can make a clone of the original and handle inserting
 and removing DOM nodes itself.
 
-Instead the {@link api/ng.directive:ngRepeat `ngRepeat`} directive compiles `<li>` separately.
+Instead the {@link ng.directive:ngRepeat `ngRepeat`} directive compiles `<li>` separately.
 The result of the `<li>` element compilation is a linking function which contains all of the
 directives contained in the `<li>` element, ready to be attached to a specific clone of the `<li>`
 element.
 
-At runtime the {@link api/ng.directive:ngRepeat `ngRepeat`} watches the expression and as items
+At runtime the {@link ng.directive:ngRepeat `ngRepeat`} watches the expression and as items
 are added to the array it clones the `<li>` element, creates a new
-{@link api/ng.$rootScope.Scope scope} for the cloned `<li>` element and calls the link function
+{@link ng.$rootScope.Scope scope} for the cloned `<li>` element and calls the link function
 on the cloned `<li>`.
 
 
