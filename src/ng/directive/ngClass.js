@@ -114,8 +114,8 @@ function classDirective(name, selector) {
            color: red;
        }
      </file>
-     <file name="protractorTest.js">
-       var ps = element.all(by.css('.doc-example-live p'));
+     <file name="protractor.js" type="protractor">
+       var ps = element.all(by.css('p'));
 
        it('should let you toggle the class', function() {
 
@@ -168,7 +168,7 @@ function classDirective(name, selector) {
          font-size:3em;
        }
      </file>
-     <file name="protractorTest.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-class', function() {
          expect(element(by.css('.base-class')).getAttribute('class')).not.
            toMatch(/my-class/);
@@ -232,7 +232,7 @@ var ngClassDirective = classDirective('', true);
          color: blue;
        }
      </file>
-     <file name="protractorTest.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-class-odd and ng-class-even', function() {
          expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
            toMatch(/odd/);
@@ -280,7 +280,7 @@ var ngClassOddDirective = classDirective('Odd', 0);
          color: blue;
        }
      </file>
-     <file name="protractorTest.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-class-odd and ng-class-even', function() {
          expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
            toMatch(/odd/);

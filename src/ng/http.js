@@ -631,7 +631,7 @@ function $HttpProvider() {
 <file name="http-hello.html">
   Hello, $http!
 </file>
-<file name="protractorTest.js">
+<file name="protractor.js" type="protractor">
   var status = element(by.binding('status'));
   var data = element(by.binding('data'));
   var fetchBtn = element(by.id('fetchbtn'));
