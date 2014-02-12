@@ -3,7 +3,7 @@
 @fullName Missing Hash Prefix
 @description
 
-This error occurs when {@link api/ng.$location $location} service is configured to use a hash prefix but this prefix was not present in a url that the `$location` service was asked to parse.
+This error occurs when {@link ng.$location $location} service is configured to use a hash prefix but this prefix was not present in a url that the `$location` service was asked to parse.
 
 For example if you configure `$location` service with prefix `'!'`:
 ```

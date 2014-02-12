@@ -27,7 +27,7 @@ In Angular applications, you move the job of filling page templates with data fr
 * {@link guide/databinding Data binding}
 * {@link guide/expression Expressions}
 * {@link guide/directive Directives}
-* {@link api/ngRoute.$route Views and routes (see the example)}
+* {@link ngRoute.$route Views and routes (see the example)}
 * {@link guide/filter Filters}
 * {@link guide/forms Forms} and [Concepts of AngularJS Forms](http://mrbool.com/the-concepts-of-angularjs-forms/29117)
 
@@ -36,14 +36,14 @@ In Angular applications, you move the job of filling page templates with data fr
 * **Blog post: **[When to use directives, controllers or services](http://kirkbushell.me/when-to-use-directives-controllers-or-services-in-angular/)
 * **App wiring:** {@link guide/di Dependency injection}
 * **Exposing model to templates:** {@link guide/scope Scopes}
-* **Communicating with servers:** {@link api/ng.$http $http}, {@link api/ngResource.$resource $resource}
+* **Communicating with servers:** {@link ng.$http $http}, {@link ngResource.$resource $resource}
 
 ### Other AngularJS Features
 
-* **Animation:** {@link guide/animations Core concepts}, {@link api/ngAnimate ngAnimate API}, and [Animation in AngularJS 1.2](http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html)
-* **Security:** {@link api/ng.$sce Strict Contextual Escaping}, {@link api/ng.directive:ngCsp Content Security Policy}, {@link api/ngSanitize.$sanitize $sanitize}, [video](https://www.youtube.com/watch?v=18ifoT-Id54)
-* **Internationalization and Localization:** {@link guide/i18n Angular Guide to i18n and l10n}, {@link api/ng.filter:date date filter}, {@link api/ng.filter:currency currency filter}, [Creating multilingual support](http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/)
-* **Mobile:** {@link api/ngTouch Touch events}
+* **Animation:** {@link guide/animations Core concepts}, {@link ngAnimate ngAnimate API}, and [Animation in AngularJS 1.2](http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html)
+* **Security:** {@link ng.$sce Strict Contextual Escaping}, {@link ng.directive:ngCsp Content Security Policy}, {@link ngSanitize.$sanitize $sanitize}, [video](https://www.youtube.com/watch?v=18ifoT-Id54)
+* **Internationalization and Localization:** {@link guide/i18n Angular Guide to i18n and l10n}, {@link ng.filter:date date filter}, {@link ng.filter:currency currency filter}, [Creating multilingual support](http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/)
+* **Mobile:** {@link ngTouch Touch events}
 
 ### Testing
 

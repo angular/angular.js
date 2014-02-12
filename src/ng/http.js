@@ -225,8 +225,8 @@ function $HttpProvider() {
      * called for such responses.
      *
      * # Writing Unit Tests that use $http
-     * When unit testing (using {@link api/ngMock ngMock}), it is necessary to call
-     * {@link api/ngMock.$httpBackend#methods_flush $httpBackend.flush()} to flush each pending
+     * When unit testing (using {@link ngMock ngMock}), it is necessary to call
+     * {@link ngMock.$httpBackend#methods_flush $httpBackend.flush()} to flush each pending
      * request using trained responses.
      *
      * ```

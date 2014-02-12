@@ -5,7 +5,7 @@
 A filter formats the value of an expression for display to the user. They can be used in view templates,
 controllers or services and it is easy to define your own filter.
 
-The underlying API is the {@link api/ng.$filterProvider filterProvider}.
+The underlying API is the {@link ng.$filterProvider filterProvider}.
 
 ## Using filters in view templates
 
@@ -13,7 +13,7 @@ Filters can be applied to expressions in view templates using the following synt
 
         {{ expression | filter }}
 
-E.g. the markup `{{ 12 | currency }}` formats the number 12 as a currency using the {@link api/ng.filter:currency `currency`}
+E.g. the markup `{{ 12 | currency }}` formats the number 12 as a currency using the {@link ng.filter:currency `currency`}
 filter. The resulting value is `$12.00`.
 
 Filters can be applied to the result of another filter. This is called "chaining" and uses
@@ -26,7 +26,7 @@ Filters may have arguments. The syntax for this is
         {{ expression | filter:argument1:argument2:... }}
 
 E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal points using the
-{@link api/ng.filter:number `number`} filter. The resulting value is `1,234.00`.
+{@link ng.filter:number `number`} filter. The resulting value is `1,234.00`.
 
 
 ## Using filters in controllers and services
@@ -36,7 +36,7 @@ to your controller or service. E.g. using the dependency `numberFilter` will inj
 The injected argument is a function that takes the value to format as first argument and filter parameters
 starting with the second argument.
 
-The example below uses the filter called {@link api/ng.filter:filter `filter`}.
+The example below uses the filter called {@link ng.filter:filter `filter`}.
 This filter reduces arrays into sub arrays based on
 conditions. The filter can be applied in the view template with markup like
 `{{ctrl.array | filter:'a'}}`, which would do a fulltext search for "a".
@@ -81,7 +81,7 @@ or the filter expression is changed).
 ## Creating custom filters
 
 Writing your own filter is very easy: just register a new filter factory function with
-your module. Internally, this uses the {@link api/ng.$filterProvider `filterProvider`}.
+your module. Internally, this uses the {@link ng.$filterProvider `filterProvider`}.
 This factory function should return a new filter function which takes the input value
 as the first argument. Any filter arguments are passed in as additional arguments to the filter
 function.

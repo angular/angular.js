@@ -7,7 +7,7 @@
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
-If you're looking for the **directives API**, we recently moved it to {@link api/ng.$compile `$compile`}.
+If you're looking for the **directives API**, we recently moved it to {@link ng.$compile `$compile`}.
 </div>
 
 
@@ -18,7 +18,7 @@ how to implement them.
 ## What are Directives?
 
 At a high level, directives are markers on a DOM element (such as an attribute, element
-name, or CSS class) that tell AngularJS's **HTML compiler** ({@link api/ng.$compile `$compile`}) to
+name, or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
 attach a specified behavior to that DOM element or even transform the DOM element and its children.
 
 Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngView`.
@@ -120,7 +120,7 @@ Doing so generally makes it easier to determine what directives a given element 
 <div class="alert alert-success">
 **Best Practice:** Comment directives were commonly used in places where the DOM API limits the
 ability to create directives that spanned multiple elements (e.g. inside `<table>` elements).
-AngularJS 1.2 introduces {@link api/ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`}
+AngularJS 1.2 introduces {@link ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`}
 as a better solution to this problem. Developers are encouraged to use this over custom comment
 directives when possible.
 </div>
@@ -129,10 +129,10 @@ directives when possible.
 
 ### Text and attribute bindings
 
-During the compilation process the {@link api/ng.$compile compiler} matches text and attributes
-using the {@link api/ng.$interpolate $interpolate} service to see if they contain embedded
-expressions. These expressions are registered as {@link api/ng.$rootScope.Scope#methods_$watch watches}
-and will update as part of normal {@link api/ng.$rootScope.Scope#methods_$digest digest} cycle. An
+During the compilation process the {@link ng.$compile compiler} matches text and attributes
+using the {@link ng.$interpolate $interpolate} service to see if they contain embedded
+expressions. These expressions are registered as {@link ng.$rootScope.Scope#methods_$watch watches}
+and will update as part of normal {@link ng.$rootScope.Scope#methods_$digest digest} cycle. An
 example of interpolation is shown below:
 
 ```html
@@ -174,7 +174,7 @@ For example, we could fix the example above by instead writing:
 
 ## Creating Directives
 
-First let's talk about the {@link api/ng.$compileProvider#methods_directive API for registering directives}. Much like
+First let's talk about the {@link ng.$compileProvider#methods_directive API for registering directives}. Much like
 controllers, directives are registered on modules. To register a directive, you use the
 `module.directive` API. `module.directive` takes the
 {@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
@@ -183,9 +183,9 @@ options to tell `$compile` how the directive should behave when matched.
 
 
 The factory function is invoked only once when the
-{@link api/ng.$compile compiler} matches the directive for the first time. You can perform any
+{@link ng.$compile compiler} matches the directive for the first time. You can perform any
 initialization work here. The function is invoked using
-{@link api/AUTO.$injector#methods_invoke $injector.invoke} which makes it injectable just like a
+{@link auto.$injector#methods_invoke $injector.invoke} which makes it injectable just like a
 controller.
 
 <div class="alert alert-success">
@@ -324,9 +324,9 @@ Let's change our directive to use `restrict: 'E'`:
 </example>
 
 For more on the
-{@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
+{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
 property, see the
-{@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
+{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
 
 <div class="alert alert-info">
 **When should I use an attribute versus an element?**
@@ -912,6 +912,6 @@ point for creating your own directives.
 You might also be interested in an in-depth explanation of the compilation process that's
 available in the {@link guide/compiler compiler guide}.
 
-The {@link api/ng.$compile `$compile` API} page has a comprehensive list of directive options for
+The {@link ng.$compile `$compile` API} page has a comprehensive list of directive options for
 reference.
 

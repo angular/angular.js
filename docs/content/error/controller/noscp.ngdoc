@@ -3,7 +3,7 @@
 @fullName Missing $scope object
 @description
 
-This error occurs when {@link api/ng.$controller $controller} service is called in order to instantiate a new controller but no scope is provided via `$scope` property of the locals map.
+This error occurs when {@link ng.$controller $controller} service is called in order to instantiate a new controller but no scope is provided via `$scope` property of the locals map.
 
 Example of incorrect usage that leads to this error:
 ```
@@ -18,4 +18,4 @@ To fix the example above please provide a scope to the $controller call:
 $controller(MyController, {$scope, newScope});
 ```
 
-Please consult the {@link api/ng.$controller $controller} service api docs to learn more.
+Please consult the {@link ng.$controller $controller} service api docs to learn more.
