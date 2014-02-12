@@ -40,7 +40,7 @@
          <pane title="{{title}}">{{text}}</pane>
        </div>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
         it('should have transcluded', function() {
           var titleElement = element(by.model('title'));
           titleElement.clear();

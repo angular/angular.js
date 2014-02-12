@@ -76,7 +76,7 @@
          </tr>
        </table>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        var expectFriendNames = function(expectedNames, key) {
          element.all(by.repeater(key + ' in friends').column(key + '.name')).then(function(arr) {
            arr.forEach(function(wd, i) {

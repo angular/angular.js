@@ -44,7 +44,7 @@
      </div>
    </div>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should alias index positions', function() {
          var elements = element.all(by.css('.example-init'));
          expect(elements.get(0).getText()).toBe('list[ 0 ][ 0 ] = a;');

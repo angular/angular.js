@@ -31,7 +31,7 @@ var $interpolateMinErr = minErr('$interpolate');
     //demo.label//
 </div>
 </file>
-</file name="protractor.js" type="protractor">
+<file name="protractor.js" type="protractor">
   it('should interpolate binding with custom symbols', function() {
     expect(element(by.binding('demo.label')).getText()).toBe('This binding is brought you by // interpolation symbols.');
   });

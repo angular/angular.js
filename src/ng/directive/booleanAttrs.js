@@ -41,7 +41,7 @@
         <a id="link-5" name="xxx" ng-click="value = 5">anchor</a> (no link)<br />
         <a id="link-6" ng-href="{{value}}">link</a> (link, change location)
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         it('should execute ng-click but not reload when href without value', function() {
           element(by.id('link-1')).click();
           expect(element(by.model('value')).getAttribute('value')).toEqual('1');
@@ -174,7 +174,7 @@
         Click me to toggle: <input type="checkbox" ng-model="checked"><br/>
         <button ng-model="button" ng-disabled="checked">Button</button>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         it('should toggle button', function() {
           expect(element(by.css('.doc-example-live button')).getAttribute('disabled')).toBeFalsy();
           element(by.model('checked')).click();
@@ -209,7 +209,7 @@
         Check me to check both: <input type="checkbox" ng-model="master"><br/>
         <input id="checkSlave" type="checkbox" ng-checked="master">
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         it('should check both checkBoxes', function() {
           expect(element(by.id('checkSlave')).getAttribute('checked')).toBeFalsy();
           element(by.model('master')).click();
@@ -244,7 +244,7 @@
         Check me to make text readonly: <input type="checkbox" ng-model="checked"><br/>
         <input type="text" ng-readonly="checked" value="I'm Angular"/>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         it('should toggle readonly attr', function() {
           expect(element(by.css('.doc-example-live [type="text"]')).getAttribute('readonly')).toBeFalsy();
           element(by.model('checked')).click();
@@ -283,7 +283,7 @@
           <option id="greet" ng-selected="selected">Greetings!</option>
         </select>
       </file>
-      </file name="protractor.js" type="protractor">
+      <file name="protractor.js" type="protractor">
         it('should select Greetings!', function() {
           expect(element(by.id('greet')).getAttribute('selected')).toBeFalsy();
           element(by.model('selected')).click();
@@ -319,7 +319,7 @@
             <summary>Show/Hide me</summary>
          </details>
        </file>
-       </file name="protractor.js" type="protractor">
+       <file name="protractor.js" type="protractor">
          it('should toggle open', function() {
            expect(element(by.id('details')).getAttribute('open')).toBeFalsy();
            element(by.model('open')).click();

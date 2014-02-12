@@ -82,7 +82,7 @@
        </ul>
       </div>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should check controller as', function() {
          var container = element(by.id('ctrl-as-exmpl'));
 
@@ -159,7 +159,7 @@
        </ul>
       </div>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should check controller', function() {
          var container = element(by.id('ctrl-exmpl'));
 

@@ -38,7 +38,7 @@
          Hello <span ng-bind="name"></span>!
        </div>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
          var exampleContainer = $('.doc-example-live');
          var nameInput = element(by.model('name'));
@@ -94,7 +94,7 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
         <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
        </div>
      </file>
-     </file name="protractor.js" type="protractor">
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
          var salutationElem = element(by.binding('salutation'));
          var salutationInput = element(by.model('salutation'));
