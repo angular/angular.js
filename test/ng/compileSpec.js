@@ -541,6 +541,14 @@ describe('$compile', function() {
             replace: true,
             template: '<tfoot><tr><td>TD</td></tr></tfoot>'
           }));
+          directive('replaceWithNonInterpolatedStyle', valueFn({
+            replace: true,
+            template: '<div style="color: red;">Replace with non-interpolated style!</div>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
         }));
 
 
@@ -634,6 +642,13 @@ describe('$compile', function() {
               expect(element.css('width')).toBe('2px');
           }));
         }
+
+        it('should handle non-interpolated css style from replacing directive', inject(
+          function($compile, $rootScope) {
+            element = $compile('<div replace-with-non-interpolated-style></div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.attr('style')).toMatch(/^color\: red;?$/ig);
+          }));
 
         it('should merge interpolated css class', inject(function($compile, $rootScope) {
           element = $compile('<div class="one {{cls}} three" replace></div>')($rootScope);
