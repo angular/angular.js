@@ -1,5 +1,4 @@
 var path = require('canonical-path');
-var gruntUtils = require('../lib/grunt/utils');
 var basePath = __dirname;
 
 var basePackage = require('./config');
@@ -13,19 +12,9 @@ module.exports = function(config) {
     { pattern: '**/*.ngdoc', basePath: path.resolve(basePath, 'content') }
   ]);
 
-  var version = gruntUtils.getVersion();
-  var versions = gruntUtils.getPreviousVersions();
-  config.set('source.currentVersion', version);
-  config.set('source.previousVersions', versions);
-
   config.set('processing.examples.commonFiles', {
     scripts: [ '../../../angular.js' ],
     stylesheets: []
-  });
-
-  config.merge('rendering.extra', {
-    git: gruntUtils.getGitRepoInfo(),
-    version: version
   });
 
   config.set('rendering.outputFolder', '../build/docs');
