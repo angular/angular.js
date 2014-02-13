@@ -2563,8 +2563,8 @@ describe("ngAnimate", function() {
     });
 
 
-    it("should disable all child animations on structural animations until the post animation timeout has passed", function() {
-      var intercepted;
+    it("should disable all child animations on structural animations until the post animation timeout has passed as well as all structural animations", function() {
+      var intercepted, continueAnimation;
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
           return {
@@ -2578,7 +2578,10 @@ describe("ngAnimate", function() {
           function ani(type) {
             return function(element, className, done) {
               intercepted = type;
-              (done || className)();
+              continueAnimation = function() {
+                continueAnimation = angular.noop;
+                (done || className)();
+              }
             }
           }
         });
@@ -2595,26 +2598,45 @@ describe("ngAnimate", function() {
         var child2 = $compile('<div class="child2 animated">...</div>')($rootScope);
         var container = $compile('<div class="container">...</div>')($rootScope);
 
-        jqLite($document[0].body).append($rootElement);
+        var body = angular.element($document[0].body);
+        body.append($rootElement);
         $rootElement.append(container);
         element.append(child1);
         element.append(child2);
+
+        $animate.enter(element, container);
+        $rootScope.$digest();
+
+        expect(intercepted).toBe('enter');
+        continueAnimation();
+
+        $animate.addClass(child1, 'test');
+        expect(child1.hasClass('test')).toBe(true);
+
+        expect(element.children().length).toBe(2);
+
+        expect(intercepted).toBe('enter');
+        $animate.leave(child1);
+        $rootScope.$digest();
+
+        expect(element.children().length).toBe(1);
+
+        expect(intercepted).toBe('enter');
 
         $animate.move(element, null, container);
         $rootScope.$digest();
 
         expect(intercepted).toBe('move');
 
-        $animate.addClass(child1, 'test');
-        expect(child1.hasClass('test')).toBe(true);
+        //flush the enter reflow
+        $timeout.flush();
 
-        expect(intercepted).toBe('move');
-        $animate.leave(child1);
-        $rootScope.$digest();
-
+        $animate.addClass(child2, 'testing');
         expect(intercepted).toBe('move');
 
-        //reflow has passed
+        continueAnimation();
+
+        //flush the move reflow
         $timeout.flush();
 
         $animate.leave(child2);
