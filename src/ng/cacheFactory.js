@@ -6,9 +6,9 @@
  *
  * @description
  * Factory that constructs cache objects and gives access to them.
- *
+ * 
  * <pre>
- *
+ * 
  *  var cache = $cacheFactory('cacheId');
  *  expect($cacheFactory.get('cacheId')).toBe(cache);
  *  expect($cacheFactory.get('noSuchCacheId')).not.toBeDefined();
@@ -17,8 +17,8 @@
  *  cache.put("another key", "another value");
  *
  *  // We've specified no options on creation
- *  expect(cache.info()).toEqual({id: 'cacheId', size: 2});
- *
+ *  expect(cache.info()).toEqual({id: 'cacheId', size: 2}); 
+ * 
  * </pre>
  *
  *
@@ -208,7 +208,7 @@ function $CacheFactoryProvider() {
  * The first time a template is used, it is loaded in the template cache for quick retrieval. You
  * can load templates directly into the cache in a `script` tag, or by consuming the
  * `$templateCache` service directly.
- *
+ * 
  * Adding via the `script` tag:
  * <pre>
  * <html ng-app>
@@ -220,29 +220,29 @@ function $CacheFactoryProvider() {
  *   ...
  * </html>
  * </pre>
- *
+ * 
  * **Note:** the `script` tag containing the template does not need to be included in the `head` of
  * the document, but it must be below the `ng-app` definition.
- *
+ * 
  * Adding via the $templateCache service:
- *
+ * 
  * <pre>
  * var myApp = angular.module('myApp', []);
  * myApp.run(function($templateCache) {
  *   $templateCache.put('templateId.html', 'This is the content of the template');
  * });
  * </pre>
- *
+ * 
  * To retrieve the template later, simply use it in your HTML:
  * <pre>
  * <div ng-include=" 'templateId.html' "></div>
  * </pre>
- *
+ * 
  * or get it via Javascript:
  * <pre>
  * $templateCache.get('templateId.html')
  * </pre>
- *
+ * 
  * See {@link ng.$cacheFactory $cacheFactory}.
  *
  */
