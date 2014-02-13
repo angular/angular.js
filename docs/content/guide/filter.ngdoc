@@ -29,12 +29,12 @@ E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal p
 {@link ng.filter:number `number`} filter. The resulting value is `1,234.00`.
 
 
-## Using filters in controllers and services
+## Using filters in controllers, services, and directives
 
-You can also use filters in controllers and services. For this, add a dependency with the name `<filterName>Filter`
-to your controller or service. E.g. using the dependency `numberFilter` will inject the number filter.
-The injected argument is a function that takes the value to format as first argument and filter parameters
-starting with the second argument.
+You can also use filters in controllers, services, and directives. For this, inject a dependency
+with the name `<filterName>Filter` to your controller/service/directive. E.g. using the dependency
+`numberFilter` will inject the number filter. The injected argument is a function that takes the
+value to format as first argument and filter parameters starting with the second argument.
 
 The example below uses the filter called {@link ng.filter:filter `filter`}.
 This filter reduces arrays into sub arrays based on
