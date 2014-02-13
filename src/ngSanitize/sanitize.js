@@ -53,7 +53,7 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  * @returns {string} Sanitized html.
  *
  * @example
-   <example module="ngSanitize">
+   <example module="ngSanitize" deps="angular-sanitize.js">
    <file name="index.html">
      <script>
        function Ctrl($scope, $sce) {
