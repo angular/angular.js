@@ -21,7 +21,7 @@
    <span ng-bind-html="linky_expression | linky"></span>
  *
  * @example
-   <example module="ngSanitize">
+   <example module="ngSanitize" deps="angular-sanitize.js">
      <file name="index.html">
        <script>
          function Ctrl($scope) {

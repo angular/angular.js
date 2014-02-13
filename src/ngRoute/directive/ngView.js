@@ -36,7 +36,7 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
  *                  - Otherwise enable scrolling only if the `autoscroll` attribute value evaluated
  *                    as an expression yields a truthy value.
  * @example
-    <example module="ngViewExample" deps="angular-route.js" animations="true">
+    <example module="ngViewExample" deps="angular-route.js;angular-animate.js" animations="true">
       <file name="index.html">
         <div ng-controller="MainCntl as main">
           Choose:

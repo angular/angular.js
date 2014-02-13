@@ -15,7 +15,7 @@ Animations are not available unless you include the {@link ngAnimate `ngAnimate`
 
 Below is a quick example of animations being enabled for `ngShow` and `ngHide`:
 
-<example animations="true">
+<example module="ngAnimate" deps="angular-animate.js" animations="true">
   <file name="index.html">
     <div ng-init="checked=true">
       <label>
@@ -214,7 +214,7 @@ able to capture class changes if an **expression** or the **ng-class** directive
 
 The example below shows how to perform animations during class changes:
 
-<example animations="true">
+<example module="ngAnimate" deps="angular-animate.js" animations="true">
  <file name="index.html">
   <p>
     <input type="button" value="set" ng-click="myCssVar='css-class'">
