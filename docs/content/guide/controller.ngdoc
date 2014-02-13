@@ -136,7 +136,7 @@ string "very". Depending on which button is clicked, the `spice` model is set to
 
 <example module="spicyApp1">
   <file name="index.html">
-    <div ng-app="spicyApp1" ng-controller="SpicyCtrl">
+    <div ng-controller="SpicyCtrl">
      <button ng-click="chiliSpicy()">Chili</button>
      <button ng-click="jalapenoSpicy()">Jalapeño</button>
      <p>The food is {{spice}} spicy!</p>
@@ -177,7 +177,7 @@ previous example.
 
 <example module="spicyApp2">
   <file name="index.html">
-  <div ng-app="spicyApp2" ng-controller="SpicyCtrl">
+  <div ng-controller="SpicyCtrl">
    <input ng-model="customSpice">
    <button ng-click="spicy('chili')">Chili</button>
    <button ng-click="spicy(customSpice)">Custom spice</button>
@@ -214,7 +214,7 @@ more information about scope inheritance.
 
 <example module="scopeInheritance">
   <file name="index.html">
-    <div ng-app="scopeInheritance" class="spicy">
+    <div class="spicy">
       <div ng-controller="MainCtrl">
         <p>Good {{timeOfDay}}, {{name}}!</p>
 
