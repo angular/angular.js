@@ -14,7 +14,7 @@ describe('$interval', function() {
           nextTime:(now + delay),
           delay: delay,
           fn: fn,
-          id: nextRepeatId,
+          id: nextRepeatId
         });
         repeatFns.sort(function(a,b){ return a.nextTime - b.nextTime;});
 
