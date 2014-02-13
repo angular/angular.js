@@ -424,7 +424,8 @@ var inputType = {
   'hidden': noop,
   'button': noop,
   'submit': noop,
-  'reset': noop
+  'reset': noop,
+  'file': noop
 };
 
 // A helper function to call $setValidity and return the value / undefined,
