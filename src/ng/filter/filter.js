@@ -197,7 +197,7 @@ function filterFilter() {
           (function(path) {
             if (typeof expression[path] == 'undefined') return;
             predicates.push(function(value) {
-              return search(path == '$' ? value : (value && value[path]), expression[path]);
+              return search(path == '$' ? value : ( (value && value[path]) || getter(value, path)), expression[path]);
             });
           })(key);
         }
