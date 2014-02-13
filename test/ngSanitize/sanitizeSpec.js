@@ -410,6 +410,27 @@ describe('HTML', function() {
       expect(sanitizeText('a<div>&</div>c')).toEqual('a&lt;div&gt;&amp;&lt;/div&gt;c');
     });
   });
+
+  describe('sanitizeExt', function() {
+    beforeEach(function() {
+      var sanitizeExt;
+      inject(function($sanitizeExt) {
+        sanitizeExt = $sanitizeExt;
+      });
+      sanitizeExt.addSafeElements('audio,video,a:custom');
+      sanitizeExt.addSafeAttributes('autoplay,custom');
+    });
+
+    it('should extend valid tags', function() {
+      expectHTML('a<audio src="abc"></audio>c').toEqual('a<audio src="abc"></audio>c');
+      expectHTML('a<video src="abc"></video>c').toEqual('a<video src="abc"></video>c');
+      expectHTML('a<a:custom>b</a:custom>c').toEqual('a<a:custom>b</a:custom>c');
+    });
+    it('should extend valid attributes', function() {
+      expectHTML('a<div autoplay="true" custom="y" class="b" unknown="x"></div>c').toEqual('a<div autoplay="true" custom="y" class="b"></div>c');
+    });
+
+  });
 });
 
 describe('decodeEntities', function() {

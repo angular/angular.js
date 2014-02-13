@@ -46,7 +46,9 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
  *   browser, won't make it through the sanitizer.
  *   The whitelist is configured using the functions `aHrefSanitizationWhitelist` and
- *   `imgSrcSanitizationWhitelist` of {@link ng.$compileProvider `$compileProvider`}.
+ *   `imgSrcSanitizationWhitelist` of {@link ng.$compileProvider `$compileProvider`}
+ *   as well as the functions `addSafeElements` and `addSafeAttributes` of
+ *   {@link ngSanitize.$sanitizeExt `$sanitizeExt`}.
  *
  * @param {string} html Html input.
  * @returns {string} Sanitized html.
@@ -201,6 +203,12 @@ var validElements = angular.extend({},
                                    inlineElements,
                                    optionalEndTagElements);
 
+//Unsupported elements:
+// audio,base,body,button,canvas,command,data,datalist,details,dialog,embed,
+// fieldset,form,head,html,iframe,input,keygen,legend,link,meta,meter,
+// noscript,object,optgroup,option,output,param,progress,select,source,
+// summary,textarea,title,track,video
+
 //Attributes that have href and hence need to be sanitized
 var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap");
 var validAttrs = angular.extend({}, uriAttrs, makeMap(
@@ -216,6 +224,43 @@ function makeMap(str) {
   return obj;
 }
 
+/**
+ * @ngdoc object
+ * @name ngSanitize.$sanitizeExt
+ *
+ * @description
+ *   Extends the safe token whitelists used by the {@link ngSanitize.$sanitize `$sanitize`} service.
+*/
+function $SanitizeExtFactory() {
+  return {
+    /**
+     * @ngdoc method
+     * @name ngSanitize.$sanitizeExt#addSafeElements
+     * @methodOf ngSanitize.$sanitizeExt
+     *
+     * @description
+     * Extends the default HTML element whitelist used during sanitization.
+     * @param {string} elements Comma-separated list of tag names to add to the whitelist.
+     */
+    addSafeElements: function(elements) {
+      var map = makeMap(elements);
+      angular.extend(blockElements, map);
+      angular.extend(validElements, map);
+    },
+    /**
+     * @ngdoc method
+     * @name ngSanitize.$sanitizeExt#addSafeAttributes
+     * @methodOf ngSanitize.$sanitizeExt
+     *
+     * @description
+     * Extends the default attribute whitelist used during sanitization.
+     * @param {string} attrs Comma-separated list of attribute names to add to the whitelist.
+     */
+    addSafeAttributes: function(attrs) {
+      angular.extend(validAttrs, makeMap(attrs));
+    }
+  };
+}
 
 /**
  * @example
@@ -464,4 +509,6 @@ function htmlSanitizeWriter(buf, uriValidator){
 
 
 // define ngSanitize module and register $sanitize service
-angular.module('ngSanitize', []).provider('$sanitize', $SanitizeProvider);
+angular.module('ngSanitize', [])
+.provider('$sanitize', $SanitizeProvider)
+.factory('$sanitizeExt', $SanitizeExtFactory);
