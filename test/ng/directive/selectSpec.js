@@ -617,6 +617,25 @@ describe('select', function() {
       expect(element.find('option').length).toEqual(1); // we add back the special empty option
     });
 
+    it('should select correct option when list is shrunk ', function() {
+      createSingleSelect();
+
+      scope.$apply(function() {
+        scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+        scope.selected = null
+      });
+
+      expect(element.find('option').length).toEqual(4);
+      element.find('option').eq(1).prop('selected', true);
+      browserTrigger(element, 'change');
+      expect(scope.selected).toEqual({name: 'A'})
+      var A = element.find('option').eq(0)
+      expect(A.prop('value')).toEqual('0')
+      expect(!!A.prop('selected')).toEqual(true)
+      var B = element.find('option').eq(1)
+      expect(B.prop('value')).toEqual('1')
+      expect(!!B.prop('selected')).toEqual(false)
+    });
 
     it('should shrink and then grow list', function() {
       createSingleSelect();
