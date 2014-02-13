@@ -206,7 +206,7 @@
           </li>
         </ul>
         <div id="loading" ng-show="loading">Loading...</div>
-        <div ng-hide="loading" ng-include="currentPage.outputPath" autoscroll></div>
+        <div ng-hide="loading" ng-include="currentPage.outputPath" onload="afterPartialLoaded()"  autoscroll></div>
       </div>
     </div>
   </section>
