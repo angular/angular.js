@@ -2,6 +2,7 @@
 
 /**
  * @ngdoc function
+ * @module ng
  * @name angular.injector
  * @function
  *
