@@ -90,6 +90,7 @@ var inputType = {
       </doc:example>
    */
   'text': textInputType,
+  'textarea': textInputType,
 
 
   /**
@@ -419,12 +420,7 @@ var inputType = {
         </doc:protractor>
       </doc:example>
    */
-  'checkbox': checkboxInputType,
-
-  'hidden': noop,
-  'button': noop,
-  'submit': noop,
-  'reset': noop
+  'checkbox': checkboxInputType
 };
 
 // A helper function to call $setValidity and return the value / undefined,
@@ -830,8 +826,11 @@ var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
     require: '?ngModel',
     link: function(scope, element, attr, ctrl) {
       if (ctrl) {
-        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
-                                                            $browser);
+        var type = element.prop('type');
+
+        if (inputType[type]) {
+          inputType[type](scope, element, attr, ctrl, $sniffer, $browser);
+        }
       }
     }
   };
