@@ -16,6 +16,7 @@ module.exports = function(config) {
     scripts: [ '../../../angular.js' ],
     stylesheets: []
   });
+  config.set('processing.examples.dependencyPath', '../../..');
 
   config.set('rendering.outputFolder', '../build/docs');
 
