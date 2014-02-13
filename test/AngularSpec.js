@@ -1128,4 +1128,15 @@ describe('angular', function() {
       });
     }));
   });
+  
+  describe('isEmptyObject', function() {
+    it('should return true for empty object', function() {
+      expect(isEmptyObject({})).toBe(true);
+      expect(isEmptyObject(null).toBe(true);
+    });
+
+    it('should return false for non empty object', function() {
+      expect(isEmptyObject({a:1}).toBe(false);
+    });
+  });
 });
