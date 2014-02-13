@@ -268,6 +268,20 @@ angular.module('ngAnimate', ['ng'])
     };
   }])
 
+  .factory('$$asyncQueueBuffer', ['$timeout', function($timeout) {
+    var timer, queue = [];
+    return function(fn) {
+      $timeout.cancel(timer);
+      queue.push(fn);
+      timer = $timeout(function() {
+        for(var i = 0; i < queue.length; i++) {
+          queue[i]();
+        }
+        queue = [];
+      }, 0, false);
+    };
+  }])
+
   .config(['$provide', '$animateProvider', function($provide, $animateProvider) {
     var noop = angular.noop;
     var forEach = angular.forEach;
@@ -291,9 +305,10 @@ angular.module('ngAnimate', ['ng'])
       return extractElementNode(elm1) == extractElementNode(elm2);
     }
 
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope', '$document',
-                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope,   $document) {
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$$asyncQueueBuffer', '$rootScope', '$document',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $$asyncQueueBuffer,    $rootScope,   $document) {
 
+      var globalAnimationCounter = 0;
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       // disable animations during bootstrap, but once we bootstrapped, wait again
@@ -314,10 +329,6 @@ angular.module('ngAnimate', ['ng'])
               : function(className) {
                 return classNameFilter.test(className);
               };
-
-      function async(fn) {
-        return $timeout(fn, 0, false);
-      }
 
       function lookup(name) {
         if (name) {
@@ -685,7 +696,6 @@ angular.module('ngAnimate', ['ng'])
         if(ngAnimateState.running) {
           //if an animation is currently running on the element then lets take the steps
           //to cancel that animation and fire any required callbacks
-          $timeout.cancel(ngAnimateState.closeAnimationTimeout);
           cleanup(element);
           cancelAnimations(ngAnimateState.animations);
 
@@ -736,12 +746,15 @@ angular.module('ngAnimate', ['ng'])
         //parent animations to find and cancel child animations when needed
         element.addClass(NG_ANIMATE_CLASS_NAME);
 
+        var localAnimationCount = globalAnimationCounter++;
+
         element.data(NG_ANIMATE_STATE, {
           running:true,
           event:animationEvent,
           className:className,
           structural:!isClassBased,
           animations:animations,
+          index:localAnimationCount,
           done:onBeforeAnimationsComplete
         });
 
@@ -816,19 +829,19 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function fireBeforeCallbackAsync() {
-          async(function() {
+          $$asyncQueueBuffer(function() {
             fireDOMCallback('before');
           });
         }
 
         function fireAfterCallbackAsync() {
-          async(function() {
+          $$asyncQueueBuffer(function() {
             fireDOMCallback('after');
           });
         }
 
         function fireDoneCallbackAsync() {
-          async(function() {
+          $$asyncQueueBuffer(function() {
             fireDOMCallback('close');
             doneCallback && doneCallback();
           });
@@ -855,8 +868,11 @@ angular.module('ngAnimate', ['ng'])
               if(isClassBased) {
                 cleanup(element);
               } else {
-                data.closeAnimationTimeout = async(function() {
-                  cleanup(element);
+                $$asyncQueueBuffer(function() {
+                  var data = element.data(NG_ANIMATE_STATE) || {};
+                  if(localAnimationCount == data.index) {
+                    cleanup(element);
+                  }
                 });
                 element.data(NG_ANIMATE_STATE, data);
               }
