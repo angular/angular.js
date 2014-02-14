@@ -706,7 +706,7 @@ angular.module('ngAnimate', ['ng'])
           if(ngAnimateState.beforeComplete || isRevertingClassAnimation) {
             (ngAnimateState.done || noop)(true);
           } else if(isFullyClassBasedAnimation) {
-            //class-based animations will compare element className values after cancelling the
+            //class-based animations will compare element className values after canceling the
             //previous animation to see if the element properties already contain the final CSS
             //class and if so then the animation will be skipped. Since the domOperation will
             //be performed only after the reflow is complete then our element's className value
@@ -834,7 +834,7 @@ angular.module('ngAnimate', ['ng'])
           });
         }
 
-        //it is less complicated to use a flag than managing and cancelling
+        //it is less complicated to use a flag than managing and canceling
         //timeouts containing multiple callbacks.
         function fireDOMOperation() {
           if(!fireDOMOperation.hasBeenRun) {
