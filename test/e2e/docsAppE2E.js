@@ -16,24 +16,27 @@ describe('docs.angularjs.org', function () {
     it('should change the page content when clicking a link to a service', function () {
       browser.get('');
 
-      var ngBindLink = element(by.css('.definition-table td a[href="api/ng.directive:ngClick"]'));
+      var ngBindLink = element(by.css('.definition-table td a[href="api/ng/directive/ngClick"]'));
       ngBindLink.click();
 
-      var pageBody = element(by.css('.content h1 code'));
+      var pageBody = element(by.css('h1'));
       expect(pageBody.getText()).toEqual('ngClick');
     });
 
 
     it('should show the functioning input directive example', function () {
-      browser.get('index-nocache.html#!/api/ng.directive:input');
+      browser.get('index-debug.html#!/api/ng/directive/input');
+
       //Wait for animation
       browser.sleep(500);
+
+      browser.switchTo().frame('example-input-directive');
 
       var nameInput = element(by.input('user.name'));
       nameInput.sendKeys('!!!');
 
-      var code = element(by.css('.doc-example-live tt'));
+      var code = element(by.css('tt'));
       expect(code.getText()).toContain('guest!!!');
     });
   });
-})
+});

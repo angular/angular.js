@@ -39,7 +39,7 @@ var inputType = {
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
    *
    * @example
-      <example>
+      <example name="text-input-directive">
         <file name="index.html">
          <script>
            function Ctrl($scope) {
@@ -119,7 +119,7 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <example>
+      <example name="number-input-directive">
         <file name="index.html">
          <script>
            function Ctrl($scope) {
@@ -194,7 +194,7 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <example>
+      <example name="url-input-directive">
         <file name="index.html">
          <script>
            function Ctrl($scope) {
@@ -270,7 +270,7 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <example>
+      <example name="email-input-directive">
         <file name="index.html">
          <script>
            function Ctrl($scope) {
@@ -336,7 +336,7 @@ var inputType = {
    *    be set when selected.
    *
    * @example
-      <example>
+      <example name="radio-input-directive">
         <file name="index.html">
          <script>
            function Ctrl($scope) {
@@ -386,7 +386,7 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <example>
+      <example name="checkbox-input-directive">
         <file name="index.html">
          <script>
            function Ctrl($scope) {
@@ -740,7 +740,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *    interaction with the input element.
  *
  * @example
-    <example>
+    <example name="input-directive">
       <file name="index.html">
        <script>
          function Ctrl($scope) {
@@ -897,7 +897,7 @@ var VALID_CLASS = 'ng-valid',
  * Note that `contenteditable` is an HTML5 attribute, which tells the browser to let the element
  * contents be edited in place by the user.  This will not work on older browsers.
  *
- * <example module="customControl">
+ * <example name="NgModelController" module="customControl">
     <file name="style.css">
       [contenteditable] {
         border: 1px solid black;
@@ -1262,7 +1262,7 @@ var ngModelDirective = function() {
  * in input value.
  *
  * @example
- * <example>
+ * <example name="ngChange-directive">
  *   <file name="index.html">
  *     <script>
  *       function Controller($scope) {
@@ -1353,7 +1353,7 @@ var requiredDirective = function() {
  *   specified in form `/something/` then the value will be converted into a regular expression.
  *
  * @example
-    <example>
+    <example name="ngList-directive">
       <file name="index.html">
        <script>
          function Ctrl($scope) {
@@ -1452,7 +1452,7 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  *   of the `input` element
  *
  * @example
-    <example>
+    <example name="ngValue-directive">
       <file name="index.html">
        <script>
           function Ctrl($scope) {
