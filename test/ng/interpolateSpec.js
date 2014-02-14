@@ -2,15 +2,14 @@
 
 describe('$interpolate', function() {
 
-  it('should return a function when there are no bindings and textOnly is undefined',
+  it('should return a function when there are no bindings and mustHaveExpression is undefined',
       inject(function($interpolate) {
     expect(typeof $interpolate('some text')).toBe('function');
   }));
 
-
-  it('should return undefined when there are no bindings and textOnly is set to true',
+  it('should return null when there are no bindings and mustHaveExpression is set to true',
       inject(function($interpolate) {
-    expect($interpolate('some text', true)).toBeUndefined();
+    expect($interpolate('some text', true)).toBeNull();
   }));
 
   it('should suppress falsy objects', inject(function($interpolate) {
@@ -70,7 +69,7 @@ describe('$interpolate', function() {
   describe('interpolating in a trusted context', function() {
     var sce;
     beforeEach(function() {
-      function log() {};
+      function log() {}
       var fakeLog = {log: log, warn: log, info: log, error: log};
       module(function($provide, $sceProvider) {
         $provide.value('$log', fakeLog);
@@ -274,4 +273,80 @@ describe('$interpolate', function() {
     }));
   });
 
+  describe('custom $$beWatched', function () {
+    it('should call the listener correctly when values change during digest',
+        inject(function ($rootScope, $interpolate) {
+      var count = 0, value;
+      $rootScope.$watch($interpolate('{{a}}-{{b}}'), function (_value) {
+        switch(++count) {
+          case 1:
+          case 2:
+            $rootScope.a++;
+            break;
+          case 3:
+          case 4:
+            $rootScope.b++;
+            break;
+          case 5:
+            value = _value;
+            break;
+        }
+      });
+      $rootScope.$apply("a=0;b=0");
+      expect(value).toBe("2-2");
+      expect(count).toBe(5);
+    }));
+
+    it('should call the listener correctly when the interpolation is watched multiple times',
+        inject(function ($rootScope, $interpolate) {
+      var interpolateFn = $interpolate('{{a}}-{{b}}'), count = 0;
+      $rootScope.$watch(interpolateFn, function(){
+        count++;
+      });
+      $rootScope.$watch(interpolateFn, function(){
+        count++;
+      });
+
+      $rootScope.$apply("a=0;b=0");
+      expect(count).toBe(2);
+
+      $rootScope.$apply("a=1;b=1");
+      expect(count).toBe(4);
+    }));
+
+    it('should call the listener only once per whole text change', inject(function ($rootScope, $interpolate) {
+      var count = 0, value;
+      $rootScope.$watch($interpolate("{{a}}-{{b}}"), function (_value){
+        count++;
+        value = _value;
+      });
+
+      $rootScope.$apply();
+      expect(count).toBe(1);
+      expect(value).toBe('-');
+
+      $rootScope.$apply('a=1;b=1');
+      expect(count).toBe(2);
+      expect(value).toBe('1-1');
+
+      // one changes
+      $rootScope.$apply('a=2');
+      expect(count).toBe(3);
+      expect(value).toBe('2-1');
+
+      $rootScope.$apply('b=2');
+      expect(count).toBe(4);
+      expect(value).toBe('2-2');
+
+      // both change
+      $rootScope.$apply('a=3;b=3');
+      expect(count).toBe(5);
+      expect(value).toBe('3-3');
+
+      // nothing changes
+      $rootScope.$apply();
+      expect(count).toBe(5);
+      expect(value).toBe('3-3');
+    }));
+  });
 });
