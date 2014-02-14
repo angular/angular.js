@@ -767,8 +767,7 @@ describe('ngView animations', function() {
         $rootScope.klass = 'boring';
         $rootScope.$digest();
 
-        expect($animate.queue.shift().event).toBe('removeClass');
-        expect($animate.queue.shift().event).toBe('addClass');
+        expect($animate.queue.shift().event).toBe('setClass');
 
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
