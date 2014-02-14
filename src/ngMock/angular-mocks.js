@@ -782,7 +782,8 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
         }
       };
 
-      angular.forEach(['enter','leave','move','addClass','removeClass'], function(method) {
+      angular.forEach(
+        ['enter','leave','move','addClass','removeClass','setClass'], function(method) {
         animate[method] = function() {
           animate.queue.push({
             event : method,

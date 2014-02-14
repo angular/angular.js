@@ -491,7 +491,7 @@ describe("ngAnimate", function() {
             $animate.triggerReflow();
 
             //this is to verify that the existing style is appended with a semicolon automatically 
-            expect(child.attr('style')).toMatch(/width: 20px;.+?/i);
+            expect(child.attr('style')).toMatch(/width: 20px;.*?/i);
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
           
@@ -564,7 +564,7 @@ describe("ngAnimate", function() {
           });
         });
 
-        it("should fire the cancel/end function with the correct flag in the parameters",
+        it("should not apply a cancellation when addClass is done multiple times",
           inject(function($animate, $rootScope, $sniffer, $timeout) {
 
           element.append(child);
@@ -572,7 +572,7 @@ describe("ngAnimate", function() {
           $animate.addClass(child, 'custom-delay');
           $animate.addClass(child, 'custom-long-delay');
 
-          expect(child.hasClass('animation-cancelled')).toBe(true);
+          expect(child.hasClass('animation-cancelled')).toBe(false);
           expect(child.hasClass('animation-ended')).toBe(false);
 
           $timeout.flush();
@@ -763,7 +763,6 @@ describe("ngAnimate", function() {
               element.removeClass('ng-hide');
               $animate.addClass(element, 'ng-hide');
               expect(element.hasClass('ng-hide-remove')).toBe(false); //added right away
-
 
               if($sniffer.animations) { //cleanup some pending animations
                 $animate.triggerReflow();
@@ -1472,6 +1471,8 @@ describe("ngAnimate", function() {
 
           expect(flag).toBe(true);
           expect(element.parent().id).toBe(parent2.id);
+
+          dealoc(element);
         }));
 
 
@@ -1620,11 +1621,12 @@ describe("ngAnimate", function() {
           var element = parent.find('span');
 
           var flag = false;
-          $animate.removeClass(element, 'ng-hide', function() {
+          $animate.addClass(element, 'ng-hide', function() {
             flag = true;
           });
 
           if($sniffer.transitions) {
+            $animate.triggerReflow();
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
           $timeout.flush();
@@ -2734,42 +2736,6 @@ describe("ngAnimate", function() {
     });
 
 
-    it("should cancel an ongoing class-based animation only if the new class contains transition/animation CSS code",
-      inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
-
-      if (!$sniffer.transitions) return;
-
-      ss.addRule('.green-add', '-webkit-transition:1s linear all;' +
-                                       'transition:1s linear all;');
-
-      ss.addRule('.blue-add', 'background:blue;');
-
-      ss.addRule('.red-add', '-webkit-transition:1s linear all;' +
-                                     'transition:1s linear all;');
-
-      ss.addRule('.yellow-add', '-webkit-animation: some_animation 4s linear 1s 2 alternate;' +
-                                        'animation: some_animation 4s linear 1s 2 alternate;');
-
-      var element = $compile('<div></div>')($rootScope);
-      $rootElement.append(element);
-      jqLite($document[0].body).append($rootElement);
-
-      $animate.addClass(element, 'green');
-      expect(element.hasClass('green-add')).toBe(true);
-   
-      $animate.addClass(element, 'blue');
-      expect(element.hasClass('blue')).toBe(true); 
-      expect(element.hasClass('green-add')).toBe(true); //not cancelled
-
-      $animate.addClass(element, 'red');
-      expect(element.hasClass('green-add')).toBe(false);
-      expect(element.hasClass('red-add')).toBe(true);
-
-      $animate.addClass(element, 'yellow');
-      expect(element.hasClass('red-add')).toBe(false); 
-      expect(element.hasClass('yellow-add')).toBe(true);
-    }));
-
 
     it("should cancel and perform the dom operation only after the reflow has run",
       inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
@@ -2837,7 +2803,7 @@ describe("ngAnimate", function() {
         $animate.removeClass(element, 'on');
         $animate.addClass(element, 'on');
 
-        expect(currentAnimation).toBe(null);
+        expect(currentAnimation).toBe('addClass');
       });
     });
 
@@ -3259,7 +3225,7 @@ describe("ngAnimate", function() {
       expect(ready).toBe(true);
     }));
 
-    it('should avoid skip animations if the same CSS class is added / removed synchronously before the reflow kicks in',
+    it('should immediately close the former animation if the same CSS class is added/removed',
       inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
 
       if (!$sniffer.transitions) return;
@@ -3281,28 +3247,15 @@ describe("ngAnimate", function() {
         signature += 'B';
       });
 
-      $timeout.flush(1);
-      expect(signature).toBe('AB');
-
-      signature = '';
-      $animate.removeClass(element, 'on', function() {
-        signature += 'A';
-      });
-      $animate.addClass(element, 'on', function() {
-        signature += 'B';
-      });
-      $animate.removeClass(element, 'on', function() {
-        signature += 'C';
-      });
-
-      $timeout.flush(1);
-      expect(signature).toBe('AB');
-
       $animate.triggerReflow();
+
+      $timeout.flush(1);
+      expect(signature).toBe('A');
+
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2000 });
       $timeout.flush(1);
 
-      expect(signature).toBe('ABC');
+      expect(signature).toBe('AB');
     }));
   });
 });
