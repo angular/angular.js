@@ -97,6 +97,23 @@ describe('jqLite', function() {
     });
   });
 
+  describe('_data', function() {
+    it('should provide access to the data present on the element', function() {
+      var element = jqLite('<i>foo</i>');
+      var data = ['value'];
+      element.data('val', data);
+      expect(angular.element._data(element[0]).data.val).toBe(data);
+      dealoc(element);
+    });
+
+    it('should provide access to the events present on the element', function() {
+      var element = jqLite('<i>foo</i>');
+      expect(angular.element._data(element[0]).events).toBeUndefined();
+
+      element.on('click', function() { });
+      expect(angular.element._data(element[0]).events.click).toBeDefined();
+    });
+  });
 
   describe('inheritedData', function() {
 
