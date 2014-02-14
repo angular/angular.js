@@ -482,7 +482,7 @@ describe("ngAnimate", function() {
 
           element.append(child);
           child.attr('style', 'width: 20px');
-          
+
           $animate.addClass(child, 'ng-hide');
           $animate.leave(child);
           $rootScope.$digest();
@@ -490,11 +490,11 @@ describe("ngAnimate", function() {
           if($sniffer.transitions) {
             $animate.triggerReflow();
 
-            //this is to verify that the existing style is appended with a semicolon automatically 
+            //this is to verify that the existing style is appended with a semicolon automatically
             expect(child.attr('style')).toMatch(/width: 20px;.*?/i);
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
-          
+
           expect(child.attr('style')).toMatch(/width: 20px/i);
         }));
 
@@ -523,7 +523,7 @@ describe("ngAnimate", function() {
 
           var completed = false;
           $animate.enter(child, element, null, function() {
-            completed = true; 
+            completed = true;
           });
           $rootScope.$digest();
 
@@ -783,19 +783,19 @@ describe("ngAnimate", function() {
             $animate.enabled(true);
 
             ss.addRule('.real-animation.ng-enter, .real-animation.ng-leave, .real-animation-fake.ng-enter, .real-animation-fake.ng-leave',
-              '-webkit-animation:1s my_animation;' + 
+              '-webkit-animation:1s my_animation;' +
               'animation:1s my_animation;');
 
             ss.addRule('.real-animation.ng-enter-stagger, .real-animation.ng-leave-stagger',
               '-webkit-animation-delay:0.1s;' +
               '-webkit-animation-duration:0s;' +
-              'animation-delay:0.1s;' + 
+              'animation-delay:0.1s;' +
               'animation-duration:0s;');
 
             ss.addRule('.fake-animation.ng-enter-stagger, .fake-animation.ng-leave-stagger',
               '-webkit-animation-delay:0.1s;' +
               '-webkit-animation-duration:1s;' +
-              'animation-delay:0.1s;' + 
+              'animation-delay:0.1s;' +
               'animation-duration:1s;');
 
             var container = $compile(html('<div></div>'))($rootScope);
@@ -850,7 +850,7 @@ describe("ngAnimate", function() {
             $animate.enabled(true);
 
             ss.addRule('.stagger-animation.ng-enter, .stagger-animation.ng-leave',
-              '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
+              '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' +
               'animation:my_animation 1s 1s, your_animation 1s 2s;');
 
             ss.addRule('.stagger-animation.ng-enter-stagger, .stagger-animation.ng-leave-stagger',
@@ -1074,19 +1074,19 @@ describe("ngAnimate", function() {
             $animate.enabled(true);
 
             ss.addRule('.real-animation.ng-enter, .real-animation.ng-leave, .real-animation-fake.ng-enter, .real-animation-fake.ng-leave',
-              '-webkit-transition:1s linear all;' + 
+              '-webkit-transition:1s linear all;' +
               'transition:1s linear all;');
 
             ss.addRule('.real-animation.ng-enter-stagger, .real-animation.ng-leave-stagger',
               '-webkit-transition-delay:0.1s;' +
               '-webkit-transition-duration:0s;' +
-              'transition-delay:0.1s;' + 
+              'transition-delay:0.1s;' +
               'transition-duration:0s;');
 
             ss.addRule('.fake-animation.ng-enter-stagger, .fake-animation.ng-leave-stagger',
               '-webkit-transition-delay:0.1s;' +
               '-webkit-transition-duration:1s;' +
-              'transition-delay:0.1s;' + 
+              'transition-delay:0.1s;' +
               'transition-duration:1s;');
 
             var container = $compile(html('<div></div>'))($rootScope);
@@ -1142,7 +1142,7 @@ describe("ngAnimate", function() {
             $animate.enabled(true);
 
             ss.addRule('.stagger-animation.ng-enter, .ani.ng-leave',
-              '-webkit-transition:1s linear color 2s, 3s linear font-size 4s;' + 
+              '-webkit-transition:1s linear color 2s, 3s linear font-size 4s;' +
               'transition:1s linear color 2s, 3s linear font-size 4s;');
 
             ss.addRule('.stagger-animation.ng-enter-stagger, .ani.ng-leave-stagger',
@@ -1234,7 +1234,7 @@ describe("ngAnimate", function() {
 
           it("should not allow the closing animation to close off a successive animation midway",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
-          
+
             if (!$sniffer.transitions) return;
 
             ss.addRule('.some-class-add', '-webkit-transition:5s linear all;' +
@@ -1272,9 +1272,9 @@ describe("ngAnimate", function() {
           $animate.enabled(true);
 
           ss.addRule('.stagger-animation.ng-enter, .stagger-animation.ng-leave',
-            '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
+            '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' +
             'animation:my_animation 1s 1s, your_animation 1s 2s;' +
-            '-webkit-transition:1s linear all 1s;' + 
+            '-webkit-transition:1s linear all 1s;' +
             'transition:1s linear all 1s;');
 
           ss.addRule('.stagger-animation.ng-enter-stagger, .stagger-animation.ng-leave-stagger',
@@ -1544,7 +1544,7 @@ describe("ngAnimate", function() {
           expect(steps.shift()).toEqual(['close', 'klass', 'addClass']);
 
           expect(steps.shift()).toEqual(['done', 'klass', 'addClass']);
-        })); 
+        }));
 
         it('should fire the DOM callbacks even if no animation is rendered',
           inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
@@ -1572,7 +1572,7 @@ describe("ngAnimate", function() {
 
           expect(steps.shift()).toEqual(['before', 'ng-enter', 'enter']);
           expect(steps.shift()).toEqual(['after',  'ng-enter', 'enter']);
-        })); 
+        }));
 
         it('should not fire DOM callbacks on the element being animated unless registered',
           inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
@@ -2551,7 +2551,7 @@ describe("ngAnimate", function() {
           }
         });
       });
-        
+
       inject(function($compile, $rootScope, $animate, $timeout, $rootElement) {
         $animate.enabled(true);
 
@@ -2832,7 +2832,7 @@ describe("ngAnimate", function() {
 
 
     it('should perform pre and post animations', function() {
-      var steps = []; 
+      var steps = [];
       module(function($animateProvider) {
         $animateProvider.register('.class-animate', function() {
           return {
@@ -2861,7 +2861,7 @@ describe("ngAnimate", function() {
 
 
     it('should treat the leave event always as a before event and discard the beforeLeave function', function() {
-      var parentID, steps = []; 
+      var parentID, steps = [];
       module(function($animateProvider) {
         $animateProvider.register('.animate', function() {
           return {
@@ -3080,7 +3080,7 @@ describe("ngAnimate", function() {
         var element = $compile('<div>' +
                                ' <div ng-repeat="item in items"' +
                                '      ng-include="tpl"' +
-                               '      class="special"></div>' + 
+                               '      class="special"></div>' +
                                '</div>')($rootScope);
 
         ss.addRule('.special', '-webkit-transition:1s linear all;' +
