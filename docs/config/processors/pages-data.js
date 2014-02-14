@@ -33,7 +33,7 @@ var navGroupMappers = {
       .groupBy('module')
 
       .map(function(modulePages, moduleName) {
-        console.log('moduleName', moduleName);
+        log.debug('moduleName: ' + moduleName);
         var navItems = [];
         var modulePage;
 
@@ -42,7 +42,7 @@ var navGroupMappers = {
           .groupBy('docType')
 
           .tap(function(docTypes) {
-            console.log(_.keys(docTypes));
+            log.debug(_.keys(docTypes));
             // Extract the module page from the collection
             modulePage = docTypes.module[0];
             delete docTypes.module;
@@ -128,7 +128,7 @@ module.exports = {
     .filter(function(doc) { return doc.docType === 'module'; })
     .map(function(doc) { return _.pick(doc, ['id', 'module', 'docType', 'area']); })
     .tap(function(docs) {
-      console.log(docs);
+      log.debug(docs);
     });
 
 
