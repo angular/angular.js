@@ -627,6 +627,9 @@ angular.module('ngAnimate', ['ng'])
           return;
         }
 
+        var elementEvents = angular.element._data(node);
+        elementEvents = elementEvents && elementEvents.events;
+
         var animationLookup = (' ' + classes).replace(/\s+/g,'.');
         if (!parentElement) {
           parentElement = afterElement ? afterElement.parent() : element.parent();
@@ -822,29 +825,32 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function fireDOMCallback(animationPhase) {
-          element.triggerHandler('$animate:' + animationPhase, {
-            event : animationEvent,
-            className : className
-          });
+          var eventName = '$animate:' + animationPhase;
+          if(elementEvents && elementEvents[eventName] && elementEvents[eventName].length > 0) {
+            $$asyncQueueBuffer(function() {
+              element.triggerHandler(eventName, {
+                event : animationEvent,
+                className : className
+              });
+            });
+          }
         }
 
         function fireBeforeCallbackAsync() {
-          $$asyncQueueBuffer(function() {
-            fireDOMCallback('before');
-          });
+          fireDOMCallback('before');
         }
 
         function fireAfterCallbackAsync() {
-          $$asyncQueueBuffer(function() {
-            fireDOMCallback('after');
-          });
+          fireDOMCallback('after');
         }
 
         function fireDoneCallbackAsync() {
-          $$asyncQueueBuffer(function() {
-            fireDOMCallback('close');
-            doneCallback && doneCallback();
-          });
+          fireDOMCallback('close');
+          if(doneCallback) {
+            $$asyncQueueBuffer(function() {
+              doneCallback();
+            });
+          }
         }
 
         //it is less complicated to use a flag than managing and cancelling
