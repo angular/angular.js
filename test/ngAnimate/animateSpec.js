@@ -1573,6 +1573,21 @@ describe("ngAnimate", function() {
           expect(steps.shift()).toEqual(['after',  'ng-enter', 'enter']);
         })); 
 
+        it('should not fire DOM callbacks on the element being animated unless registered',
+          inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
+
+          $animate.enabled(true);
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          body.append($rootElement);
+
+          $animate.addClass(element, 'class');
+          $rootScope.$digest();
+
+          $timeout.verifyNoPendingTasks();
+        }));
+
         it("should fire a done callback when provided with no animation",
           inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
 
