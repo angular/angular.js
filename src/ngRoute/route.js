@@ -269,7 +269,7 @@ function $RouteProvider(){
        Note that this example is using {@link ng.directive:script inlined templates}
        to get it working on jsfiddle as well.
 
-     <example module="ngViewExample" deps="angular-route.js">
+     <example name="$route-service" module="ngRouteExample" deps="angular-route.js" fixBase="true">
        <file name="index.html">
          <div ng-controller="MainCntl">
            Choose:
@@ -302,7 +302,7 @@ function $RouteProvider(){
        </file>
 
        <file name="script.js">
-         angular.module('ngViewExample', ['ngRoute'])
+         angular.module('ngRouteExample', ['ngRoute'])
 
          .config(function($routeProvider, $locationProvider) {
            $routeProvider.when('/Book/:bookId', {
