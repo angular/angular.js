@@ -284,7 +284,7 @@ describe('injector', function() {
     });
 
 
-    it('should load dependant modules only once', function() {
+    it('should load dependent modules only once', function() {
       var log = '';
       angular.module('a', [], function(){ log += 'a'; });
       angular.module('b', ['a'], function(){ log += 'b'; });

@@ -1040,7 +1040,7 @@ describe('angular', function() {
     });
 
 
-    it('should allow seperator to be overridden', function() {
+    it('should allow separator to be overridden', function() {
       expect(snake_case('ABC', '&')).toEqual('a&b&c');
       expect(snake_case('alanBobCharles', '&')).toEqual('alan&bob&charles');
     });

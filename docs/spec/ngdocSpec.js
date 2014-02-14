@@ -561,7 +561,7 @@ describe('ngdoc', function() {
 
   describe('usage', function() {
     describe('overview', function() {
-      it('should supress description heading', function() {
+      it('should suppress description heading', function() {
         var doc = new Doc('@ngdoc overview\n@name angular\n@description\n#heading\ntext');
         doc.parse();
         expect(doc.html()).toContain('text');
