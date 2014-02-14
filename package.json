@@ -50,7 +50,7 @@
     "gulp-concat": "~2.1.7",
     "canonical-path": "0.0.2",
     "winston": "~0.7.2",
-    "dgeni": "git://github.com/angular/dgeni",
+    "dgeni": "~0.0",
     "dgeni-packages": "git://github.com/angular/dgeni-packages"
   },
   "licenses": [
