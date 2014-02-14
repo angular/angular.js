@@ -118,7 +118,7 @@ function numberFilter($locale) {
 
 var DECIMAL_SEP = '.';
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
-  if (isNaN(number) || !isFinite(number)) return '';
+  if (number == null || !isFinite(number) || isObject(number)) return '';
 
   var isNegative = number < 0;
   number = Math.abs(number);
