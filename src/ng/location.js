@@ -513,7 +513,7 @@ function locationGetterSetter(property, preprocess) {
  */
 
 /**
- * @ngdoc object
+ * @ngdoc provider
  * @name $locationProvider
  * @description
  * Use the `$locationProvider` to configure how the application deep linking paths are stored.
