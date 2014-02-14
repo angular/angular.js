@@ -736,9 +736,14 @@ We want to run the function we pass by invoking it from the directive's scope, b
 in the context of the scope where its registered.
 
 We saw earlier how to use `=attr` in the `scope` option, but in the above example, we're using
-`&attr` instead. `&` bindings expose a function to an isolated scope allowing the isolated scope
-to invoke it, but maintaining the original scope of the function. So when a user clicks the
-`x` in the dialog, it runs `Ctrl`'s `hideDialog` function.
+`&attr` instead.  The `&` binding allows a directive to trigger evaluation of an expression in
+the context of the original scope, at a specific time.  Any legal expression is allowed, including
+an expression which contains a function call.  Because of this, `&` bindings are ideal for binding
+callback functions to directive behaviors.
+
+When the user clicks the `x` in the dialog, the directive's `close` function is called, thanks to
+`ng-click.`  This call to `close` on the isolated scope actually evaluates the expression
+`hideDialog()` in the context of the original scope, thus running `Ctrl`'s `hideDialog` function.
 
 <div class="alert alert-success">
 **Best Practice:** use `&attr` in the `scope` option when you want your directive
