@@ -98,8 +98,8 @@ function shallowClearAndCopy(src, dst) {
  *   If the parameter value is prefixed with `@` then the value of that parameter is extracted from
  *   the data object (useful for non-GET operations).
  *
- * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
- *   default set of resource actions. The declaration should be created in the format of {@link
+ * @param {Object.&lt;Object&gt;=} actions Hash with declaration of custom action that should extend
+ *   the default set of resource actions. The declaration should be created in the format of {@link
  *   ng.$http#usage_parameters $http.config}:
  *
  *       {action1: {method:?, params:?, isArray:?, headers:?, ...},
@@ -145,25 +145,26 @@ function shallowClearAndCopy(src, dst) {
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
- *
- *       { 'get':    {method:'GET'},
- *         'save':   {method:'POST'},
- *         'query':  {method:'GET', isArray:true},
- *         'remove': {method:'DELETE'},
- *         'delete': {method:'DELETE'} };
- *
+ *   ```js
+ *   { 'get':    {method:'GET'},
+ *     'save':   {method:'POST'},
+ *     'query':  {method:'GET', isArray:true},
+ *     'remove': {method:'DELETE'},
+ *     'delete': {method:'DELETE'} };
+ *   ```
+ *   
  *   Calling these methods invoke an {@link ng.$http} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
  *   instance of the resource class. The actions `save`, `remove` and `delete` are available on it
  *   as  methods with the `$` prefix. This allows you to easily perform CRUD operations (create,
  *   read, update, delete) on server-side data like this:
  *   ```js
-        var User = $resource('/user/:userId', {userId:'@id'});
-        var user = User.get({userId:123}, function() {
-          user.abc = true;
-          user.$save();
-        });
-     ```
+ *   var User = $resource('/user/:userId', {userId:'@id'});
+ *   var user = User.get({userId:123}, function() {
+ *     user.abc = true;
+ *     user.$save();
+ *   });
+ *   ```
  *
  *   It is important to realize that invoking a $resource object method immediately returns an
  *   empty reference (object or array depending on `isArray`). Once the data is returned from the
