@@ -3,7 +3,7 @@
 /**
  * @ngdoc service
  * @name $exceptionHandler
- * @requires $log
+ * @requires ng.$log
  *
  * @description
  * Any uncaught exception in angular expressions is delegated to this service.

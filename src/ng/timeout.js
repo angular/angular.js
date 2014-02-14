@@ -10,7 +10,6 @@ function $TimeoutProvider() {
      /**
       * @ngdoc service
       * @name $timeout
-      * @requires $browser
       *
       * @description
       * Angular's wrapper for `window.setTimeout`. The `fn` function is wrapped into a try/catch

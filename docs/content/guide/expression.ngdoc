@@ -4,7 +4,7 @@
 
 Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{
 expression }}`. Expressions are processed by the {@link ng.$parse $parse}
-service. Expressions are often post processed using {@link filter filters} to create a more user-friendly format.
+service. Expressions are often post processed using {@link guide/filter filters} to create a more user-friendly format.
 
 For example, these are all valid expressions in angular:
 

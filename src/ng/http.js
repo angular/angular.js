@@ -174,8 +174,7 @@ function $HttpProvider() {
      * @ngdoc service
      * @kind function
      * @name $http
-     * @requires $httpBackend
-     * @requires $browser
+     * @requires ng.$httpBackend
      * @requires $cacheFactory
      * @requires $rootScope
      * @requires $q
