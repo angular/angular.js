@@ -635,10 +635,9 @@ then uses the information it obtains to compose hashbang URLs (such as
 ## Two-way binding to $location
 
 The Angular's compiler currently does not support two-way binding for methods (see [issue](https://github.com/angular/angular.js/issues/404)).  If you should require two-way binding
-to the $location object (using {@link ng.directive:input.text
-ngModel} directive on an input field), you will need to specify an extra model property
-(e.g. `locationPath`) with two watchers which push $location updates in both directions. For
-example:
+to the $location object (using {@link input[text] ngModel} directive on an input
+field), you will need to specify an extra model property (e.g. `locationPath`) with two watchers
+which push $location updates in both directions. For example:
 <example>
 <file name="index.html">
 <div ng-controller="LocationController">

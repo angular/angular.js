@@ -489,8 +489,6 @@ function locationGetterSetter(property, preprocess) {
  * @ngdoc service
  * @name $location
  *
- * @requires $browser
- * @requires $sniffer
  * @requires $rootElement
  *
  * @description

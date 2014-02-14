@@ -22,7 +22,6 @@ angular.module('ngCookies', ['ng']).
   /**
    * @ngdoc service
    * @name $cookies
-   * @requires $browser
    *
    * @description
    * Provides read/write access to browser's cookies.
