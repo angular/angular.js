@@ -94,15 +94,18 @@
       <div>
         Show:
         <div class="check-element animate-show" ng-show="checked">
-          <span class="icon-thumbs-up"></span> I show up when your checkbox is checked.
+          <span class="glyphicon glyphicon-thumbs-up"></span> I show up when your checkbox is checked.
         </div>
       </div>
       <div>
         Hide:
         <div class="check-element animate-show" ng-hide="checked">
-          <span class="icon-thumbs-down"></span> I hide when your checkbox is checked.
+          <span class="glyphicon glyphicon-thumbs-down"></span> I hide when your checkbox is checked.
         </div>
       </div>
+    </file>
+    <file name="glyphicons.css">
+      @import url(//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css);
     </file>
     <file name="animations.css">
       .animate-show {
@@ -133,8 +136,8 @@
       }
     </file>
     <file name="protractor.js" type="protractor">
-      var thumbsUp = element(by.css('span.icon-thumbs-up'));
-      var thumbsDown = element(by.css('span.icon-thumbs-down'));
+      var thumbsUp = element(by.css('span.glyphicon-thumbs-up'));
+      var thumbsDown = element(by.css('span.glyphicon-thumbs-down'));
 
       it('should check ng-show / ng-hide', function() {
         expect(thumbsUp.isDisplayed()).toBeFalsy();
@@ -251,15 +254,18 @@ var ngShowDirective = ['$animate', function($animate) {
       <div>
         Show:
         <div class="check-element animate-hide" ng-show="checked">
-          <span class="icon-thumbs-up"></span> I show up when your checkbox is checked.
+          <span class="glyphicon glyphicon-thumbs-up"></span> I show up when your checkbox is checked.
         </div>
       </div>
       <div>
         Hide:
         <div class="check-element animate-hide" ng-hide="checked">
-          <span class="icon-thumbs-down"></span> I hide when your checkbox is checked.
+          <span class="glyphicon glyphicon-thumbs-down"></span> I hide when your checkbox is checked.
         </div>
       </div>
+    </file>
+    <file name="glyphicons.css">
+      @import url(//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css);
     </file>
     <file name="animations.css">
       .animate-hide {
@@ -290,8 +296,8 @@ var ngShowDirective = ['$animate', function($animate) {
       }
     </file>
     <file name="protractor.js" type="protractor">
-      var thumbsUp = element(by.css('span.icon-thumbs-up'));
-      var thumbsDown = element(by.css('span.icon-thumbs-down'));
+      var thumbsUp = element(by.css('span.glyphicon-thumbs-up'));
+      var thumbsDown = element(by.css('span.glyphicon-thumbs-down'));
 
       it('should check ng-show / ng-hide', function() {
         expect(thumbsUp.isDisplayed()).toBeFalsy();
