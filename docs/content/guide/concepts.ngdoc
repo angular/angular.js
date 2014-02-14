@@ -86,7 +86,7 @@ in the rest of the documentation.
 Applied to the example above, the markup directs Angular to "take the data we got from the input widgets
 and multiply them together".
 
-The example above also contains a <a name="filter">"{@link filter filter}"</a>.
+The example above also contains a <a name="filter">"{@link guide/filter filter}"</a>.
 A filter formats the value of an expression for display to the user.
 In the example above, the filter {@link ng.filter:currency `currency`} formats a number
 into an output that looks like money.

@@ -17,7 +17,6 @@ function createXhr(method) {
 /**
  * @ngdoc service
  * @name $httpBackend
- * @requires $browser
  * @requires $window
  * @requires $document
  *
