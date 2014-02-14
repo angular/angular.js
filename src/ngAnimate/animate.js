@@ -942,16 +942,21 @@ angular.module('ngAnimate', ['ng'])
 
       function cancelChildAnimations(element) {
         var node = extractElementNode(element);
-        forEach(node.querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
-          element = angular.element(element);
-          var data = element.data(NG_ANIMATE_STATE);
-          if(data && data.active) {
-            angular.forEach(data.active, function(operation) {
-              (operation.done || noop)(true);
-              cancelAnimations(operation.animations);
-            });
-          }
-        });
+        if (node) {
+          var nodes = angular.isFunction(node.getElementsByClassName) ?
+            node.getElementsByClassName(NG_ANIMATE_CLASS_NAME) :
+            node.querySelectorAll('.' + NG_ANIMATE_CLASS_NAME);
+          forEach(nodes, function(element) {
+            element = angular.element(element);
+            var data = element.data(NG_ANIMATE_STATE);
+            if(data && data.active) {
+              angular.forEach(data.active, function(operation) {
+                (operation.done || noop)(true);
+                cancelAnimations(operation.animations);
+              });
+            }
+          });
+        }
       }
 
       function cancelAnimations(animations) {
