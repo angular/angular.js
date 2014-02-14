@@ -87,7 +87,14 @@
           expect(element(by.id('link-6')).getAttribute('href')).toMatch(/\/6$/);
 
           element(by.id('link-6')).click();
-          expect(browser.getCurrentUrl()).toMatch(/\/6$/);
+
+          // At this point, we navigate away from an Angular page, so we need
+          // to use browser.driver to get the base webdriver.
+          browser.wait(function() {
+            return browser.driver.getCurrentUrl().then(function(url) {
+              return url.match(/\/6$/);
+            });
+          }, 1000, 'page should navigate to /6');
         });
       </file>
     </example>
