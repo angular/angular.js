@@ -51,7 +51,7 @@
     "canonical-path": "0.0.2",
     "winston": "~0.7.2",
     "dgeni": "~0.0",
-    "dgeni-packages": "git://github.com/angular/dgeni-packages"
+    "dgeni-packages": "~0.0"
   },
   "licenses": [
     {
