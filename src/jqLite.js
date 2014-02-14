@@ -107,6 +107,14 @@ var jqCache = JQLite.cache = {},
       ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
       : function(element, type, fn) {element.detachEvent('on' + type, fn); });
 
+/* 
+ * !!! This is an undocumented "private" function !!!
+ */
+var jqData = JQLite._data = function(node) {
+  //jQuery always returns an object on cache miss
+  return this.cache[node[this.expando]] || {};
+};
+
 function jqNextId() { return ++jqId; }
 
 
