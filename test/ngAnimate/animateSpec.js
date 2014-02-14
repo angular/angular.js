@@ -3370,5 +3370,21 @@ describe("ngAnimate", function() {
         expect(stat).toBe('gone');
       });
     });
+
+    it('should not throw an error when only comment nodes are rendered in the animation',
+      inject(function($rootScope, $compile) {
+
+      $rootScope.items = [1,2,3,4,5];
+
+      var element = html($compile('<div><div class="animated" ng-if="valid" ng-repeat="item in items"></div></div>')($rootScope));
+
+      $rootScope.$digest();
+
+      $rootScope.items = [];
+
+      $rootScope.$digest();
+
+      expect(element.children().length).toBe(0);
+    }));
   });
 });
