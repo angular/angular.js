@@ -957,7 +957,7 @@ var VALID_CLASS = 'ng-valid',
     </file>
     <file name="protractor.js" type="protractor">
       it('should data-bind and become invalid', function() {
-        if (browser.params.browser = 'safari') {
+        if (browser.params.browser == 'safari') {
           // SafariDriver can't handle contenteditable.
           return;
         };
