@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Injecting Services Into Controllers
+@name  Angular Services: Injecting Services Into Controllers
 @description
 
 Using services as dependencies for controllers is very similar to using services as dependencies

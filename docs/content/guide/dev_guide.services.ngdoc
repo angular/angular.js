@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Angular Services
+@name  Angular Services
 @description
 
 Services are a feature that Angular brings to client-side web apps from the server side, where

@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Unit Testing
+@name  Unit Testing
 @description
 
 JavaScript is a dynamically typed language which comes with great power of expression, but it also

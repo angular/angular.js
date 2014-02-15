@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Expressions
+@name  Expressions
 @description
 
 Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{

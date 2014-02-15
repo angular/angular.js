@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Creating Services
+@name  Angular Services: Creating Services
 @description
 
 While Angular offers several useful services, for any nontrivial application you'll find it useful
