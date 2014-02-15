@@ -50,8 +50,10 @@
     "gulp-concat": "~2.1.7",
     "canonical-path": "0.0.2",
     "winston": "~0.7.2",
-    "dgeni": "~0.0",
-    "dgeni-packages": "~0.0"
+    "dgeni": "*",
+    "dgeni-packages": "*",
+    "gulp-jshint": "~1.4.2",
+    "jshint-stylish": "~0.1.5"
   },
   "licenses": [
     {
