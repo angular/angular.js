@@ -27,7 +27,7 @@ For a more in-depth explanation, have a look at the {@link tutorial/ tutorial}.
 
 # A first example: Data binding
 
-In the following we will build a form to calculate the costs of an invoice in different currencies.
+In the following example we will build a form to calculate the costs of an invoice in different currencies.
 
 Let's start with input fields for quantity and cost whose values are multiplied to produce the total of the invoice:
 
