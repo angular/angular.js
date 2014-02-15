@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Managing Service Dependencies
+@name  Angular Services: Managing Service Dependencies
 @description
 
 Angular allows services to declare other services as dependencies needed for construction of their
