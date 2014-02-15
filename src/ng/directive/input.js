@@ -956,23 +956,22 @@ var VALID_CLASS = 'ng-valid',
       </form>
     </file>
     <file name="protractor.js" type="protractor">
-      it('should data-bind and become invalid', function() {
-        if (browser.params.browser == 'safari') {
-          // SafariDriver can't handle contenteditable.
-          return;
-        }
-        var contentEditable = element(by.css('[contenteditable]'));
+    it('should data-bind and become invalid', function() {
+      if (browser.params.browser == 'safari' || browser.params.browser == 'firefox') {
+        // SafariDriver can't handle contenteditable
+        // and Firefox driver can't clear contenteditables very well
+        return;
+      }
+      var contentEditable = element(by.css('[contenteditable]'));
+      var content = 'Change me!';
 
-        expect(contentEditable.getText()).toEqual('Change me!');
+      expect(contentEditable.getText()).toEqual(content);
 
-        // Firefox driver doesn't trigger the proper events on 'clear', so do this hack
-        contentEditable.click();
-        contentEditable.sendKeys(protractor.Key.chord(protractor.Key.COMMAND, "a"));
-        contentEditable.sendKeys(protractor.Key.BACK_SPACE);
-
-        expect(contentEditable.getText()).toEqual('');
-        expect(contentEditable.getAttribute('class')).toMatch(/ng-invalid-required/);
-      });
+      contentEditable.clear();
+      contentEditable.sendKeys(protractor.Key.BACK_SPACE);
+      expect(contentEditable.getText()).toEqual('');
+      expect(contentEditable.getAttribute('class')).toMatch(/ng-invalid-required/);
+    });
     </file>
  * </example>
  *
