@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Testing Angular Services
+@name  Angular Services: Testing Angular Services
 @description
 
 The following is a unit test for the 'notify' service in the 'Dependencies' example in {@link

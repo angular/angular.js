@@ -1,6 +1,6 @@
 @workInProgress
 @ngdoc overview
-@name Developer Guide: E2E Testing
+@name  E2E Testing
 @description
 
 **Angular Scenario Runner is in maintenance mode - If you're starting a new Angular project,
