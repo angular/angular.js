@@ -3,5 +3,5 @@ describe("{$ doc.description $}", function() {
     browser.get("{$ doc.pathPrefix $}/{$ doc.examplePath $}");
   });
 
-{$ doc.innerTest $}  
+{$ doc.innerTest $}
 });
