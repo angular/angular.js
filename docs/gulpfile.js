@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var jshint = require('gulp-jshint');
 var bower = require('bower');
 var docGenerator = require('dgeni');
 var merge = require('event-stream').merge;
@@ -38,7 +39,15 @@ gulp.task('doc-gen', function() {
   return docGenerator('docs.config.js').generateDocs();
 });
 
+// JSHint the example and protractor test files
+gulp.task('jshint', ['doc-gen'], function() {
+  gulp.src([outputFolder + '/ptore2e/**/*.js', outputFolder + '/examples/**/*.js'])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(jshint.reporter('fail'));
+});
+
 
 // The default task that will be run if no task is supplied
-gulp.task('default', ['assets', 'doc-gen', 'build-app']);
+gulp.task('default', ['assets', 'doc-gen', 'build-app', 'jshint']);
 
