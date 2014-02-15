@@ -960,7 +960,7 @@ var VALID_CLASS = 'ng-valid',
         if (browser.params.browser == 'safari') {
           // SafariDriver can't handle contenteditable.
           return;
-        };
+        }
         var contentEditable = element(by.css('[contenteditable]'));
 
         expect(contentEditable.getText()).toEqual('Change me!');

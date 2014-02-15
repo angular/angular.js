@@ -203,7 +203,7 @@ Let's refactor our example and move the currency conversion into a service in an
         };
         var convert = function (amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
-        }
+        };
 
         return {
           currencies: currencies,
@@ -331,7 +331,7 @@ The following example shows how this is done with Angular:
 
         var convert = function (amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
-        }
+        };
 
         var refresh = function() {
           var url = YAHOO_FINANCE_URL_PATTERN.
@@ -344,7 +344,7 @@ The following example shows how this is done with Angular:
             });
             usdToForeignRates = newUsdToForeignRates;
           });
-        }
+        };
 
         refresh();
 

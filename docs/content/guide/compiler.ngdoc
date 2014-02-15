@@ -108,7 +108,7 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
             $document.unbind('mousemove', mousemove);
             $document.unbind('mouseup', mouseup);
           }
-        }
+        };
       });
   </file>
   <file name="index.html">

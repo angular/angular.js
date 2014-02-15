@@ -791,7 +791,7 @@ element?
             $document.unbind('mousemove', mousemove);
             $document.unbind('mouseup', mouseup);
           }
-        }
+        };
       });
   </file>
   <file name="index.html">
@@ -829,7 +829,7 @@ to which tab is active.
             };
 
             this.addPane = function(pane) {
-              if (panes.length == 0) {
+              if (panes.length === 0) {
                 $scope.select(pane);
               }
               panes.push(pane);
