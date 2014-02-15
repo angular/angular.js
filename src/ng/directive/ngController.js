@@ -99,7 +99,7 @@
          expect(secondRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('john.smith@example.org');
 
-         firstRepeat.findElement(by.linkText('clear')).click()
+         firstRepeat.findElement(by.linkText('clear')).click();
 
          expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('');
@@ -176,7 +176,7 @@
          expect(secondRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('john.smith@example.org');
 
-         firstRepeat.findElement(by.linkText('clear')).click()
+         firstRepeat.findElement(by.linkText('clear')).click();
 
          expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('');

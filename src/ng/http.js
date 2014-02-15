@@ -642,7 +642,7 @@ function $HttpProvider() {
     sampleGetBtn.click();
     fetchBtn.click();
     expect(status.getText()).toMatch('200');
-    expect(data.getText()).toMatch(/Hello, \$http!/)
+    expect(data.getText()).toMatch(/Hello, \$http!/);
   });
 
   it('should make a JSONP request to angularjs.org', function() {
