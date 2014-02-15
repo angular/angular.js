@@ -10,23 +10,31 @@ var AREA_NAMES = {
   error: 'Error Reference'
 };
 
-function getNavGroup(navGroupPages, groupName, pageSorter, pageMapper) {
+function getNavGroup(pages, area, pageSorter, pageMapper) {
   
-  var navItems = _(navGroupPages)
+  var navItems = _(pages)
+    // We don't want the child to include the index page as this is already catered for
+    .omit(function(page) { return page.id === 'index'; })
+ 
+    // Apply the supplied sorting function
     .sortBy(pageSorter)
+ 
+    // Apply the supplied mapping function
     .map(pageMapper)
+ 
     .value();
 
   return {
-    name: groupName,
+    name: area.name,
     type: 'group',
+    href: area.id,
     navItems: navItems
   };
 }
 
 
 var navGroupMappers = {
-  api: function(areaPages, areaName) {
+  api: function(areaPages, area) {
     var navGroups = _(areaPages)
       .filter('module') // We are not interested in docs that are not in a module
 
@@ -80,8 +88,8 @@ var navGroupMappers = {
       .value();
     return navGroups;
   },
-  tutorial: function(pages, areaName) {
-    return [getNavGroup(pages, areaName, 'step', function(page) {
+  tutorial: function(pages, area) {
+    return [getNavGroup(pages, area, 'step', function(page) {
       return {
         name: page.name,
         step: page.step,
@@ -90,8 +98,8 @@ var navGroupMappers = {
       };
     })];
   },
-  error: function(pages, areaName) {
-    return [getNavGroup(pages, areaName, 'path', function(page) {
+  error: function(pages, area) {
+    return [getNavGroup(pages, area, 'path', function(page) {
       return {
         name: page.name,
         href: page.path,
@@ -99,8 +107,8 @@ var navGroupMappers = {
       };
     })];
   },
-  pages: function(pages, areaName) {
-    return [getNavGroup(pages, areaName, 'path', function(page) {
+  pages: function(pages, area) {
+    return [getNavGroup(pages, area, 'path', function(page) {
       return {
         name: page.name,
         href: page.path,
@@ -134,7 +142,7 @@ module.exports = {
 
     // We are only interested in docs that are in a area and not landing pages
     var navPages = _.filter(docs, function(page) {
-      return page.area && page.docType != 'landingPage';
+      return page.area && page.docType != 'componentGroup';
     });
 
     // Generate an object collection of pages that is grouped by area e.g.
@@ -157,15 +165,15 @@ module.exports = {
     var areas = {};
     _(navPages)
       .groupBy('area')
-      .forEach(function(pages, areaName) {
-        var navGroupMapper = navGroupMappers[areaName] || navGroupMappers['pages'];
-        var areaTitle = AREA_NAMES[areaName];
-
-        areas[areaName] = {
-          id: areaName,
-          name: areaTitle,
-          navGroups: navGroupMapper(pages, areaTitle)
+      .forEach(function(pages, areaId) {
+        var area = {
+          id: areaId,
+          name: AREA_NAMES[areaId]
         };
+        areas[areaId] = area;
+
+        var navGroupMapper = navGroupMappers[area.id] || navGroupMappers['pages'];
+        area.navGroups = navGroupMapper(pages, area);
       });
 
     _.forEach(docs, function(doc) {
