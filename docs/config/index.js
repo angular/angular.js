@@ -10,6 +10,7 @@ module.exports = function(config) {
   
   config.append('processing.processors', [
     require('./processors/git-data'),
+    require('./processors/error-docs'),
     require('./processors/keywords'),
     require('./processors/versions-data'),
     require('./processors/pages-data'),
