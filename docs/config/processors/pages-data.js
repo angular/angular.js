@@ -103,7 +103,7 @@ var navGroupMappers = {
       return {
         name: page.name,
         href: page.path,
-        type: 'error'
+        type: page.docType === 'errorNamespace' ? 'section' : 'error'
       };
     })];
   },
@@ -142,7 +142,8 @@ module.exports = {
 
     // We are only interested in docs that are in a area and not landing pages
     var navPages = _.filter(docs, function(page) {
-      return page.area && page.docType != 'componentGroup';
+      return page.area &&
+        page.docType != 'componentGroup';
     });
 
     // Generate an object collection of pages that is grouped by area e.g.
