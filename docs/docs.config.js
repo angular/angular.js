@@ -20,7 +20,7 @@ module.exports = function(config) {
 
   config.set('rendering.outputFolder', '../build/docs');
 
-  config.set('logging.level', 'debug');
+  config.set('logging.level', 'info');
 
   config.merge('deployment', {
     environments: [{
