@@ -81,12 +81,12 @@ __`app/js/controllers.js`.__
 <pre>
 ...
 
-phonecatApp.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
+phonecatControllers.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
   $scope.phones = Phone.query();
   $scope.orderProp = 'age';
 }]);
 
-phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
+phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
   $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
     $scope.mainImageUrl = phone.images[0];
   });
