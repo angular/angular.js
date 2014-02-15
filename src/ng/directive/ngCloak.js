@@ -38,6 +38,7 @@
  * class `ng-cloak` in addition to the `ngCloak` directive as shown in the example below.
  *
  * @element ANY
+ * @priority -500
  *
  * @example
    <doc:example>
@@ -57,6 +58,7 @@
  *
  */
 var ngCloakDirective = ngDirective({
+  priority: -500,
   compile: function(element, attr) {
     attr.$set('ngCloak', undefined);
     element.removeClass('ng-cloak');
