@@ -653,6 +653,20 @@ describe("resource", function() {
     expect(person2).toEqual(jasmine.any(Person));
   });
 
+  it('should not include $promise and $resolved when resource is toJson\'ed', function() {
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+    var cc = CreditCard.get({id: 123});
+    $httpBackend.flush();
+
+    expect(cc.$promise).toBeDefined();
+    expect(cc.$resolved).toBe(true);
+
+    var json = JSON.parse(angular.toJson(cc));
+    expect(json.$promise).not.toBeDefined();
+    expect(json.$resolved).not.toBeDefined();
+    expect(json).toEqual({id: 123, number: '9876'});
+  });
+
   describe('promise api', function() {
 
     var $rootScope;
