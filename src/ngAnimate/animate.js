@@ -32,6 +32,8 @@
  * | {@link ng.directive:ngIf#usage_animations ngIf}                 | enter and leave                                    |
  * | {@link ng.directive:ngClass#usage_animations ngClass}           | add and remove                                     |
  * | {@link ng.directive:ngShow#usage_animations ngShow & ngHide}    | add and remove (the ng-hide class value)           |
+ * | {@link ng.directive:form#usage_animations form}                 | dirty, pristine, valid and invalid                 |
+ * | {@link ng.directive:ngModel#usage_animations ngModel}           | dirty, pristine, valid and invalid                 |
  *
  * You can find out more information about animations upon visiting each directive page.
  *
