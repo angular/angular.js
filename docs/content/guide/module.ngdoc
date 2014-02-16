@@ -26,26 +26,26 @@ Important things to notice:
   * Notice the reference to the `myApp` module in the `<html ng-app="myApp">`, it is what
     bootstraps the app using your module.
 
-<doc:example module='myApp'>
-  <doc:source>
-    <script>
-      // declare a module
-      var myAppModule = angular.module('myApp', []);
-
-      // configure the module.
-      // in this example we will create a greeting filter
-      myAppModule.filter('greet', function() {
-       return function(name) {
-          return 'Hello, ' + name + '!';
-        };
-      });
-
-    </script>
+<example module='myApp'>
+  <file name="index.html">
     <div>
       {{ 'World' | greet }}
     </div>
-  </doc:source>
-</doc:example>
+  </file>
+
+  <file name="script.js">
+    // declare a module
+    var myAppModule = angular.module('myApp', []);
+
+    // configure the module.
+    // in this example we will create a greeting filter
+    myAppModule.filter('greet', function() {
+     return function(name) {
+        return 'Hello, ' + name + '!';
+      };
+    });
+  </file>
+</example>
 
 
 
@@ -67,49 +67,50 @@ that are relevant to tests.
 
 The above is only a suggestion, so feel free to tailor it to your needs.
 
-<doc:example module='xmpl'>
-  <doc:source>
-    <script>
-      angular.module('xmpl.service', []).
-        value('greeter', {
-          salutation: 'Hello',
-          localize: function(localization) {
-            this.salutation = localization.salutation;
-          },
-          greet: function(name) {
-            return this.salutation + ' ' + name + '!';
-          }
-        }).
-        value('user', {
-          load: function(name) {
-            this.name = name;
-          }
-        });
-
-      angular.module('xmpl.directive', []);
-
-      angular.module('xmpl.filter', []);
-
-      angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
-        run(function(greeter, user) {
-          // This is effectively part of the main method initialization code
-          greeter.localize({
-            salutation: 'Bonjour'
-          });
-          user.load('World');
-        })
-
-
-      // A Controller for your app
-      var XmplController = function($scope, greeter, user) {
-        $scope.greeting = greeter.greet(user.name);
-      }
-    </script>
+<example module='xmpl'>
+  <file name="index.html">
     <div ng-controller="XmplController">
       {{ greeting }}!
     </div>
-  </doc:source>
- </doc:example>
+  </file>
+
+  <file name="script.js">
+    angular.module('xmpl.service', []).
+      value('greeter', {
+        salutation: 'Hello',
+        localize: function(localization) {
+          this.salutation = localization.salutation;
+        },
+        greet: function(name) {
+          return this.salutation + ' ' + name + '!';
+        }
+      }).
+      value('user', {
+        load: function(name) {
+          this.name = name;
+        }
+      });
+
+    angular.module('xmpl.directive', []);
+
+    angular.module('xmpl.filter', []);
+
+    angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
+      run(function(greeter, user) {
+        // This is effectively part of the main method initialization code
+        greeter.localize({
+          salutation: 'Bonjour'
+        });
+        user.load('World');
+      });
+
+
+    // A Controller for your app
+    var XmplController = function($scope, greeter, user) {
+      $scope.greeting = greeter.greet(user.name);
+    };
+  </file>
+</example>
 
 
 

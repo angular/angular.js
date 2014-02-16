@@ -47,35 +47,35 @@ The example below therefore calls the filter directly in the controller.
 By this, the controller is able to call the filter only when needed (e.g. when the data is loaded from the backend
 or the filter expression is changed).
 
-<doc:example module="FilterInControllerModule">
-<doc:source>
-<script>
-  angular.module('FilterInControllerModule', []).
-    controller('FilterController', ['filterFilter', function(filterFilter) {
-      this.array = [
-        {name: 'Tobias'},
-        {name: 'Jeff'},
-        {name: 'Brian'},
-        {name: 'Igor'},
-        {name: 'James'},
-        {name: 'Brad'}
-      ];
-      this.filteredArray = filterFilter(this.array, 'a');
-    }]);
-</script>
+<example module="FilterInControllerModule">
+  <file name="index.html">
+    <div ng-controller="FilterController as ctrl">
+      <div>
+        All entries:
+        <span ng-repeat="entry in ctrl.array">{{entry.name}} </span>
+      </div>
+      <div>
+        Entries that contain an "a":
+        <span ng-repeat="entry in ctrl.filteredArray">{{entry.name}} </span>
+      </div>
+    </div>
+  </file>
 
-<div ng-controller="FilterController as ctrl">
-  <div>
-    All entries:
-    <span ng-repeat="entry in ctrl.array">{{entry.name}} </span>
-  </div>
-  <div>
-    Entries that contain an "a":
-    <span ng-repeat="entry in ctrl.filteredArray">{{entry.name}} </span>
-  </div>
-</div>
-</doc:source>
-</doc:example>
+  <file name="script.js">
+    angular.module('FilterInControllerModule', []).
+      controller('FilterController', ['filterFilter', function(filterFilter) {
+        this.array = [
+          {name: 'Tobias'},
+          {name: 'Jeff'},
+          {name: 'Brian'},
+          {name: 'Igor'},
+          {name: 'James'},
+          {name: 'Brad'}
+        ];
+        this.filteredArray = filterFilter(this.array, 'a');
+      }]);
+  </file>
+</example>
 
 
 ## Creating custom filters
@@ -89,37 +89,37 @@ function.
 The following sample filter reverses a text string. In addition, it conditionally makes the
 text upper-case.
 
-<doc:example module="MyReverseModule">
-<doc:source>
-<script>
-  angular.module('MyReverseModule', []).
-    filter('reverse', function() {
-      return function(input, uppercase) {
-        var out = "";
-        for (var i = 0; i < input.length; i++) {
-          out = input.charAt(i) + out;
-        }
-        // conditional based on optional argument
-        if (uppercase) {
-          out = out.toUpperCase();
-        }
-        return out;
-      }
-    });
+<example module="MyReverseModule">
+  <file name="index.html">
+    <div ng-controller="Ctrl">
+      <input ng-model="greeting" type="greeting"><br>
+      No filter: {{greeting}}<br>
+      Reverse: {{greeting|reverse}}<br>
+      Reverse + uppercase: {{greeting|reverse:true}}<br>
+    </div>
+  </file>
 
-  function Ctrl($scope) {
-    $scope.greeting = 'hello';
-  }
-</script>
+  <file name="script.js">
+    angular.module('MyReverseModule', []).
+      filter('reverse', function() {
+        return function(input, uppercase) {
+          var out = "";
+          for (var i = 0; i < input.length; i++) {
+            out = input.charAt(i) + out;
+          }
+          // conditional based on optional argument
+          if (uppercase) {
+            out = out.toUpperCase();
+          }
+          return out;
+        };
+      });
 
-<div ng-controller="Ctrl">
-  <input ng-model="greeting" type="greeting"><br>
-  No filter: {{greeting}}<br>
-  Reverse: {{greeting|reverse}}<br>
-  Reverse + uppercase: {{greeting|reverse:true}}<br>
-</div>
-</doc:source>
-</doc:example>
+    function Ctrl($scope) {
+      $scope.greeting = 'hello';
+    }
+  </file>
+</example>
 
 ## Testing custom filters
 

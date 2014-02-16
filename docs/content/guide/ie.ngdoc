@@ -27,7 +27,7 @@ To make your Angular application work on IE please make sure that:
      [JSON2](https://github.com/douglascrockford/JSON-js) or
      [JSON3](http://bestiejs.github.com/json3/) polyfills for this.
      
-		 ```html
+     ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org">
          <head>
@@ -43,7 +43,7 @@ To make your Angular application work on IE please make sure that:
 
   2. add `id="ng-app"` to the root element in conjunction with `ng-app` attribute
      
-		 ```html
+     ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
          ...
@@ -55,7 +55,7 @@ To make your Angular application work on IE please make sure that:
 
   4. if you **do use** custom element tags, then you must take these steps to make IE 8 and below happy:
      
-		 ```html
+     ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
          <head>
