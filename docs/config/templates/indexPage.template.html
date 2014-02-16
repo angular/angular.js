@@ -77,8 +77,8 @@
   </script>
 </head>
 <body>
-  <header class="header">
-    <div class="navbar navbar-inverse navbar-fixed-top" ng-controller="DocsSearchCtrl">
+  <header class="header header-fixed">
+    <section class="navbar navbar-inverse docs-navbar-primary" ng-controller="DocsSearchCtrl">
       <div class="container">
         <div class="navbar-header">
           <a class="brand navbar-brand" href="http://angularjs.org">
@@ -109,7 +109,7 @@
                 <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="tutorial/">Tutorial</a></li>
+                <li><a href="tutorial">Tutorial</a></li>
                 <li><a href="guide">Developer Guide</a></li>
                 <li><a href="api">API Reference</a></li>
                 <li><a href="error">Error Reference</a></li>
@@ -154,7 +154,7 @@
       <div class="search-results-container" ng-show="hasResults">
         <div class="container">
           <a href="" ng-click="hideResults()" class="search-close">
-            <span class="glyphicon glyphicon-remove search-close-icon"></span>
+            <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
           </a>
           <div class="search-results-frame">
             <div ng-repeat="(key, value) in results" class="search-results-group" ng-class="colClassName + ' col-group-' + key">
@@ -168,20 +168,34 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
+    <section class="sup-header">
+      <div class="container main-grid main-header-grid">
+        <div class="grid-left">
+          <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
+            <select ng-options="v as ('v' + v.full) group by (v.isStable?'Stable':'Unstable') for v in docs_versions"
+                    ng-model="docs_version"
+                    ng-change="jumpToDocsVersion(docs_version)"
+                    class="docs-version-jump">
+            </select>
+          </div>
+        </div>
+        <div class="grid-right">
+          <ul class="nav-breadcrumb">
+            <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
+              <span class="divider"> /</span>
+              <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </header>
 
 <div>
   <section role="main" class="container main-body">
-    <div class="main-body-grid">
+    <div class="main-grid main-body-grid">
       <div class="grid-left">
-        <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-          <select ng-options="v as ('v' + v.full) group by (v.isStable?'Stable':'Unstable') for v in docs_versions"
-                  ng-model="docs_version"
-                  ng-change="jumpToDocsVersion(docs_version)"
-                  class="docs-version-jump">
-          </select>
-        </div>
         <div class="side-navigation">
           <ul class="nav-list naked-list">
             <li ng-repeat="navGroup in currentArea.navGroups track by navGroup.name" class="nav-index-group">
@@ -199,12 +213,6 @@
         </div>
       </div>
       <div class="grid-right">
-        <ul class="nav-breadcrumb">
-          <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
-            <span class="divider"> /</span>
-            <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
-          </li>
-        </ul>
         <div id="loading" ng-show="loading">Loading...</div>
         <div ng-hide="loading" ng-include="currentPage.outputPath" onload="afterPartialLoaded()"  autoscroll></div>
       </div>
