@@ -217,9 +217,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
       /**
        *
-       * @ngdoc function
-       * @name ng.$animate#setClass
-       * @methodOf ng.$animate
+       * @ngdoc method
+       * @name $animate#setClass
        * @function
        * @description Adds and/or removes the given CSS classes to and from the element.
        * Once complete, the done() callback will be fired (if provided).
