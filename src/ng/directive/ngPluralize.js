@@ -6,7 +6,6 @@
  * @restrict EA
  *
  * @description
- * # Overview
  * `ngPluralize` is a directive that displays messages according to en-US localization rules.
  * These rules are bundled with angular.js, but can be overridden
  * (see {@link guide/i18n Angular i18n} dev guide). You configure ngPluralize directive
