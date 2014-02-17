@@ -109,7 +109,7 @@ directory.</p>
 executed from the Windows command line.</li>
       <li><p>You need an http server running on your system, but if you don't already have one
 already installed, you can use <code>node</code> to run a simple
-bundled http server: <code>node scripts\web-server.js</code>.</p></li>
+bundled http server: <code>node scripts\\web-server.js</code>.</p></li>
     </ol>
   </div>
 
