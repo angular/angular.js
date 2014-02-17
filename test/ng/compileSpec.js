@@ -529,9 +529,17 @@ describe('$compile', function() {
             replace: true,
             template: '<th>TH</th>'
           }));
+          directive('replaceWithThead', valueFn({
+            replace: true,
+            template: '<thead><tr><td>TD</td></tr></thead>'
+          }));
           directive('replaceWithTbody', valueFn({
             replace: true,
             template: '<tbody><tr><td>TD</td></tr></tbody>'
+          }));
+          directive('replaceWithTfoot', valueFn({
+            replace: true,
+            template: '<tfoot><tr><td>TD</td></tr></tfoot>'
           }));
         }));
 
@@ -718,11 +726,25 @@ describe('$compile', function() {
           expect(nodeName_(element)).toMatch(/th/i);
         }));
 
+        it('should support templates with root <thead> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-thead></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/thead/i);
+        }));
+
         it('should support templates with root <tbody> tags', inject(function($compile, $rootScope) {
           expect(function() {
             element = $compile('<div replace-with-tbody></div>')($rootScope);
           }).not.toThrow();
           expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
+
+        it('should support templates with root <tfoot> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tfoot></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tfoot/i);
         }));
       });
 
@@ -833,9 +855,17 @@ describe('$compile', function() {
               replace: true,
               templateUrl: 'th.html'
             }));
+            directive('replaceWithThead', valueFn({
+              replace: true,
+              templateUrl: 'thead.html'
+            }));
             directive('replaceWithTbody', valueFn({
               replace: true,
               templateUrl: 'tbody.html'
+            }));
+            directive('replaceWithTfoot', valueFn({
+              replace: true,
+              templateUrl: 'tfoot.html'
             }));
           }
         ));
@@ -1500,6 +1530,15 @@ describe('$compile', function() {
           expect(nodeName_(element)).toMatch(/th/i);
         }));
 
+        it('should support templates with root <thead> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('thead.html', '<thead><tr><td>TD</td></tr></thead>');
+          expect(function() {
+            element = $compile('<div replace-with-thead></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/thead/i);
+        }));
+
         it('should support templates with root <tbody> tags', inject(function($compile, $rootScope, $templateCache) {
           $templateCache.put('tbody.html', '<tbody><tr><td>TD</td></tr></tbody>');
           expect(function() {
@@ -1507,6 +1546,15 @@ describe('$compile', function() {
           }).not.toThrow();
           $rootScope.$digest();
           expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
+
+        it('should support templates with root <tfoot> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tfoot.html', '<tfoot><tr><td>TD</td></tr></tfoot>');
+          expect(function() {
+            element = $compile('<div replace-with-tfoot></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tfoot/i);
         }));
       });
 

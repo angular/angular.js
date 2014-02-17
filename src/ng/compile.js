@@ -503,7 +503,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|tbody)(\s+[^>]*)?>/i;
+      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|thead|tbody|tfoot)(\s+[^>]*)?>/i;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -1649,16 +1649,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       template = trim(template);
       if ((type = TABLE_CONTENT_REGEXP.exec(template))) {
         type = type[1].toLowerCase();
-        var table = jqLite('<table>' + template + '</table>'),
-            tbody = table.children('tbody'),
-            leaf = /(td|th)/.test(type) && table.find('tr');
-        if (tbody.length && type !== 'tbody') {
-          table = tbody;
+        var table = jqLite('<table>' + template + '</table>');
+        if (/(thead|tbody|tfoot)/.test(type)) {
+          return table.children(type);
         }
-        if (leaf && leaf.length) {
-          table = leaf;
+        table = table.children('tbody');
+        if (type === 'tr') {
+          return table.children('tr');
         }
-        return table.contents();
+        return table.children('tr').contents();
       }
       return jqLite('<div>' +
                       template +
