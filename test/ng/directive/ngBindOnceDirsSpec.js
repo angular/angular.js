@@ -45,7 +45,11 @@ describe('bindOnce directives', function() {
           scope.testValue = '<p>No Bindings</p>';
           var bindOnceHtmlNode = $compile('<div ng-bind-once-html="testValue"></div>')(scope);
           scope.$apply();
-          expect(bindOnceHtmlNode.html()).toBe('<p>No Bindings</p>'); 
+          if (msie==8){
+            expect(bindOnceHtmlNode.html()).toBe('<P>No Bindings</P>'); 
+          } else {
+            expect(bindOnceHtmlNode.html()).toBe('<p>No Bindings</p>'); 
+          }
           expect(scope.$$watchers.length).toBe(0);  
         });
 

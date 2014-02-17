@@ -33,7 +33,7 @@
          var exampleContainer = $('.doc-example-live');
          var nameInput = element(by.model('name'));
 
-         expect(exampleContainer.findElement(by.id('bindOnceTest')).getText()).toBe('Free Bird);
+         expect(exampleContainer.findElement(by.id('bindOnceTest')).getText()).toBe('Free Bird');
          nameInput.clear();
          nameInput.sendKeys('world');
          expect(exampleContainer.findElement(by.id('bindOnceTest')).getText()).toBe('Free Bird');
