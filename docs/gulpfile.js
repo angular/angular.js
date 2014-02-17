@@ -4,6 +4,7 @@ var jshint = require('gulp-jshint');
 var bower = require('bower');
 var docGenerator = require('dgeni');
 var merge = require('event-stream').merge;
+var path = require('canonical-path');
 
 
 // We indicate to gulp that tasks are async by returning the stream.
@@ -12,6 +13,17 @@ var merge = require('event-stream').merge;
 
 var outputFolder = '../build/docs';
 var bowerFolder = '../bower_components';
+
+
+var copyComponent = function(component, pattern, sourceFolder, packageFile) {
+  pattern = pattern || '/**/*';
+  sourceFolder = sourceFolder || bowerFolder;
+  packageFile = packageFile || 'bower.json';
+  var version = require(path.resolve(sourceFolder,component,packageFile)).version;
+  return gulp
+    .src(sourceFolder + '/' + component + pattern)
+    .pipe(gulp.dest(outputFolder + '/components/' + component + '-' + version));
+};
 
 gulp.task('bower', function() {
   return bower.commands.install();
@@ -26,12 +38,12 @@ gulp.task('build-app', function() {
 gulp.task('assets', ['bower'], function() {
   return merge(
     gulp.src(['app/assets/**/*']).pipe(gulp.dest(outputFolder)),
-    gulp.src(bowerFolder + '/bootstrap/**/*').pipe(gulp.dest(outputFolder + '/components/bootstrap')),
-    gulp.src(bowerFolder + '/open-sans-fontface/**/*').pipe(gulp.dest(outputFolder + '/components/open-sans-fontface')),
-    gulp.src(bowerFolder + '/lunr.js/*.js').pipe(gulp.dest(outputFolder + '/components/lunr.js')),
-    gulp.src(bowerFolder + '/google-code-prettify/**/*').pipe(gulp.dest(outputFolder + '/components/google-code-prettify/')),
-    gulp.src(bowerFolder + '/jquery/*.js').pipe(gulp.dest(outputFolder + '/components/jquery')),
-    gulp.src('../node_modules/marked/**/*.js').pipe(gulp.dest(outputFolder + '/components/marked'))
+    copyComponent('bootstrap'),
+    copyComponent('open-sans-fontface'),
+    copyComponent('lunr.js','/*.js'),
+    copyComponent('google-code-prettify'),
+    copyComponent('jquery'),
+    copyComponent('marked', '/**/*.js', '../node_modules', 'package.json')
   );
 });
 
