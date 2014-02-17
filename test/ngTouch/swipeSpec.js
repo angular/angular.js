@@ -59,8 +59,9 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.end).not.toHaveBeenCalled();
     }));
 
-    it('should trigger the "move" event after a "start"', inject(function($rootScope, $swipe, $compile) {
+    it('should trigger the "move" event after a "start"', inject(function($rootScope, $swipe, $compile, $window) {
       element = $compile('<div></div>')($rootScope);
+      angular.element($window.document.body).append(element);
       var events = {
         start: jasmine.createSpy('startSpy'),
         move: jasmine.createSpy('moveSpy'),
@@ -156,8 +157,9 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.end).not.toHaveBeenCalled();
     }));
 
-    it('should trigger a "start", many "move"s and an "end"', inject(function($rootScope, $swipe, $compile) {
+    it('should trigger a "start", many "move"s and an "end"', inject(function($rootScope, $swipe, $compile, $window) {
       element = $compile('<div></div>')($rootScope);
+      angular.element($window.document.body).append(element);
       var events = {
         start: jasmine.createSpy('startSpy'),
         move: jasmine.createSpy('moveSpy'),
@@ -239,8 +241,9 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
     }));
 
-    it('should not start sending "move"s until enough horizontal motion is accumulated', inject(function($rootScope, $swipe, $compile) {
+    it('should not start sending "move"s until enough horizontal motion is accumulated', inject(function($rootScope, $swipe, $compile, $window) {
       element = $compile('<div></div>')($rootScope);
+      angular.element($window.document.body).append(element);
       var events = {
         start: jasmine.createSpy('startSpy'),
         move: jasmine.createSpy('moveSpy'),
@@ -312,8 +315,9 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
     }));
 
-    it('should stop sending anything after vertical motion dominates', inject(function($rootScope, $swipe, $compile) {
+    it('should stop sending anything after vertical motion dominates', inject(function($rootScope, $swipe, $compile, $window) {
       element = $compile('<div></div>')($rootScope);
+      angular.element($window.document.body).append(element);
       var events = {
         start: jasmine.createSpy('startSpy'),
         move: jasmine.createSpy('moveSpy'),
