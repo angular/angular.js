@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.$exceptionHandler
- * @requires $log
+ * @ngdoc service
+ * @name $exceptionHandler
+ * @requires ng.$log
  *
  * @description
  * Any uncaught exception in angular expressions is delegated to this service.
@@ -15,14 +15,14 @@
  *
  * ## Example:
  * 
- * <pre>
+ * ```js
  *   angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
  *     return function (exception, cause) {
  *       exception.message += ' (caused by "' + cause + '")';
  *       throw exception;
  *     };
  *   });
- * </pre>
+ * ```
  * 
  * This example will override the normal action of `$exceptionHandler`, to make angular
  * exceptions fail hard when they happen, instead of just logging to the console.

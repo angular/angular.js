@@ -1,10 +1,10 @@
 @workInProgress
 @ngdoc overview
-@name Developer Guide: E2E Testing
+@name  E2E Testing
 @description
 
 **Angular Scenario Runner is in maintenance mode - If you're starting a new Angular project,
-consider using {@link https://github.com/angular/protractor Protractor}.**
+consider using [Protractor](https://github.com/angular/protractor).**
 
 
 
@@ -31,7 +31,7 @@ In addition to the above elements, scenarios may also contain helper functions t
 code in the `it` blocks.
 
 Here is an example of a simple scenario:
-<pre>
+```js
 describe('Buzz Client', function() {
 it('should filter results', function() {
   input('user').enter('jacksparrow');
@@ -41,7 +41,7 @@ it('should filter results', function() {
   expect(repeater('ul li').count()).toEqual(1);
 });
 });
-</pre>
+```
 
 Note that
 [`input('user')`](https://github.com/angular/angular.js/blob/master/docs/content/guide/dev_guide.e2e-testing.ngdoc#L119)
@@ -55,7 +55,7 @@ the only button on the page, and then it verifies that there are 10 items listed
 The API section below lists the available commands and expectations for the Runner.
 
 # API
-Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js}
+Source: https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js
 
 ## pause()
 Pauses the execution of the tests until you call `resume()` in the console (or click the resume
@@ -88,19 +88,19 @@ Returns the window.location.search of the currently loaded page in the test fram
 Returns the window.location.hash (without `#`) of the currently loaded page in the test frame.
 
 ## browser().location().url()
-Returns the {@link api/ng.$location $location.url()} of the currently loaded page in
+Returns the {@link ng.$location $location.url()} of the currently loaded page in
 the test frame.
 
 ## browser().location().path()
-Returns the {@link api/ng.$location $location.path()} of the currently loaded page in
+Returns the {@link ng.$location $location.path()} of the currently loaded page in
 the test frame.
 
 ## browser().location().search()
-Returns the {@link api/ng.$location $location.search()} of the currently loaded page
+Returns the {@link ng.$location $location.search()} of the currently loaded page
 in the test frame.
 
 ## browser().location().hash()
-Returns the {@link api/ng.$location $location.hash()} of the currently loaded page in
+Returns the {@link ng.$location $location.hash()} of the currently loaded page in
 the test frame.
 
 ## expect(future).{matcher}
@@ -188,9 +188,9 @@ Executes the `method` passing in `key` and `value` on the element matching the g
 Matchers are used in combination with the `expect(...)` function as described above and can
 be negated with `not()`. For instance: `expect(element('h1').text()).not().toEqual('Error')`.
 
-Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/matchers.js}
+Source: https://github.com/angular/angular.js/blob/master/src/ngScenario/matchers.js
 
-<pre>
+```js
 // value and Object comparison following the rules of angular.equals().
 expect(value).toEqual(value)
 
@@ -219,10 +219,10 @@ expect(value).toContain(expected)
 // number comparison using < and >
 expect(value).toBeLessThan(expected)
 expect(value).toBeGreaterThan(expected)
-</pre>
+```
 
 # Example
-See the {@link https://github.com/angular/angular-seed angular-seed} project for more examples.
+See the [angular-seed](https://github.com/angular/angular-seed) project for more examples.
 
 ## Conditional actions with element(...).query(fn)
 
@@ -239,7 +239,7 @@ Imagine the application to be structured into two views:
  2. a *detail view* which shows the entries' details and contains a delete button. When clicking the
     delete button, the user is redirected back to the *overview page*.
 
-<pre>
+```js
 beforeEach(function () {
   var deleteEntry = function () {
     browser().navigateTo('/entries');
@@ -276,24 +276,24 @@ beforeEach(function () {
   // start deleting entries
   deleteEntry();
 });
-</pre>
+```
 
 In order to understand what is happening, we should emphasize that ngScenario calls are not
 immediately executed, but queued (in ngScenario terms, we would be talking about adding
 future actions). If we had only one entry in our table, then the following future actions
 would be queued:
 
-<pre>
+```js
 // delete entry 1
 browser().navigateTo('/entries');
 element('table tbody').query(function (tbody, done) { ... });
 element('table tbody a');
 element('.btn-danger').click();
-</pre>
+```
 
 For two entries, ngScenario would have to work on the following queue:
 
-<pre>
+```js
 // delete entry 1
 browser().navigateTo('/entries');
 element('table tbody').query(function (tbody, done) { ... });
@@ -306,7 +306,7 @@ element('.btn-danger').click();
     element('table tbody').query(function (tbody, done) { ... });
     element('table tbody a');
     element('.btn-danger').click();
-</pre>
+```
 
 # Caveats
 

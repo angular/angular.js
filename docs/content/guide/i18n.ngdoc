@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: i18n and l10n
+@name  i18n and l10n
 @description
 
 # I18n and L10n in AngularJS
@@ -16,10 +16,10 @@ abstracted bits.
 
 **What level of support for i18n/l10n is currently in Angular?**
 
-Currently, Angular supports i18n/l10n for {@link
-http://docs.angularjs.org/#!/api/ng.filter:date datetime}, {@link
-http://docs.angularjs.org/#!/api/ng.filter:number number} and {@link
-http://docs.angularjs.org/#!/api/ng.filter:currency currency} filters.
+Currently, Angular supports i18n/l10n for
+[datetime](http://docs.angularjs.org/#!/api/ng.filter:date),
+[number](http://docs.angularjs.org/#!/api/ng.filter:number) and
+[currency](http://docs.angularjs.org/#!/api/ng.filter:currency) filters.
 
 Additionally, Angular supports localizable pluralization support provided by the {@link
 api/ng.directive:ngPluralize ngPluralize directive}.
@@ -28,8 +28,8 @@ All localizable Angular components depend on locale-specific rule sets managed b
 api/ng.$locale $locale service}.
 
 For readers who want to jump straight into examples, we have a few web pages that showcase how to
-use Angular filters with various locale rule sets. You can find these examples either on {@link
-https://github.com/angular/angular.js/tree/master/i18n/e2e Github} or in the i18n/e2e folder of
+use Angular filters with various locale rule sets. You can find these examples either on
+[Github](https://github.com/angular/angular.js/tree/master/i18n/e2e) or in the i18n/e2e folder of
 Angular development package.
 
 **What is a locale id?**
@@ -37,13 +37,13 @@ Angular development package.
 A locale is a specific geographical, political, or cultural region. The most commonly used locale
 ID consists of two parts: language code and country code. For example, en-US, en-AU, zh-CN are all
 valid locale IDs that have both language codes and country codes. Because specifying a country code
-in locale ID is optional,  locale IDs such as en, zh,  and sk are also valid. See the {@link
-http://userguide.icu-project.org/locale ICU } website for more information about using locale IDs.
+in locale ID is optional,  locale IDs such as en, zh,  and sk are also valid. See the
+[ICU ](http://userguide.icu-project.org/locale) website for more information about using locale IDs.
 
 **Supported locales in Angular**
 Angular separates number and datetime format rule sets into different files, each file for a
-particular locale. You can find a list of currently supported locales {@link
-https://github.com/angular/angular.js/tree/master/src/ngLocale here}
+particular locale. You can find a list of currently supported locales
+[here](https://github.com/angular/angular.js/tree/master/src/ngLocale)
 # Providing locale rules to Angular
 
 There are two approaches to providing locale rules to Angular:
@@ -66,7 +66,7 @@ starts, Angular is automatically pre-configured with localization rules for the 
 You can also include the locale specific js file in the index.html page. For example, if one client
 requires German locale, you would serve index_de-de.html which will look something like this:
 
-<pre>
+```html
 <html ng-app>
  <head>
 ….
@@ -75,7 +75,7 @@ requires German locale, you would serve index_de-de.html which will look somethi
 ….
  </head>
 </html>
-</pre>
+```
 
 **Comparison of the two approaches**
 Both approaches described above requires you to prepare different index.html pages or js files for
@@ -90,8 +90,8 @@ because an extra script needs to be loaded.
 
 **Currency symbol "gotcha"**
 
-Angular's {@link http://docs.angularjs.org/#!/api/ng.filter:currency currency filter} allows
-you to use the default currency symbol from the {@link api/ng.$locale locale service},
+Angular's [currency filter](http://docs.angularjs.org/#!/api/ng.filter:currency) allows
+you to use the default currency symbol from the {@link ng.$locale locale service},
 or you can provide the filter with a custom currency symbol. If your app will be used only in one
 locale, it is fine to rely on the default currency symbol. However, if you anticipate that viewers
 in other locales might use your app, you should provide your own currency symbol to make sure the
@@ -103,8 +103,8 @@ containing currency filter: `{{ 1000 | currency }}`, and your app is currently i
 browser will specify the locale as ja, and the balance of '¥1000.00' will be shown instead. This
 will really upset your client.
 
-In this case, you need to override the default currency symbol by providing the {@link
-http://docs.angularjs.org/#!/api/ng.filter:currency currency filter} with a currency symbol as
+In this case, you need to override the default currency symbol by providing the
+[currency filter](http://docs.angularjs.org/#!/api/ng.filter:currency) with a currency symbol as
 a parameter when you configure the filter, for example, {{ 1000 | currency:"USD$"}}. This way,
 Angular will always show a balance of 'USD$1000' and disregard any locale changes.
 

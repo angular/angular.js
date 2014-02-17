@@ -60,11 +60,11 @@ The loaded, transformed and rendered DOM is then called the <a name="view">"view
 
 The first kind of new markup are the so called <a name="directive">"{@link directive directives}"</a>.
 They apply special behavior to attributes or elements in the HTML. In the example above we use the
-{@link api/ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
-initializes our application. Angular also defines a directive for the {@link api/ng.directive:input `input`}
+{@link ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
+initializes our application. Angular also defines a directive for the {@link ng.directive:input `input`}
 element that adds extra behavior to the element. E.g. it is able to automatically validate that the entered
 text is non empty by evaluating the `required` attribute.
-The {@link api/ng.directive:ngModel `ng-model`} directive stores/updates
+The {@link ng.directive:ngModel `ng-model`} directive stores/updates
 the value of the input field into/from a variable and shows the validation state of the input field by
 adding css classes. In the example we use these css classes to mark an empty input field with a red border.
 
@@ -86,9 +86,9 @@ in the rest of the documentation.
 Applied to the example above, the markup directs Angular to "take the data we got from the input widgets
 and multiply them together".
 
-The example above also contains a <a name="filter">"{@link filter filter}"</a>.
+The example above also contains a <a name="filter">"{@link guide/filter filter}"</a>.
 A filter formats the value of an expression for display to the user.
-In the example above, the filter {@link api/ng.filter:currency `currency`} formats a number
+In the example above, the filter {@link ng.filter:currency `currency`} formats a number
 into an output that looks like money.
 
 The important thing in the example is that angular provides _live_ bindings:
@@ -157,7 +157,7 @@ More exactly, the file contains a constructor function that creates the actual c
 The purpose of controllers is to expose variables and functionality to expressions and directives.
 
 Besides the new file that contains the controller code we also added a
-{@link api/ng.directive:ngController `ng-controller`} directive to the HTML.
+{@link ng.directive:ngController `ng-controller`} directive to the HTML.
 This directive tells angular that the new `InvoiceController` is responsible for the element with the directive
 and all of the element's children.
 The syntax `InvoiceController as invoice` tells Angular to instantiate the controller
@@ -165,13 +165,13 @@ and save it in the variable `invoice` in the current scope.
 
 We also changed all expressions in the page to read and write variables within that
 controller instance by prefixing them with `invoice.` . The possible currencies are defined in the controller
-and added to the template using {@link api/ng.directive:ngRepeat `ng-repeat`}.
+and added to the template using {@link ng.directive:ngRepeat `ng-repeat`}.
 As the controller contains a `total` function
 we are also able to bind the result of that function to the DOM using `{{ invoice.total(...) }}`.
 
 Again, this binding is live, i.e. the DOM will be automatically updated
 whenever the result of the function changes.
-The button to pay the invoice uses the directive {@link api/ng.directive:ngClick `ngClick`}. This will evaluate the
+The button to pay the invoice uses the directive {@link ng.directive:ngClick `ngClick`}. This will evaluate the
 corresponding expression whenever the button is clicked.
 
 In the new JavaScript file we are also creating a {@link concepts#module module}
@@ -203,7 +203,7 @@ Let's refactor our example and move the currency conversion into a service in an
         };
         var convert = function (amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
-        }
+        };
 
         return {
           currencies: currencies,
@@ -331,7 +331,7 @@ The following example shows how this is done with Angular:
 
         var convert = function (amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
-        }
+        };
 
         var refresh = function() {
           var url = YAHOO_FINANCE_URL_PATTERN.
@@ -344,7 +344,7 @@ The following example shows how this is done with Angular:
             });
             usdToForeignRates = newUsdToForeignRates;
           });
-        }
+        };
 
         refresh();
 
@@ -380,7 +380,7 @@ The following example shows how this is done with Angular:
 
 What changed?
 Our `currencyConverter` service of the `finance` module now uses the
-{@link api/ng.$http $http} service, a builtin service provided by Angular
+{@link ng.$http $http} service, a builtin service provided by Angular
 for accessing the backend. It is a wrapper around [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
 and [JSONP](http://en.wikipedia.org/wiki/JSONP) transports. Details can be found in the api docs of that service.
 

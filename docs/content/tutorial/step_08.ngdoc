@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 8 - More Templating
+@ngdoc tutorial
+@name 8 - More Templating
+@step 8
 @description
 
 <ul doc-tutorial-nav="8"></ul>
@@ -15,12 +16,10 @@ phone in the phone list.
 Now when you click on a phone on the list, the phone details page with phone-specific information
 is displayed.
 
-To implement the phone details view we will use {@link api/ng.$http $http} to fetch
+To implement the phone details view we will use {@link ng.$http $http} to fetch
 our data, and we'll flesh out the `phone-detail.html` view template.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-7...step-8
-GitHub}:
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-7...step-8):
 
 ## Data
 
@@ -28,7 +27,8 @@ In addition to `phones.json`, the `app/phones/` directory also contains one json
 phone:
 
 __`app/phones/nexus-s.json`:__ (sample snippet)
-<pre>
+
+```js
 {
   "additionalFeatures": "Contour Display, Near Field Communications (NFC),...",
   "android": {
@@ -47,7 +47,7 @@ __`app/phones/nexus-s.json`:__ (sample snippet)
       "ram": "512MB"
   }
 }
-</pre>
+```
 
 
 Each of these files describes various properties of the phone using the same data structure. We'll
@@ -60,7 +60,8 @@ We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the jso
 the same way as the phone list controller.
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 var phonecatControllers = angular.module('phonecatControllers',[]);
 
 phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
@@ -69,7 +70,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$h
       $scope.phone = data;
     });
   }]);
-</pre>
+```
 
 To construct the URL for the HTTP request, we use `$routeParams.phoneId` extracted from the current
 route by the `$route` service.
@@ -83,7 +84,8 @@ our model into the view.
 
 
 __`app/partials/phone-detail.html`:__
-<pre>
+
+```html
 <img ng-src="{{phone.images[0]}}" class="phone">
 
 <h1>{{phone.name}}</h1>
@@ -110,7 +112,7 @@ __`app/partials/phone-detail.html`:__
     <dd>{{phone.additionalFeatures}}</dd>
   </li>
 </ul>
-</pre>
+```
 
 <div style="display: none">
 TODO!
@@ -123,7 +125,8 @@ We wrote a new unit test that is similar to the one we wrote for the `PhoneListC
 step 5.
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 ...
   describe('PhoneDetailCtrl', function(){
     var scope, $httpBackend, ctrl;
@@ -146,7 +149,7 @@ __`test/unit/controllersSpec.js`:__
     });
   });
 ...
-</pre>
+```
 
 You should now see the following output in the Karma tab:
 
@@ -157,7 +160,8 @@ We also added a new end-to-end test that navigates to the Nexus S detail page an
 heading on the page is "Nexus S".
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 ...
   describe('Phone detail view', function() {
 
@@ -171,13 +175,11 @@ __`test/e2e/scenarios.js`:__
     });
   });
 ...
-</pre>
+```
 
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
-Angular's server}.
+runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html).
 
 
 # Experiments

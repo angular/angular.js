@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Managing Service Dependencies
+@name  Angular Services: Managing Service Dependencies
 @description
 
 Angular allows services to declare other services as dependencies needed for construction of their
@@ -12,37 +12,37 @@ dropped (see "Inferring `$inject`" but note that that is currently an experiment
 
 Using the array notation:
 
-<pre>
+```js
 function myModuleCfgFn($provide) {
   $provide.factory('myService', ['dep1', 'dep2', function(dep1, dep2) {}]);
 }
-</pre>
+```
 
 
 Using the $inject property:
 
-<pre>
+```js
 function myModuleCfgFn($provide) {
   var myServiceFactory = function(dep1, dep2) {};
   myServiceFactory.$inject = ['dep1', 'dep2'];
   $provide.factory('myService', myServiceFactory);
 }
-</pre>
+```
 
 
 Using DI inference (incompatible with minifiers):
 
-<pre>
+```js
 function myModuleCfgFn($provide) {
   $provide.factory('myService', function(dep1, dep2) {});
 }
-</pre>
+```
 
 
 Here is an example of two services, one of which depends on the other and both
 of which depend on other services that are provided by the Angular framework:
 
-<pre>
+```js
 /**
  * batchLog service allows for messages to be queued in memory and flushed
  * to the console.log every 50 seconds.
@@ -83,14 +83,14 @@ of which depend on other services that are provided by the Angular framework:
 
   // get the main service to kick off the application
   angular.injector([batchLogModule]).get('routeTemplateMonitor');
-</pre>
+```
 
 Things to notice in this example:
 
-* The `batchLog` service depends on the built-in {@link api/ng.$interval $interval} and
-{@link api/ng.$log $log} services, and allows messages to be logged into the
+* The `batchLog` service depends on the built-in {@link ng.$interval $interval} and
+{@link ng.$log $log} services, and allows messages to be logged into the
 `console.log` in batches.
-* The `routeTemplateMonitor` service depends on the built-in {@link api/ngRoute.$route
+* The `routeTemplateMonitor` service depends on the built-in {@link ngRoute.$route
 $route} service as well as our custom `batchLog` service.
 * Both of our services use the factory function signature and array notation for inject annotations
 to declare their dependencies. It is important that the order of the string identifiers in the array
@@ -109,5 +109,5 @@ that the injector uses to determine which services and in which order to inject.
 
 ## Related API
 
-* {@link api/ng Angular Service API}
-* {@link api/angular.injector Angular Injector API}
+* {@link ./ng Angular Service API}
+* {@link angular.injector Angular Injector API}

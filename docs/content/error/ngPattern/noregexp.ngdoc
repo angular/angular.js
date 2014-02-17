@@ -4,4 +4,4 @@
 @description
 This error occurs when 'ngPattern' is passed an expression that isn't a regular expression or doesn't have the expected format.
 
-For more information on valid expression syntax, see 'ngPattern' in {@link api/ng.directive:input input} directive docs.
+For more information on valid expression syntax, see 'ngPattern' in {@link ng.directive:input input} directive docs.

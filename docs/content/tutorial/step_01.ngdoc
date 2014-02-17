@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 1 - Static Template
+@ngdoc tutorial
+@name 1 - Static Template
+@step 1
 @description
 
 <ul doc-tutorial-nav="1"></ul>
@@ -17,11 +18,11 @@ In this step you will add some basic information about two cell phones to an HTM
 
 The page now contains a list with information about two phones.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-0...step-1):
 
 __`app/index.html`:__
-<pre>
+
+```html
   <ul>
     <li>
       <span>Nexus S</span>
@@ -36,7 +37,7 @@ __`app/index.html`:__
       </p>
     </li>
   </ul>
-</pre>
+```
 
 
 # Experiments

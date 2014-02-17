@@ -27,17 +27,16 @@
 
 
 /**
- * @ngdoc object
- * @name ng.$rootScopeProvider
+ * @ngdoc provider
+ * @name $rootScopeProvider
  * @description
  *
  * Provider for the $rootScope service.
  */
 
 /**
- * @ngdoc function
- * @name ng.$rootScopeProvider#digestTtl
- * @methodOf ng.$rootScopeProvider
+ * @ngdoc method
+ * @name $rootScopeProvider#digestTtl
  * @description
  *
  * Sets the number of `$digest` iterations the scope should attempt to execute before giving up and
@@ -58,8 +57,8 @@
 
 
 /**
- * @ngdoc object
- * @name ng.$rootScope
+ * @ngdoc service
+ * @name $rootScope
  * @description
  *
  * Every application has a single root {@link ng.$rootScope.Scope scope}.
@@ -84,23 +83,23 @@ function $RootScopeProvider(){
       function( $injector,   $exceptionHandler,   $parse,   $browser) {
 
     /**
-     * @ngdoc function
-     * @name ng.$rootScope.Scope
+     * @ngdoc type
+     * @name $rootScope.Scope
      *
      * @description
      * A root scope can be retrieved using the {@link ng.$rootScope $rootScope} key from the
-     * {@link AUTO.$injector $injector}. Child scopes are created using the
+     * {@link auto.$injector $injector}. Child scopes are created using the
      * {@link ng.$rootScope.Scope#methods_$new $new()} method. (Most scopes are created automatically when
      * compiled HTML template is executed.)
      *
      * Here is a simple scope snippet to show how you can interact with the scope.
-     * <pre>
+     * ```html
      * <file src="./test/ng/rootScopeSpec.js" tag="docs1" />
-     * </pre>
+     * ```
      *
      * # Inheritance
      * A scope can inherit from a parent scope, as in this example:
-     * <pre>
+     * ```js
          var parent = $rootScope;
          var child = parent.$new();
 
@@ -111,7 +110,7 @@ function $RootScopeProvider(){
          child.salutation = "Welcome";
          expect(child.salutation).toEqual('Welcome');
          expect(parent.salutation).toEqual('Hello');
-     * </pre>
+     * ```
      *
      *
      * @param {Object.<string, function()>=} providers Map of service factory which need to be
@@ -139,7 +138,7 @@ function $RootScopeProvider(){
 
     /**
      * @ngdoc property
-     * @name ng.$rootScope.Scope#$id
+     * @name $rootScope.Scope#$id
      * @propertyOf ng.$rootScope.Scope
      * @returns {number} Unique scope ID (monotonically increasing alphanumeric sequence) useful for
      *   debugging.
@@ -149,9 +148,8 @@ function $RootScopeProvider(){
     Scope.prototype = {
       constructor: Scope,
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$new
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$new
        * @function
        *
        * @description
@@ -207,9 +205,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$watch
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$watch
        * @function
        *
        * @description
@@ -247,7 +244,7 @@ function $RootScopeProvider(){
        *
        *
        * # Example
-       * <pre>
+       * ```js
            // let's assume that scope was dependency injected as the $rootScope
            var scope = $rootScope;
            scope.name = 'misko';
@@ -296,7 +293,7 @@ function $RootScopeProvider(){
            scope.$digest();
            expect(scope.foodCounter).toEqual(1);
 
-       * </pre>
+       * ```
        *
        *
        *
@@ -359,9 +356,8 @@ function $RootScopeProvider(){
 
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$watchCollection
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$watchCollection
        * @function
        *
        * @description
@@ -376,7 +372,7 @@ function $RootScopeProvider(){
        *
        *
        * # Example
-       * <pre>
+       * ```js
           $scope.names = ['igor', 'matias', 'misko', 'james'];
           $scope.dataCount = 4;
 
@@ -395,7 +391,7 @@ function $RootScopeProvider(){
 
           //now there's been a change
           expect($scope.dataCount).toEqual(3);
-       * </pre>
+       * ```
        *
        *
        * @param {string|Function(scope)} obj Evaluated as {@link guide/expression expression}. The
@@ -499,9 +495,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$digest
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$digest
        * @function
        *
        * @description
@@ -525,7 +520,7 @@ function $RootScopeProvider(){
        * In unit tests, you may need to call `$digest()` to simulate the scope life cycle.
        *
        * # Example
-       * <pre>
+       * ```js
            var scope = ...;
            scope.name = 'misko';
            scope.counter = 0;
@@ -543,7 +538,7 @@ function $RootScopeProvider(){
            scope.name = 'adam';
            scope.$digest();
            expect(scope.counter).toEqual(1);
-       * </pre>
+       * ```
        *
        */
       $digest: function() {
@@ -656,7 +651,7 @@ function $RootScopeProvider(){
 
       /**
        * @ngdoc event
-       * @name ng.$rootScope.Scope#$destroy
+       * @name $rootScope.Scope#$destroy
        * @eventOf ng.$rootScope.Scope
        * @eventType broadcast on scope being destroyed
        *
@@ -668,9 +663,8 @@ function $RootScopeProvider(){
        */
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$destroy
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$destroy
        * @function
        *
        * @description
@@ -713,9 +707,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$eval
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$eval
        * @function
        *
        * @description
@@ -724,14 +717,14 @@ function $RootScopeProvider(){
        * expressions.
        *
        * # Example
-       * <pre>
+       * ```js
            var scope = ng.$rootScope.Scope();
            scope.a = 1;
            scope.b = 2;
 
            expect(scope.$eval('a+b')).toEqual(3);
            expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
-       * </pre>
+       * ```
        *
        * @param {(string|function())=} expression An angular expression to be executed.
        *
@@ -746,9 +739,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$evalAsync
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$evalAsync
        * @function
        *
        * @description
@@ -794,9 +786,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$apply
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$apply
        * @function
        *
        * @description
@@ -809,7 +800,7 @@ function $RootScopeProvider(){
        * ## Life cycle
        *
        * # Pseudo-Code of `$apply()`
-       * <pre>
+       * ```js
            function $apply(expr) {
              try {
                return $eval(expr);
@@ -819,7 +810,7 @@ function $RootScopeProvider(){
                $root.$digest();
              }
            }
-       * </pre>
+       * ```
        *
        *
        * Scope's `$apply()` method transitions through the following stages:
@@ -857,9 +848,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$on
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$on
        * @function
        *
        * @description
@@ -907,9 +897,8 @@ function $RootScopeProvider(){
 
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$emit
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$emit
        * @function
        *
        * @description
@@ -976,9 +965,8 @@ function $RootScopeProvider(){
 
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$broadcast
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$broadcast
        * @function
        *
        * @description

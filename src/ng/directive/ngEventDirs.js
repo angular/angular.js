@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngClick
+ * @name ngClick
  *
  * @description
  * The ngClick directive allows you to specify custom behavior when
@@ -14,21 +14,21 @@
  * click. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-click="count = count + 1" ng-init="count=0">
         Increment
       </button>
       count: {{count}}
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check ng-click', function() {
          expect(element(by.binding('count')).getText()).toMatch('0');
-         element(by.css('.doc-example-live button')).click();
+         element(by.css('button')).click();
          expect(element(by.binding('count')).getText()).toMatch('1');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 /*
  * A directive that allows creation of custom onclick handlers that are defined as angular
@@ -60,7 +60,7 @@ forEach(
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngDblclick
+ * @name ngDblclick
  *
  * @description
  * The `ngDblclick` directive allows you to specify custom behavior on a dblclick event.
@@ -71,20 +71,20 @@ forEach(
  * a dblclick. (The Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-dblclick="count = count + 1" ng-init="count=0">
         Increment (on double click)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngMousedown
+ * @name ngMousedown
  *
  * @description
  * The ngMousedown directive allows you to specify custom behavior on mousedown event.
@@ -95,20 +95,20 @@ forEach(
  * mousedown. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-mousedown="count = count + 1" ng-init="count=0">
         Increment (on mouse down)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngMouseup
+ * @name ngMouseup
  *
  * @description
  * Specify custom behavior on mouseup event.
@@ -119,19 +119,19 @@ forEach(
  * mouseup. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-mouseup="count = count + 1" ng-init="count=0">
         Increment (on mouse up)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngMouseover
+ * @name ngMouseover
  *
  * @description
  * Specify custom behavior on mouseover event.
@@ -142,20 +142,20 @@ forEach(
  * mouseover. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-mouseover="count = count + 1" ng-init="count=0">
         Increment (when mouse is over)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngMouseenter
+ * @name ngMouseenter
  *
  * @description
  * Specify custom behavior on mouseenter event.
@@ -166,20 +166,20 @@ forEach(
  * mouseenter. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-mouseenter="count = count + 1" ng-init="count=0">
         Increment (when mouse enters)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngMouseleave
+ * @name ngMouseleave
  *
  * @description
  * Specify custom behavior on mouseleave event.
@@ -190,20 +190,20 @@ forEach(
  * mouseleave. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-mouseleave="count = count + 1" ng-init="count=0">
         Increment (when mouse leaves)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngMousemove
+ * @name ngMousemove
  *
  * @description
  * Specify custom behavior on mousemove event.
@@ -214,20 +214,20 @@ forEach(
  * mousemove. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <button ng-mousemove="count = count + 1" ng-init="count=0">
         Increment (when mouse moves)
       </button>
       count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngKeydown
+ * @name ngKeydown
  *
  * @description
  * Specify custom behavior on keydown event.
@@ -238,18 +238,18 @@ forEach(
  * keydown. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <input ng-keydown="count = count + 1" ng-init="count=0">
       key down count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngKeyup
+ * @name ngKeyup
  *
  * @description
  * Specify custom behavior on keyup event.
@@ -260,18 +260,18 @@ forEach(
  * keyup. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <input ng-keyup="count = count + 1" ng-init="count=0">
       key up count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngKeypress
+ * @name ngKeypress
  *
  * @description
  * Specify custom behavior on keypress event.
@@ -281,18 +281,18 @@ forEach(
  * keypress. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <input ng-keypress="count = count + 1" ng-init="count=0">
       key press count: {{count}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngSubmit
+ * @name ngSubmit
  *
  * @description
  * Enables binding angular expressions to onsubmit events.
@@ -306,8 +306,8 @@ forEach(
  * @param {expression} ngSubmit {@link guide/expression Expression} to eval. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <script>
         function Ctrl($scope) {
           $scope.list = [];
@@ -326,27 +326,27 @@ forEach(
         <input type="submit" id="submit" value="Submit" />
         <pre>list={{list}}</pre>
       </form>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check ng-submit', function() {
          expect(element(by.binding('list')).getText()).toBe('list=[]');
-         element(by.css('.doc-example-live #submit')).click();
+         element(by.css('#submit')).click();
          expect(element(by.binding('list')).getText()).toContain('hello');
          expect(element(by.input('text')).getAttribute('value')).toBe('');
        });
        it('should ignore empty strings', function() {
          expect(element(by.binding('list')).getText()).toBe('list=[]');
-         element(by.css('.doc-example-live #submit')).click();
-         element(by.css('.doc-example-live #submit')).click();
+         element(by.css('#submit')).click();
+         element(by.css('#submit')).click();
          expect(element(by.binding('list')).getText()).toContain('hello');
         });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngFocus
+ * @name ngFocus
  *
  * @description
  * Specify custom behavior on focus event.
@@ -362,7 +362,7 @@ forEach(
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBlur
+ * @name ngBlur
  *
  * @description
  * Specify custom behavior on blur event.
@@ -378,7 +378,7 @@ forEach(
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngCopy
+ * @name ngCopy
  *
  * @description
  * Specify custom behavior on copy event.
@@ -389,17 +389,17 @@ forEach(
  * copy. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <input ng-copy="copied=true" ng-init="copied=false; value='copy me'" ng-model="value">
       copied: {{copied}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngCut
+ * @name ngCut
  *
  * @description
  * Specify custom behavior on cut event.
@@ -410,17 +410,17 @@ forEach(
  * cut. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <input ng-cut="cut=true" ng-init="cut=false; value='cut me'" ng-model="value">
       cut: {{cut}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngPaste
+ * @name ngPaste
  *
  * @description
  * Specify custom behavior on paste event.
@@ -431,10 +431,10 @@ forEach(
  * paste. (Event object is available as `$event`)
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <input ng-paste="paste=true" ng-init="paste=false" placeholder='paste here'>
       pasted: {{paste}}
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngRepeat
+ * @name ngRepeat
  *
  * @description
  * The `ngRepeat` directive instantiates a template once per item from a collection. Each template
@@ -20,7 +20,7 @@
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
- * Creating aliases for these properties is possible with {@link api/ng.directive:ngInit `ngInit`}.
+ * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
  * This may be useful when, for instance, nesting ngRepeats.
  *
  * # Special repeat start and end points
@@ -30,7 +30,7 @@
  * up to and including the ending HTML tag where **ng-repeat-end** is placed.
  *
  * The example below makes use of this feature:
- * <pre>
+ * ```html
  *   <header ng-repeat-start="item in items">
  *     Header {{ item }}
  *   </header>
@@ -40,10 +40,10 @@
  *   <footer ng-repeat-end>
  *     Footer {{ item }}
  *   </footer>
- * </pre>
+ * ```
  *
  * And with an input of {@type ['A','B']} for the items variable in the example above, the output will evaluate to:
- * <pre>
+ * ```html
  *   <header>
  *     Header A
  *   </header>
@@ -62,7 +62,7 @@
  *   <footer>
  *     Footer B
  *   </footer>
- * </pre>
+ * ```
  *
  * The custom start and end points for ngRepeat also support all other HTML directive syntax flavors provided in AngularJS (such
  * as **data-ng-repeat-start**, **x-ng-repeat-start** and **ng:repeat-start**).
@@ -113,7 +113,7 @@
  * @example
  * This example initializes the scope to a list of names and
  * then uses `ngRepeat` to display every person:
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
       <div ng-init="friends = [
         {name:'John', age:25, gender:'boy'},
@@ -172,9 +172,8 @@
         max-height:40px;
       }
     </file>
-    <file name="protractorTest.js">
-      var friends = element(by.css('.doc-example-live'))
-          .element.all(by.repeater('friend in friends'));
+    <file name="protractor.js" type="protractor">
+      var friends = element.all(by.repeater('friend in friends'));
 
       it('should render initial data set', function() {
         expect(friends.count()).toBe(10);
@@ -188,7 +187,7 @@
        it('should update repeater when filter predicate changes', function() {
          expect(friends.count()).toBe(10);
 
-         element(by.css('.doc-example-live')).element(by.model('q')).sendKeys('ma');
+         element(by.model('q')).sendKeys('ma');
 
          expect(friends.count()).toBe(2);
          expect(friends.get(0).getText()).toEqual('[1] Mary who is 28 years old.');

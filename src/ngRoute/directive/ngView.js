@@ -6,7 +6,7 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
 
 /**
  * @ngdoc directive
- * @name ngRoute.directive:ngView
+ * @name ngView
  * @restrict ECA
  *
  * @description
@@ -36,7 +36,9 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
  *                  - Otherwise enable scrolling only if the `autoscroll` attribute value evaluated
  *                    as an expression yields a truthy value.
  * @example
-    <example module="ngViewExample" deps="angular-route.js" animations="true">
+    <example name="ngView-directive" module="ngViewExample"
+             deps="angular-route.js;angular-animate.js"
+             animations="true" fixBase="true">
       <file name="index.html">
         <div ng-controller="MainCntl as main">
           Choose:
@@ -151,17 +153,17 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
         }
       </file>
 
-      <file name="protractorTest.js">
+      <file name="protractor.js" type="protractor">
         it('should load and compile correct template', function() {
           element(by.linkText('Moby: Ch1')).click();
-          var content = element(by.css('.doc-example-live [ng-view]')).getText();
+          var content = element(by.css('[ng-view]')).getText();
           expect(content).toMatch(/controller\: ChapterCntl/);
           expect(content).toMatch(/Book Id\: Moby/);
           expect(content).toMatch(/Chapter Id\: 1/);
 
           element(by.partialLinkText('Scarlet')).click();
 
-          content = element(by.css('.doc-example-live [ng-view]')).getText();
+          content = element(by.css('[ng-view]')).getText();
           expect(content).toMatch(/controller\: BookCntl/);
           expect(content).toMatch(/Book Id\: Scarlet/);
         });
@@ -172,8 +174,7 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
 
 /**
  * @ngdoc event
- * @name ngRoute.directive:ngView#$viewContentLoaded
- * @eventOf ngRoute.directive:ngView
+ * @name ngView#$viewContentLoaded
  * @eventType emit on the current ngView scope
  * @description
  * Emitted every time the ngView content is reloaded.

@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.filter:orderBy
+ * @ngdoc filter
+ * @name orderBy
  * @function
  *
  * @description
@@ -26,8 +26,8 @@
  * @returns {Array} Sorted copy of the source array.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.friends =
@@ -57,8 +57,8 @@
            </tr>
          </table>
        </div>
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
  */
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse){

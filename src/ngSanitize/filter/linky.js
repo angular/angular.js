@@ -4,7 +4,7 @@
 
 /**
  * @ngdoc filter
- * @name ngSanitize.filter:linky
+ * @name linky
  * @function
  *
  * @description
@@ -21,8 +21,8 @@
    <span ng-bind-html="linky_expression | linky"></span>
  *
  * @example
-   <doc:example module="ngSanitize">
-     <doc:source>
+   <example module="ngSanitize" deps="angular-sanitize.js">
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.snippet =
@@ -66,8 +66,8 @@
            <td><div ng-bind="snippet"></div></td>
          </tr>
        </table>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should linkify the snippet with urls', function() {
          expect(element(by.id('linky-filter')).element(by.binding('snippet | linky')).getText()).
              toBe('Pretty text with some links: http://angularjs.org/, us@somewhere.org, ' +
@@ -98,8 +98,8 @@
             toBe('http://angularjs.org/');
         expect(element(by.css('#linky-target a')).getAttribute('target')).toEqual('_blank');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
   var LINKY_URL_REGEXP =

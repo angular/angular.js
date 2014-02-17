@@ -3,7 +3,7 @@
 var ngOptionsMinErr = minErr('ngOptions');
 /**
  * @ngdoc directive
- * @name ng.directive:select
+ * @name select
  * @restrict E
  *
  * @description
@@ -21,7 +21,7 @@ var ngOptionsMinErr = minErr('ngOptions');
  *
  * <div class="alert alert-warning">
  * **Note:** `ngModel` compares by reference, not value. This is important when binding to an
- * array of objects. See an example {@link http://jsfiddle.net/qWzTb/ in this jsfiddle}.
+ * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/).
  * </div>
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
@@ -72,8 +72,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  *     `value` variable (e.g. `value.propertyName`).
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <script>
         function MyCntrl($scope) {
           $scope.colors = [
@@ -119,8 +119,8 @@ var ngOptionsMinErr = minErr('ngOptions');
                ng-style="{'background-color':color.name}">
           </div>
         </div>
-      </doc:source>
-      <doc:protractor>
+      </file>
+      <file name="protractor.js" type="protractor">
          it('should check ng-options', function() {
            expect(element(by.binding('{selected_color:color}')).getText()).toMatch('red');
            element.all(by.select('color')).first().click();
@@ -130,8 +130,8 @@ var ngOptionsMinErr = minErr('ngOptions');
            element.all(by.css('.nullable select[ng-model="color"] option')).first().click();
            expect(element(by.binding('{selected_color:color}')).getText()).toMatch('null');
          });
-      </doc:protractor>
-    </doc:example>
+      </file>
+    </example>
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });

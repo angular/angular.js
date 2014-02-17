@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngCookies
  * @description
  *
@@ -20,9 +20,8 @@
 
 angular.module('ngCookies', ['ng']).
   /**
-   * @ngdoc object
-   * @name ngCookies.$cookies
-   * @requires $browser
+   * @ngdoc service
+   * @name $cookies
    *
    * @description
    * Provides read/write access to browser's cookies.
@@ -33,8 +32,8 @@ angular.module('ngCookies', ['ng']).
    * Requires the {@link ngCookies `ngCookies`} module to be installed.
    *
    * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function ExampleController($cookies) {
            // Retrieving a cookie
@@ -43,8 +42,8 @@ angular.module('ngCookies', ['ng']).
            $cookies.myFavorite = 'oatmeal';
          }
        </script>
-     </doc:source>
-   </doc:example>
+     </file>
+   </example>
    */
    factory('$cookies', ['$rootScope', '$browser', function ($rootScope, $browser) {
       var cookies = {},
@@ -129,8 +128,8 @@ angular.module('ngCookies', ['ng']).
 
 
   /**
-   * @ngdoc object
-   * @name ngCookies.$cookieStore
+   * @ngdoc service
+   * @name $cookieStore
    * @requires $cookies
    *
    * @description
@@ -147,8 +146,7 @@ angular.module('ngCookies', ['ng']).
       return {
         /**
          * @ngdoc method
-         * @name ngCookies.$cookieStore#get
-         * @methodOf ngCookies.$cookieStore
+         * @name $cookieStore#get
          *
          * @description
          * Returns the value of given cookie key
@@ -163,8 +161,7 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
-         * @name ngCookies.$cookieStore#put
-         * @methodOf ngCookies.$cookieStore
+         * @name $cookieStore#put
          *
          * @description
          * Sets a value for given cookie key
@@ -178,8 +175,7 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
-         * @name ngCookies.$cookieStore#remove
-         * @methodOf ngCookies.$cookieStore
+         * @name $cookieStore#remove
          *
          * @description
          * Remove given cookie
