@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngController
+ * @name ngController
  *
  * @description
  * The `ngController` directive attaches a controller class to the view. This is a key aspect of how angular
@@ -36,8 +36,8 @@
  * notice that any changes to the data are automatically reflected in the View without the need
  * for a manual update. The example is shown in two different declaration styles you may use
  * according to preference.
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
       <script>
         function SettingsController1() {
           this.name = "John Smith";
@@ -81,8 +81,8 @@
           <li>[ <a href="" ng-click="settings.addContact()">add</a> ]</li>
        </ul>
       </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check controller as', function() {
          var container = element(by.id('ctrl-as-exmpl'));
 
@@ -99,7 +99,7 @@
          expect(secondRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('john.smith@example.org');
 
-         firstRepeat.findElement(by.linkText('clear')).click()
+         firstRepeat.findElement(by.linkText('clear')).click();
 
          expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('');
@@ -111,10 +111,10 @@
              .getAttribute('value'))
              .toBe('yourname@example.org');
        });
-     </doc:protractor>
-   </doc:example>
-    <doc:example>
-     <doc:source>
+     </file>
+   </example>
+    <example>
+     <file name="index.html">
       <script>
         function SettingsController2($scope) {
           $scope.name = "John Smith";
@@ -158,8 +158,8 @@
           <li>[ <a href="" ng-click="addContact()">add</a> ]</li>
        </ul>
       </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check controller', function() {
          var container = element(by.id('ctrl-exmpl'));
 
@@ -176,7 +176,7 @@
          expect(secondRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('john.smith@example.org');
 
-         firstRepeat.findElement(by.linkText('clear')).click()
+         firstRepeat.findElement(by.linkText('clear')).click();
 
          expect(firstRepeat.findElement(by.model('contact.value')).getAttribute('value'))
              .toBe('');
@@ -188,8 +188,8 @@
              .getAttribute('value'))
              .toBe('yourname@example.org');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
 
  */
 var ngControllerDirective = [function() {

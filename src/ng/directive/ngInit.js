@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngInit
+ * @name ngInit
  * @restrict AC
  *
  * @description
@@ -11,12 +11,12 @@
  *
  * <div class="alert alert-error">
  * The only appropriate use of `ngInit` is for aliasing special properties of
- * {@link api/ng.directive:ngRepeat `ngRepeat`}, as seen in the demo below. Besides this case, you
+ * {@link ng.directive:ngRepeat `ngRepeat`}, as seen in the demo below. Besides this case, you
  * should use {@link guide/controller controllers} rather than `ngInit`
  * to initialize values on a scope.
  * </div>
  * <div class="alert alert-warning">
- * **Note**: If you have assignment in `ngInit` along with {@link api/ng.$filter `$filter`}, make
+ * **Note**: If you have assignment in `ngInit` along with {@link ng.$filter `$filter`}, make
  * sure you have parenthesis for correct precedence:
  * <pre class="prettyprint">
  *   <div ng-init="test1 = (data | orderBy:'name')"></div>
@@ -29,8 +29,8 @@
  * @param {expression} ngInit {@link guide/expression Expression} to eval.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
    <script>
      function Ctrl($scope) {
        $scope.list = [['a', 'b'], ['c', 'd']];
@@ -43,8 +43,8 @@
        </div>
      </div>
    </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should alias index positions', function() {
          var elements = element.all(by.css('.example-init'));
          expect(elements.get(0).getText()).toBe('list[ 0 ][ 0 ] = a;');
@@ -52,8 +52,8 @@
          expect(elements.get(2).getText()).toBe('list[ 1 ][ 0 ] = c;');
          expect(elements.get(3).getText()).toBe('list[ 1 ][ 1 ] = d;');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngInitDirective = ngDirective({
   priority: 450,

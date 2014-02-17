@@ -4,7 +4,7 @@
 
 /**
  * @ngdoc directive
- * @name ngTouch.directive:ngClick
+ * @name ngClick
  *
  * @description
  * A more powerful replacement for the default ngClick designed to be used on touchscreen
@@ -25,14 +25,14 @@
  * upon tap. (Event object is available as `$event`)
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <button ng-click="count = count + 1" ng-init="count=0">
           Increment
         </button>
         count: {{ count }}
-      </doc:source>
-    </doc:example>
+      </file>
+    </example>
  */
 
 ngTouch.config(['$provide', function($provide) {

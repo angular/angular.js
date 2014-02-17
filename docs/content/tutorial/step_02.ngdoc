@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 2 - Angular Templates
+@ngdoc tutorial
+@name 2 - Angular Templates
+@step 2
 @description
 
 <ul doc-tutorial-nav="2"></ul>
@@ -9,8 +10,8 @@ Now it's time to make the web page dynamic — with AngularJS. We'll also add a 
 code for the controller we are going to add.
 
 There are many ways to structure the code for an application. For Angular apps, we encourage the
-use of {@link http://en.wikipedia.org/wiki/Model–View–Controller the Model-View-Controller (MVC)
-design pattern} to decouple the code and to separate concerns. With that in mind, let's use a
+use of [the Model-View-Controller (MVC)
+design pattern](http://en.wikipedia.org/wiki/Model–View–Controller) to decouple the code and to separate concerns. With that in mind, let's use a
 little Angular and JavaScript to add model, view, and controller components to our app.
 
 
@@ -19,8 +20,7 @@ little Angular and JavaScript to add model, view, and controller components to o
 
 The app now contains a list with three phones.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-1...step-2 GitHub}:
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-1...step-2):
 
 
 ## View and Template
@@ -32,7 +32,8 @@ view.
 The view component is constructed by Angular from this template:
 
 __`app/index.html`:__
-<pre>
+
+```html
 <html ng-app="phonecatApp">
 <head>
   ...
@@ -50,10 +51,10 @@ __`app/index.html`:__
 
 </body>
 </html>
-</pre>
+```
 
 We replaced the hard-coded phone list with the
-{@link api/ng.directive:ngRepeat ngRepeat directive} and two
+{@link ng.directive:ngRepeat ngRepeat directive} and two
 {@link guide/expression Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
@@ -77,7 +78,8 @@ the `PhoneListCtrl` __controller__. The __controller__ is simply a constructor f
 `$scope` parameter:
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 
 var phonecatApp = angular.module('phonecatApp', []);
 
@@ -92,7 +94,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
   ];
 });
 
-</pre>
+```
 
 Here we declared a controller called `PhoneListCtrl` and registered it in an AngularJS
 module, `phonecatApp`. Notice that our `ng-app` directive (on the `<html>` tag) now specifies the `phonecatApp`
@@ -103,7 +105,7 @@ for our data model, the controller allows us to establish data-binding between
 the model and the view. We connected the dots between the presentation, data, and logic components
 as follows:
 
-* The {@link api/ng.directive:ngController ngController} directive, located on the `<body>` tag,
+* The {@link ng.directive:ngController ngController} directive, located on the `<body>` tag,
 references the name of our controller, `PhoneListCtrl` (located in the JavaScript file
 `controllers.js`).
 
@@ -120,7 +122,7 @@ contained in the template, data model, and controller, to keep models and views 
 sync. Any changes made to the model are reflected in the view; any changes that occur in the view
 are reflected in the model.
 
-To learn more about Angular scopes, see the {@link api/ng.$rootScope.Scope angular scope documentation}.
+To learn more about Angular scopes, see the {@link ng.$rootScope.Scope angular scope documentation}.
 
 
 ## Tests
@@ -130,7 +132,8 @@ developed. If our controller is available on the global namespace then we can si
 with a mock `scope` object. Take a look at the following unit test for our controller:
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 describe('PhoneCat controllers', function() {
 
   describe('PhoneListCtrl', function(){
@@ -143,7 +146,7 @@ describe('PhoneCat controllers', function() {
     });
   });
 });
-</pre>
+```
 
 The test instantiates `PhoneListCtrl` and verifies that the phones array property on the scope
 contains three records. This example demonstrates how easy it is to create a unit test for code in
@@ -157,7 +160,8 @@ service, `$controller`, which will retrieve your controller by name.  Here is th
 `$controller`:
 
 __`test/unit/controllersSpec.js`:__
-<pre>
+
+```js
 describe('PhoneCat controllers', function() {
   beforeEach(module('phonecatApp'));
 
@@ -171,7 +175,7 @@ describe('PhoneCat controllers', function() {
     }));
   });
 });
-</pre>
+```
 
 Don't forget that we need to load up the `phonecatApp` module into the test so that the controller
 is available to be injected.
@@ -179,12 +183,9 @@ is available to be injected.
 ### Writing and Running Tests
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
-this tutorial in Jasmine. You can learn about Jasmine on the {@link
-http://pivotal.github.com/jasmine/ Jasmine home page} and at the {@link
-http://pivotal.github.io/jasmine/ Jasmine docs}.
+this tutorial in Jasmine. You can learn about Jasmine on the [Jasmine home page](http://pivotal.github.com/jasmine/) and at the [Jasmine docs](http://pivotal.github.io/jasmine/).
 
-The angular-seed project is pre-configured to run all unit tests using {@link
-http://karma-runner.github.io/ Karma}. Ensure that the necessary karma plugins are installed.
+The angular-seed project is pre-configured to run all unit tests using [Karma](http://karma-runner.github.io/). Ensure that the necessary karma plugins are installed.
 You can do this by issuing `npm install` into your terminal.
 
 

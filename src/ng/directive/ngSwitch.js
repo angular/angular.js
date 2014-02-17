@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngSwitch
+ * @name ngSwitch
  * @restrict EA
  *
  * @description
@@ -53,7 +53,7 @@
  *
  *
  * @example
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
       <div ng-controller="Ctrl">
         <select ng-model="selection" ng-options="item for item in items">
@@ -107,8 +107,8 @@
         top:0;
       }
     </file>
-    <file name="protractorTest.js">
-      var switchElem = element(by.css('.doc-example-live [ng-switch]'));
+    <file name="protractor.js" type="protractor">
+      var switchElem = element(by.css('[ng-switch]'));
       var select = element(by.model('selection'));
 
       it('should start in settings', function() {

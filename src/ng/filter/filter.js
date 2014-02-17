@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc filter
- * @name ng.filter:filter
+ * @name filter
  * @function
  *
  * @description
@@ -46,8 +46,8 @@
  *       insensitive way.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <div ng-init="friends = [{name:'John', phone:'555-1276'},
                                 {name:'Mary', phone:'800-BIG-MARY'},
                                 {name:'Mike', phone:'555-4321'},
@@ -75,8 +75,8 @@
            <td>{{friendObj.phone}}</td>
          </tr>
        </table>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        var expectFriendNames = function(expectedNames, key) {
          element.all(by.repeater(key + ' in friends').column(key + '.name')).then(function(arr) {
            arr.forEach(function(wd, i) {
@@ -110,8 +110,8 @@
          strict.click();
          expectFriendNames(['Julie'], 'friendObj');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 function filterFilter() {
   return function(array, expression, comparator) {

@@ -3,7 +3,7 @@
 var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngSanitize
  * @description
  *
@@ -37,7 +37,7 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
  * @ngdoc service
- * @name ngSanitize.$sanitize
+ * @name $sanitize
  * @function
  *
  * @description
@@ -53,8 +53,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  * @returns {string} Sanitized html.
  *
  * @example
-   <doc:example module="ngSanitize">
-   <doc:source>
+   <example module="ngSanitize" deps="angular-sanitize.js">
+   <file name="index.html">
      <script>
        function Ctrl($scope, $sce) {
          $scope.snippet =
@@ -98,8 +98,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
          </tr>
        </table>
        </div>
-   </doc:source>
-   <doc:protractor>
+   </file>
+   <file name="protractor.js" type="protractor">
      it('should sanitize the html snippet by default', function() {
        expect(element(by.css('#bind-html-with-sanitize div')).getInnerHtml()).
          toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
@@ -129,8 +129,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
        expect(element(by.css('#bind-default div')).getInnerHtml()).toBe(
          "new &lt;b onclick=\"alert(1)\"&gt;text&lt;/b&gt;");
      });
-   </doc:protractor>
-   </doc:example>
+   </file>
+   </example>
  */
 function $SanitizeProvider() {
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {

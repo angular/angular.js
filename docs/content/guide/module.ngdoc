@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Modules
+@name  Modules
 @description
 
 # What is a Module?
@@ -22,30 +22,30 @@ Ok, I'm in a hurry. How do I get a Hello World module working?
 
 Important things to notice:
 
-  * {@link api/angular.Module Module} API
+  * {@link angular.Module Module} API
   * Notice the reference to the `myApp` module in the `<html ng-app="myApp">`, it is what
     bootstraps the app using your module.
 
-<doc:example module='myApp'>
-  <doc:source>
-    <script>
-      // declare a module
-      var myAppModule = angular.module('myApp', []);
-
-      // configure the module.
-      // in this example we will create a greeting filter
-      myAppModule.filter('greet', function() {
-       return function(name) {
-          return 'Hello, ' + name + '!';
-        };
-      });
-
-    </script>
+<example module='myApp'>
+  <file name="index.html">
     <div>
       {{ 'World' | greet }}
     </div>
-  </doc:source>
-</doc:example>
+  </file>
+
+  <file name="script.js">
+    // declare a module
+    var myAppModule = angular.module('myApp', []);
+
+    // configure the module.
+    // in this example we will create a greeting filter
+    myAppModule.filter('greet', function() {
+     return function(name) {
+        return 'Hello, ' + name + '!';
+      };
+    });
+  </file>
+</example>
 
 
 
@@ -67,49 +67,50 @@ that are relevant to tests.
 
 The above is only a suggestion, so feel free to tailor it to your needs.
 
-<doc:example module='xmpl'>
-  <doc:source>
-    <script>
-      angular.module('xmpl.service', []).
-        value('greeter', {
-          salutation: 'Hello',
-          localize: function(localization) {
-            this.salutation = localization.salutation;
-          },
-          greet: function(name) {
-            return this.salutation + ' ' + name + '!';
-          }
-        }).
-        value('user', {
-          load: function(name) {
-            this.name = name;
-          }
-        });
-
-      angular.module('xmpl.directive', []);
-
-      angular.module('xmpl.filter', []);
-
-      angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
-        run(function(greeter, user) {
-          // This is effectively part of the main method initialization code
-          greeter.localize({
-            salutation: 'Bonjour'
-          });
-          user.load('World');
-        })
-
-
-      // A Controller for your app
-      var XmplController = function($scope, greeter, user) {
-        $scope.greeting = greeter.greet(user.name);
-      }
-    </script>
+<example module='xmpl'>
+  <file name="index.html">
     <div ng-controller="XmplController">
       {{ greeting }}!
     </div>
-  </doc:source>
- </doc:example>
+  </file>
+
+  <file name="script.js">
+    angular.module('xmpl.service', []).
+      value('greeter', {
+        salutation: 'Hello',
+        localize: function(localization) {
+          this.salutation = localization.salutation;
+        },
+        greet: function(name) {
+          return this.salutation + ' ' + name + '!';
+        }
+      }).
+      value('user', {
+        load: function(name) {
+          this.name = name;
+        }
+      });
+
+    angular.module('xmpl.directive', []);
+
+    angular.module('xmpl.filter', []);
+
+    angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
+      run(function(greeter, user) {
+        // This is effectively part of the main method initialization code
+        greeter.localize({
+          salutation: 'Bonjour'
+        });
+        user.load('World');
+      });
+
+
+    // A Controller for your app
+    var XmplController = function($scope, greeter, user) {
+      $scope.greeting = greeter.greet(user.name);
+    };
+  </file>
+</example>
 
 
 
@@ -126,7 +127,7 @@ of blocks:
     application. Only instances and constants can be injected into run blocks. This is to prevent
     further system configuration during application run time.
 
-<pre>
+```js
 angular.module('myModule', []).
   config(function(injectables) { // provider-injector
     // This is an example of config block.
@@ -140,14 +141,14 @@ angular.module('myModule', []).
     // You can only inject instances (not Providers)
     // into the run blocks
   });
-</pre>
+```
 
 ## Configuration Blocks
 
 There are some convenience methods on the module which are equivalent to the config block. For
 example:
 
-<pre>
+```js
 angular.module('myModule', []).
   value('a', 123).
   factory('a', function() { return 123; }).
@@ -163,7 +164,7 @@ angular.module('myModule', []).
     $compileProvider.directive('directiveName', ...);
     $filterProvider.register('filterName', ...);
   });
-</pre>
+```
 
 The configuration blocks get applied in the order in which they are registered. The only exception
 to it are constant definitions, which are placed at the beginning of all configuration blocks.
@@ -196,7 +197,7 @@ and thus script loaders can take advantage of this property and parallelize the 
 Beware that using `angular.module('myModule', [])` will create the module `myModule` and overwrite any
 existing module named `myModule`. Use `angular.module('myModule')` to retrieve an existing module.
 
-<pre>
+```js
   var myModule = angular.module('myModule', []);
   
   // add some directives and services
@@ -208,7 +209,7 @@ existing module named `myModule`. Use `angular.module('myModule')` to retrieve a
 
   // throws an error because myOtherModule has yet to be defined
   var myModule = angular.module('myOtherModule');
-</pre>
+```
 
 # Unit Testing
 
@@ -219,7 +220,8 @@ injector, which means that the modules are loaded multiple times per VM. Properl
 modules can help with unit testing, as in this example:
 
 In all of these examples we are going to assume this module definition:
-<pre>
+
+```js
   angular.module('greetMod', []).
 
     factory('alert', function($window) {
@@ -235,10 +237,11 @@ In all of these examples we are going to assume this module definition:
         alert(salutation + ' ' + name + '!');
       }
     });
-</pre>
+```
 
 Let's write some tests:
-<pre>
+
+```js
 describe('myApp', function() {
   // load the relevant application modules then load a special
   // test module which overrides the $window with a mock version,
@@ -272,4 +275,4 @@ describe('myApp', function() {
     });
   });
 });
-</pre>
+```

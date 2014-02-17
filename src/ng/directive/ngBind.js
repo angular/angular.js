@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBind
+ * @name ngBind
  * @restrict AC
  *
  * @description
@@ -26,8 +26,8 @@
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.name = 'Whirled';
@@ -37,19 +37,18 @@
          Enter name: <input type="text" ng-model="name"><br>
          Hello <span ng-bind="name"></span>!
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
-         var exampleContainer = $('.doc-example-live');
          var nameInput = element(by.model('name'));
 
-         expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('Whirled');
+         expect(element(by.binding('name')).getText()).toBe('Whirled');
          nameInput.clear();
          nameInput.sendKeys('world');
-         expect(exampleContainer.findElement(by.binding('name')).getText()).toBe('world');
+         expect(element(by.binding('name')).getText()).toBe('world');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngBindDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBind);
@@ -64,7 +63,7 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBindTemplate
+ * @name ngBindTemplate
  *
  * @description
  * The `ngBindTemplate` directive specifies that the element
@@ -80,8 +79,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
  *
  * @example
  * Try it here: enter text in text box and watch the greeting change.
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.salutation = 'Hello';
@@ -93,8 +92,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
         Name: <input type="text" ng-model="name"><br>
         <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
          var salutationElem = element(by.binding('salutation'));
          var salutationInput = element(by.model('salutation'));
@@ -109,8 +108,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
 
          expect(salutationElem.getText()).toBe('Greetings user!');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {
@@ -126,7 +125,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBindHtml
+ * @name ngBindHtml
  *
  * @description
  * Creates a binding that will innerHTML the result of evaluating the `expression` into the current
@@ -162,7 +161,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
        }]);
      </file>
 
-     <file name="protractorTest.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind-html', function() {
          expect(element(by.binding('myHTML')).getText()).toBe(
              'I am an HTMLstring with links! and other stuff');

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngInclude
+ * @name ngInclude
  * @restrict ECA
  *
  * @description
@@ -12,13 +12,13 @@
  * application document. This is done by calling {@link ng.$sce#methods_getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols
  * you may either {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist them} or
- * {@link ng.$sce#methods_trustAsResourceUrl wrap them} as trusted values. Refer to Angular's {@link
+ * [wrap them](ng.$sce#methods_trustAsResourceUrl) as trusted values. Refer to Angular's {@link
  * ng.$sce Strict Contextual Escaping}.
  *
  * In addition, the browser's
- * {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
- * Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
- * (CORS)} policy may further restrict whether the template is successfully loaded.
+ * [Same Origin Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest)
+ * and [Cross-Origin Resource Sharing (CORS)](http://www.w3.org/TR/cors/)
+ * policy may further restrict whether the template is successfully loaded.
  * For example, `ngInclude` won't work for cross-domain requests on all browsers and for `file://`
  * access on some browsers.
  *
@@ -43,7 +43,7 @@
  *                  - Otherwise enable scrolling only if the expression evaluates to truthy value.
  *
  * @example
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
      <div ng-controller="Ctrl">
        <select ng-model="template" ng-options="t.name for t in templates">
@@ -59,8 +59,8 @@
     <file name="script.js">
       function Ctrl($scope) {
         $scope.templates =
-          [ { name: 'template1.html', url: 'template1.html'}
-          , { name: 'template2.html', url: 'template2.html'} ];
+          [ { name: 'template1.html', url: 'template1.html'},
+            { name: 'template2.html', url: 'template2.html'} ];
         $scope.template = $scope.templates[0];
       }
      </file>
@@ -110,9 +110,9 @@
         top:50px;
       }
     </file>
-    <file name="protractorTest.js">
+    <file name="protractor.js" type="protractor">
       var templateSelect = element(by.model('template'));
-      var includeElem = element(by.css('.doc-example-live [ng-include]'));
+      var includeElem = element(by.css('[ng-include]'));
 
       it('should load template1.html', function() {
         expect(includeElem.getText()).toMatch(/Content of template1.html/);
@@ -145,7 +145,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentRequested
+ * @name ngInclude#$includeContentRequested
  * @eventOf ng.directive:ngInclude
  * @eventType emit on the scope ngInclude was declared in
  * @description
@@ -155,7 +155,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentLoaded
+ * @name ngInclude#$includeContentLoaded
  * @eventOf ng.directive:ngInclude
  * @eventType emit on the current ngInclude scope
  * @description

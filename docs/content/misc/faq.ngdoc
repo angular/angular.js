@@ -72,14 +72,14 @@ The size of the file is < 36KB compressed and minified.
 
 ### Can I use the open-source Closure Library with Angular?
 
-Yes, you can use widgets from the {@link http://code.google.com/closure/library Closure Library}
+Yes, you can use widgets from the [Closure Library](http://code.google.com/closure/library)
 in Angular.
 
 ### Does Angular use the jQuery library?
 
-Yes, Angular can use {@link http://jquery.com/ jQuery} if it's present in your app when the
+Yes, Angular can use [jQuery](http://jquery.com/) if it's present in your app when the
 application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
-to its own implementation of the subset of jQuery that we call {@link api/angular.element  jQLite}.
+to its own implementation of the subset of jQuery that we call {@link angular.element  jQLite}.
 
 Due to a change to use `on()`/`off()` rather than `bind()`/`unbind()`, Angular 1.2 only operates with
 jQuery 1.7.1 or above.
@@ -89,25 +89,23 @@ jQuery 1.7.1 or above.
 
 Very testable and designed this way from ground up. It has an integrated dependency injection
 framework, provides mocks for many heavy dependencies (server-side communication). See
-{@link api/ng service} for details.
+{@link ngMock} for details.
 
 
 ### How can I learn more about Angular?
 
 Watch the July 17, 2012 talk
-"{@link http://www.youtube.com/watch?v=1CpiB3Wk25U AngularJS Intro + Dependency Injection}".
+"[AngularJS Intro + Dependency Injection](http://www.youtube.com/watch?v=1CpiB3Wk25U)".
 
 
 ### How is Angular licensed?
 
-The {@link https://github.com/angular/angular.js/blob/master/LICENSE MIT License}.
+The [MIT License](https://github.com/angular/angular.js/blob/master/LICENSE).
 
 ### Can I download and use the Angular logo artwork?
 
-Yes! You can find design files in our github repository, under "{@link https://github.com/angular/angular.js/tree/master/images/logo
-angular.js/images/logo}"
-The logo design is licensed under a "{@link http://creativecommons.org/licenses/by-sa/3.0/
-Creative Commons Attribution-ShareAlike 3.0 Unported License}". If you have some other use in mind, contact us.
+Yes! You can find design files in our github repository, under "[angular.js/images/logo](https://github.com/angular/angular.js/tree/master/images/logo)"
+The logo design is licensed under a "[Creative Commons Attribution-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-sa/3.0/)". If you have some other use in mind, contact us.
 
 ### How can I get some AngularJS schwag?
 
@@ -119,7 +117,7 @@ they'll waive the setup costs, and you can order any quantity you need.
 For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
 stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping.
 
-As long as the design stays exactly the same, {@link http://www.stickergiant.com StickerGiant} will give you a reorder discount.
+As long as the design stays exactly the same, [StickerGiant](http://www.stickergiant.com) will give you a reorder discount.
 
 For a smaller order, or for other countries, we suggest downloading the logo artwork and making your own.
 

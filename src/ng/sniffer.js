@@ -3,7 +3,7 @@
 /**
  * !!! This is an undocumented "private" service !!!
  *
- * @name ng.$sniffer
+ * @name $sniffer
  * @requires $window
  * @requires $document
  *

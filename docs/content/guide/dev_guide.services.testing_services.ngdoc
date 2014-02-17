@@ -1,12 +1,12 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Testing Angular Services
+@name  Angular Services: Testing Angular Services
 @description
 
 The following is a unit test for the 'notify' service in the 'Dependencies' example in {@link
 dev_guide.services.creating_services Creating Angular Services}. The unit test example uses Jasmine
 spy (mock) instead of a real browser alert.
 
-<pre>
+```js
 var mock, notify;
 
 beforeEach(function() {
@@ -47,7 +47,7 @@ it('should clear messages after alert', function() {
   expect(mock.alert.callCount).toEqual(2);
   expect(mock.alert.mostRecentCall.args).toEqual(["more\ntwo\nthird"]);
 });
-</pre>
+```
 
 
 ## Related Topics
@@ -59,4 +59,4 @@ it('should clear messages after alert', function() {
 
 ## Related API
 
-* {@link api/ng Angular Service API}
+* {@link ./ng Angular Service API}

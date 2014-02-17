@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngCsp
+ * @name ngCsp
  *
  * @element html
  * @description
@@ -29,13 +29,13 @@
  *
  * @example
  * This example shows how to apply the `ngCsp` directive to the `html` tag.
-   <pre>
+   ```html
      <!doctype html>
      <html ng-app ng-csp>
      ...
      ...
      </html>
-   </pre>
+   ```
  */
 
 // ngCsp is not implemented as a proper directive any more, because we need it be processed while we bootstrap

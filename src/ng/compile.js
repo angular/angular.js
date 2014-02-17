@@ -19,8 +19,8 @@
 
 
 /**
- * @ngdoc function
- * @name ng.$compile
+ * @ngdoc service
+ * @name $compile
  * @function
  *
  * @description
@@ -50,7 +50,7 @@
  *
  * Here's an example directive declared with a Directive Definition Object:
  *
- * <pre>
+ * ```js
  *   var myModule = angular.module(...);
  *
  *   myModule.directive('directiveName', function factory(injectables) {
@@ -83,7 +83,7 @@
  *     };
  *     return directiveDefinitionObject;
  *   });
- * </pre>
+ * ```
  *
  * <div class="alert alert-warning">
  * **Note:** Any unspecified options will use the default value. You can see the default values below.
@@ -91,7 +91,7 @@
  *
  * Therefore the above can be simplified as:
  *
- * <pre>
+ * ```js
  *   var myModule = angular.module(...);
  *
  *   myModule.directive('directiveName', function factory(injectables) {
@@ -102,13 +102,13 @@
  *     // or
  *     // return function postLink(scope, iElement, iAttrs) { ... }
  *   });
- * </pre>
+ * ```
  *
  *
  *
  * ### Directive Definition Object
  *
- * The directive definition object provides instructions to the {@link api/ng.$compile
+ * The directive definition object provides instructions to the {@link ng.$compile
  * compiler}. The attributes are:
  *
  * #### `priority`
@@ -243,7 +243,7 @@
  *
  * #### `transclude`
  * compile the content of the element and make it available to the directive.
- * Typically used with {@link api/ng.directive:ngTransclude
+ * Typically used with {@link ng.directive:ngTransclude
  * ngTransclude}. The advantage of transclusion is that the linking function receives a
  * transclusion function which is pre-bound to the correct scope. In a typical setup the widget
  * creates an `isolate` scope, but the transclusion is not a child, but a sibling of the `isolate`
@@ -256,15 +256,15 @@
  *
  * #### `compile`
  *
- * <pre>
+ * ```js
  *   function compile(tElement, tAttrs, transclude) { ... }
- * </pre>
+ * ```
  *
  * The compile function deals with transforming the template DOM. Since most directives do not do
  * template transformation, it is not used often. Examples that require compile functions are
  * directives that transform template DOM, such as {@link
  * api/ng.directive:ngRepeat ngRepeat}, or load the contents
- * asynchronously, such as {@link api/ngRoute.directive:ngView ngView}. The
+ * asynchronously, such as {@link ngRoute.directive:ngView ngView}. The
  * compile function takes the following arguments.
  *
  *   * `tElement` - template element - The element where the directive has been declared. It is
@@ -301,16 +301,16 @@
  * #### `link`
  * This property is used only if the `compile` property is not defined.
  *
- * <pre>
+ * ```js
  *   function link(scope, iElement, iAttrs, controller, transcludeFn) { ... }
- * </pre>
+ * ```
  *
  * The link function is responsible for registering DOM listeners as well as updating the DOM. It is
  * executed after the template has been cloned. This is where most of the directive logic will be
  * put.
  *
- *   * `scope` - {@link api/ng.$rootScope.Scope Scope} - The scope to be used by the
- *     directive for registering {@link api/ng.$rootScope.Scope#methods_$watch watches}.
+ *   * `scope` - {@link ng.$rootScope.Scope Scope} - The scope to be used by the
+ *     directive for registering {@link ng.$rootScope.Scope#methods_$watch watches}.
  *
  *   * `iElement` - instance element - The element where the directive is to be used. It is safe to
  *     manipulate the children of the element only in `postLink` function since the children have
@@ -341,7 +341,7 @@
  * <a name="Attributes"></a>
  * ### Attributes
  *
- * The {@link api/ng.$compile.directive.Attributes Attributes} object - passed as a parameter in the
+ * The {@link ng.$compile.directive.Attributes Attributes} object - passed as a parameter in the
  * `link()` or `compile()` functions. It has a variety of uses.
  *
  * accessing *Normalized attribute names:*
@@ -361,7 +361,7 @@
  *   the only way to easily get the actual value because during the linking phase the interpolation
  *   hasn't been evaluated yet and so the value is at this time set to `undefined`.
  *
- * <pre>
+ * ```js
  * function linkingFn(scope, elm, attrs, ctrl) {
  *   // get the attribute value
  *   console.log(attrs.ngModel);
@@ -374,7 +374,7 @@
  *     console.log('ngModel has changed value to ' + value);
  *   });
  * }
- * </pre>
+ * ```
  *
  * Below is an example using `$compileProvider`.
  *
@@ -383,8 +383,8 @@
  * to illustrate how `$compile` works.
  * </div>
  *
- <doc:example module="compile">
-   <doc:source>
+ <example module="compile">
+   <file name="index.html">
     <script>
       angular.module('compile', [], function($compileProvider) {
         // configure new 'compile' directive by passing a directive
@@ -423,8 +423,8 @@
       <textarea ng-model="html"></textarea> <br>
       <div compile="html"></div>
     </div>
-   </doc:source>
-   <doc:protractor>
+   </file>
+   <file name="protractor.js" type="protractor">
      it('should auto compile', function() {
        var textarea = $('textarea');
        var output = $('div[compile]');
@@ -434,8 +434,8 @@
        textarea.sendKeys('{{name}}!');
        expect(output.getText()).toBe('Angular!');
      });
-   </doc:protractor>
- </doc:example>
+   </file>
+ </example>
 
  *
  *
@@ -465,14 +465,14 @@
  *
  * - If you are not asking the linking function to clone the template, create the DOM element(s)
  *   before you send them to the compiler and keep this reference around.
- *   <pre>
+ *   ```js
  *     var element = $compile('<p>{{total}}</p>')(scope);
- *   </pre>
+ *   ```
  *
  * - if on the other hand, you need the element to be cloned, the view reference from the original
  *   example would not point to the clone, but rather to the original template that was cloned. In
  *   this case, you can access the clone via the cloneAttachFn:
- *   <pre>
+ *   ```js
  *     var templateElement = angular.element('<p>{{total}}</p>'),
  *         scope = ....;
  *
@@ -481,7 +481,7 @@
  *     });
  *
  *     //now we have reference to the cloned DOM via `clonedElement`
- *   </pre>
+ *   ```
  *
  *
  * For information on how the compiler works, see the
@@ -491,8 +491,8 @@
 var $compileMinErr = minErr('$compile');
 
 /**
- * @ngdoc service
- * @name ng.$compileProvider
+ * @ngdoc provider
+ * @name $compileProvider
  * @function
  *
  * @description
@@ -511,9 +511,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
 
   /**
-   * @ngdoc function
-   * @name ng.$compileProvider#directive
-   * @methodOf ng.$compileProvider
+   * @ngdoc method
+   * @name $compileProvider#directive
    * @function
    *
    * @description
@@ -565,9 +564,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
   /**
-   * @ngdoc function
-   * @name ng.$compileProvider#aHrefSanitizationWhitelist
-   * @methodOf ng.$compileProvider
+   * @ngdoc method
+   * @name $compileProvider#aHrefSanitizationWhitelist
    * @function
    *
    * @description
@@ -596,9 +594,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
   /**
-   * @ngdoc function
-   * @name ng.$compileProvider#imgSrcSanitizationWhitelist
-   * @methodOf ng.$compileProvider
+   * @ngdoc method
+   * @name $compileProvider#imgSrcSanitizationWhitelist
    * @function
    *
    * @description
@@ -641,9 +638,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
       /**
-       * @ngdoc function
-       * @name ng.$compile.directive.Attributes#$addClass
-       * @methodOf ng.$compile.directive.Attributes
+       * @ngdoc method
+       * @name $compile.directive.Attributes#$addClass
        * @function
        *
        * @description
@@ -659,9 +655,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$compile.directive.Attributes#$removeClass
-       * @methodOf ng.$compile.directive.Attributes
+       * @ngdoc method
+       * @name $compile.directive.Attributes#$removeClass
        * @function
        *
        * @description
@@ -677,9 +672,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$compile.directive.Attributes#$updateClass
-       * @methodOf ng.$compile.directive.Attributes
+       * @ngdoc method
+       * @name $compile.directive.Attributes#$updateClass
        * @function
        *
        * @description
@@ -766,9 +760,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
       /**
-       * @ngdoc function
-       * @name ng.$compile.directive.Attributes#$observe
-       * @methodOf ng.$compile.directive.Attributes
+       * @ngdoc method
+       * @name $compile.directive.Attributes#$observe
        * @function
        *
        * @description
@@ -1969,8 +1962,8 @@ function directiveNormalize(name) {
 }
 
 /**
- * @ngdoc object
- * @name ng.$compile.directive.Attributes
+ * @ngdoc type
+ * @name $compile.directive.Attributes
  *
  * @description
  * A shared object between directive compile / linking functions which contains normalized DOM
@@ -1982,17 +1975,15 @@ function directiveNormalize(name) {
 
 /**
  * @ngdoc property
- * @name ng.$compile.directive.Attributes#$attr
- * @propertyOf ng.$compile.directive.Attributes
+ * @name $compile.directive.Attributes#$attr
  * @returns {object} A map of DOM element attribute names to the normalized name. This is
  *                   needed to do reverse lookup from normalized name back to actual name.
  */
 
 
 /**
- * @ngdoc function
- * @name ng.$compile.directive.Attributes#$set
- * @methodOf ng.$compile.directive.Attributes
+ * @ngdoc method
+ * @name $compile.directive.Attributes#$set
  * @function
  *
  * @description

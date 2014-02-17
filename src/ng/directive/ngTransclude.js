@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngTransclude
+ * @name ngTransclude
  * @restrict AC
  *
  * @description
@@ -13,8 +13,8 @@
  * @element ANY
  *
  * @example
-   <doc:example module="transclude">
-     <doc:source>
+   <example module="transclude">
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.title = 'Lorem Ipsum';
@@ -39,8 +39,8 @@
          <textarea ng-model="text"></textarea> <br/>
          <pane title="{{title}}">{{text}}</pane>
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
         it('should have transcluded', function() {
           var titleElement = element(by.model('title'));
           titleElement.clear();
@@ -51,8 +51,8 @@
           expect(element(by.binding('title')).getText()).toEqual('TITLE');
           expect(element(by.binding('text')).getText()).toEqual('TEXT');
         });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  *
  */
 var ngTranscludeDirective = ngDirective({
