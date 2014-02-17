@@ -1,9 +1,14 @@
 var path = require('canonical-path');
+var gruntUtils = require('../lib/grunt/utils');
 var basePath = __dirname;
 
 var basePackage = require('./config');
 
 module.exports = function(config) {
+
+  var version = gruntUtils.getVersion();
+  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + version.cdn;
+
 
   config = basePackage(config);
 
@@ -80,7 +85,37 @@ module.exports = function(config) {
         'css/docs.css',
         'css/animations.css'
       ]
-    }]
+    },
+    {
+      name: 'production',
+      scripts: [
+        cdnUrl + '/angular.min.js',
+        cdnUrl + '/angular-resource.min.js',
+        cdnUrl + '/angular-route.min.js',
+        cdnUrl + '/angular-cookies.min.js',
+        cdnUrl + '/angular-sanitize.min.js',
+        cdnUrl + '/angular-touch.min.js',
+        cdnUrl + '/angular-animate.min.js',
+        'components/marked/lib/marked.js',
+        'js/angular-bootstrap/bootstrap.js',
+        'js/angular-bootstrap/bootstrap-prettify.js',
+        'js/angular-bootstrap/dropdown-toggle.js',
+        'components/lunr.js/lunr.min.js',
+        'components/google-code-prettify/src/prettify.js',
+        'components/google-code-prettify/src/lang-css.js',
+        'js/versions-data.js',
+        'js/pages-data.js',
+        'js/docs.js'
+      ],
+      stylesheets: [
+        'components/bootstrap/dist/css/bootstrap.css',
+        'components/open-sans-fontface/open-sans.css',
+        'css/prettify-theme.css',
+        'css/docs.css',
+        'css/animations.css'
+      ]
+    }
+  ]
   });
 
   return config;
