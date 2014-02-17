@@ -5,7 +5,7 @@
 There are some concepts within Angular that you should understand before creating your first application.
 This section touches all important parts of Angular really quickly using a simple example.
 However, it won't explain all details.
-For a more in-depth explanation, have a look at the {@link tutorial/ tutorial}.
+For a more in-depth explanation, have a look at the {@link tutorial tutorial}.
 
 | Concept          | Description                     |
 |------------------|------------------------------------------|
