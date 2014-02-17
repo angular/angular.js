@@ -158,10 +158,6 @@ by template data merge.
 It's important to note that Angular operates on DOM nodes rather than strings. Usually, you don't
 notice this restriction because when a page loads, the web browser parses HTML into the DOM automatically.
 
-However it's important to keep this in mind when calling `$compile` yourself, because passing it a string
-will fail. Instead, use `angular.element` to convert a string to DOM before passing elements into
-Angular's `$compile` service.
-
 HTML compilation happens in three phases:
 
   1. {@link ng.$compile `$compile`} traverses the DOM and matches directives.
