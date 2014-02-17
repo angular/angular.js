@@ -26,6 +26,7 @@ gulp.task('build-app', function() {
 gulp.task('assets', ['bower'], function() {
   return merge(
     gulp.src(['app/assets/**/*']).pipe(gulp.dest(outputFolder)),
+    gulp.src(bowerFolder + '/bootstrap/**/*').pipe(gulp.dest(outputFolder + '/components/bootstrap')),
     gulp.src(bowerFolder + '/open-sans-fontface/**/*').pipe(gulp.dest(outputFolder + '/components/open-sans-fontface')),
     gulp.src(bowerFolder + '/lunr.js/*.js').pipe(gulp.dest(outputFolder + '/components/lunr.js')),
     gulp.src(bowerFolder + '/google-code-prettify/**/*').pipe(gulp.dest(outputFolder + '/components/google-code-prettify/')),
