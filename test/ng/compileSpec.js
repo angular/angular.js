@@ -517,6 +517,22 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithTr', valueFn({
+            replace: true,
+            template: '<tr><td>TR</td></tr>'
+          }));
+          directive('replaceWithTd', valueFn({
+            replace: true,
+            template: '<td>TD</td>'
+          }));
+          directive('replaceWithTh', valueFn({
+            replace: true,
+            template: '<th>TH</th>'
+          }));
+          directive('replaceWithTbody', valueFn({
+            replace: true,
+            template: '<tbody><tr><td>TD</td></tr></tbody>'
+          }));
         }));
 
 
@@ -680,6 +696,34 @@ describe('$compile', function() {
             }).not.toThrow();
           });
         });
+
+        it('should support templates with root <tr> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tr></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tr/i);
+        }));
+
+        it('should support templates with root <td> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-td></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/td/i);
+        }));
+
+        it('should support templates with root <th> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-th></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/th/i);
+        }));
+
+        it('should support templates with root <tbody> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tbody></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
       });
 
 
@@ -775,6 +819,23 @@ describe('$compile', function() {
             directive('replace', valueFn({
               replace: true,
               template: '<span>Hello, {{name}}!</span>'
+            }));
+
+            directive('replaceWithTr', valueFn({
+              replace: true,
+              templateUrl: 'tr.html'
+            }));
+            directive('replaceWithTd', valueFn({
+              replace: true,
+              templateUrl: 'td.html'
+            }));
+            directive('replaceWithTh', valueFn({
+              replace: true,
+              templateUrl: 'th.html'
+            }));
+            directive('replaceWithTbody', valueFn({
+              replace: true,
+              templateUrl: 'tbody.html'
             }));
           }
         ));
@@ -1411,6 +1472,42 @@ describe('$compile', function() {
             expect(element.html()).toContain('i = 1');
           });
         });
+
+        it('should support templates with root <tr> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tr.html', '<tr><td>TR</td></tr>');
+          expect(function() {
+            element = $compile('<div replace-with-tr></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tr/i);
+        }));
+
+        it('should support templates with root <td> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('td.html', '<td>TD</td>');
+          expect(function() {
+            element = $compile('<div replace-with-td></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/td/i);
+        }));
+
+        it('should support templates with root <th> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('th.html', '<th>TH</th>');
+          expect(function() {
+            element = $compile('<div replace-with-th></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/th/i);
+        }));
+
+        it('should support templates with root <tbody> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tbody.html', '<tbody><tr><td>TD</td></tr></tbody>');
+          expect(function() {
+            element = $compile('<div replace-with-tbody></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
       });
 
 
@@ -3972,6 +4069,57 @@ describe('$compile', function() {
         });
       });
 
+      // issue #6006
+      it('should link directive with $element as a comment node', function() {
+        module(function($provide) {
+          directive('innerAgain', function(log) {
+            return {
+              transclude: 'element',
+              link: function(scope, element, attr, controllers, transclude) {
+                log('innerAgain:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+                transclude(scope, function(clone) {
+                  element.parent().append(clone);
+                });
+              }
+            };
+          });
+          directive('inner', function(log) {
+            return {
+              replace: true,
+              templateUrl: 'inner.html',
+              link: function(scope, element) {
+                log('inner:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+              }
+            };
+          });
+          directive('outer', function(log) {
+            return {
+              transclude: 'element',
+              link: function(scope, element, attrs, controllers, transclude) {
+                log('outer:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+                transclude(scope, function(clone) {
+                  element.parent().append(clone);
+                });
+              }
+            };
+          });
+        });
+        inject(function(log, $compile, $rootScope, $templateCache) {
+          $templateCache.put('inner.html', '<div inner-again><p>Content</p></div>');
+          element = $compile('<div><div outer><div inner></div></div></div>')($rootScope);
+          $rootScope.$digest();
+          var child = element.children();
+
+          expect(log.toArray()).toEqual([
+            "outer:#comment:outer:",
+            "innerAgain:#comment:innerAgain:",
+            "inner:#comment:innerAgain:"]);
+          expect(child.length).toBe(1);
+          expect(child.contents().length).toBe(2);
+          expect(lowercase(nodeName_(child.contents().eq(0)))).toBe('#comment');
+          expect(lowercase(nodeName_(child.contents().eq(1)))).toBe('div');
+        });
+      });
     });
 
     it('should safely create transclude comment node and not break with "-->"',
@@ -4518,11 +4666,9 @@ describe('$compile', function() {
         $rootScope.$digest();
 
         data = $animate.queue.shift();
-        expect(data.event).toBe('removeClass');
-        expect(data.args[1]).toBe('rice');
-        data = $animate.queue.shift();
-        expect(data.event).toBe('addClass');
+        expect(data.event).toBe('setClass');
         expect(data.args[1]).toBe('dice');
+        expect(data.args[2]).toBe('rice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('dice')).toBe(true);

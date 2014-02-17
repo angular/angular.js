@@ -3,8 +3,8 @@
 var $animateMinErr = minErr('$animate');
 
 /**
- * @ngdoc object
- * @name ng.$animateProvider
+ * @ngdoc provider
+ * @name $animateProvider
  *
  * @description
  * Default implementation of $animate that doesn't perform any animations, instead just
@@ -22,9 +22,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
 
   /**
-   * @ngdoc function
-   * @name ng.$animateProvider#register
-   * @methodOf ng.$animateProvider
+   * @ngdoc method
+   * @name $animateProvider#register
    *
    * @description
    * Registers a new injectable animation factory function. The factory function produces the
@@ -37,7 +36,7 @@ var $AnimateProvider = ['$provide', function($provide) {
    *   triggered.
    *
    *
-   *<pre>
+   * ```js
    *   return {
      *     eventFn : function(element, done) {
      *       //code to run the animation
@@ -47,7 +46,7 @@ var $AnimateProvider = ['$provide', function($provide) {
      *       }
      *     }
      *   }
-   *</pre>
+   * ```
    *
    * @param {string} name The name of the animation.
    * @param {function} factory The factory function that will be executed to return the animation
@@ -62,9 +61,8 @@ var $AnimateProvider = ['$provide', function($provide) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.$animateProvider#classNameFilter
-   * @methodOf ng.$animateProvider
+   * @ngdoc method
+   * @name $animateProvider#classNameFilter
    *
    * @description
    * Sets and/or returns the CSS class regular expression that is checked when performing
@@ -87,8 +85,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
     /**
      *
-     * @ngdoc object
-     * @name ng.$animate
+     * @ngdoc service
+     * @name $animate
      * @description The $animate service provides rudimentary DOM manipulation functions to
      * insert, remove and move elements within the DOM, as well as adding and removing classes.
      * This service is the core service used by the ngAnimate $animator service which provides
@@ -106,9 +104,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
       /**
        *
-       * @ngdoc function
-       * @name ng.$animate#enter
-       * @methodOf ng.$animate
+       * @ngdoc method
+       * @name $animate#enter
        * @function
        * @description Inserts the element into the DOM either after the `after` element or within
        *   the `parent` element. Once complete, the done() callback will be fired (if provided).
@@ -134,9 +131,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
       /**
        *
-       * @ngdoc function
-       * @name ng.$animate#leave
-       * @methodOf ng.$animate
+       * @ngdoc method
+       * @name $animate#leave
        * @function
        * @description Removes the element from the DOM. Once complete, the done() callback will be
        *   fired (if provided).
@@ -151,9 +147,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
       /**
        *
-       * @ngdoc function
-       * @name ng.$animate#move
-       * @methodOf ng.$animate
+       * @ngdoc method
+       * @name $animate#move
        * @function
        * @description Moves the position of the provided element within the DOM to be placed
        * either after the `after` element or inside of the `parent` element. Once complete, the
@@ -176,9 +171,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
       /**
        *
-       * @ngdoc function
-       * @name ng.$animate#addClass
-       * @methodOf ng.$animate
+       * @ngdoc method
+       * @name $animate#addClass
        * @function
        * @description Adds the provided className CSS class value to the provided element. Once
        * complete, the done() callback will be fired (if provided).
@@ -200,9 +194,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
       /**
        *
-       * @ngdoc function
-       * @name ng.$animate#removeClass
-       * @methodOf ng.$animate
+       * @ngdoc method
+       * @name $animate#removeClass
        * @function
        * @description Removes the provided className CSS class value from the provided element.
        * Once complete, the done() callback will be fired (if provided).
@@ -218,6 +211,29 @@ var $AnimateProvider = ['$provide', function($provide) {
                       isArray(className) ? className.join(' ') : '';
         forEach(element, function (element) {
           jqLiteRemoveClass(element, className);
+        });
+        done && $timeout(done, 0, false);
+      },
+
+      /**
+       *
+       * @ngdoc function
+       * @name ng.$animate#setClass
+       * @methodOf ng.$animate
+       * @function
+       * @description Adds and/or removes the given CSS classes to and from the element.
+       * Once complete, the done() callback will be fired (if provided).
+       * @param {jQuery/jqLite element} element the element which will it's CSS classes changed
+       *   removed from it
+       * @param {string} add the CSS classes which will be added to the element
+       * @param {string} remove the CSS class which will be removed from the element
+       * @param {function=} done the callback function (if provided) that will be fired after the
+       *   CSS classes have been set on the element
+       */
+      setClass : function(element, add, remove, done) {
+        forEach(element, function (element) {
+          jqLiteAddClass(element, add);
+          jqLiteRemoveClass(element, remove);
         });
         done && $timeout(done, 0, false);
       },

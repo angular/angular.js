@@ -1,0 +1,9 @@
+@ngdoc error
+@name $location:isrcharg
+@fullName Wrong $location.search() argument type
+@description
+
+To resolve this error, ensure that the first argument for the `$location.search` call is a `string` or an object.
+You can use the stack trace associated with this error to identify the call site that caused this issue.
+
+To learn more, please consult the {@link ng.$location `$location`} api docs.

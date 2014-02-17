@@ -1,6 +1,8 @@
-@ngdoc overview
-@name Tutorial: Index
+@ngdoc tutorial
+@name Tutorial
+@step -1
 @description
+
 
 A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
 the construction of an AngularJS web app. The app you will build is a catalog that displays a list

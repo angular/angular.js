@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 7 - Routing & Multiple Views
+@ngdoc tutorial
+@name 7 - Routing & Multiple Views
+@step 7
 @description
 
 <ul doc-tutorial-nav="7"></ul>
@@ -17,9 +18,7 @@ and the same phone list appears in the browser. When you click on a phone link t
 detail page is displayed.
 
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-6...step-7
-GitHub}.
+The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-6...step-7).
 
 
 ## Multiple Views, Routing and Layout Template
@@ -36,11 +35,10 @@ our application. Other "partial templates" are then included into this layout te
 the current "route" — the view that is currently displayed to the user.
 
 Application routes in Angular are declared via the
-{@link api/ngRoute.$routeProvider $routeProvider}, which is the provider of the
-{@link api/ngRoute.$route $route service}. This service makes it easy to wire together
+{@link ngRoute.$routeProvider $routeProvider}, which is the provider of the
+{@link ngRoute.$route $route service}. This service makes it easy to wire together
 controllers, view templates, and the current
-URL location in the browser. Using this feature we can implement {@link
-http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
+URL location in the browser. Using this feature we can implement [deep linking](http://en.wikipedia.org/wiki/Deep_linking), which lets us utilize the browser's
 history (back and forward navigation) and bookmarks.
 
 
@@ -73,7 +71,8 @@ both module systems can live side by side and fulfil their goals.
 ## The App Module
 
 __`app/js/app.js`:__
-<pre>
+
+```js
 var phonecatApp = angular.module('phonecatApp', [
   'ngRoute',
   'phonecatControllers'
@@ -94,7 +93,7 @@ phonecatApp.config(['$routeProvider',
         redirectTo: '/phones'
       });
   }]);
-</pre>
+```
 
 In order to configure our application with routes, we need to create a module for our application.
 We call this module `phonecatApp`. Notice the second argument passed to `angular.module`:
@@ -107,7 +106,7 @@ module `phonecatControllers`. By listing these two modules as dependencies of `p
 can use the directives and services they provide.
 
 Thus using the `config` API we request the `$routeProvider` to be injected into our config function
-and use the {@link api/ngRoute.$routeProvider#methods_when `$routeProvider.when`} API to define our routes.
+and use the {@link ngRoute.$routeProvider#when `$routeProvider.when`} API to define our routes.
 
 Our application routes are defined as follows:
 
@@ -127,25 +126,27 @@ address doesn't match either of our routes.
 Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
 the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
 URL. All variables defined with the `:` notation are extracted into the
-{@link api/ngRoute.$routeParams `$routeParams`} object.
+{@link ngRoute.$routeParams `$routeParams`} object.
 
 
 In order for our application to bootstrap with our newly created module we'll also need to specify
-the module name as the value of the {@link api/ng.directive:ngApp ngApp}
+the module name as the value of the {@link ng.directive:ngApp ngApp}
 directive:
 
 __`app/index.html`:__
-<pre>
+
+```html
 <!doctype html>
 <html lang="en" ng-app="phonecatApp">
 ...
-</pre>
+```
 
 
 ## Controllers
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 var phonecatControllers = angular.module('phonecatControllers', []);
 
 phonecatControllers.controller('PhoneListCtrl', ['$scope', '$http',
@@ -161,7 +162,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
   function($scope, $routeParams) {
     $scope.phoneId = $routeParams.phoneId;
   }]);
-</pre>
+```
 
 Again, note that we created a new module called `phonecatControllers`. For small AngularJS applications,
 it's common to create just one module for all of your controllers if there are just a few. For larger apps,
@@ -171,7 +172,7 @@ Because our example app is relatively small, we'll add all of our controllers to
 
 ## Template
 
-The `$route` service is usually used in conjunction with the {@link api/ngRoute.directive:ngView
+The `$route` service is usually used in conjunction with the {@link ngRoute.directive:ngView
 ngView} directive. The role of the `ngView` directive is to include the view template for the current
 route into the layout template. This makes it a perfect fit for our `index.html` template.
 
@@ -182,7 +183,8 @@ tag to your `index.html` file as shown below.
 </div>
 
 __`app/index.html`:__
-<pre>
+
+```html
 <!doctype html>
 <html lang="en" ng-app="phonecatApp">
 <head>
@@ -198,14 +200,15 @@ __`app/index.html`:__
 
 </body>
 </html>
-</pre>
+```
 
 Note that we removed most of the code in the `index.html` template and replaced it with a single
 line containing a div with the `ng-view` attribute. The code that we removed was placed into the
 `phone-list.html` template:
 
 __`app/partials/phone-list.html`:__
-<pre>
+
+```html
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span2">
@@ -233,7 +236,7 @@ __`app/partials/phone-list.html`:__
     </div>
   </div>
 </div>
-</pre>
+```
 
 <div style="display:none">
 TODO!
@@ -243,9 +246,10 @@ TODO!
 We also added a placeholder template for the phone details view:
 
 __`app/partials/phone-detail.html`:__
-<pre>
+
+```html
 TBD: detail view for {{phoneId}}
-</pre>
+```
 
 Note how we are using `phoneId` model defined in the `PhoneDetailCtrl` controller.
 
@@ -255,7 +259,7 @@ Note how we are using `phoneId` model defined in the `PhoneDetailCtrl` controlle
 To automatically verify that everything is wired properly, we wrote end-to-end tests that navigate
 to various URLs and verify that the correct view was rendered.
 
-<pre>
+```js
 ...
   it('should redirect index.html to index.html#/phones', function() {
     browser().navigateTo('app/index.html');
@@ -274,13 +278,11 @@ to various URLs and verify that the correct view was rendered.
       expect(binding('phoneId')).toBe('nexus-s');
     });
  });
-</pre>
+```
 
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
-Angular's server}.
+runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html).
 
 
 # Experiments

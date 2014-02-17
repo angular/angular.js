@@ -3,8 +3,8 @@
 /* global ngTouch: false */
 
     /**
-     * @ngdoc object
-     * @name ngTouch.$swipe
+     * @ngdoc service
+     * @name $swipe
      *
      * @description
      * The `$swipe` service is a service that abstracts the messier details of hold-and-drag swipe
@@ -41,8 +41,7 @@ ngTouch.factory('$swipe', [function() {
   return {
     /**
      * @ngdoc method
-     * @name ngTouch.$swipe#bind
-     * @methodOf ngTouch.$swipe
+     * @name $swipe#bind
      *
      * @description
      * The main method of `$swipe`. It takes an element to be watched for swipe motions, and an

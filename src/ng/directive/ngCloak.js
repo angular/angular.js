@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngCloak
+ * @name ngCloak
  * @restrict AC
  *
  * @description
@@ -18,11 +18,11 @@
  * `angular.min.js`.
  * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
- * <pre>
+ * ```css
  * [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
  *   display: none !important;
  * }
- * </pre>
+ * ```
  *
  * When this css rule is loaded by the browser, all html elements (including their children) that
  * are tagged with the `ngCloak` directive are hidden. When Angular encounters this directive
@@ -40,20 +40,20 @@
  * @element ANY
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
         <div id="template1" ng-cloak>{{ 'hello' }}</div>
         <div id="template2" ng-cloak class="ng-cloak">{{ 'hello IE7' }}</div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should remove the template directive and css class', function() {
-         expect($('.doc-example-live #template1').getAttribute('ng-cloak')).
+         expect($('#template1').getAttribute('ng-cloak')).
            toBeNull();
-         expect($('.doc-example-live #template2').getAttribute('ng-cloak')).
+         expect($('#template2').getAttribute('ng-cloak')).
            toBeNull();
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  *
  */
 var ngCloakDirective = ngDirective({

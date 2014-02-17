@@ -1,12 +1,12 @@
 @ngdoc overview
-@name Developer Guide: Providers
+@name  Providers
 @description
 
 # Providers
 
 Each web application you build is composed of objects that collaborate to get stuff done. These
 objects need to be instantiated and wired together for the app to work. In Angular apps most of
-these objects are instantiated and wired together automatically by the {@link api/AUTO.$injector
+these objects are instantiated and wired together automatically by the {@link auto.$injector
 injector service}.
 
 The injector creates two types of objects, **services** and **specialized objects**.
@@ -34,7 +34,7 @@ In order for the injector to know how to create and wire together all of these o
 a registry of "recipes". Each recipe has an identifier of the object and the description of how to
 create this object.
 
-Each recipe belongs to an {@link api/angular.Module Angular module}. An Angular module is a bag
+Each recipe belongs to an {@link angular.Module Angular module}. An Angular module is a bag
 that holds one or more recipes. And since manually keeping track of module dependencies is no fun,
 a module can contain information about dependencies on other modules as well.
 

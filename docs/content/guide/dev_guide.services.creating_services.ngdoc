@@ -1,11 +1,11 @@
 @ngdoc overview
-@name Developer Guide: Angular Services: Creating Services
+@name  Angular Services: Creating Services
 @description
 
 While Angular offers several useful services, for any nontrivial application you'll find it useful
 to write your own custom services. To do this you begin by registering a service factory function
-with a module either via the {@link api/angular.module Module#factory api} or directly
-via the {@link api/AUTO.$provide $provide} api inside of module config function.
+with a module either via the {@link angular.module Module#factory api} or directly
+via the {@link auto.$provide $provide} api inside of module config function.
 
 All Angular services participate in {@link di dependency injection (DI)} by registering
 themselves with Angular's DI system (injector) under a `name` (id) as well as by declaring
@@ -17,22 +17,24 @@ testable.
 # Registering Services
 
 To register a service, you must have a module that this service will be part of. Afterwards, you
-can register the service with the module either via the {@link api/angular.Module Module api} or
-by using the {@link api/AUTO.$provide $provide} service in the module configuration
+can register the service with the module either via the {@link angular.Module Module api} or
+by using the {@link auto.$provide $provide} service in the module configuration
 function. The following pseudo-code shows both approaches:
 
 Using the angular.Module api:
-<pre>
+
+```js
 var myModule = angular.module('myModule', []);
 myModule.factory('serviceId', function() {
   var shinyNewServiceInstance;
   //factory function body that constructs shinyNewServiceInstance
   return shinyNewServiceInstance;
 });
-</pre>
+```
 
 Using the $provide service:
-<pre>
+
+```js
 angular.module('myModule', [], function($provide) {
   $provide.factory('serviceId', function() {
     var shinyNewServiceInstance;
@@ -40,7 +42,7 @@ angular.module('myModule', [], function($provide) {
     return shinyNewServiceInstance;
   });
 });
-</pre>
+```
 
 Note that you are not registering a service instance, but rather a factory function that will
 create this instance when called.
@@ -58,7 +60,7 @@ Following is an example of a very simple service. This service depends on the `$
 stores all notifications; after the third one, the service displays all of the notifications by
 window alert.
 
-<pre>
+```js
 angular.module('myModule', [], function($provide) {
   $provide.factory('notify', ['$window', function(win) {
     var msgs = [];
@@ -71,7 +73,7 @@ angular.module('myModule', [], function($provide) {
     };
   }]);
 });
-</pre>
+```
 
 
 # Instantiating Angular Services
@@ -101,4 +103,4 @@ important.
 
 ## Related API
 
-* {@link api/ng Angular Service API}
+* {@link ng Angular Service API}

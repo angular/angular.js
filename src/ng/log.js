@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name ng.$log
+ * @ngdoc service
+ * @name $log
  * @requires $window
  *
  * @description
@@ -37,8 +37,8 @@
  */
 
 /**
- * @ngdoc object
- * @name ng.$logProvider
+ * @ngdoc provider
+ * @name $logProvider
  * @description
  * Use the `$logProvider` to configure how the application logs messages
  */
@@ -48,8 +48,7 @@ function $LogProvider(){
   
   /**
    * @ngdoc property
-   * @name ng.$logProvider#debugEnabled
-   * @methodOf ng.$logProvider
+   * @name $logProvider#debugEnabled
    * @description
    * @param {boolean=} flag enable or disable debug level messages
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
@@ -67,8 +66,7 @@ function $LogProvider(){
     return {
       /**
        * @ngdoc method
-       * @name ng.$log#log
-       * @methodOf ng.$log
+       * @name $log#log
        *
        * @description
        * Write a log message
@@ -77,8 +75,7 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name ng.$log#info
-       * @methodOf ng.$log
+       * @name $log#info
        *
        * @description
        * Write an information message
@@ -87,8 +84,7 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name ng.$log#warn
-       * @methodOf ng.$log
+       * @name $log#warn
        *
        * @description
        * Write a warning message
@@ -97,8 +93,7 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name ng.$log#error
-       * @methodOf ng.$log
+       * @name $log#error
        *
        * @description
        * Write an error message
@@ -107,8 +102,7 @@ function $LogProvider(){
       
       /**
        * @ngdoc method
-       * @name ng.$log#debug
-       * @methodOf ng.$log
+       * @name $log#debug
        * 
        * @description
        * Write a debug message

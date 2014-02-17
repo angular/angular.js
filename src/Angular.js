@@ -81,14 +81,31 @@
     -assertNotHasOwnProperty,
     -getter,
     -getBlockElements,
+    -hasOwnProperty,
 
 */
 
 ////////////////////////////////////
 
 /**
+ * @ngdoc module
+ * @name ng
+ * @module ng
+ * @description
+ * 
+ * # ng (core module)
+ * The ng module is loaded by default when an AngularJS application is started. The module itself
+ * contains the essential components for an AngularJS application to function. The table below
+ * lists a high level breakdown of each of the services/factories, filters, directives and testing
+ * components available within this core module.
+ * 
+ * <div doc-module-components="ng"></div>
+ */
+
+/**
  * @ngdoc function
  * @name angular.lowercase
+ * @module ng
  * @function
  *
  * @description Converts the specified string to lowercase.
@@ -96,11 +113,12 @@
  * @returns {string} Lowercased string.
  */
 var lowercase = function(string){return isString(string) ? string.toLowerCase() : string;};
-
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
  * @ngdoc function
  * @name angular.uppercase
+ * @module ng
  * @function
  *
  * @description Converts the specified string to uppercase.
@@ -184,6 +202,7 @@ function isArrayLike(obj) {
 /**
  * @ngdoc function
  * @name angular.forEach
+ * @module ng
  * @function
  *
  * @description
@@ -195,14 +214,14 @@ function isArrayLike(obj) {
  * It is worth noting that `.forEach` does not iterate over inherited properties because it filters
  * using the `hasOwnProperty` method.
  *
-   <pre>
+   ```js
      var values = {name: 'misko', gender: 'male'};
      var log = [];
      angular.forEach(values, function(value, key){
        this.push(key + ': ' + value);
      }, log);
      expect(log).toEqual(['name: misko', 'gender: male']);
-   </pre>
+   ```
  *
  * @param {Object|Array} obj Object to iterate over.
  * @param {Function} iterator Iterator function.
@@ -312,6 +331,7 @@ function setHashKey(obj, h) {
 /**
  * @ngdoc function
  * @name angular.extend
+ * @module ng
  * @function
  *
  * @description
@@ -348,17 +368,18 @@ function inherit(parent, extra) {
 /**
  * @ngdoc function
  * @name angular.noop
+ * @module ng
  * @function
  *
  * @description
  * A function that performs no operations. This function can be useful when writing code in the
  * functional style.
-   <pre>
+   ```js
      function foo(callback) {
        var result = calculateResult();
        (callback || angular.noop)(result);
      }
-   </pre>
+   ```
  */
 function noop() {}
 noop.$inject = [];
@@ -367,17 +388,18 @@ noop.$inject = [];
 /**
  * @ngdoc function
  * @name angular.identity
+ * @module ng
  * @function
  *
  * @description
  * A function that returns its first argument. This function is useful when writing code in the
  * functional style.
  *
-   <pre>
+   ```js
      function transformer(transformationFn, value) {
        return (transformationFn || angular.identity)(value);
      };
-   </pre>
+   ```
  */
 function identity($) {return $;}
 identity.$inject = [];
@@ -388,6 +410,7 @@ function valueFn(value) {return function() {return value;};}
 /**
  * @ngdoc function
  * @name angular.isUndefined
+ * @module ng
  * @function
  *
  * @description
@@ -402,6 +425,7 @@ function isUndefined(value){return typeof value === 'undefined';}
 /**
  * @ngdoc function
  * @name angular.isDefined
+ * @module ng
  * @function
  *
  * @description
@@ -416,6 +440,7 @@ function isDefined(value){return typeof value !== 'undefined';}
 /**
  * @ngdoc function
  * @name angular.isObject
+ * @module ng
  * @function
  *
  * @description
@@ -431,6 +456,7 @@ function isObject(value){return value != null && typeof value === 'object';}
 /**
  * @ngdoc function
  * @name angular.isString
+ * @module ng
  * @function
  *
  * @description
@@ -445,6 +471,7 @@ function isString(value){return typeof value === 'string';}
 /**
  * @ngdoc function
  * @name angular.isNumber
+ * @module ng
  * @function
  *
  * @description
@@ -459,6 +486,7 @@ function isNumber(value){return typeof value === 'number';}
 /**
  * @ngdoc function
  * @name angular.isDate
+ * @module ng
  * @function
  *
  * @description
@@ -475,6 +503,7 @@ function isDate(value){
 /**
  * @ngdoc function
  * @name angular.isArray
+ * @module ng
  * @function
  *
  * @description
@@ -491,6 +520,7 @@ function isArray(value) {
 /**
  * @ngdoc function
  * @name angular.isFunction
+ * @module ng
  * @function
  *
  * @description
@@ -559,6 +589,7 @@ var trim = (function() {
 /**
  * @ngdoc function
  * @name angular.isElement
+ * @module ng
  * @function
  *
  * @description
@@ -669,6 +700,7 @@ function isLeafNode (node) {
 /**
  * @ngdoc function
  * @name angular.copy
+ * @module ng
  * @function
  *
  * @description
@@ -687,8 +719,8 @@ function isLeafNode (node) {
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  *
  * @example
- <doc:example>
- <doc:source>
+ <example>
+ <file name="index.html">
  <div ng-controller="Controller">
  <form novalidate class="simple-form">
  Name: <input type="text" ng-model="user.name" /><br />
@@ -719,8 +751,8 @@ function isLeafNode (node) {
     $scope.reset();
   }
  </script>
- </doc:source>
- </doc:example>
+ </file>
+ </example>
  */
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) {
@@ -784,6 +816,7 @@ function shallowCopy(src, dst) {
 /**
  * @ngdoc function
  * @name angular.equals
+ * @module ng
  * @function
  *
  * @description
@@ -870,6 +903,7 @@ function sliceArgs(args, startIndex) {
 /**
  * @ngdoc function
  * @name angular.bind
+ * @module ng
  * @function
  *
  * @description
@@ -925,6 +959,7 @@ function toJsonReplacer(key, value) {
 /**
  * @ngdoc function
  * @name angular.toJson
+ * @module ng
  * @function
  *
  * @description
@@ -944,6 +979,7 @@ function toJson(obj, pretty) {
 /**
  * @ngdoc function
  * @name angular.fromJson
+ * @module ng
  * @function
  *
  * @description
@@ -1099,7 +1135,8 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngApp
+ * @name ngApp
+ * @module ng
  *
  * @element ANY
  * @param {angular.Module} ngApp an optional application
@@ -1117,7 +1154,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * {@link angular.bootstrap} instead. AngularJS applications cannot be nested within each other.
  *
  * You can specify an **AngularJS module** to be used as the root module for the application.  This
- * module will be loaded into the {@link AUTO.$injector} when the application is bootstrapped and
+ * module will be loaded into the {@link auto.$injector} when the application is bootstrapped and
  * should contain the application code needed or have dependencies on other modules that will
  * contain the code. See {@link angular.module} for more information.
  *
@@ -1131,6 +1168,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
    <file name="index.html">
    <div ng-controller="ngAppDemoController">
      I can add: {{a}} + {{b}} =  {{ a+b }}
+   </div>
    </file>
    <file name="script.js">
    angular.module('ngAppDemo', []).controller('ngAppDemoController', function($scope) {
@@ -1188,20 +1226,21 @@ function angularInit(element, bootstrap) {
 /**
  * @ngdoc function
  * @name angular.bootstrap
+ * @module ng
  * @description
  * Use this function to manually start up angular application.
  *
  * See: {@link guide/bootstrap Bootstrap}
  *
  * Note that ngScenario-based end-to-end tests cannot use this function to bootstrap manually.
- * They must use {@link api/ng.directive:ngApp ngApp}.
+ * They must use {@link ng.directive:ngApp ngApp}.
  *
  * @param {Element} element DOM element which is the root of angular application.
  * @param {Array<String|Function|Array>=} modules an array of modules to load into the application.
  *     Each item in the array should be the name of a predefined module or a (DI annotated)
  *     function that will be invoked by the injector as a run block.
  *     See: {@link angular.module modules}
- * @returns {AUTO.$injector} Returns the newly created injector for this app.
+ * @returns {auto.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
   var doBootstrap = function() {

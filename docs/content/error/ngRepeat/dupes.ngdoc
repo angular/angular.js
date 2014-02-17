@@ -3,7 +3,7 @@
 @fullName Duplicate Key in Repeater
 @description
 
-Occurs if there are duplicate keys in an {@link api/ng.directive:ngRepeat ngRepeat} expression.  Duplicate keys are banned because AngularJS uses keys to associate DOM nodes with items.
+Occurs if there are duplicate keys in an {@link ng.directive:ngRepeat ngRepeat} expression.  Duplicate keys are banned because AngularJS uses keys to associate DOM nodes with items.
 
 By default, collections are keyed by reference which is desirable for most common models but can be problematic for primitive types that are interned (share references).
 

@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.filter:limitTo
+ * @ngdoc filter
+ * @name limitTo
  * @function
  *
  * @description
@@ -19,8 +19,8 @@
  *     had less than `limit` elements.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.numbers = [1,2,3,4,5,6,7,8,9];
@@ -35,8 +35,8 @@
          Limit {{letters}} to: <input type="integer" ng-model="letterLimit">
          <p>Output letters: {{ letters | limitTo:letterLimit }}</p>
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
        var numLimitInput = element(by.model('numLimit'));
        var letterLimitInput = element(by.model('letterLimit'));
        var limitedNumbers = element(by.binding('numbers | limitTo:numLimit'));
@@ -66,8 +66,8 @@
          expect(limitedNumbers.getText()).toEqual('Output numbers: [1,2,3,4,5,6,7,8,9]');
          expect(limitedLetters.getText()).toEqual('Output letters: abcdefghi');
        });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 function limitToFilter(){
   return function(input, limit) {

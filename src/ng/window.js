@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name ng.$window
+ * @ngdoc service
+ * @name $window
  *
  * @description
  * A reference to the browser's `window` object. While `window`
@@ -16,8 +16,8 @@
  * expression.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope, $window) {
            $scope.greeting = 'Hello, World!';
@@ -30,15 +30,15 @@
          <input type="text" ng-model="greeting" />
          <button ng-click="doGreeting(greeting)">ALERT</button>
        </div>
-     </doc:source>
-     <doc:protractor>
+     </file>
+     <file name="protractor.js" type="protractor">
       it('should display the greeting in the input box', function() {
        element(by.model('greeting')).sendKeys('Hello, E2E Tests');
        // If we click the button it will block the test runner
        // element(':button').click();
       });
-     </doc:protractor>
-   </doc:example>
+     </file>
+   </example>
  */
 function $WindowProvider(){
   this.$get = valueFn(window);

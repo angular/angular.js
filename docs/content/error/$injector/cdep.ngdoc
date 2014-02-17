@@ -1,0 +1,26 @@
+@ngdoc error
+@name $injector:cdep
+@fullName Circular Dependency
+@description
+
+This error occurs when the {@link angular.injector $injector} tries to get
+a service that depends on itself, either directly or indirectly. To fix this,
+construct your dependency chain such that there are no circular dependencies.
+
+For example:
+
+```
+angular.module('myApp', [])
+  .factory('myService', function (myService) {
+    // ...
+  })
+  .controller('MyCtrl', function ($scope, myService) {
+    // ...
+  });
+```
+
+When an instance of `MyCtrl` is created, the service `myService` will be created
+by the `$injector`. `myService` depends on itself, which causes the `$injector`
+to detect a circular dependency and throw the error.
+
+For more information, see the {@link guide/di Dependency Injection Guide}.

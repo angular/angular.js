@@ -8,9 +8,8 @@ function $TimeoutProvider() {
 
 
      /**
-      * @ngdoc function
-      * @name ng.$timeout
-      * @requires $browser
+      * @ngdoc service
+      * @name $timeout
       *
       * @description
       * Angular's wrapper for `window.setTimeout`. The `fn` function is wrapped into a try/catch
@@ -61,9 +60,8 @@ function $TimeoutProvider() {
 
 
      /**
-      * @ngdoc function
-      * @name ng.$timeout#cancel
-      * @methodOf ng.$timeout
+      * @ngdoc method
+      * @name $timeout#cancel
       *
       * @description
       * Cancels a task associated with the `promise`. As a result of this, the promise will be

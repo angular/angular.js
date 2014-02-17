@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Unit Testing
+@name  Unit Testing
 @description
 
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
@@ -52,7 +52,7 @@ While there is nothing wrong with the `new` operator fundamentally, a problem ar
 on a constructor. This permanently binds the call site to the type. For example, lets say that we try to
 instantiate an `XHR` that will retrieve data from the server.
 
-<pre>
+```js
 function MyClass() {
   this.doWork = function() {
     var xhr = new XHR();
@@ -61,7 +61,7 @@ function MyClass() {
     xhr.send();
   }
 }
-</pre>
+```
 
 A problem surfaces in tests when we would like to instantiate a `MockXHR` that would
 allow us to return fake data and simulate network failures. By calling `new XHR()` we are
@@ -69,20 +69,21 @@ permanently bound to the actual XHR and there is no  way to replace it. Yes, we 
 patch, but that is a bad idea for many reasons which are outside the scope of this document.
 
 Here's an example of how the class above becomes hard to test when resorting to monkey patching:
-<pre>
+
+```js
 var oldXHR = XHR;
 XHR = function MockXHR() {};
 var myClass = new MyClass();
 myClass.doWork();
 // assert that MockXHR got called with the right arguments
 XHR = oldXHR; // if you forget this bad things will happen
-</pre>
+```
 
 
 ### Global look-up:
 Another way to approach the problem is to look for the service in a well-known location.
 
-<pre>
+```js
 function MyClass() {
   this.doWork = function() {
     global.xhr({
@@ -92,24 +93,24 @@ function MyClass() {
     })
   }
 }
-</pre>
+```
 
 While no new dependency instance is created, it is fundamentally the same as `new` in
 that no  way exists to intercept the call to `global.xhr` for testing purposes, other then
 through monkey patching. The basic issue for testing is that a global variable needs to be mutated in
-order to replace it with call to a mock method. For further explanation of why this is bad see: {@link
-http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/ Brittle Global
-State & Singletons}
+order to replace it with call to a mock method. For further explanation of why this is bad see: [Brittle Global
+State & Singletons](http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/)
 
 The class above is hard to test since we have to change the global state:
-<pre>
+
+```js
 var oldXHR = global.xhr;
 global.xhr = function mockXHR() {};
 var myClass = new MyClass();
 myClass.doWork();
 // assert that mockXHR got called with the right arguments
 global.xhr = oldXHR; // if you forget this bad things will happen
-</pre>
+```
 
 
 ### Service Registry:
@@ -117,7 +118,7 @@ global.xhr = oldXHR; // if you forget this bad things will happen
 It may seem that this can be solved by having a registry of all the services and then
 having the tests replace the services as needed.
 
-<pre>
+```js
 function MyClass() {
   var serviceRegistry = ????;
   this.doWork = function() {
@@ -128,7 +129,7 @@ function MyClass() {
       complete:function(response){ ... }
     })
 }
-</pre>
+```
 
 However, where does the serviceRegistry come from? If it is:
 * `new`-ed up, the test has no chance to reset the services for testing.
@@ -136,20 +137,21 @@ However, where does the serviceRegistry come from? If it is:
 only one global variable exists to be reset).
 
 The class above is hard to test since we have to change the global state:
-<pre>
+
+```js
 var oldServiceLocator = global.serviceLocator;
 global.serviceLocator.set('xhr', function mockXHR() {});
 var myClass = new MyClass();
 myClass.doWork();
 // assert that mockXHR got called with the right arguments
 global.serviceLocator = oldServiceLocator; // if you forget this bad things will happen
-</pre>
+```
 
 
 ### Passing in Dependencies:
 Last, the dependency can be passed in.
 
-<pre>
+```js
 function MyClass(xhr) {
   this.doWork = function() {
     xhr({
@@ -158,7 +160,7 @@ function MyClass(xhr) {
       complete:function(response){ ... }
     })
 }
-</pre>
+```
 
 This is the preferred method since the code makes no assumptions about the origin of `xhr` and cares
 instead about whoever created the class  responsible for passing it in. Since the creator of the
@@ -166,12 +168,13 @@ class should be different code than the user of the class, it separates the resp
 creation from the logic. This is dependency-injection in a nutshell.
 
 The class above is testable, since in the test we can write:
-<pre>
+
+```js
 function xhrMock(args) {...}
 var myClass = new MyClass(xhrMock);
 myClass.doWork();
 // assert that xhrMock got called with the right arguments
-</pre>
+```
 
 Notice that no global variables were harmed in the writing of this test.
 
@@ -183,7 +186,7 @@ What makes each application unique is its logic, and the logic is what we would 
 for your application contains DOM manipulation, it will be hard to test. See the example
 below:
 
-<pre>
+```js
 function PasswordCtrl() {
   // get references to DOM elements
   var msg = $('.ex1 span');
@@ -206,12 +209,12 @@ function PasswordCtrl() {
      .text(strength);
   }
 }
-</pre>
+```
 
 The code above is problematic from a testability point of view since it requires your test to have the right kind
 of DOM present when the code executes. The test would look like this:
 
-<pre>
+```js
 var input = $('<input type="text"/>');
 var span = $('<span>');
 $('body').html('<div class="ex1">')
@@ -223,12 +226,12 @@ input.val('abc');
 pc.grade();
 expect(span.text()).toEqual('weak');
 $('body').empty();
-</pre>
+```
 
 In angular the controllers are strictly separated from the DOM manipulation logic and this results in
 a much easier testability story as the following example shows:
 
-<pre>
+```js
 function PasswordCtrl($scope) {
   $scope.password = '';
   $scope.grade = function() {
@@ -242,27 +245,27 @@ function PasswordCtrl($scope) {
     }
   };
 }
-</pre>
+```
 
 and the test is straight forward:
 
-<pre>
+```js
 var $scope = {};
 var pc = $controller('PasswordCtrl', { $scope: $scope });
 $scope.password = 'abc';
 $scope.grade();
 expect($scope.strength).toEqual('weak');
-</pre>
+```
 
 Notice that the test is not only much shorter, it is also easier to follow what is happening. We say
 that such a test tells a story, rather then asserting random bits which don't seem to be related.
 
 ## Filters
-{@link api/ng.$filterProvider Filters} are functions which transform the data into a user readable
+{@link ng.$filterProvider Filters} are functions which transform the data into a user readable
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 
-<pre>
+```js
 myModule.filter('length', function() {
   return function(text){
     return (''+(text||'')).length;
@@ -272,7 +275,7 @@ myModule.filter('length', function() {
 var length = $filter('length');
 expect(length(null)).toEqual(0);
 expect(length('abc')).toEqual(3);
-</pre>
+```
 
 ## Directives
 Directives in angular are responsible for encapsulating complex functionality within custom HTML tags,
@@ -283,13 +286,13 @@ you create with directives may be used throughout your application and in many d
 
 Let's start with an angular app with no dependencies.
 
-<pre>
+```js
 var app = angular.module('myApp', []);
-</pre>
+```
 
 Now we can add a directive to our app.
 
-<pre>
+```js
 app.directive('aGreatEye', function () {
     return {
         restrict: 'E',
@@ -297,13 +300,13 @@ app.directive('aGreatEye', function () {
         template: '<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>'
     };
 });
-</pre>
+```
 
 This directive is used as a tag `<a-great-eye></a-great-eye>`. It replaces the entire tag with the
 template `<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>`. Now we are going to write a jasmine unit test to
 verify this functionality. Note that the expression `{{1 + 1}}` times will also be evaluated in the rendered content.
 
-<pre>
+```js
 describe('Unit testing great quotes', function() {
     var $compile;
     var $rootScope;
@@ -328,7 +331,7 @@ describe('Unit testing great quotes', function() {
         expect(element.html()).toContain("lidless, wreathed in flame, 2 times");
     });
 });
-</pre>
+```
 
 We inject the $compile service and $rootScope before each jasmine test. The $compile service is used
 to render the aGreatEye directive. After rendering the directive we ensure that the directive has
@@ -336,5 +339,5 @@ replaced the content and "lidless, wreathed in flame, 2 times" is present.
 
 
 ## Sample project
-See the {@link https://github.com/angular/angular-seed angular-seed} project for an example.
+See the [angular-seed](https://github.com/angular/angular-seed) project for an example.
 
