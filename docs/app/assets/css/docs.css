@@ -3,6 +3,26 @@ html, body {
   height:100%;
 }
 
+#wrapper {
+  min-height:100%;
+  position:relative;
+  padding-bottom:120px;
+}
+
+.footer {
+  border-top:20px solid white;
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:100;
+  padding-top: 2em;
+  background-color: #333;
+  color: white;
+  padding-bottom: 2em;
+}
+
+
 .header-fixed {
   position:fixed;
   z-index:1000;
@@ -66,16 +86,6 @@ h1,h2,h3,h4,h5,h6 {
 
 /* end: Logo */
 
-
-.footer {
-  border-top:20px solid white;
-  position:relative;
-  z-index:100;
-  padding-top: 2em;
-  background-color: #333;
-  color: white;
-  padding-bottom: 2em;
-}
 
 .spacer {
   height: 1em;
@@ -356,14 +366,13 @@ iframe.example {
 .sup-header {
   padding-top:10px;
   padding-bottom:5px;
-  background:rgba(240,240,240,0.88);
-  box-shadow:0 0 5px #999;
+  background:rgba(245,245,245,0.88);
+  box-shadow:0 0 2px #999;
 }
 
 .main-body-grid {
   margin-top:120px;
   position:relative;
-  min-height:800px;
 }
 
 .main-body-grid > .grid-left,
@@ -374,8 +383,8 @@ iframe.example {
 .main-body-grid > .grid-left {
   position:fixed;
   top:120px;
-  padding-bottom:250px;
-  height:100%;
+  bottom:0;
+  padding-bottom:120px;
   overflow:auto;
 }
 
@@ -477,6 +486,11 @@ h2 {
   padding-top:30px;
 }
 
+h4 {
+  margin-top:20px;
+  padding-top:20px;
+}
+
 .improve-docs {
   float:right;
 }
@@ -531,4 +545,9 @@ h2 {
 
 .return-arguments td:first-child {
   width:100px; 
+}
+
+ul.methods > li,
+ul.events > li {
+  margin-bottom:40px;
 }
