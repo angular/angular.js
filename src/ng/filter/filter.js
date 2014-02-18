@@ -118,7 +118,8 @@ function filterFilter() {
     if (!isArray(array)) return array;
 
     var comparatorType = typeof(comparator),
-        predicates = [];
+        predicates = [],
+        evaluatedObjects = [];
 
     predicates.check = function(value) {
       for (var j = 0; j < predicates.length; j++) {
@@ -151,7 +152,7 @@ function filterFilter() {
       }
     }
 
-    var search = function(obj, text, orig){
+    var search = function(obj, text){
       if (typeof text == 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
       }
@@ -166,9 +167,14 @@ function filterFilter() {
               return comparator(obj, text);
             default:
               for ( var objKey in obj) {
-                if (obj[objKey] === orig) return;
-                if (objKey.charAt(0) !== '$' && search(obj[objKey], text, obj)) {
-                  return true;
+                var value = obj[objKey];
+                if (evaluatedObjects.indexOf(value) == -1) {
+                  if (typeof value == 'object') {
+                    evaluatedObjects.push(value);
+                  }
+                  if (objKey.charAt(0) !== '$' && search(value, text)) {
+                    return true;
+                  }
                 }
               }
               break;
