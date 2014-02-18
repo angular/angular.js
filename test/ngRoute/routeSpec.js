@@ -242,6 +242,12 @@ describe('$route', function() {
       $rootScope.$digest();
       expect($route.current).toBeDefined();
     }));
+
+    it('matches a URL with even more special chars', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*(bar)/~!@#$%^&*()_+=-`');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+    }));
   });
 
 
