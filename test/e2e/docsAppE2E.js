@@ -38,5 +38,23 @@ describe('docs.angularjs.org', function () {
       var code = element(by.css('tt'));
       expect(code.getText()).toContain('guest!!!');
     });
+
+    it('should be resilient to trailing slashes', function() {
+      browser.get('index-debug.html#!/api/ng/function/angular.noop/');
+      var pageBody = element(by.css('h1'));
+      expect(pageBody.getText()).toEqual('angular.noop');
+    });
+
+    it('should be resilient to trailing "index"', function() {
+      browser.get('index-debug.html#!/api/ng/function/angular.noop/index');
+      var pageBody = element(by.css('h1'));
+      expect(pageBody.getText()).toEqual('angular.noop');
+    });
+
+    it('should be resilient to trailing "index/"', function() {
+      browser.get('index-debug.html#!/api/ng/function/angular.noop/index/');
+      var pageBody = element(by.css('h1'));
+      expect(pageBody.getText()).toEqual('angular.noop');
+    });
   });
 });
