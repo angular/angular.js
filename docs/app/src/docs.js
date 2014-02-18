@@ -76,11 +76,26 @@ angular.module('docsApp', [
 
 
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
-    // Strip off leading slash
-    if ( path.charAt(0)==='/' ) {
+
+    var currentPage = $scope.currentPage = NG_PAGES[path];
+    if ( !currentPage && path.charAt(0)==='/' ) {
+      // Strip off leading slash
       path = path.substr(1);
     }
-    var currentPage = $scope.currentPage = NG_PAGES[path];
+
+    currentPage = $scope.currentPage = NG_PAGES[path];
+    if ( !currentPage && path.charAt(path.length-1) === '/' && path.length > 1 ) {
+      // Strip off trailing slash
+      path = path.substr(0, path.length-1);
+    }
+
+    currentPage = $scope.currentPage = NG_PAGES[path];
+    if ( !currentPage && /\/index$/.test(path) ) {
+      // Strip off index from the end
+      path = path.substr(0, path.length - 6);
+    }
+
+    currentPage = $scope.currentPage = NG_PAGES[path];
 
     if ( currentPage ) {
       $scope.currentArea = currentPage && NG_NAVIGATION[currentPage.area];
