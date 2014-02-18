@@ -32,7 +32,7 @@
  *
  * The filter function is registered with the `$injector` under the filter name suffix with
  * `Filter`.
- * 
+ *
  * ```js
  *   it('should be the same instance', inject(
  *     function($filterProvider) {
@@ -106,7 +106,7 @@ function $FilterProvider($provide) {
   }];
 
   ////////////////////////////////////////
-  
+
   /* global
     currencyFilter: false,
     dateFilter: false,
