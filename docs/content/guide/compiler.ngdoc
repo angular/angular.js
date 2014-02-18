@@ -5,7 +5,7 @@
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 
-If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
+If you're just getting started, we recommend the {@link tutorial tutorial} first.
 If you just want to create custom directives, we recommend the {@link guide/directive directives guide}.
 If you want a deeper look into Angular's compilation process, you're in the right place.
 </div>
