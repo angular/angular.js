@@ -13,7 +13,6 @@
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
   "disallowKeywordsOnNewLine": ["else"],
-  "disallowTrailingWhitespace": true,
   "requireLineFeedAtFileEnd": true,
   "validateJSDoc": {
     "checkParamNames": true,
