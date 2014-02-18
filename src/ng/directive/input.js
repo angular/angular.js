@@ -295,7 +295,7 @@ var inputType = {
           var text = element(by.binding('text'));
           var valid = element(by.binding('myForm.input.$valid'));
           var input = element(by.model('text'));
-          
+
           it('should initialize to model', function() {
             expect(text.getText()).toContain('me@example.com');
             expect(valid.getText()).toContain('true');
@@ -409,7 +409,7 @@ var inputType = {
 
             expect(value1.getText()).toContain('true');
             expect(value2.getText()).toContain('YES');
-            
+
             element(by.model('value1')).click();
             element(by.model('value2')).click();
 
@@ -1021,7 +1021,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * You can override this for input directives whose concept of being empty is different to the
    * default. The `checkboxInputType` directive does this because in its case a value of `false`
    * implies empty.
-   * 
+   *
    * @param {*} value Reference to check.
    * @returns {boolean} True if `value` is empty.
    */

@@ -350,7 +350,7 @@ function annotate(fn) {
  *
  *   - `Object`: then it should have a `$get` method. The `$get` method will be invoked using
  *     {@link auto.$injector#invoke $injector.invoke()} when an instance needs to be created.
- *   - `Constructor`: a new instance of the provider will be created using                     
+ *   - `Constructor`: a new instance of the provider will be created using
  *     {@link auto.$injector#instantiate $injector.instantiate()}, then treated as `object`.
  *
  * @returns {Object} registered provider instance
@@ -478,9 +478,9 @@ function annotate(fn) {
  *   var Ping = function($http) {
  *     this.$http = $http;
  *   };
- * 
+ *
  *   Ping.$inject = ['$http'];
- *   
+ *
  *   Ping.prototype.send = function() {
  *     return this.$http.get('/ping');
  *   };
