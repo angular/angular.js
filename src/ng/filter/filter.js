@@ -166,15 +166,15 @@ function filterFilter() {
             case "object":
               return comparator(obj, text);
             default:
-              for ( var objKey in obj) {
+              for (var objKey in obj) {
                 var value = obj[objKey];
-                if (evaluatedObjects.indexOf(value) == -1) {
-                  if (typeof value == 'object') {
+                if (typeof value == 'object') {
+                  if (evaluatedObjects.indexOf(value) == -1) {
                     evaluatedObjects.push(value);
+                    if (objKey.charAt(0) !== '$' && search(value, text)) { return true; }
                   }
-                  if (objKey.charAt(0) !== '$' && search(value, text)) {
-                    return true;
-                  }
+                } else {
+                  if (objKey.charAt(0) !== '$' && search(value, text)) { return true; }
                 }
               }
               break;
