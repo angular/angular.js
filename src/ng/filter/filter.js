@@ -167,14 +167,15 @@ function filterFilter() {
               return comparator(obj, text);
             default:
               for (var objKey in obj) {
-                var value = obj[objKey];
-                if (typeof value == 'object' || typeof value == 'function') {
-                  if (evaluatedObjects.indexOf(value) == -1) {
+                if (objKey.charAt(0) !== '$') {
+                  var value = obj[objKey];
+                  if (isObject(value) || isFunction(value)) {
+                    if (evaluatedObjects.indexOf(value) >= 0) continue;
                     evaluatedObjects.push(value);
-                    if (objKey.charAt(0) !== '$' && search(value, text)) { return true; }
                   }
-                } else {
-                  if (objKey.charAt(0) !== '$' && search(value, text)) { return true; }
+                  if (search(value, text)) {
+                    return true;
+                  }
                 }
               }
               break;
