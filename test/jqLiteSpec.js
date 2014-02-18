@@ -1320,7 +1320,7 @@ describe('jqLite', function() {
         };
         iframe_.src = "/base/test/fixtures/iframe.html";
         jqLite(document).find('body').append(iframe);
-        
+
         // This test is potentially flaky on CI cloud instances, so there is a generous
         // wait period...
         waitsFor(function() { return tested; }, 2000);
