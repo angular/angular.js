@@ -151,7 +151,7 @@ function filterFilter() {
       }
     }
 
-    var search = function(obj, text){
+    var search = function(obj, text, orig){
       if (typeof text == 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
       }
@@ -166,7 +166,8 @@ function filterFilter() {
               return comparator(obj, text);
             default:
               for ( var objKey in obj) {
-                if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
+                if (obj[objKey] === orig) return;
+                if (objKey.charAt(0) !== '$' && search(obj[objKey], text, obj)) {
                   return true;
                 }
               }
