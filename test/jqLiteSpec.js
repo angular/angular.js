@@ -1299,6 +1299,33 @@ describe('jqLite', function() {
       expect(contents[0].data).toEqual(' some comment ');
       expect(contents[1].data).toEqual('before-');
     });
+
+    // IE8 does not like this test, although the functionality may still work there.
+    if (!msie || msie > 8) {
+      it('should select all types iframe contents', function() {
+        var iframe_ = document.createElement('iframe'), tested,
+            iframe = jqLite(iframe_);
+        function test() {
+          var contents = iframe.contents();
+          expect(contents[0]).toBeTruthy();
+          expect(contents.length).toBe(1);
+          expect(contents.prop('nodeType')).toBe(9);
+          expect(contents[0].body).toBeTruthy();
+          expect(jqLite(contents[0].body).contents().length).toBe(3);
+          iframe.remove();
+          tested = true;
+        }
+        iframe_.onload = iframe_.onreadystatechange = function() {
+          if (iframe_.contentDocument) test();
+        };
+        iframe_.src = "/base/test/fixtures/iframe.html";
+        jqLite(document).find('body').append(iframe);
+        
+        // This test is potentially flaky on CI cloud instances, so there is a generous
+        // wait period...
+        waitsFor(function() { return tested; }, 2000);
+      });
+    }
   });
 
 
