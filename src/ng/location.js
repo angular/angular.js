@@ -531,7 +531,9 @@ function locationGetterSetter(property, preprocess) {
  */
 function $LocationProvider(){
   var hashPrefix = '',
-      html5Mode = false;
+      html5Mode = false,
+      pathInCookie = false,
+      pathInCookieName = 'angular';
 
   /**
    * @ngdoc property
@@ -566,6 +568,41 @@ function $LocationProvider(){
       return html5Mode;
     }
   };
+
+    /**
+     * @ngdoc property
+     * @name ng.$locationProvider#pathInCookie
+     * @methodOf ng.$locationProvider
+     * @description
+     * @param {boolean=} mode Store path in cookie if available.
+     * @returns {*} current value if used as getter or itself (chaining) if used as setter
+     */
+    this.pathInCookie = function(mode) {
+        if (isDefined(mode)) {
+            pathInCookie = mode;
+            return this;
+        } else {
+            return pathInCookie;
+        }
+    };
+
+    /**
+     * @ngdoc property
+     * @name ng.$locationProvider#pathInCookieName
+     * @methodOf ng.$locationProvider
+     * @description
+     * @param {string=} cookieName The name of the cookie used to store the path using
+     * {@link ng.$location#pathInCookieName pathInCookieName}
+     * @returns {*} current value if used as getter or itself (chaining) if used as setter
+     */
+    this.pathInCookieName = function(cookieName) {
+        if (isDefined(cookieName)) {
+            pathInCookieName = cookieName;
+            return this;
+        } else {
+            return pathInCookieName;
+        }
+    };
 
   /**
    * @ngdoc event
@@ -606,10 +643,22 @@ function $LocationProvider(){
 
     if (html5Mode) {
       appBase = serverBase(initialUrl) + (baseHref || '/');
-      LocationMode = $sniffer.history ? LocationHtml5Url : LocationHashbangInHtml5Url;
+      if ($sniffer.history) {
+        LocationMode = LocationHtml5Url;
+      } else {
+        LocationMode = LocationHashbangInHtml5Url;
+        // if we have set the pathInCookie, remove the cookie when loading the page
+        if (pathInCookie) {
+          $browser.cookies(pathInCookieName);
+        }
+      }
     } else {
       appBase = stripHash(initialUrl);
       LocationMode = LocationHashbangUrl;
+      // if we have set the pathInCookie, remove the cookie when loading the page
+      if (pathInCookie) {
+        $browser.cookies(pathInCookieName);
+      }
     }
     $location = new LocationMode(appBase, '#' + hashPrefix);
     $location.$$parse($location.$$rewrite(initialUrl));
@@ -653,6 +702,10 @@ function $LocationProvider(){
 
     // rewrite hashbang url <> html5 url
     if ($location.absUrl() != initialUrl) {
+      // store path in cookie
+      if( pathInCookie ) {
+        $browser.cookies(pathInCookieName, $location.url());
+      }
       $browser.url($location.absUrl(), true);
     }
 
