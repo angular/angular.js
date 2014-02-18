@@ -370,40 +370,100 @@ describe('ngClick (touch)', function() {
     }));
 
 
-    it('should not cancel clicks that come long after', inject(function($rootScope, $compile) {
-      element1 = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
+    describe('when clicking on a label immediately following a touch event', function() {
+      var touch = function(element, x, y) {
+        time = 10;
+        browserTrigger(element, 'touchstart',{
+          keys: [],
+          x: x,
+          y: y
+        });
 
-      $rootScope.count = 0;
+        time = 50;
+        browserTrigger(element, 'touchend',{
+          keys: [],
+          x: x,
+          y: y
+        });
+      };
 
-      $rootScope.$digest();
+      var click = function(element, x, y) {
+        browserTrigger(element, 'click',{
+          keys: [],
+          x: x,
+          y: y
+        });
+      };
 
-      expect($rootScope.count).toBe(0);
+      var $rootScope;
+      var container, otherElement, input, label;
+      beforeEach(inject(function(_$rootScope_, $compile, $rootElement) {
+        $rootScope = _$rootScope_;
+        var container = $compile('<div><div ng-click="count = count + 1"></div>' +
+          '<input id="input1" type="radio" ng-model="selection" value="radio1">' +
+          '<label for="input1">Input1</label></div>')($rootScope);
+        $rootElement.append(container);
+        otherElement = container.children()[0];
+        input = container.children()[1];
+        label = container.children()[2];
 
-      time = 10;
-      browserTrigger(element1, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
+        $rootScope.selection = 'initial';
+
+        $rootScope.$digest();
+      }));
+
+
+      afterEach(function() {
+        dealoc(label);
+        dealoc(input);
+        dealoc(otherElement);
+        dealoc(container);
       });
 
-      time = 50;
-      browserTrigger(element1, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
+
+      it('should not cancel input clicks with (0,0) coordinates', function() {
+        touch(otherElement, 100, 100);
+
+        time = 500;
+        click(label, 10, 10);
+        click(input, 0, 0);
+
+        expect($rootScope.selection).toBe('radio1');
       });
 
-      expect($rootScope.count).toBe(1);
 
-      time = 2700;
-      browserTrigger(element1, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
+      it('should not cancel input clicks with negative coordinates', function() {
+        touch(otherElement, 100, 100);
+
+        time = 500;
+        click(label, 10, 10);
+        click(input, -1, -1);
+
+        expect($rootScope.selection).toBe('radio1');
       });
 
-      expect($rootScope.count).toBe(2);
-    }));
+
+      it('should not cancel input clicks with positive coordinates identical to label click', function() {
+        touch(otherElement, 100, 100);
+
+        time = 500;
+        click(label, 10, 10);
+        click(input, 10, 10);
+
+        expect($rootScope.selection).toBe('radio1');
+      });
+
+
+      it('should cancel input clicks with positive coordinates different than label click', function() {
+        touch(otherElement, 100, 100);
+
+        time = 500;
+        click(label, 10, 10);
+        click(input, 11, 11);
+
+        expect($rootScope.selection).toBe('initial');
+      });
+    });
   });
 
 
