@@ -41,7 +41,9 @@ describe('Filter: filter', function() {
 
     var items = [originalItem];
     expect(function() { filter(items, 'not misko') })
-      .not.toThrow(new Error("Maximum call stack size exceeded"));
+      .not.toThrow();
+
+    expect(filter(items, 'misko')).toEqual([originalItem]);
   });
 
   it('should filter on specific property', function() {
