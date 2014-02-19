@@ -456,6 +456,11 @@ describe('$http', function() {
         $httpBackend.expect('GET', '/Path?!do%26h=g%3Da+h&:bar=$baz@1').respond('');
         $http({url: '/Path', params: {':bar': '$baz@1', '!do&h': 'g=a h'}, method: 'GET'});
       });
+
+      it('should not add question mark when params is empty', function() {
+        $httpBackend.expect('GET', '/url').respond('');
+        $http({url: '/url', params: {}, method: 'GET'});
+      })
     });
 
 
