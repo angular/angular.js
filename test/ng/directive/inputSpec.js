@@ -948,7 +948,7 @@ describe('input', function() {
         expect(EMAIL_REGEXP.test('a@.b.c')).toBe(false);
         expect(EMAIL_REGEXP.test('a@-b.c')).toBe(false);
         expect(EMAIL_REGEXP.test('a@b-.c')).toBe(false);
-        expect(EMAIL_REGEXP.test('a@3b.c')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@3b.c')).toBe(true);
         expect(EMAIL_REGEXP.test('a@b')).toBe(true);
       });
     });
