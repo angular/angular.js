@@ -1055,9 +1055,10 @@ function tryDecodeURIComponent(value) {
  * Parses an escaped url query string into key-value pairs.
  * @returns Object.<(string|boolean)>
  */
-function parseKeyValue(/**string*/keyValue) {
+function parseKeyValue(/**string*/keyValue, delimiter) {
+  delimiter = delimiter === ';' ? delimiter : '&';
   var obj = {}, key_value, key;
-  forEach((keyValue || "").split('&'), function(keyValue){
+  forEach((keyValue || "").split(delimiter), function(keyValue){
     if ( keyValue ) {
       key_value = keyValue.split('=');
       key = tryDecodeURIComponent(key_value[0]);
@@ -1076,8 +1077,11 @@ function parseKeyValue(/**string*/keyValue) {
   return obj;
 }
 
-function toKeyValue(obj) {
+function toKeyValue(obj, delimiter) {
   var parts = [];
+  if (delimiter !== '&' && delimiter !== ';') {
+    delimiter = '&';
+  }
   forEach(obj, function(value, key) {
     if (isArray(value)) {
       forEach(value, function(arrayValue) {
@@ -1089,7 +1093,7 @@ function toKeyValue(obj) {
                (value === true ? '' : '=' + encodeUriQuery(value, true)));
     }
   });
-  return parts.length ? parts.join('&') : '';
+  return parts.length ? parts.join(delimiter) : '';
 }
 
 
