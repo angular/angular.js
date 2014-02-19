@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" ng-app="docsApp" ng-controller="DocsController">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="Description"
@@ -81,62 +82,62 @@
     <header class="header header-fixed">
       <section class="navbar navbar-inverse docs-navbar-primary" ng-controller="DocsSearchCtrl">
         <div class="container">
-          <div class="navbar-header">
-            <a class="brand navbar-brand" href="http://angularjs.org">
-              <img class="logo" src="img/angularjs-for-header-only.svg">
-            </a>
-          </div>
           <div class="row">
-            <ul class="nav navbar-nav col-md-7">
-              <li class="divider-vertical"></li>
-              <li><a href="http://angularjs.org"><i class="icon-home icon-white"></i> Home</a></li>
-              <li class="divider-vertical"></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li class="disabled"><a href="http://angularjs.org/">Why AngularJS?</a></li>
-                  <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
-                  <li><a href="tutorial">Tutorial</a></li>
-                  <li><a href="http://builtwith.angularjs.org/">Case Studies</a></li>
-                  <li><a href="https://github.com/angular/angular-seed">Seed App project template</a></li>
-                  <li><a href="misc/faq">FAQ</a></li>
-                </ul>
-              </li>
-              <li class="divider-vertical"></li>
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a href="tutorial">Tutorial</a></li>
-                  <li><a href="guide">Developer Guide</a></li>
-                  <li><a href="api">API Reference</a></li>
-                  <li><a href="error">Error Reference</a></li>
-                  <li><a href="misc/contribute">Contribute</a></li>
-                  <li><a href="http://code.angularjs.org/">Download</a></li>
-                </ul>
-              </li>
-              <li class="divider-vertical"></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a href="http://blog.angularjs.org">Blog</a></li>
-                  <li><a href="http://groups.google.com/group/angular">Mailing List</a></li>
-                  <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">Chat Room</a></li>
-                  <li class="divider"></li>
-                  <li><a href="https://twitter.com/#!/angularjs">Twitter</a></li>
-                  <li><a href="https://plus.google.com/110323587230527980117">Google+</a></li>
-                  <li class="divider"></li>
-                  <li><a href="https://github.com/angular/angular.js">GitHub</a></li>
-                  <li><a href="https://github.com/angular/angular.js/issues">Issue Tracker</a></li>
-                </ul>
-              </li>
-              <li class="divider-vertical"></li>
-            </ul>
+            <div class="col-md-9 header-branding">
+              <a class="brand navbar-brand" href="http://angularjs.org">
+                <img class="logo" src="img/angularjs-for-header-only.svg">
+              </a>
+              <ul class="nav navbar-nav">
+                <li class="divider-vertical"></li>
+                <li><a href="http://angularjs.org"><i class="icon-home icon-white"></i> Home</a></li>
+                <li class="divider-vertical"></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li class="disabled"><a href="http://angularjs.org/">Why AngularJS?</a></li>
+                    <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
+                    <li><a href="tutorial">Tutorial</a></li>
+                    <li><a href="http://builtwith.angularjs.org/">Case Studies</a></li>
+                    <li><a href="https://github.com/angular/angular-seed">Seed App project template</a></li>
+                    <li><a href="misc/faq">FAQ</a></li>
+                  </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="dropdown active">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="tutorial">Tutorial</a></li>
+                    <li><a href="guide">Developer Guide</a></li>
+                    <li><a href="api">API Reference</a></li>
+                    <li><a href="error">Error Reference</a></li>
+                    <li><a href="misc/contribute">Contribute</a></li>
+                    <li><a href="http://code.angularjs.org/">Download</a></li>
+                  </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="http://blog.angularjs.org">Blog</a></li>
+                    <li><a href="http://groups.google.com/group/angular">Mailing List</a></li>
+                    <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">Chat Room</a></li>
+                    <li class="divider"></li>
+                    <li><a href="https://twitter.com/#!/angularjs">Twitter</a></li>
+                    <li><a href="https://plus.google.com/110323587230527980117">Google+</a></li>
+                    <li class="divider"></li>
+                    <li><a href="https://github.com/angular/angular.js">GitHub</a></li>
+                    <li><a href="https://github.com/angular/angular.js/issues">Issue Tracker</a></li>
+                  </ul>
+                </li>
+                <li class="divider-vertical"></li>
+              </ul>
+            </div>
             <form ng-class="{focus:focus}" class="navbar-search col-md-3 docs-search" ng-submit="submit()">
               <span class="glyphicon glyphicon-search search-icon"></span>
               <input type="text"
@@ -196,7 +197,8 @@
     <section role="main" class="container main-body">
       <div class="main-grid main-body-grid">
         <div class="grid-left">
-          <div class="side-navigation">
+          <a class="btn toc-toggle visible-xs" ng-click="toc=!toc">Show / Hide Table of Contents</a>
+          <div class="side-navigation" ng-show="toc==true">
             <ul class="nav-list naked-list">
               <li ng-repeat="navGroup in currentArea.navGroups track by navGroup.name" class="nav-index-group">
                 <a href="{{ navGroup.href }}" ng-class="navClass(navGroup)" class="nav-index-group-heading">{{ navGroup.name }}</a>
@@ -210,6 +212,9 @@
                 </ul>
               </li>
             </ul>
+            <a href="" ng-click="toc=false" class="toc-close visible-xs">
+              <span class="glyphicon glyphicon-remove toc-close-icon"></span> Close
+            </a>
           </div>
         </div>
         <div class="grid-right">
