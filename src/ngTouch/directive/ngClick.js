@@ -185,7 +185,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         tapElement,  // Used to blur the element after a tap.
         startTime,   // Used to check if the tap was held too long.
         touchStartX,
-        touchStartY;
+        touchStartY,
+        clickStartX,
+        clickStartY;
 
     function resetState() {
       tapping = false;
@@ -258,6 +260,14 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // - But the browser's follow-up slow click will be "busted" before it reaches this handler.
     // Therefore it's safe to use this directive on both mobile and desktop.
     element.on('click', function(event, touchend) {
+      if (!touchend) {
+        // If we have no touchend event, we should still check MOVE_TOLERANCE
+        // for standard browser clicks. Otherwise if we create directives that
+        // use the `swipe` service, the element will still receive clicks.
+        var x = event.clientX, y = event.clientY;
+        var dist = Math.sqrt( Math.pow(x - clickStartX, 2) + Math.pow(y - clickStartY, 2) );
+        if (dist >= MOVE_TOLERANCE) return;
+      }
       scope.$apply(function() {
         clickHandler(scope, {$event: (touchend || event)});
       });
@@ -265,6 +275,8 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     element.on('mousedown', function(event) {
       element.addClass(ACTIVE_CLASS_NAME);
+      clickStartX = event.clientX;
+      clickStartY = event.clientY;
     });
 
     element.on('mousemove mouseup', function(event) {
