@@ -11,7 +11,7 @@ module.exports = {
   init: function(config) {
     deployment = config.deployment;
     if ( !deployment || !deployment.environments ) {
-      throw new Errro('No deployment environments found in the config.');
+      throw new Error('No deployment environments found in the config.');
     }
   },
   process: function(docs) {
