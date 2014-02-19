@@ -330,7 +330,7 @@ describe("resource", function() {
 
 
   it('should not throw TypeError on null default params', function() {
-    $httpBackend.expect('GET', '/Path?').respond('{}');
+    $httpBackend.expect('GET', '/Path').respond('{}');
     var R = $resource('/Path', {param: null}, {get: {method: 'GET'}});
 
     expect(function() {
