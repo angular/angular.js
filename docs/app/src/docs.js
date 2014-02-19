@@ -123,7 +123,6 @@ angular.module('docsApp', [
   $scope.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
   $scope.futurePartialTitle = null;
   $scope.loading = 0;
-  $scope.URL = URL;
   $scope.$cookies = $cookies;
 
   $cookies.platformPreference = $cookies.platformPreference || 'gitUnix';
