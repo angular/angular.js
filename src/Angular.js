@@ -445,8 +445,7 @@ function isDefined(value){return typeof value !== 'undefined';}
  *
  * @description
  * Determines if a reference is an `Object`. Unlike `typeof` in JavaScript, `null`s are not
- * considered to be objects. Note that JavaScript arrays and functions are objects, 
- * while (normal) strings and numbers are not.
+ * considered to be objects. Note that JavaScript arrays are objects.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
