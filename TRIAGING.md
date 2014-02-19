@@ -5,7 +5,6 @@ The labels are used later on for planning releases.
 
 ## Tips ##
 
-* install [github pr helper extension](https://github.com/petebacondarwin/github-pr-helper) and become 356% more productive
 * Label "resolution:*"
     * these tags can be used for labeling a closed issue/PR with a reason why it was closed. (we can add reasons as we need them, right there are only a few rejection reasons. it doesn't make sense to label issues that were fixed or prs that were merged)
 
