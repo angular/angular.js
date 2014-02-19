@@ -1667,7 +1667,6 @@ angular.mock.$RootElementProvider = function() {
  * In addition, ngMock also extends various core ng services such that they can be
  * inspected and controlled in a synchronous manner within test code.
  *
- * {@installModule mock}
  *
  * <div doc-module-components="ngMock"></div>
  *

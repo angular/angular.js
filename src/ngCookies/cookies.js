@@ -9,7 +9,6 @@
  *
  * The `ngCookies` module provides a convenient wrapper for reading and writing browser cookies.
  *
- * {@installModule cookies}
  *
  * <div doc-module-components="ngCookies"></div>
  *

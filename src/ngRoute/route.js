@@ -12,7 +12,6 @@
  * ## Example
  * See {@link ngRoute.$route#example $route} for an example of configuring and using `ngRoute`.
  *
- * {@installModule route}
  *
  * <div doc-module-components="ngRoute"></div>
  */

@@ -53,7 +53,6 @@ function shallowClearAndCopy(src, dst) {
  * The `ngResource` module provides interaction support with RESTful services
  * via the $resource service.
  *
- * {@installModule resource}
  *
  * <div doc-module-components="ngResource"></div>
  *

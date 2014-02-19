@@ -10,7 +10,6 @@
  *
  * The `ngAnimate` module provides support for JavaScript, CSS3 transition and CSS3 keyframe animation hooks within existing core and custom directives.
  *
- * {@installModule animate}
  *
  * <div doc-module-components="ngAnimate"></div>
  *

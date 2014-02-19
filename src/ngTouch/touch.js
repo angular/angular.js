@@ -11,7 +11,6 @@
  * The implementation is based on jQuery Mobile touch event handling
  * ([jquerymobile.com](http://jquerymobile.com/)).
  *
- * {@installModule touch}
  *
  * See {@link ngTouch.$swipe `$swipe`} for usage.
  *
