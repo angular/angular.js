@@ -18,6 +18,8 @@ module.exports = function(config) {
 
   config = basePackage(config);
 
+  config.set('source.projectPath', path.resolve(basePath, '..'));
+
   config.set('source.files', [
     { pattern: 'src/**/*.js', basePath: path.resolve(basePath,'..') },
     { pattern: '**/*.ngdoc', basePath: path.resolve(basePath, 'content') }
