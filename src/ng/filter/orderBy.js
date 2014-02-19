@@ -62,9 +62,19 @@
  */
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse){
-  return function(array, sortPredicate, reverseOrder) {
-    if (!isArray(array)) return array;
-    if (!sortPredicate) return array;
+  return function(sortable, sortPredicate, reverseOrder) {
+    if (!isArray(sortable) && !isObject(sortable)) return sortable;
+    if (!sortPredicate) return sortable;
+    var array = sortable;
+    if(isObject(sortable)) {
+      array = [];
+      for (var key in sortable) {
+        if (sortable.hasOwnProperty(key) && key.charAt(0) != '$') {
+          array.push(sortable[key]);
+        }
+      }
+    }
+
     sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
     sortPredicate = map(sortPredicate, function(predicate){
       var descending = false, get = predicate || identity;

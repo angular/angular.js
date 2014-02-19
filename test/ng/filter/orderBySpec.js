@@ -31,4 +31,9 @@ describe('Filter: orderBy', function() {
     toEqual([{a:2, b:1},{a:15, b:1}]);
   });
 
+  it('can sort a hash collection', function() {
+    expect(orderBy({c: {name: 'c'}, a: {name: 'a'}, b: {name: 'b'}}, 'name')).toEqualData([{name: 'a'}, {name: 'b'}, {name: 'c'}]);
+    expect(orderBy({c: {name: 'c'}, a: {name: 'a'}, b: {name: 'b'}}, '-name')).toEqualData([{name: 'c'}, {name: 'b'}, {name: 'a'}]);
+  });
+
 });
