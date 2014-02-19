@@ -43,10 +43,10 @@
  *   transition:0.5s linear all;
  * }
  *
- * .slide.ng-enter { }        /&#42; starting animations for enter &#42;/
- * .slide.ng-enter-active { } /&#42; terminal animations for enter &#42;/
- * .slide.ng-leave { }        /&#42; starting animations for leave &#42;/
- * .slide.ng-leave-active { } /&#42; terminal animations for leave &#42;/
+ * .slide.ng-enter { }        /* starting animations for enter */
+ * .slide.ng-enter-active { } /* terminal animations for enter */
+ * .slide.ng-leave { }        /* starting animations for leave */
+ * .slide.ng-leave-active { } /* terminal animations for leave */
  * </style>
  *
  * <!--
@@ -68,25 +68,25 @@
  *
  * ```html
  * <style type="text/css">
- * /&#42;
+ * /*
  *  The animate class is apart of the element and the ng-enter class
  *  is attached to the element once the enter animation event is triggered
- * &#42;/
+ * */
  * .reveal-animation.ng-enter {
- *  -webkit-transition: 1s linear all; /&#42; Safari/Chrome &#42;/
- *  transition: 1s linear all; /&#42; All other modern browsers and IE10+ &#42;/
+ *  -webkit-transition: 1s linear all; /* Safari/Chrome */
+ *  transition: 1s linear all; /* All other modern browsers and IE10+ */
  *
- *  /&#42; The animation preparation code &#42;/
+ *  /* The animation preparation code */
  *  opacity: 0;
  * }
  *
- * /&#42;
+ * /*
  *  Keep in mind that you want to combine both CSS
  *  classes together to avoid any CSS-specificity
  *  conflicts
- * &#42;/
+ * */
  * .reveal-animation.ng-enter.ng-enter-active {
- *  /&#42; The animation code itself &#42;/
+ *  /* The animation code itself */
  *  opacity: 1;
  * }
  * </style>
@@ -101,14 +101,14 @@
  * ```html
  * <style type="text/css">
  * .reveal-animation.ng-enter {
- *   -webkit-animation: enter_sequence 1s linear; /&#42; Safari/Chrome &#42;/
- *   animation: enter_sequence 1s linear; /&#42; IE10+ and Future Browsers &#42;/
+ *   -webkit-animation: enter_sequence 1s linear; /* Safari/Chrome */
+ *   animation: enter_sequence 1s linear; /* IE10+ and Future Browsers */
  * }
- * &#64-webkit-keyframes enter_sequence {
+ * @-webkit-keyframes enter_sequence {
  *   from { opacity:0; }
  *   to { opacity:1; }
  * }
- * &#64keyframes enter_sequence {
+ * @keyframes enter_sequence {
  *   from { opacity:0; }
  *   to { opacity:1; }
  * }
@@ -137,23 +137,23 @@
  *
  * ```css
  * .my-animation.ng-enter {
- *   /&#42; standard transition code &#42;/
+ *   /* standard transition code */
  *   -webkit-transition: 1s linear all;
  *   transition: 1s linear all;
  *   opacity:0;
  * }
  * .my-animation.ng-enter-stagger {
- *   /&#42; this will have a 100ms delay between each successive leave animation &#42;/
+ *   /* this will have a 100ms delay between each successive leave animation */
  *   -webkit-transition-delay: 0.1s;
  *   transition-delay: 0.1s;
  *
- *   /&#42; in case the stagger doesn't work then these two values
- *    must be set to 0 to avoid an accidental CSS inheritance &#42;/
+ *   /* in case the stagger doesn't work then these two values
+ *    must be set to 0 to avoid an accidental CSS inheritance */
  *   -webkit-transition-duration: 0s;
  *   transition-duration: 0s;
  * }
  * .my-animation.ng-enter.ng-enter-active {
- *   /&#42; standard transition styles &#42;/
+ *   /* standard transition styles */
  *   opacity:1;
  * }
  * ```
