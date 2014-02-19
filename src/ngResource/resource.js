@@ -528,7 +528,10 @@ angular.module('ngResource', ['ng']).
                 // Decorate the array with the properties on the response data
                 if (action.arrayDecorate) {
                   for (var i in data) {
-                    if (data.hasOwnProperty(i) && angular.isUndefined(value[i]) && !/^[0-9]+$/.test(i)) {
+                    if (data.hasOwnProperty(i)
+                      && angular.isUndefined(value[i])
+                      && !/^[0-9]+$/.test(i)
+                    ) {
                       value[i] = data[i];
                     }
                   }
