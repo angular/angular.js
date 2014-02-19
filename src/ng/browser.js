@@ -305,7 +305,7 @@ function Browser(window, document, $log, $sniffer) {
         rawDocument.cookie = makeCookie(name, '', { expires: expireDate });
       } else {
         if (isString(value)) {
-          cookieLength = (rawDocument.cookie = makeCookie(name, value, cookieOptions)).length + 1;
+          cookieLength = (rawDocument.cookie = makeCookie(name, value, cookieOptions)).length;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
