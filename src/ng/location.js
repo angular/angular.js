@@ -39,7 +39,7 @@ function parseAppUrl(relativeUrl, locationObj, appBase) {
   var match = urlResolve(relativeUrl, appBase);
   locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
-  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$search = parseKeyValue(match.search, locationObj.$$queryDelimiter);
   locationObj.$$hash = decodeURIComponent(match.hash);
 
   // make sure path starts with '/';
@@ -90,6 +90,7 @@ function serverBase(url) {
 function LocationHtml5Url(appBase, basePrefix, queryDelimiter) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
+  this.$$queryDelimiter = queryDelimiter;
   var appBaseNoFile = stripFile(appBase);
   parseAbsoluteUrl(appBase, this, appBase);
 
@@ -120,7 +121,7 @@ function LocationHtml5Url(appBase, basePrefix, queryDelimiter) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search, queryDelimiter),
+    var search = toKeyValue(this.$$search, this.$$queryDelimiter),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
@@ -157,6 +158,7 @@ function LocationHtml5Url(appBase, basePrefix, queryDelimiter) {
  */
 function LocationHashbangUrl(appBase, hashPrefix, queryDelimiter) {
   var appBaseNoFile = stripFile(appBase);
+  this.$$queryDelimiter = queryDelimiter;
 
   parseAbsoluteUrl(appBase, this, appBase);
 
@@ -227,7 +229,7 @@ function LocationHashbangUrl(appBase, hashPrefix, queryDelimiter) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search, queryDelimiter),
+    var search = toKeyValue(this.$$search, this.$$queryDelimiter),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
@@ -286,6 +288,12 @@ LocationHashbangInHtml5Url.prototype =
    * @private
    */
   $$replace: false,
+
+  /**
+   * Allows using ";" instead of "&" to separate query string arguments
+   * @private
+   */
+  $$queryDelimiter: '&',
 
   /**
    * @ngdoc method
@@ -415,7 +423,7 @@ LocationHashbangInHtml5Url.prototype =
         return this.$$search;
       case 1:
         if (isString(search)) {
-          this.$$search = parseKeyValue(search);
+          this.$$search = parseKeyValue(search, this.$$queryDelimiter);
         } else if (isObject(search)) {
           this.$$search = search;
         } else {
