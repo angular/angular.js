@@ -524,6 +524,14 @@ angular.module('ngResource', ['ng']).
               // jshint +W018
               if (action.isArray) {
                 value.length = 0;
+                // Decorate the array with the properties on the response data
+                if (action.arrayDecorate) {
+                  for (var i in data) {
+                    if (data.hasOwnProperty(i) && angular.isUndefined(value[i]) && !/^[0-9]+$/.test(i)) {
+                      value[i] = data[i];
+                    }
+                  }
+                }
                 forEach(data, function(item) {
                   value.push(new Resource(item));
                 });
@@ -539,6 +547,16 @@ angular.module('ngResource', ['ng']).
 
             return response;
           }, function(response) {
+            // Decorate the existing object with the properties on the response data
+            if (action.errorDecorate) {
+              var promise = value.$promise;
+              forEach(response.data, function(property, key) {
+                value[key] = property;
+              });
+              value.$promise = promise;
+              response.resource = value;
+            }
+
             value.$resolved = true;
 
             (error||noop)(response);
