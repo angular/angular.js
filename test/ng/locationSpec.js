@@ -313,6 +313,44 @@ describe('$location', function() {
         expect(url.search()).toEqual({'i j': '<>#'});
         expect(url.hash()).toBe('x <>#');
       });
+
+
+      it('should decode query params delimited interchangeably by & and ;', function() {
+        var url = new LocationHashbangUrl('http://host.com/', '#');
+        url.$$parse('http://host.com/#?foo=1&bar=2;baz');
+        expect(url.search()).toEqual({
+          'foo': '1',
+          'bar': '2;baz'
+        });
+
+        url = new LocationHashbangUrl('http://host.com/', '#', ';');
+        url.$$parse('http://host.com/#?foo=1&bar=2;baz');
+        expect(url.search()).toEqual({
+          'foo': '1&bar',
+          'baz': true
+        });
+      });
+
+
+      it('should honor configured query param delimiter if ; --- otherwise use &', function() {
+        url = new LocationHtml5Url('http://host.com/', '#', ';');
+        url.$$parse('http://host.com/');
+        url.search({
+          "foo": "1",
+          "bar": "2",
+          "baz": "3"
+        });
+        expect(url.absUrl()).toMatch(/\?foo=1;bar=2;baz=3$/);
+
+        url = new LocationHtml5Url('http://host.com/', '#', '*');
+        url.$$parse('http://host.com/');
+        url.search({
+          "foo": "1",
+          "bar": "2",
+          "baz": "3"
+        });
+        expect(url.absUrl()).toMatch(/\?foo=1&bar=2&baz=3$/);
+      });
     });
   });
 
@@ -435,6 +473,23 @@ describe('$location', function() {
       });
 
 
+      it('should decode query params delimited interchangeably by & and ;', function() {
+        var url = new LocationHashbangUrl('http://host.com/', '#');
+        url.$$parse('http://host.com/#?foo=1&bar=2;baz');
+        expect(url.search()).toEqual({
+          'foo': '1',
+          'bar': '2;baz'
+        });
+
+        url = new LocationHashbangUrl('http://host.com/', '#', ';');
+        url.$$parse('http://host.com/#?foo=1&bar=2;baz');
+        expect(url.search()).toEqual({
+          'foo': '1&bar',
+          'baz': true
+        });
+      });
+
+
       it('should return decoded characters for search specified with setter', function() {
         var locationUrl = new LocationHtml5Url('http://host.com/');
         locationUrl.$$parse('http://host.com/')
@@ -463,6 +518,26 @@ describe('$location', function() {
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203');
         locationUrl.search({'q': '4/5 6'});
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=4%2F5%206');
+      });
+
+      it('should honor configured query param delimiter if ; --- otherwise use &', function() {
+        url = new LocationHashbangUrl('http://host.com/', '#', ';');
+        url.$$parse('http://host.com/');
+        url.search({
+          "foo": "1",
+          "bar": "2",
+          "baz": "3"
+        });
+        expect(url.absUrl()).toMatch(/\?foo=1;bar=2;baz=3$/);
+
+        url = new LocationHashbangUrl('http://host.com/', '#', '*');
+        url.$$parse('http://host.com/');
+        url.search({
+          "foo": "1",
+          "bar": "2",
+          "baz": "3"
+        });
+        expect(url.absUrl()).toMatch(/\?foo=1&bar=2&baz=3$/);
       });
     });
   });

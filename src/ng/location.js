@@ -39,7 +39,7 @@ function parseAppUrl(relativeUrl, locationObj, appBase) {
   var match = urlResolve(relativeUrl, appBase);
   locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
-  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$search = parseKeyValue(match.search, locationObj.$$queryDelimiter);
   locationObj.$$hash = decodeURIComponent(match.hash);
 
   // make sure path starts with '/';
@@ -87,9 +87,10 @@ function serverBase(url) {
  * @param {string} appBase application base URL
  * @param {string} basePrefix url path prefix
  */
-function LocationHtml5Url(appBase, basePrefix) {
+function LocationHtml5Url(appBase, basePrefix, queryDelimiter) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
+  this.$$queryDelimiter = queryDelimiter;
   var appBaseNoFile = stripFile(appBase);
   parseAbsoluteUrl(appBase, this, appBase);
 
@@ -120,7 +121,7 @@ function LocationHtml5Url(appBase, basePrefix) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
+    var search = toKeyValue(this.$$search, this.$$queryDelimiter),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
@@ -155,8 +156,9 @@ function LocationHtml5Url(appBase, basePrefix) {
  * @param {string} appBase application base URL
  * @param {string} hashPrefix hashbang prefix
  */
-function LocationHashbangUrl(appBase, hashPrefix) {
+function LocationHashbangUrl(appBase, hashPrefix, queryDelimiter) {
   var appBaseNoFile = stripFile(appBase);
+  this.$$queryDelimiter = queryDelimiter;
 
   parseAbsoluteUrl(appBase, this, appBase);
 
@@ -227,7 +229,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
+    var search = toKeyValue(this.$$search, this.$$queryDelimiter),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
@@ -286,6 +288,12 @@ LocationHashbangInHtml5Url.prototype =
    * @private
    */
   $$replace: false,
+
+  /**
+   * Allows using ";" instead of "&" to separate query string arguments
+   * @private
+   */
+  $$queryDelimiter: '&',
 
   /**
    * @ngdoc method
@@ -415,7 +423,7 @@ LocationHashbangInHtml5Url.prototype =
         return this.$$search;
       case 1:
         if (isString(search)) {
-          this.$$search = parseKeyValue(search);
+          this.$$search = parseKeyValue(search, this.$$queryDelimiter);
         } else if (isObject(search)) {
           this.$$search = search;
         } else {
@@ -520,7 +528,8 @@ function locationGetterSetter(property, preprocess) {
  */
 function $LocationProvider(){
   var hashPrefix = '',
-      html5Mode = false;
+      html5Mode = false,
+      queryDelimiter = '&';
 
   /**
    * @ngdoc property
@@ -552,6 +561,26 @@ function $LocationProvider(){
     } else {
       return html5Mode;
     }
+  };
+
+  /**
+   * @ngdoc property
+   * @name ng.$locationProvider#queryDelimiter
+   * @methodOf ng.$locationProvider
+   * @description
+   * @param {string=} delimiter String to use as a delimiter for query parameters. Must be '&' or
+   *   ';'
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.queryDelimiter = function(delimiter) {
+    if (arguments.length > 0) {
+      if (delimiter !== ';' && delimiter !== '&') {
+        delimiter = '&';
+      }
+      queryDelimiter = delimiter;
+      return this;
+    }
+    return queryDelimiter;
   };
 
   /**
@@ -596,7 +625,7 @@ function $LocationProvider(){
       appBase = stripHash(initialUrl);
       LocationMode = LocationHashbangUrl;
     }
-    $location = new LocationMode(appBase, '#' + hashPrefix);
+    $location = new LocationMode(appBase, '#' + hashPrefix, queryDelimiter);
     $location.$$parse($location.$$rewrite(initialUrl));
 
     $rootElement.on('click', function(event) {
