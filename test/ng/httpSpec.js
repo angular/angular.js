@@ -1250,6 +1250,24 @@ describe('$http', function() {
       });
 
 
+      it('should be able to remove a request from the cache', function() {
+        doFirstCacheRequest();
+
+        $http.removeCache({method: 'GET', url: '/url', cache: cache});
+
+        $httpBackend.expect('GET', '/url').respond();
+        $http({method: 'GET', url: '/url', cache: cache});
+      });
+
+
+      it('should be able to bypass and overwrite the cache for a request', function() {
+        doFirstCacheRequest();
+
+        $httpBackend.expect('GET', '/url').respond();
+        $http({method: 'GET', url: '/url', cache: cache, replaceCache: true});
+      });
+
+
       it('should always call callback asynchronously', function() {
         doFirstCacheRequest();
         $http({method: 'get', url: '/url', cache: cache}).then(callback);

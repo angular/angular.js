@@ -425,7 +425,18 @@ function $HttpProvider() {
      * If you set the default cache to `false` then only requests that specify their own custom
      * cache object will be cached.
      *
-     * ## Interceptors
+     * If you need to bypass and overwrite the cache you can set the `replaceCache` property to
+     * `true` in the request configuration.
+     *
+     * If you wish to purge stale data from the cache without making a request you can use the
+     * {@link ng.$http#methods_removeCache $http.removeCache} method and pass it the configuration
+     * object that was used to create the request you wish to purge.
+     * ```js
+     *    $http.removeCache({method: 'GET', url: '/someUrl'})
+     * ```
+     *
+     *
+     * # Interceptors
      *
      * Before you start creating interceptors, be sure to understand the
      * {@link ng.$q $q and deferred/promise APIs}.
@@ -595,6 +606,8 @@ function $HttpProvider() {
      *      GET request, otherwise if a cache instance built with
      *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
      *      caching.
+     *    - **replaceCache** - `{boolean}` - If true this request will bypas the cache and  replace
+     *      any previously cached value.
      *    - **timeout** – `{number|Promise}` – timeout in milliseconds, or {@link ng.$q promise}
      *      that should abort the request when resolved.
      *    - **withCredentials** - `{boolean}` - whether to set the `withCredentials` flag on the
@@ -926,6 +939,29 @@ function $HttpProvider() {
       */
     createShortMethodsWithData('post', 'put', 'patch');
 
+    /**
+     * @ngdoc method
+     * @name $http#removeCache
+     *
+     * @description
+     * Removes a request from the cache without generating a new request.
+     *
+     * @param {Object} config configuration object (as per the request that created the cache entry)
+     */
+     $http.removeCache = function(config) {
+
+        var url = buildUrl(config.url, config.params);
+
+        var cache = isObject(config.cache) ? config.cache
+              : isObject(defaults.cache) ? defaults.cache
+              : defaultCache;
+
+        if (cache) {
+          cache.remove(url);
+        }
+
+     };
+
         /**
          * @ngdoc property
          * @name $http#defaults
@@ -992,7 +1028,11 @@ function $HttpProvider() {
       }
 
       if (cache) {
-        cachedResp = cache.get(url);
+        if (config.replaceCache) {
+          cache.remove(url);
+        } else {
+          cachedResp = cache.get(url);
+        }
         if (isDefined(cachedResp)) {
           if (isPromiseLike(cachedResp)) {
             // cached request has already been sent, but there is no response yet
