@@ -150,7 +150,7 @@ custom type:
 function UnicornLauncher(apiToken) {
 
   this.launchedCount = 0;
-  this.launch() {
+  this.launch = function() {
     // make a request to the remote api and include the apiToken
     ...
     this.launchedCount++;
