@@ -134,6 +134,14 @@ describe("resource", function() {
       expect(clone.hello).toBeUndefined();
       expect(clone.goodbye).toBe("world");
     });
+
+    it('should allow properties to be set on an instance', function() {
+      var card = new CreditCard({ type: 'visa' });
+      expect(card.type).toEqual('visa');
+
+      card.$set({ type: 'mastercard' });
+      expect(card.type).toEqual('mastercard')
+    });
   });
 
 
@@ -509,6 +517,7 @@ describe("resource", function() {
     expect(cc.$query).toBeDefined();
     expect(cc.$remove).toBeDefined();
     expect(cc.$save).toBeDefined();
+    expect(cc.$set).toBeDefined();
 
     cc.name = 'misko';
     cc.$save(callback);

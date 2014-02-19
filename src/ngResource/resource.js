@@ -445,7 +445,7 @@ angular.module('ngResource', ['ng']).
       }
 
       function Resource(value){
-        shallowClearAndCopy(value || {}, this);
+        this.$set(value);
       }
 
       forEach(actions, function(action, name) {
@@ -576,6 +576,10 @@ angular.module('ngResource', ['ng']).
           }
           var result = Resource[name].call(this, params, this, success, error);
           return result.$promise || result;
+        };
+
+        Resource.prototype.$set = function(value) {
+          return shallowClearAndCopy(value || {}, this);
         };
       });
 
