@@ -64,7 +64,7 @@ var ngTranscludeDirective = ngDirective({
        'Element: {0}',
        startingTag($element));
     }
-    
+
     $transclude(function(clone) {
       $element.empty();
       $element.append(clone);

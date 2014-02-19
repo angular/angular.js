@@ -112,7 +112,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
           // WebKit added support for the json responseType value on 09/03/2013
           // https://bugs.webkit.org/show_bug.cgi?id=73648. Versions of Safari prior to 7 are
           // known to throw when setting the value "json" as the response type. Other older
-          // browsers implementing the responseType 
+          // browsers implementing the responseType
           //
           // The json response type can be ignored if not supported, because JSON payloads are
           // parsed on the client-side regardless.

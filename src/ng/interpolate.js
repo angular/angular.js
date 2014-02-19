@@ -226,7 +226,7 @@ function $InterpolateProvider() {
      * Use {@link ng.$interpolateProvider#methods_endSymbol $interpolateProvider#endSymbol} to change
      * the symbol.
      *
-     * @returns {string} start symbol.
+     * @returns {string} end symbol.
      */
     $interpolate.endSymbol = function() {
       return endSymbol;

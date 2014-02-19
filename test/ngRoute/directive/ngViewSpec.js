@@ -727,7 +727,7 @@ describe('ngView animations', function() {
         $rootScope.$digest();
 
         //we don't care about the enter animation for the first element
-        $animate.queue.pop(); 
+        $animate.queue.pop();
 
         $location.path('/bar');
         $rootScope.$digest();
@@ -756,7 +756,7 @@ describe('ngView animations', function() {
         $rootScope.$digest();
 
         //we don't care about the enter animation
-        $animate.queue.shift(); 
+        $animate.queue.shift();
 
         var animation = $animate.queue.shift();
         expect(animation.event).toBe('addClass');
@@ -776,7 +776,7 @@ describe('ngView animations', function() {
         $rootScope.$digest();
 
         //we don't care about the enter animation
-        $animate.queue.shift(); 
+        $animate.queue.shift();
 
         animation = $animate.queue.shift();
         item = animation.element;
