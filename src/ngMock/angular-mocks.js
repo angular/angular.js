@@ -491,7 +491,17 @@ angular.mock.$IntervalProvider = function() {
       nextRepeatId++;
       return promise;
     };
-
+    /**
+     * @ngdoc method
+     * @name $interval#cancel
+     * @description
+     *
+     * Clears the interval.
+     *
+     * @param {promise} The promise of the interval to cancel.
+     *
+     * @return {boolean}
+     */
     $interval.cancel = function(promise) {
       if(!promise) return false;
       var fnIndex;
