@@ -22,13 +22,16 @@ html, body {
   padding-bottom: 2em;
 }
 
-
 .header-fixed {
   position:fixed;
   z-index:1000;
   top:0;
   left:0;
   right:0;
+}
+
+.header-branding {
+  min-height:41px!important;
 }
 
 .docs-navbar-primary {
