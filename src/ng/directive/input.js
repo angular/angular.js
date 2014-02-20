@@ -595,6 +595,11 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
     ctrl.$parsers.push(minValidator);
     ctrl.$formatters.push(minValidator);
+    attr.$observe('min', function() {
+      if (isUndefined(minValidator(ctrl.$viewValue))) {
+        ctrl.$setViewValue(ctrl.$viewValue);
+      }
+    });
   }
 
   if (attr.max) {
@@ -605,6 +610,11 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
     ctrl.$parsers.push(maxValidator);
     ctrl.$formatters.push(maxValidator);
+    attr.$observe('max', function() {
+      if (isUndefined(maxValidator(ctrl.$viewValue))) {
+        ctrl.$setViewValue(ctrl.$viewValue);
+      }
+    });
   }
 
   ctrl.$formatters.push(function(value) {
