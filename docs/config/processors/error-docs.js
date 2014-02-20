@@ -8,8 +8,15 @@ module.exports = {
   runAfter: ['tags-extracted'],
   init: function(config, injectables) {
     injectables.value('errorNamespaces', {});
+
+    var minerrInfoPath = config.get('processing.errors.minerrInfoPath');
+    if ( !minerrInfoPath ) {
+      throw new Error('Error in configuration: Please provide a path to the minerr info file (errors.json) ' +
+        'in the `config.processing.errors.minerrInfoPath` property');
+    }
+    injectables.value('minerrInfo', require(minerrInfoPath));
   },
-  process: function(docs, partialNames, errorNamespaces) {
+  process: function(docs, partialNames, errorNamespaces, minerrInfo) {
 
     // Create error namespace docs and attach error docs to each
     _.forEach(docs, function(doc) {
@@ -31,6 +38,8 @@ module.exports = {
         // Add this error to the namespace
         namespaceDoc.errors.push(doc);
         doc.namespace = namespaceDoc;
+
+        doc.formattedErrorMessage = minerrInfo.errors[doc.namespace.name][doc.name];
 
       }
 
