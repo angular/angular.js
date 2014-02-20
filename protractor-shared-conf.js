@@ -1,16 +1,6 @@
 exports.config = {
   allScriptsTimeout: 11000,
 
-  specs: [
-    'build/docs/ptore2e/**/*jquery_test.js',
-    'test/e2e/docsAppE2E.js'
-  ],
-
-  capabilities: {
-    'browserName': 'chrome',
-    'name': 'Angular E2E: jquery'
-  },
-
   baseUrl: 'http://localhost:8000/build/docs/',
 
   framework: 'jasmine',
@@ -24,6 +14,11 @@ exports.config = {
     };
 
     browser.addMockModule('disableNgAnimate', disableNgAnimate);
+
+    // Store the name of the browser that's currently being used.
+    browser.getCapabilities().then(function(caps) {
+      browser.params.browser = caps.get('browserName');
+    });
   },
 
   jasmineNodeOpts: {
