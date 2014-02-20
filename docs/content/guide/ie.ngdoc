@@ -31,7 +31,7 @@ To make your Angular application work on IE please make sure that:
        <!doctype html>
        <html xmlns:ng="http://angularjs.org">
          <head>
-           <!--[if lte IE 8]>
+           <!--[if lte IE 7]>
              <script src="/path/to/json2.js"></script>
            <![endif]-->
          </head>
