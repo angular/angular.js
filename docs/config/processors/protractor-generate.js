@@ -5,6 +5,26 @@ var trimIndentation = require('dgeni/lib/utils/trim-indentation');
 var code = require('dgeni/lib/utils/code');
 var protractorFolder;
 
+function createProtractorDoc(example, file, env) {
+  var protractorDoc = {
+    docType: 'e2e-test',
+    id: 'protractorTest' + '-' + example.id,
+    template: 'protractorTests.template.js',
+    outputPath: path.join(protractorFolder, example.id, env + '_test.js'),
+    innerTest: file.fileContents,
+    pathPrefix: '.', // Hold for if we test with full jQuery
+    exampleId: example.id,
+    description: example.doc.id
+  };
+
+  if (env === 'jquery') {
+    protractorDoc.examplePath = example.outputFolder + '/index-jquery.html'
+  } else {
+    protractorDoc.examplePath = example.outputFolder + '/index.html'
+  }
+  return protractorDoc;
+}
+
 module.exports = {
   name: 'protractor-generate',
   description: 'Generate a protractor test file from the e2e tests in the examples',
@@ -23,22 +43,9 @@ module.exports = {
           return;
         }
 
-        // Create a new file for the test.
-        // TODO - at the moment, only jqLite is being used. Will need to generate
-        // another doc for jQuery if we want to test against that.
-        var protractorDoc = {
-          docType: 'e2e-test',
-          id: 'protractorTest' + '-' + example.id,
-          template: 'protractorTests.template.js',
-          outputPath: path.join(protractorFolder, example.id, 'jqlite' + '_test.js'),
-          innerTest: file.fileContents,
-          pathPrefix: '.', // Hold for if we test with full jQuery
-          exampleId: example.id,
-          description: example.doc.id,
-          examplePath: example.outputFolder + '/index.html'
-        };
-
-        docs.push(protractorDoc);
+        // Create new files for the tests.
+        docs.push(createProtractorDoc(example, file, 'jquery'));
+        docs.push(createProtractorDoc(example, file, 'jqlite'));
       });
     });
   }
