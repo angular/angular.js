@@ -528,8 +528,7 @@ angular.module('ngResource', ['ng']).
                 if (action.arrayDecorate) {
                   for (var i in data) {
                     if (data.hasOwnProperty(i)
-                      && angular.isUndefined(value[i])
-                      && !/^[0-9]+$/.test(i)
+                      && !angular.isNumber(i)
                     ) {
                       value[i] = data[i];
                     }
@@ -553,9 +552,13 @@ angular.module('ngResource', ['ng']).
             // Decorate the existing object with the properties on the response data
             if (action.errorDecorate) {
               var promise = value.$promise;
-              forEach(response.data, function(property, key) {
-                value[key] = property;
-              });
+              for (var i in response.data) {
+                if (response.data.hasOwnProperty(i)
+                  && !angular.isNumber(i)
+                ) {
+                  value[i] = response.data[i];
+                }
+              }
               value.$promise = promise;
               response.resource = value;
             }
