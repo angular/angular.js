@@ -10,15 +10,13 @@ if [ $JOB = "unit" ]; then
   grunt test:promises-aplus
   grunt test:unit --browsers SL_Chrome,SL_Safari,SL_Firefox,SL_IE_8,SL_IE_9,SL_IE_10,SL_IE_11 --reporters dots
 elif [ $JOB = "e2e" ]; then
-  export GRUNT_TARGET="test:protractor"
-  if [ $JQVERSION = "jquery" ]; then
-    GRUNT_TARGET="test:jq-protractor"
+  export TARGET_SPECS="build/docs/ptore2e/**/*jqlite_test.js"
+  if [ $TEST_TARGET = "jquery" ]; then
+    TARGET_SPECS="build/docs/ptore2e/**/*jquery_test.js"
+  elif [ $TEST_TARGET = "doce2e" ]; then
+    TARGET_SPECS="test/e2e/docsAppE2E.js"
   fi
-  grunt $GRUNT_TARGET --sauceUser $SAUCE_USERNAME \
-      --sauceKey $SAUCE_ACCESS_KEY \
-      --capabilities.tunnel-identifier=$TRAVIS_JOB_NUMBER \
-      --capabilities.build=$TRAVIS_BUILD_NUMBER \
-      --browser=$BROWSER
+  grunt test:travis-protractor --specs "$TARGET_SPECS"
 else
   echo "Unknown job type. Please set JOB=unit or JOB=e2e-*."
 fi
