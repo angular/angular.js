@@ -31,6 +31,9 @@ module.exports = function(config) {
   });
   config.set('processing.examples.dependencyPath', '../../..');
 
+
+  config.set('processing.errors.minerrInfoPath', path.resolve(basePath, '../build/errors.json'));
+
   config.set('rendering.outputFolder', '../build/docs');
 
   config.set('logging.level', 'info');
