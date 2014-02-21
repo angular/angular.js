@@ -833,6 +833,50 @@ describe('ngView animations', function() {
           }
         });
       });
+
+      it('should destroy the previous leave animation if a new one takes place', function() {
+        module(function($provide) {
+          $provide.value('$animate', {
+            enabled : function() { return true; },
+            leave : function() {
+              //DOM operation left blank
+            },
+            enter : function(element, parent, after) {
+              angular.element(after).after(element);
+            }
+          });
+        });
+        inject(function ($compile, $rootScope, $animate, $location) {
+          var item;
+          var $scope = $rootScope.$new();
+          element = $compile(html(
+            '<div>' +
+              '<div ng-view></div>' +
+            '</div>'
+          ))($scope);
+
+          $scope.$apply('value = true');
+
+          $location.path('/bar');
+          $rootScope.$digest();
+
+          var destroyed, inner = element.children(0);
+          inner.on('$destroy', function() {
+            destroyed = true;
+          });
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          $location.path('/bar');
+          $rootScope.$digest();
+
+          $location.path('/bar');
+          $rootScope.$digest();
+
+          expect(destroyed).toBe(true);
+        });
+      });
     });
 
 

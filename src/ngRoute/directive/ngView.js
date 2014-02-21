@@ -189,6 +189,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $animate) {
     link: function(scope, $element, attr, ctrl, $transclude) {
         var currentScope,
             currentElement,
+            previousElement,
             autoScrollExp = attr.autoscroll,
             onloadExp = attr.onload || '';
 
@@ -196,12 +197,19 @@ function ngViewFactory(   $route,   $anchorScroll,   $animate) {
         update();
 
         function cleanupLastView() {
-          if (currentScope) {
+          if(previousElement) {
+            previousElement.remove();
+            previousElement = null;
+          }
+          if(currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
           if(currentElement) {
-            $animate.leave(currentElement);
+            $animate.leave(currentElement, function() {
+              previousElement = null;
+            });
+            previousElement = currentElement;
             currentElement = null;
           }
         }
