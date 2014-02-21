@@ -16,7 +16,7 @@ If you want a deeper look into Angular's compilation process, you're in the righ
 Angular's {@link ng.$compile HTML compiler} allows the developer to teach the
 browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
 and even create new HTML elements or attributes with custom behavior. Angular calls these behavior
-extensions {@link ng.$compileProvider#methods_directive directives}.
+extensions {@link ng.$compileProvider#directive directives}.
 
 HTML has a lot of constructs for formatting the HTML for static documents in a declarative fashion.
 For example if something needs to be centered, there is no need to provide instructions to the
@@ -68,7 +68,7 @@ ng.directive:ngBind `ng-bind`} directive.
 ```
 
 A directive is just a function which executes when the compiler encounters it in the DOM. See {@link
-ng.$compileProvider#methods_directive directive API} for in-depth documentation on how
+ng.$compileProvider#directive directive API} for in-depth documentation on how
 to write directives.
 
 Here is a directive which makes any element draggable. Notice the `draggable` attribute on the
@@ -174,7 +174,7 @@ HTML compilation happens in three phases:
 
   3. `$compile` links the template with the scope by calling the combined linking function from the previous step.
   This in turn will call the linking function of the individual directives, registering listeners on the elements
-  and setting up {@link ng.$rootScope.Scope#methods_$watch `$watch`s} with the {@link ng.$rootScope.Scope `scope`}
+  and setting up {@link ng.$rootScope.Scope#$watch `$watch`s} with the {@link ng.$rootScope.Scope `scope`}
   as each directive is configured to do.
 
 The result of this is a live binding between the scope and the DOM. So at this point, a change in

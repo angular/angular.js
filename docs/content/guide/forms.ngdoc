@@ -191,11 +191,11 @@ To get a hold of the controller the directive specifies a dependency as shown in
 The validation can occur in two places:
 
   * **Model to View update** -
-    Whenever the bound model changes, all functions in {@link ngModel.NgModelController#properties_$formatters NgModelController#$formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link ngModel.NgModelController#methods_$setValidity NgModelController#$setValidity}.
+    Whenever the bound model changes, all functions in {@link ngModel.NgModelController#properties_$formatters NgModelController#$formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
 
   * **View to Model update** -
-    In a similar way, whenever a user interacts with a control it calls {@link ngModel.NgModelController#methods_$setViewValue NgModelController#$setViewValue}.
-This in turn pipelines all functions in the {@link ngModel.NgModelController#properties_$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link ngModel.NgModelController#methods_$setValidity NgModelController#$setValidity}.
+    In a similar way, whenever a user interacts with a control it calls {@link ngModel.NgModelController#$setViewValue NgModelController#$setViewValue}.
+This in turn pipelines all functions in the {@link ngModel.NgModelController#properties_$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
 
 In the following example we create two directives.
 

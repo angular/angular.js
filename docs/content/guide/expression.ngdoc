@@ -30,7 +30,7 @@ You can think of Angular expressions as JavaScript expressions with following di
 
 If, on the other hand, you do want to run arbitrary JavaScript code, you should make it a
 controller method and call the method. If you want to `eval()` an angular expression from
-JavaScript, use the {@link ng.$rootScope.Scope#methods_$eval `$eval()`} method.
+JavaScript, use the {@link ng.$rootScope.Scope#$eval `$eval()`} method.
 
 ## Example
 <example>

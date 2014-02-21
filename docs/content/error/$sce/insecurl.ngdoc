@@ -8,16 +8,16 @@ AngularJS' {@link ng.$sce Strict Contextual Escaping (SCE)} mode (enabled by def
 Typically, this would occur if you're attempting to load an Angular template from an untrusted source.
 It's also possible that a custom directive threw this error for a similar reason.
 
-Angular only loads templates from trusted URLs (by calling {@link ng.$sce#methods_getTrustedResourceUrl $sce.getTrustedResourceUrl} on the template URL).
+Angular only loads templates from trusted URLs (by calling {@link ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl} on the template URL).
 
 By default, only URLs that belong to the same origin are trusted. These are urls with the same domain and protocol as the application document.
 
 The {@link ng.directive:ngInclude ngInclude} directive and {@link guide/directive directives} that specify a `templateUrl` require a trusted resource URL.
 
 To load templates from other domains and/or protocols, either adjust the {@link
-api/ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist}/ {@link
-api/ng.$sceDelegateProvider#methods_resourceUrlBlacklist blacklist} or wrap the URL with a call to {@link
-api/ng.$sce#methods_trustAsResourceUrl $sce.trustAsResourceUrl}.
+api/ng.$sceDelegateProvider#resourceUrlWhitelist whitelist}/ {@link
+api/ng.$sceDelegateProvider#resourceUrlBlacklist blacklist} or wrap the URL with a call to {@link
+api/ng.$sce#trustAsResourceUrl $sce.trustAsResourceUrl}.
 
 **Note**: The browser's [Same Origin
 Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest) and

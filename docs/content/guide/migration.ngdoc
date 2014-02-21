@@ -361,7 +361,7 @@ See [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d49
 
 ## $location.search supports multiple keys
 
-{@link ng.$location#methods_search `$location.search`} now supports multiple keys with the
+{@link ng.$location#search `$location.search`} now supports multiple keys with the
 same value provided that the values are stored in an array.
 
 Before this change:

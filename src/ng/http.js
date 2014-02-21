@@ -225,7 +225,7 @@ function $HttpProvider() {
      *
      * # Writing Unit Tests that use $http
      * When unit testing (using {@link ngMock ngMock}), it is necessary to call
-     * {@link ngMock.$httpBackend#methods_flush $httpBackend.flush()} to flush each pending
+     * {@link ngMock.$httpBackend#flush $httpBackend.flush()} to flush each pending
      * request using trained responses.
      *
      * ```
@@ -247,12 +247,12 @@ function $HttpProvider() {
      *
      * Complete list of shortcut methods:
      *
-     * - {@link ng.$http#methods_get $http.get}
-     * - {@link ng.$http#methods_head $http.head}
-     * - {@link ng.$http#methods_post $http.post}
-     * - {@link ng.$http#methods_put $http.put}
-     * - {@link ng.$http#methods_delete $http.delete}
-     * - {@link ng.$http#methods_jsonp $http.jsonp}
+     * - {@link ng.$http#get $http.get}
+     * - {@link ng.$http#head $http.head}
+     * - {@link ng.$http#post $http.post}
+     * - {@link ng.$http#put $http.put}
+     * - {@link ng.$http#delete $http.delete}
+     * - {@link ng.$http#jsonp $http.jsonp}
      *
      *
      * # Setting HTTP Headers
