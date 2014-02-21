@@ -22,10 +22,10 @@ Currently, Angular supports i18n/l10n for
 [currency](http://docs.angularjs.org/#!/api/ng.filter:currency) filters.
 
 Additionally, Angular supports localizable pluralization support provided by the {@link
-api/ng.directive:ngPluralize ngPluralize directive}.
+ng.directive:ngPluralize ngPluralize directive}.
 
 All localizable Angular components depend on locale-specific rule sets managed by the {@link
-api/ng.$locale $locale service}.
+ng.$locale $locale service}.
 
 For readers who want to jump straight into examples, we have a few web pages that showcase how to
 use Angular filters with various locale rule sets. You can find these examples either on
