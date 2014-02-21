@@ -494,13 +494,12 @@ angular.mock.$IntervalProvider = function() {
     /**
      * @ngdoc method
      * @name $interval#cancel
+     *
      * @description
+     * Cancels a task associated with the `promise`.
      *
-     * Clears the interval.
-     *
-     * @param {promise} The promise of the interval to cancel.
-     *
-     * @return {boolean}
+     * @param {number} promise A promise from calling the `$interval` function.
+     * @returns {boolean} Returns `true` if the task was successfully cancelled.
      */
     $interval.cancel = function(promise) {
       if(!promise) return false;
