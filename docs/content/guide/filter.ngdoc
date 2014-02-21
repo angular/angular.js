@@ -92,7 +92,7 @@ text upper-case.
 <example module="MyReverseModule">
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <input ng-model="greeting" type="greeting"><br>
+      <input ng-model="greeting" type="text"><br>
       No filter: {{greeting}}<br>
       Reverse: {{greeting|reverse}}<br>
       Reverse + uppercase: {{greeting|reverse:true}}<br>
