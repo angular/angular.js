@@ -142,8 +142,6 @@ angularFiles = {
     '@angularSrcModules',
     '@angularScenario',
     '@angularTest',
-    'example/personalLog/*.js',
-    'example/personalLog/test/*.js'
   ],
 
   'karmaExclude': [
@@ -178,9 +176,6 @@ angularFiles = {
     '@angularSrcModules',
     '@angularScenario',
     '@angularTest',
-    'example/personalLog/*.js',
-
-    'example/personalLog/test/*.js'
   ],
 
   'karmaJqueryExclude': [
