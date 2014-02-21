@@ -27,7 +27,7 @@ function $TimeoutProvider() {
       * @param {function()} fn A function, whose execution should be delayed.
       * @param {number=} [delay=0] Delay in milliseconds.
       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
-      *   will invoke `fn` within the {@link ng.$rootScope.Scope#methods_$apply $apply} block.
+      *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
       * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       *

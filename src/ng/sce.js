@@ -84,9 +84,9 @@ function adjustMatchers(matchers) {
  * can override it completely to change the behavior of `$sce`, the common case would
  * involve configuring the {@link ng.$sceDelegateProvider $sceDelegateProvider} instead by setting
  * your own whitelists and blacklists for trusting URLs used for loading AngularJS resources such as
- * templates.  Refer {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist
+ * templates.  Refer {@link ng.$sceDelegateProvider#resourceUrlWhitelist
  * $sceDelegateProvider.resourceUrlWhitelist} and {@link
- * ng.$sceDelegateProvider#methods_resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist}
+ * ng.$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist}
  */
 
 /**
@@ -97,8 +97,8 @@ function adjustMatchers(matchers) {
  * The `$sceDelegateProvider` provider allows developers to configure the {@link ng.$sceDelegate
  * $sceDelegate} service.  This allows one to get/set the whitelists and blacklists used to ensure
  * that the URLs used for sourcing Angular templates are safe.  Refer {@link
- * ng.$sceDelegateProvider#methods_resourceUrlWhitelist $sceDelegateProvider.resourceUrlWhitelist} and
- * {@link ng.$sceDelegateProvider#methods_resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist}
+ * ng.$sceDelegateProvider#resourceUrlWhitelist $sceDelegateProvider.resourceUrlWhitelist} and
+ * {@link ng.$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist}
  *
  * For the general details about this service in Angular, read the main page for {@link ng.$sce
  * Strict Contextual Escaping (SCE)}.
@@ -308,16 +308,16 @@ function $SceDelegateProvider() {
      * @name $sceDelegate#valueOf
      *
      * @description
-     * If the passed parameter had been returned by a prior call to {@link ng.$sceDelegate#methods_trustAs
+     * If the passed parameter had been returned by a prior call to {@link ng.$sceDelegate#trustAs
      * `$sceDelegate.trustAs`}, returns the value that had been passed to {@link
-     * ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs`}.
+     * ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}.
      *
      * If the passed parameter is not a value that had been returned by {@link
-     * ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs`}, returns it as-is.
+     * ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}, returns it as-is.
      *
-     * @param {*} value The result of a prior {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs`}
+     * @param {*} value The result of a prior {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}
      *      call or anything else.
-     * @returns {*} The `value` that was originally provided to {@link ng.$sceDelegate#methods_trustAs
+     * @returns {*} The `value` that was originally provided to {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} if `value` is the result of such a call.  Otherwise, returns
      *     `value` unchanged.
      */
@@ -334,14 +334,14 @@ function $SceDelegateProvider() {
      * @name $sceDelegate#getTrusted
      *
      * @description
-     * Takes the result of a {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs`} call and
+     * Takes the result of a {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs`} call and
      * returns the originally supplied value if the queried context type is a supertype of the
      * created type.  If this condition isn't satisfied, throws an exception.
      *
      * @param {string} type The kind of context in which this value is to be used.
-     * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#methods_trustAs
+     * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} call.
-     * @returns {*} The value the was originally provided to {@link ng.$sceDelegate#methods_trustAs
+     * @returns {*} The value the was originally provided to {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} if valid in this context.  Otherwise, throws an exception.
      */
     function getTrusted(type, maybeTrusted) {
@@ -446,20 +446,20 @@ function $SceDelegateProvider() {
  * allowing only the files in a specific directory to do this.  Ensuring that the internal API
  * exposed by that code doesn't markup arbitrary values as safe then becomes a more manageable task.
  *
- * In the case of AngularJS' SCE service, one uses {@link ng.$sce#methods_trustAs $sce.trustAs}
- * (and shorthand methods such as {@link ng.$sce#methods_trustAsHtml $sce.trustAsHtml}, etc.) to
+ * In the case of AngularJS' SCE service, one uses {@link ng.$sce#trustAs $sce.trustAs}
+ * (and shorthand methods such as {@link ng.$sce#trustAsHtml $sce.trustAsHtml}, etc.) to
  * obtain values that will be accepted by SCE / privileged contexts.
  *
  *
  * ## How does it work?
  *
- * In privileged contexts, directives and code will bind to the result of {@link ng.$sce#methods_getTrusted
+ * In privileged contexts, directives and code will bind to the result of {@link ng.$sce#getTrusted
  * $sce.getTrusted(context, value)} rather than to the value directly.  Directives use {@link
- * ng.$sce#methods_parse $sce.parseAs} rather than `$parse` to watch attribute bindings, which performs the
- * {@link ng.$sce#methods_getTrusted $sce.getTrusted} behind the scenes on non-constant literals.
+ * ng.$sce#parse $sce.parseAs} rather than `$parse` to watch attribute bindings, which performs the
+ * {@link ng.$sce#getTrusted $sce.getTrusted} behind the scenes on non-constant literals.
  *
  * As an example, {@link ng.directive:ngBindHtml ngBindHtml} uses {@link
- * ng.$sce#methods_parseAsHtml $sce.parseAsHtml(binding expression)}.  Here's the actual code (slightly
+ * ng.$sce#parseAsHtml $sce.parseAsHtml(binding expression)}.  Here's the actual code (slightly
  * simplified):
  *
  * <pre class="prettyprint">
@@ -478,10 +478,10 @@ function $SceDelegateProvider() {
  * `templateUrl`'s specified by {@link guide/directive directives}.
  *
  * By default, Angular only loads templates from the same domain and protocol as the application
- * document.  This is done by calling {@link ng.$sce#methods_getTrustedResourceUrl
+ * document.  This is done by calling {@link ng.$sce#getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on the template URL.  To load templates from other domains and/or
- * protocols, you may either either {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist
- * them} or {@link ng.$sce#methods_trustAsResourceUrl wrap it} into a trusted value.
+ * protocols, you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist
+ * them} or {@link ng.$sce#trustAsResourceUrl wrap it} into a trusted value.
  *
  * *Please note*:
  * The browser's
@@ -501,14 +501,14 @@ function $SceDelegateProvider() {
  * `<div ng-bind-html="'<b>implicitly trusted</b>'"></div>`) just works.
  *
  * Additionally, `a[href]` and `img[src]` automatically sanitize their URLs and do not pass them
- * through {@link ng.$sce#methods_getTrusted $sce.getTrusted}.  SCE doesn't play a role here.
+ * through {@link ng.$sce#getTrusted $sce.getTrusted}.  SCE doesn't play a role here.
  *
  * The included {@link ng.$sceDelegate $sceDelegate} comes with sane defaults to allow you to load
  * templates in `ng-include` from your application's domain without having to even know about SCE.
  * It blocks loading templates from other domains or loading templates over http from an https
  * served document.  You can change these by setting your own custom {@link
- * ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelists} and {@link
- * ng.$sceDelegateProvider#methods_resourceUrlBlacklist blacklists} for matching such URLs.
+ * ng.$sceDelegateProvider#resourceUrlWhitelist whitelists} and {@link
+ * ng.$sceDelegateProvider#resourceUrlBlacklist blacklists} for matching such URLs.
  *
  * This significantly reduces the overhead.  It is far easier to pay the small overhead and have an
  * application that's secure and can be audited to verify that with much more ease than bolting
@@ -525,7 +525,7 @@ function $SceDelegateProvider() {
  * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contens are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
  * | `$sce.JS`           | For JavaScript that is safe to execute in your application's context.  Currently unused.  Feel free to use it in your own directives. |
  *
- * ## Format of items in {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#methods_resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
+ * ## Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
  *
  *  Each element in these arrays must be one of the following:
  *
@@ -769,7 +769,7 @@ function $SceProvider() {
      * @description
      * Converts Angular {@link guide/expression expression} into a function.  This is like {@link
      * ng.$parse $parse} and is identical when the expression is a literal constant.  Otherwise, it
-     * wraps the expression in a call to {@link ng.$sce#methods_getTrusted $sce.getTrusted(*type*,
+     * wraps the expression in a call to {@link ng.$sce#getTrusted $sce.getTrusted(*type*,
      * *result*)}
      *
      * @param {string} type The kind of SCE context in which this result will be used.
@@ -797,7 +797,7 @@ function $SceProvider() {
      * @name $sce#trustAs
      *
      * @description
-     * Delegates to {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs`}.  As such,
+     * Delegates to {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}.  As such,
      * returns an object that is trusted by angular for use in specified strict contextual
      * escaping contexts (such as ng-bind-html, ng-include, any src attribute
      * interpolation, any dom event binding attribute interpolation such as for onclick,  etc.)
@@ -817,13 +817,13 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.trustAsHtml(value)` →
-     *     {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs($sce.HTML, value)`}
+     *     {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs($sce.HTML, value)`}
      *
      * @param {*} value The value to trustAs.
-     * @returns {*} An object that can be passed to {@link ng.$sce#methods_getTrustedHtml
+     * @returns {*} An object that can be passed to {@link ng.$sce#getTrustedHtml
      *     $sce.getTrustedHtml(value)} to obtain the original value.  (privileged directives
      *     only accept expressions that are either literal constants or are the
-     *     return value of {@link ng.$sce#methods_trustAs $sce.trustAs}.)
+     *     return value of {@link ng.$sce#trustAs $sce.trustAs}.)
      */
 
     /**
@@ -832,13 +832,13 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.trustAsUrl(value)` →
-     *     {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs($sce.URL, value)`}
+     *     {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs($sce.URL, value)`}
      *
      * @param {*} value The value to trustAs.
-     * @returns {*} An object that can be passed to {@link ng.$sce#methods_getTrustedUrl
+     * @returns {*} An object that can be passed to {@link ng.$sce#getTrustedUrl
      *     $sce.getTrustedUrl(value)} to obtain the original value.  (privileged directives
      *     only accept expressions that are either literal constants or are the
-     *     return value of {@link ng.$sce#methods_trustAs $sce.trustAs}.)
+     *     return value of {@link ng.$sce#trustAs $sce.trustAs}.)
      */
 
     /**
@@ -847,13 +847,13 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.trustAsResourceUrl(value)` →
-     *     {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs($sce.RESOURCE_URL, value)`}
+     *     {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs($sce.RESOURCE_URL, value)`}
      *
      * @param {*} value The value to trustAs.
-     * @returns {*} An object that can be passed to {@link ng.$sce#methods_getTrustedResourceUrl
+     * @returns {*} An object that can be passed to {@link ng.$sce#getTrustedResourceUrl
      *     $sce.getTrustedResourceUrl(value)} to obtain the original value.  (privileged directives
      *     only accept expressions that are either literal constants or are the return
-     *     value of {@link ng.$sce#methods_trustAs $sce.trustAs}.)
+     *     value of {@link ng.$sce#trustAs $sce.trustAs}.)
      */
 
     /**
@@ -862,13 +862,13 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.trustAsJs(value)` →
-     *     {@link ng.$sceDelegate#methods_trustAs `$sceDelegate.trustAs($sce.JS, value)`}
+     *     {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs($sce.JS, value)`}
      *
      * @param {*} value The value to trustAs.
-     * @returns {*} An object that can be passed to {@link ng.$sce#methods_getTrustedJs
+     * @returns {*} An object that can be passed to {@link ng.$sce#getTrustedJs
      *     $sce.getTrustedJs(value)} to obtain the original value.  (privileged directives
      *     only accept expressions that are either literal constants or are the
-     *     return value of {@link ng.$sce#methods_trustAs $sce.trustAs}.)
+     *     return value of {@link ng.$sce#trustAs $sce.trustAs}.)
      */
 
     /**
@@ -876,16 +876,16 @@ function $SceProvider() {
      * @name $sce#getTrusted
      *
      * @description
-     * Delegates to {@link ng.$sceDelegate#methods_getTrusted `$sceDelegate.getTrusted`}.  As such,
-     * takes the result of a {@link ng.$sce#methods_trustAs `$sce.trustAs`}() call and returns the
+     * Delegates to {@link ng.$sceDelegate#getTrusted `$sceDelegate.getTrusted`}.  As such,
+     * takes the result of a {@link ng.$sce#trustAs `$sce.trustAs`}() call and returns the
      * originally supplied value if the queried context type is a supertype of the created type.
      * If this condition isn't satisfied, throws an exception.
      *
      * @param {string} type The kind of context in which this value is to be used.
-     * @param {*} maybeTrusted The result of a prior {@link ng.$sce#methods_trustAs `$sce.trustAs`}
+     * @param {*} maybeTrusted The result of a prior {@link ng.$sce#trustAs `$sce.trustAs`}
      *                         call.
      * @returns {*} The value the was originally provided to
-     *              {@link ng.$sce#methods_trustAs `$sce.trustAs`} if valid in this context.
+     *              {@link ng.$sce#trustAs `$sce.trustAs`} if valid in this context.
      *              Otherwise, throws an exception.
      */
 
@@ -895,7 +895,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.getTrustedHtml(value)` →
-     *     {@link ng.$sceDelegate#methods_getTrusted `$sceDelegate.getTrusted($sce.HTML, value)`}
+     *     {@link ng.$sceDelegate#getTrusted `$sceDelegate.getTrusted($sce.HTML, value)`}
      *
      * @param {*} value The value to pass to `$sce.getTrusted`.
      * @returns {*} The return value of `$sce.getTrusted($sce.HTML, value)`
@@ -907,7 +907,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.getTrustedCss(value)` →
-     *     {@link ng.$sceDelegate#methods_getTrusted `$sceDelegate.getTrusted($sce.CSS, value)`}
+     *     {@link ng.$sceDelegate#getTrusted `$sceDelegate.getTrusted($sce.CSS, value)`}
      *
      * @param {*} value The value to pass to `$sce.getTrusted`.
      * @returns {*} The return value of `$sce.getTrusted($sce.CSS, value)`
@@ -919,7 +919,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.getTrustedUrl(value)` →
-     *     {@link ng.$sceDelegate#methods_getTrusted `$sceDelegate.getTrusted($sce.URL, value)`}
+     *     {@link ng.$sceDelegate#getTrusted `$sceDelegate.getTrusted($sce.URL, value)`}
      *
      * @param {*} value The value to pass to `$sce.getTrusted`.
      * @returns {*} The return value of `$sce.getTrusted($sce.URL, value)`
@@ -931,7 +931,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.getTrustedResourceUrl(value)` →
-     *     {@link ng.$sceDelegate#methods_getTrusted `$sceDelegate.getTrusted($sce.RESOURCE_URL, value)`}
+     *     {@link ng.$sceDelegate#getTrusted `$sceDelegate.getTrusted($sce.RESOURCE_URL, value)`}
      *
      * @param {*} value The value to pass to `$sceDelegate.getTrusted`.
      * @returns {*} The return value of `$sce.getTrusted($sce.RESOURCE_URL, value)`
@@ -943,7 +943,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.getTrustedJs(value)` →
-     *     {@link ng.$sceDelegate#methods_getTrusted `$sceDelegate.getTrusted($sce.JS, value)`}
+     *     {@link ng.$sceDelegate#getTrusted `$sceDelegate.getTrusted($sce.JS, value)`}
      *
      * @param {*} value The value to pass to `$sce.getTrusted`.
      * @returns {*} The return value of `$sce.getTrusted($sce.JS, value)`
@@ -955,7 +955,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsHtml(expression string)` →
-     *     {@link ng.$sce#methods_parse `$sce.parseAs($sce.HTML, value)`}
+     *     {@link ng.$sce#parse `$sce.parseAs($sce.HTML, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -972,7 +972,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsCss(value)` →
-     *     {@link ng.$sce#methods_parse `$sce.parseAs($sce.CSS, value)`}
+     *     {@link ng.$sce#parse `$sce.parseAs($sce.CSS, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -989,7 +989,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsUrl(value)` →
-     *     {@link ng.$sce#methods_parse `$sce.parseAs($sce.URL, value)`}
+     *     {@link ng.$sce#parse `$sce.parseAs($sce.URL, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -1006,7 +1006,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsResourceUrl(value)` →
-     *     {@link ng.$sce#methods_parse `$sce.parseAs($sce.RESOURCE_URL, value)`}
+     *     {@link ng.$sce#parse `$sce.parseAs($sce.RESOURCE_URL, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -1023,7 +1023,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsJs(value)` →
-     *     {@link ng.$sce#methods_parse `$sce.parseAs($sce.JS, value)`}
+     *     {@link ng.$sce#parse `$sce.parseAs($sce.JS, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:

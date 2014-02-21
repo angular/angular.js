@@ -308,16 +308,16 @@ function annotate(fn) {
  * these cases the {@link auto.$provide $provide} service has additional helper methods to register
  * services without specifying a provider.
  *
- * * {@link auto.$provide#methods_provider provider(provider)} - registers a **service provider** with the
+ * * {@link auto.$provide#provider provider(provider)} - registers a **service provider** with the
  *     {@link auto.$injector $injector}
- * * {@link auto.$provide#methods_constant constant(obj)} - registers a value/object that can be accessed by
+ * * {@link auto.$provide#constant constant(obj)} - registers a value/object that can be accessed by
  *     providers and services.
- * * {@link auto.$provide#methods_value value(obj)} - registers a value/object that can only be accessed by
+ * * {@link auto.$provide#value value(obj)} - registers a value/object that can only be accessed by
  *     services, not providers.
- * * {@link auto.$provide#methods_factory factory(fn)} - registers a service **factory function**, `fn`,
+ * * {@link auto.$provide#factory factory(fn)} - registers a service **factory function**, `fn`,
  *     that will be wrapped in a **service provider** object, whose `$get` property will contain the
  *     given factory function.
- * * {@link auto.$provide#methods_service service(class)} - registers a **constructor function**, `class` that
+ * * {@link auto.$provide#service service(class)} - registers a **constructor function**, `class` that
  *     that will be wrapped in a **service provider** object, whose `$get` property will instantiate
  *      a new object using the given constructor function.
  *
@@ -358,7 +358,7 @@ function annotate(fn) {
  * @example
  *
  * The following example shows how to create a simple event tracking service and register it using
- * {@link auto.$provide#methods_provider $provide.provider()}.
+ * {@link auto.$provide#provider $provide.provider()}.
  *
  * ```js
  *  // Define the eventTracker provider
@@ -464,7 +464,7 @@ function annotate(fn) {
  * This is short for registering a service where its provider's `$get` property is the service
  * constructor function that will be used to instantiate the service instance.
  *
- * You should use {@link auto.$provide#methods_service $provide.service(class)} if you define your service
+ * You should use {@link auto.$provide#service $provide.service(class)} if you define your service
  * as a type/class.
  *
  * @param {string} name The name of the instance.
@@ -473,7 +473,7 @@ function annotate(fn) {
  *
  * @example
  * Here is an example of registering a service using
- * {@link auto.$provide#methods_service $provide.service(class)}.
+ * {@link auto.$provide#service $provide.service(class)}.
  * ```js
  *   var Ping = function($http) {
  *     this.$http = $http;

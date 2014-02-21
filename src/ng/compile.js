@@ -28,7 +28,7 @@
  * can then be used to link {@link ng.$rootScope.Scope `scope`} and the template together.
  *
  * The compilation is a process of walking the DOM tree and matching DOM elements to
- * {@link ng.$compileProvider#methods_directive directives}.
+ * {@link ng.$compileProvider#directive directives}.
  *
  * <div class="alert alert-warning">
  * **Note:** This document is an in-depth reference of all directive options.
@@ -231,7 +231,7 @@
  * You can specify `templateUrl` as a string representing the URL or as a function which takes two
  * arguments `tElement` and `tAttrs` (described in the `compile` function api below) and returns
  * a string value representing the url.  In either case, the template URL is passed through {@link
- * api/ng.$sce#methods_getTrustedResourceUrl $sce.getTrustedResourceUrl}.
+ * api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
  * #### `replace`
@@ -310,7 +310,7 @@
  * put.
  *
  *   * `scope` - {@link ng.$rootScope.Scope Scope} - The scope to be used by the
- *     directive for registering {@link ng.$rootScope.Scope#methods_$watch watches}.
+ *     directive for registering {@link ng.$rootScope.Scope#$watch watches}.
  *
  *   * `iElement` - instance element - The element where the directive is to be used. It is safe to
  *     manipulate the children of the element only in `postLink` function since the children have

@@ -3,6 +3,6 @@
 @fullName String Value is Required for SCE Trust Call
 @description
 
-{@link ng.$sce#methods_trustAs $sce.trustAs} requires a string value.
+{@link ng.$sce#trustAs $sce.trustAs} requires a string value.
 
 Read more about {@link ng.$sce Strict Contextual Escaping (SCE)} in AngularJS.

@@ -8,7 +8,7 @@
  * controllers.
  *
  * This provider allows controller registration via the
- * {@link ng.$controllerProvider#methods_register register} method.
+ * {@link ng.$controllerProvider#register register} method.
  */
 function $ControllerProvider() {
   var controllers = {},

@@ -131,8 +131,8 @@ directives when possible.
 
 During the compilation process the {@link ng.$compile compiler} matches text and attributes
 using the {@link ng.$interpolate $interpolate} service to see if they contain embedded
-expressions. These expressions are registered as {@link ng.$rootScope.Scope#methods_$watch watches}
-and will update as part of normal {@link ng.$rootScope.Scope#methods_$digest digest} cycle. An
+expressions. These expressions are registered as {@link ng.$rootScope.Scope#$watch watches}
+and will update as part of normal {@link ng.$rootScope.Scope#$digest digest} cycle. An
 example of interpolation is shown below:
 
 ```html
@@ -174,7 +174,7 @@ For example, we could fix the example above by instead writing:
 
 ## Creating Directives
 
-First let's talk about the {@link ng.$compileProvider#methods_directive API for registering directives}. Much like
+First let's talk about the {@link ng.$compileProvider#directive API for registering directives}. Much like
 controllers, directives are registered on modules. To register a directive, you use the
 `module.directive` API. `module.directive` takes the
 {@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
@@ -185,7 +185,7 @@ options to tell `$compile` how the directive should behave when matched.
 The factory function is invoked only once when the
 {@link ng.$compile compiler} matches the directive for the first time. You can perform any
 initialization work here. The function is invoked using
-{@link auto.$injector#methods_invoke $injector.invoke} which makes it injectable just like a
+{@link auto.$injector#invoke $injector.invoke} which makes it injectable just like a
 controller.
 
 <div class="alert alert-success">
