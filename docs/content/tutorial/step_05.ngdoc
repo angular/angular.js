@@ -109,7 +109,7 @@ properties are considered private, and should not be accessed or modified.
 ### A Note on Minification
 
 Since Angular infers the controller's dependencies from the names of arguments to the controller's
-constructor function, if you were to [minify](http://en.wikipedia.org/wiki/Minification_(programming)) the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
+constructor function, if you were to [minify](http://goo.gl/SAnnsm) the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
 minified as well, and the dependency injector would not be able to identify services correctly.
 
 There are two ways to overcome issues caused by minification:
