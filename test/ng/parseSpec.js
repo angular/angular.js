@@ -786,6 +786,28 @@ describe('parser', function() {
                       '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
                       'disallowed! Expression: a.b.doc.on("click")');
             }));
+
+            // Issue #4805
+            it('should NOT throw isecdom when referencing a Backbone Collection', function() {
+              // Backbone stuff is sort of hard to mock, if you have a better way of doing this,
+              // please fix this.
+              var fakeBackboneCollection = {
+                children: [{}, {}, {}],
+                find: function() {},
+                on: function() {},
+                off: function() {},
+                bind: function() {}
+              };
+              scope.backbone = fakeBackboneCollection;
+              expect(function() { scope.$eval('backbone'); }).not.toThrow();
+            });
+
+            it('should NOT throw isecdom when referencing an array with node properties', function() {
+              var array = [1,2,3];
+              array.on = array.attr = array.prop = array.bind = true;
+              scope.array = array;
+              expect(function() { scope.$eval('array'); }).not.toThrow();
+            });
           });
         });
 
