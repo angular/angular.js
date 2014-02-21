@@ -405,6 +405,10 @@ describe('$http', function() {
       $http = $h;
     }]));
 
+    it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
+      $httpBackend.expect('GET', '/url').respond('');
+      $http({url: '/url'});
+    }));
 
     it('should do basic request', inject(function($httpBackend, $http) {
       $httpBackend.expect('GET', '/url').respond('');
@@ -1119,6 +1123,16 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(callback.mostRecentCall.args[0]).toBe('content');
       }));
+
+      it('should cache request when cache is provided and no method specified', function () {
+        doFirstCacheRequest();
+
+        $http({url: '/url', cache: cache}).success(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toBe('content');
+      });
 
 
       it('should not cache when cache is not provided', function() {
