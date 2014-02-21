@@ -529,7 +529,7 @@ hashPrefix.
 # Testing with the $location service
 
 When using `$location` service during testing, you are outside of the angular's {@link
-api/ng.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
+ng.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
 
 ```js
 describe('serviceUnderTest', function() {
