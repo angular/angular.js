@@ -14,7 +14,7 @@ In this step, you will improve the way our app fetches data.
 
 The next improvement we will make to our app is to define a custom service that represents a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) client. Using this client we
 can make XHR requests for data in an easier way, without having to deal with the lower-level {@link
-api/ng.$http $http} API, HTTP methods and URLs.
+ng.$http $http} API, HTTP methods and URLs.
 
 The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-10...step-11):
 
@@ -57,7 +57,7 @@ service declared a dependency on the `$resource` service.
 The {@link ngResource.$resource `$resource`} service makes it easy to create a
 [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) client with just a few
 lines of code. This client can then be used in our application, instead of the lower-level {@link
-api/ng.$http $http} service.
+ng.$http $http} service.
 
 __`app/js/app.js`.__
 
