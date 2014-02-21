@@ -213,4 +213,34 @@ describe('$timeout', function() {
       expect(cancelSpy).toHaveBeenCalledOnce();
     }));
   });
+
+
+  describe('debouncing', function() {
+    it('should allow debouncing tasks', inject(function($timeout) {
+      var task = jasmine.createSpy('task'),
+          successtask = jasmine.createSpy('successtask'), 
+          errortask = jasmine.createSpy('errortask'),
+          promise = null;
+
+      promise = $timeout(task, 10000, true, promise);
+      promise.then(successtask, errortask);
+
+      expect(task).not.toHaveBeenCalled();
+      expect(successtask).not.toHaveBeenCalled();
+      expect(errortask).not.toHaveBeenCalled();
+      
+      promise = $timeout(task, 10000, true, promise);
+      expect(task).not.toHaveBeenCalled();
+      expect(successtask).not.toHaveBeenCalled();
+      expect(errortask).not.toHaveBeenCalled();
+
+      $timeout.flush();
+
+      expect(task).toHaveBeenCalled();
+      // it's a different promise, so 'successtask' should not be called but 'errortask' should
+      expect(successtask).not.toHaveBeenCalled();
+      expect(errortask).toHaveBeenCalled();
+    }));
+
+  });
 });
