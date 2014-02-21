@@ -177,15 +177,23 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
       return function(scope, $element, $attr, ctrl, $transclude) {
         var changeCounter = 0,
             currentScope,
+            previousElement,
             currentElement;
 
         var cleanupLastIncludeContent = function() {
-          if (currentScope) {
+          if(previousElement) {
+            previousElement.remove();
+            previousElement = null;
+          }
+          if(currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
           if(currentElement) {
-            $animate.leave(currentElement);
+            $animate.leave(currentElement, function() {
+              previousElement = null;
+            });
+            previousElement = currentElement;
             currentElement = null;
           }
         };

@@ -764,6 +764,27 @@ angular.module('ngAnimate', ['ng'])
           return;
         }
 
+        if(animationEvent == 'leave') {
+          //there's no need to ever remove the listener since the element
+          //will be removed (destroyed) after the leave animation ends or
+          //is cancelled midway
+          element.one('$destroy', function(e) {
+            var element = angular.element(this);
+            var state = element.data(NG_ANIMATE_STATE) || {};
+            var activeLeaveAnimation = state.active['ng-leave'];
+            if(activeLeaveAnimation) {
+              var animations = activeLeaveAnimation.animations;
+
+              //if the before animation is completed then the element will be
+              //removed shortly after so there is no need to cancel the animation
+              if(!animations[0].beforeComplete) {
+                cancelAnimations(animations);
+                cleanup(element, 'ng-leave');
+              }
+            }
+          });
+        }
+
         //the ng-animate class does nothing, but it's here to allow for
         //parent animations to find and cancel child animations when needed
         element.addClass(NG_ANIMATE_CLASS_NAME);
