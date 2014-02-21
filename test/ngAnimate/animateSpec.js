@@ -3335,5 +3335,40 @@ describe("ngAnimate", function() {
         expect(cancelReflowCallback).toHaveBeenCalled();
       });
     });
+
+    it('should immediately close off a leave animation if the element is removed from the DOM', function() {
+      var stat;
+      module(function($animateProvider) {
+        $animateProvider.register('.going', function() {
+          return {
+            leave : function() {
+              //left blank so it hangs
+              stat = 'leaving';
+              return function(cancelled) {
+                stat = cancelled && 'gone';
+              };
+            }
+          };
+        });
+      });
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+        $animate.enabled(true);
+
+        var element = $compile('<div id="parentGuy"></div>')($rootScope);
+        var child = $compile('<div class="going"></div>')($rootScope);
+        $rootElement.append(element);
+        element.append(child);
+
+        $animate.leave(child);
+        $rootScope.$digest();
+
+        expect(stat).toBe('leaving');
+
+        child.remove();
+
+        expect(stat).toBe('gone');
+      });
+    });
   });
 });

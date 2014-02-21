@@ -277,4 +277,42 @@ describe('ngIf animations', function () {
       expect(element.children().length).toBe(0);
   }));
 
+  it('should destroy the previous leave animation if a new one takes place', function() {
+    module(function($provide) {
+      $provide.value('$animate', {
+        enabled : function() { return true; },
+        leave : function() {
+          //DOM operation left blank
+        },
+        enter : function(element, parent) {
+          parent.append(element);
+        }
+      });
+    });
+    inject(function ($compile, $rootScope, $animate) {
+      var item;
+      var $scope = $rootScope.$new();
+      element = $compile(html(
+        '<div>' +
+          '<div ng-if="value">Yo</div>' +
+        '</div>'
+      ))($scope);
+
+      $scope.$apply('value = true');
+
+      var destroyed, inner = element.children(0);
+      inner.on('$destroy', function() {
+        destroyed = true;
+      });
+
+      $scope.$apply('value = false');
+
+      $scope.$apply('value = true');
+
+      $scope.$apply('value = false');
+
+      expect(destroyed).toBe(true);
+    });
+  });
+
 });
