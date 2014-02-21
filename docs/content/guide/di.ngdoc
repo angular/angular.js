@@ -50,7 +50,7 @@ code that constructs `SomeClass`.
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png">
 
 To manage the responsibility of dependency creation, each Angular application has an {@link
-api/angular.injector injector}. The injector is a service locator that is responsible for
+angular.injector injector}. The injector is a service locator that is responsible for
 construction and lookup of dependencies.
 
 Here is an example of using the injector service:
