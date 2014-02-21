@@ -187,8 +187,8 @@ To examine the scope in the debugger:
 ## Scope Events Propagation
 
 Scopes can propagate events in similar fashion to DOM events. The event can be {@link
-api/ng.$rootScope.Scope#methods_$broadcast broadcasted} to the scope children or {@link
-api/ng.$rootScope.Scope#methods_$emit emitted} to scope parents.
+ng.$rootScope.Scope#methods_$broadcast broadcasted} to the scope children or {@link
+ng.$rootScope.Scope#methods_$emit emitted} to scope parents.
 
 <example>
   <file name="script.js">
@@ -230,14 +230,14 @@ more events.
 When the browser calls into JavaScript the code executes outside the Angular execution context,
 which means that Angular is unaware of model modifications. To properly process model
 modifications the execution has to enter the Angular execution context using the {@link
-api/ng.$rootScope.Scope#methods_$apply `$apply`} method. Only model modifications which
+ng.$rootScope.Scope#methods_$apply `$apply`} method. Only model modifications which
 execute inside the `$apply` method will be properly accounted for by Angular. For example if a
 directive listens on DOM events, such as {@link
-api/ng.directive:ngClick `ng-click`} it must evaluate the
+ng.directive:ngClick `ng-click`} it must evaluate the
 expression inside the `$apply` method.
 
 After evaluating the expression, the `$apply` method performs a {@link
-api/ng.$rootScope.Scope#methods_$digest `$digest`}. In the $digest phase the scope examines all
+ng.$rootScope.Scope#methods_$digest `$digest`}. In the $digest phase the scope examines all
 of the `$watch` expressions and compares them with the previous value. This dirty checking is done
 asynchronously. This means that assignment such as `$scope.username="angular"` will not
 immediately cause a `$watch` to be notified, instead the `$watch` notification is delayed until
@@ -255,13 +255,13 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   2. **Watcher registration**
 
      During template linking directives register {@link
-     api/ng.$rootScope.Scope#methods_$watch watches} on the scope. These watches will be
+     ng.$rootScope.Scope#methods_$watch watches} on the scope. These watches will be
      used to propagate model values to the DOM.
 
   3. **Model mutation**
 
      For mutations to be properly observed, you should make them only within the {@link
-     api/ng.$rootScope.Scope#methods_$apply scope.$apply()}. (Angular APIs do this
+     ng.$rootScope.Scope#methods_$apply scope.$apply()}. (Angular APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
      or asynchronous work with {@link ng.$http $http}, {@link ng.$timeout $timeout}
      or {@link ng.$interval $interval} services.
@@ -284,30 +284,30 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
 ### Scopes and Directives
 
 During the compilation phase, the {@link compiler compiler} matches {@link
-api/ng.$compileProvider#methods_directive directives} against the DOM template. The directives
+ng.$compileProvider#methods_directive directives} against the DOM template. The directives
 usually fall into one of two categories:
 
   - Observing {@link ng.$compileProvider#methods_directive directives}, such as
     double-curly expressions `{{expression}}`, register listeners using the {@link
-    api/ng.$rootScope.Scope#methods_$watch $watch()} method. This type of directive needs
+    ng.$rootScope.Scope#methods_$watch $watch()} method. This type of directive needs
     to be notified whenever the expression changes so that it can update the view.
 
   - Listener directives, such as {@link ng.directive:ngClick
     ng-click}, register a listener with the DOM. When the DOM listener fires, the directive
     executes the associated expression and updates the view using the {@link
-    api/ng.$rootScope.Scope#methods_$apply $apply()} method.
+    ng.$rootScope.Scope#methods_$apply $apply()} method.
 
 When an external event (such as a user action, timer or XHR) is received, the associated {@link
 expression expression} must be applied to the scope through the {@link
-api/ng.$rootScope.Scope#methods_$apply $apply()} method so that all listeners are updated
+ng.$rootScope.Scope#methods_$apply $apply()} method so that all listeners are updated
 correctly.
 
 ### Directives that Create Scopes
 
 In most cases, {@link ng.$compileProvider#methods_directive directives} and scopes interact
 but do not create new instances of scope. However, some directives, such as {@link
-api/ng.directive:ngController ng-controller} and {@link
-api/ng.directive:ngRepeat ng-repeat}, create new child scopes
+ng.directive:ngController ng-controller} and {@link
+ng.directive:ngRepeat ng-repeat}, create new child scopes
 and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
 element by using an `angular.element(aDomElement).scope()` method call.
 See the {@link guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive
@@ -318,7 +318,7 @@ directives guide} for more information about isolate scopes.
 Scopes and controllers interact with each other in the following situations:
 
    - Controllers use scopes to expose controller methods to templates (see {@link
-     api/ng.directive:ngController ng-controller}).
+     ng.directive:ngController ng-controller}).
 
    - Controllers define methods (behavior) that can mutate the model (properties on the scope).
 
@@ -357,14 +357,14 @@ directive which is handling the event. An explicit call to $apply is needed only
 implementing custom event callbacks, or when working with third-party library callbacks.
 
   1. Enter Angular execution context by calling {@link guide/scope scope}`.`{@link
-     api/ng.$rootScope.Scope#methods_$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
+     ng.$rootScope.Scope#methods_$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
      the work you wish to do in Angular execution context.
   2. Angular executes the `stimulusFn()`, which typically modifies application state.
   3. Angular enters the {@link ng.$rootScope.Scope#methods_$digest $digest} loop. The
      loop is made up of two smaller loops which process {@link
-     api/ng.$rootScope.Scope#methods_$evalAsync $evalAsync} queue and the {@link
-     api/ng.$rootScope.Scope#methods_$watch $watch} list. The {@link
-     api/ng.$rootScope.Scope#methods_$digest $digest} loop keeps iterating until the model
+     ng.$rootScope.Scope#methods_$evalAsync $evalAsync} queue and the {@link
+     ng.$rootScope.Scope#methods_$watch $watch} list. The {@link
+     ng.$rootScope.Scope#methods_$digest $digest} loop keeps iterating until the model
      stabilizes, which means that the {@link ng.$rootScope.Scope#methods_$evalAsync
      $evalAsync} queue is empty and the {@link ng.$rootScope.Scope#methods_$watch
      $watch} list does not detect any changes.
@@ -386,7 +386,7 @@ user enters text into the text field.
 
   1. During the compilation phase:
      1. the {@link ng.directive:ngModel ng-model} and {@link
-        api/ng.directive:input input} {@link guide/directive
+        ng.directive:input input} {@link guide/directive
         directive} set up a `keydown` listener on the `<input>` control.
      2. the {@link ng.$interpolate &#123;&#123;name&#125;&#125; } interpolation
         sets up a {@link ng.$rootScope.Scope#methods_$watch $watch} to be notified of
@@ -395,7 +395,7 @@ user enters text into the text field.
      1. Pressing an '`X`' key causes the browser to emit a `keydown` event on the input control.
      2. The {@link ng.directive:input input} directive
         captures the change to the input's value and calls {@link
-        api/ng.$rootScope.Scope#methods_$apply $apply}`("name = 'X';")` to update the
+        ng.$rootScope.Scope#methods_$apply $apply}`("name = 'X';")` to update the
         application model inside the Angular execution context.
      3. Angular applies the `name = 'X';` to the model.
      4. The {@link ng.$rootScope.Scope#methods_$digest $digest} loop begins
