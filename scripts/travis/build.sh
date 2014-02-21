@@ -6,9 +6,9 @@ export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
 if [ $JOB = "unit" ]; then
   grunt ci-checks
-  #grunt test:docgen
   grunt test:promises-aplus
   grunt test:unit --browsers SL_Chrome,SL_Safari,SL_Firefox,SL_IE_8,SL_IE_9,SL_IE_10,SL_IE_11 --reporters dots
+  grunt test:docs --browsers SL_Chrome,SL_Safari,SL_Firefox,SL_IE_8,SL_IE_9,SL_IE_10,SL_IE_11 --reporters dots
 elif [ $JOB = "e2e" ]; then
   export GRUNT_TARGET="test:protractor"
   if [ $JQVERSION = "jquery" ]; then
