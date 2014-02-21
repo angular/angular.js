@@ -24,14 +24,14 @@ grunt ci-checks package --no-color
 
 mkdir -p test_out
 
-# DOCS generator unit tests #
-grunt test:docgen --no-color
-
 # UNIT TESTS #
 grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
 grunt test:ci-protractor
+
+# DOCS APP TESTS #
+grunt test:docs --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
 # Promises/A+ TESTS #
 grunt test:promises-aplus --no-color
