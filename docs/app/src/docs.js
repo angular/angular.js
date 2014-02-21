@@ -1,26 +1,4 @@
-angular.module('docsApp', [
-  'ngRoute',
-  'ngCookies',
-  'ngSanitize',
-  'ngAnimate',
-  'versionsData',
-  'pagesData',
-  'directives',
-  'errors',
-  'examples',
-  'search',
-  'tutorials',
-  'versions',
-  'bootstrap',
-  'bootstrapPrettify',
-  'ui.bootstrap.dropdown'
-])
-
-
-.config(function($locationProvider) {
-  $locationProvider.html5Mode(true).hashPrefix('!');
-})
-
+angular.module('DocsController', [])
 
 .controller('DocsController', function($scope, $rootScope, $location, $window, $cookies, NG_PAGES, NG_NAVIGATION, NG_VERSION) {
 
@@ -52,7 +30,8 @@ angular.module('docsApp', [
   };
 
   $scope.afterPartialLoaded = function() {
-    $window._gaq.push(['_trackPageview', $location.path()]);
+    var pagePath = $scope.currentPage ? $scope.currentPage.path : $location.path();
+    $window._gaq.push(['_trackPageview', pagePath]);
   };
 
   /** stores a cookie that is used by apache to decide which manifest ot send */
