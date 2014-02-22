@@ -23,7 +23,7 @@ module.exports = function(grunt) {
     parallel: {
       travis: {
         tasks: [
-          util.parallelTask(['test:unit', 'test:promises-aplus'/*, 'tests:docs'*/], {stream: true}),
+          util.parallelTask(['test:unit', 'test:promises-aplus', 'tests:docs'], {stream: true}),
           util.parallelTask(['test:e2e'])
         ]
       }
@@ -77,7 +77,7 @@ module.exports = function(grunt) {
     tests: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
-      //docs: 'karma-docs.conf.js',
+      docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js'
     },
 
@@ -86,7 +86,7 @@ module.exports = function(grunt) {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
       modules: 'karma-modules.conf.js',
-      //docs: 'karma-docs.conf.js'
+      docs: 'karma-docs.conf.js'
     },
 
 
@@ -217,14 +217,6 @@ module.exports = function(grunt) {
     },
 
 
-    // docs: {
-    //   process: ['build/docs/*.html', 'build/docs/.htaccess']
-    // },
-
-    "jasmine_node": {
-      projectRoot: 'docs/spec'
-    },
-
     "ddescribe-iit": {
       files: [
         'test/**/*.js',
@@ -286,11 +278,11 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'package','test:unit','test:promises-aplus'/*, 'tests:docs'*/, 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
-  grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package'/*, 'tests:docs'*/]);
+  grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
   grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
   grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
