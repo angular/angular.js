@@ -109,10 +109,10 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @function
        * @description Inserts the element into the DOM either after the `after` element or within
        *   the `parent` element. Once complete, the done() callback will be fired (if provided).
-       * @param {jQuery/jqLite element} element the element which will be inserted into the DOM
-       * @param {jQuery/jqLite element} parent the parent element which will append the element as
+       * @param {DOMElement} element the element which will be inserted into the DOM
+       * @param {DOMElement} parent the parent element which will append the element as
        *   a child (if the after element is not present)
-       * @param {jQuery/jqLite element} after the sibling element which will append the element
+       * @param {DOMElement} after the sibling element which will append the element
        *   after itself
        * @param {function=} done callback function that will be called after the element has been
        *   inserted into the DOM
@@ -136,7 +136,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @function
        * @description Removes the element from the DOM. Once complete, the done() callback will be
        *   fired (if provided).
-       * @param {jQuery/jqLite element} element the element which will be removed from the DOM
+       * @param {DOMElement} element the element which will be removed from the DOM
        * @param {function=} done callback function that will be called after the element has been
        *   removed from the DOM
        */
@@ -154,11 +154,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * either after the `after` element or inside of the `parent` element. Once complete, the
        * done() callback will be fired (if provided).
        *
-       * @param {jQuery/jqLite element} element the element which will be moved around within the
+       * @param {DOMElement} element the element which will be moved around within the
        *   DOM
-       * @param {jQuery/jqLite element} parent the parent element where the element will be
+       * @param {DOMElement} parent the parent element where the element will be
        *   inserted into (if the after element is not present)
-       * @param {jQuery/jqLite element} after the sibling element where the element will be
+       * @param {DOMElement} after the sibling element where the element will be
        *   positioned next to
        * @param {function=} done the callback function (if provided) that will be fired after the
        *   element has been moved to its new position
@@ -176,7 +176,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @function
        * @description Adds the provided className CSS class value to the provided element. Once
        * complete, the done() callback will be fired (if provided).
-       * @param {jQuery/jqLite element} element the element which will have the className value
+       * @param {DOMElement} element the element which will have the className value
        *   added to it
        * @param {string} className the CSS class which will be added to the element
        * @param {function=} done the callback function (if provided) that will be fired after the
@@ -199,7 +199,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @function
        * @description Removes the provided className CSS class value from the provided element.
        * Once complete, the done() callback will be fired (if provided).
-       * @param {jQuery/jqLite element} element the element which will have the className value
+       * @param {DOMElement} element the element which will have the className value
        *   removed from it
        * @param {string} className the CSS class which will be removed from the element
        * @param {function=} done the callback function (if provided) that will be fired after the
@@ -222,7 +222,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @function
        * @description Adds and/or removes the given CSS classes to and from the element.
        * Once complete, the done() callback will be fired (if provided).
-       * @param {jQuery/jqLite element} element the element which will it's CSS classes changed
+       * @param {DOMElement} element the element which will it's CSS classes changed
        *   removed from it
        * @param {string} add the CSS classes which will be added to the element
        * @param {string} remove the CSS class which will be removed from the element
