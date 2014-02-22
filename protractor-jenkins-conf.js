@@ -26,7 +26,7 @@ exports.config = {
 
     require('jasmine-reporters');
     jasmine.getEnv().addReporter(
-      new jasmine.JUnitXmlReporter('test_out/e2e-' + this.capabilities.browserName + '-', true, true));
+      new jasmine.JUnitXmlReporter('test_out/e2e-' + exports.config.capabilities.browserName + '-', true, true));
   },
 
   jasmineNodeOpts: {
