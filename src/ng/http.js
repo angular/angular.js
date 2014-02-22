@@ -135,7 +135,8 @@ function $HttpProvider() {
   this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
       function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
 
-    var defaultCache = $cacheFactory('$http');
+    // In case the cache is already defined with some options, try to get it first
+    var defaultCache = $cacheFactory.get('$http') || $cacheFactory('$http');
 
     /**
      * Interceptors stored in reverse order. Inner interceptors before outer interceptors.

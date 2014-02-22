@@ -26,6 +26,7 @@
  * @param {object=} options Options object that specifies the cache behavior. Properties:
  *
  *   - `{number=}` `capacity` — turns the cache into LRU cache.
+ *   - `{number=}` `maxAge` — sets a max age in milliseconds valid for each key individually.
  *
  * @returns {object} Newly created cache object with the following set of methods:
  *
@@ -53,6 +54,8 @@ function $CacheFactoryProvider() {
           data = {},
           capacity = (options && options.capacity) || Number.MAX_VALUE,
           lruHash = {},
+          timestamps = {},
+          maxAge = (options && options.maxAge) || null,
           freshEnd = null,
           staleEnd = null;
 
@@ -67,6 +70,8 @@ function $CacheFactoryProvider() {
           if (!(key in data)) size++;
           data[key] = value;
 
+          timestamps[key] = new Date().getTime();
+
           if (size > capacity) {
             this.remove(staleEnd.key);
           }
@@ -79,6 +84,11 @@ function $CacheFactoryProvider() {
           var lruEntry = lruHash[key];
 
           if (!lruEntry) return;
+
+          if (maxAge && timestamps[key] + maxAge < new Date().getTime()) {
+            this.remove(key);
+            return;
+          }
 
           refresh(lruEntry);
 
