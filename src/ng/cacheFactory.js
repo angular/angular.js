@@ -26,6 +26,9 @@
  * @param {object=} options Options object that specifies the cache behavior. Properties:
  *
  *   - `{number=}` `capacity` — turns the cache into LRU cache.
+ *   - `{number=}` `timeToLive` — number of milliseconds after which cached
+ *     objects should be invalidated. Cached objects are invalidated on
+ *     `get({string} key)`, `put({string} key, {*} value)` and `info()`.
  *
  * @returns {object} Newly created cache object with the following set of methods:
  *
@@ -40,6 +43,77 @@
  */
 function $CacheFactoryProvider() {
 
+  /*
+   * A simple linked list implementation which is used to keep track of
+   * entry access (for LRU) and entry age (for TTL).
+   */
+  function LinkedList() {
+    var hash = {};
+    var freshEnd = null;
+    var staleEnd = null;
+
+
+    /**
+     * bidirectionally links two entries of the LRU linked list
+     */
+    function link(nextEntry, prevEntry) {
+      if (nextEntry != prevEntry) {
+        if (nextEntry) nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
+        if (prevEntry) prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
+      }
+    }
+
+
+    this.add = function(key) {
+      var entry = hash[key] || (hash[key] = { key: key });
+      this.moveToHead(entry);
+      return entry;
+    };
+
+
+    this.get = function(key) {
+      return hash[key];
+    };
+
+
+    this.getTail = function() {
+      return staleEnd;
+    };
+
+
+    /**
+     * makes the `entry` the freshEnd of the linked list
+     */
+    this.moveToHead = function(entry) {
+      if (entry != freshEnd) {
+        if (!staleEnd) {
+          staleEnd = entry;
+        } else if (staleEnd == entry) {
+          staleEnd = entry.n;
+        }
+
+        link(entry.n, entry.p);
+        link(entry, freshEnd);
+        freshEnd = entry;
+        freshEnd.n = null;
+      }
+    };
+
+
+    this.remove = function(entry) {
+      if (entry == freshEnd) freshEnd = entry.p;
+      if (entry == staleEnd) staleEnd = entry.n;
+      link(entry.n,entry.p);
+      delete hash[entry.key];
+    };
+
+
+    this.removeAll = function() {
+      hash = {};
+      freshEnd = staleEnd = null;
+    };
+  }
+
   this.$get = function() {
     var caches = {};
 
@@ -52,23 +126,26 @@ function $CacheFactoryProvider() {
           stats = extend({}, options, {id: cacheId}),
           data = {},
           capacity = (options && options.capacity) || Number.MAX_VALUE,
-          lruHash = {},
-          freshEnd = null,
-          staleEnd = null;
+          timeToLive = (options && options.timeToLive) || Number.MAX_VALUE,
+          lruList = new LinkedList(),
+          ttlList = new LinkedList();
 
-      return caches[cacheId] = {
+      var cache = caches[cacheId] = {
 
         put: function(key, value) {
-          var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
+          removeExpiredEntries();
 
-          refresh(lruEntry);
+          var lruEntry = lruList.add(key);
+          var ttlEntry = ttlList.add(key);
+          
+          ttlEntry.expiration = new Date().getTime() + timeToLive;
 
           if (isUndefined(value)) return;
           if (!(key in data)) size++;
           data[key] = value;
 
           if (size > capacity) {
-            this.remove(staleEnd.key);
+            this.remove(lruList.getTail().key);
           }
 
           return value;
@@ -76,26 +153,28 @@ function $CacheFactoryProvider() {
 
 
         get: function(key) {
-          var lruEntry = lruHash[key];
+          removeExpiredEntries();
+
+          var lruEntry = lruList.get(key);
+          var ttlEntry = ttlList.get(key);
 
           if (!lruEntry) return;
 
-          refresh(lruEntry);
+          lruList.moveToHead(lruEntry);
 
           return data[key];
         },
 
 
         remove: function(key) {
-          var lruEntry = lruHash[key];
+          var lruEntry = lruList.get(key);
+          var ttlEntry = ttlList.get(key);
 
           if (!lruEntry) return;
 
-          if (lruEntry == freshEnd) freshEnd = lruEntry.p;
-          if (lruEntry == staleEnd) staleEnd = lruEntry.n;
-          link(lruEntry.n,lruEntry.p);
+          lruList.remove(lruEntry);
+          ttlList.remove(ttlEntry);
 
-          delete lruHash[key];
           delete data[key];
           size--;
         },
@@ -104,53 +183,43 @@ function $CacheFactoryProvider() {
         removeAll: function() {
           data = {};
           size = 0;
-          lruHash = {};
-          freshEnd = staleEnd = null;
+          lruList.removeAll();
+          ttlList.removeAll();
         },
 
 
         destroy: function() {
           data = null;
           stats = null;
-          lruHash = null;
+          lruList = null;
+          ttlList = null;
           delete caches[cacheId];
         },
 
 
         info: function() {
+          removeExpiredEntries();
           return extend({}, stats, {size: size});
         }
       };
 
-
-      /**
-       * makes the `entry` the freshEnd of the LRU linked list
+      /*
+       * Scans the TTL linked list for stale items and removes
+       * those through `remove({string} key)`.
+       *
+       * The TTL linked list always keeps the oldest entries at its tail so
+       * that this operation is cheap.
        */
-      function refresh(entry) {
-        if (entry != freshEnd) {
-          if (!staleEnd) {
-            staleEnd = entry;
-          } else if (staleEnd == entry) {
-            staleEnd = entry.n;
-          }
-
-          link(entry.n, entry.p);
-          link(entry, freshEnd);
-          freshEnd = entry;
-          freshEnd.n = null;
+      function removeExpiredEntries() {
+        var now = new Date().getTime();
+        var tail = ttlList.getTail();
+        while (tail && tail.expiration < now) {
+          cache.remove(tail.key);
+          tail = ttlList.getTail();
         }
       }
 
-
-      /**
-       * bidirectionally links two entries of the LRU linked list
-       */
-      function link(nextEntry, prevEntry) {
-        if (nextEntry != prevEntry) {
-          if (nextEntry) nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
-          if (prevEntry) prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
-        }
-      }
+      return cache;
     }
 
 

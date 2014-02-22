@@ -325,4 +325,164 @@ describe('$cacheFactory', function() {
       }));
     });
   });
+
+
+  describe('Timed cache', function() {
+    var cache;
+    var spy;
+
+    function setTime(time) {
+      spy.andReturn(time);
+    }
+
+    beforeEach(inject(function($cacheFactory) {
+      spy = spyOn(Date.prototype, 'getTime');
+      setTime(0);
+      cache = $cacheFactory('timedCache', {
+        timeToLive: 100
+      });
+    }));
+
+
+    it('should evict expired item', function($cacheFactory) {
+      cache.put('id0', 0);
+
+      setTime(50);
+      expect(cache.get('id0')).toBe(0);
+      expect(cache.info().size).toBe(1);
+
+      setTime(101);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.info().size).toBe(0);
+    });
+
+
+    it('should refresh an entry on put', function() {
+      cache.put('id0', 0);
+
+      setTime(100);
+      cache.put('id0', 0);
+      setTime(150);
+      expect(cache.get('id0')).toBe(0);
+
+      setTime(201);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.info().size).toBe(0);
+    });
+
+
+    it('should clear the entire cache', function() {
+      cache.put('id0', 0);
+      setTime(50);
+      cache.put('id1', 1);
+      expect(cache.get('id0')).toBe(0);
+      expect(cache.get('id1')).toBe(1);
+
+      cache.removeAll();
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBeUndefined();
+      expect(cache.info().size).toBe(0);
+    });
+
+
+    it('should time evict only the necessary ones', function() {
+      cache.put('id0', 0);
+      setTime(25);
+      cache.put('id1', 1);
+      setTime(50);
+      cache.put('id2', 2);
+
+      expect(cache.get('id0')).toBe(0);
+      expect(cache.get('id1')).toBe(1);
+      expect(cache.get('id2')).toBe(2);
+      expect(cache.info().size).toBe(3);
+
+      setTime(101);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBe(1);
+      expect(cache.get('id2')).toBe(2);
+      expect(cache.info().size).toBe(2);
+
+      setTime(126);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBeUndefined();
+      expect(cache.get('id2')).toBe(2);
+      expect(cache.info().size).toBe(1);
+
+      setTime(151);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBeUndefined();
+      expect(cache.get('id2')).toBeUndefined();
+      expect(cache.info().size).toBe(0);
+    });
+
+
+    it('should work in combination with a capacity', inject(function($cacheFactory) {
+      cache = $cacheFactory('timedCapacityCache', {
+        capacity: 2,
+        timeToLive: 100
+      });
+
+      cache.put('id0', 0);
+      setTime(25);
+      cache.put('id1', 1);
+      setTime(50);
+      cache.put('id2', 2);
+
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBe(1);
+      expect(cache.get('id2')).toBe(2);
+      expect(cache.info().size).toBe(2);
+
+      cache.get('id1'); // lru refresh
+      setTime(75);
+      cache.put('id3', 3);
+
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBe(1);
+      expect(cache.get('id2')).toBeUndefined();
+      expect(cache.get('id3')).toBe(3);
+      expect(cache.info().size).toBe(2);
+
+      setTime(126);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBeUndefined();
+      expect(cache.get('id2')).toBeUndefined();
+      expect(cache.get('id3')).toBe(3);
+      expect(cache.info().size).toBe(1);
+
+      setTime(176);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBeUndefined();
+      expect(cache.get('id2')).toBeUndefined();
+      expect(cache.get('id3')).toBeUndefined();
+      expect(cache.info().size).toBe(0);
+    }));
+
+
+    it('should expire multiple entries', function() {
+      cache.put('id0', 0);
+      setTime(25);
+      cache.put('id1', 1);
+      setTime(50);
+      cache.put('id2', 2);
+      setTime(76);
+      cache.put('id3', 3);
+
+      setTime(100);
+      expect(cache.get('id0')).toBe(0);
+      expect(cache.info().size).toBe(4);
+      setTime(101);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.info().size).toBe(3);
+
+      setTime(126);
+      expect(cache.info().size).toBe(2);
+      expect(cache.get('id0')).toBeUndefined();
+      expect(cache.get('id1')).toBeUndefined();
+      expect(cache.get('id2')).toBe(2);
+      expect(cache.get('id3')).toBe(3);
+      expect(cache.info().size).toBe(2);
+    });
+  });
 });
