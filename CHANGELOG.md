@@ -142,7 +142,7 @@ app. This is no longer possible within a single module.
 
 
 - **ngModelOptions:** due to [adfc322b](https://github.com/angular/angular.js/commit/adfc322b04a58158fb9697e5b99aab9ca63c80bb),
- 
+
 
 This commit changes the API on `NgModelController`, both semantically and
 in terms of adding and renaming methods.
@@ -914,26 +914,30 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 ## Breaking Changes
 
 - **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
-       it is now necessary to separately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
+  it is now necessary to seperately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
 
-    To migrate your code, follow the example below:
+  To migrate your code, follow the example below:
 
-    Before:
+  Before:
 
-        // Will apply to POST, PUT and PATCH methods
-        $httpProvider.defaults.headers.post = {
-            "X-MY-CSRF-HEADER": "..."
-        };
+  ```
+  // Will apply to POST, PUT and PATCH methods
+  $httpProvider.defaults.headers.post = {
+    "X-MY-CSRF-HEADER": "..."
+  };
+  ```
 
-    After:
+  After:
 
-        // POST, PUT and PATCH default headers must be specified separately,
-        // as they do not share data.
-        $httpProvider.defaults.headers.post =
-            $httpProvider.defaults.headers.put =
-            $httpProviders.defaults.headers.patch = {
-                "X-MY-CSRF-HEADER": "..."
-            };
+  ```
+  // POST, PUT and PATCH default headers must be specified seperately,
+  // as they do not share data.
+  $httpProvider.defaults.headers.post =
+    $httpProvider.defaults.headers.put =
+    $httpProviders.defaults.headers.patch = {
+      "X-MY-CSRF-HEADER": "..."
+    };
+  ```
 
 <a name="1.2.8"></a>
 # 1.2.8 interdimensional-cartography (2014-01-10)
