@@ -528,7 +528,7 @@ angular.module('ngResource', ['ng']).
                 if (action.arrayDecorate) {
                   for (var i in data) {
                     if (data.hasOwnProperty(i)
-                      && !angular.isNumber(i)
+                      && !/^[0-9]+$/.test(i)
                     ) {
                       value[i] = data[i];
                     }
@@ -554,7 +554,7 @@ angular.module('ngResource', ['ng']).
               var promise = value.$promise;
               for (var i in response.data) {
                 if (response.data.hasOwnProperty(i)
-                  && !angular.isNumber(i)
+                  && !/^[0-9]+$/.test(i)
                 ) {
                   value[i] = response.data[i];
                 }

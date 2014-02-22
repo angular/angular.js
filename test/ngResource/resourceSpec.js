@@ -1272,8 +1272,9 @@ describe('resource', function() {
     $httpBackend.flush();
 
     // Should have array and metadata
-    expect(models[0]).toBe(result[0]);
-    expect(models[1]).toBe(result[1]);
+    expect(models.length).toBe(2);
+    expect(models[0].thing).toEqual(result[0].thing);
+    expect(models[1].thing).toEqual(result[1].thing);
     expect(models.meta).toBe('data');
   });
 
