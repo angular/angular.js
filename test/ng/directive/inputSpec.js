@@ -447,6 +447,17 @@ describe('input', function() {
   });
 
 
+  it('should bind to a getter/setter function', function() {
+    compileInput('<input type="text" ng-model="name($value)" name="alias" ng-change="change()" />');
+
+    scope.$apply(function() {
+      scope.name = function() { return 'sean'; };
+    });
+
+    expect(inputElm.val()).toBe('sean');
+  });
+
+
   it('should not set readonly or disabled property on ie7', function() {
     this.addMatchers({
       toBeOff: function(attributeName) {
@@ -475,6 +486,15 @@ describe('input', function() {
 
     changeInputValueTo('adam');
     expect(scope.name).toEqual('adam');
+  });
+
+
+  it('should call setter functions on "blur" event', function() {
+    scope.name = jasmine.createSpy('name');
+    compileInput('<input type="text" ng-model="name($value)" name="alias" ng-change="change()" />');
+
+    changeInputValueTo('sean');
+    expect(scope.name).toHaveBeenCalledWith('sean');
   });
 
   if (!(msie < 9)) {

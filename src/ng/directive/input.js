@@ -1001,6 +1001,50 @@ var VALID_CLASS = 'ng-valid',
     </file>
  * </example>
  *
+ * ## Getter/Setter Function Example
+ *
+ * A getter/setter function can also be used as a model by calling the function with
+ * `$value` in the argument list in your expression. This assumes that calling the
+ * function will act as a getter when called without arguments, and a setter when
+ * called with arguments. See {@link $parse $parse} for more details.
+ *
+ * <example name="NgModelControllerFunction" module="getterSetterFunction">
+    <file name="script.js">
+      angular.module('getterSetterFunction', []).
+        controller('NameCtrl', function($scope) {
+          var name = 'Change me!';
+          $scope.name = function(newName) {
+            if (newName === undefined) {
+              return name;
+            } else {
+              name = newName;
+            }
+          };
+        });
+    </file>
+    <file name="index.html">
+      <div ng-controller="NameCtrl">
+        <form name="myForm">
+          <input type="text" ng-model="name($value)" />
+        </form>
+        <p class="name">
+          {{ name() }}
+        </p>
+      </div>
+    </file>
+    <file name="protractor.js" type="protractor">
+      it('should bind the name function', function() {
+        var input = element(by.css('input'));
+        var binding = element(by.css('.name'));
+        var content = 'Change me!';
+
+        input.clear();
+        input.sendKeys('New name');
+
+        expect(binding.getText()).toEqual('New name');
+      });
+    </file>
+ * </example>
  *
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
@@ -1217,7 +1261,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * @description
  * The `ngModel` directive binds an `input`,`select`, `textarea` (or custom form control) to a
  * property on the scope using {@link ngModel.NgModelController NgModelController},
- * which is created and exposed by this directive.
+ * which is created and exposed by this directive. A getter/setter function can also be used for
+ * the model. See {@link $parse $parse} for details.
  *
  * `ngModel` is responsible for:
  *

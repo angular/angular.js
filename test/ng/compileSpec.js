@@ -2597,6 +2597,29 @@ describe('$compile', function() {
         expect(componentScope.ref).toBe('hello misko');
       }));
 
+
+      it('should allow binding to getter/setter functions', inject(function() {
+        var rootName;
+        $rootScope.name = function(newName) {
+          if (newName == null) {
+            return rootName;
+          } else {
+            rootName = newName;
+          }
+        };
+        compile('<div><span my-component ref="name($value)">');
+
+        rootName = 'sean';
+        $rootScope.$apply();
+
+        expect(componentScope.ref).toBe('sean');
+
+        componentScope.ref = 'jim'
+        $rootScope.$apply()
+
+        expect(rootName).toBe('jim');
+      }));
+
       // regression
       it('should stabilize model', inject(function() {
         compile('<div><span my-component reference="name">');
