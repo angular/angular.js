@@ -125,9 +125,9 @@ To run the end-to-end test, open one of the following in a new browser tab:
 * casual reader: http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html
 
 Previously we've seen how Karma can be used to execute unit tests. Well, it can also run the
-end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike
+end-to-end tests! Use `./scripts/e2e-test.sh` (if you are on Windows, run `scripts\e2e-test.bat`) script for that. End-to-end tests are slow, so unlike
 with unit tests, Karma will exit after the test run and will not automatically rerun the test
-suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
+suite on every file change. To rerun the test suite, execute the `e2e-test.sh` or `e2e-test.bat` script again.
 
 Note: You must ensure you've installed the karma-ng-scenario framework plugin prior to running the
 `e2e-test.sh` script. You can do this by issuing `npm install` into your terminal.
