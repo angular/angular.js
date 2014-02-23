@@ -1439,6 +1439,32 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
     $httpBackend.verifyNoOutstandingExpectation();
   };
 
+  /**
+   * @ngdoc method
+   * @name $httpBackend#flushByIndex
+   * @description
+   * Flushes any number of pending requests starting at the given index using the trained responses.
+   *
+   * @param {number=} index The index of the first response to flush, where 0 corresponds to the
+   *   earliest submitted request. If there is no pending request at the given index when this
+   *   method is called, an exception as thrown.
+   * @param {number=} count Number of responses to flush (in the order they arrived). If undefined,
+   *   only one pending request will be flushed. If there are no pending requests when the flush
+   *   method is called an exception is thrown (as this typically a sign of programming error).
+   */
+  $httpBackend.flushByIndex = function(index, count) {
+    $rootScope.$digest();
+    if (!responses.length) throw new Error('No pending request to flush !');
+    if (!angular.isDefined(index)) throw new Error('Requires an index.');
+    if (!angular.isDefined(count)) count = 1;
+
+    while(count--) {
+      if (index >= responses.length) throw new Error('No more pending request to flush !');
+      responses.splice(index, 1)[0]();
+    }
+
+    $httpBackend.verifyNoOutstandingExpectation();
+  };
 
   /**
    * @ngdoc method

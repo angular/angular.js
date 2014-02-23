@@ -1266,6 +1266,52 @@ describe('ngMock', function() {
       });
     });
 
+    describe('flushByIndex()', function() {
+      it('should flush given number of pending requests, starting at a given index', function() {
+        var callback2 = jasmine.createSpy('callback2');
+        var callback3 = jasmine.createSpy('callback3');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback2);
+        hb('GET', '/some', null, callback3);
+
+        hb.flushByIndex(1, 2);
+        expect(callback).not.toHaveBeenCalled();
+        expect(callback2).toHaveBeenCalled();
+        expect(callback3).toHaveBeenCalled();
+      });
+
+
+      it('should throw exception when flushing more requests than pending', function() {
+        hb.when('GET').respond(200, '');
+        hb('GET', '/url', null, callback);
+
+        expect(function() {hb.flushByIndex(0, 3);}).toThrow('No more pending request to flush !');
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should throw exception when no request to flush', function() {
+        expect(function() {hb.flushByIndex(0);}).toThrow('No pending request to flush !');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, callback);
+        hb.flushByIndex(0);
+
+        expect(function() {hb.flushByIndex(0);}).toThrow('No pending request to flush !');
+      });
+
+
+      it('should throw exception if not all expectations satisfied', function() {
+        hb.expect('GET', '/url1').respond();
+        hb.expect('GET', '/url2').respond();
+
+        hb('GET', '/url1', null, angular.noop);
+        expect(function() {hb.flushByIndex(0);}).toThrow('Unsatisfied requests: GET /url2');
+      });
+    });
+
 
     it('should abort requests when timeout promise resolves', function() {
       hb.expect('GET', '/url1').respond(200);
