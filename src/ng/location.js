@@ -268,6 +268,16 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
       return appBaseNoFile;
     }
   };
+
+  this.$$compose = function() {
+    var search = toKeyValue(this.$$search),
+        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+
+    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    // include hashPrefix in $$absUrl when $$url is empty so IE8 & 9 do not reload page because of removal of '#'
+    this.$$absUrl = appBase + hashPrefix + this.$$url;
+  };
+
 }
 
 
@@ -640,6 +650,38 @@ function $LocationProvider(){
         // SVGAnimatedString.animVal should be identical to SVGAnimatedString.baseVal, unless during
         // an animation.
         absHref = urlResolve(absHref.animVal).href;
+      }
+
+      // Make relative links work in HTML5 mode for legacy browsers (or at least IE8 & 9)
+      // The href should be a regular url e.g. /link/somewhere or link/somewhere or ../somewhere or somewhere#anchor or http://example.com/somewhere
+      if (LocationMode === LocationHashbangInHtml5Url) {
+        // get the actual href attribute - see http://msdn.microsoft.com/en-us/library/ie/dd347148(v=vs.85).aspx
+        // TODO check browser is in standards mode
+        var href = elm[0].getAttribute('href');
+
+        if (href.indexOf('://' == -1)) {         // Ignore absolute URLs
+          if (href[0] == '/') {
+            // absolute path - replace old path
+            absHref = serverBase(absHref) + href;
+          } else if (href[0] == '#') {
+            // local anchor
+            absHref = serverBase(absHref) + $location.path() + href;
+          } else {
+            // relative path - join with current path
+            var stack = $location.path().split("/"),
+              parts = href.split("/");
+            stack.pop(); // remove top file
+            for (var i=0; i<parts.length; i++) {
+              if (parts[i] == ".")
+                continue;
+              else if (parts[i] == "..")
+                stack.pop();
+              else
+                stack.push(parts[i]);
+            }
+            absHref = serverBase(absHref) + stack.join("/");
+          }
+        }
       }
 
       var rewrittenUrl = $location.$$rewrite(absHref);
