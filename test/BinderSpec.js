@@ -195,8 +195,10 @@ describe('Binder', function() {
     module(function($exceptionHandlerProvider){
       $exceptionHandlerProvider.mode('log');
     });
-    inject(function($rootScope, $exceptionHandler, $compile) {
+    inject(function($rootScope, $exceptionHandler, $compile, $log) {
       $compile('<div attr="before {{error.throw()}} after"></div>', null, true)($rootScope);
+      expect($log.warn.logs.pop()).toMatch(/\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./);
+      expect($log.warn.logs).toEqual([]);
       var errorLogs = $exceptionHandler.errors;
       var count = 0;
 

@@ -617,11 +617,13 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureResult.toLowerCase()).toEqual('some <b>value</b>');
       });
 
-      it('should select binding in template by name', function() {
+      it('should select binding in template by name', inject(function($log) {
         compile('<pre ng-bind-template="foo {{foo.bar}} baz"></pre>', 'bar');
+        expect($log.warn.logs.pop()).toMatch(/\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./);
+        expect($log.warn.logs).toEqual([]);
         $root.dsl.binding('foo.bar');
         expect($root.futureResult).toEqual('bar');
-      });
+      }));
 
       it('should match bindings by substring match', function() {
         compile('<pre ng-bind="foo.bar | filter"></pre>', 'binding value');

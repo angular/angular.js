@@ -90,10 +90,12 @@ describe('Scope', function() {
     }));
 
 
-    it('should watch and fire on expression change', inject(function($rootScope) {
+    it('should watch and fire on expression change', inject(function($rootScope, $log) {
       var spy = jasmine.createSpy();
       $rootScope.$watch('name.first', spy);
       $rootScope.$digest();
+      expect($log.warn.logs.pop()).toMatch(/\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./);
+      expect($log.warn.logs).toEqual([]);
       spy.reset();
 
       $rootScope.name = {};

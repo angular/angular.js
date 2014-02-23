@@ -3039,10 +3039,13 @@ describe('$compile', function() {
           };
         });
       });
-      inject(function($templateCache, $compile, $rootScope) {
+      inject(function($templateCache, $compile, $rootScope, $log) {
         $templateCache.put('main.html', '<span>template:{{mainCtrl.name}} <div ng-transclude></div></span>');
         element = $compile('<div main>transclude:{{mainCtrl.name}}</div>')($rootScope);
         $rootScope.$apply();
+        expect($log.warn.logs.pop()).toMatch(/\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./);
+        expect($log.warn.logs.pop()).toMatch(/\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./);
+        expect($log.warn.logs).toEqual([]);
         expect(element.text()).toBe('template:lucas transclude:');
       });
     });
