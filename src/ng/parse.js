@@ -748,9 +748,11 @@ Parser.prototype = {
   },
 
   functionCall: function(fn, contextGetter) {
-    var argsFn = [];
+    var argsFn = [],
+        isAssignable = false;
     if (this.peekToken().text !== ')') {
       do {
+        isAssignable = isAssignable || this.peek().text == '$value';
         argsFn.push(this.expression());
       } while (this.expect(','));
     }
@@ -758,7 +760,7 @@ Parser.prototype = {
 
     var parser = this;
 
-    return function(scope, locals) {
+    var getterFn = function(scope, locals) {
       var args = [];
       var context = contextGetter ? contextGetter(scope, locals) : scope;
 
@@ -777,6 +779,16 @@ Parser.prototype = {
 
       return ensureSafeObject(v, parser.text);
     };
+
+    if (isAssignable) {
+      return extend(getterFn, {
+        assign: function(scope, value, locals) {
+          getterFn(scope, extend(locals || {}, { $value: value }));
+        }
+      });
+    } else {
+      return getterFn;
+    }
   },
 
   // This is used with json array declaration
@@ -1103,6 +1115,28 @@ function getterFn(path, options, fullExp) {
  *   expect(getter(context, locals)).toEqual('local');
  * ```
  *
+ * A getter/setter function can also be used as an assignable expression when
+ * the function is called with `$value` as its argument.  This assumes that the
+ * function will act as a getter when called without arguments, and a setter
+ * when called with arguments.
+ *
+ * ```js
+ *   var name = 'angular';
+ *   var nameFn = function(newName) {
+ *     if (newName === undefined) {
+ *       return name;
+ *     } else {
+ *       name = newName;
+ *     }
+ *   };
+ *   var getter = $parse('name($value)');
+ *   var setter = getter.assign;
+ *   var context = {name:nameFn};
+ *
+ *   expect(getter(context)).toEqual('angular');
+ *   setter(context, 'newValue');
+ *   expect(name).toEqual('newValue');
+ * ```
  *
  * @param {string} expression String expression to compile.
  * @returns {function(context, locals)} a function which represents the compiled expression:

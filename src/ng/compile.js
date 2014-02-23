@@ -155,7 +155,9 @@
  *   value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
  *   in `localModel` and any changes in `localModel` will reflect in `parentModel`. If the parent
  *   scope property doesn't exist, it will throw a NON_ASSIGNABLE_MODEL_EXPRESSION exception. You
- *   can avoid this behavior using `=?` or `=?attr` in order to flag the property as optional.
+ *   can avoid this behavior using `=?` or `=?attr` in order to flag the property as optional. A
+ *   getter/setter function can also be used for this binding, given an expression such as
+ *   `<widget my-attr="parentModel($value)">`. See {@link $parse $parse} for details.
  *
  * * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope.
  *   If no `attr` name is specified then the attribute name is assumed to be the same as the

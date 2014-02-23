@@ -947,6 +947,29 @@ describe('parser', function() {
             fn.assign(scope, 123);
             expect(scope).toEqual({a:123});
           }));
+
+
+          it('should allow assignment via a setter function', inject(function($parse) {
+            var fn = $parse('a($value)');
+            expect(fn.assign).toBeTruthy();
+            var scope = jasmine.createSpyObj('scope', ['a']);
+            fn.assign(scope, 123);
+            expect(scope.a).toHaveBeenCalledWith(123);
+          }));
+
+
+          it('does not expose assignment for functions called without `$value`',
+          inject(function($parse) {
+            var fn = $parse('a()');
+            expect(fn.assign).toBeFalsy();
+          }));
+
+
+          it('does not expose assignment when `$value` is passed earlier in the call chain',
+          inject(function($parse) {
+            var fn = $parse('a($value).b()');
+            expect(fn.assign).toBeFalsy();
+          }));
         });
 
 
