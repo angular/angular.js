@@ -1063,16 +1063,21 @@ angular.module('ngAnimate', ['ng'])
       var closingTimestamp = 0;
       var animationElementQueue = [];
       function animationCloseHandler(element, totalTime) {
+        var node = extractElementNode(element);
+        element = angular.element(node);
+
+        //this item will be garbage collected by the closing
+        //animation timeout
+        animationElementQueue.push(element);
+
+        //but it may not need to cancel out the existing timeout
+        //if the timestamp is less than the previous one
         var futureTimestamp = Date.now() + (totalTime * 1000);
         if(futureTimestamp <= closingTimestamp) {
           return;
         }
 
         $timeout.cancel(closingTimer);
-
-        var node = extractElementNode(element);
-        element = angular.element(node);
-        animationElementQueue.push(element);
 
         closingTimestamp = futureTimestamp;
         closingTimer = $timeout(function() {
