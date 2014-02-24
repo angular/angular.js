@@ -1656,6 +1656,34 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
   return $delegate;
 };
 
+angular.mock.$RAFDecorator = function($delegate) {
+  var queue = [];
+  var rafFn = function(fn) {
+    var index = queue.length;
+    queue.push(fn);
+    return function() {
+      queue.splice(index, 1);
+    };
+  };
+
+  rafFn.supported = $delegate.supported;
+
+  rafFn.flush = function() {
+    if(queue.length === 0) {
+      throw new Error('No rAF callbacks present');
+    }
+
+    var length = queue.length;
+    for(var i=0;i<length;i++) {
+      queue[i]();
+    }
+
+    queue = [];
+  };
+
+  return rafFn;
+};
+
 /**
  *
  */
@@ -1689,6 +1717,7 @@ angular.module('ngMock', ['ng']).provider({
   $rootElement: angular.mock.$RootElementProvider
 }).config(['$provide', function($provide) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
+  $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
 }]);
 
 /**
