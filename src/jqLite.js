@@ -166,9 +166,9 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
         }
       }
     }
-    if(name === 'remove'){
-      var elementsDetached = jQuery(this);
-      if(elementsDetached){
+    if(dispatchThis){
+      var elementsDetached = param ? jQuery(this).filter(param) : jQuery(this);
+      if(elementsDetached.length){
         elementsDetached.triggerHandler('$detach', elementsDetached);
       }
     }
@@ -184,8 +184,21 @@ function jqLitePatchJQueryInsert(name){
 
   function insertPatch() {
     // jshint -W040
-    var elementsAttached = jQuery(arguments[0]),
-      originalResult = originalJqFn.apply(this, arguments);
+    var elementsAttached,
+        arg = arguments[0];
+    if(typeof arg === "function"){
+      elementsAttached = jQuery();
+      var res,
+          self = this;
+      this.each(function(index){
+        res = arg.call(this, index, self.html());
+        elementsAttached = elementsAttached.add(res);
+      });
+    }
+    else{
+      elementsAttached = jQuery(arg);
+    }
+    var originalResult = originalJqFn.apply(this, arguments);
     if(elementsAttached){
       elementsAttached.triggerHandler('$attach', elementsAttached);
     }
