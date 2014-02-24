@@ -443,6 +443,14 @@ angular.module('ngResource', ['ng']).
         return response.resource;
       }
 
+      function defaultRequestInterceptor(httpConfig) {
+        return httpConfig || $q.when(httpConfig);
+      }
+
+      function defaultRequestErrorInterceptor(response) {
+        return $q.reject(response);
+      }
+
       function Resource(value){
         shallowClearAndCopy(value || {}, this);
       }
@@ -493,6 +501,10 @@ angular.module('ngResource', ['ng']).
           var isInstanceCall = this instanceof Resource;
           var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
           var httpConfig = {};
+          var requestInterceptor = action.interceptor && action.interceptor.request ||
+                                   defaultRequestInterceptor;
+          var requestErrorInterceptor = action.interceptor && action.interceptor.requestError ||
+                                        defaultRequestErrorInterceptor;
           var responseInterceptor = action.interceptor && action.interceptor.response ||
                                     defaultResponseInterceptor;
           var responseErrorInterceptor = action.interceptor && action.interceptor.responseError ||
@@ -508,6 +520,8 @@ angular.module('ngResource', ['ng']).
           route.setUrlParams(httpConfig,
                              extend({}, extractParams(data, action.params || {}), params),
                              action.url);
+
+          httpConfig = requestInterceptor(httpConfig);
 
           var promise = $http(httpConfig).then(function(response) {
             var data = response.data,
@@ -543,7 +557,7 @@ angular.module('ngResource', ['ng']).
 
             (error||noop)(response);
 
-            return $q.reject(response);
+            return requestErrorInterceptor(response);
           });
 
           promise = promise.then(
