@@ -946,7 +946,7 @@ forEach({
        }
      }
     }
- 
+
     // jQuery 'detach' method calls jQuery 'remvove' method with additional parameter
     // this casues that the jqLitePatchJQueryRemove that patches jQuery remove triggers $destroy events as well
     // the following function mimics this behaviour
