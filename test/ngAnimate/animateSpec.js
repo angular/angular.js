@@ -1181,6 +1181,49 @@ describe("ngAnimate", function() {
             expect(element.hasClass('some-class-add-active')).toBe(false);
           }));
 
+          it("should intelligently cancel former timeouts and close off a series of elements a final timeout", function() {
+            var cancellations = 0;
+            module(function($provide) {
+              $provide.decorator('$timeout', function($delegate) {
+                var _cancel = $delegate.cancel;
+                $delegate.cancel = function() {
+                  cancellations++;
+                  return _cancel.apply($delegate, arguments);
+                };
+                return $delegate;
+              });
+            })
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
+              if (!$sniffer.transitions) return;
+
+              ss.addRule('.animate-me', '-webkit-transition:1s linear all;' +
+                                                      'transition:1s linear all;');
+
+              element = $compile(html('<div><div class="animate-me" ng-repeat="item in items"></div></div>'))($rootScope);
+
+              $rootScope.items = [1,2,3,4,5,6,7,8,9,10];
+              var totalOperations = $rootScope.items.length;
+
+              $rootScope.$digest();
+
+              $rootScope.items = [0];
+              $animate.triggerReflow();
+              $timeout.flush(1500);
+
+              expect(cancellations).toBeLessThan(totalOperations);
+              expect(element.children().length).toBe(10);
+              cancellations = 0;
+
+              $rootScope.items = [1];
+              $rootScope.$digest();
+
+              $animate.triggerReflow();
+              $timeout.flush(1500);
+              expect(element.children().length).toBe(1);
+              expect(cancellations).toBeLessThan(totalOperations);
+            });
+          });
+
           it("apply a closing timeout with respect to a staggering animation",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
