@@ -218,9 +218,9 @@ is relative to this parent as it animates transitions.
 
 With this in place, let's add the CSS for this transition animation to our `animations.css` file:
 
-__`app/css/animations.css`.__
+__`app/css/animations.css`__
 
-```css
+<pre>
 .view-container {
   position: relative;
 }
@@ -249,34 +249,34 @@ __`app/css/animations.css`.__
   z-index:99;
 }
 
-@keyframes fade-in {
+&#64;keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@-moz-keyframes fade-in {
+&#64;-moz-keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@-webkit-keyframes fade-in {
+&#64;-webkit-keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes fade-out {
+&#64;keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
-@-moz-keyframes fade-out {
+&#64;-moz-keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
-@-webkit-keyframes fade-out {
+&#64;-webkit-keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
 
 /* don't forget about the vendor-prefixes! */
-```
+</pre>
 
 Nothing crazy here! Just a simple fade in and fade out effect between pages. The only out of the ordinary thing
 here is that we're using absolute positioning to position the next page (identified via `ng-enter`) on top of the
