@@ -1259,7 +1259,15 @@ describe("ngAnimate", function() {
             }
 
             //(stagger * index) + (duration + delay) * 150%
-            $timeout.flush(9500); //0.5 * 4 + 5 * 1.5 = 9500;
+            //0.5 * 4 + 5 * 1.5 = 9500;
+            //9500 - 7500 = 2000
+            $timeout.flush(1999); //remove 1999 more
+
+            for(var i = 0; i < 5; i++) {
+              expect(kids[i].hasClass('ng-enter-active')).toBe(true);
+            }
+
+            $timeout.flush(1); //up to 2000ms
 
             for(var i = 0; i < 5; i++) {
               expect(kids[i].hasClass('ng-enter-active')).toBe(false);
