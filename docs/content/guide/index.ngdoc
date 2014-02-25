@@ -84,7 +84,7 @@ This is a short list of libraries with specific support and documentation for wo
 
 ### Server-Specific
 
-* **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html)
+* **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html), [Getting Started with Django Rest Framework and AngularJS](http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html)
 * **FireBase:** [AngularFire](http://angularfire.com/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
 * **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/resources/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
 * **Hood.ie:** [60 Minutes to Awesome](http://www.roberthorvick.com/2013/06/30/todomvc-angularjs-hood-ie-60-minutes-to-awesome/)
