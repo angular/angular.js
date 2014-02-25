@@ -777,6 +777,89 @@ describe('Scope', function() {
     });
   });
 
+  describe('$watchGroup', function() {
+    var scope;
+    beforeEach(inject(function($rootScope) {
+      scope = $rootScope.$new();
+    }));
+
+
+    it('should treat set of 1 as direct watch', function() {
+      var lastValues = ['foo'];
+      var log = '';
+      var clean = scope.$watchGroup(['a'], function(values, oldValues, s) {
+        log += values.join(',') + ';';
+        expect(s).toBe(scope);
+        expect(oldValues).toEqual(lastValues);
+        lastValues = values.slice();
+      });
+
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('foo;');
+
+      scope.$digest();
+      expect(log).toEqual('foo;');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo;bar;');
+
+      clean();
+      scope.a = 'xxx';
+      scope.$digest();
+      expect(log).toEqual('foo;bar;');
+    });
+
+
+    it('should detect a change to any one in a set', function() {
+      var lastValues = ['foo', 'bar'];
+      var log = '';
+
+      scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
+        log += values.join(',') + ';';
+        expect(s).toBe(scope);
+        expect(oldValues).toEqual(lastValues);
+        lastValues = values.slice();
+      });
+
+      scope.a = 'foo';
+      scope.b = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo,bar;');
+
+      log = '';
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'a';
+      scope.$digest();
+      expect(log).toEqual('a,bar;');
+
+      log = '';
+      scope.a = 'A';
+      scope.b = 'B';
+      scope.$digest();
+      expect(log).toEqual('A,B;');
+    });
+
+
+    it('should not call watch action fn when watchGroup was deregistered', function() {
+      var lastValues = ['foo', 'bar'];
+      var log = '';
+      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
+        log += values.join(',') + ';';
+        expect(s).toBe(scope);
+        expect(oldValues).toEqual(lastValues);
+        lastValues = values.slice();
+      });
+
+      deregister();
+      scope.a = 'xxx';
+      scope.$digest();
+      expect(log).toEqual('');
+    });
+  });
 
   describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
