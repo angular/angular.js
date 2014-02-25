@@ -733,6 +733,76 @@ describe('Scope', function() {
     });
   });
 
+  describe('$watchSet', function() {
+    var scope;
+    beforeEach(inject(function($rootScope) {
+      scope = $rootScope.$new();
+    }));
+
+    it('should skip empty sets', function() {
+      expect(scope.$watchSet([], null)()).toBeUndefined();
+    });
+
+    it('should treat set of 1 as direct watch', function() {
+      var lastValues = ['foo'];
+      var log = '';
+      var clean = scope.$watchSet(['a'], function(values, oldValues, s) {
+        log += values.join(',') + ';';
+        expect(s).toBe(scope);
+        expect(oldValues).toEqual(lastValues);
+        lastValues = values.slice();
+      });
+
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('foo;');
+
+      scope.$digest();
+      expect(log).toEqual('foo;');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo;bar;');
+
+      clean();
+      scope.a = 'xxx';
+      scope.$digest();
+      expect(log).toEqual('foo;bar;');
+    });
+
+    it('should detect a change to any one in a set', function() {
+      var lastValues = ['foo', 'bar'];
+      var log = '';
+      var clean = scope.$watchSet(['a', 'b'], function(values, oldValues, s) {
+        log += values.join(',') + ';';
+        expect(s).toBe(scope);
+        expect(oldValues).toEqual(lastValues);
+        lastValues = values.slice();
+      });
+
+      scope.a = 'foo';
+      scope.b = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo,bar;');
+
+      scope.$digest();
+      expect(log).toEqual('foo,bar;');
+
+      scope.a = 'a';
+      scope.$digest();
+      expect(log).toEqual('foo,bar;a,bar;');
+
+      scope.a = 'A';
+      scope.b = 'B';
+      scope.$digest();
+      expect(log).toEqual('foo,bar;a,bar;A,B;');
+
+      clean();
+      scope.a = 'xxx';
+      scope.$digest();
+      expect(log).toEqual('foo,bar;a,bar;A,B;');
+    });
+  });
 
   describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
