@@ -380,7 +380,7 @@ describe("ngAnimate", function() {
           expect(child.attr('class')).toContain('ng-enter');
           expect(child.attr('class')).toContain('ng-enter-active');
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           //move
           element.append(after);
@@ -391,7 +391,7 @@ describe("ngAnimate", function() {
           expect(child.attr('class')).toContain('ng-move');
           expect(child.attr('class')).toContain('ng-move-active');
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           //hide
           $animate.addClass(child, 'ng-hide');
@@ -537,7 +537,7 @@ describe("ngAnimate", function() {
             $animate.triggerReflow();
             browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(completed).toBe(true);
         }));
@@ -782,7 +782,7 @@ describe("ngAnimate", function() {
 
             $animate.enabled(true);
 
-            ss.addRule('.real-animation.ng-enter, .real-animation.ng-leave, .real-animation-fake.ng-enter, .real-animation-fake.ng-leave',
+            ss.addRule('.real-animation.ng-enter, .real-animation.ng-leave',
               '-webkit-animation:1s my_animation;' +
               'animation:1s my_animation;');
 
@@ -817,6 +817,9 @@ describe("ngAnimate", function() {
             expect(elements[3].attr('style')).toMatch(/animation-delay: 0\.3\d*s/);
             expect(elements[4].attr('style')).toMatch(/animation-delay: 0\.4\d*s/);
 
+            //final closing timeout
+            $timeout.flush();
+
             for(var i = 0; i < 5; i++) {
               dealoc(elements[i]);
               var newScope = $rootScope.$new();
@@ -826,13 +829,9 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-            var expectFailure = true;
-            try {
-              $animate.triggerReflow();
-              expectFailure = false;
-            } catch(e) {}
 
-            expect(expectFailure).toBe(true);
+            //this means no animations were triggered
+            $timeout.verifyNoPendingTasks();
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).not.toMatch(/animation-delay: 0\.1\d*s/);
@@ -1117,14 +1116,7 @@ describe("ngAnimate", function() {
             };
 
             $rootScope.$digest();
-
-            var expectFailure = true;
-            try {
-              $animate.triggerReflow();
-              expectFailure = false;
-            } catch(e) {}
-
-            expect(expectFailure).toBe(true);
+            $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toBeFalsy();
             expect(elements[1].attr('style')).not.toMatch(/transition-delay: 0\.1\d*s/);
@@ -1337,7 +1329,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('ng-enter')).toBe(true);
             expect(element.hasClass('ng-enter-active')).toBe(true);
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22 });
-            $timeout.flush();
+            $animate.triggerCallbacks();
           }
           expect(element.hasClass('abc')).toBe(true);
 
@@ -1351,7 +1343,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('ng-enter')).toBe(true);
             expect(element.hasClass('ng-enter-active')).toBe(true);
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 11000, elapsedTime: 11 });
-            $timeout.flush();
+            $animate.triggerCallbacks();
           }
           expect(element.hasClass('xyz')).toBe(true);
         }));
@@ -1426,7 +1418,7 @@ describe("ngAnimate", function() {
           });
           $rootScope.$digest();
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(flag).toBe(true);
         }));
@@ -1446,7 +1438,7 @@ describe("ngAnimate", function() {
           });
           $rootScope.$digest();
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(flag).toBe(true);
         }));
@@ -1467,7 +1459,7 @@ describe("ngAnimate", function() {
           });
           $rootScope.$digest();
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(flag).toBe(true);
           expect(element.parent().id).toBe(parent2.id);
@@ -1493,7 +1485,7 @@ describe("ngAnimate", function() {
             signature += 'B';
           });
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(signature).toBe('AB');
         }));
@@ -1529,17 +1521,19 @@ describe("ngAnimate", function() {
             steps.push(['done', 'klass', 'addClass']);
           });
 
-          $timeout.flush(1);
+          $animate.triggerCallbacks();
 
           expect(steps.pop()).toEqual(['before', 'klass', 'addClass']);
 
           $animate.triggerReflow();
-          $timeout.flush(1);
+
+          $animate.triggerCallbacks();
 
           expect(steps.pop()).toEqual(['after', 'klass', 'addClass']);
 
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
-          $timeout.flush(1);
+
+          $animate.triggerCallbacks();
 
           expect(steps.shift()).toEqual(['close', 'klass', 'addClass']);
 
@@ -1568,7 +1562,7 @@ describe("ngAnimate", function() {
           $animate.enter(element, parent);
           $rootScope.$digest();
 
-          $timeout.flush(1);
+          $animate.triggerCallbacks();
 
           expect(steps.shift()).toEqual(['before', 'ng-enter', 'enter']);
           expect(steps.shift()).toEqual(['after',  'ng-enter', 'enter']);
@@ -1602,7 +1596,7 @@ describe("ngAnimate", function() {
             flag = true;
           });
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(flag).toBe(true);
         }));
 
@@ -1629,7 +1623,7 @@ describe("ngAnimate", function() {
             $animate.triggerReflow();
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(flag).toBe(true);
         }));
 
@@ -1648,7 +1642,7 @@ describe("ngAnimate", function() {
             flag = true;
           });
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(flag).toBe(true);
         }));
 
@@ -1677,8 +1671,9 @@ describe("ngAnimate", function() {
           $animate.addClass(element, 'ng-hide'); //earlier animation cancelled
           if($sniffer.transitions) {
             $animate.triggerReflow();
+            browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 9 });
           }
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(signature).toBe('AB');
         }));
       });
@@ -1707,7 +1702,7 @@ describe("ngAnimate", function() {
 
         it("should not perform an animation, and the followup DOM operation, if the class is " +
            "already present during addClass or not present during removeClass on the element",
-          inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout) {
+          inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout, $browser) {
 
           var element = jqLite('<div class="klassy"></div>');
           $rootElement.append(element);
@@ -1781,7 +1776,7 @@ describe("ngAnimate", function() {
             signature += 'B';
           });
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(element.hasClass('klass')).toBe(false);
           expect(signature).toBe('AB');
         }));
@@ -1813,7 +1808,8 @@ describe("ngAnimate", function() {
             expect(element.hasClass('klass-add-active')).toBe(true);
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3 });
           }
-          $timeout.flush();
+
+          $animate.triggerCallbacks();
 
           //this cancels out the older animation
           $animate.removeClass(element,'klass', function() {
@@ -1830,7 +1826,8 @@ describe("ngAnimate", function() {
 
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3 });
           }
-          $timeout.flush();
+
+          $animate.triggerCallbacks();
 
           expect(element.hasClass('klass')).toBe(false);
           expect(signature).toBe('12');
@@ -1863,6 +1860,7 @@ describe("ngAnimate", function() {
 
           expect(element.hasClass('klassy')).toBe(false);
 
+          $animate.triggerCallbacks();
           expect(signature).toBe('XY');
         }));
 
@@ -1895,7 +1893,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('klass-add-active')).toBe(false);
           }
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(element.hasClass('klass')).toBe(true);
 
           $animate.removeClass(element,'klass', function() {
@@ -1911,7 +1909,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('klass-remove-active')).toBe(false);
           }
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
           expect(element.hasClass('klass')).toBe(false);
 
           expect(signature).toBe('db');
@@ -1951,7 +1949,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('two-add-active')).toBe(false);
           }
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(element.hasClass('one')).toBe(true);
           expect(element.hasClass('two')).toBe(true);
@@ -1997,7 +1995,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('two-remove-active')).toBe(false);
           }
 
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(element.hasClass('one')).toBe(false);
           expect(element.hasClass('two')).toBe(false);
@@ -2159,7 +2157,7 @@ describe("ngAnimate", function() {
         child.addClass('usurper');
         $animate.leave(child);
         $rootScope.$digest();
-        $timeout.flush();
+        $animate.triggerCallbacks();
 
         expect(child.hasClass('ng-enter')).toBe(false);
         expect(child.hasClass('ng-enter-active')).toBe(false);
@@ -2213,10 +2211,10 @@ describe("ngAnimate", function() {
   //    if($sniffer.transitions) {
   //      expect(element.hasClass('on')).toBe(false);
   //      expect(element.hasClass('on-add')).toBe(true);
-  //      $timeout.flush();
+  //      $animate.triggerCallbacks();
   //    }
   //
-  //    $timeout.flush();
+  //    $animate.triggerCallbacks();
   //
   //    expect(element.hasClass('on')).toBe(true);
   //    expect(element.hasClass('on-add')).toBe(false);
@@ -2229,7 +2227,7 @@ describe("ngAnimate", function() {
   //      $timeout.flush(10000);
   //    }
   //
-  //    $timeout.flush();
+  //    $animate.triggerCallbacks();
   //    expect(element.hasClass('on')).toBe(false);
   //    expect(element.hasClass('on-remove')).toBe(false);
   //    expect(element.hasClass('on-remove-active')).toBe(false);
@@ -2272,11 +2270,11 @@ describe("ngAnimate", function() {
   //
   //      if($sniffer.transitions) {
   //        expect(element).toBeShown(); //still showing
-  //        $timeout.flush();
+  //        $animate.triggerCallbacks();
   //        expect(element).toBeShown();
   //        $timeout.flush(5555);
   //      }
-  //      $timeout.flush();
+  //      $animate.triggerCallbacks();
   //      expect(element).toBeHidden();
   //
   //      expect(element.hasClass('showing')).toBe(false);
@@ -2285,11 +2283,11 @@ describe("ngAnimate", function() {
   //
   //      if($sniffer.transitions) {
   //        expect(element).toBeHidden();
-  //        $timeout.flush();
+  //        $animate.triggerCallbacks();
   //        expect(element).toBeHidden();
   //        $timeout.flush(5580);
   //      }
-  //      $timeout.flush();
+  //      $animate.triggerCallbacks();
   //      expect(element).toBeShown();
   //
   //      expect(element.hasClass('showing')).toBe(true);
@@ -2484,7 +2482,7 @@ describe("ngAnimate", function() {
         expect(animationState).toBe('enter-cancel');
 
         $rootScope.$digest();
-        $timeout.flush();
+        $animate.triggerCallbacks();
 
         $animate.addClass(child, 'something');
         if($sniffer.transitions) {
@@ -2646,16 +2644,16 @@ describe("ngAnimate", function() {
 
         expect(intercepted).toBe('move');
 
-        //flush the enter reflow
-        $timeout.flush();
+        //flush the POST enter callback
+        $animate.triggerCallbacks();
 
         $animate.addClass(child2, 'testing');
         expect(intercepted).toBe('move');
 
         continueAnimation();
 
-        //flush the move reflow
-        $timeout.flush();
+        //flush the POST move callback
+        $animate.triggerCallbacks();
 
         $animate.leave(child2);
         $rootScope.$digest();
@@ -3100,7 +3098,7 @@ describe("ngAnimate", function() {
         forEach(element.children(), function(kid) {
           browserTrigger(kid, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
         });
-        $timeout.flush();
+        $animate.triggerCallbacks();
 
         $rootScope.items = [];
         $rootScope.$digest();
@@ -3141,7 +3139,7 @@ describe("ngAnimate", function() {
         });
 
         $rootScope.$digest();
-        $timeout.flush();
+        $animate.triggerCallbacks();
 
         expect(captures['enter']).toBeUndefined();
         expect(enterDone).toBe(true);
@@ -3152,8 +3150,9 @@ describe("ngAnimate", function() {
         $animate.leave(element, function() {
           leaveDone = true;
         });
+
         $rootScope.$digest();
-        $timeout.flush();
+        $animate.triggerCallbacks();
 
         expect(captures['leave']).toBe(true);
         expect(leaveDone).toBe(true);
@@ -3184,11 +3183,11 @@ describe("ngAnimate", function() {
 
       $animate.triggerReflow();
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
-      $timeout.flush(1);
       expect(ready).toBe(false);
 
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 5 });
-      $timeout.flush(1);
+      $animate.triggerReflow();
+      $animate.triggerCallbacks();
       expect(ready).toBe(true);
 
       ready = false;
@@ -3198,7 +3197,7 @@ describe("ngAnimate", function() {
 
       $animate.triggerReflow();
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
-      $timeout.flush(1);
+      $animate.triggerCallbacks();
       expect(ready).toBe(true);
     }));
 
@@ -3221,7 +3220,7 @@ describe("ngAnimate", function() {
         ready = true;
       });
 
-      $timeout.flush(1);
+      $animate.triggerCallbacks();
       expect(ready).toBe(true);
     }));
 
@@ -3248,14 +3247,42 @@ describe("ngAnimate", function() {
       });
 
       $animate.triggerReflow();
-
-      $timeout.flush(1);
+      $animate.triggerCallbacks();
       expect(signature).toBe('A');
 
       browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2000 });
-      $timeout.flush(1);
+      $animate.triggerCallbacks();
 
       expect(signature).toBe('AB');
     }));
+
+    it('should cancel the previous reflow when new animations are added', function() {
+      var cancelReflowCallback = jasmine.createSpy('callback');
+      module(function($provide) {
+        $provide.value('$$animateReflow', function(fn) {
+          return cancelReflowCallback;
+        });
+      });
+      inject(function($animate, $sniffer, $rootScope, $compile) {
+        if (!$sniffer.transitions) return;
+
+        ss.addRule('.fly', '-webkit-transition:2s linear all;' +
+                                   'transition:2s linear all;');
+
+        $animate.enabled(true);
+
+        var element = $compile('<div class="fly"></div>')($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        expect(cancelReflowCallback).not.toHaveBeenCalled();
+
+        $animate.addClass(element, 'fast');
+        $animate.addClass(element, 'smooth');
+        $animate.triggerReflow();
+
+        expect(cancelReflowCallback).toHaveBeenCalled();
+      });
+    });
   });
 });

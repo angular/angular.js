@@ -81,7 +81,11 @@ var $AnimateProvider = ['$provide', function($provide) {
     return this.$$classNameFilter;
   };
 
-  this.$get = ['$timeout', function($timeout) {
+  this.$get = ['$timeout', '$$asyncCallback', function($timeout, $$asyncCallback) {
+
+    function async(fn) {
+      fn && $$asyncCallback(fn);
+    }
 
     /**
      *
@@ -126,7 +130,7 @@ var $AnimateProvider = ['$provide', function($provide) {
           }
           parent.append(element);
         }
-        done && $timeout(done, 0, false);
+        async(done);
       },
 
       /**
@@ -142,7 +146,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        */
       leave : function(element, done) {
         element.remove();
-        done && $timeout(done, 0, false);
+        async(done);
       },
 
       /**
@@ -189,7 +193,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         forEach(element, function (element) {
           jqLiteAddClass(element, className);
         });
-        done && $timeout(done, 0, false);
+        async(done);
       },
 
       /**
@@ -212,7 +216,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         forEach(element, function (element) {
           jqLiteRemoveClass(element, className);
         });
-        done && $timeout(done, 0, false);
+        async(done);
       },
 
       /**
@@ -234,7 +238,7 @@ var $AnimateProvider = ['$provide', function($provide) {
           jqLiteAddClass(element, add);
           jqLiteRemoveClass(element, remove);
         });
-        done && $timeout(done, 0, false);
+        async(done);
       },
 
       enabled : noop
