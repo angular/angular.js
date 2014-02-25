@@ -87,7 +87,7 @@ Administrator). This is because `grunt package` creates some symbolic links.
 </div>
 
 <div class="alert alert-warning">
-**Note:** If you're using Linux, and npm install fails with the message 
+**Note:** If you're using Linux, and npm install fails with the message
 'Please try running this command again as root/Administrator.', you may need to globally install grunt and bower:
 <ul>
 <li>sudo npm install -g grunt-cli</li>
@@ -131,6 +131,10 @@ made available a local web server based on Node.js.
    ```
    By default, it serves the contents of the AngularJS project directory.
 
+3. To access the locally served docs, visit this URL:
+   ```
+   http://localhost:8000/build/docs/
+   ```
 
 ## Running the Unit Test Suite
 
