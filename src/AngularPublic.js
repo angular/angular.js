@@ -73,7 +73,7 @@
     $TemplateCacheProvider,
     $TimeoutProvider,
     $$RAFProvider,
-    $AsyncCallbackProvider,
+    $$AsyncCallbackProvider,
     $WindowProvider
 */
 
@@ -214,7 +214,8 @@ function publishExternalAPI(angular){
         $templateCache: $TemplateCacheProvider,
         $timeout: $TimeoutProvider,
         $window: $WindowProvider,
-        $$rAF: $$RAFProvider
+        $$rAF: $$RAFProvider,
+        $$asyncCallback : $$AsyncCallbackProvider
       });
     }
   ]);

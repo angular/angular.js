@@ -1684,6 +1684,20 @@ angular.mock.$RAFDecorator = function($delegate) {
   return rafFn;
 };
 
+angular.mock.$AsyncCallbackDecorator = function($delegate) {
+  var callbacks = [];
+  var addFn = function(fn) {
+    callbacks.push(fn);
+  };
+  addFn.flush = function() {
+    angular.forEach(callbacks, function(fn) {
+      fn();
+    });
+    callbacks = [];
+  };
+  return addFn;
+};
+
 /**
  *
  */
@@ -1718,6 +1732,7 @@ angular.module('ngMock', ['ng']).provider({
 }).config(['$provide', function($provide) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
   $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
+  $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
 }]);
 
 /**
