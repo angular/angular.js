@@ -323,6 +323,11 @@ function qFactory(nextTick, exceptionHandler) {
           }, function(error) {
             return handleCallback(error, false);
           });
+        },
+        get: function(key) {
+          return this.then(function(obj) {
+            return obj[key];
+          });
         }
       }
     };
