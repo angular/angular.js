@@ -3418,6 +3418,27 @@ describe("ngAnimate", function() {
       });
     });
 
+    it('should remove all element and comment nodes during leave animation',
+      inject(function($compile, $rootScope) {
+
+      $rootScope.items = [1,2,3,4,5];
+
+      var element = html($compile(
+        '<div>' +
+        '  <div class="animated" ng-repeat-start="item in items">start</div>' +
+        '  <div ng-repeat-end>end</div>' +
+        '</div>'
+      )($rootScope));
+
+      $rootScope.$digest();
+
+      $rootScope.items = [];
+
+      $rootScope.$digest();
+
+      expect(element.children().length).toBe(0);
+    }));
+
     it('should not throw an error when only comment nodes are rendered in the animation',
       inject(function($rootScope, $compile) {
 
