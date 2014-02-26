@@ -41,6 +41,7 @@ var $interpolateMinErr = minErr('$interpolate');
 function $InterpolateProvider() {
   var startSymbol = '{{';
   var endSymbol = '}}';
+  var strictMode = false;
 
   /**
    * @ngdoc method
@@ -57,6 +58,25 @@ function $InterpolateProvider() {
       return this;
     } else {
       return startSymbol;
+    }
+  };
+
+  /**
+   * @ngdoc method
+   * @name $interpolateProvider#strictMode
+   * @description
+   * If strictMode is on, $CompileProvider will NOT denormalize Directives templates:
+   * default symbols '{{' and '}}' will NOT be supported anymore.
+   *
+   * @param {boolean=} true to disable denormalizeTemplate() in $CompileProvider
+   * @returns {boolean|self} true if strict mode is enabled, false otherwise.
+   */
+  this.strictMode = function(value){
+    if (value !== undefined) {
+      strictMode = value;
+      return this;
+    } else {
+      return strictMode;
     }
   };
 
@@ -231,6 +251,21 @@ function $InterpolateProvider() {
     $interpolate.endSymbol = function() {
       return endSymbol;
     };
+
+
+    /**
+     * @ngdoc method
+     * @name $interpolate#strictMode
+     * @description
+     * If strictMode is on, $CompileProvider will NOT denormalize Directives templates:
+     * default symbols '{{' and '}}' will NOT be supported anymore.
+     *
+     * @returns {boolean} true if strict mode is enabled, false otherwise.
+     */
+    $interpolate.strictMode = function() {
+      return strictMode;
+    };
+
 
     return $interpolate;
   }];
