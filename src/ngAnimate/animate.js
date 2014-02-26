@@ -436,8 +436,7 @@ angular.module('ngAnimate', ['ng'])
           cancelChildAnimations(element);
           this.enabled(false, element);
           $rootScope.$$postDigest(function() {
-            element = stripCommentsFromElement(element);
-            performAnimation('leave', 'ng-leave', element, null, null, function() {
+            performAnimation('leave', 'ng-leave', stripCommentsFromElement(element), null, null, function() {
               $delegate.leave(element);
             }, doneCallback);
           });
