@@ -841,6 +841,49 @@ describe("ngAnimate", function() {
           }));
 
 
+          it("should block and unblock keyframe animations when a stagger animation kicks in while skipping the first element",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+
+            if(!$sniffer.animations) return;
+
+            $animate.enabled(true);
+
+            ss.addRule('.blocked-animation.ng-enter',
+              '-webkit-animation:my_animation 1s;' +
+              'animation:my_animation 1s;');
+
+            ss.addRule('.blocked-animation.ng-enter-stagger',
+              '-webkit-animation-delay:0.2s;' +
+              'animation-delay:0.2s;');
+
+            var container = $compile(html('<div></div>'))($rootScope);
+
+            var elements = [];
+            for(var i = 0; i < 4; i++) {
+              var newScope = $rootScope.$new();
+              var element = $compile('<div class="blocked-animation"></div>')(newScope);
+              $animate.enter(element, container);
+              elements.push(element);
+            };
+
+            $rootScope.$digest();
+
+            expect(elements[0].attr('style')).toBeUndefined();
+            expect(elements[1].attr('style')).toMatch(/animation:.*?none/);
+            expect(elements[2].attr('style')).toMatch(/animation:.*?none/);
+            expect(elements[3].attr('style')).toMatch(/animation:.*?none/);
+
+            $animate.triggerReflow();
+
+            expect(elements[0].attr('style')).toBeUndefined();
+            expect(elements[1].attr('style')).not.toMatch(/animation:.*?none/);
+            expect(elements[1].attr('style')).toMatch(/animation-delay: 0.2\d*s/);
+            expect(elements[2].attr('style')).not.toMatch(/animation:.*?none/);
+            expect(elements[2].attr('style')).toMatch(/animation-delay: 0.4\d*s/);
+            expect(elements[3].attr('style')).not.toMatch(/animation:.*?none/);
+            expect(elements[3].attr('style')).toMatch(/animation-delay: 0.6\d*s/);
+          }));
+
           it("should stagger items when multiple animation durations/delays are defined",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
 
@@ -3013,7 +3056,7 @@ describe("ngAnimate", function() {
     }));
 
 
-    it('should block and unblock keyframe animations around the reflow operation',
+    it('should not block keyframe animations around the reflow operation',
       inject(function($rootScope, $compile, $rootElement, $document, $animate, $sniffer, $timeout) {
 
       if (!$sniffer.animations) return;
@@ -3032,15 +3075,19 @@ describe("ngAnimate", function() {
 
       $animate.addClass(element, 'trigger-class');
 
-      expect(node.style[animationKey]).toContain('none');
+      expect(node.style[animationKey]).not.toContain('none');
 
       $animate.triggerReflow();
+
+      expect(node.style[animationKey]).not.toContain('none');
+
+      browserTrigger(element, 'animationend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
 
       expect(node.style[animationKey]).not.toContain('none');
     }));
 
 
-    it('should block and unblock keyframe animations before the followup JS animation occurs', function() {
+    it('should not block keyframe animations at anytime before a followup JS animation occurs', function() {
       module(function($animateProvider) {
         $animateProvider.register('.special', function($sniffer, $window) {
           var prop = $sniffer.vendorPrefix == 'Webkit' ? 'WebkitAnimation' : 'animation';
@@ -3076,8 +3123,8 @@ describe("ngAnimate", function() {
 
         var prop = $sniffer.vendorPrefix == 'Webkit' ? 'WebkitAnimation' : 'animation';
 
-        expect(element[0].style[prop]).toContain('none');
-        expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('0s');
+        expect(element[0].style[prop]).not.toContain('none');
+        expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('1s');
 
         $animate.triggerReflow();
       });
