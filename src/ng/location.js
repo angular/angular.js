@@ -178,11 +178,6 @@ function LocationHashbangUrl(appBase, hashPrefix) {
       throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url,
           hashPrefix);
     }
-
-    if (withoutHashUrl === '' && withoutBaseUrl.charAt(0) === '?') {
-      withoutHashUrl = withoutBaseUrl;
-    }
-
     parseAppUrl(withoutHashUrl, this, appBase);
 
     this.$$path = removeWindowsDriveName(this.$$path, withoutHashUrl, appBase);
@@ -233,14 +228,10 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    */
   this.$$compose = function() {
     var search = toKeyValue(this.$$search),
-        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '',
-        url = '';
+        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
-    if (this.$$url) {
-      url = this.$$path ? hashPrefix + this.$$url : this.$$url;
-    }
-    this.$$absUrl = appBase + url;
+    this.$$absUrl = appBase + (this.$$url ? hashPrefix + this.$$url : '');
   };
 
   this.$$rewrite = function(url) {
