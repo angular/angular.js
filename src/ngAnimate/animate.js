@@ -1252,7 +1252,11 @@ angular.module('ngAnimate', ['ng'])
         if(transitionDuration > 0) {
           blockTransitions(element, className, isCurrentlyAnimating);
         }
-        if(animationDuration > 0) {
+
+        //keyframes don't need to be blocked unless staggered and if a stagger
+        //is present then only the items that are of current index > 0 are blocked (since
+        //the element at index==0 will never have a stagger delay at all).
+        if(animationDuration > 0 && stagger.animationDelay > 0 && stagger.animationDuration === 0) {
           blockKeyframeAnimations(element);
         }
 
