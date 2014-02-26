@@ -325,9 +325,10 @@ function qFactory(nextTick, exceptionHandler) {
           });
         },
         get: function(key) {
-          return this.then(function(obj) {
+          function getKey(obj) {
             return obj[key];
-          });
+          }
+          return this.then(getKey, getKey);
         }
       }
     };
