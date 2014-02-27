@@ -364,6 +364,82 @@ describe("ngAnimate", function() {
         }));
 
 
+        it("should exclusively animate the setClass animation event", function() {
+          var count = 0, fallback = jasmine.createSpy('callback');
+          module(function($animateProvider) {
+            $animateProvider.register('.classify', function() {
+              return {
+                beforeAddClass : fallback,
+                addClass : fallback,
+                beforeRemoveClass : fallback,
+                removeClass : fallback,
+
+                beforeSetClass : function(element, add, remove, done) {
+                  count++;
+                  expect(add).toBe('yes');
+                  expect(remove).toBe('no');
+                  done();
+                },
+                setClass : function(element, add, remove, done) {
+                  count++;
+                  expect(add).toBe('yes');
+                  expect(remove).toBe('no');
+                  done();
+                }
+              };
+            });
+          })
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+            child.attr('class','classify no');
+            $animate.setClass(child, 'yes', 'no');
+
+            expect(child.hasClass('yes')).toBe(true);
+            expect(child.hasClass('no')).toBe(false);
+            expect(count).toBe(2);
+
+            expect(fallback).not.toHaveBeenCalled();
+          });
+        });
+
+
+        it("should delegate down to addClass/removeClass if a setClass animation is not found", function() {
+          var count = 0;
+          module(function($animateProvider) {
+            $animateProvider.register('.classify', function() {
+              return {
+                beforeAddClass : function(element, className, done) {
+                  count++;
+                  expect(className).toBe('yes');
+                  done();
+                },
+                addClass : function(element, className, done) {
+                  count++;
+                  expect(className).toBe('yes');
+                  done();
+                },
+                beforeRemoveClass : function(element, className, done) {
+                  count++;
+                  expect(className).toBe('no');
+                  done();
+                },
+                removeClass : function(element, className, done) {
+                  count++;
+                  expect(className).toBe('no');
+                  done();
+                }
+              };
+            });
+          })
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+            child.attr('class','classify no');
+            $animate.setClass(child, 'yes', 'no');
+
+            expect(child.hasClass('yes')).toBe(true);
+            expect(child.hasClass('no')).toBe(false);
+            expect(count).toBe(4);
+          });
+        });
+
         it("should assign the ng-event className to all animation events when transitions/keyframes are used",
           inject(function($animate, $sniffer, $rootScope, $timeout) {
 
@@ -1582,6 +1658,29 @@ describe("ngAnimate", function() {
           $animate.triggerCallbacks();
 
           expect(signature).toBe('AB');
+        }));
+
+        it("should fire the setClass callback",
+          inject(function($animate, $rootScope, $compile, $sniffer, $rootElement, $timeout) {
+
+          var parent = jqLite('<div><span class="off"></span></div>');
+          var element = parent.find('span');
+          $rootElement.append(parent);
+          body.append($rootElement);
+
+          expect(element.hasClass('on')).toBe(false);
+          expect(element.hasClass('off')).toBe(true);
+
+          var signature = '';
+          $animate.setClass(element, 'on', 'off', function() {
+            signature += 'Z';
+          });
+
+          $animate.triggerCallbacks();
+
+          expect(signature).toBe('Z');
+          expect(element.hasClass('on')).toBe(true);
+          expect(element.hasClass('off')).toBe(false);
         }));
 
         it('should fire DOM callbacks on the element being animated',
