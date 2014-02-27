@@ -32,7 +32,7 @@
 #   * all arguments match to an entry in ARGS_DEF
 #   * all required arguments are present
 #   * all arguments match their regex
-# - Afterwards, every paramter value will be stored in a variable
+# - Afterwards, every parameter value will be stored in a variable
 #   with the name of the parameter in upper case (with dash converted to underscore).
 #
 # Special arguments that are always available:
