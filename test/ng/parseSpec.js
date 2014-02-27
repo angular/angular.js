@@ -1361,7 +1361,7 @@ describe('parser', function() {
             }));
 
 
-            it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
+            it('should evaluate a resolved promise and overwrite the previous set value in the absence of the getter',
                 inject(function($parse) {
               scope.person = promise;
               var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });
