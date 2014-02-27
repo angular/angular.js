@@ -893,7 +893,7 @@ describe('ngRepeat', function() {
     var extra = angular.element('<strong></strong>')[0];
     element[0].insertBefore(extra, ends[2]);
 
-    // move the third block to the begining
+    // move the third block to the beginning
     $rootScope.values.unshift($rootScope.values.pop());
     $rootScope.$digest();
 
