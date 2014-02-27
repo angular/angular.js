@@ -47,12 +47,18 @@ var nullFormCtrl = {
  */
 //asks for $scope to fool the BC controller module
 FormController.$inject = ['$element', '$attrs', '$scope'];
-function FormController(element, attrs) {
+function FormController(element, attrs, scope) {
   var form = this,
-      parentForm = element.parent().controller('form') || nullFormCtrl,
+      parentForm,
       invalidCount = 0, // used to easily determine if we are valid
       errors = form.$error = {},
       controls = [];
+
+  if (isDefined(attrs.parent)) {
+    parentForm = scope.$eval(attrs.parent) || nullFormCtrl;
+  } else {
+    parentForm = element.parent().controller('form') || nullFormCtrl;
+  }
 
   // init state
   form.$name = attrs.name || attrs.ngForm;
@@ -216,7 +222,10 @@ function FormController(element, attrs) {
  *
  * @param {string=} ngForm|name Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.
- *
+ * @param {string=} parent Angular expression that points to a form that will be treated as parent
+ *                         form. If not specified, Angular will traverse up the DOM to locate a
+ *                         parent form by itself. If specified without a value (or if the expression
+ *                         evaluates falsy), the form will not register itself in a parent form.
  */
 
  /**
@@ -281,6 +290,10 @@ function FormController(element, attrs) {
  *
  * @param {string=} name Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.
+ * @param {string=} parent Angular expression that points to a form that will be treated as parent
+ *                         form. If not specified, Angular will traverse up the DOM to locate a
+ *                         parent form by itself. If specified without a value (or if the expression
+ *                         evaluates falsy), the form will not register itself in a parent form.
  *
  * @example
     <example>
@@ -356,12 +369,19 @@ var formDirectiveFactory = function(isNgForm) {
               });
             }
 
-            var parentFormCtrl = formElement.parent().controller('form'),
+            var parentFormCtrl,
                 alias = attr.name || attr.ngForm;
 
             if (alias) {
               setter(scope, alias, controller, alias);
             }
+
+            if (isDefined(attr.parent)) {
+              parentFormCtrl = scope.$eval(attr.parent);
+            } else {
+              parentFormCtrl = formElement.parent().controller('form');
+            }
+
             if (parentFormCtrl) {
               formElement.on('$destroy', function() {
                 parentFormCtrl.$removeControl(controller);
