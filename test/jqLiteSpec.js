@@ -666,6 +666,55 @@ describe('jqLite', function() {
         expect(jqLite(b).hasClass('abc')).toEqual(false);
 
       });
+
+      it('should allow toggling multiple classes without a condition', function () {
+        var selector = jqLite([a, b]);
+        expect(selector.toggleClass('abc cde')).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(true);
+        expect(jqLite(a).hasClass('cde')).toEqual(true);
+        expect(jqLite(b).hasClass('abc')).toEqual(true);
+        expect(jqLite(b).hasClass('cde')).toEqual(true);
+
+        expect(selector.toggleClass('abc cde')).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(false);
+        expect(jqLite(a).hasClass('cde')).toEqual(false);
+        expect(jqLite(b).hasClass('abc')).toEqual(false);
+        expect(jqLite(b).hasClass('cde')).toEqual(false);
+
+        expect(selector.toggleClass('abc')).toEqual(selector);
+        expect(selector.toggleClass('abc cde')).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(false);
+        expect(jqLite(a).hasClass('cde')).toEqual(true);
+        expect(jqLite(b).hasClass('abc')).toEqual(false);
+        expect(jqLite(b).hasClass('cde')).toEqual(true);
+
+        expect(selector.toggleClass('abc cde')).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(true);
+        expect(jqLite(a).hasClass('cde')).toEqual(false);
+        expect(jqLite(b).hasClass('abc')).toEqual(true);
+        expect(jqLite(b).hasClass('cde')).toEqual(false);
+      });
+
+      it('should allow toggling multiple classes with a condition', function () {
+        var selector = jqLite([a, b]);
+        expect(selector.toggleClass('abc cde', true)).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(true);
+        expect(jqLite(a).hasClass('cde')).toEqual(true);
+        expect(jqLite(b).hasClass('abc')).toEqual(true);
+        expect(jqLite(b).hasClass('cde')).toEqual(true);
+
+        expect(selector.toggleClass('abc cde', false)).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(false);
+        expect(jqLite(a).hasClass('cde')).toEqual(false);
+        expect(jqLite(b).hasClass('abc')).toEqual(false);
+        expect(jqLite(b).hasClass('cde')).toEqual(false);
+      });
+
+      it('should not break for null / undefined selectors', function () {
+        var selector = jqLite([a, b]);
+        expect(selector.toggleClass(null)).toEqual(selector);
+        expect(selector.toggleClass(undefined)).toEqual(selector);
+      });
     });
 
 
