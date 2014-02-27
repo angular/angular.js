@@ -123,16 +123,16 @@
             {type:'email', value:'john.smith@example.org'} ];
 
           $scope.greet = function() {
-           alert(this.name);
+           alert($scope.name);
           };
 
           $scope.addContact = function() {
-           this.contacts.push({type:'email', value:'yourname@example.org'});
+           $scope.contacts.push({type:'email', value:'yourname@example.org'});
           };
 
           $scope.removeContact = function(contactToRemove) {
-           var index = this.contacts.indexOf(contactToRemove);
-           this.contacts.splice(index, 1);
+           var index = $scope.contacts.indexOf(contactToRemove);
+           $scope.contacts.splice(index, 1);
           };
 
           $scope.clearContact = function(contact) {
