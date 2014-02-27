@@ -2,6 +2,8 @@
 
 describe('parser', function() {
 
+  var UNDEFINED_WARNING_REGEXP = /\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./;
+
   beforeEach(function() {
     // clear caches
     getterFnCache = {};
@@ -204,6 +206,7 @@ describe('parser', function() {
 
       describe('csp: ' + cspEnabled + ", unwrapPromises: " + unwrapPromisesEnabled, function() {
 
+        var $log;
         var originalSecurityPolicy;
 
 
@@ -220,8 +223,9 @@ describe('parser', function() {
           $parseProvider.unwrapPromises(unwrapPromisesEnabled);
         }));
 
-        beforeEach(inject(function ($rootScope) {
+        beforeEach(inject(function ($rootScope, _$log_) {
           scope = $rootScope;
+          $log = _$log_;
         }));
 
         it('should parse expressions', function() {
@@ -348,6 +352,8 @@ describe('parser', function() {
           expect(scope.$eval("a", scope)).toEqual(123);
           expect(scope.$eval("b.c", scope)).toEqual(456);
           expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
+          expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+          expect($log.warn.logs).toEqual([]);
         });
 
         it('should resolve deeply nested paths (important for CSP mode)', function() {
@@ -379,8 +385,12 @@ describe('parser', function() {
         it('should be forgiving', function() {
           scope.a = {b: 23};
           expect(scope.$eval('b')).toBeUndefined();
+          expect($log.warn.logs).toEqual([]);
           expect(scope.$eval('a.x')).toBeUndefined();
+          expect($log.warn.logs).toEqual([]);
           expect(scope.$eval('a.b.c.d')).toBeUndefined();
+          expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+          expect($log.warn.logs).toEqual([]);
         });
 
         it('should support property names that collide with native object properties', function() {
@@ -965,6 +975,8 @@ describe('parser', function() {
             expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
             expect($parse('a.b.c')({a: null}, {a: {b: {c: 1}}})).toEqual(1);
           }));
 
@@ -1058,11 +1070,15 @@ describe('parser', function() {
           // simpleGetterFn2
           it('should return undefined for properties of `null` constant', inject(function($rootScope) {
             expect($rootScope.$eval('null.a')).toBeUndefined();
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
           }));
 
           it('should return undefined for properties of `null` values', inject(function($rootScope) {
             $rootScope.a = null;
             expect($rootScope.$eval('a.b')).toBeUndefined();
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
           }));
 
           it('should return null for `a.b` where `b` is null', inject(function($rootScope) {
@@ -1079,6 +1095,8 @@ describe('parser', function() {
           it('should return undefined for `a.b.c.d.e` where `d` is null', inject(function($rootScope) {
             $rootScope.a = { b: { c: { d: null } } };
             expect($rootScope.$eval('a.b.c.d.e')).toBeUndefined();
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
           }));
 
           // cspSafeGetter || pathKeys.length > 6
@@ -1090,6 +1108,8 @@ describe('parser', function() {
           it('should return undefined for `a.b.c.d.e.f.g` where `f` is null', inject(function($rootScope) {
             $rootScope.a = { b: { c: { d: { e: { f: null } } } } };
             expect($rootScope.$eval('a.b.c.d.e.f.g')).toBeUndefined();
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
           }));
         });
       });
@@ -1174,7 +1194,9 @@ describe('parser', function() {
         it('should log warnings for deep promises', function() {
           scope.car = {wheel: {disc: promise}};
           scope.$eval('car.wheel.disc.pad');
+          expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
           expect($log.warn.logs.pop()).toMatch(PROMISE_WARNING_REGEXP);
+          expect($log.warn.logs).toEqual([]);
         });
 
 
@@ -1182,6 +1204,7 @@ describe('parser', function() {
           scope.person = promise;
           scope.$eval('person.name = "Bubu"');
           expect($log.warn.logs.pop()).toMatch(PROMISE_WARNING_REGEXP);
+          expect($log.warn.logs).toEqual([]);
         });
 
 
@@ -1297,12 +1320,14 @@ describe('parser', function() {
           describe('assignment into promises', function() {
             // This behavior is analogous to assignments to non-promise values
             // that are lazily set on the scope.
-            it('should evaluate a resolved object promise and set its value', inject(function($parse) {
+            it('should evaluate a resolved object promise and set its value', inject(function($parse, $log) {
               scope.person = promise;
               deferred.resolve({'name': 'Bill Gates'});
 
               var getter = $parse('person.name', { unwrapPromises: true });
               expect(getter(scope)).toBe(undefined);
+              expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+              expect($log.warn.logs).toEqual([]);
 
               scope.$digest();
               expect(getter(scope)).toBe('Bill Gates');
@@ -1326,14 +1351,18 @@ describe('parser', function() {
             }));
 
 
-            it('should evaluate an unresolved promise and set and remember its value', inject(function($parse) {
+            it('should evaluate an unresolved promise and set and remember its value', inject(function($parse, $log) {
               scope.person = promise;
 
               var getter = $parse('person.name', { unwrapPromises: true });
               expect(getter(scope)).toBe(undefined);
+              expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+              expect($log.warn.logs).toEqual([]);
 
               scope.$digest();
               expect(getter(scope)).toBe(undefined);
+              expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+              expect($log.warn.logs).toEqual([]);
 
               getter.assign(scope, 'Bonjour');
               scope.$digest();
@@ -1350,6 +1379,8 @@ describe('parser', function() {
               // Set another property on the person.A.B
               var c2Getter = $parse('person.A.B.C2', { unwrapPromises: true });
               scope.$digest();
+              expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+              expect($log.warn.logs).toEqual([]);
               expect(c2Getter(scope)).toBe(undefined);
               c2Getter.assign(scope, 'c2_value');
               scope.$digest();
@@ -1375,20 +1406,25 @@ describe('parser', function() {
         });
 
         describe('dereferencing', function() {
-          it('should evaluate and dereference properties leading to and from a promise', function() {
+          it('should evaluate and dereference properties leading to and from a promise', inject(function($log) {
             scope.obj = {greeting: promise};
             expect(scope.$eval('obj.greeting')).toBe(undefined);
             expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
 
             scope.$digest();
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
+
             expect(scope.$eval('obj.greeting')).toBe(undefined);
             expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+            expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+            expect($log.warn.logs).toEqual([]);
 
             deferred.resolve({polite: 'Good morning!'});
             scope.$digest();
             expect(scope.$eval('obj.greeting')).toEqual({polite: 'Good morning!'});
             expect(scope.$eval('obj.greeting.polite')).toBe('Good morning!');
-          });
+          }));
 
           it('should evaluate and dereference properties leading to and from a promise via bracket ' +
               'notation', function() {

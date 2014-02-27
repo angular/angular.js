@@ -1,6 +1,7 @@
 'use strict';
 
 var $parseMinErr = minErr('$parse');
+var log;
 var promiseWarningCache = {};
 var promiseWarning;
 
@@ -313,7 +314,7 @@ Lexer.prototype = {
     } else {
       var getter = getterFn(ident, this.options, this.text);
       token.fn = extend(function(self, locals) {
-        return (getter(self, locals));
+        return (getter(self, locals, log));
       }, {
         assign: function(self, value) {
           return setter(self, ident, value, parser.text, parser.options);
@@ -707,7 +708,7 @@ Parser.prototype = {
     var getter = getterFn(field, this.options, this.text);
 
     return extend(function(scope, locals, self) {
-      return getter(self || object(scope, locals));
+      return getter(self || object(scope, locals, log));
     }, {
       assign: function(scope, value, locals) {
         return setter(object(scope, locals), field, value, parser.text, parser.options);
@@ -884,6 +885,17 @@ function setter(obj, path, setValue, fullExp, options) {
 var getterFnCache = {};
 
 /**
+ * Logs a warning when a key cannot be resolved in an expression because the parent object is undefined.
+ * @param key
+ * @param fullExp
+ * @returns {undefined}
+ */
+function logAndReturnUndefined(key, fullExp){
+  log.warn('[$parse] Key `' + key + '` cannot be resolved in expression `' + fullExp + '` because parent object is null.');
+  return undefined;
+}
+
+/**
  * Implementation of the "Black Hole" variant from:
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
@@ -901,21 +913,32 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
 
           if (pathVal == null) return pathVal;
           pathVal = pathVal[key0];
+          if (pathVal == null) {
+            return logAndReturnUndefined(key0, fullExp);
+          }
 
           if (!key1) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key1, fullExp);
+          }
           pathVal = pathVal[key1];
 
           if (!key2) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key2, fullExp);
+          }
           pathVal = pathVal[key2];
 
           if (!key3) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key3, fullExp);
+          }
           pathVal = pathVal[key3];
 
           if (!key4) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key4, fullExp);
+          }
           pathVal = pathVal[key4];
 
           return pathVal;
@@ -924,7 +947,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
               promise;
 
-          if (pathVal == null) return pathVal;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key0, fullExp);
+          }
 
           pathVal = pathVal[key0];
           if (pathVal && pathVal.then) {
@@ -938,7 +963,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key1) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key1, fullExp);
+          }
           pathVal = pathVal[key1];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -951,7 +978,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key2) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key2, fullExp);
+          }
           pathVal = pathVal[key2];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -964,7 +993,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key3) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key3, fullExp);
+          }
           pathVal = pathVal[key3];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -977,7 +1008,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key4) return pathVal;
-          if (pathVal == null) return undefined;
+          if (pathVal == null) {
+            return logAndReturnUndefined(key4, fullExp);
+          }
           pathVal = pathVal[key4];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -996,8 +1029,10 @@ function simpleGetterFn1(key0, fullExp) {
   ensureSafeMemberName(key0, fullExp);
 
   return function simpleGetterFn1(scope, locals) {
-    if (scope == null) return undefined;
-    return ((locals && locals.hasOwnProperty(key0)) ? locals : scope)[key0];
+    if (scope == null) {
+      return logAndReturnUndefined(key0, fullExp);
+    }
+    return((locals && locals.hasOwnProperty(key0)) ? locals : scope)[key0];
   };
 }
 
@@ -1006,9 +1041,14 @@ function simpleGetterFn2(key0, key1, fullExp) {
   ensureSafeMemberName(key1, fullExp);
 
   return function simpleGetterFn2(scope, locals) {
-    if (scope == null) return undefined;
-    scope = ((locals && locals.hasOwnProperty(key0)) ? locals : scope)[key0];
-    return scope == null ? undefined : scope[key1];
+    if (scope == null) {
+      return logAndReturnUndefined(key0, fullExp);
+    }
+    var pathVal = ((locals && locals.hasOwnProperty(key0)) ? locals : scope)[key0];
+    if (pathVal == null) {
+      return logAndReturnUndefined(key1, fullExp);
+    }
+    return pathVal[key1];
   };
 }
 
@@ -1051,7 +1091,10 @@ function getterFn(path, options, fullExp) {
     var code = 'var p;\n';
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
-      code += 'if(s == null) return undefined;\n' +
+      code += 'if(s == null) {\n' +
+              ' l.warn("[$parse] Key `' + key + '` cannot be resolved in expression `' + fullExp.replace(/(["\r\n])/g, '\\$1') + '` because parent object is null.");\n' +
+              ' return undefined;\n' +
+              '}\n' +
               's='+ (index
                       // we simply dereference 's' on any .dot notation
                       ? 's'
@@ -1072,11 +1115,11 @@ function getterFn(path, options, fullExp) {
     code += 'return s;';
 
     /* jshint -W054 */
-    var evaledFnGetter = new Function('s', 'k', 'pw', code); // s=scope, k=locals, pw=promiseWarning
+    var evaledFnGetter = new Function('s', 'k', 'l', 'pw', code); // s=scope, k=locals, l=log, pw=promiseWarning
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
     fn = options.unwrapPromises ? function(scope, locals) {
-      return evaledFnGetter(scope, locals, promiseWarning);
+      return evaledFnGetter(scope, locals, log, promiseWarning);
     } : evaledFnGetter;
   }
 
@@ -1233,6 +1276,8 @@ function $ParseProvider() {
 
   this.$get = ['$filter', '$sniffer', '$log', function($filter, $sniffer, $log) {
     $parseOptions.csp = $sniffer.csp;
+
+    log = $log;
 
     promiseWarning = function promiseWarningFn(fullExp) {
       if (!$parseOptions.logPromiseWarnings || promiseWarningCache.hasOwnProperty(fullExp)) return;

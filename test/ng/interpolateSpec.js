@@ -2,6 +2,8 @@
 
 describe('$interpolate', function() {
 
+  var UNDEFINED_WARNING_REGEXP = /\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./;
+
   it('should return a function when there are no bindings and textOnly is undefined',
       inject(function($interpolate) {
     expect(typeof $interpolate('some text')).toBe('function');
@@ -13,11 +15,13 @@ describe('$interpolate', function() {
     expect($interpolate('some text', true)).toBeUndefined();
   }));
 
-  it('should suppress falsy objects', inject(function($interpolate) {
+  it('should suppress falsy objects', inject(function($interpolate, $log) {
     expect($interpolate('{{undefined}}')()).toEqual('');
     expect($interpolate('{{undefined+undefined}}')()).toEqual('');
     expect($interpolate('{{null}}')()).toEqual('');
     expect($interpolate('{{a.b}}')()).toEqual('');
+    expect($log.warn.logs.pop()).toMatch(/\[\$parse\] Key `.+` cannot be resolved in expression `.+` because parent object is null\./);
+    expect($log.warn.logs).toEqual([]);
   }));
 
   it('should jsonify objects', inject(function($interpolate) {
@@ -56,8 +60,10 @@ describe('$interpolate', function() {
   }));
 
 
-  it('should ignore undefined model', inject(function($interpolate) {
+  it('should ignore undefined model', inject(function($interpolate, $log) {
     expect($interpolate("Hello {{'World' + foo}}")()).toEqual('Hello World');
+    expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+    expect($log.warn.logs).toEqual([]);
   }));
 
 
@@ -215,8 +221,10 @@ describe('$interpolate', function() {
             "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
     }));
 
-    it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate) {
+    it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate, $log) {
       expect($interpolate('some/{{id}}')()).toEqual('some/');
+      expect($log.warn.logs.pop()).toMatch(UNDEFINED_WARNING_REGEXP);
+      expect($log.warn.logs).toEqual([]);
       expect($interpolate('some/{{id}}')({id: 1})).toEqual('some/1');
       expect($interpolate('{{foo}}{{bar}}')({foo: 1, bar: 2})).toEqual('12');
     }));
