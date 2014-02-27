@@ -537,10 +537,10 @@ function $SceDelegateProvider() {
  *      being tested (substring matches are not good enough.)
  *    - There are exactly **two wildcard sequences** - `*` and `**`.  All other characters
  *      match themselves.
- *    - `*`: matches zero or more occurances of any character other than one of the following 6
+ *    - `*`: matches zero or more occurrences of any character other than one of the following 6
  *      characters: '`:`', '`/`', '`.`', '`?`', '`&`' and ';'.  It's a useful wildcard for use
  *      in a whitelist.
- *    - `**`: matches zero or more occurances of *any* character.  As such, it's not
+ *    - `**`: matches zero or more occurrences of *any* character.  As such, it's not
  *      not appropriate to use in for a scheme, domain, etc. as it would match too much.  (e.g.
  *      http://**.example.com/ would match http://evil.com/?ignore=.example.com/ and that might
  *      not have been the intention.)  It's usage at the very end of the path is ok.  (e.g.
