@@ -380,6 +380,17 @@ describe("resource", function() {
     inst.$post();
   });
 
+  it('should not call function in action param if overriden', function() {
+    $httpBackend.expect('GET', '/item/123').respond({foo: 'bar'});
+
+    var TypeItem = $resource('/item/:id', {}, {get: {method: 'GET', params: {id: callback}}});
+    var item = TypeItem.get({id: 123}); // overrides params.id
+
+    $httpBackend.flush();
+
+    expect(callback).not.toHaveBeenCalled();
+    expect(item).toEqualData({foo: 'bar'});
+  });
 
   it('should not throw TypeError on null default params', function() {
     $httpBackend.expect('GET', '/Path').respond('{}');
