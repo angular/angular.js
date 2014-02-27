@@ -201,7 +201,7 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 ## Breaking Changes
 
 - **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
-	   it is now necessary to seperately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
+	   it is now necessary to separately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
 		 
 	To migrate your code, follow the example below:
 	
@@ -214,7 +214,7 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 
 	After:
 
-		// POST, PUT and PATCH default headers must be specified seperately,
+		// POST, PUT and PATCH default headers must be specified separately,
 		// as they do not share data.
 		$httpProvider.defaults.headers.post =
 			$httpProvider.defaults.headers.put =
@@ -2364,7 +2364,7 @@ _Note: This release also contains all bug fixes available in [1.0.5](#1.0.5)._
   - **ngClass:** keep track of old ngClass value manually
   ([5f5d4fea](https://github.com/angular/angular.js/commit/5f5d4feadbfa9d8ecc8150041dfd2bca2b2e9fea),
    [#1637](https://github.com/angular/angular.js/issues/1637))
-  - **ngSwitch:** make ngSwitch compatible with controller backwards-compatiblity module
+  - **ngSwitch:** make ngSwitch compatible with controller backwards-compatibility module
   ([9b7c1d0f](https://github.com/angular/angular.js/commit/9b7c1d0f7ce442d4ad2ec587e66d2d335e64fa4e))
 - **Filters:**
   - **date:**  invert timezone sign and always display sign
@@ -3720,7 +3720,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 
 
 ## Bug Fixes:
-- [ng:view]: ignore stale xhr callbacks - fixes issues caused by race-conditions which occured when
+- [ng:view]: ignore stale xhr callbacks - fixes issues caused by race-conditions which occurred when
   user navigated to a new route before the current route finished loading
   (issue [#619](https://github.com/angular/angular.js/issues/619))
 - [ng:form] should always be a block level (css) element
@@ -4037,7 +4037,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 - [jqLite]
   - added `show()`, `hide()` and `eq()` methods to jqlite
     ([commit](https://github.com/angular/angular.js/commit/7a3fdda9650a06792d9278a8cef06d544d49300f))
-- added $defer.cancel to support cancelation of tasks defered via the [$defer] service
+- added $defer.cancel to support cancellation of tasks defered via the [$defer] service
 - [date] filter
   - added support for `full`, `long`, `medium` and `short` date-time format flags
     ([commit](https://github.com/angular/angular.js/commit/3af1e7ca2ee8c2acd69e5bcbb3ffc1bf51239285))
