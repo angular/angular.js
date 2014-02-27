@@ -1459,7 +1459,7 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
-      it('should have seperate opbjects for defaults PUT and POST', function() {
+      it('should have separate opbjects for defaults PUT and POST', function() {
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
         expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
