@@ -1264,8 +1264,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * ## Animation Hooks
  *
  * Animations within models are triggered when any of the associated CSS classes are added and removed
- * on the input element which is attached to the model. These classes are: `.pristine`, `.dirty`,
- * `.invalid` and `.valid` as well as any other validations that are performed on the model itself.
+ * on the input element which is attached to the model. These classes are: `.ng-pristine`, `.ng-dirty`,
+ * `.ng-invalid` and `.ng-valid` as well as any other validations that are performed on the model itself.
  * The animations that are triggered within ngModel are similar to how they work in ngClass and
  * animations can be hooked into using CSS transitions, keyframes as well as JS animations.
  *
