@@ -46,8 +46,8 @@ var nullFormCtrl = {
  *
  */
 //asks for $scope to fool the BC controller module
-FormController.$inject = ['$element', '$attrs', '$scope'];
-function FormController(element, attrs) {
+FormController.$inject = ['$element', '$attrs', '$scope', '$interpolate'];
+function FormController(element, attrs, $scope, $interpolate) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
@@ -55,7 +55,7 @@ function FormController(element, attrs) {
       controls = [];
 
   // init state
-  form.$name = attrs.name || attrs.ngForm;
+  form.$name = $interpolate(attrs.name || attrs.ngForm || '', false)($scope);
   form.$dirty = false;
   form.$pristine = true;
   form.$valid = true;
