@@ -9,13 +9,20 @@ describe('style', function() {
   });
 
 
-  it('should not compile style element', inject(function($compile, $rootScope) {
-    element = jqLite('<style type="text/css">should {{notBound}}</style>');
+  it('should compile style element', inject(function($compile, $rootScope) {
+    element = jqLite('<style type="text/css">.some-container{ width: {{elementWidth}}px; }</style>');
     $compile(element)($rootScope);
     $rootScope.$digest();
 
     // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('should {{notBound}}');
+    expect(trim(element[0].innerHTML)).toBe('.some-container{ width: px; }');
+
+    $rootScope.$apply(function() {
+      $rootScope.elementWidth = 200;
+    });
+
+    // read innerHTML and trim to pass on IE8
+    expect(trim(element[0].innerHTML)).toBe('.some-container{ width: 200px; }');
   }));
 
 
