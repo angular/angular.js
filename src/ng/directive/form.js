@@ -287,10 +287,11 @@ function FormController(element, attrs, $scope, $animate) {
  *
  * ## Animation Hooks
  *
- * Animations in ngForm are triggered when any of the associated CSS classes are added and removed. These
- * classes are: `.pristine`, `.dirty`, `.invalid` and `.valid` as well as any other validations that
- * are performed within the form. Animations in ngForm are similar to how they work in ngClass and
- * animations can be hooked into using CSS transitions, keyframes as well as JS animations.
+ * Animations in ngForm are triggered when any of the associated CSS classes are added and removed.
+ * These classes are: `.ng-pristine`, `.ng-dirty`, `.ng-invalid` and `.ng-valid` as well as any
+ * other validations that are performed within the form. Animations in ngForm are similar to how
+ * they work in ngClass and animations can be hooked into using CSS transitions, keyframes as well
+ * as JS animations.
  *
  * The following example shows a simple way to utilize CSS transitions to style a form element
  * that has been rendered as invalid after it has been validated:
