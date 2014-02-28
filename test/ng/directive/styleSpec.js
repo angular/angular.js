@@ -21,7 +21,7 @@ describe('style', function() {
     // read innerHTML and trim to pass on IE8
     expect(trim(element[0].innerHTML)).toBe(
       '.navigation{font-size:1.5em; h3{font-size:1.5em}}' +
-      '.footer{h3{font-size:em}}' + 
+      '.footer{h3{font-size:em}}' +
       '.header{font-size:1.5em; h3{font-size:}}');
 
     $rootScope.$apply(function() {
