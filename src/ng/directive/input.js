@@ -725,7 +725,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * {@link ng.directive:input input element}.
  *
  * @param {string} ngModel Assignable angular expression to data-bind to.
- * @param {string=} name Property name of the form under which the control is published.
+ * @param {template} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
  * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
  *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -1003,8 +1003,8 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-    function($scope, $exceptionHandler, $attr, $element, $parse) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$interpolate',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $interpolate) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -1014,7 +1014,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
-  this.$name = $attr.name;
+  this.$name = $interpolate($attr.name || '')($scope) || undefined;
 
   var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign;

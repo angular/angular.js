@@ -80,6 +80,18 @@ describe('form', function() {
   });
 
 
+  it('should support a template as an alias', function() {
+    scope.alias = 'foo';
+    doc = $compile(
+      '<div ng-form="myForm">' +
+        '<input type="text" name="{{alias}}" ng-model="value"/>' +
+      '</div>')(scope);
+
+    expect(scope.myForm).toBeDefined();
+    expect(scope.myForm.foo).toBeDefined();
+  });
+
+
   it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
     expect(scope.myForm).toBeTruthy();
