@@ -21,7 +21,7 @@ function $SnifferProvider() {
         android =
           int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
-        document = $document[0] || {},
+        document = $document[0] || window.document || {},
         documentMode = document.documentMode,
         vendorPrefix,
         vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
