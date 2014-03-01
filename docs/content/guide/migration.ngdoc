@@ -48,6 +48,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#underscore-prefixed/suffixed-properties-are-non-bindable Underscore-prefixed/suffixed properties are non-bindable}</li>
   <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
   <li>{@link guide/migration#uncommon-region-specific-local-files-were-removed-from-i18n Uncommon region-specific local files were removed from i18n}</li>
+  <li>{@link guide/migration#services-can-now-return-functions Services can now return functions}</li>
 </ul>
 
 
@@ -653,3 +654,39 @@ load and use your copy of the locale file provided that you maintain it yourself
 
 See [6382e21f](https://github.com/angular/angular.js/commit/6382e21fb28541a2484ac1a241d41cf9fbbe9d2c).
 
+## Services can now return functions
+
+Previously, the service constructor only returned objects regardless of whether a function was returned.
+
+Now, `$injector.instantiate` (and thus `$provide.service`) behaves the same as the native
+`new` operator and allows functions to be returned as a service.
+
+If using a JavaScript preprocessor it's quite possible when upgrading that services could start behaving incorrectly.
+Make sure your services return the correct type wanted.
+
+**Coffeescript example**
+
+```
+myApp.service 'applicationSrvc', ->
+  @something = "value"
+  @someFunct = ->
+    "something else"
+```
+
+pre 1.2 this service would return the whole object as the service.
+
+post 1.2 this service returns `someFunct` as the value of the service
+
+you would need to change this services to
+
+```
+myApp.service 'applicationSrvc', ->
+  @something = "value"
+  @someFunct = ->
+    "something else"
+  return
+```
+
+to continue to return the complete instance.
+
+See [c22adbf1](https://github.com/angular/angular.js/commit/c22adbf160f32c1839fbb35382b7a8c6bcec2927).
