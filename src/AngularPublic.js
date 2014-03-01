@@ -24,6 +24,7 @@
     ngCspDirective,
     ngCloakDirective,
     ngControllerDirective,
+    ngDirDirective,
     ngFormDirective,
     ngHideDirective,
     ngIfDirective,
@@ -52,6 +53,7 @@
 
     $AnchorScrollProvider,
     $AnimateProvider,
+    $BidiProvider,
     $BrowserProvider,
     $CacheFactoryProvider,
     $ControllerProvider,
@@ -164,6 +166,7 @@ function publishExternalAPI(angular){
             ngClassOdd: ngClassOddDirective,
             ngCloak: ngCloakDirective,
             ngController: ngControllerDirective,
+            ngDir: ngDirDirective,
             ngForm: ngFormDirective,
             ngHide: ngHideDirective,
             ngIf: ngIfDirective,
@@ -195,6 +198,7 @@ function publishExternalAPI(angular){
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $animate: $AnimateProvider,
+        $bidi: $BidiProvider,
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,

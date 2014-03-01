@@ -1799,12 +1799,17 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       if (interpolateFn) {
         directives.push({
           priority: 0,
-          compile: valueFn(function textInterpolateLinkFn(scope, node) {
+          require: '^?ngDir',
+          compile: valueFn(function textInterpolateLinkFn(scope, node, attr, dirCtrl) {
             var parent = node.parent(),
-                bindings = parent.data('$binding') || [];
+                bindings = parent.data('$binding') || [],
+                textChanger = dirCtrl?  dirCtrl.createTextChanger(scope, text) : null;
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
             scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+              if (textChanger) {
+                textChanger(value);
+              }
               node[0].nodeValue = value;
             });
           })

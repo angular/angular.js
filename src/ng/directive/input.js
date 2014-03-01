@@ -878,7 +878,7 @@ function addNativeHtml5Validators(ctrl, validatorName, element) {
   }
 }
 
-function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+function textInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger) {
   var validity = element.prop('validity');
   var placeholder = element[0].placeholder, noevent = {};
 
@@ -925,9 +925,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         // even when the first character entered causes an error.
         (validity && value === '' && !validity.valueMissing)) {
       if (scope.$$phase) {
+        if (dirTextChanger) {
+          dirTextChanger(value);
+        }
         ctrl.$setViewValue(value, event);
       } else {
         scope.$apply(function() {
+          if (dirTextChanger) {
+            dirTextChanger(value);
+          }
           ctrl.$setViewValue(value, event);
         });
       }
@@ -980,7 +986,11 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   ctrl.$render = function() {
-    element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
+    var value = ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue;
+    if (dirTextChanger) {
+      dirTextChanger(value);
+    }
+    element.val(value);
   };
 
   // pattern validator
@@ -1089,8 +1099,8 @@ function createDateParser(regexp, mapping) {
 }
 
 function createDateInputType(type, regexp, parseDate, format) {
-   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
-      textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger, $filter) {
+      textInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger);
 
       ctrl.$parsers.push(function(value) {
          if(ctrl.$isEmpty(value)) {
@@ -1185,8 +1195,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   });
 }
 
-function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function urlInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger) {
+  textInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger);
 
   var urlValidator = function(value) {
     return validate(ctrl, 'url', ctrl.$isEmpty(value) || URL_REGEXP.test(value), value);
@@ -1196,8 +1206,8 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$parsers.push(urlValidator);
 }
 
-function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function emailInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger) {
+  textInputType(scope, element, attr, ctrl, $sniffer, $browser, dirTextChanger);
 
   var emailValidator = function(value) {
     return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
@@ -1422,11 +1432,20 @@ function checkboxInputType(scope, element, attr, ctrl) {
 var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sniffer, $filter) {
   return {
     restrict: 'E',
-    require: ['?ngModel'],
+    require: ['?ngModel','?^ngDir'],
     link: function(scope, element, attr, ctrls) {
-      if (ctrls[0]) {
-        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
-                                                            $browser, $filter);
+      var ngModelCtrl = ctrls[0],
+        dirCtrl = ctrls[1],
+        dirTextChanger = dirCtrl ? dirCtrl.createTextChanger(scope, '') : null;
+
+      if (ngModelCtrl) {
+        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ngModelCtrl, $sniffer,
+          $browser, dirTextChanger, $filter);
+      }
+      if (dirTextChanger) {
+        attr.$observe('value', function(value) {
+          dirTextChanger(value);
+        });
       }
     }
   };
