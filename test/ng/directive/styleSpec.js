@@ -9,20 +9,38 @@ describe('style', function() {
   });
 
 
-  it('should compile style element', inject(function($compile, $rootScope) {
-    element = jqLite('<style type="text/css">' +
-      '.navigation{font-size:1.5em; h3{font-size:1.5em}}' +
-      '.footer{h3{font-size:{{fontSize}}em}}' +
-      '.header{font-size:1.5em; h3{font-size:{{fontSize}}{{unit}}}}' +
-      '</style>');
+  it('should compile style element without binding', inject(function($compile, $rootScope) {
+    element = jqLite('<style type="text/css">.header{font-size:1.5em; h3{font-size:1.5em}}</style>');
     $compile(element)($rootScope);
     $rootScope.$digest();
 
     // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe(
-      '.navigation{font-size:1.5em; h3{font-size:1.5em}}' +
-      '.footer{h3{font-size:em}}' +
-      '.header{font-size:1.5em; h3{font-size:}}');
+    expect(trim(element[0].innerHTML)).toBe('.header{font-size:1.5em; h3{font-size:1.5em}}');
+  }));
+
+  it('should compile style element with one bind', inject(function($compile, $rootScope) {
+    element = jqLite('<style type="text/css">.header{h3{font-size:{{fontSize}}em}}</style>');
+    $compile(element)($rootScope);
+    $rootScope.$digest();
+
+    // read innerHTML and trim to pass on IE8
+    expect(trim(element[0].innerHTML)).toBe('.header{h3{font-size:em}}');
+
+    $rootScope.$apply(function() {
+      $rootScope.fontSize = 1.5;
+    });
+
+    // read innerHTML and trim to pass on IE8
+    expect(trim(element[0].innerHTML)).toBe('.header{h3{font-size:1.5em}}');
+  }));
+
+  it('should compile style element with two binds', inject(function($compile, $rootScope) {
+    element = jqLite('<style type="text/css">.header{h3{font-size:{{fontSize}}{{unit}}}}</style>');
+    $compile(element)($rootScope);
+    $rootScope.$digest();
+
+    // read innerHTML and trim to pass on IE8
+    expect(trim(element[0].innerHTML)).toBe('.header{h3{font-size:}}');
 
     $rootScope.$apply(function() {
       $rootScope.fontSize = 1.5;
@@ -30,12 +48,8 @@ describe('style', function() {
     });
 
     // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe(
-      '.navigation{font-size:1.5em; h3{font-size:1.5em}}' +
-      '.footer{h3{font-size:1.5em}}' +
-      '.header{font-size:1.5em; h3{font-size:1.5em}}');
+    expect(trim(element[0].innerHTML)).toBe('.header{h3{font-size:1.5em}}');
   }));
-
 
   it('should compile content of element with style attr', inject(function($compile, $rootScope) {
     element = jqLite('<div style="some">{{bind}}</div>');
