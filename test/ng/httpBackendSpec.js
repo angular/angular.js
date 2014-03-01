@@ -456,7 +456,17 @@ describe('$httpBackend', function() {
     }
 
 
-    it('should convert 0 to 200 if content', function() {
+    it('should convert 0 to 200 if content and file protocol', function() {
+      $backend = createHttpBackend($browser, createMockXhr);
+
+      $backend('GET', 'file:///whatever/index.html', null, callback);
+      respond(0, 'SOME CONTENT');
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(200);
+    });
+
+    it('should convert 0 to 200 if content for protocols other than file', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
       $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
@@ -466,17 +476,25 @@ describe('$httpBackend', function() {
       expect(callback.mostRecentCall.args[0]).toBe(200);
     });
 
-
-    it('should convert 0 to 404 if no content', function() {
+    it('should convert 0 to 404 if no content and file protocol', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
-      $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
+      $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
 
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(404);
     });
 
+    it('should not convert 0 to 404 if no content for protocols other than file', function() {
+      $backend = createHttpBackend($browser, createMockXhr);
+
+      $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
+      respond(0, '');
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(0);
+    });
 
     it('should convert 0 to 404 if no content - relative url', function() {
       var originalUrlParsingNode = urlParsingNode;
@@ -486,10 +504,10 @@ describe('$httpBackend', function() {
         hash : "#/C:/",
         host : "",
         hostname : "",
-        href : "someProtocol:///C:/base#!/C:/foo",
+        href : "file:///C:/base#!/C:/foo",
         pathname : "/C:/foo",
         port : "",
-        protocol : "someProtocol:",
+        protocol : "file:",
         search : "",
         setAttribute: angular.noop
       };
