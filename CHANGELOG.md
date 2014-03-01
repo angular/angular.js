@@ -1,3 +1,77 @@
+<a name="1.2.14"></a>
+# 1.2.14 feisty-cryokinesis (2014-03-01)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - delegate down to addClass/removeClass if setClass is not found
+  ([18c41af0](https://github.com/angular/angular.js/commit/18c41af065006a804a3d38eecca7ae184103ece9),
+   [#6463](https://github.com/angular/angular.js/issues/6463))
+  - ensure all comment nodes are removed during a leave animation
+  ([f4f1f43d](https://github.com/angular/angular.js/commit/f4f1f43d5140385bbf070510975f72b65196e08a),
+   [#6403](https://github.com/angular/angular.js/issues/6403))
+  - only block keyframes if a stagger is set to occur
+  ([e71e7b6c](https://github.com/angular/angular.js/commit/e71e7b6cae57f25c5837dda98551c8e0a5cb720d),
+   [#4225](https://github.com/angular/angular.js/issues/4225))
+  - ensure that animateable directives cancel expired leave animations
+  ([e9881991](https://github.com/angular/angular.js/commit/e9881991ca0a5019d3a4215477738ed247898ba0),
+   [#5886](https://github.com/angular/angular.js/issues/5886))
+  - ensure all animated elements are taken care of during the closing timeout
+  ([99720fb5](https://github.com/angular/angular.js/commit/99720fb5ab7259af37f708bc4eeda7cbbe790a69),
+   [#6395](https://github.com/angular/angular.js/issues/6395))
+  - fix for TypeError Cannot call method 'querySelectorAll' in cancelChildAnimations
+  ([c914cd99](https://github.com/angular/angular.js/commit/c914cd99b3aaf932e3c0e2a585eead7b76621f1b),
+   [#6205](https://github.com/angular/angular.js/issues/6205))
+- **$http:**
+  - do not add trailing question
+  ([c8e03e34](https://github.com/angular/angular.js/commit/c8e03e34b27a8449d8e1bfe0e3801d6a67ae2c49),
+   [#6342](https://github.com/angular/angular.js/issues/6342))
+  - send GET requests by default
+  ([267b2173](https://github.com/angular/angular.js/commit/267b217376ed466e9f260ecfdfa15a8227c103ff),
+   [#5985](https://github.com/angular/angular.js/issues/5985), [#6401](https://github.com/angular/angular.js/issues/6401))
+- **$parse:** reduce false-positives in isElement tests
+  ([5fe1f39f](https://github.com/angular/angular.js/commit/5fe1f39f027c6f2c6a530975dd5389d788d3c0eb),
+   [#4805](https://github.com/angular/angular.js/issues/4805), [#5675](https://github.com/angular/angular.js/issues/5675))
+- **input:** use ValidityState to determine validity
+  ([c2d447e3](https://github.com/angular/angular.js/commit/c2d447e378dd72d1b955f476bd5bf249625b4dab),
+   [#4293](https://github.com/angular/angular.js/issues/4293), [#2144](https://github.com/angular/angular.js/issues/2144), [#4857](https://github.com/angular/angular.js/issues/4857), [#5120](https://github.com/angular/angular.js/issues/5120), [#4945](https://github.com/angular/angular.js/issues/4945), [#5500](https://github.com/angular/angular.js/issues/5500), [#5944](https://github.com/angular/angular.js/issues/5944))
+- **isElement:** reduce false-positives in isElement tests
+  ([75515852](https://github.com/angular/angular.js/commit/75515852ea9742d3d84a0f463c2a2c61ef2b7323))
+- **jqLite:**
+  - properly toggle multiple classes
+  ([4e73c80b](https://github.com/angular/angular.js/commit/4e73c80b17bd237a8491782bcf9e19f1889e12ed),
+   [#4467](https://github.com/angular/angular.js/issues/4467), [#6448](https://github.com/angular/angular.js/issues/6448))
+  - make jqLite('<iframe src="someurl">').contents() return iframe document, as in jQuery
+  ([05fbed57](https://github.com/angular/angular.js/commit/05fbed5710b702c111c1425a9e241c40d13b0a54),
+   [#6320](https://github.com/angular/angular.js/issues/6320), [#6323](https://github.com/angular/angular.js/issues/6323))
+- **numberFilter:** convert all non-finite/non-numbers/non-numeric strings to the empty string
+  ([cceb455f](https://github.com/angular/angular.js/commit/cceb455fb167571e26341ded6b595dafd4d92bc6),
+   [#6188](https://github.com/angular/angular.js/issues/6188), [#6261](https://github.com/angular/angular.js/issues/6261))
+- **$parse:** support trailing commas in object & array literals
+  ([6b049c74](https://github.com/angular/angular.js/commit/6b049c74ccc9ee19688bb9bbe504c300e61776dc))
+- **ngHref:** bind ng-href to xlink:href for SVGAElement
+  ([2bce71e9](https://github.com/angular/angular.js/commit/2bce71e9dc10c8588f9eb599a0cd2e831440fc48),
+   [#5904](https://github.com/angular/angular.js/issues/5904))
+
+
+## Features
+
+- **$animate:** animate dirty, pristine, valid, invalid for form/fields
+  ([33443966](https://github.com/angular/angular.js/commit/33443966c8e8cac85a863bb181d4a4aff00baab4),
+   [#5378](https://github.com/angular/angular.js/issues/5378))
+
+
+## Performance Improvements
+
+- **$animate:** use rAF instead of timeouts to issue animation callbacks
+  ([4c4537e6](https://github.com/angular/angular.js/commit/4c4537e65e6cf911c9659b562d89e3330ce3ffae))
+- **$cacheFactory:** skip LRU bookkeeping for caches with unbound capacity
+  ([a4078fca](https://github.com/angular/angular.js/commit/a4078fcae4a33295675d769a1cd067837029da2f),
+   [#6193](https://github.com/angular/angular.js/issues/6193), [#6226](https://github.com/angular/angular.js/issues/6226))
+
+
+
 <a name="1.2.13"></a>
 # 1.2.13 romantic-transclusion (2014-02-14)
 
@@ -202,11 +276,11 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 
 - **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
 	   it is now necessary to separately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
-		 
+
 	To migrate your code, follow the example below:
-	
+
 	Before:
-	
+
 		// Will apply to POST, PUT and PATCH methods
 		$httpProvider.defaults.headers.post = {
 			"X-MY-CSRF-HEADER": "..."
