@@ -10,9 +10,10 @@ angular.module('directives', [])
  *
  * @description Ensure that the browser scrolls when the anchor is clicked
  */
-.directive('backToTop', ['$anchorScroll', function($anchorScroll) {
+.directive('backToTop', ['$anchorScroll', '$location', function($anchorScroll, $location) {
   return function link(scope, element) {
     element.on('click', function(event) {
+      $location.hash('');
       scope.$apply($anchorScroll);
     });
   };
