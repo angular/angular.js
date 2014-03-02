@@ -6,32 +6,33 @@
  * @function
  *
  * @description
- * Selects a subset of items from `array` and returns it as a new array.
+ * Returns a subset of items from `collection` that pass a supplied truth test.
  *
- * @param {Array} array The source array.
+ * @param {Array|Object} collection The source collection.
  * @param {string|Object|function()} expression The predicate to be used for selecting items from
- *   `array`.
+ *   `collection`.
  *
  *   Can be one of:
  *
- *   - `string`: The string is evaluated as an expression and the resulting value is used for substring match against
- *     the contents of the `array`. All strings or objects with string properties in `array` that contain this string
- *     will be returned. The predicate can be negated by prefixing the string with `!`.
+ *   - `string`: The string is evaluated as an expression and the resulting value is used for
+ *     substring match against the contents of the `collection`. All strings or objects with string
+ *     properties in `collection` that contain this string will be returned. The predicate can be
+ *     negated by prefixing the string with `!`.
  *
  *   - `Object`: A pattern object can be used to filter specific properties on objects contained
- *     by `array`. For example `{name:"M", phone:"1"}` predicate will return an array of items
- *     which have property `name` containing "M" and property `phone` containing "1". A special
- *     property name `$` can be used (as in `{$:"text"}`) to accept a match against any
+ *     by `collection`. For example `{name:"M", phone:"1"}` predicate will return an collection of
+ *     items which have property `name` containing "M" and property `phone` containing "1". A
+ *     special property name `$` can be used (as in `{$:"text"}`) to accept a match against any
  *     property of the object. That's equivalent to the simple substring match with a `string`
  *     as described above.
  *
- *   - `function(value)`: A predicate function can be used to write arbitrary filters. The function is
- *     called for each element of `array`. The final result is an array of those elements that
- *     the predicate returned true for.
+ *   - `function(value)`: A predicate function can be used to write arbitrary filters. The function
+ *     is called for each element of `collection`. The final result is a collection of those
+ *     elements of which the predicate returned true.
  *
  * @param {function(actual, expected)|true|undefined} comparator Comparator which is used in
  *     determining if the expected value (from the filter expression) and actual value (from
- *     the object in the array) should be considered a match.
+ *     the object in the collection) should be considered a match.
  *
  *   Can be one of:
  *
@@ -114,10 +115,10 @@
    </example>
  */
 function filterFilter() {
-  return function(array, expression, comparator) {
-    if (!isArray(array)) return array;
+  return function(collection, expression, comparator) {
 
-    var comparatorType = typeof(comparator),
+    var collectionIsArray = isArray(collection),
+        comparatorType = typeof(comparator),
         predicates = [];
 
     predicates.check = function(value) {
@@ -206,15 +207,15 @@ function filterFilter() {
         predicates.push(expression);
         break;
       default:
-        return array;
+        return collection;
     }
-    var filtered = [];
-    for ( var j = 0; j < array.length; j++) {
-      var value = array[j];
-      if (predicates.check(value)) {
-        filtered.push(value);
-      }
-    }
+    var filtered = collectionIsArray ? [] : {};
+    forEach(collection, function(item, key){
+        if (predicates.check(item)) {
+          if (collectionIsArray) filtered.push(item);
+          else filtered[key] = item;
+        }
+    });
     return filtered;
   };
 }
