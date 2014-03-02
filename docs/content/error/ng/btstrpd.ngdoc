@@ -27,3 +27,5 @@ Note that for bootrapping purposes, the `<html>` element is the same as `documen
 </script>
 </html>
 ```
+
+You can also get this error if you accidentally load AngularJS itself more than once.
