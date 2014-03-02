@@ -160,6 +160,31 @@ describe('select', function() {
         expect(element).toEqualSelect([''], 'x', 'y');
       });
 
+      it('should support option without a value attribute', function() {
+        compile('<select ng-model="robot">' +
+                  '<option>--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+      });
+
+      it('should support option without a value with other HTML attributes', function() {
+        compile('<select ng-model="robot">' +
+                  '<option data-foo="bar">--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+      });
+
+      it('should support option without a value attribute using `ng-options`', function() {
+        scope.someOpts = [{name: 'foo'}, {name: 'foo'}];
+        compile('<select ng-model="robot" ng-options="r.name for someOpts in someOpts">' +
+                  '<option>--select--</option>' +
+                '</select>');
+        expect(element).toEqualSelect([""],"0","1");
+      });
 
       it('should support defining an empty option anywhere in the option list', function() {
         compile('<select ng-model="robot">' +

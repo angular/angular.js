@@ -221,6 +221,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
       // find "null" option
       for(var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
+        if(children[i].nodeName === 'OPTION' && isUndefined(children.eq(i).attr('value'))) {
+          children[i].value = '';
+        }
+
         if (children[i].value === '') {
           emptyOption = nullOption = children.eq(i);
           break;
