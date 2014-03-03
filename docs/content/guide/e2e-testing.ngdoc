@@ -15,7 +15,7 @@ To solve this problem, we have built an Angular Scenario Runner which simulates 
 that will help you verify the health of your Angular application.
 
 # Overview
-You will write scenario tests in JavaScript, which describe how your application should behave,
+You write scenario tests in JavaScript. These tests describe how your application should behave
 given a certain interaction in a specific state. A scenario is comprised of one or more `it` blocks
 (you can think of these as the requirements of your application), which in turn are made of
 **commands** and **expectations**. Commands tell the Runner to do something with the application
@@ -310,4 +310,4 @@ element('.btn-danger').click();
 
 # Caveats
 
-ngScenario does not work with apps that manually bootstrap using angular.bootstrap. You must use the ng-app directive.
+`ngScenario` does not work with apps that manually bootstrap using `angular.bootstrap`. You must use the `ng-app` directive.
