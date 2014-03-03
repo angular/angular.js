@@ -454,6 +454,31 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('#test').prop('className')).toEqual('bam');
       });
 
+      it('should return hasClass correctly', function() {
+        doc.append('<div id="test" class="foo bar"></div>');
+        var chain = $root.dsl.element('#test');
+        chain.hasClass('foo');
+        expect($root.futureResult).toBeTruthy();
+        chain.hasClass('baz');
+        expect($root.futureResult).toBeFalsy();
+      });
+
+      it('should add class', function() {
+        doc.append('<div id="test" class="foo bar"></div>');
+        var chain = $root.dsl.element('#test');
+        chain.addClass('baz');
+        chain.hasClass('baz');
+        expect($root.futureResult).toBeTruthy();
+      });
+
+      it('should remove class', function() {
+        doc.append('<div id="test" class="foo bar"></div>');
+        var chain = $root.dsl.element('#test');
+        chain.removeClass('bar');
+        chain.hasClass('bar');
+        expect($root.futureResult).toBeFalsy();
+      });
+
       it('should get css', function() {
         doc.append('<div id="test" style="height: 30px"></div>');
         $root.dsl.element('#test').css('height');
