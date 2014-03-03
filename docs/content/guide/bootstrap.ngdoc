@@ -2,7 +2,7 @@
 @name  Bootstrap
 @description
 
-# Overview
+# Bootstrap
 
 This page explains the Angular initialization process and how you can manually initialize Angular
 if necessary.
@@ -23,7 +23,7 @@ initialization.
 </html>
 ```
 
-  * Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
+  1. Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
     improves app load time because the HTML loading is not blocked by loading of the `angular.js`
     script. You can get the latest bits from http://code.angularjs.org. Please don't link
     your production code to this URL, as it will expose a security hole on your site. For
@@ -32,16 +32,16 @@ initialization.
       debugging.
     * Choose: `angular-[version].min.js` for a compressed and obfuscated file, suitable for use in
       production.
-  * Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
+  2. Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
     angular to auto-bootstrap your application.
 
         <html ng-app>
 
-  * If IE7 support is required add `id="ng-app"`
+  3. If you require IE7 support add `id="ng-app"`
 
         <html ng-app id="ng-app">
 
-  * If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
+  4. If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
     to make IE happy. (This is here for historical reasons, and we no longer recommend use of
     `ng:`.)
 
@@ -103,8 +103,8 @@ Here is an example of manually initializing Angular:
 ```
 
 Note that we have provided the name of our application module to be loaded into the injector as the second
-parameter of the {@link angular.bootstrap} function. Notice that `angular.bootstrap` will not create modules 
-on the fly. You must create any custom {@link guide/module modules} before you pass them as a parameter. 
+parameter of the {@link angular.bootstrap} function. Notice that `angular.bootstrap` will not create modules
+on the fly. You must create any custom {@link guide/module modules} before you pass them as a parameter.
 
 This is the sequence that your code should follow:
 
