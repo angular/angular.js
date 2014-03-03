@@ -7,11 +7,11 @@ comes with almost no help from the compiler. For this reason we feel very strong
 written in JavaScript needs to come with a strong set of tests. We have built many features into
 Angular which makes testing your Angular applications easy. So there is no excuse for not testing.
 
-# It is all about NOT mixing concerns
+# Separation of Concerns
 
 Unit testing as the name implies is about testing individual units of code. Unit tests try to
-answer questions such as "Did I think about the logic correctly?" or "Does the sort function order the list
-in the right order?"
+answer questions such as "Did I think about the logic correctly?" or "Does the sort function order
+the list in the right order?"
 
 In order to answer such a question it is very important that we can isolate the unit of code under test.
 That is because when we are testing the sort function we don't want to be forced into creating
@@ -33,8 +33,8 @@ function has mutated the DOM in the right way.
 ## With great power comes great responsibility
 
 Angular is written with testability in mind, but it still requires that you do the right thing.
-We tried to make the right thing easy, but Angular is not magic. If you don't follow these guidelines
-you may very well end up with an untestable application.
+We tried to make the right thing easy, but if you ignore these guidelines you may end up with an
+untestable application.
 
 ## Dependency Injection
 There are several ways in which you can get a hold of a dependency. You can:
@@ -321,7 +321,7 @@ describe('Unit testing great quotes', function() {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
     }));
-    
+
     it('Replaces the element with the appropriate content', function() {
         // Compile a piece of HTML containing the directive
         var element = $compile("<a-great-eye></a-great-eye>")($rootScope);
