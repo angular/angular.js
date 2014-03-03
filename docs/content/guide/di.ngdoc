@@ -7,6 +7,9 @@
 Dependency Injection (DI) is a software design pattern that deals with how code gets hold of its
 dependencies.
 
+The Angular injector subsystem is in charge of service instantiation, resolution
+of dependencies, and provision of dependencies to components as requested.
+
 For in-depth discussion about DI, see
 [Dependency Injection](http://en.wikipedia.org/wiki/Dependency_injection) at Wikipedia,
 [Inversion of Control](http://martinfowler.com/articles/injection.html) by Martin Fowler,
@@ -17,9 +20,7 @@ or read about DI in your favorite software design pattern book.
 There are only three ways an object or a function can get a hold of its dependencies:
 
   1. The dependency can be created, typically using the `new` operator.
-
   2. The dependency can be looked up by referring to a global variable.
-
   3. The dependency can be passed in to where it is needed.
 
 
@@ -32,13 +33,13 @@ The third option is the most viable, since it removes the responsibility of loca
 dependency from the component. The dependency is simply handed to the component.
 
 ```js
-  function SomeClass(greeter) {
-    this.greeter = greeter;
-  }
-  
-  SomeClass.prototype.doSomething = function(name) {
-    this.greeter.greet(name);
-  }
+function SomeClass(greeter) {
+  this.greeter = greeter;
+}
+
+SomeClass.prototype.doSomething = function(name) {
+  this.greeter.greet(name);
+}
 ```
 
 In the above example `SomeClass` is not concerned with locating the `greeter` dependency, it
@@ -56,27 +57,27 @@ construction and lookup of dependencies.
 Here is an example of using the injector service:
 
 ```js
-  // Provide the wiring information in a module
-  angular.module('myModule', []).
-  
-    // Teach the injector how to build a 'greeter'
-    // Notice that greeter itself is dependent on '$window'
-    factory('greeter', function($window) {
-      // This is a factory function, and is responsible for 
-      // creating the 'greet' service.
-      return {
-        greet: function(text) {
-          $window.alert(text);
-        }
-      };
-    });
+// Provide the wiring information in a module
+angular.module('myModule', []).
 
-  // New injector is created from the module. 
-  // (This is usually done automatically by angular bootstrap)
-  var injector = angular.injector(['myModule', 'ng']);
-  
-  // Request any dependency from the injector
-  var greeter = injector.get('greeter');
+  // Teach the injector how to build a 'greeter'
+  // Notice that greeter itself is dependent on '$window'
+  factory('greeter', function($window) {
+    // This is a factory function, and is responsible for
+    // creating the 'greet' service.
+    return {
+      greet: function(text) {
+        $window.alert(text);
+      }
+    };
+  });
+
+// New injector is created from the module.
+// (This is usually done automatically by angular bootstrap)
+var injector = angular.injector(['myModule', 'ng']);
+
+// Request any dependency from the injector
+var greeter = injector.get('greeter');
 ```
 
 Asking for dependencies solves the issue of hard coding, but it also means that the injector needs
@@ -84,22 +85,22 @@ to be passed throughout the application. Passing the injector breaks the [Law of
 dependency lookup responsibility to the injector by declaring the dependencies as in this example:
 
 ```html
-  <!-- Given this HTML -->
-  <div ng-controller="MyController">
-    <button ng-click="sayHello()">Hello</button>
-  </div>
+<!-- Given this HTML -->
+<div ng-controller="MyController">
+  <button ng-click="sayHello()">Hello</button>
+</div>
 ```
-  
+
 ```js
-  // And this controller definition
-  function MyController($scope, greeter) {
-    $scope.sayHello = function() {
-      greeter.greet('Hello World');
-    };
-  }
-  
-  // The 'ng-controller' directive does this behind the scenes
-  injector.instantiate(MyController);
+// And this controller definition
+function MyController($scope, greeter) {
+  $scope.sayHello = function() {
+    greeter.greet('Hello World');
+  };
+}
+
+// The 'ng-controller' directive does this behind the scenes
+injector.instantiate(MyController);
 ```
 
 Notice that by having the `ng-controller` instantiate the class, it can satisfy all of the
@@ -123,9 +124,9 @@ The simplest way to get hold of the dependencies, is to assume that the function
 are the names of the dependencies.
 
 ```js
-  function MyController($scope, greeter) {
-    ...
-  }
+function MyController($scope, greeter) {
+  // ...
+}
 ```
 
 Given a function the injector can infer the names of the service to inject by examining the
@@ -142,10 +143,10 @@ the function needs to be annotated with the `$inject` property. The `$inject` pr
 of service names to inject.
 
 ```js
-  var MyController = function(renamed$scope, renamedGreeter) {
-    ...
-  }
-  MyController['$inject'] = ['$scope', 'greeter'];
+var MyController = function(renamed$scope, renamedGreeter) {
+  ...
+}
+MyController['$inject'] = ['$scope', 'greeter'];
 ```
 
 In this scenario the ordering of the values in the '$inject' array must match the ordering of the arguments to inject.
@@ -164,29 +165,29 @@ directives.
 For example:
 
 ```js
-  someModule.factory('greeter', function($window) {
-    ...
-  });
+someModule.factory('greeter', function($window) {
+  // ...
+});
 ```
 
 Results in code bloat due to needing a temporary variable:
 
 ```js
-  var greeterFactory = function(renamed$window) {
-    ...
-  };
-  
-  greeterFactory.$inject = ['$window'];
-  
-  someModule.factory('greeter', greeterFactory);
+var greeterFactory = function(renamed$window) {
+  // ...
+};
+
+greeterFactory.$inject = ['$window'];
+
+someModule.factory('greeter', greeterFactory);
 ```
 
 For this reason the third annotation style is provided as well.
 
 ```js
-  someModule.factory('greeter', ['$window', function(renamed$window) {
-    ...
-  }]);
+someModule.factory('greeter', ['$window', function(renamed$window) {
+  // ...
+}]);
 ```
 
 Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
@@ -194,21 +195,22 @@ where injection is supported.
 
 ## Where can I use DI?
 
-DI is pervasive throughout Angular. It is typically used in controllers and factory methods. 
+DI is pervasive throughout Angular. You can use it in controllers, services, directives, filters,
+animations, and `run` and `config` blocks.
 
 ### DI in controllers
 
-Controllers are classes which are responsible for application behavior. The recommended way of 
+Controllers are classes which are responsible for application behavior. The recommended way of
 declaring controllers is using the array notation:
 
 ```js
-  someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
+someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
+  ...
+  $scope.aMethod = function() {
     ...
-    $scope.aMethod = function() {
-      ...
-    }
-    ...
-  }]);
+  }
+  ...
+}]);
 ```
 
 This avoids the creation of global functions for controllers and also protects against minification.
@@ -221,20 +223,20 @@ services, and filters. The factory methods are registered with the module, and t
 of declaring factories is:
 
 ```js
-  angular.module('myModule', []).
-    config(['depProvider', function(depProvider){
-      ...
-    }]).
-    factory('serviceId', ['depService', function(depService) {
-      ...
-    }]).
-    directive('directiveName', ['depService', function(depService) {
-      ...
-    }]).
-    filter('filterName', ['depService', function(depService) {
-      ...
-    }]).
-    run(['depService', function(depService) {
-      ...
-    }]);
+angular.module('myModule', []).
+  config(['depProvider', function(depProvider){
+    ...
+  }]).
+  factory('serviceId', ['depService', function(depService) {
+    ...
+  }]).
+  directive('directiveName', ['depService', function(depService) {
+    ...
+  }]).
+  filter('filterName', ['depService', function(depService) {
+    ...
+  }]).
+  run(['depService', function(depService) {
+    ...
+  }]);
 ```
