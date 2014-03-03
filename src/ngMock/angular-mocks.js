@@ -1457,7 +1457,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * ```
    */
   $httpBackend.verifyNoOutstandingExpectation = function() {
-    $rootScope.$digest();
+    if (!$rootScope.$$phase) $rootScope.$digest();
     if (expectations.length) {
       throw new Error('Unsatisfied requests: ' + expectations.join(', '));
     }
