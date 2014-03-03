@@ -211,26 +211,24 @@ In the following example we create two directives.
 
 <example module="form-example1">
   <file name="index.html">
-    <div ng-controller="Controller">
-      <form name="form" class="css-form" novalidate>
-        <div>
-          Size (integer 0 - 10):
-          <input type="number" ng-model="size" name="size"
-                 min="0" max="10" integer />{{size}}<br />
-          <span ng-show="form.size.$error.integer">This is not valid integer!</span>
-          <span ng-show="form.size.$error.min || form.size.$error.max">
-            The value must be in range 0 to 10!</span>
-        </div>
+    <form name="form" class="css-form" novalidate>
+      <div>
+        Size (integer 0 - 10):
+        <input type="number" ng-model="size" name="size"
+               min="0" max="10" integer />{{size}}<br />
+        <span ng-show="form.size.$error.integer">This is not valid integer!</span>
+        <span ng-show="form.size.$error.min || form.size.$error.max">
+          The value must be in range 0 to 10!</span>
+      </div>
 
-        <div>
-          Length (float):
-          <input type="text" ng-model="length" name="length" smart-float />
-          {{length}}<br />
-          <span ng-show="form.length.$error.float">
-            This is not a valid float number!</span>
-        </div>
-      </form>
-    </div>
+      <div>
+        Length (float):
+        <input type="text" ng-model="length" name="length" smart-float />
+        {{length}}<br />
+        <span ng-show="form.length.$error.float">
+          This is not a valid float number!</span>
+      </div>
+    </form>
   </file>
 
   <file name="script.js">
