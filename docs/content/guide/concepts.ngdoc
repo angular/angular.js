@@ -185,7 +185,7 @@ The following graphic shows how everything works together after we introduced th
 
 Right now, the `InvoiceController` contains all logic of our example. When the application grows it
 is a good practice to move view independent logic from the controller into a so called
-<a name="service">"{@link dev_guide.services service}"</a>, so it can be reused by other parts
+<a name="service">"{@link services service}"</a>, so it can be reused by other parts
 of the application as well. Later on, we could also change that service to load the exchange rates
 from the web, e.g. by calling the Yahoo Finance API, without changing the controller.
 
@@ -278,7 +278,7 @@ The code snippet `angular.module('invoice2', ['finance2'])`  specifies that the 
 Now that Angular knows of all the parts of the application, it needs to create them.
 In the previous section we saw that controllers are created using a factory function.
 For services there are multiple ways to define their factory
-(see the {@link dev_guide.services service guide}).
+(see the {@link services service guide}).
 In the example above, we are using a function that returns the `currencyConverter` function as the factory
 for the service.
 
