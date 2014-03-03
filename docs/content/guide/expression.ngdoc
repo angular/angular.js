@@ -26,7 +26,7 @@ You can think of Angular expressions as JavaScript expressions with following di
     where trying to evaluate undefined properties can generate `ReferenceError` or `TypeError`.
 
   * **No Control Flow Statements:** you cannot do any of the following in angular expression:
-    conditionals, loops, or throw.
+    conditionals, loops, or throw. *Note that you can use **ternary if** (`{{ somevalue = (condition ? true: false) }}`) in angular expressions.*
 
 If, on the other hand, you do want to run arbitrary JavaScript code, you should make it a
 controller method and call the method. If you want to `eval()` an angular expression from
