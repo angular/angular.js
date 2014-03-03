@@ -1,5 +1,5 @@
 @ngdoc overview
-@name  Angular Services: Using $location
+@name  Using $location
 @description
 
 # What does it do?
@@ -329,7 +329,7 @@ reload to the original link.
   Example: `<a href="http://angularjs.org/">link</a>`
 - Links starting with '/' that lead to a different base path when base is defined<br>
   Example: `<a href="/not-my-base/link">link</a>`
-  
+
 When running Angular in the root of a domain, along side perhaps a normal application in the same
 directory, the "otherwise" route handler will try to handle all the URLs, including ones that map
 to static files.
