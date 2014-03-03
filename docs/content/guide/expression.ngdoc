@@ -2,35 +2,36 @@
 @name  Expressions
 @description
 
-Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{
-expression }}`. Expressions are processed by the {@link ng.$parse $parse}
-service. Expressions are often post processed using {@link guide/filter filters} to create a more user-friendly format.
+Expressions are JavaScript-like code snippets that are usually placed in bindings such as
+`{{ expression }}`.
 
-For example, these are all valid expressions in angular:
+For example, these are valid expressions in Angular:
 
   * `1+2`
+  * `a+b`
   * `user.name`
+  * `items[index]`
 
 
-## Angular Expressions vs. JS Expressions
+## Angular Expressions vs. JavaScript Expressions
 
-It might be tempting to think of Angular view expressions as JavaScript expressions, but that is
-not entirely correct, since Angular does not use a JavaScript `eval()` to evaluate expressions.
-You can think of Angular expressions as JavaScript expressions with following differences:
+Angular expressions are like JavaScript expressions with the following differences:
 
-  * **Attribute Evaluation:** evaluation of all properties are against the scope doing the
-    evaluation, unlike in JavaScript where the expressions are evaluated against the global
-    `window`.
+  * **Context:** JavaScript expressions are evaluated against the global `window`.
+    In Angular, expressions are evaluated against a {@link ng.$rootScope.Scope `scope`} object.
 
-  * **Forgiving:** expression evaluation is forgiving to `undefined` and `null`, unlike in JavaScript,
-    where trying to evaluate undefined properties can generate `ReferenceError` or `TypeError`.
+  * **Forgiving:** In JavaScript, trying to evaluate undefined properties generates `ReferenceError`
+    or `TypeError`. In Angular, expression evaluation is forgiving to `undefined` and `null`.
 
-  * **No Control Flow Statements:** you cannot do any of the following in angular expression:
-    conditionals, loops, or throw.
+  * **No Control Flow Statements:** you cannot use the following in an Angular expression:
+    conditionals, loops, or exceptions.
 
-If, on the other hand, you do want to run arbitrary JavaScript code, you should make it a
-controller method and call the method. If you want to `eval()` an angular expression from
-JavaScript, use the {@link ng.$rootScope.Scope#$eval `$eval()`} method.
+  * **Filters:** You can use {@link guide/filter filters} within expressions to format data before
+    displaying it.
+
+If you want to run more complex JavaScript code, you should make it a controller method and call
+the method from your view. If you want to `eval()` an Angular expression yourself, use the
+{@link ng.$rootScope.Scope#$eval `$eval()`} method.
 
 ## Example
 <example>
@@ -87,13 +88,15 @@ You can try evaluating different expressions here:
 </example>
 
 
-# Property Evaluation
+# Context
 
-Evaluation of all properties takes place against a scope. Unlike JavaScript, where names default
-to global window properties, Angular expressions have to use {@link ng.$window
-`$window`} to refer to the global `window` object. For example, if you want to call `alert()`, which is
-defined on `window`, in an expression you must use `$window.alert()`. This is done intentionally to
-prevent accidental access to the global state (a common source of subtle bugs).
+Angular does not use JavaScript's `eval()` to evaluate expressions. Instead Angular's
+{@link ng.$parse $parse} service processes these expressions.
+
+Unlike JavaScript, where names default to global `window` properties, Angular expressions must use
+{@link ng.$window `$window`} explicitly to refer to the global `window` object. For example, if you
+want to call `alert()` in an expression you must use `$window.alert()`. This restriction is
+intentional. It prevents accidental access to the global state – a common source of subtle bugs.
 
 <example>
   <file name="index.html">
@@ -142,12 +145,12 @@ It makes more sense to show nothing than to throw an exception if `a` is undefin
 waiting for the server response, and it will become defined soon). If expression evaluation wasn't
 forgiving we'd have to write bindings that clutter the code, for example: `{{((a||{}).b||{}).c}}`
 
-Similarly, invoking a function `a.b.c()` on undefined or null simply returns undefined.
+Similarly, invoking a function `a.b.c()` on `undefined` or `null` simply returns `undefined`.
 
 
 ## No Control Flow Statements
 
 You cannot write a control flow statement in an expression. The reason behind this is core to the
-Angular philosophy that application logic should be in controllers, not in the view. If you need a
+Angular philosophy that application logic should be in controllers, not the views. If you need a
 conditional, loop, or to throw from a view expression, delegate to a JavaScript method instead.
 
