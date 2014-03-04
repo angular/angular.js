@@ -8,7 +8,8 @@ function $$RAFProvider(){ //rAF
 
     var cancelAnimationFrame = $window.cancelAnimationFrame ||
                                $window.webkitCancelAnimationFrame ||
-                               $window.mozCancelAnimationFrame;
+                               $window.mozCancelAnimationFrame ||
+                               $window.webkitCancelRequestAnimationFrame;
 
     var rafSupported = !!requestAnimationFrame;
     var raf = rafSupported
