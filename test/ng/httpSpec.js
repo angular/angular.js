@@ -1267,6 +1267,30 @@ describe('$http', function() {
       });
 
 
+      it('should resolve with correct config if second request was made before the first returned',
+          function() {
+            $httpBackend.expect('GET', '/url').respond(201, 'fake-response');
+
+            callback.andCallFake(function(response) {
+              expect(response.data).toBe('fake-response');
+              expect(response.status).toBe(201);
+              return response;
+            });
+
+            $http({method: 'GET', url: '/url', cache: cache}).then(callback);
+            $http({method: 'GET', url: '/url', cache: cache, extraData: 'some-data'})
+              .then(callback)
+              .then(function(response) {
+                expect(response.config.extraData).toBe('some-data');
+              });
+
+            $httpBackend.flush();
+            expect(callback).toHaveBeenCalled();
+            expect(callback.callCount).toBe(2);
+          }
+      );
+
+
       it('should allow the cached value to be an empty string', function () {
         cache.put('/abc', '');
 

@@ -941,8 +941,7 @@ function $HttpProvider() {
         if (isDefined(cachedResp)) {
           if (cachedResp.then) {
             // cached request has already been sent, but there is no response yet
-            cachedResp.then(removePendingReq, removePendingReq);
-            return cachedResp;
+            cachedResp.then(cacheDone, cacheDone);
           } else {
             // serving from cache
             if (isArray(cachedResp)) {
@@ -984,6 +983,18 @@ function $HttpProvider() {
 
         resolvePromise(response, status, headersString);
         if (!$rootScope.$$phase) $rootScope.$apply();
+      }
+
+
+      /**
+       * Callback to resolve based on an in-flight cache entry.
+       */
+      function cacheDone(resolution) {
+        if (isUndefined(resolution.status)) {
+          resolvePromise(resolution, 200, {});
+        } else {
+          resolvePromise(resolution.data, resolution.status, resolution.headers);
+        }
       }
 
 
