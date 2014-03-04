@@ -457,7 +457,7 @@ forEach({
     return jqLite(element).data('$isolateScope') || jqLite(element).data('$isolateScopeNoTemplate');
   },
 
-  controller: jqLiteController ,
+  controller: jqLiteController,
 
   injector: function(element) {
     return jqLiteInheritedData(element, '$injector');
