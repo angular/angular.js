@@ -3356,6 +3356,49 @@ describe("ngAnimate", function() {
       });
     });
 
+    it('should animate only the specified CSS className inside ng-if', function() {
+      var captures = {};
+      module(function($animateProvider) {
+        $animateProvider.classNameFilter(/prefixed-animation/);
+        $animateProvider.register('.capture', function() {
+          return {
+            enter : buildFn('enter'),
+            leave : buildFn('leave')
+          };
+
+          function buildFn(key) {
+            return function(element, className, done) {
+              captures[key] = true;
+              (done || className)();
+            }
+          }
+        });
+      });
+      inject(function($rootScope, $compile, $rootElement, $document, $sniffer, $animate) {
+        if(!$sniffer.transitions) return;
+
+        var upperElement = $compile('<div><div ng-if=1><span class="capture prefixed-animation"></span></div></div>')($rootScope);
+        $rootElement.append(upperElement);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.$digest();
+        $animate.triggerCallbacks();
+
+        var element = upperElement.find('span');
+
+        var leaveDone = false;
+        $animate.leave(element, function() {
+          leaveDone = true;
+        });
+
+        $rootScope.$digest();
+        $animate.triggerCallbacks();
+
+        expect(captures['leave']).toBe(true);
+        expect(leaveDone).toBe(true);
+      });
+    });
+
     it('should respect the most relevant CSS transition property if defined in multiple classes',
       inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
 
