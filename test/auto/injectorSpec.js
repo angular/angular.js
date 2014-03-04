@@ -163,7 +163,7 @@ describe('injector', function() {
       function $f_n0 /*
           */(
           $a, // x, <-- looks like an arg but it is a comment
-          b_ , /* z, <-- looks like an arg but it is a
+          b_, /* z, <-- looks like an arg but it is a
                  multi-line comment
                  function (a, b) {}
                  */
