@@ -38,11 +38,8 @@ describe('$$rAF', function() {
       //we need to create our own injector to work around the ngMock overrides
       var injector = createInjector(['ng', function($provide) {
         $provide.value('$timeout', timeoutSpy);
-        $provide.decorator('$window', function($delegate) {
-          $delegate.requestAnimationFrame = false;
-          $delegate.webkitRequestAnimationFrame = false;
-          $delegate.mozRequestAnimationFrame = false;
-          return $delegate;
+        $provide.value('$window', {
+          location : window.location,
         });
       }]);
 
@@ -75,5 +72,30 @@ describe('$$rAF', function() {
         expect(failed).toBe(true);
       }
     }));
+  });
+
+  describe('mobile', function() {
+    it('should provide a cancellation method for an older version of Android', function() {
+      //we need to create our own injector to work around the ngMock overrides
+      var injector = createInjector(['ng', function($provide) {
+        $provide.value('$window', {
+          location : window.location,
+          webkitRequestAnimationFrame: jasmine.createSpy('$window.webkitRequestAnimationFrame'),
+          webkitCancelRequestAnimationFrame: jasmine.createSpy('$window.webkitCancelRequestAnimationFrame')
+        });
+      }]);
+
+      var $$rAF = injector.get('$$rAF');
+      var $window = injector.get('$window');
+      var cancel = $$rAF(function() {});
+
+      expect($$rAF.supported).toBe(true);
+
+      try {
+        cancel();
+      } catch(e) {}
+
+      expect($window.webkitCancelRequestAnimationFrame).toHaveBeenCalled();
+    });
   });
 });
