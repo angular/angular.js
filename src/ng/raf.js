@@ -6,7 +6,8 @@ function $$RAFProvider(){ //rAF
                                 $window.webkitRequestAnimationFrame;
 
     var cancelAnimationFrame = $window.cancelAnimationFrame ||
-                               $window.webkitCancelAnimationFrame;
+                               $window.webkitCancelAnimationFrame ||
+                               $window.webkitCancelRequestAnimationFrame;
 
     var raf = function(fn) {
       var id = requestAnimationFrame(fn);
