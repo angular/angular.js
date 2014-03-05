@@ -55,6 +55,7 @@
     ngModelOptionsDirective,
     ngAttributeAliasDirectives,
     ngEventDirectives,
+    ngNameDirective,
 
     $AnchorScrollProvider,
     $AnimateProvider,
@@ -197,7 +198,8 @@ function publishExternalAPI(angular){
             maxlength: maxlengthDirective,
             ngMaxlength: maxlengthDirective,
             ngValue: ngValueDirective,
-            ngModelOptions: ngModelOptionsDirective
+            ngModelOptions: ngModelOptionsDirective,
+            ngName: ngNameDirective
         }).
         directive({
           ngInclude: ngIncludeFillContentDirective
