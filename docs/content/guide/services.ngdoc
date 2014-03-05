@@ -18,7 +18,7 @@ Angular offers several useful services (like {@link ng.$http `$http`}), but for 
 you'll also want to {@link services#creating-services create your own}.
 
 <div class="alert alert-info">
-**Note:** Like other core Angular identifiers built-in services always start with `$`
+**Note:** Like other core Angular identifiers, built-in services always start with `$`
 (i.e. `$http`).
 </div>
 
