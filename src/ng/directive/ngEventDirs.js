@@ -297,9 +297,8 @@ forEach(
  * @description
  * Enables binding angular expressions to onsubmit events.
  *
- * Additionally it prevents the default action (which for form means sending the request to the
- * server and reloading the current page), but only if the form does not contain `action`,
- * `data-action`, or `x-action` attributes.
+ * This directive does not prevent the default action, so $event.preventDefault(); must be called
+ * in order to stop form submission from occuring
  *
  * @element form
  * @priority 0
@@ -312,7 +311,8 @@ forEach(
         function Ctrl($scope) {
           $scope.list = [];
           $scope.text = 'hello';
-          $scope.submit = function() {
+          $scope.submit = function(event) {
+            event.preventDefault();
             if ($scope.text) {
               $scope.list.push(this.text);
               $scope.text = '';
@@ -320,7 +320,7 @@ forEach(
           };
         }
       </script>
-      <form ng-submit="submit()" ng-controller="Ctrl">
+      <form ng-submit="submit($event)" ng-controller="Ctrl">
         Enter text and hit enter:
         <input type="text" ng-model="text" name="text" />
         <input type="submit" id="submit" value="Submit" />
