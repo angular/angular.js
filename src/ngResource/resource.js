@@ -159,7 +159,7 @@ function shallowClearAndCopy(src, dst) {
  *   read, update, delete) on server-side data like this:
  *   ```js
  *   var User = $resource('/user/:userId', {userId:'@id'});
- *   var user = User.get({userId:123}, function() {
+ *   var user = User.get({userId:123}, function(user, responseHeaders) {
  *     user.abc = true;
  *     user.$save();
  *   });
