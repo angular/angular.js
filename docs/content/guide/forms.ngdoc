@@ -56,7 +56,7 @@ Note that `novalidate` is used to disable browser's native form validation.
 
 # Using CSS classes
 
-To allow styling of form as well as controls, `ngModel`  add these CSS classes:
+To allow styling of form as well as controls, `ngModel`  adds these CSS classes:
 
 - `ng-valid`
 - `ng-invalid`
