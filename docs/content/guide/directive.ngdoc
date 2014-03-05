@@ -295,7 +295,7 @@ The `restrict` option is typically set to:
 
 These restictions can all be combined as needed:
 
-* `'AEC'` - matches either attribure or element or class name
+* `'AEC'` - matches either attribute or element or class name
 
 Let's change our directive to use `restrict: 'E'`:
 
