@@ -11,28 +11,44 @@
  *
  * The main purpose of this service is to simplify debugging and troubleshooting.
  *
- * The default is to log `debug` messages. You can use
- * {@link ng.$logProvider ng.$logProvider#debugEnabled} to change this.
+ * It consists of five types of logging that will display the message that you log with a different format.
+ *
+ * The five types are: `log()`, `info()`, `warn()`, `error()` and `debug()`.
+ *
+ * You can turn on/off all the `debug()` methods through {@link ng.$logProvider ng.$logProvider#debugEnabled}.
  *
  * @example
-   <example>
-     <file name="script.js">
-       function LogCtrl($scope, $log) {
-         $scope.$log = $log;
-         $scope.message = 'Hello World!';
-       }
-     </file>
+   <example module='ngLogExample'>
+
      <file name="index.html">
-       <div ng-controller="LogCtrl">
-         <p>Reload this page with open console, enter text and hit the log button...</p>
+       <div ng-controller="MainController">
+         <p>Open the console and reload the page. Then click on the button with the type of log you want.</p>
          Message:
          <input type="text" ng-model="message"/>
          <button ng-click="$log.log(message)">log</button>
          <button ng-click="$log.warn(message)">warn</button>
          <button ng-click="$log.info(message)">info</button>
          <button ng-click="$log.error(message)">error</button>
+         <button ng-click="toBeDebugged()">debug me</button>
        </div>
      </file>
+
+     <file name="script.js">
+
+       angular.module('ngLogExample',[]);
+
+       angular.module('ngLogExample')
+         .controller('MainController', ['$log', '$scope', function($log, $scope){
+           $scope.$log = $log;
+           $scope.message = 'Hello World!';
+           $scope.toBeDebugged = function(){
+             $log.debug(":: DEBUG :: The function toBeDebugged() has been called");
+           };
+         }]
+       );
+
+     </file>
+
    </example>
  */
 
@@ -40,17 +56,20 @@
  * @ngdoc provider
  * @name $logProvider
  * @description
- * Use the `$logProvider` to configure how the application logs messages
+ * Use the `$logProvider` to configure how the application logs messages.
+ * You can turn on/off `debug` messages through this provider.
  */
 function $LogProvider(){
   var debug = true,
       self = this;
 
   /**
-   * @ngdoc property
+   * @ngdoc method
    * @name $logProvider#debugEnabled
    * @description
-   * @param {boolean=} flag enable or disable debug level messages
+   * When a falsy parameter is passed to this function, no {@link ng.$log ng.$log} `debug()` methods are logged.
+   *
+   * @param {boolean} flag enable or disable debug level messages
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.debugEnabled = function(flag) {
@@ -69,7 +88,7 @@ function $LogProvider(){
        * @name $log#log
        *
        * @description
-       * Write a log message
+       * Write a log message in the console.
        */
       log: consoleLog('log'),
 
@@ -78,7 +97,7 @@ function $LogProvider(){
        * @name $log#info
        *
        * @description
-       * Write an information message
+       * Write an information message in the console.
        */
       info: consoleLog('info'),
 
@@ -87,7 +106,7 @@ function $LogProvider(){
        * @name $log#warn
        *
        * @description
-       * Write a warning message
+       * Write a warning message in the console.
        */
       warn: consoleLog('warn'),
 
@@ -96,7 +115,7 @@ function $LogProvider(){
        * @name $log#error
        *
        * @description
-       * Write an error message
+       * Write an error message in the console.
        */
       error: consoleLog('error'),
 
@@ -105,7 +124,8 @@ function $LogProvider(){
        * @name $log#debug
        *
        * @description
-       * Write a debug message
+       * Write a debug message in the console. 
+       * It will not be executed if {@link ng.$logProvider ng.$logProvider#debugEnabled} is set to false.
        */
       debug: (function () {
         var fn = consoleLog('debug');
