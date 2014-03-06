@@ -83,6 +83,11 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         // we can't set xhr.onreadystatechange to undefined or delete it because that breaks IE8 (method=PATCH) and
         // Safari respectively.
         if (xhr && xhr.readyState == 4) {
+          // onreadystatechange might by called multiple times
+          // with readyState === 4 on mobile webkit caused by
+          // xhrs that are resolved while the app is in the background (see #5426).
+          xhr.onreadystatechange = function(){};
+
           var responseHeaders = null,
               response = null;
 
