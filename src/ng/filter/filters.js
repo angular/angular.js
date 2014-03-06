@@ -239,6 +239,12 @@ function ampmGetter(date, formats) {
   return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
 }
 
+function ordinalDateGetter (date) {
+  var ordinals = 'st nd rd th'.split(' ');
+  var d = date.getDate() - 1;
+  return ordinals[d > 3 ? 3 : d];
+}
+
 var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
     yy: dateGetter('FullYear', 2, 0, true),
@@ -255,6 +261,7 @@ var DATE_FORMATS = {
      h: dateGetter('Hours', 1, -12),
     mm: dateGetter('Minutes', 2),
      m: dateGetter('Minutes', 1),
+     o: ordinalDateGetter,
     ss: dateGetter('Seconds', 2),
      s: dateGetter('Seconds', 1),
      // while ISO 8601 requires fractions to be prefixed with `.` or `,`
@@ -266,7 +273,7 @@ var DATE_FORMATS = {
      Z: timeZoneGetter
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmosaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|o+|s+|a|Z))(.*)/,
     NUMBER_STRING = /^\-?\d+$/;
 
 /**
@@ -296,6 +303,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'h'`: Hour in am/pm, (1-12)
  *   * `'mm'`: Minute in hour, padded (00-59)
  *   * `'m'`: Minute in hour (0-59)
+ *   * `'o'`: Ordinal suffix for day in month (st, nd, rd, th)
  *   * `'ss'`: Second in minute, padded (00-59)
  *   * `'s'`: Second in minute (0-59)
  *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
