@@ -10,7 +10,7 @@ set -xe
 # Define reasonable set of browsers in case we are running manually from commandline
 if [[ -z "$BROWSERS" ]]
 then
-  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh,/Users/jenkins/bin/ie8.sh,/Users/jenkins/bin/ie9.sh"
+  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh"
 fi
 
 # CLEAN #
