@@ -21,7 +21,7 @@
      * documentation for `bind` below.
      */
 
-ngTouch.factory('$swipe', [function() {
+ngTouch.factory('$swipe', ['$window', function($window) {
   // The total distance in any direction before we make the call on swipe vs. scroll.
   var MOVE_BUFFER_RADIUS = 10;
 
@@ -77,7 +77,7 @@ ngTouch.factory('$swipe', [function() {
       var lastPos;
       // Whether a swipe is active.
       var active = false;
-
+      
       element.on('touchstart mousedown', function(event) {
         startCoords = getCoordinates(event);
         active = true;
@@ -87,12 +87,12 @@ ngTouch.factory('$swipe', [function() {
         eventHandlers['start'] && eventHandlers['start'](startCoords, event);
       });
 
-      element.on('touchcancel', function(event) {
+      angular.element($window).on('touchcancel', function(event) {
         active = false;
         eventHandlers['cancel'] && eventHandlers['cancel'](event);
       });
 
-      element.on('touchmove mousemove', function(event) {
+      angular.element($window).on('touchmove mousemove', function(event) {
         if (!active) return;
 
         // Android will send a touchcancel if it thinks we're starting to scroll.
@@ -126,7 +126,7 @@ ngTouch.factory('$swipe', [function() {
         }
       });
 
-      element.on('touchend mouseup', function(event) {
+      angular.element($window).on('touchend mouseup', function(event) {
         if (!active) return;
         active = false;
         eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
@@ -134,5 +134,3 @@ ngTouch.factory('$swipe', [function() {
     }
   };
 }]);
-
-
