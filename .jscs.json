@@ -1,5 +1,6 @@
 {
   "disallowKeywords": ["with"],
   "disallowTrailingWhitespace": true,
-  "requireRightStickedOperators": ["!"]
+  "requireRightStickedOperators": ["!"],
+  "requireLeftStickedOperators": [","]
 }

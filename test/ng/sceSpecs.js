@@ -109,7 +109,7 @@ describe('SCE', function() {
     }));
 
     it('should NOT wrap unknown contexts', inject(function($sce) {
-      expect(function() { $sce.trustAs('unknown1' , '123'); }).toThrowMinErr(
+      expect(function() { $sce.trustAs('unknown1', '123'); }).toThrowMinErr(
           '$sce', 'icontext', 'Attempted to trust a value in invalid context. Context: unknown1; Value: 123');
     }));
 
