@@ -1803,9 +1803,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
-            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+            scope.$watchSet(interpolateFn.expressions, interpolateFn.$$invoke(function(value) {
               node[0].nodeValue = value;
-            });
+            }));
           })
         });
       }
@@ -1866,7 +1866,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 attr[name] = interpolateFn(scope);
                 ($$observers[name] || ($$observers[name] = [])).$$inter = true;
                 (attr.$$observers && attr.$$observers[name].$$scope || scope).
-                  $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
+                  $watchSet(interpolateFn.expressions, interpolateFn.$$invoke(function (newValue, oldValue) {
                     //special case for class attribute addition + removal
                     //so that class changes can tap into the animation
                     //hooks provided by the $animate service. Be sure to
@@ -1878,7 +1878,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     } else {
                       attr.$set(name, newValue);
                     }
-                  });
+                  }));
               }
             };
           }
