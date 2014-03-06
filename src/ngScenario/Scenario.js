@@ -314,8 +314,8 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
         }
         for(var fns, j=0, jj=binding.length;  j<jj; j++) {
           fns = binding[j];
-          if (fns.parts) {
-            fns = fns.parts;
+          if (fns.expressions) {
+            fns = fns.expressions;
           } else {
             fns = [fns];
           }
