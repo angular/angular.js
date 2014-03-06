@@ -19,7 +19,7 @@ you'll also want to {@link services#creating-services create your own}.
 
 <div class="alert alert-info">
 **Note:** Like other core Angular identifiers built-in services always start with `$`
-(i.e. `$http`).
+(e.g. `$http`).
 </div>
 
 
@@ -129,7 +129,7 @@ injection of `$window`, `$scope`, and our `notify` service:
   </file>
 </example>
 
-<div class="alert alert-error">
+<div class="alert alert-danger">
 **Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming) your code,
 your variable names will get renamed unless you use one of the annotation techniques above.
 </div>
