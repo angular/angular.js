@@ -55,19 +55,37 @@ function prepare {
   git commit -m "v$NEW_VERSION"
 }
 
-function publish {
-  if [[  $IS_SNAPSHOT_BUILD ]]; then
-    echo "-- Updating snapshot version"
-    curl -G --data-urlencode "ver=$NEW_VERSION" http://code.angularjs.org/fetchLatestSnapshot.php
-    exit 0;
-  fi
 
+function _update_snapshot() {
+  for backend in "$@" ; do
+    echo "-- Updating snapshot version: backend=$backend"
+    curl -G --data-urlencode "ver=$NEW_VERSION" http://$backend:8003/fetchLatestSnapshot.php
+  done
+}
+
+function _update_code() {
   cd $REPO_DIR
+
   echo "-- Pushing code.angularjs.org"
   git push origin master
 
-  echo "-- Refreshing code.angularjs.org"
-  curl http://code.angularjs.org/gitFetchSite.php
+  for backend in "$@" ; do
+    echo "-- Refreshing code.angularjs.org: backend=$backend"
+    curl http://$backend:8003/gitFetchSite.php
+  done
+}
+
+function publish {
+  # The TXT record for backends.angularjs.org is a CSV of the IP addresses for
+  # the currently serving Compute Engine backends.
+  # code.angularjs.org is served out of port 8003 on these backends.
+  backends=("$(dig backends.angularjs.org +short TXT | python -c 'print raw_input()[1:-1].replace(",", "\n")')")
+
+  if [[  $IS_SNAPSHOT_BUILD ]]; then
+    _update_snapshot ${backends[@]}
+  else
+    _update_code ${backends[@]}
+  fi
 }
 
 source $(dirname $0)/../utils.inc
