@@ -7,10 +7,10 @@ echo "#################################"
 # Enable tracing and exit on first failure
 set -xe
 
-# Define reasonable set of browsers in case we are running manually from commandline
+# This is the default set of browsers to use on the CI server unless overridden via env variable
 if [[ -z "$BROWSERS" ]]
 then
-  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh,/Users/jenkins/bin/ie8.sh,/Users/jenkins/bin/ie9.sh"
+  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh,/Users/jenkins/bin/ie9.sh"
 fi
 
 # CLEAN #
