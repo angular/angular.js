@@ -39,36 +39,36 @@
  *
  * @example
    <example>
-   <file name="index.html">
-   <div ng-controller="CacheCtrl">
-   <input ng-model="newCacheKey" placeholder="Key">
-   <input ng-model="newCacheValue" placeholder="Value">
-   <button ng-click="put(newCacheKey, newCacheValue)">Cache</button>
+     <file name="index.html">
+       <div ng-controller="CacheCtrl">
+         <input ng-model="newCacheKey" placeholder="Key">
+         <input ng-model="newCacheValue" placeholder="Value">
+         <button ng-click="put(newCacheKey, newCacheValue)">Cache</button>
 
-   <p ng-if="keys.length">Cached Values</p>
-   <div ng-repeat="key in keys">
-   <span ng-bind="key"></span>
-   <span>: </span>
-   <b ng-bind="cache.get(key)"></b>
-   </div>
+         <p ng-if="keys.length">Cached Values</p>
+         <div ng-repeat="key in keys">
+           <span ng-bind="key"></span>
+           <span>: </span>
+           <b ng-bind="cache.get(key)"></b>
+         </div>
 
-   <p>Cache Info</p>
-   <div ng-repeat="(key, value) in cache.info()">
-   <span ng-bind="key"></span>
-   <span>: </span>
-   <b ng-bind="value"></b>
-   </div>
-   </div>
+         <p>Cache Info</p>
+         <div ng-repeat="(key, value) in cache.info()">
+           <span ng-bind="key"></span>
+           <span>: </span>
+           <b ng-bind="value"></b>
+         </div>
+       </div>
    </file>
    <file name="script.js">
-   function CacheCtrl($scope, $cacheFactory) {
-      $scope.keys = [];
-      $scope.cache = $cacheFactory('cacheId');
-      $scope.put = function(key, value) {
-        $scope.cache.put(key, value);
-        $scope.keys.push(key);
-      };
-    }
+     function CacheCtrl($scope, $cacheFactory) {
+        $scope.keys = [];
+        $scope.cache = $cacheFactory('cacheId');
+        $scope.put = function(key, value) {
+          $scope.cache.put(key, value);
+          $scope.keys.push(key);
+        };
+      }
    </file>
    <file name="style.css">
      p {
