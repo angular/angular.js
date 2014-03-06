@@ -117,6 +117,15 @@ describe('$location', function() {
     });
 
 
+    it('search() should remove multiple parameters', function() {
+      url.search({one: 1, two: true});
+      expect(url.search()).toEqual({one: 1, two: true});
+      url.search({one: null, two: null});
+      expect(url.search()).toEqual({});
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b#hash');
+    });
+
+
     it('search() should handle multiple value', function() {
       url.search('a&b');
       expect(url.search()).toEqual({a: true, b: true});
