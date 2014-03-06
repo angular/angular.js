@@ -123,77 +123,84 @@ describe('$interpolate', function() {
     }));
 
     it('should not get confused with same markers', inject(function($interpolate) {
-      expect($interpolate('---').parts).toEqual(['---']);
+      expect($interpolate('---').separators).toEqual(['---']);
+      expect($interpolate('---').expressions).toEqual([]);
       expect($interpolate('----')()).toEqual('');
       expect($interpolate('--1--')()).toEqual('1');
     }));
   });
 
-
   describe('parseBindings', function() {
     it('should Parse Text With No Bindings', inject(function($interpolate) {
-      var parts = $interpolate("a").parts;
-      expect(parts.length).toEqual(1);
-      expect(parts[0]).toEqual("a");
+      expect($interpolate("a").separators).toEqual(['a']);
+      expect($interpolate("a").expressions).toEqual([]);
     }));
 
     it('should Parse Empty Text', inject(function($interpolate) {
-      var parts = $interpolate("").parts;
-      expect(parts.length).toEqual(1);
-      expect(parts[0]).toEqual("");
+      expect($interpolate("").separators).toEqual(['']);
+      expect($interpolate("").expressions).toEqual([]);
     }));
 
     it('should Parse Inner Binding', inject(function($interpolate) {
-      var parts = $interpolate("a{{b}}C").parts;
-      expect(parts.length).toEqual(3);
-      expect(parts[0]).toEqual("a");
-      expect(parts[1].exp).toEqual("b");
-      expect(parts[1]({b:123})).toEqual(123);
-      expect(parts[2]).toEqual("C");
+      var interpolateFn = $interpolate("a{{b}}C"),
+          separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['a', 'C']);
+      expect(expressions.length).toEqual(1);
+      expect(expressions[0].exp).toEqual('b');
+      expect(expressions[0]({b:123})).toEqual('123');
     }));
 
     it('should Parse Ending Binding', inject(function($interpolate) {
-      var parts = $interpolate("a{{b}}").parts;
-      expect(parts.length).toEqual(2);
-      expect(parts[0]).toEqual("a");
-      expect(parts[1].exp).toEqual("b");
-      expect(parts[1]({b:123})).toEqual(123);
+      var interpolateFn = $interpolate("a{{b}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['a', '']);
+      expect(expressions.length).toEqual(1);
+      expect(expressions[0].exp).toEqual('b');
+      expect(expressions[0]({b:123})).toEqual('123');
     }));
 
     it('should Parse Begging Binding', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}c").parts;
-      expect(parts.length).toEqual(2);
-      expect(parts[0].exp).toEqual("b");
-      expect(parts[1]).toEqual("c");
+      var interpolateFn = $interpolate("{{b}}c"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', 'c']);
+      expect(expressions.length).toEqual(1);
+      expect(expressions[0].exp).toEqual('b');
+      expect(expressions[0]({b:123})).toEqual('123');
     }));
 
     it('should Parse Loan Binding', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}").parts;
-      expect(parts.length).toEqual(1);
-      expect(parts[0].exp).toEqual("b");
+      var interpolateFn = $interpolate("{{b}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', '']);
+      expect(expressions.length).toEqual(1);
+      expect(expressions[0].exp).toEqual('b');
+      expect(expressions[0]({b:123})).toEqual('123');
     }));
 
     it('should Parse Two Bindings', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}{{c}}").parts;
-      expect(parts.length).toEqual(2);
-      expect(parts[0].exp).toEqual("b");
-      expect(parts[1].exp).toEqual("c");
+      var interpolateFn = $interpolate("{{b}}{{c}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', '', '']);
+      expect(expressions.length).toEqual(2);
+      expect(expressions[0].exp).toEqual('b');
+      expect(expressions[1].exp).toEqual('c');
     }));
 
     it('should Parse Two Bindings With Text In Middle', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}x{{c}}").parts;
-      expect(parts.length).toEqual(3);
-      expect(parts[0].exp).toEqual("b");
-      expect(parts[1]).toEqual("x");
-      expect(parts[2].exp).toEqual("c");
+      var interpolateFn = $interpolate("{{b}}x{{c}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', 'x', '']);
+      expect(expressions.length).toEqual(2);
+      expect(expressions[0].exp).toEqual('b');
+      expect(expressions[1].exp).toEqual('c');
     }));
 
     it('should Parse Multiline', inject(function($interpolate) {
-      var parts = $interpolate('"X\nY{{A\n+B}}C\nD"').parts;
-      expect(parts.length).toEqual(3);
-      expect(parts[0]).toEqual('"X\nY');
-      expect(parts[1].exp).toEqual('A\n+B');
-      expect(parts[2]).toEqual('C\nD"');
+      var interpolateFn = $interpolate('"X\nY{{A\n+B}}C\nD"'),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['"X\nY', 'C\nD"']);
+      expect(expressions.length).toEqual(1);
+      expect(expressions[0].exp).toEqual('A\n+B');
     }));
   });
 
@@ -205,6 +212,12 @@ describe('$interpolate', function() {
           $interpolate('constant/{{var}}', true, isTrustedContext);
         }).toThrowMinErr(
             "$interpolate", "noconcat", "Error while interpolating: constant/{{var}}\nStrict " +
+            "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
+            "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+      expect(function() {
+        $interpolate('{{var}}/constant', true, isTrustedContext);
+      }).toThrowMinErr(
+          "$interpolate", "noconcat", "Error while interpolating: {{var}}/constant\nStrict " +
             "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
             "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
       expect(function() {
@@ -248,7 +261,8 @@ describe('$interpolate', function() {
       });
 
       inject(function($interpolate) {
-        expect($interpolate('---').parts).toEqual(['---']);
+        expect($interpolate('---').separators).toEqual(['---']);
+        expect($interpolate('---').expressions).toEqual([]);
         expect($interpolate('----')()).toEqual('');
         expect($interpolate('--1--')()).toEqual('1');
       });
