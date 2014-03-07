@@ -22,6 +22,12 @@ module.exports = {
     _.forEach(docs, function(doc) {
       if ( doc.docType === 'error' ) {
 
+        // Parse out the error info from the id
+        parts = doc.name.split(':');
+        doc.namespace = parts[0];
+        doc.name = parts[1];
+
+
         var namespaceDoc = errorNamespaces[doc.namespace];
         if ( !namespaceDoc ) {
           // First time we came across this namespace, so create a new one
