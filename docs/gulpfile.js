@@ -49,7 +49,11 @@ gulp.task('assets', ['bower'], function() {
 
 
 gulp.task('doc-gen', function() {
-  return docGenerator('docs.config.js').generateDocs();
+  return docGenerator('docs.config.js')
+    .generateDocs()
+    .catch(function(error) {
+      process.exit(1);
+    });
 });
 
 // JSHint the example and protractor test files
