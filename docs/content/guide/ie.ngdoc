@@ -26,7 +26,7 @@ To make your Angular application work on IE please make sure that:
   1. You polyfill JSON.stringify for IE7 and below. You can use
      [JSON2](https://github.com/douglascrockford/JSON-js) or
      [JSON3](http://bestiejs.github.com/json3/) polyfills for this.
-     
+
      ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org">
@@ -42,7 +42,7 @@ To make your Angular application work on IE please make sure that:
      ```
 
   2. add `id="ng-app"` to the root element in conjunction with `ng-app` attribute
-     
+
      ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
@@ -54,7 +54,7 @@ To make your Angular application work on IE please make sure that:
      `<div ng-view>` instead), or
 
   4. if you **do use** custom element tags, then you must take these steps to make IE 8 and below happy:
-     
+
      ```html
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
@@ -64,7 +64,7 @@ To make your Angular application work on IE please make sure that:
                document.createElement('ng-include');
                document.createElement('ng-pluralize');
                document.createElement('ng-view');
-     
+
                // Optionally these for CSS
                document.createElement('ng:include');
                document.createElement('ng:pluralize');
@@ -79,7 +79,7 @@ To make your Angular application work on IE please make sure that:
      ```
   5. Use `ng-style` tags instead of `style="{{ someCss }}"`. The later works in Chrome and Firefox
      but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
-     
+
 
 The **important** parts are:
 
@@ -165,7 +165,7 @@ In IE, the behavior is that the `BODY` element has three children:
 
 ## CSS Styling of Custom Tag Names
 
-To make CSS selectors work with custom elements, the custom element name must be pre-created with 
+To make CSS selectors work with custom elements, the custom element name must be pre-created with
 `document.createElement('my-tag')` regardless of XML namespace.
 
 ```html
