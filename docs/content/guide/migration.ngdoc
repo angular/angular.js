@@ -43,7 +43,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#ngscenario ngScenario}</li>
   <li>{@link guide/migration#nginclude-and-ngview-replace-its-entire-element-on-update ngInclude and ngView replace its entire element on update}</li>
   <li>{@link guide/migration#urls-are-now-sanitized-against-a-whitelist URLs are now sanitized against a whitelist}</li>
-  <li>{@link guide/migration#isolate-scope-only-exposed-to-directives-with-property Isolate scope only exposed to directives with <code>scope</code> property}</li>
+  <li>{@link guide/migration#isolate-scope-only-exposed-to-directives-with-scope-property Isolate scope only exposed to directives with <code>scope</code> property}</li>
   <li>{@link guide/migration#change-to-interpolation-priority Change to interpolation priority}</li>
   <li>{@link guide/migration#underscore-prefixed/suffixed-properties-are-non-bindable Underscore-prefixed/suffixed properties are non-bindable}</li>
   <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
