@@ -91,7 +91,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
 record. This property is used to order phones by age.
 
 * We added a line to the controller that sets the default value of `orderProp` to `age`. If we had
-not set a default value here, the `orderBy` filter would remain uninitialized until our 
+not set a default value here, the `orderBy` filter would remain uninitialized until our
 user picked an option from the drop down menu.
 
   This is a good time to talk about two-way data-binding. Notice that when the app is loaded in the
@@ -117,7 +117,7 @@ describe('PhoneCat controllers', function() {
     var scope, ctrl;
 
     beforeEach(module('phonecatApp'));
-    
+
     beforeEach(inject(function($controller) {
       scope = {};
       ctrl = $controller('PhoneListCtrl', {$scope:scope});

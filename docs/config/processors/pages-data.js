@@ -11,17 +11,17 @@ var AREA_NAMES = {
 };
 
 function getNavGroup(pages, area, pageSorter, pageMapper) {
-  
+
   var navItems = _(pages)
     // We don't want the child to include the index page as this is already catered for
     .omit(function(page) { return page.id === 'index'; })
- 
+
     // Apply the supplied sorting function
     .sortBy(pageSorter)
- 
+
     // Apply the supplied mapping function
     .map(pageMapper)
- 
+
     .value();
 
   return {
@@ -176,7 +176,7 @@ module.exports = {
     //    - ngView
     //    - section "service"
     //    - $route
-    //    
+    //
     var areas = {};
     _(navPages)
       .groupBy('area')
