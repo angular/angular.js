@@ -183,7 +183,7 @@ is available to be injected.
 ### Writing and Running Tests
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
-this tutorial in Jasmine. You can learn about Jasmine on the [Jasmine home page](http://pivotal.github.com/jasmine/) and at the [Jasmine docs](http://pivotal.github.io/jasmine/).
+this tutorial in Jasmine. You can learn about Jasmine on the [Jasmine home page](http://jasmine.github.io/) and at the [Jasmine docs](http://jasmine.github.io/).
 
 The angular-seed project is pre-configured to run all unit tests using [Karma](http://karma-runner.github.io/). Ensure that the necessary karma plugins are installed.
 You can do this by issuing `npm install` into your terminal.
