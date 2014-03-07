@@ -219,7 +219,7 @@
         </div>
         <div class="grid-right">
           <div id="loading" ng-show="loading">Loading...</div>
-          <div ng-hide="loading" ng-include="currentPage.outputPath" onload="afterPartialLoaded()"  autoscroll></div>
+          <div ng-hide="loading" ng-include="currentPage.outputPath || 'Error404.html'" onload="afterPartialLoaded()"  autoscroll></div>
         </div>
       </div>
     </section>
