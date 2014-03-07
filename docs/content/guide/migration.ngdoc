@@ -7,7 +7,7 @@ AngularJS version 1.2 introduces several breaking changes that may require chang
 application's source code.
 
 Although we try to avoid breaking changes, there are some cases where it is unavoidable.
-AngularJS 1.2 has undergone a thourough security review to make applications safer by default,
+AngularJS 1.2 has undergone a thorough security review to make applications safer by default,
 which has driven many of these changes. Several new features, especially animations, would not
 be possible without a few changes. Finally, some outstanding bugs were best fixed by changing
 an existing API.
@@ -493,7 +493,7 @@ See [31f190d4](https://github.com/angular/angular.js/commit/31f190d4d53921d32253
 
 the priority of ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView has changed. This could affect directives that explicitly specify their priority.
 
-In order to make ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView work together in all common scenarios their directives are being adjusted to achieve the following precendence:
+In order to make ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView work together in all common scenarios their directives are being adjusted to achieve the following precedence:
 
 
 Directive        | Old Priority | New Priority
@@ -532,7 +532,7 @@ See [7d69d52a](https://github.com/angular/angular.js/commit/7d69d52acff8578e0f7d
 
 A whitelist configured via `$compileProvider` can be used to configure what URLs are considered safe.
 By default all common protocol prefixes are whitelisted including `data:` URIs with mime types `image/*`.
-This change sholdn't impact apps that don't contain malicious image links.
+This change shouldn't impact apps that don't contain malicious image links.
 
 See [1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d61286840177607edd552a9df97),
 [3e39ac7e](https://github.com/angular/angular.js/commit/3e39ac7e1b10d4812a44dad2f959a93361cd823b).
@@ -613,7 +613,7 @@ controller.) That's easier said that done for two reasons:
 someone on the scope chain for JavaScript use, you also expose it to
 Angular expressions
 2. The new `controller as` syntax that's now in increased usage exposes the
-entire controller on the scope chain greatly increaing the exposed surface.
+entire controller on the scope chain greatly increasing the exposed surface.
 
 Though Angular expressions are written and controlled by the developer, they:
 
