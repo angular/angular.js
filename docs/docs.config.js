@@ -25,6 +25,8 @@ module.exports = function(config) {
     { pattern: '**/*.ngdoc', basePath: path.resolve(basePath, 'content') }
   ]);
 
+  config.set('processing.stopOnError', true);
+
   config.set('processing.errors.minerrInfoPath', path.resolve(basePath, '../build/errors.json'));
 
   config.set('rendering.outputFolder', '../build/docs');

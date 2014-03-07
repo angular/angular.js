@@ -145,6 +145,9 @@ module.exports = {
     _(docs)
     .filter(function(doc) { return doc.area === 'api'; })
     .filter(function(doc) { return doc.docType === 'module'; })
+    .forEach(function(doc) { if ( !doc.path ) {
+      log.warn('Missing path property for ', doc.id);
+    }})
     .map(function(doc) { return _.pick(doc, ['id', 'module', 'docType', 'area']); })
     .tap(function(docs) {
       log.debug(docs);
@@ -187,12 +190,6 @@ module.exports = {
         var navGroupMapper = navGroupMappers[area.id] || navGroupMappers['pages'];
         area.navGroups = navGroupMapper(pages, area);
       });
-
-    _.forEach(docs, function(doc) {
-      if ( !doc.path ) {
-        log.warn('Missing path property for ', doc.id);
-      }
-    });
 
     // Extract a list of basic page information for mapping paths to paritals and for client side searching
     var pages = _(docs)
