@@ -1,3 +1,33 @@
+<a name="1.3.0-beta.1"></a>
+# 1.3.0-beta.1 retractable-eyebrow (2014-03-07)
+
+
+## Bug Fixes
+
+- **$compile:** support templates with thead and tfoot root elements
+  ([53ec5e13](https://github.com/angular/angular.js/commit/53ec5e13e5955830b6751019eef232bd2125c0b6),
+   [#6289](https://github.com/angular/angular.js/issues/6289))
+- **style:** expressions in style tags
+  ([0609453e](https://github.com/angular/angular.js/commit/0609453e1f9ae074f8d786df903096a6eadb6aa0),
+   [#2387](https://github.com/angular/angular.js/issues/2387), [#6492](https://github.com/angular/angular.js/issues/6492))
+
+
+## Features
+
+- **input:** support types date, time, datetime-local, month, week
+  ([46bd6dc8](https://github.com/angular/angular.js/commit/46bd6dc88de252886d75426efc2ce8107a5134e9),
+   [#5864](https://github.com/angular/angular.js/issues/5864))
+
+
+## Breaking Changes
+
+- **build:** due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
+  As communicated before, IE8 is no longer supported.
+
+For more info: http://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html
+
+
+
 <a name="1.2.14"></a>
 # 1.2.14 feisty-cryokinesis (2014-03-01)
 
