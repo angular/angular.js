@@ -30,6 +30,7 @@ module.exports = function(config) {
   config.set('processing.errors.minerrInfoPath', path.resolve(basePath, '../build/errors.json'));
 
   config.set('rendering.outputFolder', '../build/docs');
+  config.set('rendering.contentsFolder', 'partials');
 
   config.set('logging.level', 'info');
 
