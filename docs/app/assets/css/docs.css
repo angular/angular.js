@@ -466,6 +466,10 @@ iframe.example {
   background:rgb(189, 63, 66);
 }
 
+.type-hint-regexp {
+  background: rgb(90, 84, 189);
+}
+
 .runnable-example-frame {
   width:100%;
   height:300px;
