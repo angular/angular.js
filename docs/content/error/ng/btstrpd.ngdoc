@@ -38,12 +38,12 @@ You can also get this error if you accidentally load AngularJS itself more than 
 <html ng-app>
   <head>
     <script src="angular.js"></script>
-    
+
     ...
 
   </head>
   <body>
-    
+
     ...
 
     <script src="angular.js"></script>
