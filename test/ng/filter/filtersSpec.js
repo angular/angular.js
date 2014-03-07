@@ -58,7 +58,7 @@ describe('filters', function() {
       expect(num).toBe('1.1112');
     });
 
-    it('should format according different seperators', function() {
+    it('should format according different separators', function() {
       var num = formatNumber(1234567.1, pattern, '.', ',', 2);
       expect(num).toBe('1.234.567,10');
     });
@@ -197,7 +197,7 @@ describe('filters', function() {
     var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
     var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
     var earlyDate = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
-
+    var secondWeek = new angular.mock.TzDate(+5, '2013-01-11T12:00:00.000Z'); //Friday Jan 11, 2012
     var date;
 
     beforeEach(inject(function($filter) {
@@ -220,6 +220,12 @@ describe('filters', function() {
     });
 
     it('should accept various format strings', function() {
+      expect(date(secondWeek, 'yyyy-Ww')).
+                      toEqual('2013-W2');
+
+      expect(date(secondWeek, 'yyyy-Www')).
+                      toEqual('2013-W02');
+
       expect(date(morning, "yy-MM-dd HH:mm:ss")).
                       toEqual('10-09-03 07:05:08');
 

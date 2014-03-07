@@ -8,12 +8,9 @@
   "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"],
   "disallowLeftStickedOperators": ["?", "+", "-", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
   "disallowRightStickedOperators": ["?", "+", "/", "*", ":", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
-  "requireRightStickedOperators": ["!"],
-  "requireLeftStickedOperators": [","],
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
   "disallowKeywordsOnNewLine": ["else"],
-  "disallowTrailingWhitespace": true,
   "requireLineFeedAtFileEnd": true,
   "validateJSDoc": {
     "checkParamNames": true,

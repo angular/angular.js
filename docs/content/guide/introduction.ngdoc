@@ -7,14 +7,14 @@
 
 AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template
 language and lets you extend HTML's syntax to express your application's components clearly and
-succinctly. Out of the box, it eliminates much of the code you currently write through data
-binding and dependency injection. And it all happens in JavaScript within the browser, making it
+succinctly. Angular's data binding and dependency injection eliminate much of the code you
+currently have to write. And it all happens within the browser, making it
 an ideal partner with any server technology.
 
 Angular is what HTML would have been had it been designed for applications. HTML is a great
 declarative language for static documents. It does not contain much in the way of creating
 applications, and as a result building web applications is an exercise in *what do I have to do
-to trick the browser into doing what I want.*
+to trick the browser into doing what I want?*
 
 The impedance mismatch between dynamic applications and static documents is often solved with:
 

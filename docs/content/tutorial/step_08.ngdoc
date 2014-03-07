@@ -107,7 +107,7 @@ __`app/partials/phone-detail.html`:__
     </dl>
   </li>
     ...
-  </li>
+  <li>
     <span>Additional Features</span>
     <dd>{{phone.additionalFeatures}}</dd>
   </li>

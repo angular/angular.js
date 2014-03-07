@@ -1040,7 +1040,7 @@ describe('angular', function() {
     });
 
 
-    it('should allow seperator to be overridden', function() {
+    it('should allow separator to be overridden', function() {
       expect(snake_case('ABC', '&')).toEqual('a&b&c');
       expect(snake_case('alanBobCharles', '&')).toEqual('alan&bob&charles');
     });
@@ -1127,5 +1127,25 @@ describe('angular', function() {
         expect(result).toEqual(expected[idx]);
       });
     }));
+
+    // Issue #4805
+    it('should return false for objects resembling a Backbone Collection', function() {
+      // Backbone stuff is sort of hard to mock, if you have a better way of doing this,
+      // please fix this.
+      var fakeBackboneCollection = {
+        children: [{}, {}, {}],
+        find: function() {},
+        on: function() {},
+        off: function() {},
+        bind: function() {}
+      };
+      expect(isElement(fakeBackboneCollection)).toBe(false);
+    });
+
+    it('should return false for arrays with node-like properties', function() {
+      var array = [1,2,3];
+      array.on = true;
+      expect(isElement(array)).toBe(false);
+    });
   });
 });

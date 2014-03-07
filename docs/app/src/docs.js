@@ -1,26 +1,4 @@
-angular.module('docsApp', [
-  'ngRoute',
-  'ngCookies',
-  'ngSanitize',
-  'ngAnimate',
-  'versionsData',
-  'pagesData',
-  'directives',
-  'errors',
-  'examples',
-  'search',
-  'tutorials',
-  'versions',
-  'bootstrap',
-  'bootstrapPrettify',
-  'ui.bootstrap.dropdown'
-])
-
-
-.config(function($locationProvider) {
-  $locationProvider.html5Mode(true).hashPrefix('!');
-})
-
+angular.module('DocsController', [])
 
 .controller('DocsController', function($scope, $rootScope, $location, $window, $cookies, NG_PAGES, NG_NAVIGATION, NG_VERSION) {
 
@@ -52,7 +30,8 @@ angular.module('docsApp', [
   };
 
   $scope.afterPartialLoaded = function() {
-    $window._gaq.push(['_trackPageview', $location.path()]);
+    var pagePath = $scope.currentPage ? $scope.currentPage.path : $location.path();
+    $window._gaq.push(['_trackPageview', pagePath]);
   };
 
   /** stores a cookie that is used by apache to decide which manifest ot send */
@@ -76,11 +55,26 @@ angular.module('docsApp', [
 
 
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
-    // Strip off leading slash
-    if ( path.charAt(0)==='/' ) {
+
+    var currentPage = $scope.currentPage = NG_PAGES[path];
+    if ( !currentPage && path.charAt(0)==='/' ) {
+      // Strip off leading slash
       path = path.substr(1);
     }
-    var currentPage = $scope.currentPage = NG_PAGES[path];
+
+    currentPage = $scope.currentPage = NG_PAGES[path];
+    if ( !currentPage && path.charAt(path.length-1) === '/' && path.length > 1 ) {
+      // Strip off trailing slash
+      path = path.substr(0, path.length-1);
+    }
+
+    currentPage = $scope.currentPage = NG_PAGES[path];
+    if ( !currentPage && /\/index$/.test(path) ) {
+      // Strip off index from the end
+      path = path.substr(0, path.length - 6);
+    }
+
+    currentPage = $scope.currentPage = NG_PAGES[path];
 
     if ( currentPage ) {
       $scope.currentArea = currentPage && NG_NAVIGATION[currentPage.area];
@@ -108,7 +102,6 @@ angular.module('docsApp', [
   $scope.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
   $scope.futurePartialTitle = null;
   $scope.loading = 0;
-  $scope.URL = URL;
   $scope.$cookies = $cookies;
 
   $cookies.platformPreference = $cookies.platformPreference || 'gitUnix';

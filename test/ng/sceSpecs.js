@@ -109,7 +109,7 @@ describe('SCE', function() {
     }));
 
     it('should NOT wrap unknown contexts', inject(function($sce) {
-      expect(function() { $sce.trustAs('unknown1' , '123'); }).toThrowMinErr(
+      expect(function() { $sce.trustAs('unknown1', '123'); }).toThrowMinErr(
           '$sce', 'icontext', 'Attempted to trust a value in invalid context. Context: unknown1; Value: 123');
     }));
 
@@ -436,7 +436,7 @@ describe('SCE', function() {
     it('should support multiple items in both lists', runTest(
       {
         whiteList: [/^http:\/\/example.com\/1$/, /^http:\/\/example.com\/2$/, /^http:\/\/example.com\/3$/, 'self'],
-        blackList: [/^http:\/\/example.com\/3$/, /.*\/open_redirect/],
+        blackList: [/^http:\/\/example.com\/3$/, /.*\/open_redirect/]
       }, function($sce) {
         expect($sce.getTrustedResourceUrl('same_domain')).toEqual('same_domain');
         expect($sce.getTrustedResourceUrl('http://example.com/1')).toEqual('http://example.com/1');

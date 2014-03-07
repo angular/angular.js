@@ -18,6 +18,7 @@ directive.runnableExample = ['$templateCache', '$document', function($templateCa
 
   return {
     restrict: 'C',
+    scope : true,
     controller : ['$scope', function($scope) {
       $scope.setTab = function(index) {
         var tab = $scope.tabs[index];
@@ -28,21 +29,20 @@ directive.runnableExample = ['$templateCache', '$document', function($templateCa
     compile : function(element) {
       element.html(tpl + element.html());
       return function(scope, element) {
+        var node = element[0];
+        var examples = node.querySelectorAll(exampleClassNameSelector);
         var tabs = [], now = Date.now();
-        angular.forEach(doc.querySelectorAll(exampleClassNameSelector),
-          function(child, index) {
-
+        angular.forEach(examples, function(child, index) {
           tabs.push(child.getAttribute('name'));
         });
 
         if(tabs.length > 0) {
           scope.tabs = tabs;
           scope.$on('tabChange', function(e, index, title) {
-            var elements = doc.querySelectorAll(exampleClassNameSelector);
-            angular.forEach(elements, function(child) {
+            angular.forEach(examples, function(child) {
               child.style.display = 'none';
             });
-            var selected = elements[index];
+            var selected = examples[index];
             selected.style.display = 'block';
           });
           scope.setTab(0);

@@ -368,7 +368,7 @@ describe('ngInclude', function() {
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
       expect($animate.queue.shift().event).toBe('enter');
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
@@ -385,7 +385,7 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       $rootScope.$apply(function () {
         $rootScope.tpl = 'another.html';
@@ -394,7 +394,7 @@ describe('ngInclude', function() {
 
       expect($animate.queue.shift().event).toBe('leave');
       expect($animate.queue.shift().event).toBe('enter');
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
@@ -403,7 +403,7 @@ describe('ngInclude', function() {
 
       expect($animate.queue.shift().event).toBe('leave');
       expect($animate.queue.shift().event).toBe('enter');
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       expect(autoScrollSpy).toHaveBeenCalled();
       expect(autoScrollSpy.callCount).toBe(3);
@@ -419,7 +419,7 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $timeout.flush();
+      $animate.triggerCallbacks();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
 
@@ -435,7 +435,7 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       $rootScope.$apply(function () {
         $rootScope.tpl = 'template.html';
@@ -457,7 +457,7 @@ describe('ngInclude', function() {
 
           $rootScope.$apply("tpl = 'template.html'");
           expect($animate.queue.shift().event).toBe('enter');
-          $timeout.flush();
+          $animate.triggerCallbacks();
 
           expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
@@ -663,4 +663,44 @@ describe('ngInclude animations', function() {
       expect(itemA).not.toEqual(itemB);
   }));
 
+  it('should destroy the previous leave animation if a new one takes place', function() {
+    module(function($provide) {
+      $provide.value('$animate', {
+        enabled : function() { return true; },
+        leave : function() {
+          //DOM operation left blank
+        },
+        enter : function(element, parent, after) {
+          angular.element(after).after(element);
+        }
+      });
+    });
+    inject(function ($compile, $rootScope, $animate, $templateCache) {
+      var item;
+      var $scope = $rootScope.$new();
+      element = $compile(html(
+        '<div>' +
+          '<div ng-include="inc">Yo</div>' +
+        '</div>'
+      ))($scope);
+
+      $templateCache.put('one', [200, '<div>one</div>', {}]);
+      $templateCache.put('two', [200, '<div>two</div>', {}]);
+
+      $scope.$apply('inc = "one"');
+
+      var destroyed, inner = element.children(0);
+      inner.on('$destroy', function() {
+        destroyed = true;
+      });
+
+      $scope.$apply('inc = "two"');
+
+      $scope.$apply('inc = "one"');
+
+      $scope.$apply('inc = "two"');
+
+      expect(destroyed).toBe(true);
+    });
+  });
 });

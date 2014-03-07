@@ -460,6 +460,8 @@ describe('parser', function() {
           expect(scope.$eval("[1, 2]").length).toEqual(2);
           expect(scope.$eval("[1, 2]")[0]).toEqual(1);
           expect(scope.$eval("[1, 2]")[1]).toEqual(2);
+          expect(scope.$eval("[1, 2,]")[1]).toEqual(2);
+          expect(scope.$eval("[1, 2,]").length).toEqual(2);
         });
 
         it('should evaluate array access', function() {
@@ -474,6 +476,9 @@ describe('parser', function() {
           expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
           expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
           expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{a:'b',}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{'a':'b',}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{\"a\":'b',}"))).toEqual('{"a":"b"}');
         });
 
         it('should evaluate object access', function() {
@@ -786,6 +791,28 @@ describe('parser', function() {
                       '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
                       'disallowed! Expression: a.b.doc.on("click")');
             }));
+
+            // Issue #4805
+            it('should NOT throw isecdom when referencing a Backbone Collection', function() {
+              // Backbone stuff is sort of hard to mock, if you have a better way of doing this,
+              // please fix this.
+              var fakeBackboneCollection = {
+                children: [{}, {}, {}],
+                find: function() {},
+                on: function() {},
+                off: function() {},
+                bind: function() {}
+              };
+              scope.backbone = fakeBackboneCollection;
+              expect(function() { scope.$eval('backbone'); }).not.toThrow();
+            });
+
+            it('should NOT throw isecdom when referencing an array with node properties', function() {
+              var array = [1,2,3];
+              array.on = array.attr = array.prop = array.bind = true;
+              scope.array = array;
+              expect(function() { scope.$eval('array'); }).not.toThrow();
+            });
           });
         });
 
@@ -1334,7 +1361,7 @@ describe('parser', function() {
             }));
 
 
-            it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
+            it('should evaluate a resolved promise and overwrite the previous set value in the absence of the getter',
                 inject(function($parse) {
               scope.person = promise;
               var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });

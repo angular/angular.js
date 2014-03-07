@@ -11,6 +11,7 @@ angularFiles = {
 
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
+    'src/ng/asyncCallback.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
@@ -26,6 +27,7 @@ angularFiles = {
     'src/ng/log.js',
     'src/ng/parse.js',
     'src/ng/q.js',
+    'src/ng/raf.js',
     'src/ng/rootScope.js',
     'src/ng/sanitizeUri.js',
     'src/ng/sce.js',
@@ -142,8 +144,6 @@ angularFiles = {
     '@angularSrcModules',
     '@angularScenario',
     '@angularTest',
-    'example/personalLog/*.js',
-    'example/personalLog/test/*.js'
   ],
 
   'karmaExclude': [
@@ -178,9 +178,6 @@ angularFiles = {
     '@angularSrcModules',
     '@angularScenario',
     '@angularTest',
-    'example/personalLog/*.js',
-
-    'example/personalLog/test/*.js'
   ],
 
   'karmaJqueryExclude': [

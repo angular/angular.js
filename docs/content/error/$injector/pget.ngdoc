@@ -22,5 +22,5 @@ angular.module("myApp", [])
   .provider('good', GoodProvider);
 ```
 
-For more information, refer to the {@link auto.$provide#methods_provider
+For more information, refer to the {@link auto.$provide#provider
 $provide.provider} api doc.

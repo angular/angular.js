@@ -405,6 +405,10 @@ describe('$http', function() {
       $http = $h;
     }]));
 
+    it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
+      $httpBackend.expect('GET', '/url').respond('');
+      $http({url: '/url'});
+    }));
 
     it('should do basic request', inject(function($httpBackend, $http) {
       $httpBackend.expect('GET', '/url').respond('');
@@ -452,6 +456,11 @@ describe('$http', function() {
         $httpBackend.expect('GET', '/Path?!do%26h=g%3Da+h&:bar=$baz@1').respond('');
         $http({url: '/Path', params: {':bar': '$baz@1', '!do&h': 'g=a h'}, method: 'GET'});
       });
+
+      it('should not add question mark when params is empty', function() {
+        $httpBackend.expect('GET', '/url').respond('');
+        $http({url: '/url', params: {}, method: 'GET'});
+      })
     });
 
 
@@ -667,7 +676,7 @@ describe('$http', function() {
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {
-          'Custom': 'header',
+          'Custom': 'header'
         }});
 
         $httpBackend.flush();
@@ -1120,6 +1129,16 @@ describe('$http', function() {
         expect(callback.mostRecentCall.args[0]).toBe('content');
       }));
 
+      it('should cache request when cache is provided and no method specified', function () {
+        doFirstCacheRequest();
+
+        $http({url: '/url', cache: cache}).success(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toBe('content');
+      });
+
 
       it('should not cache when cache is not provided', function() {
         doFirstCacheRequest();
@@ -1440,7 +1459,7 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
-      it('should have seperate opbjects for defaults PUT and POST', function() {
+      it('should have separate opbjects for defaults PUT and POST', function() {
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
         expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);

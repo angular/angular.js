@@ -45,12 +45,6 @@ module.exports = function(config, specificOptions) {
         platform: 'OS X 10.9',
         version: '7'
       },
-      'SL_IE_8': {
-        base: 'SauceLabs',
-        browserName: 'internet explorer',
-        platform: 'Windows 7',
-        version: '8'
-      },
       'SL_IE_9': {
         base: 'SauceLabs',
         browserName: 'internet explorer',
@@ -87,13 +81,6 @@ module.exports = function(config, specificOptions) {
         browser: 'firefox',
         os: 'Windows',
         os_version: '8'
-      },
-      'BS_IE_8': {
-        base: 'BrowserStack',
-        browser: 'ie',
-        browser_version: '8.0',
-        os: 'Windows',
-        os_version: '7'
       },
       'BS_IE_9': {
         base: 'BrowserStack',

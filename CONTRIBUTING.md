@@ -3,15 +3,25 @@
 We'd love for you to contribute to our source code and to make AngularJS even better than it is
 today! Here are the guidelines we'd like you to follow:
 
-## Code of Conduct
+ - [Code of Conduct](#coc)
+ - [Question or Problem?](#question)
+ - [Issues and Bugs](#issue)
+ - [Feature Requests](#feature)
+ - [Submission Guidelines](#submit)
+ - [Coding Rules](#rules)
+ - [Commit Message Guidelines](#commit)
+ - [Signing the CLA](#cla)
+ - [Further Info](#info)
+
+## <a name="coc"></a> Code of Conduct
 Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
 
-## Got a Question or Problem?
+## <a name="question"></a> Got a Question or Problem?
 
 If you have questions about how to use AngularJS, please direct these to the [Google Group][groups]
 discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc].
 
-## Found an Issue?
+## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code or a mistake in the documentation, you can help us by
 submitting and issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
 with a fix.
@@ -22,7 +32,7 @@ approach is to submit a patch to the I18N project directly, instead of submittin
 
 **Please see the Submission Guidelines below**.
 
-## Want a Feature?
+## <a name="feature"></a> Want a Feature?
 You can request a new feature by submitting an issue to our [GitHub Repository][github].  If you
 would like to implement a new feature then consider what kind of change it is:
 
@@ -33,7 +43,7 @@ project.
 * **Small Changes** can be crafted and submitted to [GitHub Repository][github] as a Pull Request.
 
 
-## Want a Doc Fix?
+## <a name="docs"></a> Want a Doc Fix?
 If you want to help improve the docs, it's a good idea to let others know what you're working on to 
 minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open). 
 Comment on an issue to let others know what you're working on, or create a new issue if your work
@@ -45,7 +55,7 @@ is labeled "docs:" and follows the **Git Commit Guidelines** outlined below.
 
 If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly.
 
-## Submission Guidelines
+## <a name="submit"></a> Submission Guidelines
 
 ### Submitting an Issue
 Before you submit your issue search the archive, maybe your question was already answered.
@@ -143,15 +153,7 @@ from the main (upstream) repository:
     git pull --ff upstream master
     ```
 
-### GitHub Pull Request Helper
-
-We track Pull Requests by attaching labels and assigning to milestones.  For some reason GitHub
-does not provide a good UI for managing labels on Pull Requests (unlike Issues).  We have developed
-a simple Chrome Extension that enables you to view (and manage if you have permission) the labels
-on Pull Requests.  You can get the extension from the Chrome WebStore -
-[GitHub PR Helper][github-pr-helper]
-
-## Coding Rules
+## <a name="rules"></a> Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All features or bug fixes **must be tested** by one or more [specs][unit-testing].
@@ -171,7 +173,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
     * We **don't go crazy with type annotations** for private internal APIs unless it's an internal API
       that is used throughout AngularJS. The best guidance is to do what makes the most sense.
 
-## Git Commit Guidelines
+## <a name="commit"></a> Git Commit Guidelines
 
 We have very precise rules over how our git commit messages can be formatted.  This leads to **more
 readable messages** that are easy to follow when looking through the **project history**.  But also,
@@ -228,7 +230,7 @@ reference GitHub issues that this commit **Closes**.
 
 A detailed explanation can be found in this [document][commit-message-format].
 
-## Signing the CLA
+## <a name="cla"></a> Signing the CLA 
 
 Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
 changes to be accepted, the CLA must be signed. It's a quick process, we promise!
@@ -237,7 +239,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 * For corporations we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
 
-## Further Information
+## <a name="info"></a> Further Information
 You can find out more detailed information about contributing in the
 [AngularJS documentation][contributing].
 

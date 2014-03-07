@@ -62,7 +62,7 @@ now-familiar double-curly brace binding in the `href` attribute values. In step 
 the element attribute.
 
 We also added phone images next to each record using an image tag with the {@link
-api/ng.directive:ngSrc ngSrc} directive. That directive prevents the
+ng.directive:ngSrc ngSrc} directive. That directive prevents the
 browser from treating the angular `{{ expression }}` markup literally, and initiating a request to
 invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
 specified an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`).
