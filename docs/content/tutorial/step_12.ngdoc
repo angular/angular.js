@@ -83,7 +83,7 @@ __`app/js/app.js`.__
 
 ```js
 // ...
-angular.module('phonecat', [
+angular.module('phonecatApp', [
   'ngRoute',
 
   'phonecatAnimations',
