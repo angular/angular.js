@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
   "branchVersion": "1.3.*",
-  "cdnVersion": "1.2.14",
+  "cdnVersion": "1.3.0-beta.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
