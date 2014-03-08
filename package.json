@@ -1,6 +1,6 @@
 {
   "name": "angularjs",
-  "branchVersion": "1.2.*",
+  "branchVersion": "1.3.*",
   "cdnVersion": "1.2.14",
   "repository": {
     "type": "git",
