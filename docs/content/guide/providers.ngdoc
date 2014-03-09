@@ -143,7 +143,7 @@ primitive, object literal, function, or even an instance of a custom type.
 ## Service Recipe
 
 JavaScript developers often use custom types to write object-oriented code. Let's explore how we
-could launch a unicorn into the space via our `unicornLauncher` service that is an instance of
+could launch a unicorn into space via our `unicornLauncher` service that is an instance of
 custom type:
 
 ```javascript
