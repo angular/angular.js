@@ -75,6 +75,8 @@ describe('Filter: filter', function() {
                  {person: {name: 'Rita'}},
                  {person: {name: 'Billy'}},
                  {person: {name: 'Joan'}}];
+
+    expect(filter(items, {person: {name : undefined}}).length).toBe(4);
     expect(filter(items, {person: {name: 'Jo'}}).length).toBe(2);
     expect(filter(items, {person: {name: 'Jo'}})).toEqual([
       {person: {name: 'John'}}, {person: {name: 'Joan'}}]);

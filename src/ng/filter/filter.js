@@ -138,8 +138,10 @@ function filterFilter() {
         comparator = function(obj, text) {
           if (obj && text && typeof obj === 'object' && typeof text === 'object') {
             for (var objKey in obj) {
-              if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey) &&
-                  comparator(obj[objKey], text[objKey])) {
+              if (objKey.charAt(0) !== '$' &&
+                  hasOwnProperty.call(obj, objKey) &&
+                  (!isDefined(text[objKey]) || comparator(obj[objKey], text[objKey]))
+              ) {
                 return true;
               }
             }
