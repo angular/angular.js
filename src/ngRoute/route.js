@@ -271,7 +271,7 @@ function $RouteProvider(){
      * <example name="$route-service" module="ngRouteExample"
      *          deps="angular-route.js" fixBase="true">
      *   <file name="index.html">
-     *     <div ng-controller="MainCntl">
+     *     <div ng-controller="MainController">
      *       Choose:
      *       <a href="Book/Moby">Moby</a> |
      *       <a href="Book/Moby/ch/1">Moby: Ch1</a> |
@@ -280,6 +280,7 @@ function $RouteProvider(){
      *       <a href="Book/Scarlet">Scarlet Letter</a><br/>
      *
      *       <div ng-view></div>
+     *
      *       <hr />
      *
      *       <pre>$location.path() = {{$location.path()}}</pre>
@@ -304,10 +305,27 @@ function $RouteProvider(){
      *   <file name="script.js">
      *     angular.module('ngRouteExample', ['ngRoute'])
      *
+     *      .controller('MainController', function($scope, $route, $routeParams, $location) {
+     *          $scope.$route = $route;
+     *          $scope.$location = $location;
+     *          $scope.$routeParams = $routeParams;
+     *      })
+     *
+     *      .controller('BookController', function($scope, $routeParams) {
+     *          $scope.name = "BookController";
+     *          $scope.params = $routeParams;
+     *      })
+     *
+     *      .controller('ChapterController', function($scope, $routeParams) {
+     *          $scope.name = "ChapterController";
+     *          $scope.params = $routeParams;
+     *      })
+     *
      *     .config(function($routeProvider, $locationProvider) {
-     *       $routeProvider.when('/Book/:bookId', {
+     *       $routeProvider
+     *        .when('/Book/:bookId', {
      *         templateUrl: 'book.html',
-     *         controller: BookCntl,
+     *         controller: 'BookController',
      *         resolve: {
      *           // I will cause a 1 second delay
      *           delay: function($q, $timeout) {
@@ -316,45 +334,30 @@ function $RouteProvider(){
      *             return delay.promise;
      *           }
      *         }
-     *       });
-     *       $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+     *       })
+     *       .when('/Book/:bookId/ch/:chapterId', {
      *         templateUrl: 'chapter.html',
-     *         controller: ChapterCntl
+     *         controller: 'ChapterController'
      *       });
      *
      *       // configure html5 to get links working on jsfiddle
      *       $locationProvider.html5Mode(true);
      *     });
      *
-     *     function MainCntl($scope, $route, $routeParams, $location) {
-     *       $scope.$route = $route;
-     *       $scope.$location = $location;
-     *       $scope.$routeParams = $routeParams;
-     *     }
-     *
-     *     function BookCntl($scope, $routeParams) {
-     *       $scope.name = "BookCntl";
-     *       $scope.params = $routeParams;
-     *     }
-     *
-     *     function ChapterCntl($scope, $routeParams) {
-     *       $scope.name = "ChapterCntl";
-     *       $scope.params = $routeParams;
-     *     }
      *   </file>
      *
      *   <file name="protractor.js" type="protractor">
      *     it('should load and compile correct template', function() {
      *       element(by.linkText('Moby: Ch1')).click();
      *       var content = element(by.css('[ng-view]')).getText();
-     *       expect(content).toMatch(/controller\: ChapterCntl/);
+     *       expect(content).toMatch(/controller\: ChapterController/);
      *       expect(content).toMatch(/Book Id\: Moby/);
      *       expect(content).toMatch(/Chapter Id\: 1/);
      *
      *       element(by.partialLinkText('Scarlet')).click();
      *
      *       content = element(by.css('[ng-view]')).getText();
-     *       expect(content).toMatch(/controller\: BookCntl/);
+     *       expect(content).toMatch(/controller\: BookController/);
      *       expect(content).toMatch(/Book Id\: Scarlet/);
      *     });
      *   </file>
