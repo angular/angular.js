@@ -239,6 +239,87 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
     }));
 
+    it('should not trigger a "start", many "move"s and an "end" for mouse if "disableMouseEvents" is set to "true"', inject(function($rootScope, $swipe, $compile) {
+      element = $compile('<div></div>')($rootScope);
+      var events = {
+        disableMouseEvents: 'true',
+        start: jasmine.createSpy('startSpy'),
+        move: jasmine.createSpy('moveSpy'),
+        cancel: jasmine.createSpy('cancelSpy'),
+        end: jasmine.createSpy('endSpy')
+      };
+
+      $swipe.bind(element, events);
+
+      expect(events.start).not.toHaveBeenCalled();
+      expect(events.move).not.toHaveBeenCalled();
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 100,
+        y: 40
+      });
+
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 120,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 130,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 140,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 150,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 160,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 170,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 180,
+        y: 40
+      });
+
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 200,
+        y: 40
+      });
+
+
+      if(description === 'mouse'){
+        expect(events.start).not.toHaveBeenCalled();
+        expect(events.move).not.toHaveBeenCalled();
+        expect(events.cancel).not.toHaveBeenCalled();
+        expect(events.end).not.toHaveBeenCalled();
+      }
+      else{
+        expect(events.start).toHaveBeenCalled();
+        expect(events.move.calls.length).toBe(7);
+        expect(events.end).toHaveBeenCalled();
+
+        expect(events.cancel).not.toHaveBeenCalled();
+      }
+    }));
+
     it('should not start sending "move"s until enough horizontal motion is accumulated', inject(function($rootScope, $swipe, $compile) {
       element = $compile('<div></div>')($rootScope);
       var events = {
