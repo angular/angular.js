@@ -53,6 +53,7 @@ describe('Filter: filter', function() {
     var items = [{first: 'misko', last: 'hevery'},
                  {first: 'adam', last: 'abrons'}];
 
+    expect(filter(items, {first: undefined}).length).toBe(2);
     expect(filter(items, {first:'', last:''}).length).toBe(2);
     expect(filter(items, {first:'', last:'hevery'}).length).toBe(1);
     expect(filter(items, {first:'adam', last:'hevery'}).length).toBe(0);
