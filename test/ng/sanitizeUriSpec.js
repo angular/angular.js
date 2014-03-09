@@ -44,6 +44,12 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
     });
 
+    it('should not sanitize object URLs for images', function() {
+      // ref: https://developer.mozilla.org/en-US/docs/Web/API/URL.createObjectURL
+      testUrl = "blob:https%3A//developer.mozilla.org/f4ba7378-80bb-42af-88fd-df94cfe0fbd0";
+      expect(sanitizeImg(testUrl)).toBe('blob:https%3A//developer.mozilla.org/f4ba7378-80bb-42af-88fd-df94cfe0fbd0');
+    });
+
     it('should sanitize mailto: urls', function() {
       testUrl = "mailto:foo@bar.com";
       expect(sanitizeImg(testUrl)).toBe('unsafe:mailto:foo@bar.com');
