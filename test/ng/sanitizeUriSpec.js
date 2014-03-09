@@ -113,6 +113,10 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
     });
 
+	it('should allow image references to local content in Windows Phone 8', function() {
+		testUrl = "x-wmapp0://www/image.png";
+		expect(sanitizeImg(testUrl)).toBe('x-wmapp0://www/image.png');
+	});
 
     it('should allow reconfiguration of the src whitelist', function() {
       var returnVal;
@@ -212,7 +216,13 @@ describe('sanitizeUri', function() {
       expect(sanitizeHref(testUrl)).toBe('file:///foo/bar.html');
     }));
 
-    it('should allow reconfiguration of the href whitelist', function() {
+	it('should allow reference to local content in Windows Phone 8', function() {
+	  testUrl = "x-wmapp0://www/index.html";
+	  expect(sanitizeHref(testUrl)).toBe('x-wmapp0://www/index.html');
+	});
+
+
+	  it('should allow reconfiguration of the href whitelist', function() {
       var returnVal;
       expect(sanitizeUriProvider.aHrefSanitizationWhitelist() instanceof RegExp).toBe(true);
       returnVal = sanitizeUriProvider.aHrefSanitizationWhitelist(/javascript:/);
