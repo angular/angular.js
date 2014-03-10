@@ -66,10 +66,9 @@ that you break your application to multiple modules like this:
   * And an application level module which depends on the above modules and contains any
     initialization code.
 
-We've also written a document on how we organize large apps at Google and on how to write
-reusable components.
-
-The above is a suggestion. Tailor it to your needs.
+For more insight on the topic, check out [this presentation](http://www.youtube.com/watch?v=62RvRQuMVyg)
+by Google DoubleClick team during ng-conf 2014. Keep in mind that these are, after all, suggestions, and you
+should tailor them to your specific needs.
 
 <example module='xmpl'>
   <file name="index.html">
