@@ -66,7 +66,7 @@ that you break your application to multiple modules like this:
   * And an application level module which depends on the above modules and contains any
     initialization code.
 
-We've also written a document on how we organize large apps at Google and on how to write
+We've also <a href='whereisthisdocument'>written</a> a document on how we organize large apps at Google and on how to write
 reusable components.
 
 The above is a suggestion. Tailor it to your needs.
