@@ -66,8 +66,9 @@ that you break your application to multiple modules like this:
   * And an application level module which depends on the above modules and contains any
     initialization code.
 
-We've also written a document on how we organize large apps at Google and on how to write
-reusable components.
+We've also
+[written a document](http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html)
+on how we organize large apps at Google.
 
 The above is a suggestion. Tailor it to your needs.
 
