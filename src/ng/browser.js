@@ -123,6 +123,7 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
 
   var lastBrowserUrl = location.href,
+      lastBrowserState = history.state,
       baseElement = document.find('base'),
       newLocation = null;
 
@@ -143,21 +144,30 @@ function Browser(window, document, $log, $sniffer) {
    * {@link ng.$location $location service} to change url.
    *
    * @param {string} url New url (when used as setter)
-   * @param {boolean=} replace Should new url replace current history record ?
+   * @param {boolean=} replace Should new url replace current history record?
+   * @param {object=} state object to use with pushState/replaceState
+   * @param {string=} title to use with pushState/replaceState
    */
-  self.url = function(url, replace) {
+  self.url = function(url, replace, state, title) {
     // Android Browser BFCache causes location, history reference to become stale.
     if (location !== window.location) location = window.location;
     if (history !== window.history) history = window.history;
 
     // setter
     if (url) {
-      if (lastBrowserUrl == url) return;
+      if (lastBrowserUrl == url &&
+        // if pushState supported, check if state changed
+        ((lastBrowserState == null && state == null) || equals(lastBrowserState, state))) {
+        return;
+      }
       lastBrowserUrl = url;
+      lastBrowserState = copy(state);
       if ($sniffer.history) {
-        if (replace) history.replaceState(null, '', url);
+        title = title || rawDocument.title;
+        state = state || null;
+        if (replace) history.replaceState(state, title, url);
         else {
-          history.pushState(null, '', url);
+          history.pushState(state, title, url);
           // Crazy Opera Bug: http://my.opera.com/community/forums/topic.dml?id=1185462
           baseElement.attr('href', baseElement.attr('href'));
         }
@@ -170,13 +180,12 @@ function Browser(window, document, $log, $sniffer) {
         }
       }
       return self;
-    // getter
-    } else {
-      // - newLocation is a workaround for an IE7-9 issue with location.replace and location.href
-      //   methods not updating location.href synchronously.
-      // - the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return newLocation || location.href.replace(/%27/g,"'");
     }
+    // getter
+    // - newLocation is a workaround for an IE7-9 issue with location.replace and location.href
+    //   methods not updating location.href synchronously.
+    // - the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
+    return newLocation || location.href.replace(/%27/g,"'");
   };
 
   var urlChangeListeners = [],
@@ -188,7 +197,7 @@ function Browser(window, document, $log, $sniffer) {
 
     lastBrowserUrl = self.url();
     forEach(urlChangeListeners, function(listener) {
-      listener(self.url());
+      listener(self.url(), history.state, rawDocument.title);
     });
   }
 

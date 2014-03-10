@@ -282,10 +282,16 @@ LocationHashbangInHtml5Url.prototype =
   $$html5: false,
 
   /**
-   * Has any change been replacing ?
+   * Has any change been replacing?
    * @private
    */
   $$replace: false,
+
+  /**
+   * Current History API state.
+   * @private
+   */
+  $$state: null,
 
   /**
    * @ngdoc method
@@ -325,6 +331,43 @@ LocationHashbangInHtml5Url.prototype =
     if (match[2] || match[1]) this.search(match[3] || '');
     this.hash(match[5] || '', replace);
 
+    return this;
+  },
+
+  /**
+   * @ngdoc method
+   * @name $location#pushState
+   *
+   * @description
+   * Invokes history.pushState. Changes url, state and title.
+   *
+   * @param {object=} state object for pushState
+   * @param {string=} title for pushState
+   * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
+   * @return {object} $location
+   */
+  pushState: function(state, title, url, replace) {
+    this.$$state = copy(state);
+    this.$$title = title;
+    this.$$replace = replace;
+    this.url(url, replace);
+    return this;
+  },
+
+  /**
+   * @ngdoc method
+   * @name $location#replaceState.
+   *
+   * @description
+   * Invokes history.replaceState. Changes url, state and title.
+   *
+   * @param {object=} state object for replaceState
+   * @param {string=} title for replaceState
+   * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
+   * @return {object} $location
+   */
+  replaceState: function(state, title, url) {
+    this.pushState(state, title, url, true);
     return this;
   },
 
@@ -642,7 +685,7 @@ function $LocationProvider(){
     }
 
     // update $location when $browser url changes
-    $browser.onUrlChange(function(newUrl) {
+    $browser.onUrlChange(function(newUrl, state, title) {
       if ($location.absUrl() != newUrl) {
         $rootScope.$evalAsync(function() {
           var oldUrl = $location.absUrl();
@@ -651,9 +694,9 @@ function $LocationProvider(){
           if ($rootScope.$broadcast('$locationChangeStart', newUrl,
                                     oldUrl).defaultPrevented) {
             $location.$$parse(oldUrl);
-            $browser.url(oldUrl);
+            $browser.url($location.absUrl(), false, state, title);
           } else {
-            afterLocationChange(oldUrl);
+            afterLocationChange(oldUrl, state, title);
           }
         });
         if (!$rootScope.$$phase) $rootScope.$digest();
@@ -663,30 +706,34 @@ function $LocationProvider(){
     // update browser
     var changeCounter = 0;
     $rootScope.$watch(function $locationWatch() {
-      var oldUrl = $browser.url();
-      var currentReplace = $location.$$replace;
+      var oldUrl = $browser.url(),
+          currentReplace = $location.$$replace,
+          currentState = $location.$$state,
+          currentTitle = $location.$$title;
 
       if (!changeCounter || oldUrl != $location.absUrl()) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
-          if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
+          if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl, currentState, currentTitle).
               defaultPrevented) {
             $location.$$parse(oldUrl);
           } else {
-            $browser.url($location.absUrl(), currentReplace);
-            afterLocationChange(oldUrl);
+            $browser.url($location.absUrl(), currentReplace, currentState, currentTitle);
+            afterLocationChange(oldUrl, currentState, currentTitle);
           }
         });
       }
       $location.$$replace = false;
+      delete $location.$$state;
+      delete $location.$$title;
 
       return changeCounter;
     });
 
     return $location;
 
-    function afterLocationChange(oldUrl) {
-      $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
+    function afterLocationChange(oldUrl, state, title) {
+      $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl, state, title);
     }
 }];
 }
