@@ -535,10 +535,10 @@ where:
   corresponding attribute values.
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
-changes the time formatting string that our directive binds to. We will use the `$interval` service
-to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
+changes the time formatting string that our directive binds to. We will use the javascript native setInterval
+function to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
 end 2 end testing, where we want to ensure that all $timeouts have completed before completing the test.
-We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
+We also want to remove the interval if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
   <file name="script.js">
@@ -546,7 +546,7 @@ We also want to remove the `$interval` if the directive is deleted so we don't i
       .controller('Ctrl2', function($scope) {
         $scope.format = 'M/d/yy h:mm:ss a';
       })
-      .directive('myCurrentTime', function($interval, dateFilter) {
+      .directive('myCurrentTime', function(dateFilter) {
 
         function link(scope, element, attrs) {
           var format,
@@ -561,12 +561,12 @@ We also want to remove the `$interval` if the directive is deleted so we don't i
             updateTime();
           });
 
-          element.on('$destroy', function() {
-            $interval.cancel(timeoutId);
+          scope.$on('$destroy', function() {
+            clearInterval(timeoutId);
           });
 
           // start the UI update process; save the timeoutId for canceling
-          timeoutId = $interval(function() {
+          timeoutId = setInterval(function() {
             updateTime(); // update DOM
           }, 1000);
         }
@@ -586,10 +586,10 @@ We also want to remove the `$interval` if the directive is deleted so we don't i
 
 There are a couple of things to note here.
 Just like the `module.controller` API, the function argument in `module.directive` is dependency
-injected. Because of this, we can use `$interval` and `dateFilter` inside our directive's `link`
+injected. Because of this, we can use `dateFilter` inside our directive's `link`
 function.
 
-We register an event `element.on('$destroy', ...)`. What fires this `$destroy` event?
+We register an event `scope.$on('$destroy', ...)`. What fires this `$destroy` event?
 
 There are a few special events that AngularJS emits. When a DOM node that has been compiled
 with Angular's compiler is destroyed, it emits a `$destroy` event. Similarly, when an AngularJS
