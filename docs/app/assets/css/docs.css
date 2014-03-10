@@ -501,10 +501,6 @@ h4 {
   padding-top:20px;
 }
 
-.improve-docs {
-  float:right;
-}
-
 .btn {
   color:#428bca;
   position: relative;
@@ -538,10 +534,17 @@ h4 {
   background:white!important;
 }
 
+.view-source, .improve-docs {
+  position:relative;
+  z-index:100;
+}
+
 .view-source {
   margin-right:10px;
-  padding-right:10px;
-  border-right:1px solid #999;
+}
+
+.improve-docs {
+  float:right;
 }
 
 .return-arguments,
