@@ -1,5 +1,6 @@
 var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
+var versionInfo = require('./lib/versions/version-info');
 var path = require('path');
 
 module.exports = function(grunt) {
@@ -8,9 +9,9 @@ module.exports = function(grunt) {
 
   grunt.loadTasks('lib/grunt');
 
-  var NG_VERSION = util.getVersion();
+  var NG_VERSION = versionInfo.currentVersion;
+  NG_VERSION.cdn = versionInfo.currentPackage.cdnVersion;
   var dist = 'angular-'+ NG_VERSION.full;
-
 
   //global beforeEach
   util.init();
