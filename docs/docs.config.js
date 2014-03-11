@@ -40,7 +40,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ '../../../angular.js' ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         '../angular.js',
@@ -75,7 +75,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ '../../../angular.min.js' ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         '../angular.min.js',
@@ -113,7 +113,7 @@ module.exports = function(config) {
             '../../../angular.js'
           ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         'components/jquery-' + getVersion('jquery') + '/jquery.js',
@@ -149,7 +149,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ cdnUrl + '/angular.min.js' ]
         },
-        dependencyPath: cdnUrl
+        dependencyPath: cdnUrl + '/'
       },
       scripts: [
         cdnUrl + '/angular.min.js',
