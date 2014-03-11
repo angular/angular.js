@@ -115,7 +115,7 @@ authentication against a remote API. This token will be called 'apiToken' and wi
 based on the `clientId` value and a secret stored in browser's local storage:
 
 ```javascript
-myApp.factory('apiToken', ['clientId', function apiTokenFactory(clientId) {
+myApp.factory('apiTokenFactory', ['clientId', function apiTokenFactory(clientId) {
   var encrypt = function(data1, data2) {
     // NSA-proof encryption algorithm:
     return (data1 + ':' + data2).toUpperCase();
@@ -128,7 +128,7 @@ myApp.factory('apiToken', ['clientId', function apiTokenFactory(clientId) {
 }]);
 ```
 
-In the code above, we see how the `apiToken` service is defined via the Factory recipe that depends
+In the code above, we see how the `apiTokenFactory` service is defined via the Factory recipe that depends
 on `clientId` service. The factory service then uses NSA-proof encryption to produce an authentication
 token.
 
@@ -162,7 +162,7 @@ We are now ready to launch unicorns, but notice that UnicornLauncher depends on 
 We can satisfy this dependency on `apiToken` using the Factory recipe:
 
 ```javascript
-myApp.factory('unicornLauncher', ["apiToken", function(apiToken) {
+myApp.factory('unicornLauncherFactory', ["apiTokenFactory", function(apiToken) {
   return new UnicornLauncher(apiToken);
 }]);
 ```
@@ -181,14 +181,10 @@ Since we already have a constructor for our UnicornLauncher type, we can replace
 above with a Service recipe like this:
 
 ```javascript
-myApp.service('unicornLauncher', ["apiToken", UnicornLauncher]);
+myApp.service('unicornLauncherService', ["apiTokenFactory", UnicornLauncher]);
 ```
 
 Much simpler!
-
-Note: Yes, we have called one of our service recipes 'Service'. We regret this and know that we'll
-be somehow punished for our mis-deed. It's like we named one of our offspring 'Children'. Boy,
-that would mess with the teachers.
 
 
 ## Provider Recipe
@@ -207,7 +203,7 @@ You should use the Provider recipe only when you want to expose an API for appli
 configuration that must be made before the application starts. This is usually interesting only
 for reusable services whose behavior might need to vary slightly between applications.
 
-Let's say that our `unicornLauncher` service is so awesome that many apps use it. By default the
+Let's say that our `unicornLauncherService` service is so awesome that many apps use it. By default the
 launcher shoots unicorns into space without any protective shielding. But on some planets the
 atmosphere is so thick that we must wrap every unicorn in tinfoil before sending it on its
 intergalactic trip, otherwise they would burn while passing through the atmosphere. It would then
@@ -216,14 +212,14 @@ that need it. We can make it configurable like so:
 
 
 ```javascript
-myApp.provider('unicornLauncher', function UnicornLauncherProvider() {
+myApp.provider('unicornLauncherProvider', function UnicornLauncherProvider() {
   var useTinfoilShielding = false;
 
   this.useTinfoilShielding = function(value) {
     useTinfoilShielding = !!value;
   };
 
-  this.$get = ["apiToken", function unicornLauncherFactory(apiToken) {
+  this.$get = ["apiTokenFactory", function unicornLauncherFactory(apiToken) {
 
     // let's assume that the UnicornLauncher constructor was also changed to
     // accept and use the useTinfoilShielding argument
@@ -264,7 +260,7 @@ Since simple values, like url prefix, don't have dependencies or configuration, 
 to make them available in both the configuration and run phases. This is what the Constant recipe
 is for.
 
-Let's say that our `unicornLauncher` service can stamp a unicorn with the planet name it's being
+Let's say that our `unicornLauncherService` service can stamp a unicorn with the planet name it's being
 launched from if this name was provided during the configuration phase. The planet name is
 application specific and is used also by various controllers during the runtime of the application.
 We can then define the planet name as a constant like this:
