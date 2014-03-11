@@ -54,7 +54,8 @@
     "dgeni-packages": "^0.7.0",
     "gulp-jshint": "~1.4.2",
     "jshint-stylish": "~0.1.5",
-    "node-html-encoder": "0.0.2"
+    "node-html-encoder": "0.0.2",
+    "lockdown": "0.0.5"
   },
   "licenses": [
     {
@@ -62,5 +63,8 @@
       "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
     }
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "preinstall": "lockdown"
+  }
 }
