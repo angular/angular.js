@@ -1697,6 +1697,22 @@ describe('input', function() {
         expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
         expect(URL_REGEXP.test('a@B.c')).toBe(false);
       });
+
+
+      it('should pass on valid url', function() {
+        expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
+        expect(URL_REGEXP.test('http://foo.com/angular#directives')).toBe(true);
+        expect(URL_REGEXP.test('www.angularjs.org')).toBe(true);
+        expect(URL_REGEXP.test('http://localhost:8080/?angular=cool&i=loveit')).toBe(true);
+      });
+
+
+      it('should fail on invalid url', function() {
+        expect(URL_REGEXP.test('http://')).toBe(false);
+        expect(URL_REGEXP.test('http://w')).toBe(false);
+        expect(URL_REGEXP.test('http://www.angularjs. org')).toBe(false);
+        expect(URL_REGEXP.test('htp://localhost:8080/?angular=cool&i=loveit')).toBe(false);
+      });
     });
   });
 
