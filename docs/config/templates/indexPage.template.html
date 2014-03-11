@@ -175,7 +175,7 @@
         <div class="container main-grid main-header-grid">
           <div class="grid-left">
             <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-              <select ng-options="v as ('v' + v.full) group by (v.isStable?'Stable':'Unstable') for v in docs_versions"
+              <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by (v.isStable?'Stable':'Unstable') for v in docs_versions"
                       ng-model="docs_version"
                       ng-change="jumpToDocsVersion(docs_version)"
                       class="docs-version-jump">
