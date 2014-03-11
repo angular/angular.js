@@ -1712,13 +1712,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   var ctrl = this;
 
   $scope.$watch(function ngModelWatch() {
-    var value = ngModelGet($scope);
+    var value = ngModelGet($scope),
+      formatters = ctrl.$formatters,
+      idx = formatters.length;
 
     // if scope model value and ngModel value are out of sync
     if (ctrl.$modelValue !== value) {
-
-      var formatters = ctrl.$formatters,
-          idx = formatters.length;
 
       ctrl.$modelValue = value;
       while(idx--) {
@@ -1729,8 +1728,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$viewValue = value;
         ctrl.$render();
       }
-    }
+    } else if ((value) && (value instanceof Array) && (value.length === 0)) {
+      // case where model is modifed directly, this helps to validate the change
 
+      while (idx--) {
+        value = formatters[idx](value);
+      }
+    }
     return value;
   });
 }];
