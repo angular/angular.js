@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
-  "branchVersion": "1.2.*",
-  "cdnVersion": "1.2.14",
+  "branchVersion": "1.3.*",
+  "cdnVersion": "1.3.0-beta.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
@@ -16,7 +16,7 @@
     "grunt-contrib-jshint": "~0.7.2",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-jasmine-node": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
-    "grunt-jscs-checker": "~0.3.2",
+    "grunt-jscs-checker": "~0.4.0",
     "grunt-merge-conflict": "~0.0.1",
     "grunt-parallel": "~0.3.1",
     "grunt-shell": "~0.4.0",
@@ -51,7 +51,7 @@
     "canonical-path": "0.0.2",
     "winston": "~0.7.2",
     "dgeni": "^0.2.2",
-    "dgeni-packages": "^0.6.0",
+    "dgeni-packages": "^0.7.0",
     "gulp-jshint": "~1.4.2",
     "jshint-stylish": "~0.1.5",
     "node-html-encoder": "0.0.2"

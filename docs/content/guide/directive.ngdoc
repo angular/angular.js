@@ -293,7 +293,7 @@ The `restrict` option is typically set to:
 * `'E'` - only matches element name
 * `'C'` - only matches class name
 
-These restictions can all be combined as needed:
+These restrictions can all be combined as needed:
 
 * `'AEC'` - matches either attribute or element or class name
 

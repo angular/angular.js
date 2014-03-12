@@ -1,13 +1,12 @@
 var path = require('canonical-path');
-var gruntUtils = require('../lib/grunt/utils');
+var versionInfo = require('../lib/versions/version-info');
 var basePath = __dirname;
 
 var basePackage = require('./config');
 
 module.exports = function(config) {
 
-  var version = gruntUtils.getVersion();
-  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + version.cdn;
+  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.currentPackage.cdnVersion;
 
   var getVersion = function(component, sourceFolder, packageFile) {
     sourceFolder = sourceFolder || '../bower_components';
@@ -41,7 +40,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ '../../../angular.js' ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         '../angular.js',
@@ -76,7 +75,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ '../../../angular.min.js' ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         '../angular.min.js',
@@ -114,7 +113,7 @@ module.exports = function(config) {
             '../../../angular.js'
           ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         'components/jquery-' + getVersion('jquery') + '/jquery.js',
@@ -150,7 +149,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ cdnUrl + '/angular.min.js' ]
         },
-        dependencyPath: cdnUrl
+        dependencyPath: cdnUrl + '/'
       },
       scripts: [
         cdnUrl + '/angular.min.js',

@@ -87,7 +87,7 @@ angular.module('DocsController', [])
         breadcrumbPath += '/';
       });
     } else {
-      $scope.currentArea = null;
+      $scope.currentArea = NG_NAVIGATION['api'];
       $scope.breadcrumb = [];
     }
   });
