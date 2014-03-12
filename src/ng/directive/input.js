@@ -898,14 +898,14 @@ var VALID_CLASS = 'ng-valid',
  * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
        the model value changes. Each function is called, in turn, passing the value through to the
        next. Used to format / convert values for display in the control and validation.
- *      ```js
- *      function formatter(value) {
- *        if (value) {
- *          return value.toUpperCase();
- *        }
- *      }
- *      ngModel.$formatters.push(formatter);
- *      ```
+ * ```js
+ * function formatter(value) {
+ *   if (value) {
+ *     return value.toUpperCase();
+ *   }
+ * }
+ * ngModel.$formatters.push(formatter);
+ * ```
  *
  * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
  *     view value has changed. It is called with no arguments, and its return value is ignored.
