@@ -216,6 +216,17 @@ describe('ngClass', function() {
     expect(e2.hasClass('D')).toBeFalsy();
   }));
 
+  it('should calculate ngClassOdd/Even when $index is negative', inject(function($rootScope, $compile){
+    element = $compile("<ul><li ng-repeat=\"(key,value) in {'-1': '', '-2': ''}\" ng-init=\"$index = key\" ng-class-even=\"'even'\" ng-class-odd=\"'odd'\" class=\"exists\">{{ $index }}</li></ul>")($rootScope);
+    $rootScope.$digest();
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[3]);
+    expect(e1.hasClass('exists')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeTruthy();
+    expect(e2.hasClass('exists')).toBeTruthy();
+    expect(e2.hasClass('odd')).toBeTruthy();
+  }));
+
 
   it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
     element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
