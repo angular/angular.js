@@ -107,10 +107,10 @@ describe('Scope', function() {
 
     it('should not keep constant expressions on watch queue', inject(function($rootScope) {
       $rootScope.$watch('1 + 1', function() {});
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect($rootScope.$$watchersHead).not.toEqual(null);
       $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
+      expect($rootScope.$$watchersHead).toEqual(null);
     }));
 
 
@@ -181,7 +181,7 @@ describe('Scope', function() {
 
       // init
       $rootScope.$digest();
-      expect(log).toBe('rabrab');
+      expect(log).toBe('abrabr');
 
       log = '';
       childA.$digest();
@@ -215,7 +215,7 @@ describe('Scope', function() {
       $rootScope.$watch(function() { log += 'a'; });
       child.$watch(function() { log += 'b'; });
       $rootScope.$digest();
-      expect(log).toEqual('abab');
+      expect(log).toEqual('baba');
     }));
 
 
@@ -460,7 +460,7 @@ describe('Scope', function() {
 
         $rootScope.$digest();
 
-        expect(log).toEqual(['watch1', 'watchAction1', 'watch1', 'watch3', 'watchAction3',
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch3', 'watchAction3',
                              'watch1', 'watch3']);
         scope.$destroy();
         log.reset();
@@ -692,8 +692,7 @@ describe('Scope', function() {
           $rootScope.$watch(log.fn('w5'), log.fn('w5action'));
         });
         $rootScope.$digest();
-        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action',
-                             'w1', 'w2', 'w3', 'w4', 'w5', 'w5action',
+        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action', 'w5', 'w5action',
                              'w1', 'w2', 'w3', 'w4', 'w5']);
       }));
 
@@ -864,7 +863,7 @@ describe('Scope', function() {
       child.$evalAsync(function(scope) { log += 'child.async;'; });
       child.$watch('value', function() { log += 'child.$digest;'; });
       $rootScope.$digest();
-      expect(log).toEqual('parent.async;child.async;parent.$digest;child.$digest;');
+      expect(log).toEqual('parent.async;child.async;child.$digest;parent.$digest;');
     }));
 
     it('should not run another digest for an $$postDigest call', inject(function($rootScope) {
