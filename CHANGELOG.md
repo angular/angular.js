@@ -23,6 +23,9 @@
 
 - **build:** due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
   As communicated before, IE8 is no longer supported.
+- **input:** types date, time, datetime-local, month, week now always
+  require a `Date` object as model ([46bd6dc8](https://github.com/angular/angular.js/commit/46bd6dc88de252886d75426efc2ce8107a5134e9),
+   [#5864](https://github.com/angular/angular.js/issues/5864))
 
 For more info: http://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html
 
