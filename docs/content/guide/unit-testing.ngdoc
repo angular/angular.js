@@ -258,7 +258,7 @@ expect($scope.strength).toEqual('weak');
 ```
 
 Notice that the test is not only much shorter, it is also easier to follow what is happening. We say
-that such a test tells a story, rather then asserting random bits which don't seem to be related.
+that such a test tells a story, rather than asserting random bits which don't seem to be related.
 
 ## Filters
 {@link ng.$filterProvider Filters} are functions which transform the data into a user readable
