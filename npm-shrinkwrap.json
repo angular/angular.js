@@ -2713,6 +2713,9 @@
     "shelljs": {
       "version": "0.2.6"
     },
+    "sorted-object": {
+      "version": "1.0.0"
+    },
     "winston": {
       "version": "0.7.2",
       "dependencies": {
