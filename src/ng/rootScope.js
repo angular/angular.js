@@ -564,7 +564,6 @@ function $RootScopeProvider(){
             lastDirtyWatch = null;
           }
 
-          traverseScopesLoop:
           if (this.$$watchersHead) { // "traverse the scopes" loop
             currentWatcher = this.$$watchersHead;
             do {
@@ -594,7 +593,7 @@ function $RootScopeProvider(){
                     // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
                     // have already been tested.
                     dirty = false;
-                    break traverseScopesLoop;
+                    break;
                   }
                 } else {
                   removeWatchers(currentWatcher.scope, currentWatcher, currentWatcher);
