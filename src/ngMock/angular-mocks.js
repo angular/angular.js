@@ -1821,8 +1821,8 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *    an array containing response status (number), response data (string) and response headers
  *    (Object).
  *  - passThrough – `{function()}` – Any request matching a backend definition with `passThrough`
- *    handler, will be pass through to the real backend (an XHR request will be made to the
- *    server.
+ *    handler will be passed through to the real backend (an XHR request will be made to the
+ *    server.)
  */
 
 /**
