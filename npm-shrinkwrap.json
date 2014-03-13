@@ -811,68 +811,56 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.6.0",
-      "from": "https://registry.npmjs.org/dgeni-packages/-/dgeni-packages-0.6.0.tgz",
-      "resolved": "https://registry.npmjs.org/dgeni-packages/-/dgeni-packages-0.6.0.tgz",
+      "version": "0.7.1",
+      "from": "dgeni-packages@0.7.1",
       "dependencies": {
         "lodash": {
           "version": "2.4.1",
-          "from": "https://registry.npmjs.org/lodash/-/lodash-2.4.1.tgz",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.1.tgz"
+          "from": "lodash@~2.4.1"
         },
         "graceful-fs": {
           "version": "2.0.2",
-          "from": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-2.0.2.tgz",
-          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-2.0.2.tgz"
+          "from": "graceful-fs@~2.0.1"
         },
         "glob": {
           "version": "3.2.9",
-          "from": "https://registry.npmjs.org/glob/-/glob-3.2.9.tgz",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.9.tgz",
+          "from": "glob@~3.2.8",
           "dependencies": {
             "minimatch": {
               "version": "0.2.14",
-              "from": "https://registry.npmjs.org/minimatch/-/minimatch-0.2.14.tgz",
-              "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.2.14.tgz",
+              "from": "minimatch@~0.2.11",
               "dependencies": {
                 "lru-cache": {
                   "version": "2.5.0",
-                  "from": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.5.0.tgz",
-                  "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.5.0.tgz"
+                  "from": "lru-cache@2"
                 },
                 "sigmund": {
                   "version": "1.0.0",
-                  "from": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.0.tgz",
-                  "resolved": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.0.tgz"
+                  "from": "sigmund@~1.0.0"
                 }
               }
             },
             "inherits": {
               "version": "2.0.1",
-              "from": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz",
-              "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
+              "from": "inherits@2"
             }
           }
         },
         "nunjucks": {
           "version": "1.0.1",
-          "from": "https://registry.npmjs.org/nunjucks/-/nunjucks-1.0.1.tgz",
-          "resolved": "https://registry.npmjs.org/nunjucks/-/nunjucks-1.0.1.tgz",
+          "from": "nunjucks@~1.0.1",
           "dependencies": {
             "optimist": {
               "version": "0.6.1",
-              "from": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
-              "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+              "from": "optimist@*",
               "dependencies": {
                 "wordwrap": {
                   "version": "0.0.2",
-                  "from": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.2.tgz",
-                  "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.2.tgz"
+                  "from": "wordwrap@~0.0.2"
                 },
                 "minimist": {
                   "version": "0.0.8",
-                  "from": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz",
-                  "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz"
+                  "from": "minimist@~0.0.1"
                 }
               }
             }
@@ -880,13 +868,11 @@
         },
         "catharsis": {
           "version": "0.7.0",
-          "from": "https://registry.npmjs.org/catharsis/-/catharsis-0.7.0.tgz",
-          "resolved": "https://registry.npmjs.org/catharsis/-/catharsis-0.7.0.tgz"
+          "from": "catharsis@^0.7.0"
         },
         "esprima": {
           "version": "1.0.4",
-          "from": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz",
-          "resolved": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
+          "from": "esprima@^1.0.4"
         }
       }
     },
