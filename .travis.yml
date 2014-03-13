@@ -21,8 +21,8 @@ env:
 before_script:
   - mkdir -p $LOGS_DIR
   - ./lib/sauce/sauce_connect_setup.sh
-  - npm install -g grunt-cli
-  - grunt package
+  - npm install grunt-cli@0.1.13
+  - ./node_modules/.bin/grunt package
   - ./scripts/travis/wait_for_browser_provider.sh
 
 script:
