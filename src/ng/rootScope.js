@@ -124,7 +124,8 @@ function $RootScopeProvider(){
      */
     function Scope() {
       this.$id = nextUid();
-      this.$$phase = this.$parent = this.$$watchersHead = this.$$watchersTail =
+      this.$$phase = this.$parent =
+                     this.$$watchersHead = this.$$watchersCurrentTail = this.$$watchersTail =
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
       this['this'] = this.$root =  this;
@@ -192,7 +193,8 @@ function $RootScopeProvider(){
         child.$$listeners = {};
         child.$$listenerCount = {};
         child.$parent = this;
-        child.$$watchersHead = child.$$watchersTail = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
+        child.$$watchersHead = child.$$watchersCurrentTail = child.$$watchersTail =
+            child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
         if (this.$$childHead) {
           this.$$childTail.$$nextSibling = child;
@@ -1051,10 +1053,11 @@ function $RootScopeProvider(){
 
     function insertWatcher(watcher) {
       var scope = watcher.scope;
-      watcher.prev = findLastWatcherBefore(watcher.scope);
+      watcher.prev = watcher.scope.$$watchersCurrentTail || findLastWatcherBefore(watcher.scope);
       watcher.next = watcher.prev ? watcher.prev.next : findFirstWatcherAfter(watcher.scope);
       if (watcher.prev) watcher.prev.next = watcher;
       if (watcher.next) watcher.next.prev = watcher;
+      scope.$$watchersCurrentTail = watcher;
       while (scope && (scope.$$watchersHead === null || scope.$$watchersHead === watcher.next ||
           scope.$$watchersTail === watcher.prev)) {
         if (scope.$$watchersHead === null || scope.$$watchersHead === watcher.next) {
@@ -1068,9 +1071,9 @@ function $RootScopeProvider(){
     }
 
     function findLastWatcherBefore(scope) {
-      while (scope && !scope.$$watchersTail) {
-        scope = scope.$$prevSibling || (scope.$parent && scope.$parent.$$prevSibling);
-      }
+      do {
+        scope = scope.$parent;
+      } while (scope && !scope.$$watchersTail);
       return scope ? scope.$$watchersTail : null;
     }
 
@@ -1084,6 +1087,7 @@ function $RootScopeProvider(){
     function removeWatchers(scope, head, tail) {
       if (head.prev) head.prev.next = tail.next;
       if (tail.next) tail.next.prev = head.prev;
+      scope.$$watchersCurrentTail = (head.prev && head.prev.scope === scope ? head.prev : null);
       while (scope && (scope.$$watchersHead === head || scope.$$watchersTail === tail)) {
         if (scope.$$watchersHead === head && scope.$$watchersTail === tail) {
           scope.$$watchersHead = scope.$$watchersTail = null;

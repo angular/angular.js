@@ -181,7 +181,7 @@ describe('Scope', function() {
 
       // init
       $rootScope.$digest();
-      expect(log).toBe('abrabr');
+      expect(log).toBe('rabrab');
 
       log = '';
       childA.$digest();
@@ -215,7 +215,7 @@ describe('Scope', function() {
       $rootScope.$watch(function() { log += 'a'; });
       child.$watch(function() { log += 'b'; });
       $rootScope.$digest();
-      expect(log).toEqual('baba');
+      expect(log).toEqual('abab');
     }));
 
 
@@ -863,7 +863,7 @@ describe('Scope', function() {
       child.$evalAsync(function(scope) { log += 'child.async;'; });
       child.$watch('value', function() { log += 'child.$digest;'; });
       $rootScope.$digest();
-      expect(log).toEqual('parent.async;child.async;child.$digest;parent.$digest;');
+      expect(log).toEqual('parent.async;child.async;parent.$digest;child.$digest;');
     }));
 
     it('should not run another digest for an $$postDigest call', inject(function($rootScope) {

@@ -715,7 +715,7 @@ describe('ngRepeat', function() {
       $rootScope.items = [];
       $rootScope.$apply();
       expect(angular.mock.dump(element)).toBe('<!-- ngRepeat: i in items -->');
-      expect(logs).toEqual([1, 2, 1, 2, 1, 2]);
+      expect(logs).toEqual([1, 2, 1, 2]);
     }));
 
 
@@ -742,7 +742,7 @@ describe('ngRepeat', function() {
       $rootScope.items = [];
       $rootScope.$apply();
       expect(sortedHtml(element)).toBe('<span>-</span><!-- ngRepeat: i in items --><span>-</span>');
-      expect(logs).toEqual([1, 2, 1, 2, 1, 2]);
+      expect(logs).toEqual([1, 2, 1, 2]);
     }));
 
 
