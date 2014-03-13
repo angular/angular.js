@@ -503,12 +503,47 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|thead|tbody|tfoot)(\s+[^>]*)?>/i;
+      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|thead|tbody|tfoot)(\s+[^>]*)?>/i,
+      environment = {
+        directiveCollectors: [],
+        directiveLocators: []
+      };
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
   // 'on' and be composed of only English letters.
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
+
+  /**
+   * @ngdoc method
+   * @name $compileProvider#registerDirectiveLocator
+   * @function
+   *
+   * @description
+   * Registers a new directive locator with the compiler.
+   *
+   * @param {function} directiveLocator A new directive locator. A directive locator
+   *    is a function that given a directive name will return an array of directives
+   *    that respond to that name.
+   */
+  this.registerDirectiveLocator = registerDirectiveLocator;
+
+  /**
+   * @ngdoc method
+   * @name $compileProvider#registerDirectiveCollector
+   * @function
+   *
+   * @description
+   * Registers a new directive collector with the compiler.
+   *
+   * @param {function} directiveCollector A new directive collector. A directive collator
+   *    is a function that given a DOM node will return an array of descriptions of
+   *    directive candidates for the given DOM. A directive description is a javascript
+   *    object that at a minimum contains the properties `name` and `type`.
+   *    The property `name` is the directive name and the property `type` is a single
+   *    character that specifies the directive declaration style.
+   */
+  this.registerDirectiveCollector = registerDirectiveCollector;
 
   /**
    * @ngdoc method
@@ -525,7 +560,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *    {@link guide/directive} for more info.
    * @returns {ng.$compileProvider} Self for chaining.
    */
-   this.directive = function registerDirective(name, directiveFactory) {
+  this.directive = function registerDirective(name, directiveFactory) {
     assertNotHasOwnProperty(name, 'directive');
     if (isString(name)) {
       assertArg(directiveFactory, 'directiveFactory');
@@ -537,16 +572,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             forEach(hasDirectives[name], function(directiveFactory, index) {
               try {
                 var directive = $injector.invoke(directiveFactory);
-                if (isFunction(directive)) {
-                  directive = { compile: valueFn(directive) };
-                } else if (!directive.compile && directive.link) {
-                  directive.compile = valueFn(directive.link);
-                }
-                directive.priority = directive.priority || 0;
-                directive.index = index;
-                directive.name = directive.name || name;
-                directive.require = directive.require || (directive.controller && directive.name);
-                directive.restrict = directive.restrict || 'A';
                 directives.push(directive);
               } catch (e) {
                 $exceptionHandler(e);
@@ -805,6 +830,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
+    registerDirectiveCollector(commentDirectiveCollector);
+    registerDirectiveCollector(textDirectiveCollector);
+    registerDirectiveCollector(elementDirectiveCollector);
+    registerDirectiveCollector(attributeBindingDirectiveCollector);
+    registerDirectiveCollector(attributeDirectiveCollector);
+    registerDirectiveCollector(classDirectiveCollector);
+    registerDirectiveLocator(baseDirectiveLocator);
+    registerDirectiveLocator(interpolateDirectiveLocator);
 
     return compile;
 
@@ -983,85 +1016,129 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      * @param {number=} maxPriority Max directive priority.
      */
     function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
-      var nodeType = node.nodeType,
-          attrsMap = attrs.$attr,
-          match,
-          className;
+      var attrsMap = attrs.$attr;
 
-      switch(nodeType) {
-        case 1: /* Element */
-          // use the node name: <directive>
-          addDirective(directives,
-              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority, ignoreDirective);
-
-          // iterate over the attributes
-          for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
-                   j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
-            var attrStartName = false;
-            var attrEndName = false;
-
-            attr = nAttrs[j];
-            if (!msie || msie >= 8 || attr.specified) {
-              name = attr.name;
-              // support ngAttr attribute binding
-              ngAttrName = directiveNormalize(name);
-              if (NG_ATTR_BINDING.test(ngAttrName)) {
-                name = snake_case(ngAttrName.substr(6), '-');
-              }
-
-              var directiveNName = ngAttrName.replace(/(Start|End)$/, '');
-              if (ngAttrName === directiveNName + 'Start') {
-                attrStartName = name;
-                attrEndName = name.substr(0, name.length - 5) + 'end';
-                name = name.substr(0, name.length - 6);
-              }
-
-              nName = directiveNormalize(name.toLowerCase());
-              attrsMap[nName] = name;
-              attrs[nName] = value = trim(attr.value);
-              if (getBooleanAttrName(node, nName)) {
-                attrs[nName] = true; // presence means true
-              }
-              addAttrInterpolateDirective(node, directives, value, nName);
-              addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName,
-                            attrEndName);
+      forEach(environment.directiveCollectors, function (directiveCollector) {
+        var candidates = directiveCollector(node);
+        forEach(candidates, function (candidate) {
+          if(addDirective(directives, candidate.name, candidate.type, maxPriority, ignoreDirective, candidate.base)) {
+            if (candidate.hasOwnProperty('value')) {
+              attrs[candidate.valueAttr || candidate.name] = candidate.value;
+            }
+            if (candidate.hasOwnProperty('map')) {
+              attrsMap[candidate.valueAttr || candidate.name] = candidate.map;
             }
           }
-
-          // use class as directive
-          className = node.className;
-          if (isString(className) && className !== '') {
-            while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
-              nName = directiveNormalize(match[2]);
-              if (addDirective(directives, nName, 'C', maxPriority, ignoreDirective)) {
-                attrs[nName] = trim(match[3]);
-              }
-              className = className.substr(match.index + match[0].length);
-            }
-          }
-          break;
-        case 3: /* Text Node */
-          addTextInterpolateDirective(directives, node.nodeValue);
-          break;
-        case 8: /* Comment */
-          try {
-            match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
-            if (match) {
-              nName = directiveNormalize(match[1]);
-              if (addDirective(directives, nName, 'M', maxPriority, ignoreDirective)) {
-                attrs[nName] = trim(match[2]);
-              }
-            }
-          } catch (e) {
-            // turns out that under some circumstances IE9 throws errors when one attempts to read
-            // comment's node value.
-            // Just ignore it and continue. (Can't seem to reproduce in test case.)
-          }
-          break;
-      }
+        });
+      });
 
       directives.sort(byPriority);
       return directives;
+    }
+
+    function commentDirectiveCollector(node) {
+      var match;
+
+      if (node.nodeType !== 8) return;
+      try {
+        match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
+        if (match) {
+          return [{name: directiveNormalize(match[1]), type: 'M', value: trim(match[2])}];
+        }
+      } catch (e) {
+        // turns out that under some circumstances IE9 throws errors when one attempts to read
+        // comment's node value.
+        // Just ignore it and continue. (Can't seem to reproduce in test case.)
+      }
+    }
+
+    function textDirectiveCollector(node) {
+      if (node.nodeType !== 3) return;
+      var interpolateFn = $interpolate(node.nodeValue, true);
+      if (interpolateFn) return [{name: 'interpolate', type: 'T', base: {interpolateFn: interpolateFn}}];
+    }
+
+    function elementDirectiveCollector(node) {
+      if (node.nodeType !== 1) return;
+      return [{name: directiveNormalize(nodeName_(node).toLowerCase()), type: 'E'}];
+    }
+
+    function attributeDirectiveCollector(node) {
+      var result = [], attr, name, ngAttrName, attrStartName, attrEndName;
+
+      if (node.nodeType !== 1) return;
+
+      // iterate over the attributes
+      for (var nAttrs = node.attributes, j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
+        attr = nAttrs[j];
+        if (!msie || msie >= 8 || attr.specified) {
+          name = attr.name;
+          ngAttrName = directiveNormalize(name.toLowerCase());
+          if (ngAttrName.indexOf('Start', ngAttrName.length - 5) !== -1) {
+            attrStartName = name;
+            attrEndName = name.substr(0, name.length - 5) + 'end';
+            ngAttrName = ngAttrName.substr(0, ngAttrName.length - 5);
+            result.push({name: ngAttrName, type: 'A', base: {$$start: attrStartName, $$end: attrEndName}, value: trim(attr.value)});
+          } else {
+            result.push({name: ngAttrName, type: 'A'});
+          }
+        }
+      }
+      return result;
+    }
+
+    function attributeBindingDirectiveCollector(node) {
+      var result = [], interpolateFn;
+      if (node.nodeType !== 1) return;
+      for (var attr, name, ngAttrName, value, nAttrs = node.attributes,
+             j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
+
+        attr = nAttrs[j];
+        if (!msie || msie >= 8 || attr.specified) {
+          name = attr.name;
+          // support ngAttr attribute binding
+          ngAttrName = directiveNormalize(name.toLowerCase());
+          if (NG_ATTR_BINDING.test(ngAttrName)) {
+            ngAttrName = ngAttrName.charAt(6).toLowerCase() + ngAttrName.substr(7);
+            name = snake_case(ngAttrName, '-');
+          }
+          value = trim(attr.value);
+          interpolateFn = $interpolate(value, true);
+          if (interpolateFn) {
+            if (name === "multiple" && nodeName_(node) === "SELECT") {
+              throw $compileMinErr("selmulti",
+                "Binding to the 'multiple' attribute is not supported. Element: {0}",
+                startingTag(node));
+            }
+
+            if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
+              throw $compileMinErr('nodomevents',
+                "Interpolations for HTML DOM event attributes are disallowed.  Please use the " +
+                  "ng- versions (such as ng-click instead of onclick) instead.");
+            }
+          }
+
+          if (getBooleanAttrName(node, ngAttrName)) {
+            value = true; // presence means true
+          }
+          result.push({name: 'interpolateAttr', type: 'A', base: {attr: ngAttrName}, value: value, valueAttr: ngAttrName, map: name});
+        }
+      }
+      return result;
+    }
+
+    function classDirectiveCollector(node) {
+      var className, match, result = [];
+      if (node.nodeType !== 1) return;
+      // use class as directive
+      className = node.className;
+      if (isString(className) && className !== '') {
+        while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
+          result.push({name: directiveNormalize(match[2]), type: 'C', value: trim(match[3])});
+          className = className.substr(match.index + match[0].length);
+        }
+      }
+      return result;
     }
 
     /**
@@ -1301,9 +1378,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           try {
             linkFn = directive.compile($compileNode, templateAttrs, childTranscludeFn);
             if (isFunction(linkFn)) {
-              addLinkFns(null, linkFn, attrStart, attrEnd);
+              addLinkFns(null, bind(directive, linkFn), attrStart, attrEnd);
             } else if (linkFn) {
-              addLinkFns(linkFn.pre, linkFn.post, attrStart, attrEnd);
+              addLinkFns(bind(directive, linkFn.pre), bind(directive, linkFn.post), attrStart, attrEnd);
             }
           } catch (e) {
             $exceptionHandler(e, startingTag($compileNode));
@@ -1581,29 +1658,103 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      *   * `M`: comment
      * @returns {boolean} true if directive was added.
      */
-    function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startAttrName,
-                          endAttrName) {
-      if (name === ignoreDirective) return null;
-      var match = null;
-      if (hasDirectives.hasOwnProperty(name)) {
-        for(var directive, directives = $injector.get(name + Suffix),
-            i = 0, ii = directives.length; i<ii; i++) {
-          try {
-            directive = directives[i];
-            if ( (maxPriority === undefined || maxPriority > directive.priority) &&
-                 directive.restrict.indexOf(location) != -1) {
-              if (startAttrName) {
-                directive = inherit(directive, {$$start: startAttrName, $$end: endAttrName});
-              }
-              tDirectives.push(directive);
-              match = directive;
+    function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, base) {
+      if (name === ignoreDirective) return false;
+      var match = false;
+      for(var directive, directives = locateDirectives(name),
+          i = 0, ii = directives.length; i<ii; i++) {
+        try {
+          directive = directives[i];
+          if ( (maxPriority === undefined || maxPriority > directive.priority) &&
+               directive.restrict.indexOf(location) != -1) {
+            if (base) {
+              directive = inherit(directive, base);
             }
-          } catch(e) { $exceptionHandler(e); }
-        }
+            tDirectives.push(directive);
+            match = true;
+          }
+        } catch(e) { $exceptionHandler(e); }
       }
       return match;
     }
 
+    function baseDirectiveLocator(name) {
+      if (hasDirectives.hasOwnProperty(name)) return $injector.get(name + Suffix);
+    }
+
+    function interpolateDirectiveLocator(name) {
+      if (name === 'interpolate') {
+        return [{
+          priority: 0,
+          restrict: 'T',
+          link: function textInterpolateLinkFn(scope, node) {
+            var interpolateFn = this.interpolateFn,
+              parent = node.parent(),
+              bindings = parent.data('$binding') || [];
+            if (!interpolateFn) return;
+            bindings.push(interpolateFn);
+            safeAddClass(parent.data('$binding', bindings), 'ng-binding');
+            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+              node[0].nodeValue = value;
+            });
+          }
+        }];
+      }
+      if (name === 'interpolateAttr') {
+        return [{
+          priority: 100,
+          restrict: 'A',
+          compile: function() {
+            return {
+              pre: function attrInterpolatePreLinkFn(scope, element, attr) {
+                var $$observers = (attr.$$observers || (attr.$$observers = {})), interpolateFn,
+                  name = this.attr;
+
+                // we need to interpolate again, in case the attribute value has been updated
+                // (e.g. by another directive's compile function)
+                interpolateFn = $interpolate(attr[name] || '', true, getTrustedContext(element[0], name));
+
+                // if attribute was updated so that there is no interpolation going on we don't want to
+                // register any observers
+                if (!interpolateFn) return;
+
+                // TODO(i): this should likely be attr.$set(name, iterpolateFn(scope) so that we reset the
+                // actual attr value
+                attr[name] = interpolateFn(scope);
+                ($$observers[name] || ($$observers[name] = [])).$$inter = true;
+                (attr.$$observers && attr.$$observers[name].$$scope || scope).
+                  $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
+                    //special case for class attribute addition + removal
+                    //so that class changes can tap into the animation
+                    //hooks provided by the $animate service. Be sure to
+                    //skip animations when the first digest occurs (when
+                    //both the new and the old values are the same) since
+                    //the CSS classes are the non-interpolated values
+                    if(name === 'class' && newValue != oldValue) {
+                      attr.$updateClass(newValue, oldValue);
+                    } else {
+                      attr.$set(name, newValue);
+                    }
+                  });
+              }
+            };
+          }
+        }];
+      }
+    }
+
+    function locateDirectives(name) {
+      var result = [];
+      forEach(environment.directiveLocators, function(locator) {
+        var directives = locator(name);
+        if (directives) result.push.apply(result, directives);
+      });
+      forEach(result, function (directive, index) {
+        result[index] = normalizeDirectiveStructure(directive, name, index);
+      });
+      return result;
+
+    }
 
     /**
      * When the element is replaced with HTML template then the new attributes
@@ -1794,26 +1945,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     }
 
-
-    function addTextInterpolateDirective(directives, text) {
-      var interpolateFn = $interpolate(text, true);
-      if (interpolateFn) {
-        directives.push({
-          priority: 0,
-          compile: valueFn(function textInterpolateLinkFn(scope, node) {
-            var parent = node.parent(),
-                bindings = parent.data('$binding') || [];
-            bindings.push(interpolateFn);
-            safeAddClass(parent.data('$binding', bindings), 'ng-binding');
-            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
-              node[0].nodeValue = value;
-            });
-          })
-        });
-      }
-    }
-
-
     function getTrustedContext(node, attrNormalizedName) {
       if (attrNormalizedName == "srcdoc") {
         return $sce.HTML;
@@ -1827,66 +1958,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         return $sce.RESOURCE_URL;
       }
     }
-
-
-    function addAttrInterpolateDirective(node, directives, value, name) {
-      var interpolateFn = $interpolate(value, true);
-
-      // no interpolation found -> ignore
-      if (!interpolateFn) return;
-
-
-      if (name === "multiple" && nodeName_(node) === "SELECT") {
-        throw $compileMinErr("selmulti",
-            "Binding to the 'multiple' attribute is not supported. Element: {0}",
-            startingTag(node));
-      }
-
-      directives.push({
-        priority: 100,
-        compile: function() {
-            return {
-              pre: function attrInterpolatePreLinkFn(scope, element, attr) {
-                var $$observers = (attr.$$observers || (attr.$$observers = {}));
-
-                if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
-                  throw $compileMinErr('nodomevents',
-                      "Interpolations for HTML DOM event attributes are disallowed.  Please use the " +
-                          "ng- versions (such as ng-click instead of onclick) instead.");
-                }
-
-                // we need to interpolate again, in case the attribute value has been updated
-                // (e.g. by another directive's compile function)
-                interpolateFn = $interpolate(attr[name], true, getTrustedContext(node, name));
-
-                // if attribute was updated so that there is no interpolation going on we don't want to
-                // register any observers
-                if (!interpolateFn) return;
-
-                // TODO(i): this should likely be attr.$set(name, iterpolateFn(scope) so that we reset the
-                // actual attr value
-                attr[name] = interpolateFn(scope);
-                ($$observers[name] || ($$observers[name] = [])).$$inter = true;
-                (attr.$$observers && attr.$$observers[name].$$scope || scope).
-                  $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
-                    //special case for class attribute addition + removal
-                    //so that class changes can tap into the animation
-                    //hooks provided by the $animate service. Be sure to
-                    //skip animations when the first digest occurs (when
-                    //both the new and the old values are the same) since
-                    //the CSS classes are the non-interpolated values
-                    if(name === 'class' && newValue != oldValue) {
-                      attr.$updateClass(newValue, oldValue);
-                    } else {
-                      attr.$set(name, newValue);
-                    }
-                  });
-              }
-            };
-          }
-      });
-    }
-
 
     /**
      * This is a special jqLite.replaceWith, which can replace items which
@@ -1940,11 +2011,33 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       elementsToRemove.length = 1;
     }
 
-
     function cloneAndAnnotateFn(fn, annotation) {
       return extend(function() { return fn.apply(null, arguments); }, fn, annotation);
     }
   }];
+
+  function registerDirectiveCollector(directiveCollector) {
+    environment.directiveCollectors.push(directiveCollector);
+  }
+
+  function registerDirectiveLocator(directiveLocator) {
+    environment.directiveLocators.push(directiveLocator);
+  }
+
+  function normalizeDirectiveStructure(directive, name, index) {
+    if (isFunction(directive)) {
+      directive = { compile: valueFn(directive) };
+    } else if (!directive.compile && directive.link) {
+      directive.compile = valueFn(directive.link);
+    }
+    directive.priority = directive.priority || 0;
+    directive.index = index;
+    directive.name = directive.name || name;
+    directive.require = directive.require || (directive.controller && directive.name);
+    directive.restrict = directive.restrict || 'A';
+    return directive;
+  }
+
 }
 
 var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
