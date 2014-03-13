@@ -44,4 +44,28 @@ describe('$$rAF', function() {
       }
     }));
   });
+
+  describe('mobile', function() {
+    var $window;
+
+    it('should provide a cancellation method for an older version of Android', function() {
+      module(function($provide) {
+        $provide.value('$window', {
+          webkitRequestAnimationFrame: jasmine.createSpy('$window.webkitRequestAnimationFrame'),
+          webkitCancelRequestAnimationFrame: jasmine.createSpy('$window.webkitCancelRequestAnimationFrame')
+        });
+      });
+
+      inject(function($window) {
+        var $raf = createRAF($window);
+        var cancel = $raf(function() {});
+
+        try {
+          cancel();
+        } catch(e) {}
+
+        expect($window.webkitCancelRequestAnimationFrame).toHaveBeenCalled();
+      });
+    });
+  });
 });
