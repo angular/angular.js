@@ -54,7 +54,8 @@
     "dgeni-packages": "^0.7.0",
     "gulp-jshint": "~1.4.2",
     "jshint-stylish": "~0.1.5",
-    "node-html-encoder": "0.0.2"
+    "node-html-encoder": "0.0.2",
+    "sorted-object": "^1.0.0"
   },
   "licenses": [
     {
