@@ -1202,7 +1202,7 @@ function radioInputType(scope, element, attr, ctrl) {
 
   ctrl.$render = function() {
     var value = attr.value;
-    element[0].checked = (value == ctrl.$viewValue);
+    element[0].checked = angular.equals(value, ctrl.$viewValue);
   };
 
   attr.$observe('value', ctrl.$render);
