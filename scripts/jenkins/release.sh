@@ -23,7 +23,7 @@ ARG_DEFS=(
 )
 
 function init {
-  if [[ $(git rev-parse --short HEAD) != $COMMIT_SHA ]]; then
+  if [[ $(git rev-parse HEAD) != $(git rev-parse $COMMIT_SHA) ]]; then
     echo "HEAD is not at $COMMIT_SHA"
     usage
   fi
