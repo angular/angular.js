@@ -31,6 +31,38 @@ describe('$$rAF', function() {
     expect(present).toBe(true);
   }));
 
+  describe('$timeout fallback', function() {
+    it("it should use a $timeout incase native rAF isn't suppored", function() {
+      var timeoutSpy = jasmine.createSpy('callback');
+
+      //we need to create our own injector to work around the ngMock overrides
+      var injector = createInjector(['ng', function($provide) {
+        $provide.value('$timeout', timeoutSpy);
+        $provide.decorator('$window', function($delegate) {
+          $delegate.requestAnimationFrame = false;
+          $delegate.webkitRequestAnimationFrame = false;
+          $delegate.mozRequestAnimationFrame = false;
+          return $delegate;
+        });
+      }]);
+
+      var $$rAF = injector.get('$$rAF');
+      expect($$rAF.supported).toBe(false);
+
+      var message;
+      $$rAF(function() {
+        message = 'on';
+      });
+
+      expect(message).toBeUndefined();
+      expect(timeoutSpy).toHaveBeenCalled();
+
+      timeoutSpy.mostRecentCall.args[0]();
+
+      expect(message).toBe('on');
+    });
+  });
+
   describe('mocks', function() {
     it('should throw an error if no frames are present', inject(function($$rAF) {
       if($$rAF.supported) {

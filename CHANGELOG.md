@@ -1,3 +1,28 @@
+<a name="1.3.0-beta.2"></a>
+# 1.3.0-beta.2 silent-ventriloquism (2014-03-14)
+
+
+## Bug Fixes
+
+- **$$rAF:** always fallback to a $timeout in case native rAF isn't supported
+  ([7b5e0199](https://github.com/angular/angular.js/commit/7b5e019981f352add88be2984de68e553d1bfa93),
+   [#6654](https://github.com/angular/angular.js/issues/6654))
+- **$http:** don't convert 0 status codes to 404 for non-file protocols
+  ([56e73ea3](https://github.com/angular/angular.js/commit/56e73ea355c851fdfd574d6d2a9e2fcb75677945),
+   [#6074](https://github.com/angular/angular.js/issues/6074), [#6155](https://github.com/angular/angular.js/issues/6155))
+- **ngAnimate:** setting classNameFilter disables animation inside ng-if
+  ([129e2e02](https://github.com/angular/angular.js/commit/129e2e021ab1d773874428cd1fb329eae72797c4),
+   [#6539](https://github.com/angular/angular.js/issues/6539))
+
+
+## Features
+
+- whitelist blob urls for sanitization of data-bound image urls
+  ([47ab8df4](https://github.com/angular/angular.js/commit/47ab8df455df1f1391b760e1fbcc5c21645512b8),
+   [#4623](https://github.com/angular/angular.js/issues/4623))
+
+
+
 <a name="1.3.0-beta.1"></a>
 # 1.3.0-beta.1 retractable-eyebrow (2014-03-07)
 
@@ -23,6 +48,9 @@
 
 - **build:** due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
   As communicated before, IE8 is no longer supported.
+- **input:** types date, time, datetime-local, month, week now always
+  require a `Date` object as model ([46bd6dc8](https://github.com/angular/angular.js/commit/46bd6dc88de252886d75426efc2ce8107a5134e9),
+   [#5864](https://github.com/angular/angular.js/issues/5864))
 
 For more info: http://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html
 
