@@ -1052,10 +1052,13 @@ function $RootScopeProvider(){
 
     function insertWatcher(watcher) {
       var scope = watcher.scope;
-      watcher.prev = findLastWatcherBefore(watcher.scope);
-      watcher.next = watcher.prev ? watcher.prev.next : findFirstWatcherAfter(watcher.scope);
+      watcher.prev = findLastWatcherBefore(scope);
+      watcher.next = watcher.prev ? watcher.prev.next : findFirstWatcherAfter(scope);
       if (watcher.prev) watcher.prev.next = watcher;
       if (watcher.next) watcher.next.prev = watcher;
+
+      // We have all the information for the current watcher, need to fix this scope and
+      // the scope hierarchy head and tail
       scope.$$watchersCurrentTail = watcher;
       while (scope && (scope.$$watchersHead === null || scope.$$watchersHead === watcher.next ||
           scope.$$watchersTail === watcher.prev)) {
@@ -1081,6 +1084,8 @@ function $RootScopeProvider(){
       return null;
     }
 
+    // This function short-circuit the search with the assumption that
+    // findLastWatcherBefore(scope) already returned `null`
     function findFirstWatcherAfter(scope) {
       while (scope && !scope.$$watchersHead) {
         scope = scope.$parent;
