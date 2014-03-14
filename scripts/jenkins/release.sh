@@ -56,8 +56,8 @@ function phase {
 
   ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
   ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
-  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG
-  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
+  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
 }
 
 function run {
