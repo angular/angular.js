@@ -79,7 +79,7 @@ route by the `$route` service.
 ## Template
 
 The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
-Note where we use the angular `{{expression}}` markup and `ngRepeat` to project phone data from
+Note where we use the Angular `{{expression}}` markup and `ngRepeat` to project phone data from
 our model into the view.
 
 
