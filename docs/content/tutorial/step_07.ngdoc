@@ -114,7 +114,7 @@ Our application routes are defined as follows:
 view, Angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
 
 * The phone details view will be shown when the URL hash fragment matches '/phone/:phoneId', where
-`:phoneId` is a variable part of the URL. To construct the phone details view, angular will use the
+`:phoneId` is a variable part of the URL. To construct the phone details view, Angular will use the
 `phone-detail.html` template and the `PhoneDetailCtrl` controller.
 
 We reused the `PhoneListCtrl` controller that we constructed in previous steps and we added a new,
