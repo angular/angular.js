@@ -1073,6 +1073,7 @@ function $RootScopeProvider(){
       var result = null;
       while (scope && !result) {
         result = scope.$$watchersCurrentTail;
+        if (!result && scope.$$watchersHead) return scope.$$watchersHead.prev;
         while (!result && scope.$$prevSibling) {
           result = (scope = scope.$$prevSibling).$$watchersTail;
         }
@@ -1091,7 +1092,8 @@ function $RootScopeProvider(){
     function removeWatchers(scope, head, tail) {
       if (head.prev) head.prev.next = tail.next;
       if (tail.next) tail.next.prev = head.prev;
-      scope.$$watchersCurrentTail = (head.prev && head.prev.scope === scope ? head.prev : null);
+      if (head === scope.$$watchersCurrentTail)
+        scope.$$watchersCurrentTail = (head.prev && head.prev.scope === scope ? head.prev : null);
       while (scope && (scope.$$watchersHead === head || scope.$$watchersTail === tail)) {
         if (scope.$$watchersHead === head && scope.$$watchersTail === tail) {
           scope.$$watchersHead = scope.$$watchersTail = null;
