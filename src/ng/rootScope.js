@@ -1070,16 +1070,15 @@ function $RootScopeProvider(){
     }
 
     function findLastWatcherBefore(scope) {
-      var result = null;
-      while (scope && !result) {
-        result = scope.$$watchersCurrentTail;
-        if (!result && scope.$$watchersHead) return scope.$$watchersHead.prev;
-        while (!result && scope.$$prevSibling) {
-          result = (scope = scope.$$prevSibling).$$watchersTail;
+      while (scope) {
+        if (scope.$$watchersCurrentTail) return scope.$$watchersCurrentTail;
+        if (scope.$$watchersHead) return scope.$$watchersHead.prev;
+        while (scope.$$prevSibling) {
+          if ((scope = scope.$$prevSibling).$$watchersTail) return scope.$$watchersTail;
         }
         scope = scope.$parent;
       }
-      return result;
+      return null;
     }
 
     function findFirstWatcherAfter(scope) {
