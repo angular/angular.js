@@ -1052,7 +1052,7 @@ function $RootScopeProvider(){
 
     function insertWatcher(watcher) {
       var scope = watcher.scope;
-      watcher.prev = watcher.scope.$$watchersCurrentTail || findLastWatcherBefore(watcher.scope);
+      watcher.prev = findLastWatcherBefore(watcher.scope);
       watcher.next = watcher.prev ? watcher.prev.next : findFirstWatcherAfter(watcher.scope);
       if (watcher.prev) watcher.prev.next = watcher;
       if (watcher.next) watcher.next.prev = watcher;
@@ -1070,10 +1070,15 @@ function $RootScopeProvider(){
     }
 
     function findLastWatcherBefore(scope) {
-      do {
+      var result = null;
+      while (scope && !result) {
+        result = scope.$$watchersCurrentTail;
+        while (!result && scope.$$prevSibling) {
+          result = (scope = scope.$$prevSibling).$$watchersTail;
+        }
         scope = scope.$parent;
-      } while (scope && !scope.$$watchersTail);
-      return scope ? scope.$$watchersTail : null;
+      }
+      return result;
     }
 
     function findFirstWatcherAfter(scope) {
