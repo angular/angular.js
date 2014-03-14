@@ -15,7 +15,7 @@
 # 0. Set the current directory to the directory of the script. By this
 #    the script can be called from anywhere.
 # 1. Parse the named arguments
-# 2. If the parameter "git_push_dryrun" is set, all calls the `git push` in this script
+# 2. If the parameter "git_push_dryrun" is set, all calls to `git push` in this script
 #    or in child scripts will be intercepted so that the `--dry-run` and `--porcelain` is added
 #    to show what the push would do but not actually do it.
 # 3. If the parameter "verbose" is set, the `-x` flag will be set in bash.
@@ -36,7 +36,7 @@
 #   with the name of the parameter in upper case (with dash converted to underscore).
 #
 # Special arguments that are always available:
-# - "--action=.*": This parameter will be used to dispatch to a function with that name when the
+# - "--action=.*": This parameter will be used to execute a function with that name when the
 #   script is started
 # - "--git_push_dryrun=true": This will intercept all calls to `git push` in this script
 #   or in child scripts so that the `--dry-run` and `--porcelain` is added
@@ -195,7 +195,7 @@ function isFunction {
 }
 
 # readJsonProp(jsonFile, property)
-# - restriction: property needs to be on an own line!
+# - restriction: property needs to be on a single line!
 function readJsonProp {
   echo $(sed -En 's/.*"'$2'"[ ]*:[ ]*"(.*)".*/\1/p' $1)
 }
