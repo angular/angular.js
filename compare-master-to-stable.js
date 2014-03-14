@@ -122,7 +122,7 @@ then(function (tags) {
 }).
 then(function (tags) {
   return [
-    { name: 'v1.0.x', tag: tags[0] },
+    { name: 'v1.2.x', tag: tags[0] },
     { name: 'master', tag: tags[1] }
   ];
 }).
