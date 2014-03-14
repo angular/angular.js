@@ -121,9 +121,12 @@ then(function (tags) {
     value();
 }).
 then(function (tags) {
+  var master = tags.pop();
+  var stable = tags.pop();
+
   return [
-    { name: 'v1.2.x', tag: tags[0] },
-    { name: 'master', tag: tags[1] }
+    { name: stable.replace(/\d+$/, 'x'), tag: stable },
+    { name: 'master', tag: master}
   ];
 }).
 then(allInSeries(function (branch) {
