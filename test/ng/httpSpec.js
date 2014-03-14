@@ -498,8 +498,8 @@ describe('$http', function() {
 
       describe('success', function() {
         it('should allow http specific callbacks to be registered via "success"', function() {
-          $httpBackend.expect('GET', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
-          $http({url: '/url', method: 'GET'}).success(function(data, status, headers, config) {
+          $httpBackend.expect('POST', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
+          $http({url: '/url', method: 'POST'}).success(function(data, status, headers, config) {
             expect(data).toBe('my content');
             expect(status).toBe(207);
             expect(headers()).toEqual({'content-encoding': 'smurf'});
@@ -513,8 +513,8 @@ describe('$http', function() {
 
 
         it('should return the original http promise', function() {
-          $httpBackend.expect('GET', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
-          var httpPromise = $http({url: '/url', method: 'GET'});
+          $httpBackend.expect('POST', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
+          var httpPromise = $http({url: '/url', method: 'POST'});
           expect(httpPromise.success(callback)).toBe(httpPromise);
         });
       });
@@ -542,8 +542,15 @@ describe('$http', function() {
           expect(httpPromise.error(callback)).toBe(httpPromise);
         });
       });
-    });
 
+      describe('notify', function() {
+        it('should return the original http promise', function() {
+          $httpBackend.expect('GET', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
+          var httpPromise = $http({url: '/url', method: 'GET'});
+          expect(httpPromise.notify(callback)).toBe(httpPromise);
+        });
+      });
+    });
 
     describe('response headers', function() {
 
@@ -1471,7 +1478,7 @@ describe('$http', function() {
   it('should pass timeout, withCredentials and responseType', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+    $httpBackend.andCallFake(function(m, u, d, p, c, h, timeout, withCredentials, responseType) {
       expect(timeout).toBe(12345);
       expect(withCredentials).toBe(true);
       expect(responseType).toBe('json');
@@ -1496,7 +1503,7 @@ describe('$http', function() {
   it('should use withCredentials from default', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+    $httpBackend.andCallFake(function(m, u, d, p, c, h, timeout, withCredentials, responseType) {
       expect(withCredentials).toBe(true);
     });
 
