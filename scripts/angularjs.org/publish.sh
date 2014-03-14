@@ -11,8 +11,12 @@ ARG_DEFS=(
 )
 
 function init {
-  TMP_DIR=$(resolveDir ../../tmp)
+  BASE_DIR=$(resolveDir ../..)
+  TMP_DIR=$BASE_DIR/tmp
   REPO_DIR=$TMP_DIR/angularjs.org
+  BRANCH_PATTERN=$(readJsonProp "$BASE_DIR/package.json" "branchVersion")
+  BUILD_DIR=$BASE_DIR/build
+  NEW_VERSION=$(cat $BUILD_DIR/version.txt)
 }
 
 function prepare {
@@ -24,18 +28,24 @@ function prepare {
   #
   echo "-- Updating angularjs.org"
   cd $REPO_DIR
-  VERSION_REGEX="[a-z0-9\-\.\+]+"
+  VERSION_REGEX="[-a-z0-9\.\+]+"
 
-  replaceInFile "index.html" "(ajax\/libs\/angularjs\/)$VERSION_REGEX" "\1$CDN_VERSION"
-  replaceInFile "index.html" "(<span class=\"version\">[^<]*<span>)$VERSION_REGEX" "\1$CDN_VERSION"
-  replaceInFile "index.html" "(code.angularjs.org\/)$VERSION_REGEX" "\1$CDN_VERSION"
+  # Replace the version in the script links that reference the Google CDN
+  # e.g. <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.1/angular.js"></script>
+  replaceInFile "index.html" "(http:\/\/ajax.googleapis.com\/ajax\/libs\/angularjs\/)$VERSION_REGEX" "\1$CDN_VERSION"
 
-  replaceInFile "js/homepage.js" "($scope.CURRENT_STABLE_VERSION[ ]*=[ ]*')$VERSION_REGEX" "\1$CDN_VERSION"
-  replaceInFile "js/homepage.js" "($scope.CURRENT_UNSTABLE_VERSION[ ]*=[ ]*')$VERSION_REGEX" "\1$CDN_VERSION"
+  # Replace the version in the script links that reference code.angularjs.org
+  # e.g. <script src="http://code.angularjs.org/1.3.0-beta.1/i18n/angular-locale_sk.js"></script>
+  replaceInFile "index.html" "(code\.angularjs\.org\/)$VERSION_REGEX" "\1$CDN_VERSION"
 
+  # Replace the version of the branch that we are updating
+  echo $BRANCH_PATTERN
+  echo $NEW_VERSION
+  replaceInFile "js/download-data.js" "branch:[ ]+'($BRANCH_PATTERN)',[ ]+version:[ ]+'$VERSION_REGEX'" "branch: '\1', version: '$NEW_VERSION'"
+  
   git add index.html
-  git add js/homepage.js
-  git commit -m "update(version): update angular version to $CDN_VERSION"
+  git add js/download-data.js
+  git commit -m "update(version): update angular version to $NEW_VERSION for branch $BRANCH_PATTERN"
 }
 
 function publish {
