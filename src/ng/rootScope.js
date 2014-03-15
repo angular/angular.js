@@ -124,7 +124,8 @@ function $RootScopeProvider(){
      */
     function Scope() {
       this.$id = nextUid();
-      this.$$phase = this.$parent = this.$$watchers =
+      this.$$phase = this.$parent =
+                     this.$$watchersHead = this.$$watchersCurrentTail = this.$$watchersTail =
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
       this['this'] = this.$root =  this;
@@ -192,7 +193,8 @@ function $RootScopeProvider(){
         child.$$listeners = {};
         child.$$listenerCount = {};
         child.$parent = this;
-        child.$$watchers = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
+        child.$$watchersHead = child.$$watchersCurrentTail = child.$$watchersTail =
+            child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
         if (this.$$childHead) {
           this.$$childTail.$$nextSibling = child;
@@ -315,13 +317,15 @@ function $RootScopeProvider(){
       $watch: function(watchExp, listener, objectEquality) {
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
-            array = scope.$$watchers,
             watcher = {
               fn: listener,
               last: initWatchVal,
               get: get,
               exp: watchExp,
-              eq: !!objectEquality
+              eq: !!objectEquality,
+              scope: scope,
+              next: null,
+              prev: null
             };
 
         lastDirtyWatch = null;
@@ -336,19 +340,13 @@ function $RootScopeProvider(){
           var originalFn = watcher.fn;
           watcher.fn = function(newVal, oldVal, scope) {
             originalFn.call(this, newVal, oldVal, scope);
-            arrayRemove(array, watcher);
+            watcher.toRemove = true;
           };
         }
-
-        if (!array) {
-          array = scope.$$watchers = [];
-        }
-        // we use unshift since we use a while loop in $digest for speed.
-        // the while loop reads in reverse order.
-        array.unshift(watcher);
+        insertWatcher(watcher);
 
         return function() {
-          arrayRemove(array, watcher);
+          watcher.toRemove = true;
           lastDirtyWatch = null;
         };
       },
@@ -541,14 +539,11 @@ function $RootScopeProvider(){
        *
        */
       $digest: function() {
-        var watch, value, last,
-            watchers,
+        var value, last,
             asyncQueue = this.$$asyncQueue,
             postDigestQueue = this.$$postDigestQueue,
-            length,
             dirty, ttl = TTL,
-            next, current, target = this,
-            watchLog = [],
+            watchLog = [], currentWatcher,
             logIdx, logMsg, asyncTask;
 
         beginPhase('$digest');
@@ -557,7 +552,6 @@ function $RootScopeProvider(){
 
         do { // "while dirty" loop
           dirty = false;
-          current = target;
 
           while(asyncQueue.length) {
             try {
@@ -570,59 +564,47 @@ function $RootScopeProvider(){
             lastDirtyWatch = null;
           }
 
-          traverseScopesLoop:
-          do { // "traverse the scopes" loop
-            if ((watchers = current.$$watchers)) {
-              // process our watches
-              length = watchers.length;
-              while (length--) {
-                try {
-                  watch = watchers[length];
-                  // Most common watches are on primitives, in which case we can short
-                  // circuit it with === operator, only when === fails do we use .equals
-                  if (watch) {
-                    if ((value = watch.get(current)) !== (last = watch.last) &&
-                        !(watch.eq
-                            ? equals(value, last)
-                            : (typeof value == 'number' && typeof last == 'number'
-                               && isNaN(value) && isNaN(last)))) {
-                      dirty = true;
-                      lastDirtyWatch = watch;
-                      watch.last = watch.eq ? copy(value) : value;
-                      watch.fn(value, ((last === initWatchVal) ? value : last), current);
-                      if (ttl < 5) {
-                        logIdx = 4 - ttl;
-                        if (!watchLog[logIdx]) watchLog[logIdx] = [];
-                        logMsg = (isFunction(watch.exp))
-                            ? 'fn: ' + (watch.exp.name || watch.exp.toString())
-                            : watch.exp;
-                        logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
-                        watchLog[logIdx].push(logMsg);
-                      }
-                    } else if (watch === lastDirtyWatch) {
-                      // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
-                      // have already been tested.
-                      dirty = false;
-                      break traverseScopesLoop;
+          if (this.$$watchersHead) { // "traverse the scopes" loop
+            currentWatcher = this.$$watchersHead;
+            do {
+              try {
+                // Most common watches are on primitives, in which case we can short
+                // circuit it with === operator, only when === fails do we use .equals
+                if (!currentWatcher.toRemove) {
+                  if ((value = currentWatcher.get(currentWatcher.scope)) !== (last = currentWatcher.last) &&
+                      !(currentWatcher.eq
+                          ? equals(value, last)
+                          : (typeof value == 'number' && typeof last == 'number'
+                             && isNaN(value) && isNaN(last)))) {
+                    dirty = true;
+                    lastDirtyWatch = currentWatcher;
+                    currentWatcher.last = currentWatcher.eq ? copy(value) : value;
+                    currentWatcher.fn(value, ((last === initWatchVal) ? value : last), currentWatcher.scope);
+                    if (ttl < 5) {
+                      logIdx = 4 - ttl;
+                      if (!watchLog[logIdx]) watchLog[logIdx] = [];
+                      logMsg = (isFunction(currentWatcher.exp))
+                          ? 'fn: ' + (currentWatcher.exp.name || currentWatcher.exp.toString())
+                          : currentWatcher.exp;
+                      logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
+                      watchLog[logIdx].push(logMsg);
                     }
+                  } else if (currentWatcher === lastDirtyWatch) {
+                    // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
+                    // have already been tested.
+                    dirty = false;
+                    break;
                   }
-                } catch (e) {
-                  clearPhase();
-                  $exceptionHandler(e);
+                } else {
+                  removeWatchers(currentWatcher.scope, currentWatcher, currentWatcher);
                 }
+              } catch (e) {
+                clearPhase();
+                $exceptionHandler(e);
               }
-            }
-
-            // Insanity Warning: scope depth-first traversal
-            // yes, this code is a bit crazy, but it works and we have tests to prove it!
-            // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead ||
-                (current !== target && current.$$nextSibling)))) {
-              while(current !== target && !(next = current.$$nextSibling)) {
-                current = current.$parent;
-              }
-            }
-          } while ((current = next));
+              currentWatcher = currentWatcher.next;
+            } while (this.$$watchersTail && this.$$watchersTail.next !== currentWatcher);
+          }
 
           // `break traverseScopesLoop;` takes us to here
 
@@ -697,11 +679,12 @@ function $RootScopeProvider(){
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
         if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
         if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
+        if (this.$$watchersHead) removeWatchers(this, this.$$watchersHead, this.$$watchersTail);
 
         // This is bogus code that works around Chrome's GC leak
         // see: https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
         this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
-            this.$$childTail = null;
+            this.$$childTail = this.$$watchersHead = this.$$watchersTail = null;
       },
 
       /**
@@ -1065,6 +1048,80 @@ function $RootScopeProvider(){
           delete current.$$listenerCount[name];
         }
       } while ((current = current.$parent));
+    }
+
+    function insertWatcher(watcher) {
+      var scope = watcher.scope;
+      watcher.prev = findLastWatcherBefore(scope);
+      watcher.next = watcher.prev ? watcher.prev.next : findFirstWatcherAfter(scope);
+      if (watcher.prev) watcher.prev.next = watcher;
+      if (watcher.next) watcher.next.prev = watcher;
+
+      // We have all the information for the current watcher, need to fix this scope and
+      // the scope hierarchy head and tail
+      scope.$$watchersCurrentTail = watcher;
+      while (scope && (scope.$$watchersHead === null || scope.$$watchersHead === watcher.next ||
+          scope.$$watchersTail === watcher.prev)) {
+        if (scope.$$watchersHead === null || scope.$$watchersHead === watcher.next) {
+          scope.$$watchersHead = watcher;
+        }
+        if (scope.$$watchersTail === null || scope.$$watchersTail === watcher.prev) {
+          scope.$$watchersTail = watcher;
+        }
+        scope = scope.$parent;
+      }
+    }
+
+    function findLastWatcherBefore(scope) {
+      // Insanity warning: head is searching for a watcher moving backwards and tail is
+      // doing the same search moving forwards
+      var head = scope, tail = scope;
+      while (true) {
+        // Moving head
+        while (head.$parent && !head.$$watchersCurrentTail && (
+              !head.$$prevSibling ||
+              !head.$parent.$$watchersTail ||                                      // this is, the parent
+              head.$parent.$$watchersTail === head.$parent.$$watchersCurrentTail)) // has no child watchers
+          head = head.$parent;
+        if (!head.$parent || head.$$watchersCurrentTail) return head.$$watchersCurrentTail;
+        head = head.$$prevSibling;
+
+        // Moving tail
+        if (tail.$$watchersHead) return tail.$$watchersHead.prev;
+        while (tail.$parent && !tail.$$watchersTail && (
+              !tail.$$nextSibling ||
+              !tail.$parent.$$watchersTail ||                                      // this is, the parent
+              tail.$parent.$$watchersTail === tail.$parent.$$watchersCurrentTail)) // has no child watchers
+          tail = tail.$parent;
+        if (!tail.$parent || tail.$$watchersTail) return tail.$$watchersTail;
+        tail = tail.$$nextSibling;
+      }
+    }
+
+    // This function short-circuit the search with the assumption that
+    // findLastWatcherBefore(scope) already returned `null`
+    function findFirstWatcherAfter(scope) {
+      while (scope && !scope.$$watchersHead) {
+        scope = scope.$parent;
+      }
+      return scope ? scope.$$watchersHead : null;
+    }
+
+    function removeWatchers(scope, head, tail) {
+      if (head.prev) head.prev.next = tail.next;
+      if (tail.next) tail.next.prev = head.prev;
+      if (head === scope.$$watchersCurrentTail)
+        scope.$$watchersCurrentTail = (head.prev && head.prev.scope === scope ? head.prev : null);
+      while (scope && (scope.$$watchersHead === head || scope.$$watchersTail === tail)) {
+        if (scope.$$watchersHead === head && scope.$$watchersTail === tail) {
+          scope.$$watchersHead = scope.$$watchersTail = null;
+        } else if (scope.$$watchersHead === head) {
+          scope.$$watchersHead = tail.next;
+        } else {
+          scope.$$watchersTail = head.prev;
+        }
+        scope = scope.$parent;
+      }
     }
 
     /**
