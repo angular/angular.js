@@ -1073,15 +1073,29 @@ function $RootScopeProvider(){
     }
 
     function findLastWatcherBefore(scope) {
-      while (scope) {
-        if (scope.$$watchersCurrentTail) return scope.$$watchersCurrentTail;
-        if (scope.$$watchersHead) return scope.$$watchersHead.prev;
-        while (scope.$$prevSibling) {
-          if ((scope = scope.$$prevSibling).$$watchersTail) return scope.$$watchersTail;
-        }
-        scope = scope.$parent;
+      // Insanity warning: head is searching for a watcher moving backwards and tail is
+      // doing the same search moving forwards
+      var head = scope, tail = scope;
+      while (true) {
+        // Moving head
+        while (head.$parent && !head.$$watchersCurrentTail && (
+              !head.$$prevSibling ||
+              !head.$parent.$$watchersTail ||                                      // this is, the parent
+              head.$parent.$$watchersTail === head.$parent.$$watchersCurrentTail)) // has no child watchers
+          head = head.$parent;
+        if (!head.$parent || head.$$watchersCurrentTail) return head.$$watchersCurrentTail;
+        head = head.$$prevSibling;
+
+        // Moving tail
+        if (tail.$$watchersHead) return tail.$$watchersHead.prev;
+        while (tail.$parent && !tail.$$watchersTail && (
+              !tail.$$nextSibling ||
+              !tail.$parent.$$watchersTail ||                                      // this is, the parent
+              tail.$parent.$$watchersTail === tail.$parent.$$watchersCurrentTail)) // has no child watchers
+          tail = tail.$parent;
+        if (!tail.$parent || tail.$$watchersTail) return tail.$$watchersTail;
+        tail = tail.$$nextSibling;
       }
-      return null;
     }
 
     // This function short-circuit the search with the assumption that

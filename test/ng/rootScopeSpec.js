@@ -730,6 +730,94 @@ describe('Scope', function() {
                              'w1', 'w2']);
       }));
     });
+
+    describe('$watchers linked list', function () {
+      it('should be inited with `null` head, tail and current tail', inject(function($rootScope) {
+        expect($rootScope.$$watchersHead).toBe(null);
+        expect($rootScope.$$watchersTail).toBe(null);
+        expect($rootScope.$$watchersCurrentTail).toBe(null);
+        var scope = $rootScope.$new();
+        expect(scope.$$watchersHead).toBe(null);
+        expect(scope.$$watchersTail).toBe(null);
+        expect(scope.$$watchersCurrentTail).toBe(null);
+      }));
+      it('should set the head, tail and current tail when adding a watcher to a scope', inject(function($rootScope) {
+        $rootScope.$watch('foo', function() {});
+        expect($rootScope.$$watchersHead).not.toBe(null);
+        expect($rootScope.$$watchersTail).toBe($rootScope.$$watchersHead);
+        expect($rootScope.$$watchersCurrentTail).toBe($rootScope.$$watchersHead);
+        $rootScope.$watch('foo2', function() {});
+        expect($rootScope.$$watchersHead).not.toBe(null);
+        expect($rootScope.$$watchersTail).not.toBe(null);
+        expect($rootScope.$$watchersTail).not.toBe($rootScope.$$watchersHead);
+        expect($rootScope.$$watchersCurrentTail).toBe($rootScope.$$watchersTail);
+      }));
+      it('should not update the current tail when the watched is added to a sub-scope', inject(function($rootScope) {
+        var scope = $rootScope.$new();
+        scope.$watch('foo', function() {});
+        expect($rootScope.$$watchersHead).not.toBe(null);
+        expect($rootScope.$$watchersTail).toBe($rootScope.$$watchersHead);
+        expect($rootScope.$$watchersCurrentTail).toBe(null);
+        expect(scope.$$watchersHead).toBe($rootScope.$$watchersHead);
+        expect(scope.$$watchersTail).toBe($rootScope.$$watchersHead);
+        expect(scope.$$watchersCurrentTail).toBe($rootScope.$$watchersHead);
+      }));
+      it('should place the watchers in the sub-scope after the watchers in the parent scope', inject(function($rootScope) {
+        var scope = $rootScope.$new();
+        scope.$watch('foo', function() {});
+        $rootScope.$watch('foo', function() {});
+        expect($rootScope.$$watchersTail).toBe(scope.$$watchersHead);
+        expect($rootScope.$$watchersCurrentTail.next).toBe(scope.$$watchersHead);
+      }));
+      it('should insert the watchers in the order of scopes', inject(function($rootScope) {
+        var scope1 = $rootScope.$new();
+        var scope2 = $rootScope.$new();
+        var scope3 = $rootScope.$new();
+        scope3.$watch('foo', function() {});
+        scope1.$watch('foo', function() {});
+        scope2.$watch('foo', function() {});
+        expect($rootScope.$$watchersHead).toBe(scope1.$$watchersTail);
+        expect(scope1.$$watchersHead.next).toBe(scope2.$$watchersTail);
+        expect(scope2.$$watchersHead.next).toBe(scope3.$$watchersTail);
+        expect(scope3.$$watchersHead.next).toBe(null);
+      }));
+      it('should insert the watchers in the order of scopes', inject(function($rootScope) {
+        var scope1 = $rootScope.$new();
+        var scope2 = $rootScope.$new();
+        var scope3 = $rootScope.$new();
+        scope3.$watch('foo', function() {});
+        scope2.$watch('foo', function() {});
+        scope1.$watch('foo', function() {});
+        expect($rootScope.$$watchersHead).toBe(scope1.$$watchersTail);
+        expect(scope1.$$watchersHead.next).toBe(scope2.$$watchersTail);
+        expect(scope2.$$watchersHead.next).toBe(scope3.$$watchersTail);
+        expect(scope3.$$watchersHead.next).toBe(null);
+      }));
+      it('should put the child watchers after the parent watchers', inject(function($rootScope) {
+        var scope1 = $rootScope.$new();
+        var scope2 = scope1.$new();
+        var scope3 = $rootScope.$new();
+        scope1.$watch('foo', function() {});
+        scope3.$watch('foo', function() {});
+        scope2.$watch('foo', function() {});
+        expect($rootScope.$$watchersHead).toBe(scope1.$$watchersHead);
+        expect(scope1.$$watchersHead.next).toBe(scope2.$$watchersTail);
+        expect(scope2.$$watchersHead.next).toBe(scope3.$$watchersTail);
+        expect(scope3.$$watchersHead.next).toBe(null);
+      }));
+      it('should put the child watcher after the parent watcher even if the parent watcher is the last in the chain', inject(function($rootScope) {
+        var scope1 = $rootScope.$new();
+        var scope2 = scope1.$new();
+        var scope3 = scope2.$new();
+        scope1.$watch('foo', function() {});
+        scope2.$watch('foo', function() {});
+        scope3.$watch('foo', function() {});
+        expect($rootScope.$$watchersHead).toBe(scope1.$$watchersHead);
+        expect(scope1.$$watchersHead.next).toBe(scope2.$$watchersHead);
+        expect(scope2.$$watchersHead.next).toBe(scope3.$$watchersTail);
+        expect(scope3.$$watchersHead.next).toBe(null);
+      }));
+    });
   });
 
 
