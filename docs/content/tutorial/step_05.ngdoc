@@ -20,7 +20,7 @@ You should now see a list of 20 phones.
 The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-4...step-5):
 
 ## Data
-
+a
 The `app/phones/phones.json` file in your project is a dataset that contains a larger list of phones
 stored in the JSON format.
 
@@ -44,7 +44,7 @@ Following is a sample of the file:
 
 We'll use Angular's {@link ng.$http $http} service in our controller to make an HTTP
 request to your web server to fetch the data in the `app/phones/phones.json` file. `$http` is just
-one of several built-in {@link guide/dev_guide.services angular services} that handle common operations
+one of several built-in {@link guide/dev_guide.services Angular services} that handle common operations
 in web apps. Angular injects these services for you where you need them.
 
 Services are managed by Angular's {@link guide/di DI subsystem}. Dependency injection
@@ -74,10 +74,10 @@ tutorial.)
 
 The `$http` service returns a {@link ng.$q promise object} with a `success`
 method. We call this method to handle the asynchronous response and assign the phone data to the
-scope controlled by this controller, as a model called `phones`. Notice that angular detected the
+scope controlled by this controller, as a model called `phones`. Notice that Angular detected the
 json response and parsed it for us!
 
-To use a service in angular, you simply declare the names of the dependencies you need as arguments
+To use a service in Angular, you simply declare the names of the dependencies you need as arguments
 to the controller's constructor function, as follows:
 
     phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {...}
@@ -96,7 +96,7 @@ dependencies.
 ### `$` Prefix Naming Convention
 
 You can create your own services, and in fact we will do exactly that in step 11. As a naming
-convention, angular's built-in services, Scope methods and a few other Angular APIs have a `$`
+convention, Angular's built-in services, Scope methods and a few other Angular APIs have a `$`
 prefix in front of the name.
 
 The `$` prefix is there to namespace Angular-provided services.
@@ -167,7 +167,7 @@ __`test/unit/controllersSpec.js`:__
 Because we started using dependency injection and our controller has dependencies, constructing the
 controller in our tests is a bit more complicated. We could use the `new` operator and provide the
 constructor with some kind of fake `$http` implementation. However, the recommended (and easier) way
-is to create a controller in the test environment in the same way that angular does it in the
+is to create a controller in the test environment in the same way that Angular does it in the
 production code behind the scenes, as follows:
 
 ```js
@@ -269,7 +269,7 @@ to the first 5 in the list. Use the following code in the `$http` callback:
 
 # Summary
 
-Now that you have learned how easy it is to use angular services (thanks to Angular's dependency
+Now that you have learned how easy it is to use Angular services (thanks to Angular's dependency
 injection), go to {@link step_06 step 6}, where you will add some
 thumbnail images of phones and some links.
 
