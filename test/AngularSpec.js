@@ -583,6 +583,36 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value)});
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
+
+	it('should handle break', function() {
+	  var obj = [];
+	  obj[0] = 1;
+	  obj[1] = 2;
+	  obj[2] = 3;
+	  var log = [];
+	  forEach(obj, function(value, key) {
+		log.push(key + ':' + value);
+		if (value === 2) {
+		  return false;
+		}
+	  });
+	  expect(log).toEqual(['0:1', '1:2']);
+	});
+
+	it('should handle continue', function() {
+	  var obj = [];
+	  obj[0] = 1;
+	  obj[1] = 2;
+	  obj[2] = 3;
+	  var log = [];
+	  forEach(obj, function(value, key) {
+		  if (value === 2) {
+			  return true;
+		  }
+		  log.push(key + ':' + value);
+	  });
+	  expect(log).toEqual(['0:1', '2:3']);
+    });
   });
 
 
