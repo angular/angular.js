@@ -27,7 +27,7 @@
     "q-io": "~1.10.6",
     "qq": "~0.3.5",
     "shelljs": "~0.2.6",
-    "karma": "0.11.12",
+    "karma": "^0.12.0",
     "karma-jasmine": "0.1.5",
     "karma-chrome-launcher": "0.1.2",
     "karma-firefox-launcher": "0.1.3",
