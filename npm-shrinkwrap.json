@@ -1967,7 +1967,7 @@
       }
     },
     "karma": {
-      "version": "0.11.12",
+      "version": "0.12.0",
       "dependencies": {
         "di": {
           "version": "0.0.1"
@@ -2083,9 +2083,6 @@
             }
           }
         },
-        "coffee-script": {
-          "version": "1.6.3"
-        },
         "rimraf": {
           "version": "2.2.6"
         },
@@ -2102,7 +2099,7 @@
           "version": "1.2.11"
         },
         "log4js": {
-          "version": "0.6.10",
+          "version": "0.6.12",
           "dependencies": {
             "async": {
               "version": "0.1.15"
@@ -2111,7 +2108,7 @@
               "version": "1.1.4"
             },
             "readable-stream": {
-              "version": "1.0.26",
+              "version": "1.0.26-2",
               "dependencies": {
                 "string_decoder": {
                   "version": "0.10.25-1"
@@ -2206,7 +2203,7 @@
           }
         },
         "source-map": {
-          "version": "0.1.32",
+          "version": "0.1.33",
           "dependencies": {
             "amdefine": {
               "version": "0.1.0"
