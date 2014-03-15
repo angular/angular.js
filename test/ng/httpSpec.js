@@ -989,6 +989,16 @@ describe('$http', function() {
         });
 
 
+        it('should ignore Blob objects', function () {
+          if (!window.Blob) return;
+
+          var blob = new Blob(['blob!'], { type: 'text/plain' });
+
+          $httpBackend.expect('POST', '/url', '[object Blob]').respond('');
+          $http({ method: 'POST', url: '/url', data: blob });
+        });
+
+
         it('should have access to request headers', function() {
           $httpBackend.expect('POST', '/url', 'header1').respond(200);
           $http.post('/url', 'req', {
