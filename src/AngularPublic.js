@@ -149,7 +149,7 @@ function publishExternalAPI(angular){
       $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
-		    details: detailsDirective,
+            details: detailsDirective,
             input: inputDirective,
             textarea: inputDirective,
             form: formDirective,
