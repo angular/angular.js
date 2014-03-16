@@ -8,6 +8,7 @@
     $CompileProvider,
 
     htmlAnchorDirective,
+    detailsDirective,
     inputDirective,
     inputDirective,
     formDirective,
@@ -148,6 +149,7 @@ function publishExternalAPI(angular){
       $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
+		    details: detailsDirective,
             input: inputDirective,
             textarea: inputDirective,
             form: formDirective,
