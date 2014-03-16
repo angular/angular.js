@@ -7,7 +7,7 @@
  *
  * @description
  * Modifies the default behavior of the html details tag so that when used with ng-open
- * if the ng-open is pointing at a ng-model the model is updated on click.
+ * the scope variable that it is pointing at is updated on click.
  *
  * This change allows for automatically linking a details element to a model, e.g.:
  * `<input type="checkbox" ng-model="open">`
