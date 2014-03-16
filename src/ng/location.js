@@ -642,6 +642,9 @@ function $LocationProvider(){
           if (href[0] == '/') {
             // absolute path - replace old path
             absHref = serverBase(absHref) + href;
+          } else if (href[0] == '#') {
+            // local anchor
+            absHref = serverBase(absHref) + $location.path() + href
           } else {
             // relative path - join with current path 
             var stack = $location.path().split("/"),
