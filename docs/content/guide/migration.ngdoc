@@ -664,4 +664,29 @@ Now, `$injector.instantiate` (and thus `$provide.service`) behaves the same as t
 If using a JavaScript preprocessor it's quite possible when upgrading that services could start behaving incorrectly.
 Make sure your services return the correct type wanted.
 
+**Coffeescript example**
+
+```
+myApp.service 'applicationSrvc', ->
+  @something = "value"
+  @someFunct = -> 
+    "something else"
+```
+
+pre 1.2 this service would return the whole object as the service.
+
+post 1.2 this service returns `someFunct` as the value of the service
+
+you would need to change this services to
+
+```
+myApp.service 'applicationSrvc', ->
+  @something = "value"
+  @someFunct = -> 
+    "something else"
+  return
+```
+
+to continue to return the complete instance.
+
 See [c22adbf1](https://github.com/angular/angular.js/commit/c22adbf160f32c1839fbb35382b7a8c6bcec2927).
