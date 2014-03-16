@@ -413,10 +413,10 @@ var formDirectiveFactory = function(isNgForm) {
             }
 
 	          if (isNgForm) {
-	            var inputs = formElement.find('input');
 	            var buttons = [],
 	              submits = [],
 	              others = [];
+	            var inputs = formElement[0].querySelectorAll('input, button');
 	            for (var i = 0; i < inputs.length; i++) {
 	              var elem = angular.element(inputs[i]);
 	              var elemType = elem.attr('type');
