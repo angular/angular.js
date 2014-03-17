@@ -44,7 +44,7 @@ Following is a sample of the file:
 
 We'll use Angular's {@link ng.$http $http} service in our controller to make an HTTP
 request to your web server to fetch the data in the `app/phones/phones.json` file. `$http` is just
-one of several built-in {@link guide/dev_guide.services Angular services} that handle common operations
+one of several built-in {@link guide/services Angular services} that handle common operations
 in web apps. Angular injects these services for you where you need them.
 
 Services are managed by Angular's {@link guide/di DI subsystem}. Dependency injection
