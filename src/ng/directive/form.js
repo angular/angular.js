@@ -412,68 +412,68 @@ var formDirectiveFactory = function(isNgForm) {
               });
             }
 
-	          if (isNgForm) {
-	            var buttons = [],
-	              submits = [],
-	              others = [];
-	            var inputs = formElement[0].querySelectorAll('input, button');
-	            for (var i = 0; i < inputs.length; i++) {
-	              var elem = angular.element(inputs[i]);
-	              var elemType = elem.attr('type');
-	              if (elemType) {
-	                if ('button' === elemType.toLowerCase()) {
-	                  buttons.push(elem);
-	                } else if ('submit' === elemType.toLowerCase()) {
-	                  submits.push(elem);
-	                } else {
-	                  others.push(elem);
-	                }
-	              } else {
-	                others.push(elem);
-	              }
-	            }
+            if (isNgForm) {
+              var buttons = [],
+                submits = [],
+                others = [];
+              var inputs = formElement[0].querySelectorAll('input, button');
+              for (var i = 0; i < inputs.length; i++) {
+                var elem = angular.element(inputs[i]);
+                var elemType = elem.attr('type');
+                if (elemType) {
+                  if ('button' === elemType.toLowerCase()) {
+                    buttons.push(elem);
+                  } else if ('submit' === elemType.toLowerCase()) {
+                    submits.push(elem);
+                  } else {
+                    others.push(elem);
+                  }
+                } else {
+                  others.push(elem);
+                }
+              }
 
-	            var submitElem = null;
-	            if (submits.length) {
-	              submitElem = submits[0];
-	            } else if (buttons.length) {
-	              submitElem = buttons[0];
-	            }
+              var submitElem = null;
+              if (submits.length) {
+                submitElem = submits[0];
+              } else if (buttons.length) {
+                submitElem = buttons[0];
+              }
 
-	            if (submitElem) {
-	              addEventListenerFn(submitElem[0], 'click', function(event) {
-	                formElement.triggerHandler('submit');
-	              });
-	            }
+              if (submitElem) {
+                addEventListenerFn(submitElem[0], 'click', function(event) {
+                  formElement.triggerHandler('submit');
+                });
+              }
 
-	            if (inputs.length === 1) {
-	              /*
-	               * - If a form has only one input field then hitting enter in this field triggers form submit
-	               * (`ngSubmit`)
-	               */
-	              var singleInput = angular.element(inputs[0]);
-	              addEventListenerFn(singleInput[0], 'keyup', function(event) {
-	                if (event.which === 13) {
-	                  formElement.triggerHandler('submit');
-	                }
-	              });
-	            } else if (others.length && (buttons.length + submits.length)) {
-	              /*
-	               * - if a form has one or more input fields and one or more buttons or input[type=submit] then
-	               * hitting enter in any of the input fields will trigger the click handler on the *first* button or
-	               * input[type=submit] (`ngClick`) *and* a submit handler on the enclosing form (`ngSubmit`)
-	               */
-	              for (i = 0; i < others.length; i++) {
-	                var otherElem = others[i];
-	                addEventListenerFn(otherElem[0], 'keyup', function(event) {
-	                  if (event.which === 13) {
-	                    submitElem.triggerHandler('click');
-	                    formElement.triggerHandler('submit');
-	                  }
-	                });
-	              }
-	            }
-	          }
+              if (inputs.length === 1) {
+                /*
+                 * - If a form has only one input field then hitting enter in this field triggers form submit
+                 * (`ngSubmit`)
+                 */
+                var singleInput = angular.element(inputs[0]);
+                addEventListenerFn(singleInput[0], 'keyup', function(event) {
+                  if (event.which === 13) {
+                    formElement.triggerHandler('submit');
+                  }
+                });
+              } else if (others.length && (buttons.length + submits.length)) {
+                /*
+                 * - if a form has one or more input fields and one or more buttons or input[type=submit] then
+                 * hitting enter in any of the input fields will trigger the click handler on the *first* button or
+                 * input[type=submit] (`ngClick`) *and* a submit handler on the enclosing form (`ngSubmit`)
+                 */
+                for (i = 0; i < others.length; i++) {
+                  var otherElem = others[i];
+                  addEventListenerFn(otherElem[0], 'keyup', function(event) {
+                    if (event.which === 13) {
+                      submitElem.triggerHandler('click');
+                      formElement.triggerHandler('submit');
+                    }
+                  });
+                }
+              }
+            }
           }
         };
       }
