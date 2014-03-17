@@ -864,7 +864,9 @@
       "version": "0.0.4"
     },
     "grunt-jasmine-node": {
-      "version": "0.1.0"
+      "version": "0.1.0",
+      "from": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
+      "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs-checker": {
       "version": "0.4.0",
