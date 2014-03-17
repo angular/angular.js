@@ -18,11 +18,15 @@
  *      `<`, `=`, `>` operator.
  *    - `string`: An Angular expression which evaluates to an object to order by, such as 'name'
  *      to sort by a property called 'name'. Optionally prefixed with `+` or `-` to control
- *      ascending or descending sort order (for example, +name or -name).
+ *      ascending or descending sort order (for example, +name or -name). This might be obvious, but this
+ *      has to be quoted even inside the ngRepeat string, like "item in items: orderBy:'size'", where
+ *      the "item" object has a "size" property.
  *    - `Array`: An array of function or string predicates. The first predicate in the array
  *      is used for sorting, but when two items are equivalent, the next predicate is used.
  *
- * @param {boolean=} reverse Reverse the order the array.
+ * @param {boolean=} reverse Reverse the order of the array. Note that this does essentially the same
+ * thing as '-name'. Using the "reverse" property gives you more programmatic control, and the "-" property
+ * name prefix is a good shorthand if you just need to statically declare the direction.
  * @returns {Array} Sorted copy of the source array.
  *
  * @example
