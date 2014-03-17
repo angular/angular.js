@@ -30,6 +30,9 @@ Following are invalid uses of this directive:
 
 <!-- ERROR because `myFn()=localValue` is an invalid statement -->
 <my-directive bind="myFn()">
+
+<!-- ERROR because attribute bind wasn't provided -->
+<my-directive>
 ```
 
 
