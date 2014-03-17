@@ -101,7 +101,7 @@ and follow the instructions for setting up your computer.
         Node Version Manager (nvm)</a>.</div>
         <p>Additionally install <a href="http://karma-runner.github.io/" title="Karma site">Karma</a>
         if you don't have it already:</p>
-        <pre>npm install -g karma</pre>
+        <pre>npm install -g karma karma-cli</pre>
       </li>
       <li><p>You'll also need Git, which you can get from
                <a href="http://git-scm.com/download" title="Git site download">the Git site</a>.</p></li>
