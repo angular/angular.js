@@ -172,7 +172,7 @@ angular.module('myModule', []).
 
 <div class="alert alert-info">
 When bootstrapping, first Angular applies all constant definitions.
-Then Angular applies configuration blocks in the order same order they were registered.
+Then Angular applies configuration blocks in the same order they were registered.
 </div>
 
 ## Run Blocks
