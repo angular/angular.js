@@ -2,6 +2,8 @@ angular.module('DocsController', [])
 
 .controller('DocsController', function($scope, $rootScope, $location, $window, $cookies, NG_PAGES, NG_NAVIGATION, NG_VERSION) {
 
+  $scope.docsVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.version;
+  
   $scope.fold = function(url) {
     if(url) {
       $scope.docs_fold = '/notes/' + url;
