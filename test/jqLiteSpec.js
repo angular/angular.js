@@ -168,6 +168,19 @@ describe('jqLite', function() {
 
       dealoc(ul);
     });
+
+    it('should pass through DocumentFragment boundaries via host', function() {
+      var host = jqLite('<div></div>'),
+          frag = document.createDocumentFragment(),
+          $frag = jqLite(frag);
+      frag.host = host[0];
+      host.data("foo", 123);
+      host.append($frag);
+      expect($frag.inheritedData("foo")).toBe(123);
+
+      dealoc(host);
+      dealoc($frag);
+    });
   });
 
 
