@@ -269,21 +269,27 @@ function provideLog($provide) {
 
       log.toString = function() {
         return messages.join('; ');
-      }
+      };
 
       log.toArray = function() {
         return messages;
-      }
+      };
 
       log.reset = function() {
         messages = [];
+      };
+
+      log.empty = function() {
+        var currentMessages = messages;
+        messages = [];
+        return currentMessages;
       }
 
       log.fn = function(msg) {
         return function() {
           log(msg);
-        }
-      }
+        };
+      };
 
       log.$$log = true;
 
