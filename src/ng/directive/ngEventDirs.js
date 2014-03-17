@@ -11,7 +11,7 @@
  * @element ANY
  * @priority 0
  * @param {expression} ngClick {@link guide/expression Expression} to evaluate upon
- * click. (Event object is available as `$event`)
+ * click. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -68,7 +68,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngDblclick {@link guide/expression Expression} to evaluate upon
- * a dblclick. (The Event object is available as `$event`)
+ * a dblclick. (The Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -92,7 +92,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngMousedown {@link guide/expression Expression} to evaluate upon
- * mousedown. (Event object is available as `$event`)
+ * mousedown. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -116,7 +116,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngMouseup {@link guide/expression Expression} to evaluate upon
- * mouseup. (Event object is available as `$event`)
+ * mouseup. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -139,7 +139,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngMouseover {@link guide/expression Expression} to evaluate upon
- * mouseover. (Event object is available as `$event`)
+ * mouseover. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -163,7 +163,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngMouseenter {@link guide/expression Expression} to evaluate upon
- * mouseenter. (Event object is available as `$event`)
+ * mouseenter. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -187,7 +187,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngMouseleave {@link guide/expression Expression} to evaluate upon
- * mouseleave. (Event object is available as `$event`)
+ * mouseleave. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -211,7 +211,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngMousemove {@link guide/expression Expression} to evaluate upon
- * mousemove. (Event object is available as `$event`)
+ * mousemove. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -235,7 +235,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngKeydown {@link guide/expression Expression} to evaluate upon
- * keydown. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
+ * keydown. (Event object is available as `$event` inside this expression and can be interrogated for keyCode, altKey, etc.)
  *
  * @example
    <example>
@@ -257,7 +257,7 @@ forEach(
  * @element ANY
  * @priority 0
  * @param {expression} ngKeyup {@link guide/expression Expression} to evaluate upon
- * keyup. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
+ * keyup. (Event object is available as `$event` inside this expression and can be interrogated for keyCode, altKey, etc.)
  *
  * @example
    <example>
@@ -278,7 +278,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} ngKeypress {@link guide/expression Expression} to evaluate upon
- * keypress. (Event object is available as `$event` and can be interrogated for keyCode, altKey, etc.)
+ * keypress. (Event object is available as `$event` inside this expression and can be interrogated for keyCode, altKey, etc.)
  *
  * @example
    <example>
@@ -303,7 +303,7 @@ forEach(
  *
  * @element form
  * @priority 0
- * @param {expression} ngSubmit {@link guide/expression Expression} to eval. (Event object is available as `$event`)
+ * @param {expression} ngSubmit {@link guide/expression Expression} to eval. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -354,7 +354,7 @@ forEach(
  * @element window, input, select, textarea, a
  * @priority 0
  * @param {expression} ngFocus {@link guide/expression Expression} to evaluate upon
- * focus. (Event object is available as `$event`)
+ * focus. (Event object is available as `$event` inside this expression)
  *
  * @example
  * See {@link ng.directive:ngClick ngClick}
@@ -370,7 +370,7 @@ forEach(
  * @element window, input, select, textarea, a
  * @priority 0
  * @param {expression} ngBlur {@link guide/expression Expression} to evaluate upon
- * blur. (Event object is available as `$event`)
+ * blur. (Event object is available as `$event` inside this expression)
  *
  * @example
  * See {@link ng.directive:ngClick ngClick}
@@ -386,7 +386,7 @@ forEach(
  * @element window, input, select, textarea, a
  * @priority 0
  * @param {expression} ngCopy {@link guide/expression Expression} to evaluate upon
- * copy. (Event object is available as `$event`)
+ * copy. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -407,7 +407,7 @@ forEach(
  * @element window, input, select, textarea, a
  * @priority 0
  * @param {expression} ngCut {@link guide/expression Expression} to evaluate upon
- * cut. (Event object is available as `$event`)
+ * cut. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
@@ -428,7 +428,7 @@ forEach(
  * @element window, input, select, textarea, a
  * @priority 0
  * @param {expression} ngPaste {@link guide/expression Expression} to evaluate upon
- * paste. (Event object is available as `$event`)
+ * paste. (Event object is available as `$event` inside this expression)
  *
  * @example
    <example>
