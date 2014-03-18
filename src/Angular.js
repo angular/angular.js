@@ -4,6 +4,7 @@
 /* global
     -angular,
     -msie,
+    -windowsStore,
     -jqLite,
     -jQuery,
     -slice,
@@ -153,6 +154,7 @@ if ('i' !== 'I'.toLowerCase()) {
 
 var /** holds major version number for IE or NaN for real browsers */
     msie,
+    windowsStore,     // Windows Store JS apps
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -177,6 +179,9 @@ if (isNaN(msie)) {
   msie = int((/trident\/.*; rv:(\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
 }
 
+// The MSApp object is supported only in Windows Store JavaScript apps.
+// http://msdn.microsoft.com/en-us/library/windows/apps/hh767332.aspx
+windowsStore = typeof window.MSApp != 'undefined' ? true : false;
 
 /**
  * @private
@@ -1309,6 +1314,8 @@ function bindJQuery() {
     jqLitePatchJQueryRemove('remove', true, true, false);
     jqLitePatchJQueryRemove('empty', false, false, false);
     jqLitePatchJQueryRemove('html', false, false, true);
+    // additional tweaks for Windows Store apps
+    jqLitePatchJQueryForWindowsStore();
   } else {
     jqLite = JQLite;
   }
