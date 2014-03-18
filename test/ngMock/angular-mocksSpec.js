@@ -52,16 +52,19 @@ describe('ngMock', function() {
 
 
     it('should fake getHours method', function() {
-      //0 in -3h
-      var t0 = new angular.mock.TzDate(-3, 0);
+      // avoid going negative due to #5017, so use Jan 2, 1970 00:00 UTC
+      var jan2 = 24 * 60 * 60 * 1000;
+
+      //0:00 in -3h
+      var t0 = new angular.mock.TzDate(-3, jan2);
       expect(t0.getHours()).toBe(3);
 
-      //0 in +0h
-      var t1 = new angular.mock.TzDate(0, 0);
+      //0:00 in +0h
+      var t1 = new angular.mock.TzDate(0, jan2);
       expect(t1.getHours()).toBe(0);
 
-      //0 in +3h
-      var t2 = new angular.mock.TzDate(3, 0);
+      //0:00 in +3h
+      var t2 = new angular.mock.TzDate(3, jan2);
       expect(t2.getHours()).toMatch(21);
     });
 
