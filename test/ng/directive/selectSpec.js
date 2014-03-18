@@ -1148,6 +1148,40 @@ describe('select', function() {
       });
 
 
+      it('should include static option', function() {
+        createMultiSelect('<option value="">Choose One</option>');
+
+        scope.$apply(function() {
+          scope.values = [{name: 'A'}, {name: 'B'}];
+          scope.selected = [];
+        });
+
+        expect(element.find('option').length).toEqual(3);
+        expect(element.find('option')[0].selected).toBeFalsy();
+        expect(element.find('option')[1].selected).toBeFalsy();
+        expect(element.find('option')[2].selected).toBeFalsy();
+
+        scope.$apply(function() {
+          scope.selected.push(scope.values[0]);
+        });
+
+        expect(element.find('option').length).toEqual(3);
+
+        expect(element.find('option')[0].selected).toBeFalsy();
+        expect(element.find('option')[1].selected).toBeTruthy();
+        expect(element.find('option')[2].selected).toBeFalsy();
+
+        scope.$apply(function() {
+          scope.selected.push(scope.values[1]);
+        });
+
+        expect(element.find('option').length).toEqual(3);
+        expect(element.find('option')[0].selected).toBeFalsy();
+        expect(element.find('option')[1].selected).toBeTruthy();
+        expect(element.find('option')[2].selected).toBeTruthy();
+      });
+
+
       it('should update model on change', function() {
         createMultiSelect();
 
