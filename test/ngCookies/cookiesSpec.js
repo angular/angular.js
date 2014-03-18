@@ -45,15 +45,25 @@ describe('$cookies', function() {
   }));
 
 
-  it('should drop or reset any cookie that was set to a non-string value',
+  it('should convert non-string values to string',
       inject(function($cookies, $browser, $rootScope) {
     $cookies.nonString = [1, 2, 3];
     $cookies.nullVal = null;
     $cookies.undefVal = undefined;
-    $cookies.preexisting = function() {};
+    var preexisting = $cookies.preexisting = function() {};
     $rootScope.$digest();
-    expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
-    expect($cookies).toEqual({'preexisting': 'oldCookie'});
+    expect($browser.cookies()).toEqual({
+      'preexisting': '' + preexisting,
+      'nonString': '1,2,3',
+      'nullVal': 'null',
+      'undefVal': 'undefined'
+    });
+    expect($cookies).toEqual({
+      'preexisting': '' + preexisting,
+      'nonString': '1,2,3',
+      'nullVal': 'null',
+      'undefVal': 'undefined'
+    });
   }));
 
 

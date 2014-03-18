@@ -95,12 +95,10 @@ angular.module('ngCookies', ['ng']).
         for(name in cookies) {
           value = cookies[name];
           if (!angular.isString(value)) {
-            if (angular.isDefined(lastCookies[name])) {
-              cookies[name] = lastCookies[name];
-            } else {
-              delete cookies[name];
-            }
-          } else if (value !== lastCookies[name]) {
+            value = '' + value;
+            cookies[name] = value;
+          }
+          if (value !== lastCookies[name]) {
             $browser.cookies(name, value);
             updated = true;
           }
