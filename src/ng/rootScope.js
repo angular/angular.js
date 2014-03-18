@@ -411,79 +411,98 @@ function $RootScopeProvider(){
         var self = this;
         var oldValue;
         var newValue;
-        var changeDetected = 0;
+        var changeFlipFlop = 0;
         var objGetter = $parse(obj);
         var internalArray = [];
         var internalObject = {};
-        var oldLength = 0;
+        var internalLength = 0;
+
+        // Holds simple value or reference to internalArray or internalObject.
+        // The special initial value is used to ensure that the listener is called
+        // when the watch is established and that oldValue = newValue.
+        var internalValue = initWatchVal;
 
         function $watchCollectionWatch() {
+          var newLength, key, i, changeDetected;
+
           newValue = objGetter(self);
-          var newLength, key;
+          oldValue = internalValue;
+          changeDetected = 0;
 
           if (!isObject(newValue)) {
-            if (oldValue !== newValue) {
-              oldValue = newValue;
+            if (internalValue !== newValue) {
+              internalValue = newValue;
               changeDetected++;
             }
           } else if (isArrayLike(newValue)) {
-            if (oldValue !== internalArray) {
-              // we are transitioning from something which was not an array into array.
-              oldValue = internalArray;
-              oldLength = oldValue.length = 0;
-              changeDetected++;
-            }
-
             newLength = newValue.length;
-
-            if (oldLength !== newLength) {
-              // if lengths do not match we need to trigger change notification
+            if (internalValue !== internalArray) {
+              // we are transitioning from something which was not an array into array.
               changeDetected++;
-              oldValue.length = oldLength = newLength;
-            }
-            // copy the items to oldValue and look for changes.
-            for (var i = 0; i < newLength; i++) {
-              if (oldValue[i] !== newValue[i]) {
+            } else {
+              if (internalLength !== newLength) {
+                // if lengths do not match we need to trigger change notification
                 changeDetected++;
-                oldValue[i] = newValue[i];
-              }
-            }
-          } else {
-            if (oldValue !== internalObject) {
-              // we are transitioning from something which was not an object into object.
-              oldValue = internalObject = {};
-              oldLength = 0;
-              changeDetected++;
-            }
-            // copy the items to oldValue and look for changes.
-            newLength = 0;
-            for (key in newValue) {
-              if (newValue.hasOwnProperty(key)) {
-                newLength++;
-                if (oldValue.hasOwnProperty(key)) {
-                  if (oldValue[key] !== newValue[key]) {
+              } else {
+                // look for item changes
+                for (i = 0; i < newLength; i++) {
+                  if (internalValue[i] !== newValue[i]) {
                     changeDetected++;
-                    oldValue[key] = newValue[key];
+                    break;
                   }
-                } else {
-                  oldLength++;
-                  oldValue[key] = newValue[key];
-                  changeDetected++;
                 }
               }
             }
-            if (oldLength > newLength) {
-              // we used to have more keys, need to find them and destroy them.
+            if (changeDetected) {
+              // copy the items to array cache
+              internalValue = internalArray = [];
+              internalValue.length = internalLength = newLength;
+              for (i = 0; i < newLength; i++) {
+                internalValue[i] = newValue[i];
+              }
+            }
+          } else {
+            if (internalValue !== internalObject) {
+              // we are transitioning from something which was not an object into object
               changeDetected++;
-              for(key in oldValue) {
-                if (oldValue.hasOwnProperty(key) && !newValue.hasOwnProperty(key)) {
-                  oldLength--;
-                  delete oldValue[key];
+            } else {
+              // look for item changes
+              newLength = 0;
+              for (key in newValue) {
+                if (newValue.hasOwnProperty(key)) {
+                  newLength++;
+                  if (! (internalValue.hasOwnProperty(key) &&
+                         internalValue[key] === newValue[key])) {
+                    changeDetected++;
+                    break;
+                  }
+                }
+              }
+              if (internalLength !== newLength) {
+                changeDetected++;
+              }
+            }
+            if (changeDetected) {
+              // copy the items to object cache
+              internalValue = internalObject = {};
+              internalLength = 0;
+              for (key in newValue) {
+                if (newValue.hasOwnProperty(key)) {
+                  internalLength++;
+                  internalValue[key] = newValue[key];
                 }
               }
             }
           }
-          return changeDetected;
+
+          if (changeDetected) {
+            changeFlipFlop = 1 - changeFlipFlop;
+            if (oldValue === initWatchVal) {
+              oldValue = newValue;
+            }
+          }
+
+          return changeFlipFlop;
         }
 
         function $watchCollectionAction() {

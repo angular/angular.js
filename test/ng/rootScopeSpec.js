@@ -479,29 +479,44 @@ describe('Scope', function() {
       }));
     });
 
-
     describe('$watchCollection', function() {
-      var log, $rootScope, deregister;
+        var log, $rootScope, deregister, prevval, firstWatch, oldValueCorrect;
 
-      beforeEach(inject(function(_$rootScope_) {
-        log = [];
-        $rootScope = _$rootScope_;
-        deregister = $rootScope.$watchCollection('obj', function logger(obj) {
-          log.push(toJson(obj));
+        beforeEach(inject(function (_$rootScope_) {
+            log = [];
+            $rootScope = _$rootScope_;
+            firstWatch = true;
+            oldValueCorrect = true;
+            deregister = $rootScope.$watchCollection('obj', function listener(obj, oldobj) {
+                log.push(toJson(obj));
+                if (firstWatch) {
+                    firstWatch = false;
+                    if (toJson(obj) !== toJson(oldobj)) {
+                        oldValueCorrect = false;
+                    }
+                } else {
+                    if (toJson(oldobj) !== prevval) {
+                        oldValueCorrect = false;
+                    }
+                }
+                prevval = toJson(obj);
+            });
+        }));
+
+        afterEach(function () {
+            deregister();
         });
-      }));
 
-
-      it('should not trigger if nothing change', inject(function($rootScope) {
+      it('should not trigger if nothing change', function() {
         $rootScope.$digest();
         expect(log).toEqual([undefined]);
 
         $rootScope.$digest();
         expect(log).toEqual([undefined]);
-      }));
+      });
 
 
-      it('should allow deregistration', inject(function($rootScope) {
+      it('should allow deregistration', function() {
         $rootScope.obj = [];
         $rootScope.$digest();
 
@@ -512,7 +527,7 @@ describe('Scope', function() {
 
         $rootScope.$digest();
         expect(log).toEqual(['[]']);
-      }));
+      });
 
 
       describe('array', function() {
@@ -536,6 +551,9 @@ describe('Scope', function() {
           $rootScope.obj = undefined;
           $rootScope.$digest();
           expect(log).toEqual(['"test"', '[]', '{}', '[]', undefined]);
+
+          expect(oldValueCorrect).toBe(true);
+
         });
 
 
@@ -579,6 +597,9 @@ describe('Scope', function() {
           log = [];
           $rootScope.$digest();
           expect(log).toEqual([ '[{},[]]' ]);
+
+          expect(oldValueCorrect).toBe(true);
+
         });
 
         it('should watch array-like objects like arrays', function () {
@@ -596,6 +617,9 @@ describe('Scope', function() {
           $rootScope.arrayLikeObject =  document.getElementsByTagName('a');
           $rootScope.$digest();
           expect(arrayLikelog).toEqual(['x', 'y']);
+
+          expect(oldValueCorrect).toBe(true);
+
         });
       });
 
@@ -652,6 +676,9 @@ describe('Scope', function() {
           log = [];
           $rootScope.$digest();
           expect(log).toEqual([ '{"b":[],"c":"B"}' ]);
+
+          expect(oldValueCorrect).toBe(true);
+
         });
       });
     });
