@@ -597,6 +597,65 @@ describe('Scope', function() {
           $rootScope.$digest();
           expect(arrayLikelog).toEqual(['x', 'y']);
         });
+
+        it('should return a new array with old values', function(){
+          var watchArgs;
+          $rootScope.$watchCollection('obj', function (newValues, oldValues) {
+            watchArgs = {
+              newValues: newValues,
+              oldValues: oldValues
+            };
+          });
+
+          $rootScope.obj = ['a'];
+          $rootScope.$digest();
+
+          expect(watchArgs.newValues).toEqual($rootScope.obj);
+          expect(watchArgs.oldValues).toEqual([]);
+
+          $rootScope.obj.push('b');
+          $rootScope.$digest();
+
+          expect(watchArgs.newValues).toEqual(['a', 'b']);
+          expect(watchArgs.oldValues).toEqual(['a']);
+        });
+
+        it('should return a new array with old values from array like objects', function(){
+          var watchArgs;
+          $rootScope.$watchCollection('arrayLikeObject', function (newValues, oldValues) {
+            watchArgs = {
+              newValues: [],
+              oldValues: []
+            };
+            forEach(newValues, function (element){
+              watchArgs.newValues.push(element.name);
+            });
+            forEach(oldValues, function (element){
+              watchArgs.oldValues.push(element.name);
+            });
+          });
+
+          document.body.innerHTML = "<p>" +
+                                      "<a name='x'>a</a>" +
+                                      "<a name='y'>b</a>" +
+                                      "<a name='z'>c</a>" +
+                                    "</p>";
+
+          $rootScope.arrayLikeObject = document.getElementsByTagName('a');
+          $rootScope.$digest();
+
+          document.body.innerHTML = "<p>" +
+                                      "<a name='x'>a</a>" +
+                                      "<a name='y'>b</a>" +
+                                    "</p>";
+
+          $rootScope.arrayLikeObject.length = 2;
+          $rootScope.$digest();
+
+          expect(watchArgs.newValues).toEqual(['x', 'y']);
+          expect(watchArgs.oldValues).toEqual(['x', 'y', 'z']);
+        });
+
       });
 
 
