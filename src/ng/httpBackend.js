@@ -49,16 +49,13 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       var callbackId = '_' + (callbacks.counter++).toString(36);
       callbacks[callbackId] = function(data) {
         callbacks[callbackId].data = data;
+        callbacks[callbackId].called = true;
       };
 
       var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
-          function() {
-        if (callbacks[callbackId].data) {
-          completeRequest(callback, 200, callbacks[callbackId].data);
-        } else {
-          completeRequest(callback, status || -2);
-        }
-        callbacks[callbackId] = angular.noop;
+          callbackId, function(status, text) {
+        completeRequest(callback, status, callbacks[callbackId].data, "", text);
+        callbacks[callbackId] = noop;
       });
     } else {
 
@@ -158,33 +155,39 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     }
   };
 
-  function jsonpReq(url, done) {
+  function jsonpReq(url, callbackId, done) {
     // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
     // - fetches local scripts via XHR and evals them
     // - adds and immediately removes script elements from the document
-    var script = rawDocument.createElement('script'),
-        doneWrapper = function() {
-          script.onreadystatechange = script.onload = script.onerror = null;
-          rawDocument.body.removeChild(script);
-          if (done) done();
-        };
-
-    script.type = 'text/javascript';
+    var script = rawDocument.createElement('script'), callback = null;
+    script.type = "text/javascript";
     script.src = url;
+    script.async = true;
 
-    if (msie && msie <= 8) {
-      script.onreadystatechange = function() {
-        if (/loaded|complete/.test(script.readyState)) {
-          doneWrapper();
+    callback = function(event) {
+      removeEventListenerFn(script, "load", callback);
+      removeEventListenerFn(script, "error", callback);
+      rawDocument.body.removeChild(script);
+      script = null;
+      var status = -1;
+      var text = "unknown";
+
+      if (event) {
+        if (event.type === "load" && !callbacks[callbackId].called) {
+          event = { type: "error" };
         }
-      };
-    } else {
-      script.onload = script.onerror = function() {
-        doneWrapper();
-      };
-    }
+        text = event.type;
+        status = event.type === "error" ? 404 : 200;
+      }
 
+      if (done) {
+        done(status, text);
+      }
+    };
+
+    addEventListenerFn(script, "load", callback);
+    addEventListenerFn(script, "error", callback);
     rawDocument.body.appendChild(script);
-    return doneWrapper;
+    return callback;
   }
 }
