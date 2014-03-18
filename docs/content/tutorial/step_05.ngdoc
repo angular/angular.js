@@ -20,7 +20,6 @@ You should now see a list of 20 phones.
 The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-4...step-5):
 
 ## Data
-a
 The `app/phones/phones.json` file in your project is a dataset that contains a larger list of phones
 stored in the JSON format.
 
