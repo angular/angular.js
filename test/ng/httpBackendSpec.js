@@ -39,7 +39,17 @@ describe('$httpBackend', function() {
     fakeDocument = {
       $$scripts: [],
       createElement: jasmine.createSpy('createElement').andCallFake(function() {
-        return {};
+        // msie8 depends on modifying readyState for testing. This property is readonly,
+        // so it requires a fake object. For other browsers, we do need to make use of
+        // event listener registration/deregistration, so these stubs are needed.
+        if (msie <= 8) return {
+          attachEvent: noop,
+          detachEvent: noop,
+          addEventListener: noop,
+          removeEventListener: noop
+        };
+        // Return a proper script element...
+        return document.createElement(arguments[0]);
       }),
       body: {
         appendChild: jasmine.createSpy('body.appendChild').andCallFake(function(script) {
@@ -356,7 +366,7 @@ describe('$httpBackend', function() {
         script.readyState = 'complete';
         script.onreadystatechange();
       } else {
-        script.onload();
+        browserTrigger(script, "load");
       }
 
       expect(callback).toHaveBeenCalledOnce();
@@ -372,12 +382,11 @@ describe('$httpBackend', function() {
           callbackId = script.src.match(SCRIPT_URL)[2];
 
       callbacks[callbackId]('some-data');
-
       if (script.onreadystatechange) {
         script.readyState = 'complete';
         script.onreadystatechange();
       } else {
-        script.onload();
+        browserTrigger(script, "load");
       }
 
       expect(callbacks[callbackId]).toBe(angular.noop);
@@ -385,7 +394,7 @@ describe('$httpBackend', function() {
     });
 
 
-    if(msie<=8) {
+    if (msie <= 8) {
 
       it('should attach onreadystatechange handler to the script object', function() {
         $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, noop);
@@ -400,41 +409,8 @@ describe('$httpBackend', function() {
         expect(script.onreadystatechange).toBe(null);
       });
 
-    } else {
-
-      it('should attach onload and onerror handlers to the script object', function() {
-        $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, noop);
-
-        expect(fakeDocument.$$scripts[0].onload).toEqual(jasmine.any(Function));
-        expect(fakeDocument.$$scripts[0].onerror).toEqual(jasmine.any(Function));
-
-        var script = fakeDocument.$$scripts[0];
-        script.onload();
-
-        expect(script.onload).toBe(null);
-        expect(script.onerror).toBe(null);
-      });
 
     }
-
-    it('should call callback with status -2 when script fails to load', function() {
-      callback.andCallFake(function(status, response) {
-        expect(status).toBe(-2);
-        expect(response).toBeUndefined();
-      });
-
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-      expect(fakeDocument.$$scripts.length).toBe(1);
-
-      var script = fakeDocument.$$scripts.shift();
-      if (script.onreadystatechange) {
-        script.readyState = 'complete';
-        script.onreadystatechange();
-      } else {
-        script.onload();
-      }
-      expect(callback).toHaveBeenCalledOnce();
-    });
 
 
     it('should set url to current location if not specified or empty string', function() {
