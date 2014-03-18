@@ -64,14 +64,15 @@ function headersGetter(headers) {
  * @param {*} data Data to transform.
  * @param {function(string=)} headers Http headers getter fn.
  * @param {(Function|Array.<Function>)} fns Function or an array of functions.
+ * @param {boolean} success True when this is response and it is success
  * @returns {*} Transformed data.
  */
-function transformData(data, headers, fns) {
+function transformData(data, headers, fns, success) {
   if (isFunction(fns))
-    return fns(data, headers);
+    return fns(data, headers, success);
 
   forEach(fns, function(fn) {
-    data = fn(data, headers);
+    data = fn(data, headers, success);
   });
 
   return data;
@@ -739,13 +740,12 @@ function $HttpProvider() {
       return promise;
 
       function transformResponse(response) {
-        // make a copy since the response must be cacheable
-        var resp = extend({}, response, {
-          data: transformData(response.data, response.headers, config.transformResponse)
-        });
-        return (isSuccess(response.status))
-          ? resp
-          : $q.reject(resp);
+        var success = isSuccess(response.status),
+          // make a copy since the response must be cacheable
+          resp = extend({}, response, {
+            data: transformData(response.data, response.headers, config.transformResponse, success)
+          });
+        return success ? resp : $q.reject(resp);
       }
 
       function mergeHeaders(config) {

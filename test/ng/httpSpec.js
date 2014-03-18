@@ -1097,6 +1097,19 @@ describe('$http', function() {
           expect(callback.mostRecentCall.args[0]).toBe('header1');
         });
 
+        it('should know when response is failed', function() {
+          $httpBackend.expect('GET', '/url').respond(404, 'Not found');
+          $http.get('/url', {
+            transformResponse: function(data, headers, success) {
+              return success;
+            }
+          }).error(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe(false);
+        });
+
 
         it('should pipeline more functions', function() {
           function first(d, h) {return d + '-first' + ':' + h('h1')}
