@@ -1711,11 +1711,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   // model -> value
   var ctrl = this;
 
-  $scope.$watch(function ngModelWatch() {
+  $scope.$watchCollection($attr.ngModel, function ngModelWatch(newValue, oldValue) {
     var value = ngModelGet($scope);
 
     // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== value) {
+    if (!equals(ctrl.$modelValue, oldValue)) {
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
