@@ -34,16 +34,18 @@ Let's start with input fields for quantity and cost whose values are multiplied 
 
 <example>
   <file name="index.html">
-      <div ng-init="qty=1;cost=2">
-        <b>Invoice:</b>
-        <div>
-          Quantity: <input type="number" ng-model="qty" required >
-        </div>
-        <div>
-          Costs: <input type="number" ng-model="cost" required >
-        </div>
-        <div>
-          <b>Total:</b> {{qty * cost | currency}}
+      <div ng-app>
+        <div ng-init="qty=1;cost=2">
+          <b>Invoice:</b>
+          <div>
+            Quantity: <input type="number" ng-model="qty" required >
+          </div>
+          <div>
+            Costs: <input type="number" ng-model="cost" required >
+          </div>
+          <div>
+            <b>Total:</b> {{qty * cost | currency}}
+          </div>
         </div>
       </div>
   </file>
