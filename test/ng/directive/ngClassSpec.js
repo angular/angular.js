@@ -303,6 +303,19 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
+
+  it('should pass the $element variable to functions in expression', inject(function($rootScope, $compile){
+    element = $compile('<div>' +
+      '<div ng-class="{\'some-class\': fn($element)}"></div>' +
+      '</div>')($rootScope);
+    var el;
+    $rootScope.fn = function(theElement){
+      el = theElement && theElement[0];
+    };
+    $rootScope.$digest();
+
+    expect(el).toBe(element.children()[0]);
+  }));
 });
 
 describe('ngClass animations', function() {
