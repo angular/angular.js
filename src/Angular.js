@@ -243,8 +243,13 @@ function forEach(obj, iterator, context) {
     } else if (obj.forEach && obj.forEach !== forEach) {
       obj.forEach(iterator, context);
     } else if (isArrayLike(obj)) {
-      for (key = 0; key < obj.length; key++)
+      for (key = 0; key < obj.length; key++) {
         iterator.call(context, obj[key], key);
+      }
+    } else if (isNumber(obj.length) && isFunction(obj.item)) {
+      for (key = 0; key < obj.length; key++) {
+        iterator.call(context, obj.item(key), key);
+      }
     } else {
       for (key in obj) {
         if (obj.hasOwnProperty(key)) {
