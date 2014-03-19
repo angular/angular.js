@@ -2,7 +2,7 @@
 
 
 function $DebounceProvider() {
-  this.$get = ['$timeout', '$q', '$exceptionHandler', function($timeout, $q, $exceptionHandler) {
+  this.$get = ['$timeout', '$q', '$rootScope', function($timeout, $q, $rootScope, invokeApply) {
 
    /**
     * @ngdoc service
@@ -13,17 +13,20 @@ function $DebounceProvider() {
     * ensures that the function is not called more frequently than a given time interval.
     *
     * The result of calling `$debounce()` is a new debounced function, which you can call in the
-    * same way as the original `func`.  All parameters in the call are forwarded on to the original
-    * function.
+    * same way as the original function.  All parameters in the call are forwarded on to the
+    * original function.
     *
-    * @param {!function(...)} func       The function to be debounced
-    * @param {number} delay              The minimum time between calls to `func`
-    * @param {boolean} [immediate=false] If true then `func` is invoked on the first call to
+    * @param {!function(...)} fn         The function to be debounced
+    * @param {number} delay              The minimum time between calls to `fn`
+    * @param {boolean} [immediate=false] If true then `fn` is invoked on the first call to
     *                                    the debounced function. Otherwise the first call will not
     *                                    happen until after the `delay` time has expired
-    * @return {function(...) : Promise}  A debounced wrapper function around the `func` function.
+    * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
+    *                                    will invoke a {@link ng.$rootScope.Scope#$digest}
+    *                                    after running `fn`.
+    * @return {function(...) : Promise}  A debounced wrapper function around the `fn` function.
     *                                    This function will return a promise to the return value of
-    *                                    `func`, when it is eventually called.
+    *                                    `fn`, when it is eventually called.
     *
     * @example
     * <example name="debounce" module="debounce-example">
@@ -47,34 +50,51 @@ function $DebounceProvider() {
     * </file>
     * </example>
     */
-    return function(func, delay, immediate) {
-      var timeout;
-      var deferred = $q.defer();
+    return function(func, delay, immediate, invokeApply) {
+      var timeout,
+          skipApply = (isDefined(invokeApply) && !invokeApply);
 
       return function() {
         var context = this, args = arguments;
-        var later = function() {
-          timeout = null;
-          if(!immediate) {
-            try {
-              deferred.resolve(func.apply(context, args));
-            } catch(e) {
-              $exceptionHandler(e);
-              deferred.reject(e);
+
+        // Run the wrapped function with an apply if necessary
+        var applyFn = function() {
+          var result;
+          try {
+            result = func.apply(context,args);
+          } finally {
+            if ( !skipApply ) {
+              $rootScope.$apply();
             }
-            deferred = $q.defer();
+          }
+          return result;
+        };
+
+        // This is the function that will be called when the delay period is complete
+        var delayComplete = function() {
+
+          // The timeout has completed so we can clear this
+          timeout = null;
+
+          // If the debounce is immediate then the call would have been made already
+          if(!immediate) {
+            return $q.when(applyFn());
           }
         };
+        
         var callNow = immediate && !timeout;
+        
+        // Reset the timeout
         if ( timeout ) {
           $timeout.cancel(timeout);
         }
-        timeout = $timeout(later, delay);
+        timeout = $timeout(delayComplete, delay, false);
+ 
         if (callNow) {
-          deferred.resolve(func.apply(context,args));
-          deferred = $q.defer();
+          return $q.when(applyFn());
         }
-        return deferred.promise;
+
+        return timeout;
       };
     };
   }];
