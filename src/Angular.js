@@ -36,6 +36,7 @@
     -isUndefined,
     -isDefined,
     -isObject,
+    -isEmptyObject,
     -isString,
     -isNumber,
     -isDate,
@@ -452,6 +453,26 @@ function isDefined(value){return typeof value !== 'undefined';}
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
 function isObject(value){return value != null && typeof value === 'object';}
+
+
+/**
+* @ngdoc function
+* @name angular.isEmptyObject
+* @function
+*
+* @description
+* Determines if a object is empty. (contains no enumerable properties).
+*
+* @param {*} value Reference to check.
+* @returns {boolean} True if `value` has no properties.
+*/
+function isEmptyObject(value) {
+  var name;
+  for ( name in value ) {
+    return false;
+  }
+  return true;
+}
 
 
 /**

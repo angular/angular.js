@@ -120,6 +120,7 @@ function publishExternalAPI(angular){
     'isString': isString,
     'isFunction': isFunction,
     'isObject': isObject,
+    'isEmptyObject': isEmptyObject,
     'isNumber': isNumber,
     'isElement': isElement,
     'isArray': isArray,
