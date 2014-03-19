@@ -7,6 +7,7 @@ describe('$debounce', function() {
     expect($debounce(function() {}, 123)).toEqual(jasmine.any(Function));
   }));
 
+
   it('should allow you to specify the delay time', inject(function($debounce, $timeout) {
     var counter = 0;
     var debouncedFn = $debounce(function() { counter++; }, 123);
@@ -55,48 +56,6 @@ describe('$debounce', function() {
     expect(counter).toBe(2);
   }));
 
-  it('should return a promise which will be resolved with the result of the call to the wrapped function',
-        inject(function($debounce, $timeout) {
-
-    var log = [];
-    var debouncedFn = $debounce(function() { return 1234; }, 1000);
-    var promise = debouncedFn();
-
-    promise.then(function(value) { log.push('promise success: ' + value); },
-                 function(err) { log.push('promise error: ' + err); },
-                 function(note) { log.push('promise update: ' + note); });
-
-    expect(log).toEqual([]);
-
-    $timeout.flush(1000);
-    expect(log).toEqual(['promise success: 1234']);
-  }));
-
-  it('should resolve the promise immediately to the value of calling the function, if `immediate` is true ',
-        inject(function($debounce, $rootScope) {
-    var log = [];
-    var debouncedFn = $debounce(function() { return 1234; }, 1000, true);
-    var promise = debouncedFn();
-    debugger;
-    promise.then(function(value) { log.push('promise success: ' + value); },
-                 function(err) { log.push('promise error: ' + err); },
-                 function(note) { log.push('promise update: ' + note); });
-    $rootScope.$apply();
-    expect(log).toEqual(['promise success: 1234']);
-  }));
-
-  it('should NOT call $apply if invokeApply is set to `false`', inject(function($debounce, $rootScope, $timeout) {
-    var applySpy = spyOn($rootScope, '$apply').andCallThrough();
-
-    var debouncedFn = $debounce(function() {}, 12, false, false);
-    debouncedFn();
-    $timeout.flush();
-    expect(applySpy).not.toHaveBeenCalled();
-
-    debouncedFn = $debounce(function() {}, 12, true, false);
-    debouncedFn();
-    expect(applySpy).not.toHaveBeenCalled();
-  }));
 
 describe('exception handling', function() {
 
@@ -131,27 +90,6 @@ describe('exception handling', function() {
       $timeout.flush(123);
       expect(applySpy).toHaveBeenCalled();
     }));
-
-
-    it('should reject the timeout promise when an exception is thrown in the timeout callback',
-        inject(function($debounce, $timeout) {
-
-      var log = [];
-
-      var debouncedFn = $debounce(function() {throw "Some Error";}, 123);
-
-      var promise = debouncedFn();
-
-      promise.then(function() {
-        log.push('success');
-      }, function(reason) {
-        log.push('error: ' + reason);
-      });
-      $timeout.flush(123);
-
-      expect(log).toEqual(['error: Some Error']);
-    }));
-
 
   });
 });

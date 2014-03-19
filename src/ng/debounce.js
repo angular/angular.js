@@ -9,29 +9,32 @@ function $DebounceProvider() {
     * @name $debounce
     *
     * @description
-    * The $debounce service provides a mechanism for creating a wrapper around a function that
-    * ensures that the function is not called more frequently than a given time interval.
+    * The $debounce service provides a mechanism for creating a **debounced** function from a
+    * **wrapped** function, which ensures that the **wrapped** function is not called until a given
+    * time period (**delay**) has expired since the last time the **debounced** function was called.
     *
-    * The result of calling `$debounce()` is a new debounced function, which you can call in the
-    * same way as the original function.  All parameters in the call are forwarded on to the
-    * original function.
+    * The result of calling `$debounce()` is a new **debounced** function, which you can call in the
+    * same way as the original **wrapped** function.  All parameters in the call to the
+    * **debounced** function are forwarded on to the original **wrapped** function.
     *
-    * @param {!function(...)} fn         The function to be debounced
+    *
+    * @param {!Function} fn              The function to be debounced
     * @param {number} delay              The minimum time between calls to `fn`
     * @param {boolean} [immediate=false] If true then `fn` is invoked on the first call to
     *                                    the debounced function. Otherwise the first call will not
     *                                    happen until after the `delay` time has expired
-    * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
-    *                                    will invoke a {@link ng.$rootScope.Scope#$digest}
-    *                                    after running `fn`.
-    * @return {function(...) : Promise}  A debounced wrapper function around the `fn` function.
-    *                                    This function will return a promise to the return value of
-    *                                    `fn`, when it is eventually called.
+    * @return {Function}                 A debounced wrapper function around the `fn` function.
+    *
     *
     * @example
     * <example name="debounce" module="debounce-example">
     * <file name="index.html">
     *   <div ng-controller="DebounceController">
+    *     <p>
+    *       Each time you click the "increment" button, the counter will increase. In contrast, if
+    *       you click the "debounced increment" button, the counter will only increase 500ms after
+    *       you stop clicking.
+    *     </p>
     *     <button ng-click="increment()">Increment</button>
     *     <button ng-click="debouncedIncrement()">Debounced Increment</button>
     *     <div>Counter: {{counter}}</div>
@@ -45,56 +48,36 @@ function $DebounceProvider() {
     *     $scope.increment = function() {
     *       $scope.counter += 1;
     *     };
-    *     $scope.debouncedIncrement = $debounce($scope.increment, 500, true);
+    *     $scope.debouncedIncrement = $debounce($scope.increment, 500);
     *   });
     * </file>
     * </example>
     */
-    return function $debounce(func, delay, immediate, invokeApply) {
-      var timeout,
-          skipApply = (isDefined(invokeApply) && !invokeApply);
+    return function $debounce(func, delay, immediate) {
+      var callCount = 0;
 
       return function debouncedFn() {
         var context = this, args = arguments;
 
-        // Run the wrapped function with an apply if necessary
-        var applyFn = function() {
-          var result;
-          try {
-            result = func.apply(context,args);
-          } finally {
-            if ( !skipApply ) {
-              $rootScope.$apply();
-            }
-          }
-          return result;
-        };
-
         // This is the function that will be called when the delay period is complete
         var delayComplete = function() {
 
-          // The timeout has completed so we can clear this
-          timeout = null;
+          callCount -= 1;
 
           // If the debounce is immediate then the call would have been made already
-          if(!immediate) {
-            return $q.when(applyFn());
+          if(!immediate && callCount === 0) {
+            func.apply(context,args);
           }
         };
 
-        var callNow = immediate && !timeout;
-
         // Reset the timeout
-        if (timeout) {
-          $timeout.cancel(timeout);
-        }
-        timeout = $timeout(delayComplete, delay, false);
+        $timeout(delayComplete, delay);
 
-        if (callNow) {
-          return $q.when(applyFn());
+        if (immediate && callCount === 0) {
+          func.apply(context,args);
         }
 
-        return timeout;
+        callCount += 1;
       };
     };
   }];
