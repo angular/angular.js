@@ -50,11 +50,11 @@ function $DebounceProvider() {
     * </file>
     * </example>
     */
-    return function(func, delay, immediate, invokeApply) {
+    return function $debounce(func, delay, immediate, invokeApply) {
       var timeout,
           skipApply = (isDefined(invokeApply) && !invokeApply);
 
-      return function() {
+      return function debouncedFn() {
         var context = this, args = arguments;
 
         // Run the wrapped function with an apply if necessary
@@ -85,7 +85,7 @@ function $DebounceProvider() {
         var callNow = immediate && !timeout;
 
         // Reset the timeout
-        if ( timeout ) {
+        if (timeout) {
           $timeout.cancel(timeout);
         }
         timeout = $timeout(delayComplete, delay, false);
