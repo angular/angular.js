@@ -81,15 +81,15 @@ function $DebounceProvider() {
             return $q.when(applyFn());
           }
         };
-        
+
         var callNow = immediate && !timeout;
-        
+
         // Reset the timeout
         if ( timeout ) {
           $timeout.cancel(timeout);
         }
         timeout = $timeout(delayComplete, delay, false);
- 
+
         if (callNow) {
           return $q.when(applyFn());
         }
