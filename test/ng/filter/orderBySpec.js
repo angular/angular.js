@@ -23,6 +23,36 @@ describe('Filter: orderBy', function() {
     expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['+b', '-a'])).toEqualData([{a:15, b:1}, {a:2, b:1}]);
   });
 
+
+  it('should sort array by date predicate', function() {
+    // same dates
+    expect(orderBy([
+            { a:new Date('01/01/2014'), b:1 },
+            { a:new Date('01/01/2014'), b:3 },
+            { a:new Date('01/01/2014'), b:4 },
+            { a:new Date('01/01/2014'), b:2 }],
+            ['a', 'b']))
+    .toEqualData([
+            { a:new Date('01/01/2014'), b:1 },
+            { a:new Date('01/01/2014'), b:2 },
+            { a:new Date('01/01/2014'), b:3 },
+            { a:new Date('01/01/2014'), b:4 }]);
+
+    // one different date
+    expect(orderBy([
+            { a:new Date('01/01/2014'), b:1 },
+            { a:new Date('01/01/2014'), b:3 },
+            { a:new Date('01/01/2013'), b:4 },
+            { a:new Date('01/01/2014'), b:2 }],
+            ['a', 'b']))
+    .toEqualData([
+            { a:new Date('01/01/2013'), b:4 },
+            { a:new Date('01/01/2014'), b:1 },
+            { a:new Date('01/01/2014'), b:2 },
+            { a:new Date('01/01/2014'), b:3 }]);
+  });
+
+
   it('should use function', function() {
     expect(
       orderBy(
