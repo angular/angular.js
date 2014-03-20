@@ -16,7 +16,6 @@ function init {
   REPO_DIR=$TMP_DIR/angularjs.org
   BRANCH_PATTERN=$(readJsonProp "$BASE_DIR/package.json" "branchVersion")
   BUILD_DIR=$BASE_DIR/build
-  NEW_VERSION=$(cat $BUILD_DIR/version.txt)
 }
 
 function prepare {
@@ -40,12 +39,12 @@ function prepare {
 
   # Replace the version of the branch that we are updating
   echo $BRANCH_PATTERN
-  echo $NEW_VERSION
-  replaceInFile "js/download-data.js" "branch:[ ]+'($BRANCH_PATTERN)',[ ]+version:[ ]+'$VERSION_REGEX'" "branch: '\1', version: '$NEW_VERSION'"
-  
+  echo $CDN_VERSION
+  replaceInFile "js/download-data.js" "branch:[ ]+'($BRANCH_PATTERN)',[ ]+version:[ ]+'$VERSION_REGEX'" "branch: '\1', version: '$CDN_VERSION'"
+
   git add index.html
   git add js/download-data.js
-  git commit -m "update(version): update angular version to $NEW_VERSION for branch $BRANCH_PATTERN"
+  git commit -m "update(version): update angular version to $CDN_VERSION for branch $BRANCH_PATTERN"
 }
 
 function publish {
