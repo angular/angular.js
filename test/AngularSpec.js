@@ -586,6 +586,215 @@ describe('angular', function() {
   });
 
 
+  describe('whileEach', function() {
+    it('should stop when the desired value is found', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+        this.foo = 'fooVal';
+      }
+
+      var obj = new MyObj(),
+          log = [];
+
+      whileEach(obj, function(value, key) {
+        log.push(key + ':' + value)
+
+        if (key === 'baz') {
+          return true;
+        }
+      });
+
+      expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
+    });
+
+
+    it('should not stop when the desired value is not found', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+        this.foo = 'fooVal';
+      }
+
+      var obj = new MyObj(),
+          log = [];
+
+      whileEach(obj, function(value, key) {
+        log.push(key + ':' + value)
+
+        if (key === 'bar2') {
+          return true;
+        }
+      });
+
+      expect(log).toEqual(['bar:barVal', 'baz:bazVal', 'foo:fooVal']);
+    });
+
+
+    it('should return the retured value if the desired value is found', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+        this.foo = 'fooVal';
+      }
+
+      var obj = new MyObj(),
+          log = [];
+
+      log.push(whileEach(obj, function(value, key) {
+        if (key === 'bar') {
+          return 'found';
+        }
+      }, undefined, 'not found'));
+
+      expect(log).toEqual(['found']);
+    });
+
+
+    it('should return the default value if the desired value is not found', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+        this.foo = 'fooVal';
+      }
+
+      var obj = new MyObj(),
+          log = [];
+
+      log.push(whileEach(obj, function(value, key) {
+        if (key === 'bar2') {
+          return true;
+        }
+      }, undefined, 'not found'));
+
+      expect(log).toEqual(['not found']);
+    });
+
+
+    it('should iterate over *own* object properties', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+      }
+      MyObj.prototype.foo = 'fooVal';
+
+      var obj = new MyObj(),
+          log = [];
+
+      whileEach(obj, function(value, key) { log.push(key + ':' + value)});
+
+      expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
+    });
+
+
+    it('should not break if obj is an array we override hasOwnProperty', function() {
+      var obj = [];
+      obj[0] = 1;
+      obj[1] = 2;
+      obj.hasOwnProperty = null;
+      var log = [];
+      whileEach(obj, function(value, key) {
+        log.push(key + ':' + value);
+      });
+      expect(log).toEqual(['0:1', '1:2']);
+    });
+
+
+
+    it('should handle JQLite and jQuery objects like arrays', function() {
+      var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
+          log = [];
+
+      whileEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
+      expect(log).toEqual(['0:s1', '1:s2']);
+    });
+
+
+    it('should handle NodeList objects like arrays', function() {
+      var nodeList = jqLite("<p><span>a</span><span>b</span><span>c</span></p>")[0].childNodes,
+          log = [];
+
+
+      whileEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+
+    it('should handle HTMLCollection objects like arrays', function() {
+      document.body.innerHTML = "<p>" +
+                                  "<a name='x'>a</a>" +
+                                  "<a name='y'>b</a>" +
+                                  "<a name='x'>c</a>" +
+                                "</p>";
+
+      var htmlCollection = document.getElementsByName('x'),
+          log = [];
+
+      whileEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:a', '1:c']);
+    });
+
+    if (document.querySelectorAll) {
+      it('should handle the result of querySelectorAll in IE8 as it has no hasOwnProperty function', function() {
+        document.body.innerHTML = "<p>" +
+          "<a name='x'>a</a>" +
+          "<a name='y'>b</a>" +
+          "<a name='x'>c</a>" +
+          "</p>";
+
+        var htmlCollection = document.querySelectorAll('[name="x"]'),
+          log = [];
+
+        whileEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+        expect(log).toEqual(['0:a', '1:c']);
+      });
+    }
+
+    it('should handle arguments objects like arrays', function() {
+      var args,
+          log = [];
+
+      (function(){ args = arguments}('a', 'b', 'c'));
+
+      whileEach(args, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+    it('should handle string values like arrays', function() {
+      var log = [];
+
+      whileEach('bar', function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['0:b', '1:a', '2:r']);
+    });
+
+
+    it('should handle objects with length property as objects', function() {
+      var obj = {
+            'foo' : 'bar',
+            'length': 2
+          },
+          log = [];
+
+      whileEach(obj, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['foo:bar', 'length:2']);
+    });
+
+
+    it('should handle objects of custom types with length property as objects', function() {
+      function CustomType() {
+        this.length = 2;
+        this.foo = 'bar'
+      }
+
+      var obj = new CustomType(),
+          log = [];
+
+      whileEach(obj, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['length:2', 'foo:bar']);
+    });
+  });
+
+
   describe('sortedKeys', function() {
     it('should collect keys from object', function() {
       expect(sortedKeys({c:0, b:0, a:0})).toEqual(['a', 'b', 'c']);

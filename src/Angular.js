@@ -22,6 +22,7 @@
     -nodeName_,
     -isArrayLike,
     -forEach,
+    -whileEach,
     -sortedKeys,
     -forEachSorted,
     -reverseParams,
@@ -254,6 +255,79 @@ function forEach(obj, iterator, context) {
     }
   }
   return obj;
+}
+
+/**
+ * @ngdoc function
+ * @name angular.whileEach
+ * @module ng
+ * @function
+ *
+ * @description
+ * Invokes the `iterator` function once for each item in `obj` collection, which can be either an
+ * object or an array until any value is returned or the end of the collection. The `iterator`
+ * function is invoked with `iterator(value, key)`, where `value` is the value of an object property
+ * or an array element and `key` is the object property key or array element index. Specifying a
+ * `context` for the function is optional.
+ *
+ * It is worth noting that `.whileEach` does not iterate over inherited properties because it filters
+ * using the `hasOwnProperty` method.
+ *
+   ```js
+     var values = [
+      {name: 'sandra', gender: 'female'},
+      {name: 'carlos', gender: 'male'},
+      {name: 'wally', gender: 'male'},
+      {name: 'john', gender: 'male'}
+     ];
+     var gender = angular.whileEach(values, function(value, key){
+       if (value.name === 'wally') {
+        return value.gender;
+       }
+     }, undefined, 'not found');
+     expect(gender).toEqual('male');
+   ```
+ *
+ * @param {Object|Array} obj Object to iterate over.
+ * @param {Function} iterator Iterator function.
+ * @param {Object=} context Object to become context (`this`) for the iterator function.
+ * @param {*=} value Value returned if the execution don't stop at any point.
+ * @returns {*} The returned value or `value`.
+ */
+function whileEach(obj, iterator, context, value) {
+  var key;
+  if (obj) {
+    if (isFunction(obj)){
+      for (key in obj) {
+        // Need to check if hasOwnProperty exists,
+        // as on IE8 the result of querySelectorAll is an object without a hasOwnProperty function
+        if (key != 'prototype' && key != 'length' && key != 'name' && (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
+          var returned = iterator.call(context, obj[key], key);
+          if (returned !== undefined) {
+            return returned;
+          }
+        }
+      }
+    } else if (obj.whileEach && obj.whileEach !== whileEach) {
+      return obj.whileEach(iterator, context, value);
+    } else if (isArrayLike(obj)) {
+      for (key = 0; key < obj.length; key++)
+        var returned = iterator.call(context, obj[key], key);
+        if (returned !== undefined) {
+          return returned;
+        }
+    } else {
+      for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          var returned = iterator.call(context, obj[key], key);
+          if (returned !== undefined) {
+            return returned;
+          }
+        }
+      }
+    }
+  }
+  return value;
 }
 
 function sortedKeys(obj) {
