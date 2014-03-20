@@ -576,7 +576,7 @@ Now what happens if we use both directives on the same element?
 ```
 
 In Angular 1.0, the nonIsolateScope directive will have access to the isolateScope directive’s scope. The
-log statements will print the same id, because the scope is the same. But in Angular 1.2.7, the nonIsolateScope
+log statements will print the same id, because the scope is the same. But in Angular 1.2, the nonIsolateScope
 will not use the same scope as isolateScope. Instead, it will inherit the parent scope. The log statements
 will print different id’s.
 
@@ -728,15 +728,3 @@ myApp.service 'applicationSrvc', ->
 to continue to return the complete instance.
 
 See [c22adbf1](https://github.com/angular/angular.js/commit/c22adbf160f32c1839fbb35382b7a8c6bcec2927).
-
-## Modifying the DOM outside digest cycle
-
-If you see the following error message:
-
-```
-A Node was inserted somewhere it doesn't belong
-```
-
-It means you are probably changing the DOM outside of the Angular world, updating a model, and then
-triggering an Angular $digest cycle. Angular 1.2.7 will cause this error in certain cases when you
-manipulate the DOM before a $digest cycle.
