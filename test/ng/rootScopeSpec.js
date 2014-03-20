@@ -605,7 +605,9 @@ describe('Scope', function() {
 
         it('should not infinitely digest when current value is NaN', function() {
           $rootScope.obj = [NaN];
-          $rootScope.$digest();
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
         });
 
         it('should watch array-like objects like arrays', function () {
