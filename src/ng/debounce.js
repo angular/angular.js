@@ -2,7 +2,7 @@
 
 
 function $DebounceProvider() {
-  this.$get = ['$timeout', '$q', '$rootScope', function($timeout, $q, $rootScope, invokeApply) {
+  this.$get = ['$timeout', function($timeout) {
 
    /**
     * @ngdoc service
@@ -56,22 +56,21 @@ function $DebounceProvider() {
     return function $debounce(func, delay, immediate) {
       var callCount = 0;
 
+      // This is the function that will be called when the delay period is complete
+      var delayComplete = function(context, args) {
+        callCount -= 1;
+
+        // If the debounce is immediate then the call would have been made already
+        if(!immediate && callCount === 0) {
+          func.apply(context,args);
+        }
+      };
+
       return function debouncedFn() {
         var context = this, args = arguments;
 
-        // This is the function that will be called when the delay period is complete
-        var delayComplete = function() {
-
-          callCount -= 1;
-
-          // If the debounce is immediate then the call would have been made already
-          if(!immediate && callCount === 0) {
-            func.apply(context,args);
-          }
-        };
-
         // Reset the timeout
-        $timeout(delayComplete, delay);
+        $timeout(function() { delayComplete(context, args); }, delay);
 
         if (immediate && callCount === 0) {
           func.apply(context,args);
