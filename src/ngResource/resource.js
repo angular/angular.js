@@ -501,7 +501,8 @@ angular.module('ngResource', ['ng']).
           /* jshint +W086 */ /* (purposefully fall through case statements) */
 
           var isInstanceCall = this instanceof Resource;
-          var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
+          var ResourceConstructor = this;
+          var value = isInstanceCall ? data : (action.isArray ? [] : new ResourceConstructor(data));
           var httpConfig = {};
           var responseInterceptor = action.interceptor && action.interceptor.response ||
                                     defaultResponseInterceptor;
@@ -535,7 +536,7 @@ angular.module('ngResource', ['ng']).
               if (action.isArray) {
                 value.length = 0;
                 forEach(data, function(item) {
-                  value.push(new Resource(item));
+                  value.push(new ResourceConstructor(item));
                 });
               } else {
                 shallowClearAndCopy(data, value);
