@@ -41,6 +41,7 @@
     "nodeName_": false,
     "isArrayLike": false,
     "forEach": false,
+    "whileEach": false,
     "sortedKeys": false,
     "forEachSorted": false,
     "reverseParams": false,

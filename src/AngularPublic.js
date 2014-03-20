@@ -109,6 +109,7 @@ function publishExternalAPI(angular){
     'equals': equals,
     'element': jqLite,
     'forEach': forEach,
+    'whileEach': whileEach,
     'injector': createInjector,
     'noop':noop,
     'bind':bind,
