@@ -1,4 +1,4 @@
-AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.png?branch=master)](https://travis-ci.org/angular/angular.js)
+AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.svg?branch=master)](https://travis-ci.org/angular/angular.js)
 =========
 
 AngularJS lets you write client-side web applications as if you had a smarter browser.  It lets you
