@@ -274,10 +274,15 @@ function forEach(obj, iterator, context) {
  * using the `hasOwnProperty` method.
  *
    ```js
-     var values = {'sandra':'female', 'carlos':'male', 'wally':'male', 'john':'male'};
+     var values = [
+      {name: 'sandra', gender: 'female'},
+      {name: 'carlos', gender: 'male'},
+      {name: 'wally', gender: 'male'},
+      {name: 'john', gender: 'male'}
+     ];
      var gender = angular.whileEach(values, function(value, key){
-       if (key === 'wally') {
-        return value;
+       if (value.name === 'wally') {
+        return value.gender;
        }
      }, undefined, 'not found');
      expect(gender).toEqual('male');
