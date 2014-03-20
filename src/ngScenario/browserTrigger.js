@@ -53,7 +53,7 @@
       }[inputType || '_default_'];
     }
 
-    if (nodeName == 'option') {
+    if (nodeName === 'option') {
       element.parentNode.value = element.value;
       element = element.parentNode;
       eventType = 'change';
@@ -65,7 +65,7 @@
     }
 
     if (msie < 9) {
-      if (inputType == 'radio' || inputType == 'checkbox') {
+      if (inputType === 'radio' || inputType === 'checkbox') {
           element.checked = !element.checked;
       }
 
@@ -78,9 +78,9 @@
 
       // TODO(vojta): create event objects with pressed keys to get it working on IE<9
       var ret = element.fireEvent('on' + eventType);
-      if (inputType == 'submit') {
+      if (inputType === 'submit') {
         while(element) {
-          if (element.nodeName.toLowerCase() == 'form') {
+          if (element.nodeName.toLowerCase() === 'form') {
             element.fireEvent('onsubmit');
             break;
           }
