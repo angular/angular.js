@@ -64,6 +64,7 @@
  *       restrict: 'A',
  *       scope: false,
  *       controller: function($scope, $element, $attrs, $transclude, otherInjectables) { ... },
+ *       controllerAs: 'stringAlias',
  *       require: 'siblingDirectiveName', // or // ['^parentDirectiveName', '?optionalDirectiveName', '?^optionalParent'],
  *       compile: function compile(tElement, tAttrs, transclude) {
  *         return {
