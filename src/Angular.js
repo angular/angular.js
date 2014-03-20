@@ -265,7 +265,7 @@ function forEach(obj, iterator, context) {
  *
  * @description
  * Invokes the `iterator` function once for each item in `obj` collection, which can be either an
- * object or an array until the returned value is FALSE or the end of the collection. The `iterator`
+ * object or an array until any value is returned or the end of the collection. The `iterator`
  * function is invoked with `iterator(value, key)`, where `value` is the value of an object property
  * or an array element and `key` is the object property key or array element index. Specifying a
  * `context` for the function is optional.
