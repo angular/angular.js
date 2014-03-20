@@ -40,7 +40,7 @@
       }[inputType || '_default_'];
     }
 
-    if (nodeName == 'option') {
+    if (nodeName === 'option') {
       element.parentNode.value = element.value;
       element = element.parentNode;
       eventType = 'change';
