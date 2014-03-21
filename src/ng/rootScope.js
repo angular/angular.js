@@ -79,8 +79,8 @@ function $RootScopeProvider(){
     return TTL;
   };
 
-  this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
-      function( $injector,   $exceptionHandler,   $parse,   $browser) {
+  this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser', '$log',
+      function( $injector,   $exceptionHandler,   $parse,   $browser,   $log) {
 
     /**
      * @ngdoc type
@@ -970,6 +970,11 @@ function $RootScopeProvider(){
             listenerArgs = concat([event], arguments, 1),
             i, length;
 
+        if (this.$$destroyed) {
+          $log.warn("Trying to emit '" + name + "' on a destroyed scope");
+          return event;
+        }
+
         do {
           namedListeners = scope.$$listeners[name] || empty;
           event.currentScope = scope;
@@ -1034,6 +1039,11 @@ function $RootScopeProvider(){
             },
             listenerArgs = concat([event], arguments, 1),
             listeners, i, length;
+
+        if (this.$$destroyed) {
+          $log.warn("Trying to broadcast '" + name + "' on a destroyed scope");
+          return event;
+        }
 
         //down while you can, then up and next sibling or up and next sibling until back at root
         while ((current = next)) {

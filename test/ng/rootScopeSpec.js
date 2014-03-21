@@ -874,6 +874,43 @@ describe('Scope', function() {
       $rootScope.$broadcast(EVENT);
       expect(spy.callCount).toBe(1);
     }));
+
+
+    it('should warn when emitting on a destroyed scope', inject(function($rootScope, $log) {
+      var EVENTNAME = 'barEvent',
+          child = $rootScope.$new(),
+          warning,
+          event;
+
+      child.$destroy();
+
+      expect($log.warn.logs).toEqual([]);
+      event = child.$emit(EVENTNAME);
+      expect(event.name).toEqual(EVENTNAME);
+
+      warning = $log.warn.logs.shift();
+
+      expect(warning[0]).toContain(EVENTNAME);
+      expect(warning[0]).toContain('emit');
+    }));
+
+
+    it('should warn when broadcasting on a destroyed scope', inject(function($rootScope, $log) {
+      var EVENTNAME = 'bazEvent',
+          warning,
+          event;
+
+      $rootScope.$destroy();
+
+      expect($log.warn.logs).toEqual([]);
+      event = $rootScope.$broadcast(EVENTNAME);
+      expect(event.name).toEqual(EVENTNAME);
+
+      warning = $log.warn.logs.shift();
+
+      expect(warning[0]).toContain(EVENTNAME);
+      expect(warning[0]).toContain('broadcast');
+    }));
   });
 
 
