@@ -332,9 +332,12 @@ angular.module('ngAnimate', ['ng'])
           //operation which performs CSS transition and keyframe
           //animations sniffing. This is always included for each
           //element animation procedure if the browser supports
-          //transitions and/or keyframe animations
+          //transitions and/or keyframe animations. The default
+          //animation is added to the top of the list to prevent
+          //any previous animations from affecting the element styling
+          //prior to the element being animated.
           if ($sniffer.transitions || $sniffer.animations) {
-            classes.push('');
+            matches.push($injector.get(selectors['']));
           }
 
           for(var i=0; i < classes.length; i++) {
