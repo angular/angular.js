@@ -1,3 +1,56 @@
+<a name="v1.2.15"></a>
+# v1.2.15 beer-underestimating (2014-03-21)
+
+
+## Bug Fixes
+
+- **$$RAFProvider:** check for webkitCancelRequestAnimationFrame
+  ([e84da228](https://github.com/angular/angular.js/commit/e84da2283c4e195be557f7b06c8783fe502acbbb),
+   [#6526](https://github.com/angular/angular.js/issues/6526))
+- **$$rAF:** always fallback to a $timeout incase native rAF isn't supported
+  ([ee8e4a94](https://github.com/angular/angular.js/commit/ee8e4a946ed8f943e00846b88d8d51c0b2cd1fab),
+   [#6654](https://github.com/angular/angular.js/issues/6654))
+- **$compile:** support templates with thead and tfoot root elements
+  ([ca0ac649](https://github.com/angular/angular.js/commit/ca0ac649971ae4fb50419b38f92a98d2226eb696),
+   [#6289](https://github.com/angular/angular.js/issues/6289))
+- **$http:**
+  - allow sending Blob data using $http
+  ([fbb125a3](https://github.com/angular/angular.js/commit/fbb125a3af164e52af2f8119175b04cbbed2f331),
+   [#5012](https://github.com/angular/angular.js/issues/5012))
+  - don't covert 0 status codes to 404 for non-file protocols
+  ([f108a2a9](https://github.com/angular/angular.js/commit/f108a2a994149ecc011e29f327bcb8e11adf72d9),
+   [#6074](https://github.com/angular/angular.js/issues/6074), [#6155](https://github.com/angular/angular.js/issues/6155))
+- **$rootScope:**
+  - ng-repeat can't handle NaN values. #4605
+  ([e48c28fe](https://github.com/angular/angular.js/commit/e48c28fe9292efe7af6205b2be116d2350990c73),
+   [#4605](https://github.com/angular/angular.js/issues/4605))
+  - $watchCollection should call listener with oldValue
+  ([3dd95727](https://github.com/angular/angular.js/commit/3dd9572754c7bafec30dd625f5c611346959c969),
+   [#2621](https://github.com/angular/angular.js/issues/2621), [#5661](https://github.com/angular/angular.js/issues/5661), [#5688](https://github.com/angular/angular.js/issues/5688), [#6736](https://github.com/angular/angular.js/issues/6736))
+- **angular.bootstrap:** only allow angular to load once
+  ([0d60f8d3](https://github.com/angular/angular.js/commit/0d60f8d367e38224696749b0f7de04bd60649815),
+   [#5863](https://github.com/angular/angular.js/issues/5863), [#5587](https://github.com/angular/angular.js/issues/5587))
+- **jqLite:** traverse `host` property for DocumentFragment in inheritedData()
+  ([98d825e1](https://github.com/angular/angular.js/commit/98d825e10d3bf76f47e69abba857a8933c8cb7d9),
+   [#6637](https://github.com/angular/angular.js/issues/6637))
+- **ngAnimate:** setting classNameFilter disables animation inside ng-if
+  ([a41a2a1d](https://github.com/angular/angular.js/commit/a41a2a1d2ce20f86ac2709592e4ada527160e580),
+   [#6539](https://github.com/angular/angular.js/issues/6539))
+- **ngCookie:** convert non-string values to string
+  ([93d1c95c](https://github.com/angular/angular.js/commit/93d1c95c61dbfa565333bb64527a103242175af7),
+   [#6151](https://github.com/angular/angular.js/issues/6151), [#6220](https://github.com/angular/angular.js/issues/6220))
+- **ngTouch:** update workaround for desktop Webkit quirk
+  ([01a34f51](https://github.com/angular/angular.js/commit/01a34f513bb567ed6d4c81d00d7c2a777c0dae01),
+   [#6302](https://github.com/angular/angular.js/issues/6302))
+- **orderBy:** support string predicates containing non-ident characters
+  ([10d3e1e4](https://github.com/angular/angular.js/commit/10d3e1e4472ab9f5cf4418b6438ec2e0f2b0b288),
+   [#6143](https://github.com/angular/angular.js/issues/6143), [#6144](https://github.com/angular/angular.js/issues/6144))
+- **select:** avoid checking option element selected properties in render
+  ([dc149de9](https://github.com/angular/angular.js/commit/dc149de9364c66b988f169f67cad39577ba43434),
+   [#2448](https://github.com/angular/angular.js/issues/2448), [#5994](https://github.com/angular/angular.js/issues/5994), [#6769](https://github.com/angular/angular.js/issues/6769))
+
+
+
 <a name="1.2.14"></a>
 # 1.2.14 feisty-cryokinesis (2014-03-01)
 
