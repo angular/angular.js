@@ -1332,13 +1332,20 @@ describe("ngAnimate", function() {
           }));
 
           it("should intelligently cancel former timeouts and close off a series of elements a final timeout", function() {
+            var currentTimestamp = Date.now();
+            spyOn(Date,'now').andCallFake(function() {
+              return currentTimestamp;
+            });
+
             var cancellations = 0;
             module(function($provide) {
               $provide.decorator('$timeout', function($delegate) {
                 var _cancel = $delegate.cancel;
-                $delegate.cancel = function() {
-                  cancellations++;
-                  return _cancel.apply($delegate, arguments);
+                $delegate.cancel = function(timer) {
+                  if(timer) {
+                    cancellations++;
+                    return _cancel.apply($delegate, arguments);
+                  }
                 };
                 return $delegate;
               });
@@ -1346,10 +1353,22 @@ describe("ngAnimate", function() {
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
               if (!$sniffer.transitions) return;
 
-              ss.addRule('.animate-me', '-webkit-transition:1s linear all;' +
+              ss.addRule('.animate-me div', '-webkit-transition:1s linear all;' +
                                                       'transition:1s linear all;');
 
-              element = $compile(html('<div><div class="animate-me" ng-repeat="item in items"></div></div>'))($rootScope);
+              ss.addRule('.animate-me-longer div', '-webkit-transition:1.5s linear all;' +
+                                                       'transition:1.5s linear all;');
+
+              element = $compile(html('<div class="animate-me-longer">' +
+                                      '  <div ng-repeat="item in items"></div>' +
+                                      '</div>'))($rootScope);
+              $rootScope.items = [0];
+              $rootScope.$digest();
+              $animate.triggerReflow();
+
+              currentTimestamp += 2250; //1.5 * 1500 = 2250
+
+              element[0].className = 'animate-me';
 
               $rootScope.items = [1,2,3,4,5,6,7,8,9,10];
               var totalOperations = $rootScope.items.length;
@@ -1358,9 +1377,11 @@ describe("ngAnimate", function() {
 
               $rootScope.items = [0];
               $animate.triggerReflow();
+
+              currentTimestamp += 1500; //1.5 * 1000 = 1500
               $timeout.flush(1500);
 
-              expect(cancellations).toBeLessThan(totalOperations);
+              expect(cancellations).toBe(1);
               expect(element.children().length).toBe(10);
               cancellations = 0;
 
@@ -1370,7 +1391,7 @@ describe("ngAnimate", function() {
               $animate.triggerReflow();
               $timeout.flush(1500);
               expect(element.children().length).toBe(1);
-              expect(cancellations).toBeLessThan(totalOperations);
+              expect(cancellations).toBe(1);
             });
           });
 
