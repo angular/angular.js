@@ -721,6 +721,37 @@ describe("ngAnimate", function() {
           })
         });
 
+        /* The CSS animation handler must always be rendered before the other JS animation
+           handlers. This is important since the CSS animation handler may place temporary
+           styling on the HTML element before the reflow commences which in turn may override
+           other transition or keyframe styles that any former JS animations may have placed
+           on the element: https://github.com/angular/angular.js/issues/6675 */
+        it("should always perform the CSS animation before the JS animation", function() {
+          var log = [];
+          module(function($animateProvider) {
+            //CSS animation handler
+            $animateProvider.register('', function() {
+              return {
+                leave : function() { log.push('css'); }
+              }
+            });
+            //custom JS animation handler
+            $animateProvider.register('.js-animation', function() {
+              return {
+                leave : function() { log.push('js'); }
+              }
+            });
+          });
+          inject(function($animate, $rootScope, $compile, $sniffer) {
+            if(!$sniffer.transitions) return;
+
+            element = $compile(html('<div class="js-animation"></div>'))($rootScope);
+            $animate.leave(element);
+            $rootScope.$digest();
+            expect(log).toEqual(['css','js']);
+          });
+        });
+
 
         describe("Animations", function() {
 
