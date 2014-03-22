@@ -1465,9 +1465,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
               case '&':
                 parentGet = $parse(attrs[attrName]);
-                isolateScope[scopeName] = function(locals) {
-                  return parentGet(scope, locals);
-                };
+                isolateScope[scopeName] = parentGetFn(parentGet, scope);
                 break;
 
               default:
@@ -1813,6 +1811,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     }
 
+   function parentGetFn(parentGet, scope) {
+     return function(locals) {
+       return parentGet(scope, locals);
+     };
+   }
 
     function getTrustedContext(node, attrNormalizedName) {
       if (attrNormalizedName == "srcdoc") {
