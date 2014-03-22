@@ -20,7 +20,7 @@ application.
 </html>
 ```
 
-Note that for bootrapping purposes, the `<html>` element is the same as `document`, so the following
+Note that for bootstrapping purposes, the `<html>` element is the same as `document`, so the following
 will also throw an error.
 
 ```
