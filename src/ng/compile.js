@@ -1462,9 +1462,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
               case '&':
                 parentGet = $parse(attrs[attrName]);
-                isolateScope[scopeName] = function(locals) {
-                  return parentGet(scope, locals);
-                };
+                isolateScope[scopeName] = parentGetFn(parentGet, scope);
                 break;
 
               default:
@@ -1809,8 +1807,19 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         });
       }
     }
-
-
+	/**
+	 * Wrapper for '&' One-way binding to prevent memory leak.
+	 * Backport from 1.3.x fix for bug #6794.
+	 * @param {function} parentGet Gets value from parent
+	 * @param {ng.$rootScope.Scope} scope Target Scope
+	 * @return {function} & Binding Fn
+	 */
+	function parentGetFn(parentGet, scope) {
+      return function (locals) {
+        return parentGet(scope, locals);
+      };
+    }
+	
     function getTrustedContext(node, attrNormalizedName) {
       if (attrNormalizedName == "srcdoc") {
         return $sce.HTML;
