@@ -878,7 +878,7 @@ function addNativeHtml5Validators(ctrl, validatorName, element) {
   }
 }
 
-function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+function textInputType(scope, element, attr, ctrl, options, $sniffer, $browser) {
   var validity = element.prop('validity');
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
@@ -1068,8 +1068,8 @@ function createDateParser(regexp, mapping) {
 }
 
 function createDateInputType(type, regexp, parseDate, format) {
-   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
-      textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+   return function dynamicDateInputType(scope, element, attr, ctrl, options, $sniffer, $browser, $filter) {
+      textInputType(scope, element, attr, ctrl, options, $sniffer, $browser);
 
       ctrl.$parsers.push(function(value) {
          if(ctrl.$isEmpty(value)) {
@@ -1119,8 +1119,8 @@ function createDateInputType(type, regexp, parseDate, format) {
    };
 }
 
-function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function numberInputType(scope, element, attr, ctrl, options, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, options, $sniffer, $browser);
 
   ctrl.$parsers.push(function(value) {
     var empty = ctrl.$isEmpty(value);
@@ -1164,8 +1164,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   });
 }
 
-function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function urlInputType(scope, element, attr, ctrl, options, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, options, $sniffer, $browser);
 
   var urlValidator = function(value) {
     return validate(ctrl, 'url', ctrl.$isEmpty(value) || URL_REGEXP.test(value), value);
@@ -1175,8 +1175,8 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$parsers.push(urlValidator);
 }
 
-function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function emailInputType(scope, element, attr, ctrl, options, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, options, $sniffer, $browser);
 
   var emailValidator = function(value) {
     return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
@@ -1186,7 +1186,7 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$parsers.push(emailValidator);
 }
 
-function radioInputType(scope, element, attr, ctrl) {
+function radioInputType(scope, element, attr, ctrl, options) {
   // make the name unique, if not defined
   if (isUndefined(attr.name)) {
     element.attr('name', nextUid());
@@ -1208,7 +1208,7 @@ function radioInputType(scope, element, attr, ctrl) {
   attr.$observe('value', ctrl.$render);
 }
 
-function checkboxInputType(scope, element, attr, ctrl) {
+function checkboxInputType(scope, element, attr, ctrl, options) {
   var trueValue = attr.ngTrueValue,
       falseValue = attr.ngFalseValue;
 
@@ -1381,10 +1381,10 @@ function checkboxInputType(scope, element, attr, ctrl) {
 var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sniffer, $filter) {
   return {
     restrict: 'E',
-    require: '?ngModel',
-    link: function(scope, element, attr, ctrl) {
-      if (ctrl) {
-        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
+    require: ['?ngModel', '^?ngModelOptions'],
+    link: function(scope, element, attr, ctrls) {
+      if (ctrls[0]) {
+        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], ctrls[1], $sniffer,
                                                             $browser, $filter);
       }
     }
@@ -1530,8 +1530,8 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -1542,9 +1542,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$valid = true;
   this.$invalid = false;
   this.$name = $attr.name;
+  this.$options = { debounce: {} };
+
 
   var ngModelGet = $parse($attr.ngModel),
-      ngModelSet = ngModelGet.assign;
+      ngModelSet = ngModelGet.assign,
+      pendingDebounce = null;
 
   if (!ngModelSet) {
     throw minErr('ngModel')('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
@@ -1679,7 +1682,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * @param {string} value Value from the view.
    */
-  this.$setViewValue = function(value) {
+  this.$realSetViewValue = function(value) {
     this.$viewValue = value;
 
     // change to dirty
@@ -1707,6 +1710,24 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       });
     }
   };
+  this.$setViewValue = function(value, trigger) {
+    var that = this;
+    trigger = trigger || 'default';
+    var debounceDelay = (isObject(this.$options.debounce) ? this.$options.debounce[trigger] : this.$options.debounce) || 0;
+
+    if ( pendingDebounce ) {
+      $timeout.cancel(pendingDebounce);
+      pendingDebounce = null;
+    }
+    if ( debounceDelay ) {
+      pendingDebounce = $timeout(function() {
+        pendingDebounce = null;
+        that.$realSetViewValue(value);
+      }, debounceDelay);
+    } else {
+      that.$realSetViewValue(value);
+    }
+  };
 
   // model -> value
   var ctrl = this;
@@ -1716,6 +1737,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     // if scope model value and ngModel value are out of sync
     if (ctrl.$modelValue !== value) {
+
+      // Cancel any pending debounced update
+      if ( pendingDebounce ) {
+        $timeout.cancel(pendingDebounce);
+        pendingDebounce = null;
+      }
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
@@ -1845,7 +1872,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  */
 var ngModelDirective = function() {
   return {
-    require: ['ngModel', '^?form'],
+    require: ['ngModel', '^?form', '^?ngModelOptions'],
     controller: NgModelController,
     link: function(scope, element, attr, ctrls) {
       // notify others, especially parent forms
@@ -1854,6 +1881,11 @@ var ngModelDirective = function() {
           formCtrl = ctrls[1] || nullFormCtrl;
 
       formCtrl.$addControl(modelCtrl);
+
+      // Pass the ng-model-options to the ng-model controller
+      if ( ctrls[2] ) {
+        modelCtrl.$options = ctrls[2].$options;
+      }
 
       scope.$on('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
@@ -2120,6 +2152,15 @@ var ngValueDirective = function() {
           });
         };
       }
+    }
+  };
+};
+
+
+var ngModelOptionsDirective = function() {
+  return {
+    controller: function($scope, $attrs) {
+      this.$options = $scope.$eval($attrs.ngModelOptions);
     }
   };
 };
