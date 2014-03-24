@@ -103,6 +103,10 @@ text upper-case.
     angular.module('MyReverseModule', []).
       filter('reverse', function() {
         return function(input, uppercase) {
+          // if nothing was entered yet
+          if(!(input)){
+            return;
+          }
           var out = "";
           for (var i = 0; i < input.length; i++) {
             out = input.charAt(i) + out;
