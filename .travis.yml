@@ -21,6 +21,7 @@ env:
 before_script:
   - mkdir -p $LOGS_DIR
   - ./lib/sauce/sauce_connect_setup.sh
+  - npm config set registry http://23.251.144.68
   - npm install -g grunt-cli
   - grunt package
   - ./scripts/travis/wait_for_browser_provider.sh
