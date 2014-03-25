@@ -50,7 +50,7 @@ Comment on an issue to let others know what you're working on, or create a new i
 doesn't fit within the scope of any of the existing doc fix projects.
 
 For large fixes, please build and test the documentation before submitting the PR to be sure you haven't
-accidentally introduced any layout or formatting issues.You should also make sure that your commit message 
+accidentally introduced any layout or formatting issues. You should also make sure that your commit message
 is labeled "docs:" and follows the **Git Commit Guidelines** outlined below.
 
 If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly.
@@ -92,16 +92,19 @@ Before you submit your pull request consider the following guidelines:
      git checkout -b my-fix-branch master
      ```
 
-* Create your patch, including appropriate test cases.
-* Follow our [Coding Rules](#coding-rules)
-* Commit your changes and create a descriptive commit message (the
-  commit message is used to generate release notes, please check out our
-  [commit message conventions](#commit-message-format) and our commit message presubmit hook
-  `validate-commit-msg.js`):
+* Create your patch, **including appropriate test cases**.
+* Follow our [Coding Rules](#coding-rules).
+* Run the full Angular test suite, as described in the [developer documentation][dev-doc],
+  and ensure that all tests pass.
+* Commit your changes using a descriptive commit message that follows our
+  [commit message conventions](#commit-message-format) and passes our commit message presubmit hook
+  `validate-commit-msg.js`. Adherence to the [commit message conventions](#commit-message-format)
+  is required because release notes are automatically generated from these messages.
 
      ```shell
      git commit -a
      ```
+  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
 * Build your changes locally to ensure all the tests pass
 
@@ -109,15 +112,17 @@ Before you submit your pull request consider the following guidelines:
     grunt test
     ```
 
-* Push your branch to Github:
+* Push your branch to GitHub:
 
     ```shell
     git push origin my-fix-branch
     ```
 
-* In Github, send a pull request to `angular:master`.
-* If we suggest changes then you can modify your branch, rebase and force a new push to your GitHub
-  repository to update the Pull Request:
+* In GitHub, send a pull request to `angular:master`.
+* If we suggest changes then 
+  * Make the required updates.
+  * Re-run the Angular test suite to ensure tests are still passing.
+  * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
     git rebase master -i
@@ -126,10 +131,12 @@ Before you submit your pull request consider the following guidelines:
 
 That's it! Thank you for your contribution!
 
-When the patch is reviewed and merged, you can safely delete your branch and pull the changes
+#### After your pull request is merged
+
+After your pull request is merged, you can safely delete your branch and pull the changes
 from the main (upstream) repository:
 
-* Delete the remote branch on Github:
+* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
 
     ```shell
     git push origin --delete my-fix-branch
@@ -245,24 +252,23 @@ You can find out more detailed information about contributing in the
 
 
 
-[github]: https://github.com/angular/angular.js
 [Google Closure I18N library]: https://code.google.com/p/closure-library/source/browse/closure/goog/i18n/
-[list]: https://groups.google.com/forum/?fromgroups#!forum/angular
-[contribute]: http://docs.angularjs.org/misc/contribute
-[stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
-[groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
-[irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
-[plunker]: http://plnkr.co/edit
-[jsfiddle]: http://jsfiddle.net/
-[ngDocs]: https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
-[unit-testing]: http://docs.angularjs.org/guide/dev_guide.unit-testing
-[js-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
-[contributing]: http://docs.angularjs.org/misc/contribute
-[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
-[corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
-[commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[github-pr-helper]: https://chrome.google.com/webstore/detail/github-pr-helper/mokbklfnaddkkbolfldepnkfmanfhpen
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
+[commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
+[contribute]: http://docs.angularjs.org/misc/contribute
+[contributing]: http://docs.angularjs.org/misc/contribute
+[corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
+[github]: https://github.com/angular/angular.js
+[groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
+[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
+[irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
+[js-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
+[jsfiddle]: http://jsfiddle.net/
+[list]: https://groups.google.com/forum/?fromgroups#!forum/angular
+[ngDocs]: https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
+[plunker]: http://plnkr.co/edit
+[stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
+[unit-testing]: http://docs.angularjs.org/guide/dev_guide.unit-testing
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)
