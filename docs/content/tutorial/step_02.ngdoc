@@ -226,7 +226,7 @@ To run the test, do the following:
 
   Refresh your browser and verify that it says "Hello, World!".
 
-* Update the unit test for the controler in ./tests/unit/controlersSpec.js to reflect the previous change. For example by adding:
+* Update the unit test for the controller in ./tests/unit/controllersSpec.js to reflect the previous change. For example by adding:
 
           expect(scope.name).toBe('World');
 
