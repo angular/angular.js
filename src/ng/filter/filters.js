@@ -198,7 +198,8 @@ function padNumber(num, digits, trim) {
     num = -num;
   }
   num = '' + num;
-  while(num.length < digits) num = '0' + num;
+  if (num.length < digits) 
+    num = new Array(digits - num.length + 1).join('0') + num;
   if (trim)
     num = num.substr(num.length - digits);
   return neg + num;
