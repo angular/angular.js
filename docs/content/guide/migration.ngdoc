@@ -2,6 +2,7 @@
 @name Migrating from 1.0 to 1.2
 @description
 
+# Migrating from 1.0 to 1.2
 
 AngularJS version 1.2 introduces several breaking changes that may require changes to your
 application's source code.
