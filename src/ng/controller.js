@@ -56,6 +56,26 @@ function $ControllerProvider() {
      *
      * It's just a simple call to {@link auto.$injector $injector}, but extracted into
      * a service, so that one can override this service with [BC version](https://gist.github.com/1649788).
+     * @example
+       <example>
+         <file name="index.html">
+           <div ng-controller="LargeCtrl">
+             <p ng-bind="tinyMessage"></p>
+             <p ng-bind="largeMessage"></p>
+           </div>
+         </file>
+         <file name="script.js">
+           function LargeCtrl($scope, $controller) {
+             $controller('TinyCtrl', {$scope: $scope});
+
+             $scope.largeMessage = "I am large controller, from the dom!";
+           }
+
+           function TinyCtrl($scope) {
+             $scope.tinyMessage = "I am tiny controller, from the $controller factory!";
+           }
+         </file>
+       </example>
      */
     return function(expression, locals) {
       var instance, match, constructor, identifier;
