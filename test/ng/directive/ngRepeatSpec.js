@@ -146,6 +146,16 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:swe|shyam:set|');
   });
 
+  it('should iterate over on object/map where (key,value) contains whitespaces', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(  key ,  value  ) in items">{{key}}:{{value}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {me:'swe', you:'set'};
+    scope.$digest();
+    expect(element.text()).toEqual('me:swe|you:set|');
+  });
+
   it('should iterate over an object/map with identical values', function() {
     element = $compile(
       '<ul>' +
