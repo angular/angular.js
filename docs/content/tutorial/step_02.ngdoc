@@ -186,7 +186,7 @@ writing tests. Although Angular does not require you to use Jasmine, we wrote al
 this tutorial in Jasmine. You can learn about Jasmine on the [Jasmine home page](http://jasmine.github.io/) and at the [Jasmine docs](http://jasmine.github.io/).
 
 The angular-seed project is pre-configured to run all unit tests using [Karma](http://karma-runner.github.io/). Ensure that the necessary karma plugins are installed.
-You can do this by issuing `npm install` into your terminal.
+You can do this by issuing `npm install` (if you are in Windows you need to run 'npm install karma-cli -g') into your terminal.
 
 
 To run the test, do the following:
