@@ -36,7 +36,8 @@
  * - `{void}` `remove({string} key)` — Removes a key-value pair from the cache.
  * - `{void}` `removeAll()` — Removes all cached values.
  * - `{void}` `destroy()` — Removes references to this cache from $cacheFactory.
- *
+ * - `{void}` `peek()` — Returns all keys in the cache.
+ * -
  */
 function $CacheFactoryProvider() {
 
@@ -126,6 +127,14 @@ function $CacheFactoryProvider() {
 
         info: function() {
           return extend({}, stats, {size: size});
+        },
+        
+        peek: function() {
+          keys = [];
+          for(var key in data) {
+            keys.push(key);
+          }
+          return keys;
         }
       };
 
