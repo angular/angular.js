@@ -1,8 +1,8 @@
 @ngdoc overview
-@name  Internet Explorer Compatibility
+@name Internet Explorer Compatibility
 @description
 
-# Overview
+# Internet Explorer Compatibility
 
 <div class="alert alert-warning">
 **Note:** AngularJS 1.3 is dropping support for IE8. Read more about it on
@@ -24,7 +24,7 @@ We do not run tests on IE8 and below. A subset of the AngularJS functionality ma
 browesers, but it is up to you to test and decide whether it works for your particular app.
 
 
-# Short Version
+## Short Version
 
 To make your Angular application work on IE please make sure that:
 
@@ -97,7 +97,7 @@ The **important** parts are:
     happy.
 
 
-# Long Version
+## Long Version
 
 IE has issues with element tag names which are not standard HTML tag names. These fall into two
 categories, and each category has its own fix.
