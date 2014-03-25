@@ -106,11 +106,11 @@
  *   -webkit-animation: enter_sequence 1s linear; /&#42; Safari/Chrome &#42;/
  *   animation: enter_sequence 1s linear; /&#42; IE10+ and Future Browsers &#42;/
  * }
- * &#64-webkit-keyframes enter_sequence {
+ * @-webkit-keyframes enter_sequence {
  *   from { opacity:0; }
  *   to { opacity:1; }
  * }
- * &#64keyframes enter_sequence {
+ * @keyframes enter_sequence {
  *   from { opacity:0; }
  *   to { opacity:1; }
  * }
