@@ -1276,7 +1276,7 @@ function angularInit(element, bootstrap) {
  * </file>
  * </example>
  *
- * @param {Element} element DOM element which is the root of angular application.
+ * @param {DOMElement} element DOM element which is the root of angular application.
  * @param {Array<String|Function|Array>=} modules an array of modules to load into the application.
  *     Each item in the array should be the name of a predefined module or a (DI annotated)
  *     function that will be invoked by the injector as a run block.
