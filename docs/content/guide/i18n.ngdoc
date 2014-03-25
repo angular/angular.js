@@ -17,9 +17,9 @@ abstracted bits.
 **What level of support for i18n/l10n is currently in Angular?**
 
 Currently, Angular supports i18n/l10n for
-[datetime](http://docs.angularjs.org/#!/api/ng.filter:date),
-[number](http://docs.angularjs.org/#!/api/ng.filter:number) and
-[currency](http://docs.angularjs.org/#!/api/ng.filter:currency) filters.
+[date](http://docs.angularjs.org/api/ng/filter/date),
+[number](http://docs.angularjs.org/api/ng/filter/number) and
+[currency](http://docs.angularjs.org/api/ng/filter/currency) filters.
 
 Additionally, Angular supports localizable pluralization support provided by the {@link
 ng.directive:ngPluralize ngPluralize directive}.
