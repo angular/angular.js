@@ -470,6 +470,10 @@ iframe.example {
   background: rgb(90, 84, 189);
 }
 
+.type-hint-domelement {
+  background: rgb(95, 158, 160);
+}
+
 .runnable-example-frame {
   width:100%;
   height:300px;
