@@ -75,7 +75,7 @@ well as the `angular-animate.js` file. The animation module, known as {@link api
 defined within `angular-animate.js` and contains the code necessary to make your application become animation
 aware.
 
-Here's what needs to changed in the index file:
+Here's what needs to be changed in the index file:
 
 __`app/index.html`.__
 
