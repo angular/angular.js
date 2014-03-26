@@ -27,7 +27,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#ngroute-has-been-moved-into-its-own-module ngRoute has been moved into its own module}</li>
   <li>{@link guide/migration#templates-no-longer-automatically-unwrap-promises Templates no longer automatically unwrap promises}</li>
   <li>{@link guide/migration#syntax-for-named-wildcard-parameters-changed-in Syntax for named wildcard parameters changed in <code>$route</code>}</li>
-  <li>{@link guide/migration#you-can-only-bind-one-expression-to You can only bind one expression to <code>*[src]</code> or <code>*[ng-src]</code>}</li>
+  <li>{@link guide/migration#you-can-only-bind-one-expression-to You can only bind one expression to <code>*[src]</code>, <code>*[ng-src]</code> or <code>action</code>}</li>
   <li>{@link guide/migration#interpolations-inside-dom-event-handlers-are-now-disallowed Interpolations inside DOM event handlers are now disallowed}</li>
   <li>{@link guide/migration#directives-cannot-end-with--start-or--end Directives cannot end with -start or -end}</li>
   <li>{@link guide/migration#in-$q,-promisealways-has-been-renamed-promisefinally In $q, promise.always has been renamed promise.finally}</li>
@@ -50,6 +50,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
   <li>{@link guide/migration#uncommon-region-specific-local-files-were-removed-from-i18n Uncommon region-specific local files were removed from i18n}</li>
   <li>{@link guide/migration#services-can-now-return-functions Services can now return functions}</li>
+  <li>{@link guide/migration#modifying-the-dom-outside-digest-cycle Modifying the DOM outside digest cycle}</li>
 </ul>
 
 
@@ -139,17 +140,18 @@ $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
 See [04cebcc1](https://github.com/angular/angular.js/commit/04cebcc133c8b433a3ac5f72ed19f3631778142b).
 
 
-## You can only bind one expression to `*[src]` or `*[ng-src]`
+## You can only bind one expression to `*[src]`, `*[ng-src]` or `action`
 
 With the exception of `<a>` and `<img>` elements, you cannot bind more than one expression to the
-`src` attribute of elements.
+`src` or `action` attribute of elements.
 
 This is one of several improvements to security introduces by Angular 1.2.
 
 Concatenating expressions makes it hard to understand whether some combination of concatenated
 values are unsafe to use and potentially subject to XSS vulnerabilities. To simplify the task of
 auditing for XSS issues, we now require that a single expression be used for `*[src/ng-src]`
-bindings such as bindings for `iframe[src]`, `object[src]`, etc.
+bindings such as bindings for `iframe[src]`, `object[src]`, etc. In addition, this requirement is
+enforced for `form` tags with `action` attributes.
 
 <table class="table table-bordered code-table">
 <thead>
@@ -542,9 +544,45 @@ See [1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d612868
 
 ## Isolate scope only exposed to directives with `scope` property
 
-Directives without isolate scope do not get the isolate scope from an isolate directive on the
-same element. If your code depends on this behavior (non-isolate directive needs to access state
-from within the isolate scope), change the isolate directive to use scope locals to pass these explicitly.
+If you declare a scope option on a directive, that directive will have an
+[isolate scope](https://github.com/angular/angular.js/wiki/Understanding-Scopes). In Angular 1.0, if a
+directive with an isolate scope is used on an element, all directives on that same element have access
+to the same isolate scope. For example, say we have the following directives:
+
+```
+// This directive declares an isolate scope.
+.directive('isolateScope', function() {
+  return {
+    scope: {},
+    link: function($scope) {
+      console.log('one = ' + $scope.$id);
+    }
+  };
+})
+
+// This directive does not.
+.directive('nonIsolateScope', function() {
+  return {
+    link: function($scope) {
+      console.log('two = ' + $scope.$id);
+    }
+  };
+});
+```
+
+Now what happens if we use both directives on the same element?
+
+```
+<div isolate-scope non-isolate-scope></div>
+```
+
+In Angular 1.0, the nonIsolateScope directive will have access to the isolateScope directive’s scope. The
+log statements will print the same id, because the scope is the same. But in Angular 1.2, the nonIsolateScope
+will not use the same scope as isolateScope. Instead, it will inherit the parent scope. The log statements
+will print different id’s.
+
+If your code depends on the Angular 1.0 behavior (non-isolate directive needs to access state
+from within the isolate scope), change the isolate directive to use scope locals to pass these explicitly:
 
 **Before**
 
