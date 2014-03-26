@@ -40,10 +40,10 @@
  * restating the styles for the .ng-hide class in CSS:
  * ```css
  * .ng-hide {
- *   //!annotate CSS Specificity|Not to worry, this will override the AngularJS default...
+ *   /&#42; Not to worry, this will override the AngularJS default...
  *   display:block!important;
  *
- *   //this is just another form of hiding an element
+ *   /&#42; this is just another form of hiding an element &#42;/
  *   position:absolute;
  *   top:-9999px;
  *   left:-9999px;
@@ -69,8 +69,18 @@
  * //a working example can be found at the bottom of this page
  * //
  * .my-element.ng-hide-add, .my-element.ng-hide-remove {
- *   transition:0.5s linear all;
+ *   /&#42; this is required as of 1.3x to properly
+ *      apply all styling in a show/hide animation &#42;/
+ *   transition:0s linear all;
+ *
+ *   /&#42; this must be set as block so the animation is visible &#42;/
  *   display:block!important;
+ * }
+ *
+ * .my-element.ng-hide-add-active,
+ * .my-element.ng-hide-remove-active {
+ *   /&#42; the transition is defined in the active class &#42;/
+ *   transition:1s linear all;
  * }
  *
  * .my-element.ng-hide-add { ... }
@@ -109,8 +119,6 @@
     </file>
     <file name="animations.css">
       .animate-show {
-        -webkit-transition:all linear 0.5s;
-        transition:all linear 0.5s;
         line-height:20px;
         opacity:1;
         padding:10px;
@@ -121,6 +129,12 @@
       .animate-show.ng-hide-add,
       .animate-show.ng-hide-remove {
         display:block!important;
+      }
+
+      .animate-show.ng-hide-add.ng-hide-add-active,
+      .animate-show.ng-hide-remove.ng-hide-remove-active {
+        -webkit-transition:all linear 0.5s;
+        transition:all linear 0.5s;
       }
 
       .animate-show.ng-hide {
