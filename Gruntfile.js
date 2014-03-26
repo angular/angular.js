@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = versionInfo.currentVersion;
-  NG_VERSION.cdn = versionInfo.currentPackage.cdnVersion;
+  NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-'+ NG_VERSION.full;
 
   //global beforeEach
