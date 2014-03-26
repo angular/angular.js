@@ -309,7 +309,7 @@ describe('ngClass animations', function() {
   var body, element, $rootElement;
 
   it("should avoid calling addClass accidentally when removeClass is going on", function() {
-    module('mock.animate');
+    module('ngAnimateMock');
     inject(function($compile, $rootScope, $animate, $timeout) {
       var element = angular.element('<div ng-class="val"></div>');
       var body = jqLite(document.body);
@@ -320,23 +320,22 @@ describe('ngClass animations', function() {
 
       $rootScope.val = 'one';
       $rootScope.$digest();
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = '';
       $rootScope.$digest();
-      $animate.flushNext('removeClass'); //only removeClass is called
+      expect($animate.queue.shift().event).toBe('removeClass'); //only removeClass is called
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = 'one';
       $rootScope.$digest();
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = 'two';
       $rootScope.$digest();
-      $animate.flushNext('removeClass');
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('setClass');
       expect($animate.queue.length).toBe(0);
     });
   });
@@ -346,6 +345,7 @@ describe('ngClass animations', function() {
     //mocks are not used since the enter delegation method is called before addClass and
     //it makes it impossible to test to see that addClass is called first
     module('ngAnimate');
+    module('ngAnimateMock');
 
     var digestQueue = [];
     module(function($animateProvider) {
@@ -368,7 +368,7 @@ describe('ngClass animations', function() {
         };
       };
     });
-    inject(function($compile, $rootScope, $rootElement, $animate, $timeout, $document) {
+    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $document) {
 
       // Enable animations by triggering the first item in the postDigest queue
       digestQueue.shift()();
@@ -408,7 +408,7 @@ describe('ngClass animations', function() {
       //is spaced-out then it is required so that the original digestion
       //is kicked into gear
       $rootScope.$digest();
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       expect(element.data('state')).toBe('crazy-enter');
       expect(enterComplete).toBe(true);
@@ -416,7 +416,7 @@ describe('ngClass animations', function() {
   });
 
   it("should not remove classes if they're going to be added back right after", function() {
-    module('mock.animate');
+    module('ngAnimateMock');
 
     inject(function($rootScope, $compile, $animate) {
       var className;
@@ -430,16 +430,18 @@ describe('ngClass animations', function() {
       $rootScope.$digest();
 
       //this fires twice due to the class observer firing
-      className = $animate.flushNext('addClass').params[1];
-      expect(className).toBe('one two three');
+      var item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.args[1]).toBe('one two three');
 
       expect($animate.queue.length).toBe(0);
 
       $rootScope.three = false;
       $rootScope.$digest();
 
-      className = $animate.flushNext('removeClass').params[1];
-      expect(className).toBe('three');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.args[1]).toBe('three');
 
       expect($animate.queue.length).toBe(0);
 
@@ -447,11 +449,10 @@ describe('ngClass animations', function() {
       $rootScope.three = true;
       $rootScope.$digest();
 
-      className = $animate.flushNext('removeClass').params[1];
-      expect(className).toBe('two');
-
-      className = $animate.flushNext('addClass').params[1];
-      expect(className).toBe('three');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('setClass');
+      expect(item.args[1]).toBe('three');
+      expect(item.args[2]).toBe('two');
 
       expect($animate.queue.length).toBe(0);
     });

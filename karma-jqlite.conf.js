@@ -5,7 +5,12 @@ module.exports = function(config) {
   sharedConfig(config, {testName: 'AngularJS: jqLite', logFile: 'karma-jqlite.log'});
 
   config.set({
-    files: angularFiles.mergeFilesFor('karma'),
+    files: angularFiles.mergeFilesFor('karma').concat({
+      pattern: "test/fixtures/**/*.html",
+      served: true,
+      watched: true,
+      included: false
+    }),
     exclude: angularFiles.mergeFilesFor('karmaExclude'),
 
     junitReporter: {

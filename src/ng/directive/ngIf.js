@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngIf
+ * @name ngIf
  * @restrict A
  *
  * @description
@@ -19,7 +19,7 @@
  * Note that when an element is removed using `ngIf` its scope is destroyed and a new scope
  * is created when the element is restored.  The scope created within `ngIf` inherits from
  * its parent scope using
- * {@link https://github.com/angular/angular.js/wiki/The-Nuances-of-Scope-Prototypal-Inheritance prototypal inheritance}.
+ * [prototypal inheritance](https://github.com/angular/angular.js/wiki/The-Nuances-of-Scope-Prototypal-Inheritance).
  * An important implication of this is if `ngModel` is used within `ngIf` to bind to
  * a javascript primitive defined in the parent scope. In this case any modifications made to the
  * variable within the child scope will override (hide) the value in the parent scope.
@@ -44,7 +44,7 @@
  *     element is added to the DOM tree.
  *
  * @example
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
       Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
       Show when checked:
@@ -59,9 +59,6 @@
         padding:10px;
       }
 
-      /&#42;
-        The transition styles can also be placed on the CSS base class above
-      &#42;/
       .animate-if.ng-enter, .animate-if.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -87,7 +84,7 @@ var ngIfDirective = ['$animate', function($animate) {
     restrict: 'A',
     $$tlb: true,
     link: function ($scope, $element, $attr, ctrl, $transclude) {
-        var block, childScope;
+        var block, childScope, previousElements;
         $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
 
           if (toBoolean(value)) {
@@ -105,14 +102,19 @@ var ngIfDirective = ['$animate', function($animate) {
               });
             }
           } else {
-
-            if (childScope) {
+            if(previousElements) {
+              previousElements.remove();
+              previousElements = null;
+            }
+            if(childScope) {
               childScope.$destroy();
               childScope = null;
             }
-
-            if (block) {
-              $animate.leave(getBlockElements(block.clone));
+            if(block) {
+              previousElements = getBlockElements(block.clone);
+              $animate.leave(previousElements, function() {
+                previousElements = null;
+              });
               block = null;
             }
           }

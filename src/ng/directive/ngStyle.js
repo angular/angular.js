@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngStyle
+ * @name ngStyle
  * @restrict AC
  *
  * @description
@@ -27,13 +27,15 @@
          color: black;
        }
      </file>
-     <file name="scenario.js">
+     <file name="protractor.js" type="protractor">
+       var colorSpan = element(by.css('span'));
+
        it('should check ng-style', function() {
-         expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
-         element('.doc-example-live :button[value=set]').click();
-         expect(element('.doc-example-live span').css('color')).toBe('rgb(255, 0, 0)');
-         element('.doc-example-live :button[value=clear]').click();
-         expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
+         expect(colorSpan.getCssValue('color')).toBe('rgba(0, 0, 0, 1)');
+         element(by.css('input[value=set]')).click();
+         expect(colorSpan.getCssValue('color')).toBe('rgba(255, 0, 0, 1)');
+         element(by.css('input[value=clear]')).click();
+         expect(colorSpan.getCssValue('color')).toBe('rgba(0, 0, 0, 1)');
        });
      </file>
    </example>

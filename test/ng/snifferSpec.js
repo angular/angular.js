@@ -332,10 +332,8 @@ describe('$sniffer', function() {
         expect($sniffer.history).toBe(false);
       });
     });
-  });
 
-  describe('history', function() {
-      it('should be false on Webkit versions older then 534.x.x', function() {
+    it('should be false on Webkit versions older then 534.x.x', function() {
           module(function($provide) {
               var doc = {
                   body : {
@@ -357,6 +355,21 @@ describe('$sniffer', function() {
               expect($sniffer.history).toBe(false);
           });
       });
+  });
+
+  it('should provide the android version', function() {
+    module(function($provide) {
+      var win = {
+        navigator: {
+          userAgent: 'android 2'
+        }
+      };
+      $provide.value('$document', jqLite({}));
+      $provide.value('$window', win);
+    });
+    inject(function($sniffer) {
+      expect($sniffer.android).toBe(2);
+    });
   });
 
   it('should return the internal msie flag', inject(function($sniffer) {

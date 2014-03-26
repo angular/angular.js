@@ -94,6 +94,49 @@ describe("resource", function() {
   });
 
 
+  describe('shallow copy', function() {
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowClearAndCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+
+
+    it('should omit "$$"-prefixed properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
+
+
+    it('should copy "$"-prefixed properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
+
+
+    it('should omit properties from prototype chain', function() {
+      var original, clone = {};
+      function Func() {};
+      Func.prototype.hello = "world";
+
+      original = new Func();
+      original.goodbye = "world";
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.hello).toBeUndefined();
+      expect(clone.goodbye).toBe("world");
+    });
+  });
+
+
   it('should default to empty parameters', function() {
     $httpBackend.expect('GET', 'URL').respond({});
     $resource('URL').query();
@@ -150,6 +193,13 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
+  it('should not collapsed the url into an empty string', function() {
+    var R = $resource('/:foo/:bar/');
+
+    $httpBackend.when('GET', '/').respond('{}');
+
+    R.get({});
+  });
 
   it('should support escaping colons in url template', function() {
     var R = $resource('http://localhost\\:8080/Path/:a/\\:stillPath/:b');
@@ -171,9 +221,11 @@ describe("resource", function() {
 
     $httpBackend.expect('GET', '/Path/foo%231').respond('{}');
     $httpBackend.expect('GET', '/Path/doh!@foo?bar=baz%231').respond('{}');
+    $httpBackend.expect('GET', '/Path/herp$').respond('{}');
 
     R.get({a: 'foo#1'});
     R.get({a: 'doh!@foo', bar: 'baz#1'});
+    R.get({a: 'herp$'});
   });
 
 
@@ -278,7 +330,7 @@ describe("resource", function() {
 
 
   it('should not throw TypeError on null default params', function() {
-    $httpBackend.expect('GET', '/Path?').respond('{}');
+    $httpBackend.expect('GET', '/Path').respond('{}');
     var R = $resource('/Path', {param: null}, {get: {method: 'GET'}});
 
     expect(function() {

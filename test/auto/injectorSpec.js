@@ -74,6 +74,17 @@ describe('injector', function() {
   });
 
 
+  it('should not corrupt the cache when an object fails to get instantiated', function() {
+    expect(function() {
+      injector.get('idontexist');
+    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist");
+
+    expect(function() {
+      injector.get('idontexist');
+    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist");
+  });
+
+
   it('should provide path to the missing provider', function() {
     providers('a', function(idontexist) {return 1;});
     providers('b', function(a) {return 2;});
@@ -152,7 +163,7 @@ describe('injector', function() {
       function $f_n0 /*
           */(
           $a, // x, <-- looks like an arg but it is a comment
-          b_ , /* z, <-- looks like an arg but it is a
+          b_, /* z, <-- looks like an arg but it is a
                  multi-line comment
                  function (a, b) {}
                  */

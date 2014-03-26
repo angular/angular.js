@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name ng.$controllerProvider
+ * @ngdoc provider
+ * @name $controllerProvider
  * @description
  * The {@link ng.$controller $controller service} is used by Angular to create new
  * controllers.
  *
  * This provider allows controller registration via the
- * {@link ng.$controllerProvider#methods_register register} method.
+ * {@link ng.$controllerProvider#register register} method.
  */
 function $ControllerProvider() {
   var controllers = {},
@@ -16,9 +16,8 @@ function $ControllerProvider() {
 
 
   /**
-   * @ngdoc function
-   * @name ng.$controllerProvider#register
-   * @methodOf ng.$controllerProvider
+   * @ngdoc method
+   * @name $controllerProvider#register
    * @param {string|Object} name Controller name, or an object map of controllers where the keys are
    *    the names and the values are the constructors.
    * @param {Function|Array} constructor Controller constructor fn (optionally decorated with DI
@@ -37,8 +36,8 @@ function $ControllerProvider() {
   this.$get = ['$injector', '$window', function($injector, $window) {
 
     /**
-     * @ngdoc function
-     * @name ng.$controller
+     * @ngdoc service
+     * @name $controller
      * @requires $injector
      *
      * @param {Function|string} constructor If called with a function then it's considered to be the
@@ -55,9 +54,8 @@ function $ControllerProvider() {
      * @description
      * `$controller` service is responsible for instantiating controllers.
      *
-     * It's just a simple call to {@link AUTO.$injector $injector}, but extracted into
-     * a service, so that one can override this service with {@link https://gist.github.com/1649788
-     * BC version}.
+     * It's just a simple call to {@link auto.$injector $injector}, but extracted into
+     * a service, so that one can override this service with [BC version](https://gist.github.com/1649788).
      */
     return function(expression, locals) {
       var instance, match, constructor, identifier;

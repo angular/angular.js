@@ -204,13 +204,24 @@ describe('parser', function() {
 
       describe('csp: ' + cspEnabled + ", unwrapPromises: " + unwrapPromisesEnabled, function() {
 
-        beforeEach(module(function ($parseProvider) {
+        var originalSecurityPolicy;
+
+
+        beforeEach(function() {
+          originalSecurityPolicy = window.document.securityPolicy;
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+        afterEach(function() {
+          window.document.securityPolicy = originalSecurityPolicy;
+        });
+
+        beforeEach(module(function ($parseProvider, $provide) {
           $parseProvider.unwrapPromises(unwrapPromisesEnabled);
         }));
 
-        beforeEach(inject(function ($rootScope, $sniffer) {
+        beforeEach(inject(function ($rootScope) {
           scope = $rootScope;
-          $sniffer.csp = cspEnabled;
         }));
 
         it('should parse expressions', function() {
@@ -344,6 +355,27 @@ describe('parser', function() {
           expect(scope.$eval("a.b.c.d.e.f.g.h.i.j.k.l.m.n", scope)).toBe('nooo!');
         });
 
+        forEach([2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 42, 99], function(pathLength) {
+          it('should resolve nested paths of length ' + pathLength, function() {
+            // Create a nested object {x2: {x3: {x4: ... {x[n]: 42} ... }}}.
+            var obj = 42, locals = {};
+            for (var i = pathLength; i >= 2; i--) {
+              var newObj = {};
+              newObj['x' + i] = obj;
+              obj = newObj;
+            }
+            // Assign to x1 and build path 'x1.x2.x3. ... .x[n]' to access the final value.
+            scope.x1 = obj;
+            var path = 'x1';
+            for (var i = 2; i <= pathLength; i++) {
+              path += '.x' + i;
+            }
+            expect(scope.$eval(path)).toBe(42);
+            locals['x' + pathLength] = 'not 42'
+            expect(scope.$eval(path, locals)).toBe(42);
+          });
+        });
+
         it('should be forgiving', function() {
           scope.a = {b: 23};
           expect(scope.$eval('b')).toBeUndefined();
@@ -428,6 +460,8 @@ describe('parser', function() {
           expect(scope.$eval("[1, 2]").length).toEqual(2);
           expect(scope.$eval("[1, 2]")[0]).toEqual(1);
           expect(scope.$eval("[1, 2]")[1]).toEqual(2);
+          expect(scope.$eval("[1, 2,]")[1]).toEqual(2);
+          expect(scope.$eval("[1, 2,]").length).toEqual(2);
         });
 
         it('should evaluate array access', function() {
@@ -442,6 +476,9 @@ describe('parser', function() {
           expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
           expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
           expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{a:'b',}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{'a':'b',}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{\"a\":'b',}"))).toEqual('{"a":"b"}');
         });
 
         it('should evaluate object access', function() {
@@ -754,6 +791,28 @@ describe('parser', function() {
                       '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
                       'disallowed! Expression: a.b.doc.on("click")');
             }));
+
+            // Issue #4805
+            it('should NOT throw isecdom when referencing a Backbone Collection', function() {
+              // Backbone stuff is sort of hard to mock, if you have a better way of doing this,
+              // please fix this.
+              var fakeBackboneCollection = {
+                children: [{}, {}, {}],
+                find: function() {},
+                on: function() {},
+                off: function() {},
+                bind: function() {}
+              };
+              scope.backbone = fakeBackboneCollection;
+              expect(function() { scope.$eval('backbone'); }).not.toThrow();
+            });
+
+            it('should NOT throw isecdom when referencing an array with node properties', function() {
+              var array = [1,2,3];
+              array.on = array.attr = array.prop = array.bind = true;
+              scope.array = array;
+              expect(function() { scope.$eval('array'); }).not.toThrow();
+            });
           });
         });
 
@@ -906,6 +965,14 @@ describe('parser', function() {
             expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+            expect($parse('a.b.c')({a: null}, {a: {b: {c: 1}}})).toEqual(1);
+          }));
+
+          it('should not use locals to resolve object properties', inject(function($parse) {
+            expect($parse('a[0].b')({a: [ {b : 'scope'} ]}, {b : 'locals'})).toBe('scope');
+            expect($parse('a[0]["b"]')({a: [ {b : 'scope'} ]}, {b : 'locals'})).toBe('scope');
+            expect($parse('a[0][0].b')({a: [[{b : 'scope'}]]}, {b : 'locals'})).toBe('scope');
+            expect($parse('a[0].b.c')({a: [ {b: {c: 'scope'}}] }, {b : {c: 'locals'} })).toBe('scope');
           }));
         });
 
@@ -976,6 +1043,55 @@ describe('parser', function() {
             expect($parse('"name" + id').constant).toBe(false);
           }));
         });
+
+        describe('nulls in expressions', function() {
+          // simpleGetterFn1
+          it('should return null for `a` where `a` is null', inject(function($rootScope) {
+            $rootScope.a = null;
+            expect($rootScope.$eval('a')).toBe(null);
+          }));
+
+          it('should return undefined for `a` where `a` is undefined', inject(function($rootScope) {
+            expect($rootScope.$eval('a')).toBeUndefined();
+          }));
+
+          // simpleGetterFn2
+          it('should return undefined for properties of `null` constant', inject(function($rootScope) {
+            expect($rootScope.$eval('null.a')).toBeUndefined();
+          }));
+
+          it('should return undefined for properties of `null` values', inject(function($rootScope) {
+            $rootScope.a = null;
+            expect($rootScope.$eval('a.b')).toBeUndefined();
+          }));
+
+          it('should return null for `a.b` where `b` is null', inject(function($rootScope) {
+            $rootScope.a = { b: null };
+            expect($rootScope.$eval('a.b')).toBe(null);
+          }));
+
+          // cspSafeGetter && pathKeys.length < 6 || pathKeys.length > 2
+          it('should return null for `a.b.c.d.e` where `e` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: { e: null } } } };
+            expect($rootScope.$eval('a.b.c.d.e')).toBe(null);
+          }));
+
+          it('should return undefined for `a.b.c.d.e` where `d` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: null } } };
+            expect($rootScope.$eval('a.b.c.d.e')).toBeUndefined();
+          }));
+
+          // cspSafeGetter || pathKeys.length > 6
+          it('should return null for `a.b.c.d.e.f.g` where `g` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: { e: { f: { g: null } } } } } };
+            expect($rootScope.$eval('a.b.c.d.e.f.g')).toBe(null);
+          }));
+
+          it('should return undefined for `a.b.c.d.e.f.g` where `f` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: { e: { f: null } } } } };
+            expect($rootScope.$eval('a.b.c.d.e.f.g')).toBeUndefined();
+          }));
+        });
       });
     });
   });
@@ -1019,6 +1135,17 @@ describe('parser', function() {
 
         var $log;
         var PROMISE_WARNING_REGEXP = /\[\$parse\] Promise found in the expression `[^`]+`. Automatic unwrapping of promises in Angular expressions is deprecated\./;
+        var originalSecurityPolicy;
+
+
+        beforeEach(function() {
+          originalSecurityPolicy = window.document.securityPolicy;
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+        afterEach(function() {
+          window.document.securityPolicy = originalSecurityPolicy;
+        });
 
         beforeEach(module(function($parseProvider) {
           $parseProvider.unwrapPromises(true);
@@ -1092,15 +1219,27 @@ describe('parser', function() {
 
       describe('csp ' + cspEnabled, function() {
 
+        var originalSecurityPolicy;
+
+
+        beforeEach(function() {
+          originalSecurityPolicy = window.document.securityPolicy;
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+        afterEach(function() {
+          window.document.securityPolicy = originalSecurityPolicy;
+        });
+
+
         beforeEach(module(function($parseProvider) {
           $parseProvider.unwrapPromises(true);
           $parseProvider.logPromiseWarnings(false);
         }));
 
 
-        beforeEach(inject(function($rootScope, $sniffer, $q) {
+        beforeEach(inject(function($rootScope, $q) {
           scope = $rootScope;
-          $sniffer.csp = cspEnabled;
 
           q = $q;
           deferred = q.defer();
@@ -1222,7 +1361,7 @@ describe('parser', function() {
             }));
 
 
-            it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
+            it('should evaluate a resolved promise and overwrite the previous set value in the absence of the getter',
                 inject(function($parse) {
               scope.person = promise;
               var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });

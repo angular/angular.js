@@ -1,0 +1,26 @@
+@ngdoc error
+@name $sce:insecurl
+@fullName Processing of a Resource from Untrusted Source Blocked
+@description
+
+AngularJS' {@link ng.$sce Strict Contextual Escaping (SCE)} mode (enabled by default) has blocked loading a resource from an insecure URL.
+
+Typically, this would occur if you're attempting to load an Angular template from an untrusted source.
+It's also possible that a custom directive threw this error for a similar reason.
+
+Angular only loads templates from trusted URLs (by calling {@link ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl} on the template URL).
+
+By default, only URLs that belong to the same origin are trusted. These are urls with the same domain, protocol and port as the application document.
+
+The {@link ng.directive:ngInclude ngInclude} directive and {@link guide/directive directives} that specify a `templateUrl` require a trusted resource URL.
+
+To load templates from other domains and/or protocols, either adjust the {@link
+api/ng.$sceDelegateProvider#resourceUrlWhitelist whitelist}/ {@link
+api/ng.$sceDelegateProvider#resourceUrlBlacklist blacklist} or wrap the URL with a call to {@link
+api/ng.$sce#trustAsResourceUrl $sce.trustAsResourceUrl}.
+
+**Note**: The browser's [Same Origin
+Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest) and
+[Cross-Origin Resource Sharing (CORS)](http://www.w3.org/TR/cors/) policy apply
+that may further restrict whether the template is successfully loaded.  (e.g.  neither cross-domain
+requests won't work on all browsers nor `file://` requests on some browsers)

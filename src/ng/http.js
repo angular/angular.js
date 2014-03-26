@@ -63,7 +63,7 @@ function headersGetter(headers) {
  *
  * @param {*} data Data to transform.
  * @param {function(string=)} headers Http headers getter fn.
- * @param {(function|Array.<function>)} fns Function or an array of functions.
+ * @param {(Function|Array.<Function>)} fns Function or an array of functions.
  * @returns {*} Transformed data.
  */
 function transformData(data, headers, fns) {
@@ -103,7 +103,7 @@ function $HttpProvider() {
 
     // transform outgoing request data
     transformRequest: [function(d) {
-      return isObject(d) && !isFile(d) ? toJson(d) : d;
+      return isObject(d) && !isFile(d) && !isBlob(d) ? toJson(d) : d;
     }],
 
     // default headers
@@ -111,9 +111,9 @@ function $HttpProvider() {
       common: {
         'Accept': 'application/json, text/plain, */*'
       },
-      post:   CONTENT_TYPE_APPLICATION_JSON,
-      put:    CONTENT_TYPE_APPLICATION_JSON,
-      patch:  CONTENT_TYPE_APPLICATION_JSON
+      post:   copy(CONTENT_TYPE_APPLICATION_JSON),
+      put:    copy(CONTENT_TYPE_APPLICATION_JSON),
+      patch:  copy(CONTENT_TYPE_APPLICATION_JSON)
     },
 
     xsrfCookieName: 'XSRF-TOKEN',
@@ -171,10 +171,10 @@ function $HttpProvider() {
 
 
     /**
-     * @ngdoc function
-     * @name ng.$http
-     * @requires $httpBackend
-     * @requires $browser
+     * @ngdoc service
+     * @kind function
+     * @name $http
+     * @requires ng.$httpBackend
      * @requires $cacheFactory
      * @requires $rootScope
      * @requires $q
@@ -182,8 +182,8 @@ function $HttpProvider() {
      *
      * @description
      * The `$http` service is a core Angular service that facilitates communication with the remote
-     * HTTP servers via the browser's {@link https://developer.mozilla.org/en/xmlhttprequest
-     * XMLHttpRequest} object or via {@link http://en.wikipedia.org/wiki/JSONP JSONP}.
+     * HTTP servers via the browser's [XMLHttpRequest](https://developer.mozilla.org/en/xmlhttprequest)
+     * object or via [JSONP](http://en.wikipedia.org/wiki/JSONP).
      *
      * For unit testing applications that use `$http` service, see
      * {@link ngMock.$httpBackend $httpBackend mock}.
@@ -201,7 +201,7 @@ function $HttpProvider() {
      * that is used to generate an HTTP request and returns  a {@link ng.$q promise}
      * with two $http specific methods: `success` and `error`.
      *
-     * <pre>
+     * ```js
      *   $http({method: 'GET', url: '/someUrl'}).
      *     success(function(data, status, headers, config) {
      *       // this callback will be called asynchronously
@@ -211,7 +211,7 @@ function $HttpProvider() {
      *       // called asynchronously if an error occurs
      *       // or server returns response with an error status.
      *     });
-     * </pre>
+     * ```
      *
      * Since the returned value of calling the $http function is a `promise`, you can also use
      * the `then` method to register callbacks, and these callbacks will receive a single argument –
@@ -222,54 +222,36 @@ function $HttpProvider() {
      * will result in the success callback being called. Note that if the response is a redirect,
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
-     * 
-     * # Calling $http from outside AngularJS
-     * The `$http` service will not actually send the request until the next `$digest()` is
-     * executed. Normally this is not an issue, since almost all the time your call to `$http` will
-     * be from within a `$apply()` block.
-     * If you are calling `$http` from outside Angular, then you should wrap it in a call to
-     * `$apply` to cause a $digest to occur and also to handle errors in the block correctly.
-     *
-     * ```
-     * $scope.$apply(function() {
-     *   $http(...);
-     * });
-     * ```
      *
      * # Writing Unit Tests that use $http
-     * When unit testing you are mostly responsible for scheduling the `$digest` cycle. If you do
-     * not trigger a `$digest` before calling `$httpBackend.flush()` then the request will not have
-     * been made and `$httpBackend.expect(...)` expectations will fail.  The solution is to run the
-     * code that calls the `$http()` method inside a $apply block as explained in the previous
-     * section.
+     * When unit testing (using {@link ngMock ngMock}), it is necessary to call
+     * {@link ngMock.$httpBackend#flush $httpBackend.flush()} to flush each pending
+     * request using trained responses.
      *
      * ```
      * $httpBackend.expectGET(...);
-     * $scope.$apply(function() {
-     *   $http.get(...);
-     * });
+     * $http.get(...);
      * $httpBackend.flush();
      * ```
      *
      * # Shortcut methods
      *
-     * Since all invocations of the $http service require passing in an HTTP method and URL, and
-     * POST/PUT requests require request data to be provided as well, shortcut methods
-     * were created:
+     * Shortcut methods are also available. All shortcut methods require passing in the URL, and
+     * request data must be passed in for POST/PUT requests.
      *
-     * <pre>
+     * ```js
      *   $http.get('/someUrl').success(successCallback);
      *   $http.post('/someUrl', data).success(successCallback);
-     * </pre>
+     * ```
      *
      * Complete list of shortcut methods:
      *
-     * - {@link ng.$http#methods_get $http.get}
-     * - {@link ng.$http#methods_head $http.head}
-     * - {@link ng.$http#methods_post $http.post}
-     * - {@link ng.$http#methods_put $http.put}
-     * - {@link ng.$http#methods_delete $http.delete}
-     * - {@link ng.$http#methods_jsonp $http.jsonp}
+     * - {@link ng.$http#get $http.get}
+     * - {@link ng.$http#head $http.head}
+     * - {@link ng.$http#post $http.post}
+     * - {@link ng.$http#put $http.put}
+     * - {@link ng.$http#delete $http.delete}
+     * - {@link ng.$http#jsonp $http.jsonp}
      *
      *
      * # Setting HTTP Headers
@@ -291,7 +273,15 @@ function $HttpProvider() {
      * `$httpProvider.defaults.headers.get = { 'My-Header' : 'value' }.
      *
      * The defaults can also be set at runtime via the `$http.defaults` object in the same
-     * fashion. In addition, you can supply a `headers` property in the config object passed when
+     * fashion. For example:
+     *
+     * ```
+     * module.run(function($http) {
+     *   $http.defaults.headers.common.Authentication = 'Basic YmVlcDpib29w'
+     * });
+     * ```
+     *
+     * In addition, you can supply a `headers` property in the config object passed when
      * calling `$http(config)`, which overrides the defaults without changing them globally.
      *
      *
@@ -315,7 +305,9 @@ function $HttpProvider() {
      * properties. These properties are by default an array of transform functions, which allows you
      * to `push` or `unshift` a new transformation function into the transformation chain. You can
      * also decide to completely override any default transformations by assigning your
-     * transformation functions to these properties directly without the array wrapper.
+     * transformation functions to these properties directly without the array wrapper.  These defaults
+     * are again available on the $http factory at run-time, which may be useful if you have run-time
+     * services you wish to be involved in your transformations.
      *
      * Similarly, to locally override the request/response transforms, augment the
      * `transformRequest` and/or `transformResponse` properties of the configuration object passed
@@ -375,7 +367,7 @@ function $HttpProvider() {
      *     resolved with a rejection.
      *
      *
-     * <pre>
+     * ```js
      *   // register the interceptor as a service
      *   $provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
      *     return {
@@ -409,25 +401,26 @@ function $HttpProvider() {
      *           return responseOrNewPromise
      *         }
      *         return $q.reject(rejection);
-     *       };
-     *     }
+     *       }
+     *     };
      *   });
      *
      *   $httpProvider.interceptors.push('myHttpInterceptor');
      *
      *
-     *   // register the interceptor via an anonymous factory
+     *   // alternatively, register the interceptor via an anonymous factory
      *   $httpProvider.interceptors.push(function($q, dependency1, dependency2) {
      *     return {
      *      'request': function(config) {
      *          // same as above
      *       },
+     *
      *       'response': function(response) {
      *          // same as above
      *       }
      *     };
      *   });
-     * </pre>
+     * ```
      *
      * # Response interceptors (DEPRECATED)
      *
@@ -445,7 +438,7 @@ function $HttpProvider() {
      * injected with dependencies (if specified) and returns the interceptor  — a function that
      * takes a {@link ng.$q promise} and returns the original or a new promise.
      *
-     * <pre>
+     * ```js
      *   // register the interceptor as a service
      *   $provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
      *     return function(promise) {
@@ -471,16 +464,15 @@ function $HttpProvider() {
      *       // same as above
      *     }
      *   });
-     * </pre>
+     * ```
      *
      *
      * # Security Considerations
      *
      * When designing web applications, consider security threats from:
      *
-     * - {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
-     *   JSON vulnerability}
-     * - {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF}
+     * - [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx)
+     * - [XSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery)
      *
      * Both server and the client must cooperate in order to eliminate these threats. Angular comes
      * pre-configured with strategies that address these issues, but for this to work backend server
@@ -488,29 +480,29 @@ function $HttpProvider() {
      *
      * ## JSON Vulnerability Protection
      *
-     * A {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
-     * JSON vulnerability} allows third party website to turn your JSON resource URL into
-     * {@link http://en.wikipedia.org/wiki/JSONP JSONP} request under some conditions. To
+     * A [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx)
+     * allows third party website to turn your JSON resource URL into
+     * [JSONP](http://en.wikipedia.org/wiki/JSONP) request under some conditions. To
      * counter this your server can prefix all JSON requests with following string `")]}',\n"`.
      * Angular will automatically strip the prefix before processing it as JSON.
      *
      * For example if your server needs to return:
-     * <pre>
+     * ```js
      * ['one','two']
-     * </pre>
+     * ```
      *
      * which is vulnerable to attack, your server can return:
-     * <pre>
+     * ```js
      * )]}',
      * ['one','two']
-     * </pre>
+     * ```
      *
      * Angular will strip the prefix, before processing the JSON.
      *
      *
      * ## Cross Site Request Forgery (XSRF) Protection
      *
-     * {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF} is a technique by which
+     * [XSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery) is a technique by which
      * an unauthorized site can gain your user's private data. Angular provides a mechanism
      * to counter XSRF. When performing XHR requests, the $http service reads a token from a cookie
      * (by default, `XSRF-TOKEN`) and sets it as an HTTP header (`X-XSRF-TOKEN`). Since only
@@ -524,11 +516,12 @@ function $HttpProvider() {
      * that only JavaScript running on your domain could have sent the request. The token must be
      * unique for each user and must be verifiable by the server (to prevent the JavaScript from
      * making up its own tokens). We recommend that the token is a digest of your site's
-     * authentication cookie with a {@link https://en.wikipedia.org/wiki/Salt_(cryptography) salt}
+     * authentication cookie with a [salt](https://en.wikipedia.org/wiki/Salt_(cryptography))
      * for added security.
      *
      * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
-     * properties of either $httpProvider.defaults, or the per-request config object.
+     * properties of either $httpProvider.defaults at config-time, $http.defaults at run-time,
+     * or the per-request config object.
      *
      *
      * @param {object} config Object describing the request to be made and how it should be
@@ -560,10 +553,10 @@ function $HttpProvider() {
      *    - **timeout** – `{number|Promise}` – timeout in milliseconds, or {@link ng.$q promise}
      *      that should abort the request when resolved.
      *    - **withCredentials** - `{boolean}` - whether to to set the `withCredentials` flag on the
-     *      XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
-     *      requests with credentials} for more information.
-     *    - **responseType** - `{string}` - see {@link
-     *      https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
+     *      XHR object. See [requests with credentials]https://developer.mozilla.org/en/http_access_control#section_5
+     *      for more information.
+     *    - **responseType** - `{string}` - see
+     *      [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -592,14 +585,14 @@ function $HttpProvider() {
       <option>JSONP</option>
     </select>
     <input type="text" ng-model="url" size="80"/>
-    <button ng-click="fetch()">fetch</button><br>
-    <button ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
-    <button
+    <button id="fetchbtn" ng-click="fetch()">fetch</button><br>
+    <button id="samplegetbtn" ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
+    <button id="samplejsonpbtn"
       ng-click="updateModel('JSONP',
                     'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">
       Sample JSONP
     </button>
-    <button
+    <button id="invalidjsonpbtn"
       ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">
         Invalid JSONP
       </button>
@@ -636,33 +629,41 @@ function $HttpProvider() {
 <file name="http-hello.html">
   Hello, $http!
 </file>
-<file name="scenario.js">
+<file name="protractor.js" type="protractor">
+  var status = element(by.binding('status'));
+  var data = element(by.binding('data'));
+  var fetchBtn = element(by.id('fetchbtn'));
+  var sampleGetBtn = element(by.id('samplegetbtn'));
+  var sampleJsonpBtn = element(by.id('samplejsonpbtn'));
+  var invalidJsonpBtn = element(by.id('invalidjsonpbtn'));
+
   it('should make an xhr GET request', function() {
-    element(':button:contains("Sample GET")').click();
-    element(':button:contains("fetch")').click();
-    expect(binding('status')).toBe('200');
-    expect(binding('data')).toMatch(/Hello, \$http!/);
+    sampleGetBtn.click();
+    fetchBtn.click();
+    expect(status.getText()).toMatch('200');
+    expect(data.getText()).toMatch(/Hello, \$http!/);
   });
 
   it('should make a JSONP request to angularjs.org', function() {
-    element(':button:contains("Sample JSONP")').click();
-    element(':button:contains("fetch")').click();
-    expect(binding('status')).toBe('200');
-    expect(binding('data')).toMatch(/Super Hero!/);
+    sampleJsonpBtn.click();
+    fetchBtn.click();
+    expect(status.getText()).toMatch('200');
+    expect(data.getText()).toMatch(/Super Hero!/);
   });
 
   it('should make JSONP request to invalid URL and invoke the error handler',
       function() {
-    element(':button:contains("Invalid JSONP")').click();
-    element(':button:contains("fetch")').click();
-    expect(binding('status')).toBe('0');
-    expect(binding('data')).toBe('Request failed');
+    invalidJsonpBtn.click();
+    fetchBtn.click();
+    expect(status.getText()).toMatch('0');
+    expect(data.getText()).toMatch('Request failed');
   });
 </file>
 </example>
      */
     function $http(requestConfig) {
       var config = {
+        method: 'get',
         transformRequest: defaults.transformRequest,
         transformResponse: defaults.transformResponse
       };
@@ -795,8 +796,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#get
-     * @methodOf ng.$http
+     * @name $http#get
      *
      * @description
      * Shortcut method to perform `GET` request.
@@ -808,8 +808,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#delete
-     * @methodOf ng.$http
+     * @name $http#delete
      *
      * @description
      * Shortcut method to perform `DELETE` request.
@@ -821,8 +820,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#head
-     * @methodOf ng.$http
+     * @name $http#head
      *
      * @description
      * Shortcut method to perform `HEAD` request.
@@ -834,8 +832,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#jsonp
-     * @methodOf ng.$http
+     * @name $http#jsonp
      *
      * @description
      * Shortcut method to perform `JSONP` request.
@@ -849,8 +846,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#post
-     * @methodOf ng.$http
+     * @name $http#post
      *
      * @description
      * Shortcut method to perform `POST` request.
@@ -863,8 +859,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$http#put
-     * @methodOf ng.$http
+     * @name $http#put
      *
      * @description
      * Shortcut method to perform `PUT` request.
@@ -878,8 +873,7 @@ function $HttpProvider() {
 
         /**
          * @ngdoc property
-         * @name ng.$http#defaults
-         * @propertyOf ng.$http
+         * @name $http#defaults
          *
          * @description
          * Runtime equivalent of the `$httpProvider.defaults` property. Allows configuration of
@@ -1030,7 +1024,10 @@ function $HttpProvider() {
                          encodeUriQuery(v));
             });
           });
-          return url + ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
+          if(parts.length > 0) {
+            url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
+          }
+          return url;
         }
 
 

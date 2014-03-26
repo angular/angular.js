@@ -190,13 +190,34 @@ describe('angular', function() {
       expect(copy.key).toBe(original.key);
     });
 
-    it('should not copy $$ properties nor prototype properties', function() {
+    it('should omit "$$"-prefixed properties', function() {
       var original = {$$some: true, $$: true};
       var clone = {};
 
       expect(shallowCopy(original, clone)).toBe(clone);
       expect(clone.$$some).toBeUndefined();
       expect(clone.$$).toBeUndefined();
+    });
+
+    it('should copy "$"-prefixed properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
+
+    it('should omit properties from prototype chain', function() {
+      var original, clone = {};
+      function Func() {};
+      Func.prototype.hello = "world";
+
+      original = new Func();
+      original.goodbye = "world";
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.hello).toBeUndefined();
+      expect(clone.goodbye).toBe("world");
     });
   });
 
@@ -504,6 +525,21 @@ describe('angular', function() {
       expect(log).toEqual(['0:a', '1:c']);
     });
 
+    if (document.querySelectorAll) {
+      it('should handle the result of querySelectorAll in IE8 as it has no hasOwnProperty function', function() {
+        document.body.innerHTML = "<p>" +
+          "<a name='x'>a</a>" +
+          "<a name='y'>b</a>" +
+          "<a name='x'>c</a>" +
+          "</p>";
+
+        var htmlCollection = document.querySelectorAll('[name="x"]'),
+          log = [];
+
+        forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+        expect(log).toEqual(['0:a', '1:c']);
+      });
+    }
 
     it('should handle arguments objects like arrays', function() {
       var args,
@@ -1004,7 +1040,7 @@ describe('angular', function() {
     });
 
 
-    it('should allow seperator to be overridden', function() {
+    it('should allow separator to be overridden', function() {
       expect(snake_case('ABC', '&')).toEqual('a&b&c');
       expect(snake_case('alanBobCharles', '&')).toEqual('alan&bob&charles');
     });
@@ -1091,5 +1127,25 @@ describe('angular', function() {
         expect(result).toEqual(expected[idx]);
       });
     }));
+
+    // Issue #4805
+    it('should return false for objects resembling a Backbone Collection', function() {
+      // Backbone stuff is sort of hard to mock, if you have a better way of doing this,
+      // please fix this.
+      var fakeBackboneCollection = {
+        children: [{}, {}, {}],
+        find: function() {},
+        on: function() {},
+        off: function() {},
+        bind: function() {}
+      };
+      expect(isElement(fakeBackboneCollection)).toBe(false);
+    });
+
+    it('should return false for arrays with node-like properties', function() {
+      var array = [1,2,3];
+      array.on = true;
+      expect(isElement(array)).toBe(false);
+    });
   });
 });

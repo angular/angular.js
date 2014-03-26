@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 3 - Filtering Repeaters
+@ngdoc tutorial
+@name 3 - Filtering Repeaters
+@step 3
 @description
 
 <ul doc-tutorial-nav="3"></ul>
@@ -18,8 +19,7 @@ The app now has a search box. Notice that the phone list on the page changes dep
 user types into the search box.
 
 The most important differences between Steps 2 and 3 are listed below. You can see the full diff on
-{@link https://github.com/angular/angular-phonecat/compare/step-2...step-3
- GitHub}:
+[GitHub](https://github.com/angular/angular-phonecat/compare/step-2...step-3):
 
 
 ## Controller
@@ -30,7 +30,8 @@ We made no changes to the controller.
 ## Template
 
 __`app/index.html`:__
-<pre>
+
+```html
   <div class="container-fluid">
     <div class="row-fluid">
       <div class="span2">
@@ -52,11 +53,11 @@ __`app/index.html`:__
       </div>
     </div>
   </div>
-</pre>
+```
 
 We added a standard HTML `<input>` tag and used Angular's
-{@link api/ng.filter:filter filter} function to process the input for the
-{@link api/ng.directive:ngRepeat ngRepeat} directive.
+{@link ng.filter:filter filter} function to process the input for the
+{@link ng.directive:ngRepeat ngRepeat} directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
 list. This new code demonstrates the following:
@@ -71,7 +72,7 @@ the DOM to reflect the current state of the model.
 
 <img  class="diagram" src="img/tutorial/tutorial_03.png">
 
-* Use of the `filter` filter: The {@link api/ng.filter:filter filter} function uses the
+* Use of the `filter` filter: The {@link ng.filter:filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
 
   `ngRepeat` automatically updates the view in response to the changing number of phones returned
@@ -88,7 +89,8 @@ The search feature was fully implemented via templates and data-binding, so we'l
 end-to-end test, to verify that the feature works.
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 describe('PhoneCat App', function() {
 
   describe('Phone list view', function() {
@@ -109,7 +111,7 @@ describe('PhoneCat App', function() {
     });
   });
 });
-</pre>
+```
 
 Even though the syntax of this test looks very much like our controller unit test written with
 Jasmine, the end-to-end test uses APIs of {@link guide/dev_guide.e2e-testing Angular's end-to-end
@@ -117,15 +119,15 @@ test runner}.
 
 To run the end-to-end test, open one of the following in a new browser tab:
 
-* node.js users: {@link http://localhost:8000/test/e2e/runner.html}
+* node.js users: http://localhost:8000/test/e2e/runner.html
 * users with other http servers:
 `http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
-* casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
+* casual reader: http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html
 
 Previously we've seen how Karma can be used to execute unit tests. Well, it can also run the
-end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike
+end-to-end tests! Use `./scripts/e2e-test.sh` (if you are on Windows, run `scripts\e2e-test.bat`) script for that. End-to-end tests are slow, so unlike
 with unit tests, Karma will exit after the test run and will not automatically rerun the test
-suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
+suite on every file change. To rerun the test suite, execute the `e2e-test.sh` or `e2e-test.bat` script again.
 
 Note: You must ensure you've installed the karma-ng-scenario framework plugin prior to running the
 `e2e-test.sh` script. You can do this by issuing `npm install` into your terminal.
@@ -160,15 +162,15 @@ and title elements:
 
   While using double curlies works fine within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
-solution would be to use the {@link api/ng.directive:ngBind
-ngBind} or {@link api/ng.directive:ngBindTemplate
+solution would be to use the {@link ng.directive:ngBind
+ngBind} or {@link ng.directive:ngBindTemplate
 ngBindTemplate} directives, which are invisible to the user while the page is loading:
 
           <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
 
 * Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
 
-  <pre>
+  ```js
     it('should display the current filter value within an element with id "status"',
         function() {
       expect(element('#status').text()).toMatch(/Current filter: \s*$/);
@@ -180,7 +182,7 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
       //alternative version of the last assertion that tests just the value of the binding
       using('#status').expect(binding('query')).toBe('nexus');
     });
-  </pre>
+  ```
 
   Refresh the browser tab with the end-to-end test runner to see the test fail. To make the test
 pass, edit the `index.html` template to add a `div` or `p` element with `id` `"status"` and content

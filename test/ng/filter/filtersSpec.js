@@ -58,7 +58,7 @@ describe('filters', function() {
       expect(num).toBe('1.1112');
     });
 
-    it('should format according different seperators', function() {
+    it('should format according different separators', function() {
       var num = formatNumber(1234567.1, pattern, '.', ',', 2);
       expect(num).toBe('1.234.567,10');
     });
@@ -128,6 +128,11 @@ describe('filters', function() {
       expect(number(1234)).toEqual('1,234');
       expect(number(1234.5678)).toEqual('1,234.568');
       expect(number(Number.NaN)).toEqual('');
+      expect(number(null)).toEqual('');
+      expect(number({})).toEqual('');
+      expect(number([])).toEqual('');
+      expect(number(+Infinity)).toEqual('');
+      expect(number(-Infinity)).toEqual('');
       expect(number("1234.5678")).toEqual('1,234.568');
       expect(number(1/0)).toEqual("");
       expect(number(1,        2)).toEqual("1.00");

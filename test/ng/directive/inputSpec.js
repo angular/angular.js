@@ -477,18 +477,47 @@ describe('input', function() {
     expect(scope.name).toEqual('adam');
   });
 
-  it('should not update the model between "compositionstart" and "compositionend"', function() {
-    compileInput('<input type="text" ng-model="name" name="alias"" />');
-    changeInputValueTo('a');
-    expect(scope.name).toEqual('a');
+  if (!(msie < 9)) {
+    describe('compositionevents', function() {
+      it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
+        $sniffer.android = false;
+
+        compileInput('<input type="text" ng-model="name" name="alias"" />');
+        changeInputValueTo('a');
+        expect(scope.name).toEqual('a');
+        browserTrigger(inputElm, 'compositionstart');
+        changeInputValueTo('adam');
+        expect(scope.name).toEqual('a');
+        browserTrigger(inputElm, 'compositionend');
+        changeInputValueTo('adam');
+        expect(scope.name).toEqual('adam');
+      }));
+
+      it('should update the model between "compositionstart" and "compositionend" on android', inject(function($sniffer) {
+        $sniffer.android = true;
+
+        compileInput('<input type="text" ng-model="name" name="alias"" />');
+        changeInputValueTo('a');
+        expect(scope.name).toEqual('a');
+        browserTrigger(inputElm, 'compositionstart');
+        changeInputValueTo('adam');
+        expect(scope.name).toEqual('adam');
+        browserTrigger(inputElm, 'compositionend');
+        changeInputValueTo('adam2');
+        expect(scope.name).toEqual('adam2');
+      }));
+    });
+  }
+
+  it('should update the model on "compositionend"', function() {
+    compileInput('<input type="text" ng-model="name" name="alias" />');
     if (!(msie < 9)) {
       browserTrigger(inputElm, 'compositionstart');
-      changeInputValueTo('adam');
-      expect(scope.name).toEqual('a');
+      changeInputValueTo('caitp');
+      expect(scope.name).toBeUndefined();
       browserTrigger(inputElm, 'compositionend');
+      expect(scope.name).toEqual('caitp');
     }
-    changeInputValueTo('adam');
-    expect(scope.name).toEqual('adam');
   });
 
   describe('"change" event', function() {
@@ -515,6 +544,23 @@ describe('input', function() {
       'event so that form auto complete works',function() {
       assertBrowserSupportsChangeEvent(true);
     });
+
+    if (!_jqLiteMode) {
+      it('should not cause the double $digest when triggering an event using jQuery', function() {
+        $sniffer.hasEvent = function(eventName) {
+          return eventName !== 'input';
+        };
+
+        compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+        scope.field = 'fake field';
+        scope.$watch('field', function() {
+          // We need to use _originalTrigger since trigger is modified by Angular Scenario.
+          inputElm._originalTrigger('change');
+        });
+        scope.$apply();
+      });
+    }
   });
 
   describe('"paste" and "cut" events', function() {
@@ -689,7 +735,7 @@ describe('input', function() {
 
   describe('minlength', function() {
 
-    it('should invalid shorter than given minlenght', function() {
+    it('should invalid shorter than given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
@@ -703,7 +749,7 @@ describe('input', function() {
 
   describe('maxlength', function() {
 
-    it('should invalid shorter than given maxlenght', function() {
+    it('should invalid shorter than given maxlength', function() {
       compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
@@ -909,7 +955,8 @@ describe('input', function() {
       it('should validate email', function() {
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
         expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
-        expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@B.c')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@.b.c')).toBe(false);
       });
     });
   });
@@ -1434,4 +1481,102 @@ describe('input', function() {
       expect(scope.items[0].selected).toBe(false);
     });
   });
+});
+
+describe('NgModel animations', function() {
+  beforeEach(module('ngAnimateMock'));
+
+  function findElementAnimations(element, queue) {
+    var node = element[0];
+    var animations = [];
+    for(var i = 0; i < queue.length; i++) {
+      var animation = queue[i];
+      if(animation.element[0] == node) {
+        animations.push(animation);
+      }
+    }
+    return animations;
+  };
+
+  function assertValidAnimation(animation, event, className) {
+    expect(animation.event).toBe(event);
+    expect(animation.args[1]).toBe(className);
+  }
+
+  var doc, input, scope, model;
+  beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
+    scope = $rootScope.$new();
+    doc = jqLite('<form name="myForm">' +
+                 '  <input type="text" ng-model="input" name="myInput" />' +
+                 '</form>');
+    $rootElement.append(doc);
+    $compile(doc)(scope);
+    $animate.queue = [];
+
+    input = doc.find('input');
+    model = scope.myForm.myInput;
+  }));
+
+  afterEach(function() {
+    dealoc(input);
+  });
+
+  it('should trigger an animation when invalid', inject(function($animate) {
+    model.$setValidity('required', false);
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-valid-required');
+    assertValidAnimation(animations[3], 'addClass', 'ng-invalid-required');
+  }));
+
+  it('should trigger an animation when valid', inject(function($animate) {
+    model.$setValidity('required', false);
+
+    $animate.queue = [];
+
+    model.$setValidity('required', true);
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-invalid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-valid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-invalid-required');
+    assertValidAnimation(animations[3], 'addClass', 'ng-valid-required');
+  }));
+
+  it('should trigger an animation when dirty', inject(function($animate) {
+    model.$setViewValue('some dirty value');
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-pristine');
+    assertValidAnimation(animations[1], 'addClass', 'ng-dirty');
+  }));
+
+  it('should trigger an animation when pristine', inject(function($animate) {
+    model.$setPristine();
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-dirty');
+    assertValidAnimation(animations[1], 'addClass', 'ng-pristine');
+  }));
+
+  it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
+    model.$setValidity('custom-error', false);
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-valid-custom-error');
+    assertValidAnimation(animations[3], 'addClass', 'ng-invalid-custom-error');
+
+    $animate.queue = [];
+    model.$setValidity('custom-error', true);
+
+    animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-invalid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-valid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-invalid-custom-error');
+    assertValidAnimation(animations[3], 'addClass', 'ng-valid-custom-error');
+  }));
 });

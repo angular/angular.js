@@ -202,9 +202,14 @@ describe('$compile', function() {
       if (msie < 9) return;
 
       element = jqLite('<div>{{1+2}}</div>');
-      element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
 
-      if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      try {
+        element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
+      } catch(e) {
+      } finally {
+        if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      }
+
       expect(element[0].childNodes[1].textContent).toBe('fake node');
 
       $compile(element)($rootScope);
@@ -512,6 +517,30 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithTr', valueFn({
+            replace: true,
+            template: '<tr><td>TR</td></tr>'
+          }));
+          directive('replaceWithTd', valueFn({
+            replace: true,
+            template: '<td>TD</td>'
+          }));
+          directive('replaceWithTh', valueFn({
+            replace: true,
+            template: '<th>TH</th>'
+          }));
+          directive('replaceWithThead', valueFn({
+            replace: true,
+            template: '<thead><tr><td>TD</td></tr></thead>'
+          }));
+          directive('replaceWithTbody', valueFn({
+            replace: true,
+            template: '<tbody><tr><td>TD</td></tr></tbody>'
+          }));
+          directive('replaceWithTfoot', valueFn({
+            replace: true,
+            template: '<tfoot><tr><td>TD</td></tr></tfoot>'
+          }));
         }));
 
 
@@ -675,6 +704,48 @@ describe('$compile', function() {
             }).not.toThrow();
           });
         });
+
+        it('should support templates with root <tr> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tr></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tr/i);
+        }));
+
+        it('should support templates with root <td> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-td></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/td/i);
+        }));
+
+        it('should support templates with root <th> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-th></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/th/i);
+        }));
+
+        it('should support templates with root <thead> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-thead></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/thead/i);
+        }));
+
+        it('should support templates with root <tbody> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tbody></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
+
+        it('should support templates with root <tfoot> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tfoot></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tfoot/i);
+        }));
       });
 
 
@@ -770,6 +841,31 @@ describe('$compile', function() {
             directive('replace', valueFn({
               replace: true,
               template: '<span>Hello, {{name}}!</span>'
+            }));
+
+            directive('replaceWithTr', valueFn({
+              replace: true,
+              templateUrl: 'tr.html'
+            }));
+            directive('replaceWithTd', valueFn({
+              replace: true,
+              templateUrl: 'td.html'
+            }));
+            directive('replaceWithTh', valueFn({
+              replace: true,
+              templateUrl: 'th.html'
+            }));
+            directive('replaceWithThead', valueFn({
+              replace: true,
+              templateUrl: 'thead.html'
+            }));
+            directive('replaceWithTbody', valueFn({
+              replace: true,
+              templateUrl: 'tbody.html'
+            }));
+            directive('replaceWithTfoot', valueFn({
+              replace: true,
+              templateUrl: 'tfoot.html'
             }));
           }
         ));
@@ -1123,6 +1219,26 @@ describe('$compile', function() {
         });
 
 
+        it('should copy classes from pre-template node into linked element', function() {
+          module(function() {
+            directive('test', valueFn({
+              templateUrl: 'test.html',
+              replace: true
+            }));
+          });
+          inject(function($compile, $templateCache, $rootScope) {
+            var child;
+            $templateCache.put('test.html', '<p class="template-class">Hello</p>');
+            element = $compile('<div test></div>')($rootScope, function(node) {
+              node.addClass('clonefn-class');
+            });
+            $rootScope.$digest();
+            expect(element).toHaveClass('template-class');
+            expect(element).toHaveClass('clonefn-class');
+          });
+        });
+
+
         describe('delay compile / linking functions until after template is resolved', function(){
           var template;
           beforeEach(module(function() {
@@ -1386,6 +1502,60 @@ describe('$compile', function() {
             expect(element.html()).toContain('i = 1');
           });
         });
+
+        it('should support templates with root <tr> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tr.html', '<tr><td>TR</td></tr>');
+          expect(function() {
+            element = $compile('<div replace-with-tr></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tr/i);
+        }));
+
+        it('should support templates with root <td> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('td.html', '<td>TD</td>');
+          expect(function() {
+            element = $compile('<div replace-with-td></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/td/i);
+        }));
+
+        it('should support templates with root <th> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('th.html', '<th>TH</th>');
+          expect(function() {
+            element = $compile('<div replace-with-th></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/th/i);
+        }));
+
+        it('should support templates with root <thead> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('thead.html', '<thead><tr><td>TD</td></tr></thead>');
+          expect(function() {
+            element = $compile('<div replace-with-thead></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/thead/i);
+        }));
+
+        it('should support templates with root <tbody> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tbody.html', '<tbody><tr><td>TD</td></tr></tbody>');
+          expect(function() {
+            element = $compile('<div replace-with-tbody></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
+
+        it('should support templates with root <tfoot> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tfoot.html', '<tfoot><tr><td>TD</td></tr></tfoot>');
+          expect(function() {
+            element = $compile('<div replace-with-tfoot></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tfoot/i);
+        }));
       });
 
 
@@ -3947,6 +4117,57 @@ describe('$compile', function() {
         });
       });
 
+      // issue #6006
+      it('should link directive with $element as a comment node', function() {
+        module(function($provide) {
+          directive('innerAgain', function(log) {
+            return {
+              transclude: 'element',
+              link: function(scope, element, attr, controllers, transclude) {
+                log('innerAgain:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+                transclude(scope, function(clone) {
+                  element.parent().append(clone);
+                });
+              }
+            };
+          });
+          directive('inner', function(log) {
+            return {
+              replace: true,
+              templateUrl: 'inner.html',
+              link: function(scope, element) {
+                log('inner:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+              }
+            };
+          });
+          directive('outer', function(log) {
+            return {
+              transclude: 'element',
+              link: function(scope, element, attrs, controllers, transclude) {
+                log('outer:'+lowercase(nodeName_(element))+':'+trim(element[0].data));
+                transclude(scope, function(clone) {
+                  element.parent().append(clone);
+                });
+              }
+            };
+          });
+        });
+        inject(function(log, $compile, $rootScope, $templateCache) {
+          $templateCache.put('inner.html', '<div inner-again><p>Content</p></div>');
+          element = $compile('<div><div outer><div inner></div></div></div>')($rootScope);
+          $rootScope.$digest();
+          var child = element.children();
+
+          expect(log.toArray()).toEqual([
+            "outer:#comment:outer:",
+            "innerAgain:#comment:innerAgain:",
+            "inner:#comment:innerAgain:"]);
+          expect(child.length).toBe(1);
+          expect(child.contents().length).toBe(2);
+          expect(lowercase(nodeName_(child.contents().eq(0)))).toBe('#comment');
+          expect(lowercase(nodeName_(child.contents().eq(1)))).toBe('div');
+        });
+      });
     });
 
     it('should safely create transclude comment node and not break with "-->"',
@@ -4244,6 +4465,12 @@ describe('$compile', function() {
       expect(element.attr('test3')).toBe('Misko');
     }));
 
+    it('should work with the "href" attribute', inject(function($compile, $rootScope) {
+      $rootScope.value = 'test';
+      element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('href')).toBe('test/test');
+    }));
 
     it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";
@@ -4459,7 +4686,7 @@ describe('$compile', function() {
 
   describe('$animate animation hooks', function() {
 
-    beforeEach(module('mock.animate'));
+    beforeEach(module('ngAnimateMock'));
 
     it('should automatically fire the addClass and removeClass animation hooks',
       inject(function($compile, $animate, $rootScope) {
@@ -4475,8 +4702,9 @@ describe('$compile', function() {
         $rootScope.val2 = 'rice';
         $rootScope.$digest();
 
-        data = $animate.flushNext('addClass');
-        expect(data.params[1]).toBe('ice rice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('addClass');
+        expect(data.args[1]).toBe('ice rice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('rice')).toBe(true);
@@ -4485,10 +4713,10 @@ describe('$compile', function() {
         $rootScope.val2 = 'dice';
         $rootScope.$digest();
 
-        data = $animate.flushNext('removeClass');
-        expect(data.params[1]).toBe('rice');
-        data = $animate.flushNext('addClass');
-        expect(data.params[1]).toBe('dice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('setClass');
+        expect(data.args[1]).toBe('dice');
+        expect(data.args[2]).toBe('rice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('dice')).toBe(true);
@@ -4498,8 +4726,9 @@ describe('$compile', function() {
         $rootScope.val2 = '';
         $rootScope.$digest();
 
-        data = $animate.flushNext('removeClass');
-        expect(data.params[1]).toBe('ice dice');
+        data = $animate.queue.shift();
+        expect(data.event).toBe('removeClass');
+        expect(data.args[1]).toBe('ice dice');
 
         expect(element.hasClass('ice')).toBe(false);
         expect(element.hasClass('dice')).toBe(false);

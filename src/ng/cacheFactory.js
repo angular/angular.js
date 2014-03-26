@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name ng.$cacheFactory
+ * @ngdoc service
+ * @name $cacheFactory
  *
  * @description
  * Factory that constructs cache objects and gives access to them.
- * 
- * <pre>
- * 
+ *
+ * ```js
+ *
  *  var cache = $cacheFactory('cacheId');
  *  expect($cacheFactory.get('cacheId')).toBe(cache);
  *  expect($cacheFactory.get('noSuchCacheId')).not.toBeDefined();
@@ -17,9 +17,9 @@
  *  cache.put("another key", "another value");
  *
  *  // We've specified no options on creation
- *  expect(cache.info()).toEqual({id: 'cacheId', size: 2}); 
- * 
- * </pre>
+ *  expect(cache.info()).toEqual({id: 'cacheId', size: 2});
+ *
+ * ```
  *
  *
  * @param {string} cacheId Name or id of the newly created cache.
@@ -59,9 +59,11 @@ function $CacheFactoryProvider() {
       return caches[cacheId] = {
 
         put: function(key, value) {
-          var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
+          if (capacity < Number.MAX_VALUE) {
+            var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
-          refresh(lruEntry);
+            refresh(lruEntry);
+          }
 
           if (isUndefined(value)) return;
           if (!(key in data)) size++;
@@ -76,26 +78,31 @@ function $CacheFactoryProvider() {
 
 
         get: function(key) {
-          var lruEntry = lruHash[key];
+          if (capacity < Number.MAX_VALUE) {
+            var lruEntry = lruHash[key];
 
-          if (!lruEntry) return;
+            if (!lruEntry) return;
 
-          refresh(lruEntry);
+            refresh(lruEntry);
+          }
 
           return data[key];
         },
 
 
         remove: function(key) {
-          var lruEntry = lruHash[key];
+          if (capacity < Number.MAX_VALUE) {
+            var lruEntry = lruHash[key];
 
-          if (!lruEntry) return;
+            if (!lruEntry) return;
 
-          if (lruEntry == freshEnd) freshEnd = lruEntry.p;
-          if (lruEntry == staleEnd) staleEnd = lruEntry.n;
-          link(lruEntry.n,lruEntry.p);
+            if (lruEntry == freshEnd) freshEnd = lruEntry.p;
+            if (lruEntry == staleEnd) staleEnd = lruEntry.n;
+            link(lruEntry.n,lruEntry.p);
 
-          delete lruHash[key];
+            delete lruHash[key];
+          }
+
           delete data[key];
           size--;
         },
@@ -156,8 +163,7 @@ function $CacheFactoryProvider() {
 
   /**
    * @ngdoc method
-   * @name ng.$cacheFactory#info
-   * @methodOf ng.$cacheFactory
+   * @name $cacheFactory#info
    *
    * @description
    * Get information about all the of the caches that have been created
@@ -175,8 +181,7 @@ function $CacheFactoryProvider() {
 
   /**
    * @ngdoc method
-   * @name ng.$cacheFactory#get
-   * @methodOf ng.$cacheFactory
+   * @name $cacheFactory#get
    *
    * @description
    * Get access to a cache object by the `cacheId` used when it was created.
@@ -194,48 +199,44 @@ function $CacheFactoryProvider() {
 }
 
 /**
- * @ngdoc object
- * @name ng.$templateCache
+ * @ngdoc service
+ * @name $templateCache
  *
  * @description
  * The first time a template is used, it is loaded in the template cache for quick retrieval. You
  * can load templates directly into the cache in a `script` tag, or by consuming the
  * `$templateCache` service directly.
- * 
+ *
  * Adding via the `script` tag:
- * <pre>
- * <html ng-app>
- * <head>
- * <script type="text/ng-template" id="templateId.html">
- *   This is the content of the template
- * </script>
- * </head>
- *   ...
- * </html>
- * </pre>
- * 
+ *
+ * ```html
+ *   <script type="text/ng-template" id="templateId.html">
+ *     <p>This is the content of the template</p>
+ *   </script>
+ * ```
+ *
  * **Note:** the `script` tag containing the template does not need to be included in the `head` of
  * the document, but it must be below the `ng-app` definition.
- * 
+ *
  * Adding via the $templateCache service:
- * 
- * <pre>
+ *
+ * ```js
  * var myApp = angular.module('myApp', []);
  * myApp.run(function($templateCache) {
  *   $templateCache.put('templateId.html', 'This is the content of the template');
  * });
- * </pre>
- * 
+ * ```
+ *
  * To retrieve the template later, simply use it in your HTML:
- * <pre>
+ * ```html
  * <div ng-include=" 'templateId.html' "></div>
- * </pre>
- * 
+ * ```
+ *
  * or get it via Javascript:
- * <pre>
+ * ```js
  * $templateCache.get('templateId.html')
- * </pre>
- * 
+ * ```
+ *
  * See {@link ng.$cacheFactory $cacheFactory}.
  *
  */

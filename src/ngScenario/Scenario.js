@@ -239,7 +239,8 @@ function callerFile(offset) {
  * To work around this we instead use our own handler that fires a real event.
  */
 (function(fn){
-  var parentTrigger = fn.trigger;
+  // We need a handle to the original trigger function for input tests.
+  var parentTrigger = fn._originalTrigger = fn.trigger;
   fn.trigger = function(type) {
     if (/(click|change|keydown|blur|input|mousedown|mouseup)/.test(type)) {
       var processDefaults = [];

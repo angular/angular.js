@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngRepeat
+ * @name ngRepeat
  *
  * @description
  * The `ngRepeat` directive instantiates a template once per item from a collection. Each template
@@ -20,6 +20,8 @@
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
+ * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
+ * This may be useful when, for instance, nesting ngRepeats.
  *
  * # Special repeat start and end points
  * To repeat a series of elements instead of just one parent element, ngRepeat (as well as other ng directives) supports extending
@@ -28,7 +30,7 @@
  * up to and including the ending HTML tag where **ng-repeat-end** is placed.
  *
  * The example below makes use of this feature:
- * <pre>
+ * ```html
  *   <header ng-repeat-start="item in items">
  *     Header {{ item }}
  *   </header>
@@ -38,10 +40,10 @@
  *   <footer ng-repeat-end>
  *     Footer {{ item }}
  *   </footer>
- * </pre>
+ * ```
  *
  * And with an input of {@type ['A','B']} for the items variable in the example above, the output will evaluate to:
- * <pre>
+ * ```html
  *   <header>
  *     Header A
  *   </header>
@@ -60,15 +62,17 @@
  *   <footer>
  *     Footer B
  *   </footer>
- * </pre>
+ * ```
  *
  * The custom start and end points for ngRepeat also support all other HTML directive syntax flavors provided in AngularJS (such
  * as **data-ng-repeat-start**, **x-ng-repeat-start** and **ng:repeat-start**).
  *
  * @animations
- * enter - when a new item is added to the list or when an item is revealed after a filter
- * leave - when an item is removed from the list or when an item is filtered out
- * move - when an adjacent item is filtered out causing a reorder or when the item contents are reordered
+ * **.enter** - when a new item is added to the list or when an item is revealed after a filter
+ *
+ * **.leave** - when an item is removed from the list or when an item is filtered out
+ *
+ * **.move** - when an adjacent item is filtered out causing a reorder or when the item contents are reordered
  *
  * @element ANY
  * @scope
@@ -111,7 +115,7 @@
  * @example
  * This example initializes the scope to a list of names and
  * then uses `ngRepeat` to display every person:
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
       <div ng-init="friends = [
         {name:'John', age:25, gender:'boy'},
@@ -170,25 +174,26 @@
         max-height:40px;
       }
     </file>
-    <file name="scenario.js">
-       it('should render initial data set', function() {
-         var r = using('.doc-example-live').repeater('ul li');
-         expect(r.count()).toBe(10);
-         expect(r.row(0)).toEqual(["1","John","25"]);
-         expect(r.row(1)).toEqual(["2","Jessie","30"]);
-         expect(r.row(9)).toEqual(["10","Samantha","60"]);
-         expect(binding('friends.length')).toBe("10");
-       });
+    <file name="protractor.js" type="protractor">
+      var friends = element.all(by.repeater('friend in friends'));
+
+      it('should render initial data set', function() {
+        expect(friends.count()).toBe(10);
+        expect(friends.get(0).getText()).toEqual('[1] John who is 25 years old.');
+        expect(friends.get(1).getText()).toEqual('[2] Jessie who is 30 years old.');
+        expect(friends.last().getText()).toEqual('[10] Samantha who is 60 years old.');
+        expect(element(by.binding('friends.length')).getText())
+            .toMatch("I have 10 friends. They are:");
+      });
 
        it('should update repeater when filter predicate changes', function() {
-         var r = using('.doc-example-live').repeater('ul li');
-         expect(r.count()).toBe(10);
+         expect(friends.count()).toBe(10);
 
-         input('q').enter('ma');
+         element(by.model('q')).sendKeys('ma');
 
-         expect(r.count()).toBe(2);
-         expect(r.row(0)).toEqual(["1","Mary","28"]);
-         expect(r.row(1)).toEqual(["2","Samantha","60"]);
+         expect(friends.count()).toBe(2);
+         expect(friends.get(0).getText()).toEqual('[1] Mary who is 28 years old.');
+         expect(friends.last().getText()).toEqual('[2] Samantha who is 60 years old.');
        });
       </file>
     </example>
@@ -203,7 +208,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     $$tlb: true,
     link: function($scope, $element, $attr, ctrl, $transclude){
         var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
+        var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
           trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
           lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
@@ -215,7 +220,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
         lhs = match[1];
         rhs = match[2];
-        trackByExp = match[4];
+        trackByExp = match[3];
 
         if (trackByExp) {
           trackByExpGetter = $parse(trackByExp);

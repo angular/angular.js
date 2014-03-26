@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc filter
- * @name ng.filter:currency
+ * @name currency
  * @function
  *
  * @description
@@ -15,8 +15,8 @@
  *
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.amount = 1234.56;
@@ -24,22 +24,28 @@
        </script>
        <div ng-controller="Ctrl">
          <input type="number" ng-model="amount"> <br>
-         default currency symbol ($): {{amount | currency}}<br>
-         custom currency identifier (USD$): {{amount | currency:"USD$"}}
+         default currency symbol ($): <span id="currency-default">{{amount | currency}}</span><br>
+         custom currency identifier (USD$): <span>{{amount | currency:"USD$"}}</span>
        </div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should init with 1234.56', function() {
-         expect(binding('amount | currency')).toBe('$1,234.56');
-         expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
+         expect(element(by.id('currency-default')).getText()).toBe('$1,234.56');
+         expect(element(by.binding('amount | currency:"USD$"')).getText()).toBe('USD$1,234.56');
        });
        it('should update', function() {
-         input('amount').enter('-1234');
-         expect(binding('amount | currency')).toBe('($1,234.00)');
-         expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
+         if (browser.params.browser == 'safari') {
+           // Safari does not understand the minus key. See
+           // https://github.com/angular/protractor/issues/481
+           return;
+         }
+         element(by.model('amount')).clear();
+         element(by.model('amount')).sendKeys('-1234');
+         expect(element(by.id('currency-default')).getText()).toBe('($1,234.00)');
+         expect(element(by.binding('amount | currency:"USD$"')).getText()).toBe('(USD$1,234.00)');
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
@@ -53,7 +59,7 @@ function currencyFilter($locale) {
 
 /**
  * @ngdoc filter
- * @name ng.filter:number
+ * @name number
  * @function
  *
  * @description
@@ -68,8 +74,8 @@ function currencyFilter($locale) {
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.val = 1234.56789;
@@ -77,26 +83,27 @@ function currencyFilter($locale) {
        </script>
        <div ng-controller="Ctrl">
          Enter number: <input ng-model='val'><br>
-         Default formatting: {{val | number}}<br>
-         No fractions: {{val | number:0}}<br>
-         Negative number: {{-val | number:4}}
+         Default formatting: <span id='number-default'>{{val | number}}</span><br>
+         No fractions: <span>{{val | number:0}}</span><br>
+         Negative number: <span>{{-val | number:4}}</span>
        </div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should format numbers', function() {
-         expect(binding('val | number')).toBe('1,234.568');
-         expect(binding('val | number:0')).toBe('1,235');
-         expect(binding('-val | number:4')).toBe('-1,234.5679');
+         expect(element(by.id('number-default')).getText()).toBe('1,234.568');
+         expect(element(by.binding('val | number:0')).getText()).toBe('1,235');
+         expect(element(by.binding('-val | number:4')).getText()).toBe('-1,234.5679');
        });
 
        it('should update', function() {
-         input('val').enter('3374.333');
-         expect(binding('val | number')).toBe('3,374.333');
-         expect(binding('val | number:0')).toBe('3,374');
-         expect(binding('-val | number:4')).toBe('-3,374.3330');
-       });
-     </doc:scenario>
-   </doc:example>
+         element(by.model('val')).clear();
+         element(by.model('val')).sendKeys('3374.333');
+         expect(element(by.id('number-default')).getText()).toBe('3,374.333');
+         expect(element(by.binding('val | number:0')).getText()).toBe('3,374');
+         expect(element(by.binding('-val | number:4')).getText()).toBe('-3,374.3330');
+      });
+     </file>
+   </example>
  */
 
 
@@ -111,7 +118,7 @@ function numberFilter($locale) {
 
 var DECIMAL_SEP = '.';
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
-  if (isNaN(number) || !isFinite(number)) return '';
+  if (number == null || !isFinite(number) || isObject(number)) return '';
 
   var isNegative = number < 0;
   number = Math.abs(number);
@@ -264,7 +271,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
 
 /**
  * @ngdoc filter
- * @name ng.filter:date
+ * @name date
  * @function
  *
  * @description
@@ -322,26 +329,26 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
-           {{1288323623006 | date:'medium'}}<br>
+           <span>{{1288323623006 | date:'medium'}}</span><br>
        <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
-          {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br>
+          <span>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span><br>
        <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
-          {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br>
-     </doc:source>
-     <doc:scenario>
+          <span>{{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}</span><br>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should format date', function() {
-         expect(binding("1288323623006 | date:'medium'")).
+         expect(element(by.binding("1288323623006 | date:'medium'")).getText()).
             toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
-         expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
+         expect(element(by.binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).getText()).
             toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} (\-|\+)?\d{4}/);
-         expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
+         expect(element(by.binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).getText()).
             toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 dateFilter.$inject = ['$locale'];
 function dateFilter($locale) {
@@ -421,7 +428,7 @@ function dateFilter($locale) {
 
 /**
  * @ngdoc filter
- * @name ng.filter:json
+ * @name json
  * @function
  *
  * @description
@@ -434,17 +441,17 @@ function dateFilter($locale) {
  * @returns {string} JSON string.
  *
  *
- * @example:
-   <doc:example>
-     <doc:source>
+ * @example
+   <example>
+     <file name="index.html">
        <pre>{{ {'name':'value'} | json }}</pre>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should jsonify filtered objects', function() {
-         expect(binding("{'name':'value'}")).toMatch(/\{\n  "name": ?"value"\n}/);
+         expect(element(by.binding("{'name':'value'}")).getText()).toMatch(/\{\n  "name": ?"value"\n}/);
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  *
  */
 function jsonFilter() {
@@ -456,7 +463,7 @@ function jsonFilter() {
 
 /**
  * @ngdoc filter
- * @name ng.filter:lowercase
+ * @name lowercase
  * @function
  * @description
  * Converts string to lowercase.
@@ -467,7 +474,7 @@ var lowercaseFilter = valueFn(lowercase);
 
 /**
  * @ngdoc filter
- * @name ng.filter:uppercase
+ * @name uppercase
  * @function
  * @description
  * Converts string to uppercase.

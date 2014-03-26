@@ -15,6 +15,7 @@
 /**
  * @ngdoc function
  * @name angular.element
+ * @module ng
  * @function
  *
  * @description
@@ -40,7 +41,7 @@
  * - [`after()`](http://api.jquery.com/after/)
  * - [`append()`](http://api.jquery.com/append/)
  * - [`attr()`](http://api.jquery.com/attr/)
- * - [`bind()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
+ * - [`bind()`](http://api.jquery.com/bind/) - Does not support namespaces, selectors or eventData
  * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
  * - [`clone()`](http://api.jquery.com/clone/)
  * - [`contents()`](http://api.jquery.com/contents/)
@@ -54,6 +55,7 @@
  * - [`next()`](http://api.jquery.com/next/) - Does not support selectors
  * - [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
  * - [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
+ * - [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
  * - [`parent()`](http://api.jquery.com/parent/) - Does not support selectors
  * - [`prepend()`](http://api.jquery.com/prepend/)
  * - [`prop()`](http://api.jquery.com/prop/)
@@ -66,7 +68,7 @@
  * - [`text()`](http://api.jquery.com/text/)
  * - [`toggleClass()`](http://api.jquery.com/toggleClass/)
  * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
- * - [`unbind()`](http://api.jquery.com/off/) - Does not support namespaces
+ * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces
  * - [`val()`](http://api.jquery.com/val/)
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
@@ -84,9 +86,9 @@
  *   camelCase directive name, then the controller for this directive will be retrieved (e.g.
  *   `'ngModel'`).
  * - `injector()` - retrieves the injector of the current element or its parent.
- * - `scope()` - retrieves the {@link api/ng.$rootScope.Scope scope} of the current
+ * - `scope()` - retrieves the {@link ng.$rootScope.Scope scope} of the current
  *   element or its parent.
- * - `isolateScope()` - retrieves an isolate {@link api/ng.$rootScope.Scope scope} if one is attached directly to the
+ * - `isolateScope()` - retrieves an isolate {@link ng.$rootScope.Scope scope} if one is attached directly to the
  *   current element. This getter should be used only on elements that contain a directive which starts a new isolate
  *   scope. Calling `scope()` on this element always returns the original non-isolate scope.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
@@ -105,6 +107,14 @@ var jqCache = JQLite.cache = {},
     removeEventListenerFn = (window.document.removeEventListener
       ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
       : function(element, type, fn) {element.detachEvent('on' + type, fn); });
+
+/*
+ * !!! This is an undocumented "private" function !!!
+ */
+var jqData = JQLite._data = function(node) {
+  //jQuery always returns an object on cache miss
+  return this.cache[node[this.expando]] || {};
+};
 
 function jqNextId() { return ++jqId; }
 
@@ -173,6 +183,9 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
 function JQLite(element) {
   if (element instanceof JQLite) {
     return element;
+  }
+  if (isString(element)) {
+    element = trim(element);
   }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
@@ -351,11 +364,15 @@ function jqLiteInheritedData(element, name, value) {
   var names = isArray(name) ? name : [name];
 
   while (element.length) {
-
+    var node = element[0];
     for (var i = 0, ii = names.length; i < ii; i++) {
       if ((value = element.data(names[i])) !== undefined) return value;
     }
-    element = element.parent();
+
+    // If dealing with a document fragment node with a host element, and no parent, use the host
+    // element as the parent. This enables directives within a Shadow DOM or polyfilled Shadow DOM
+    // to lookup parent controllers.
+    element = jqLite(node.parentNode || (node.nodeType === 11 && node.host));
   }
 }
 
@@ -444,7 +461,7 @@ forEach({
     return jqLite(element).data('$isolateScope') || jqLite(element).data('$isolateScopeNoTemplate');
   },
 
-  controller: jqLiteController ,
+  controller: jqLiteController,
 
   injector: function(element) {
     return jqLiteInheritedData(element, '$injector');
@@ -645,7 +662,10 @@ function createEventHandler(element, events) {
       return event.defaultPrevented || event.returnValue === false;
     };
 
-    forEach(events[type || event.type], function(fn) {
+    // Copy event handlers in case event handlers array is modified during execution.
+    var eventHandlersCopy = shallowCopy(events[type || event.type] || []);
+
+    forEach(eventHandlersCopy, function(fn) {
       fn.call(element, event);
     });
 
@@ -741,6 +761,19 @@ forEach({
 
   off: jqLiteOff,
 
+  one: function(element, type, fn) {
+    element = jqLite(element);
+
+    //add the listener twice so that when it is called
+    //you can remove the original function and still be
+    //able to call element.off(ev, fn) normally
+    element.on(type, function onFn() {
+      element.off(type, fn);
+      element.off(type, onFn);
+    });
+    element.on(type, fn);
+  },
+
   replaceWith: function(element, replaceNode) {
     var index, parent = element.parentNode;
     jqLiteDealoc(element);
@@ -764,7 +797,7 @@ forEach({
   },
 
   contents: function(element) {
-    return element.childNodes || [];
+    return element.contentDocument || element.childNodes || [];
   },
 
   append: function(element, node) {
@@ -811,10 +844,15 @@ forEach({
   removeClass: jqLiteRemoveClass,
 
   toggleClass: function(element, selector, condition) {
-    if (isUndefined(condition)) {
-      condition = !jqLiteHasClass(element, selector);
+    if (selector) {
+      forEach(selector.split(' '), function(className){
+        var classCondition = condition;
+        if (isUndefined(classCondition)) {
+          classCondition = !jqLiteHasClass(element, className);
+        }
+        (classCondition ? jqLiteAddClass : jqLiteRemoveClass)(element, className);
+      });
     }
-    (condition ? jqLiteAddClass : jqLiteRemoveClass)(element, selector);
   },
 
   parent: function(element) {

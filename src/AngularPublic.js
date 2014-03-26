@@ -3,10 +3,10 @@
 /* global
     angularModule: true,
     version: true,
-    
+
     $LocaleProvider,
     $CompileProvider,
-    
+
     htmlAnchorDirective,
     inputDirective,
     inputDirective,
@@ -72,13 +72,16 @@
     $SnifferProvider,
     $TemplateCacheProvider,
     $TimeoutProvider,
+    $$RAFProvider,
+    $$AsyncCallbackProvider,
     $WindowProvider
 */
 
 
 /**
- * @ngdoc property
+ * @ngdoc object
  * @name angular.version
+ * @module ng
  * @description
  * An object that contains information about the current AngularJS version. This object has the
  * following properties:
@@ -210,7 +213,9 @@ function publishExternalAPI(angular){
         $sniffer: $SnifferProvider,
         $templateCache: $TemplateCacheProvider,
         $timeout: $TimeoutProvider,
-        $window: $WindowProvider
+        $window: $WindowProvider,
+        $$rAF: $$RAFProvider,
+        $$asyncCallback : $$AsyncCallbackProvider
       });
     }
   ]);

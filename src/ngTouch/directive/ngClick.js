@@ -4,7 +4,7 @@
 
 /**
  * @ngdoc directive
- * @name ngTouch.directive:ngClick
+ * @name ngClick
  *
  * @description
  * A more powerful replacement for the default ngClick designed to be used on touchscreen
@@ -25,14 +25,14 @@
  * upon tap. (Event object is available as `$event`)
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <button ng-click="count = count + 1" ng-init="count=0">
           Increment
         </button>
         count: {{ count }}
-      </doc:source>
-    </doc:example>
+      </file>
+    </example>
  */
 
 ngTouch.config(['$provide', function($provide) {
@@ -53,6 +53,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   var ACTIVE_CLASS_NAME = 'ng-click-active';
   var lastPreventedTime;
   var touchCoordinates;
+  var lastLabelClickCoordinates;
 
 
   // TAP EVENTS AND GHOST CLICKS
@@ -124,9 +125,22 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     var y = touches[0].clientY;
     // Work around desktop Webkit quirk where clicking a label will fire two clicks (on the label
     // and on the input element). Depending on the exact browser, this second click we don't want
-    // to bust has either (0,0) or negative coordinates.
+    // to bust has either (0,0), negative coordinates, or coordinates equal to triggering label
+    // click event
     if (x < 1 && y < 1) {
       return; // offscreen
+    }
+    if (lastLabelClickCoordinates &&
+        lastLabelClickCoordinates[0] === x && lastLabelClickCoordinates[1] === y) {
+      return; // input click triggered by label click
+    }
+    // reset label click coordinates on first subsequent click
+    if (lastLabelClickCoordinates) {
+      lastLabelClickCoordinates = null;
+    }
+    // remember label click coordinates to prevent click busting of trigger click event on input
+    if (event.target.tagName.toLowerCase() === 'label') {
+      lastLabelClickCoordinates = [x, y];
     }
 
     // Look for an allowable region containing this click.

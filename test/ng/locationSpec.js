@@ -4,6 +4,8 @@
 describe('$location', function() {
   var url;
 
+  beforeEach(module(provideLog));
+
   afterEach(function() {
     // link rewriting used in html5 mode on legacy browsers binds to document.onClick, so we need
     // to clean this up after each test.
@@ -1229,6 +1231,31 @@ describe('$location', function() {
       });
       browserTrigger(button, 'click');
     }));
+
+
+    it('should not throw when clicking an SVGAElement link', function() {
+      var base;
+      module(function($locationProvider) {
+        return function($browser) {
+          window.location.hash = '!someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+          $locationProvider.hashPrefix('!');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+        var template = '<svg><g><a xlink:href="#!/view1"><circle r="50"></circle></a></g></svg>';
+        var element = $compile(template)($rootScope);
+
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        expect(function() {
+          browserTrigger(av1, 'click');
+        }).not.toThrow();
+      });
+    });
   });
 
 
@@ -1376,6 +1403,32 @@ describe('$location', function() {
         dealoc($rootElement);
       });
     });
+
+    it('should always return the new url value via path() when $locationChangeStart event occurs regardless of cause',
+      inject(function($location, $rootScope, $browser, log) {
+        var base = $browser.url();
+
+        $rootScope.$on('$locationChangeStart', function() {
+          log($location.path());
+        });
+
+        // change through $location service
+        $rootScope.$apply(function() {
+          $location.path('/myNewPath');
+        });
+
+        // reset location
+        $rootScope.$apply(function() {
+          $location.path('');
+        });
+
+        // change through $browser
+        $browser.url(base + '#/myNewPath');
+        $browser.poll();
+
+        expect(log).toEqual(['/myNewPath', '/', '/myNewPath']);
+      })
+    );
   });
 
   describe('LocationHtml5Url', function() {

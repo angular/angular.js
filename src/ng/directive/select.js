@@ -3,7 +3,7 @@
 var ngOptionsMinErr = minErr('ngOptions');
 /**
  * @ngdoc directive
- * @name ng.directive:select
+ * @name select
  * @restrict E
  *
  * @description
@@ -19,14 +19,21 @@ var ngOptionsMinErr = minErr('ngOptions');
  * represented by the selected option will be bound to the model identified by the `ngModel`
  * directive.
  *
+ * <div class="alert alert-warning">
+ * **Note:** `ngModel` compares by reference, not value. This is important when binding to an
+ * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/).
+ * </div>
+ *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
  *
- * Note: `ngOptions` provides iterator facility for `<option>` element which should be used instead
+ * <div class="alert alert-warning">
+ * **Note:** `ngOptions` provides an iterator facility for the `<option>` element which should be used instead
  * of {@link ng.directive:ngRepeat ngRepeat} when you want the
  * `select` model to be bound to a non-string value. This is because an option element can only
  * be bound to string values at present.
+ * </div>
  *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
@@ -65,8 +72,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  *     `value` variable (e.g. `value.propertyName`).
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <script>
         function MyCntrl($scope) {
           $scope.colors = [
@@ -112,24 +119,26 @@ var ngOptionsMinErr = minErr('ngOptions');
                ng-style="{'background-color':color.name}">
           </div>
         </div>
-      </doc:source>
-      <doc:scenario>
+      </file>
+      <file name="protractor.js" type="protractor">
          it('should check ng-options', function() {
-           expect(binding('{selected_color:color}')).toMatch('red');
-           select('color').option('0');
-           expect(binding('{selected_color:color}')).toMatch('black');
-           using('.nullable').select('color').option('');
-           expect(binding('{selected_color:color}')).toMatch('null');
+           expect(element(by.binding('{selected_color:color}')).getText()).toMatch('red');
+           element.all(by.select('color')).first().click();
+           element.all(by.css('select[ng-model="color"] option')).first().click();
+           expect(element(by.binding('{selected_color:color}')).getText()).toMatch('black');
+           element(by.css('.nullable select[ng-model="color"]')).click();
+           element.all(by.css('.nullable select[ng-model="color"] option')).first().click();
+           expect(element(by.binding('{selected_color:color}')).getText()).toMatch('null');
          });
-      </doc:scenario>
-    </doc:example>
+      </file>
+    </example>
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });
 // jshint maxlen: false
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
-                         //0000111110000000000022220000000000000000000000333300000000000000444444444444444000000000555555555555555000000066666666666666600000000000000007777000000000000000000088888
-  var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/,
+                         //000011111111110000000000022222222220000000000000000000003333333333000000000000004444444444444440000000005555555555555550000000666666666666666000000000000000777777777700000000000000000008888888888
+  var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/,
       nullModelCtrl = {$setViewValue: noop};
 // jshint maxlen: 100
 
@@ -221,18 +230,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       selectCtrl.init(ngModelCtrl, nullOption, unknownOption);
 
       // required validator
-      if (multiple && (attr.required || attr.ngRequired)) {
-        var requiredValidator = function(value) {
-          ngModelCtrl.$setValidity('required', !attr.required || (value && value.length));
-          return value;
+      if (multiple) {
+        ngModelCtrl.$isEmpty = function(value) {
+          return !value || value.length === 0;
         };
-
-        ngModelCtrl.$parsers.push(requiredValidator);
-        ngModelCtrl.$formatters.unshift(requiredValidator);
-
-        attr.$observe('required', function() {
-          requiredValidator(ngModelCtrl.$viewValue);
-        });
       }
 
       if (optionsExp) setupAsOptions(scope, element, ngModelCtrl);
@@ -303,7 +304,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       function setupAsOptions(scope, selectElement, ctrl) {
         var match;
 
-        if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
+        if (!(match = optionsExp.match(NG_OPTIONS_REGEXP))) {
           throw ngOptionsMinErr('iexp',
             "Expected expression in form of " +
             "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
@@ -393,6 +394,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   value = valueFn(scope, locals);
                 }
               }
+              // Update the null option's selected property here so $render cleans it up correctly
+              if (optionGroupsCache[0].length > 1) {
+                if (optionGroupsCache[0][1].id !== key) {
+                  optionGroupsCache[0][1].selected = false;
+                }
+              }
             }
             ctrl.$setViewValue(value);
           });
@@ -438,7 +445,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
-            
+
             key = index;
             if (keyName) {
               key = keys[index];
@@ -530,7 +537,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   lastElement.val(existingOption.id = option.id);
                 }
                 // lastElement.prop('selected') provided by jQuery has side-effects
-                if (lastElement[0].selected !== option.selected) {
+                if (existingOption.selected !== option.selected) {
                   lastElement.prop('selected', (existingOption.selected = option.selected));
                 }
               } else {

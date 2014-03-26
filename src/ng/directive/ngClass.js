@@ -64,12 +64,24 @@ function classDirective(name, selector) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngClass
+ * @name ngClass
  * @restrict AC
  *
  * @description
  * The `ngClass` directive allows you to dynamically set CSS classes on an HTML element by databinding
  * an expression that represents all classes to be added.
+ *
+ * The directive operates in three different ways, depending on which of three types the expression
+ * evaluates to:
+ *
+ * 1. If the expression evaluates to a string, the string should be one or more space-delimited class
+ * names.
+ *
+ * 2. If the expression evaluates to an array, each element of the array should be a string that is
+ * one or more space-delimited class names.
+ *
+ * 3. If the expression evaluates to an object, then for each key-value pair of the
+ * object with a truthy value the corresponding key is used as a class name.
  *
  * The directive won't add duplicate classes if a particular class was already set.
  *
@@ -114,31 +126,34 @@ function classDirective(name, selector) {
            color: red;
        }
      </file>
-     <file name="scenario.js">
+     <file name="protractor.js" type="protractor">
+       var ps = element.all(by.css('p'));
+
        it('should let you toggle the class', function() {
 
-         expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/bold/);
-         expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/red/);
+         expect(ps.first().getAttribute('class')).not.toMatch(/bold/);
+         expect(ps.first().getAttribute('class')).not.toMatch(/red/);
 
-         input('important').check();
-         expect(element('.doc-example-live p:first').prop('className')).toMatch(/bold/);
+         element(by.model('important')).click();
+         expect(ps.first().getAttribute('class')).toMatch(/bold/);
 
-         input('error').check();
-         expect(element('.doc-example-live p:first').prop('className')).toMatch(/red/);
+         element(by.model('error')).click();
+         expect(ps.first().getAttribute('class')).toMatch(/red/);
        });
 
        it('should let you toggle string example', function() {
-         expect(element('.doc-example-live p:nth-of-type(2)').prop('className')).toBe('');
-         input('style').enter('red');
-         expect(element('.doc-example-live p:nth-of-type(2)').prop('className')).toBe('red');
+         expect(ps.get(1).getAttribute('class')).toBe('');
+         element(by.model('style')).clear();
+         element(by.model('style')).sendKeys('red');
+         expect(ps.get(1).getAttribute('class')).toBe('red');
        });
 
        it('array example should have 3 classes', function() {
-         expect(element('.doc-example-live p:last').prop('className')).toBe('');
-         input('style1').enter('bold');
-         input('style2').enter('strike');
-         input('style3').enter('red');
-         expect(element('.doc-example-live p:last').prop('className')).toBe('bold strike red');
+         expect(ps.last().getAttribute('class')).toBe('');
+         element(by.model('style1')).sendKeys('bold');
+         element(by.model('style2')).sendKeys('strike');
+         element(by.model('style3')).sendKeys('red');
+         expect(ps.last().getAttribute('class')).toBe('bold strike red');
        });
      </file>
    </example>
@@ -147,10 +162,10 @@ function classDirective(name, selector) {
 
    The example below demonstrates how to perform animations using ngClass.
 
-   <example animations="true">
+   <example module="ngAnimate" deps="angular-animate.js" animations="true">
      <file name="index.html">
-      <input type="button" value="set" ng-click="myVar='my-class'">
-      <input type="button" value="clear" ng-click="myVar=''">
+      <input id="setbtn" type="button" value="set" ng-click="myVar='my-class'">
+      <input id="clearbtn" type="button" value="clear" ng-click="myVar=''">
       <br>
       <span class="base-class" ng-class="myVar">Sample Text</span>
      </file>
@@ -165,19 +180,19 @@ function classDirective(name, selector) {
          font-size:3em;
        }
      </file>
-     <file name="scenario.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-class', function() {
-         expect(element('.doc-example-live span').prop('className')).not().
+         expect(element(by.css('.base-class')).getAttribute('class')).not.
            toMatch(/my-class/);
 
-         using('.doc-example-live').element(':button:first').click();
+         element(by.id('setbtn')).click();
 
-         expect(element('.doc-example-live span').prop('className')).
+         expect(element(by.css('.base-class')).getAttribute('class')).
            toMatch(/my-class/);
 
-         using('.doc-example-live').element(':button:last').click();
+         element(by.id('clearbtn')).click();
 
-         expect(element('.doc-example-live span').prop('className')).not().
+         expect(element(by.css('.base-class')).getAttribute('class')).not.
            toMatch(/my-class/);
        });
      </file>
@@ -188,14 +203,14 @@ function classDirective(name, selector) {
    The ngClass directive still supports CSS3 Transitions/Animations even if they do not follow the ngAnimate CSS naming structure.
    Upon animation ngAnimate will apply supplementary CSS classes to track the start and end of an animation, but this will not hinder
    any pre-existing CSS transitions already on the element. To get an idea of what happens during a class-based animation, be sure
-   to view the step by step details of {@link ngAnimate.$animate#methods_addclass $animate.addClass} and
-   {@link ngAnimate.$animate#methods_removeclass $animate.removeClass}.
+   to view the step by step details of {@link ngAnimate.$animate#addclass $animate.addClass} and
+   {@link ngAnimate.$animate#removeclass $animate.removeClass}.
  */
 var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngClassOdd
+ * @name ngClassOdd
  * @restrict AC
  *
  * @description
@@ -229,11 +244,11 @@ var ngClassDirective = classDirective('', true);
          color: blue;
        }
      </file>
-     <file name="scenario.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-class-odd and ng-class-even', function() {
-         expect(element('.doc-example-live li:first span').prop('className')).
+         expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
            toMatch(/odd/);
-         expect(element('.doc-example-live li:last span').prop('className')).
+         expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
            toMatch(/even/);
        });
      </file>
@@ -243,7 +258,7 @@ var ngClassOddDirective = classDirective('Odd', 0);
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngClassEven
+ * @name ngClassEven
  * @restrict AC
  *
  * @description
@@ -277,11 +292,11 @@ var ngClassOddDirective = classDirective('Odd', 0);
          color: blue;
        }
      </file>
-     <file name="scenario.js">
+     <file name="protractor.js" type="protractor">
        it('should check ng-class-odd and ng-class-even', function() {
-         expect(element('.doc-example-live li:first span').prop('className')).
+         expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
            toMatch(/odd/);
-         expect(element('.doc-example-live li:last span').prop('className')).
+         expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
            toMatch(/even/);
        });
      </file>

@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name ng.$anchorScroll
+ * @ngdoc service
+ * @name $anchorScroll
+ * @kind function
  * @requires $window
  * @requires $location
  * @requires $rootScope
@@ -10,11 +11,11 @@
  * @description
  * When called, it checks current value of `$location.hash()` and scroll to related element,
  * according to rules specified in
- * {@link http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document Html5 spec}.
+ * [Html5 spec](http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document).
  *
  * It also watches the `$location.hash()` and scrolls whenever it changes to match any anchor.
  * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
- * 
+ *
  * @example
    <example>
      <file name="index.html">
@@ -29,10 +30,10 @@
            // set the location.hash to the id of
            // the element you wish to scroll to.
            $location.hash('bottom');
-           
+
            // call $anchorScroll()
            $anchorScroll();
-         }
+         };
        }
      </file>
      <file name="style.css">

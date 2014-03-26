@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngNonBindable
+ * @name ngNonBindable
  * @restrict AC
  * @priority 1000
  *
@@ -19,18 +19,17 @@
  * but the one wrapped in `ngNonBindable` is left alone.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <div>Normal: {{1 + 2}}</div>
         <div ng-non-bindable>Ignored: {{1 + 2}}</div>
-      </doc:source>
-      <doc:scenario>
+      </file>
+      <file name="protractor.js" type="protractor">
        it('should check ng-non-bindable', function() {
-         expect(using('.doc-example-live').binding('1 + 2')).toBe('3');
-         expect(using('.doc-example-live').element('div:last').text()).
-           toMatch(/1 \+ 2/);
+         expect(element(by.binding('1 + 2')).getText()).toContain('3');
+         expect(element.all(by.css('div')).last().getText()).toMatch(/1 \+ 2/);
        });
-      </doc:scenario>
-    </doc:example>
+      </file>
+    </example>
  */
 var ngNonBindableDirective = ngDirective({ terminal: true, priority: 1000 });

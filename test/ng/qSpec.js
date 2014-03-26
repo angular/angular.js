@@ -959,6 +959,13 @@ describe('q', function() {
       mockNextTick.flush();
       expect(log).toEqual(['errorBroken(rejected)->throw(catch me!)', 'errorAffected(catch me!)->reject(catch me!)']);
     });
+
+
+    it('should have functions `finally` and `catch`', function() {
+      var rejectedPromise = q.reject('rejected');
+      expect(rejectedPromise['finally']).not.toBeUndefined();
+      expect(rejectedPromise['catch']).not.toBeUndefined();
+    });
   });
 
 
@@ -1003,7 +1010,7 @@ describe('q', function() {
       });
 
 
-      it('should call the errback after the orignal promise is rejected',
+      it('should call the errback after the original promise is rejected',
           function() {
         q.when(deferred.promise, success(), error());
         expect(logStr()).toBe('');
@@ -1128,7 +1135,7 @@ describe('q', function() {
 
 
     describe('security', function() {
-      it('should call success callback only once even if the original promise gets fullfilled ' +
+      it('should call success callback only once even if the original promise gets fulfilled ' +
           'multiple times', function() {
         var evilPromise = {
           then: function(success, error, progress) {
@@ -1154,7 +1161,7 @@ describe('q', function() {
       });
 
 
-      it('should call errback only once even if the original promise gets fullfilled multiple ' +
+      it('should call errback only once even if the original promise gets fulfilled multiple ' +
           'times', function() {
         var evilPromise = {
           then: function(success, error, progress) {
@@ -1176,7 +1183,7 @@ describe('q', function() {
       });
 
 
-      it('should not call progressback after promise gets fullfilled, even if original promise ' +
+      it('should not call progressback after promise gets fulfilled, even if original promise ' +
           'gets notified multiple times', function() {
         var evilPromise = {
           then: function(success, error, progress) {

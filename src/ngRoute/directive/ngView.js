@@ -6,7 +6,7 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
 
 /**
  * @ngdoc directive
- * @name ngRoute.directive:ngView
+ * @name ngView
  * @restrict ECA
  *
  * @description
@@ -26,10 +26,21 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
  *
  * @scope
  * @priority 400
+ * @param {string=} onload Expression to evaluate whenever the view updates.
+ *
+ * @param {string=} autoscroll Whether `ngView` should call {@link ng.$anchorScroll
+ *                  $anchorScroll} to scroll the viewport after the view is updated.
+ *
+ *                  - If the attribute is not set, disable scrolling.
+ *                  - If the attribute is set without value, enable scrolling.
+ *                  - Otherwise enable scrolling only if the `autoscroll` attribute value evaluated
+ *                    as an expression yields a truthy value.
  * @example
-    <example module="ngViewExample" deps="angular-route.js" animations="true">
+    <example name="ngView-directive" module="ngViewExample"
+             deps="angular-route.js;angular-animate.js"
+             animations="true" fixBase="true">
       <file name="index.html">
-        <div ng-controller="MainCntl as main">
+        <div ng-controller="MainCtrl as main">
           Choose:
           <a href="Book/Moby">Moby</a> |
           <a href="Book/Moby/ch/1">Moby: Ch1</a> |
@@ -108,51 +119,53 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
       </file>
 
       <file name="script.js">
-        angular.module('ngViewExample', ['ngRoute', 'ngAnimate'],
-          function($routeProvider, $locationProvider) {
-            $routeProvider.when('/Book/:bookId', {
-              templateUrl: 'book.html',
-              controller: BookCntl,
-              controllerAs: 'book'
-            });
-            $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-              templateUrl: 'chapter.html',
-              controller: ChapterCntl,
-              controllerAs: 'chapter'
-            });
+        angular.module('ngViewExample', ['ngRoute', 'ngAnimate'])
+          .config(['$routeProvider', '$locationProvider',
+            function($routeProvider, $locationProvider) {
+              $routeProvider
+                .when('/Book/:bookId', {
+                  templateUrl: 'book.html',
+                  controller: 'BookCtrl',
+                  controllerAs: 'book'
+                })
+                .when('/Book/:bookId/ch/:chapterId', {
+                  templateUrl: 'chapter.html',
+                  controller: 'ChapterCtrl',
+                  controllerAs: 'chapter'
+                });
 
-            // configure html5 to get links working on jsfiddle
-            $locationProvider.html5Mode(true);
-        });
+              // configure html5 to get links working on jsfiddle
+              $locationProvider.html5Mode(true);
+          }])
+          .controller('MainCtrl', ['$route', '$routeParams', '$location',
+            function($route, $routeParams, $location) {
+              this.$route = $route;
+              this.$location = $location;
+              this.$routeParams = $routeParams;
+          }])
+          .controller('BookCtrl', ['$routeParams', function($routeParams) {
+            this.name = "BookCtrl";
+            this.params = $routeParams;
+          }])
+          .controller('ChapterCtrl', ['$routeParams', function($routeParams) {
+            this.name = "ChapterCtrl";
+            this.params = $routeParams;
+          }]);
 
-        function MainCntl($route, $routeParams, $location) {
-          this.$route = $route;
-          this.$location = $location;
-          this.$routeParams = $routeParams;
-        }
-
-        function BookCntl($routeParams) {
-          this.name = "BookCntl";
-          this.params = $routeParams;
-        }
-
-        function ChapterCntl($routeParams) {
-          this.name = "ChapterCntl";
-          this.params = $routeParams;
-        }
       </file>
 
-      <file name="scenario.js">
+      <file name="protractor.js" type="protractor">
         it('should load and compile correct template', function() {
-          element('a:contains("Moby: Ch1")').click();
-          var content = element('.doc-example-live [ng-view]').text();
-          expect(content).toMatch(/controller\: ChapterCntl/);
+          element(by.linkText('Moby: Ch1')).click();
+          var content = element(by.css('[ng-view]')).getText();
+          expect(content).toMatch(/controller\: ChapterCtrl/);
           expect(content).toMatch(/Book Id\: Moby/);
           expect(content).toMatch(/Chapter Id\: 1/);
 
-          element('a:contains("Scarlet")').click();
-          content = element('.doc-example-live [ng-view]').text();
-          expect(content).toMatch(/controller\: BookCntl/);
+          element(by.partialLinkText('Scarlet')).click();
+
+          content = element(by.css('[ng-view]')).getText();
+          expect(content).toMatch(/controller\: BookCtrl/);
           expect(content).toMatch(/Book Id\: Scarlet/);
         });
       </file>
@@ -162,8 +175,7 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
 
 /**
  * @ngdoc event
- * @name ngRoute.directive:ngView#$viewContentLoaded
- * @eventOf ngRoute.directive:ngView
+ * @name ngView#$viewContentLoaded
  * @eventType emit on the current ngView scope
  * @description
  * Emitted every time the ngView content is reloaded.
@@ -178,6 +190,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $animate) {
     link: function(scope, $element, attr, ctrl, $transclude) {
         var currentScope,
             currentElement,
+            previousElement,
             autoScrollExp = attr.autoscroll,
             onloadExp = attr.onload || '';
 
@@ -185,12 +198,19 @@ function ngViewFactory(   $route,   $anchorScroll,   $animate) {
         update();
 
         function cleanupLastView() {
-          if (currentScope) {
+          if(previousElement) {
+            previousElement.remove();
+            previousElement = null;
+          }
+          if(currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
           if(currentElement) {
-            $animate.leave(currentElement);
+            $animate.leave(currentElement, function() {
+              previousElement = null;
+            });
+            previousElement = currentElement;
             currentElement = null;
           }
         }
@@ -199,7 +219,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $animate) {
           var locals = $route.current && $route.current.locals,
               template = locals && locals.$template;
 
-          if (template) {
+          if (angular.isDefined(template)) {
             var newScope = scope.$new();
             var current = $route.current;
 

@@ -7,7 +7,7 @@
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
-If you're looking for the **directives API**, we recently moved it to {@link api/ng.$compile `$compile`}.
+If you're looking for the **directives API**, we recently moved it to {@link ng.$compile `$compile`}.
 </div>
 
 
@@ -18,7 +18,7 @@ how to implement them.
 ## What are Directives?
 
 At a high level, directives are markers on a DOM element (such as an attribute, element
-name, or CSS class) that tell AngularJS's **HTML compiler** ({@link api/ng.$compile `$compile`}) to
+name, or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
 attach a specified behavior to that DOM element or even transform the DOM element and its children.
 
 Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngView`.
@@ -32,7 +32,7 @@ When Angular {@link guide/bootstrap bootstraps} your application, the
 For AngularJS, "compilation" means attaching event listeners to the HTML to make it interactive.
 The reason we use the term "compile" is that the recursive process of attaching directives
 mirrors the process of compiling source code in
-{@link http://en.wikipedia.org/wiki/Compiled_languages compiled programming languages}.
+[compiled programming languages](http://en.wikipedia.org/wiki/Compiled_languages).
 </div>
 
 
@@ -55,9 +55,9 @@ The following also **matches** `ngModel`:
 
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
 directives. We typically refer to directives by their case-sensitive
-{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`). 
+[camelCase](http://en.wikipedia.org/wiki/CamelCase) **normalized** name (e.g. `ngModel`).
 However, since HTML is case-insensitive, we refer to directives in the DOM by lower-case
-forms, typically using {@link http://en.wikipedia.org/wiki/Letter_case#Computers dash-delimited}
+forms, typically using [dash-delimited](http://en.wikipedia.org/wiki/Letter_case#Computers)
 attributes on DOM elements (e.g. `ng-model`).
 
 The **normalization** process is as follows:
@@ -84,10 +84,10 @@ Here are some equivalent examples of elements that match `ngBind`:
       <span x-ng-bind="name"></span> <br/>
     </div>
   </file>
-  <file name="scenario.js">
+  <file name="protractorTest.js">
     it('should show off bindings', function() {
-      expect(element('div[ng-controller="Ctrl1"] span[ng-bind]').text())
-        .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      expect(element(by.css('div[ng-controller="Ctrl1"] span[ng-bind]')).getText())
+          .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
     });
   </file>
 </example>
@@ -120,7 +120,7 @@ Doing so generally makes it easier to determine what directives a given element 
 <div class="alert alert-success">
 **Best Practice:** Comment directives were commonly used in places where the DOM API limits the
 ability to create directives that spanned multiple elements (e.g. inside `<table>` elements).
-AngularJS 1.2 introduces {@link api/ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`}
+AngularJS 1.2 introduces {@link ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`}
 as a better solution to this problem. Developers are encouraged to use this over custom comment
 directives when possible.
 </div>
@@ -129,10 +129,10 @@ directives when possible.
 
 ### Text and attribute bindings
 
-During the compilation process the {@link api/ng.$compile compiler} matches text and attributes
-using the {@link api/ng.$interpolate $interpolate} service to see if they contain embedded
-expressions. These expressions are registered as {@link api/ng.$rootScope.Scope#methods_$watch watches}
-and will update as part of normal {@link api/ng.$rootScope.Scope#methods_$digest digest} cycle. An
+During the compilation process the {@link ng.$compile compiler} matches text and attributes
+using the {@link ng.$interpolate $interpolate} service to see if they contain embedded
+expressions. These expressions are registered as {@link ng.$rootScope.Scope#$watch watches}
+and will update as part of normal {@link ng.$rootScope.Scope#$digest digest} cycle. An
 example of interpolation is shown below:
 
 ```html
@@ -174,18 +174,18 @@ For example, we could fix the example above by instead writing:
 
 ## Creating Directives
 
-First let's talk about the API for registering directives. Much like controllers, directives are
-registered on modules. To register a directive, you use the `module.directive` API.
-`module.directive` takes the
+First let's talk about the {@link ng.$compileProvider#directive API for registering directives}. Much like
+controllers, directives are registered on modules. To register a directive, you use the
+`module.directive` API. `module.directive` takes the
 {@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
 followed by a **factory function.** This factory function should return an object with the different
 options to tell `$compile` how the directive should behave when matched.
 
 
 The factory function is invoked only once when the
-{@link api/ng.$compile compiler} matches the directive for the first time. You can perform any
+{@link ng.$compile compiler} matches the directive for the first time. You can perform any
 initialization work here. The function is invoked using
-{@link api/AUTO.$injector#methods_invoke $injector.invoke} which makes it injectable just like a
+{@link auto.$injector#invoke $injector.invoke} which makes it injectable just like a
 controller.
 
 <div class="alert alert-success">
@@ -280,18 +280,22 @@ using `templateUrl` instead:
 </example>
 
 Great! But what if we wanted to have our directive match the tag name `<my-customer>` instead?
-If we simply put a `<my-customer>` element into the HMTL, it doesn't work.
+If we simply put a `<my-customer>` element into the HTML, it doesn't work.
 
 <div class="alert alert-waring">
 **Note:** When you create a directive, it is restricted to attribute only by default. In order to
-create directives that are triggered by element name, you need to use the `restrict` option.
+create directives that are triggered by element or class name, you need to use the `restrict` option.
 </div>
 
 The `restrict` option is typically set to:
 
 * `'A'` - only matches attribute name
 * `'E'` - only matches element name
-* `'AE'` - matches either attribute or element name
+* `'C'` - only matches class name
+
+These restrictions can all be combined as needed:
+
+* `'AEC'` - matches either attribute or element or class name
 
 Let's change our directive to use `restrict: 'E'`:
 
@@ -324,9 +328,9 @@ Let's change our directive to use `restrict: 'E'`:
 </example>
 
 For more on the
-{@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
+{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
 property, see the
-{@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
+{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
 
 <div class="alert alert-info">
 **When should I use an attribute versus an element?**
@@ -506,6 +510,8 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
+See the {@link guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive
+"Isolating the Scope of a Directive"} section for more information about isolate scopes.
 </div>
 
 <div class="alert alert-success">
@@ -525,11 +531,14 @@ where:
 
 * `scope` is an Angular scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
-* `attrs` is an object with the normalized attribute names and their corresponding values.
+* `attrs` is a hash object with key-value pairs of normalized attribute names and their
+  corresponding attribute values.
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
-changes the time formatting string that our directive binds to. We also want to remove the timeout
-if the directive is deleted so we don't introduce a memory leak.
+changes the time formatting string that our directive binds to. We will use the `$interval` service
+to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
+end 2 end testing, where we want to ensure that all $timeouts have completed before completing the test.
+We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
   <file name="script.js">
@@ -537,7 +546,7 @@ if the directive is deleted so we don't introduce a memory leak.
       .controller('Ctrl2', function($scope) {
         $scope.format = 'M/d/yy h:mm:ss a';
       })
-      .directive('myCurrentTime', function($timeout, dateFilter) {
+      .directive('myCurrentTime', function($interval, dateFilter) {
 
         function link(scope, element, attrs) {
           var format,
@@ -552,20 +561,14 @@ if the directive is deleted so we don't introduce a memory leak.
             updateTime();
           });
 
-          function scheduleUpdate() {
-            // save the timeoutId for canceling
-            timeoutId = $timeout(function() {
-              updateTime(); // update DOM
-              scheduleUpdate(); // schedule the next update
-            }, 1000);
-          }
-
           element.on('$destroy', function() {
-            $timeout.cancel(timeoutId);
+            $interval.cancel(timeoutId);
           });
 
-          // start the UI update process.
-          scheduleUpdate();
+          // start the UI update process; save the timeoutId for canceling
+          timeoutId = $interval(function() {
+            updateTime(); // update DOM
+          }, 1000);
         }
 
         return {
@@ -583,7 +586,7 @@ if the directive is deleted so we don't introduce a memory leak.
 
 There are a couple of things to note here.
 Just like the `module.controller` API, the function argument in `module.directive` is dependency
-injected. Because of this, we can use `$timeout` and `dateFilter` inside our directive's `link`
+injected. Because of this, we can use `$interval` and `dateFilter` inside our directive's `link`
 function.
 
 We register an event `element.on('$destroy', ...)`. What fires this `$destroy` event?
@@ -736,13 +739,18 @@ own behavior to it.
 We want to run the function we pass by invoking it from the directive's scope, but have it run
 in the context of the scope where its registered.
 
-We saw earlier how to use `=prop` in the `scope` option, but in the above example, we're using
-`&prop` instead. `&` bindings expose a function to an isolated scope allowing the isolated scope
-to invoke it, but maintaining the original scope of the function. So when a user clicks the
-`x` in the dialog, it runs `Ctrl`'s `close` function.
+We saw earlier how to use `=attr` in the `scope` option, but in the above example, we're using
+`&attr` instead.  The `&` binding allows a directive to trigger evaluation of an expression in
+the context of the original scope, at a specific time.  Any legal expression is allowed, including
+an expression which contains a function call.  Because of this, `&` bindings are ideal for binding
+callback functions to directive behaviors.
+
+When the user clicks the `x` in the dialog, the directive's `close` function is called, thanks to
+`ng-click.`  This call to `close` on the isolated scope actually evaluates the expression
+`hideDialog()` in the context of the original scope, thus running `Ctrl`'s `hideDialog` function.
 
 <div class="alert alert-success">
-**Best Practice:** use `&prop` in the `scope` option when you want your directive
+**Best Practice:** use `&attr` in the `scope` option when you want your directive
 to expose an API for binding to behaviors.
 </div>
 
@@ -792,7 +800,7 @@ element?
             $document.unbind('mousemove', mousemove);
             $document.unbind('mouseup', mouseup);
           }
-        }
+        };
       });
   </file>
   <file name="index.html">
@@ -830,7 +838,7 @@ to which tab is active.
             };
 
             this.addPane = function(pane) {
-              if (panes.length == 0) {
+              if (panes.length === 0) {
                 $scope.select(pane);
               }
               panes.push(pane);
@@ -913,6 +921,6 @@ point for creating your own directives.
 You might also be interested in an in-depth explanation of the compilation process that's
 available in the {@link guide/compiler compiler guide}.
 
-The {@link api/ng.$compile `$compile` API} page has a comprehensive list of directive options for
+The {@link ng.$compile `$compile` API} page has a comprehensive list of directive options for
 reference.
 

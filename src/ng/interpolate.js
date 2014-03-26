@@ -3,8 +3,8 @@
 var $interpolateMinErr = minErr('$interpolate');
 
 /**
- * @ngdoc object
- * @name ng.$interpolateProvider
+ * @ngdoc provider
+ * @name $interpolateProvider
  * @function
  *
  * @description
@@ -12,8 +12,8 @@ var $interpolateMinErr = minErr('$interpolate');
  * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
  *
  * @example
-<doc:example module="customInterpolationApp">
-<doc:source>
+<example module="customInterpolationApp">
+<file name="index.html">
 <script>
   var customInterpolationApp = angular.module('customInterpolationApp', []);
 
@@ -30,13 +30,13 @@ var $interpolateMinErr = minErr('$interpolate');
 <div ng-app="App" ng-controller="DemoController as demo">
     //demo.label//
 </div>
-</doc:source>
-<doc:scenario>
- it('should interpolate binding with custom symbols', function() {
-  expect(binding('demo.label')).toBe('This binding is brought you by // interpolation symbols.');
- });
-</doc:scenario>
-</doc:example>
+</file>
+<file name="protractor.js" type="protractor">
+  it('should interpolate binding with custom symbols', function() {
+    expect(element(by.binding('demo.label')).getText()).toBe('This binding is brought you by // interpolation symbols.');
+  });
+</file>
+</example>
  */
 function $InterpolateProvider() {
   var startSymbol = '{{';
@@ -44,8 +44,7 @@ function $InterpolateProvider() {
 
   /**
    * @ngdoc method
-   * @name ng.$interpolateProvider#startSymbol
-   * @methodOf ng.$interpolateProvider
+   * @name $interpolateProvider#startSymbol
    * @description
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
@@ -63,8 +62,7 @@ function $InterpolateProvider() {
 
   /**
    * @ngdoc method
-   * @name ng.$interpolateProvider#endSymbol
-   * @methodOf ng.$interpolateProvider
+   * @name $interpolateProvider#endSymbol
    * @description
    * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
    *
@@ -86,8 +84,8 @@ function $InterpolateProvider() {
         endSymbolLength = endSymbol.length;
 
     /**
-     * @ngdoc function
-     * @name ng.$interpolate
+     * @ngdoc service
+     * @name $interpolate
      * @function
      *
      * @requires $parse
@@ -101,11 +99,11 @@ function $InterpolateProvider() {
      * interpolation markup.
      *
      *
-       <pre>
-         var $interpolate = ...; // injected
-         var exp = $interpolate('Hello {{name | uppercase}}!');
-         expect(exp({name:'Angular'}).toEqual('Hello ANGULAR!');
-       </pre>
+     * ```js
+     *   var $interpolate = ...; // injected
+     *   var exp = $interpolate('Hello {{name | uppercase}}!');
+     *   expect(exp({name:'Angular'}).toEqual('Hello ANGULAR!');
+     * ```
      *
      *
      * @param {string} text The text with markup to interpolate.
@@ -113,7 +111,7 @@ function $InterpolateProvider() {
      *    embedded expression in order to return an interpolation function. Strings with no
      *    embedded expression will return null for the interpolation function.
      * @param {string=} trustedContext when provided, the returned function passes the interpolated
-     *    result through {@link ng.$sce#methods_getTrusted $sce.getTrusted(interpolatedResult,
+     *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
      * @returns {function(context)} an interpolation function which is used to compute the
@@ -205,8 +203,7 @@ function $InterpolateProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$interpolate#startSymbol
-     * @methodOf ng.$interpolate
+     * @name $interpolate#startSymbol
      * @description
      * Symbol to denote the start of expression in the interpolated string. Defaults to `{{`.
      *
@@ -222,15 +219,14 @@ function $InterpolateProvider() {
 
     /**
      * @ngdoc method
-     * @name ng.$interpolate#endSymbol
-     * @methodOf ng.$interpolate
+     * @name $interpolate#endSymbol
      * @description
      * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
      *
      * Use {@link ng.$interpolateProvider#endSymbol $interpolateProvider#endSymbol} to change
      * the symbol.
      *
-     * @returns {string} start symbol.
+     * @returns {string} end symbol.
      */
     $interpolate.endSymbol = function() {
       return endSymbol;

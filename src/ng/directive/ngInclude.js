@@ -2,23 +2,23 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngInclude
+ * @name ngInclude
  * @restrict ECA
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
  * By default, the template URL is restricted to the same domain and protocol as the
- * application document. This is done by calling {@link ng.$sce#methods_getTrustedResourceUrl
+ * application document. This is done by calling {@link ng.$sce#getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols
- * you may either {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist them} or
- * {@link ng.$sce#methods_trustAsResourceUrl wrap them} as trusted values. Refer to Angular's {@link
+ * you may either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
+ * [wrap them](ng.$sce#trustAsResourceUrl) as trusted values. Refer to Angular's {@link
  * ng.$sce Strict Contextual Escaping}.
  *
  * In addition, the browser's
- * {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
- * Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
- * (CORS)} policy may further restrict whether the template is successfully loaded.
+ * [Same Origin Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest)
+ * and [Cross-Origin Resource Sharing (CORS)](http://www.w3.org/TR/cors/)
+ * policy may further restrict whether the template is successfully loaded.
  * For example, `ngInclude` won't work for cross-domain requests on all browsers and for `file://`
  * access on some browsers.
  *
@@ -32,7 +32,7 @@
  * @priority 400
  *
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
- *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
+ *                 make sure you wrap it in **single** quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
@@ -43,7 +43,7 @@
  *                  - Otherwise enable scrolling only if the expression evaluates to truthy value.
  *
  * @example
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
      <div ng-controller="Ctrl">
        <select ng-model="template" ng-options="t.name for t in templates">
@@ -59,8 +59,8 @@
     <file name="script.js">
       function Ctrl($scope) {
         $scope.templates =
-          [ { name: 'template1.html', url: 'template1.html'}
-          , { name: 'template2.html', url: 'template2.html'} ];
+          [ { name: 'template1.html', url: 'template1.html'},
+            { name: 'template2.html', url: 'template2.html'} ];
         $scope.template = $scope.templates[0];
       }
      </file>
@@ -110,19 +110,33 @@
         top:50px;
       }
     </file>
-    <file name="scenario.js">
+    <file name="protractor.js" type="protractor">
+      var templateSelect = element(by.model('template'));
+      var includeElem = element(by.css('[ng-include]'));
+
       it('should load template1.html', function() {
-       expect(element('.doc-example-live [ng-include]').text()).
-         toMatch(/Content of template1.html/);
+        expect(includeElem.getText()).toMatch(/Content of template1.html/);
       });
+
       it('should load template2.html', function() {
-       select('template').option('1');
-       expect(element('.doc-example-live [ng-include]').text()).
-         toMatch(/Content of template2.html/);
+        if (browser.params.browser == 'firefox') {
+          // Firefox can't handle using selects
+          // See https://github.com/angular/protractor/issues/480
+          return;
+        }
+        templateSelect.click();
+        templateSelect.element.all(by.css('option')).get(2).click();
+        expect(includeElem.getText()).toMatch(/Content of template2.html/);
       });
+
       it('should change to blank', function() {
-       select('template').option('');
-       expect(element('.doc-example-live [ng-include]')).toBe(undefined);
+        if (browser.params.browser == 'firefox') {
+          // Firefox can't handle using selects
+          return;
+        }
+        templateSelect.click();
+        templateSelect.element.all(by.css('option')).get(0).click();
+        expect(includeElem.isPresent()).toBe(false);
       });
     </file>
   </example>
@@ -131,8 +145,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentRequested
- * @eventOf ng.directive:ngInclude
+ * @name ngInclude#$includeContentRequested
  * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted every time the ngInclude content is requested.
@@ -141,8 +154,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentLoaded
- * @eventOf ng.directive:ngInclude
+ * @name ngInclude#$includeContentLoaded
  * @eventType emit on the current ngInclude scope
  * @description
  * Emitted every time the ngInclude content is reloaded.
@@ -163,15 +175,23 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
       return function(scope, $element, $attr, ctrl, $transclude) {
         var changeCounter = 0,
             currentScope,
+            previousElement,
             currentElement;
 
         var cleanupLastIncludeContent = function() {
-          if (currentScope) {
+          if(previousElement) {
+            previousElement.remove();
+            previousElement = null;
+          }
+          if(currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
           if(currentElement) {
-            $animate.leave(currentElement);
+            $animate.leave(currentElement, function() {
+              previousElement = null;
+            });
+            previousElement = currentElement;
             currentElement = null;
           }
         };

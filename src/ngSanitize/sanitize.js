@@ -3,7 +3,7 @@
 var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngSanitize
  * @description
  *
@@ -11,7 +11,6 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *
  * The `ngSanitize` module provides functionality to sanitize HTML.
  *
- * {@installModule sanitize}
  *
  * <div doc-module-components="ngSanitize"></div>
  *
@@ -37,7 +36,7 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
  * @ngdoc service
- * @name ngSanitize.$sanitize
+ * @name $sanitize
  * @function
  *
  * @description
@@ -53,8 +52,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  * @returns {string} Sanitized html.
  *
  * @example
-   <doc:example module="ngSanitize">
-   <doc:source>
+   <example module="ngSanitize" deps="angular-sanitize.js">
+   <file name="index.html">
      <script>
        function Ctrl($scope, $sce) {
          $scope.snippet =
@@ -98,37 +97,39 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
          </tr>
        </table>
        </div>
-   </doc:source>
-   <doc:scenario>
+   </file>
+   <file name="protractor.js" type="protractor">
      it('should sanitize the html snippet by default', function() {
-       expect(using('#bind-html-with-sanitize').element('div').html()).
+       expect(element(by.css('#bind-html-with-sanitize div')).getInnerHtml()).
          toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
      });
 
      it('should inline raw snippet if bound to a trusted value', function() {
-       expect(using('#bind-html-with-trust').element("div").html()).
+       expect(element(by.css('#bind-html-with-trust div')).getInnerHtml()).
          toBe("<p style=\"color:blue\">an html\n" +
               "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
               "snippet</p>");
      });
 
      it('should escape snippet without any filter', function() {
-       expect(using('#bind-default').element('div').html()).
+       expect(element(by.css('#bind-default div')).getInnerHtml()).
          toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
               "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
               "snippet&lt;/p&gt;");
      });
 
      it('should update', function() {
-       input('snippet').enter('new <b onclick="alert(1)">text</b>');
-       expect(using('#bind-html-with-sanitize').element('div').html()).toBe('new <b>text</b>');
-       expect(using('#bind-html-with-trust').element('div').html()).toBe(
+       element(by.model('snippet')).clear();
+       element(by.model('snippet')).sendKeys('new <b onclick="alert(1)">text</b>');
+       expect(element(by.css('#bind-html-with-sanitize div')).getInnerHtml()).
+         toBe('new <b>text</b>');
+       expect(element(by.css('#bind-html-with-trust div')).getInnerHtml()).toBe(
          'new <b onclick="alert(1)">text</b>');
-       expect(using('#bind-default').element('div').html()).toBe(
+       expect(element(by.css('#bind-default div')).getInnerHtml()).toBe(
          "new &lt;b onclick=\"alert(1)\"&gt;text&lt;/b&gt;");
      });
-   </doc:scenario>
-   </doc:example>
+   </file>
+   </example>
  */
 function $SanitizeProvider() {
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
@@ -206,7 +207,7 @@ var validAttrs = angular.extend({}, uriAttrs, makeMap(
     'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,'+
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,'+
-    'scope,scrolling,shape,span,start,summary,target,title,type,'+
+    'scope,scrolling,shape,size,span,start,summary,target,title,type,'+
     'valign,value,vspace,width'));
 
 function makeMap(str) {
@@ -253,7 +254,7 @@ function htmlParser( html, handler ) {
         match = html.match( DOCTYPE_REGEXP );
 
         if ( match ) {
-          html = html.replace( match[0] , '');
+          html = html.replace( match[0], '');
           chars = false;
         }
       // end tag
@@ -393,7 +394,7 @@ function decodeEntities(value) {
  * resulting string can be safely inserted into attribute or
  * element text.
  * @param value
- * @returns escaped text
+ * @returns {string} escaped text
  */
 function encodeEntities(value) {
   return value.

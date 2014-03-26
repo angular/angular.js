@@ -25,7 +25,7 @@
  * should all be static strings, not variables or general expressions.
  *
  * @param {string} module The namespace to use for the new minErr instance.
- * @returns {function(string, string, ...): Error} instance
+ * @returns {function(code:string, template:string, ...templateArgs): Error} minErr instance
  */
 
 function minErr(module) {

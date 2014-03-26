@@ -52,16 +52,19 @@ describe('ngMock', function() {
 
 
     it('should fake getHours method', function() {
-      //0 in -3h
-      var t0 = new angular.mock.TzDate(-3, 0);
+      // avoid going negative due to #5017, so use Jan 2, 1970 00:00 UTC
+      var jan2 = 24 * 60 * 60 * 1000;
+
+      //0:00 in -3h
+      var t0 = new angular.mock.TzDate(-3, jan2);
       expect(t0.getHours()).toBe(3);
 
-      //0 in +0h
-      var t1 = new angular.mock.TzDate(0, 0);
+      //0:00 in +0h
+      var t1 = new angular.mock.TzDate(0, jan2);
       expect(t1.getHours()).toBe(0);
 
-      //0 in +3h
-      var t2 = new angular.mock.TzDate(3, 0);
+      //0:00 in +3h
+      var t2 = new angular.mock.TzDate(3, jan2);
       expect(t2.getHours()).toMatch(21);
     });
 
@@ -509,6 +512,11 @@ describe('ngMock', function() {
 
       it('should not throw a runtime exception when given an undefined promise',
           inject(function($interval) {
+        var task1 = jasmine.createSpy('task1'),
+            promise1;
+
+        promise1 = $interval(task1, 1000, 1);
+
         expect($interval.cancel()).toBe(false);
       }));
     });
@@ -862,6 +870,50 @@ describe('ngMock', function() {
           expect(log).toEqual('module;inject;')
         });
       });
+
+
+      describe('this', function() {
+
+        it('should set `this` to be the jasmine context', inject(function() {
+          expect(this instanceof jasmine.Spec).toBe(true);
+        }));
+
+        it('should set `this` to be the jasmine context when inlined in a test', function() {
+          var tested = false;
+
+          inject(function() {
+            expect(this instanceof jasmine.Spec).toBe(true);
+            tested = true;
+          });
+
+          expect(tested).toBe(true);
+        });
+      });
+
+
+      // We don't run the following tests on IE8.
+      // IE8 throws "Object does not support this property or method." error,
+      // when thrown from a function defined on window (which `inject` is).
+
+      it('should not change thrown Errors', inject(function($sniffer) {
+        if ($sniffer.msie <= 8) return;
+
+        expect(function() {
+          inject(function() {
+            throw new Error('test message');
+          });
+        }).toThrow('test message');
+      }));
+
+      it('should not change thrown strings', inject(function($sniffer) {
+        if ($sniffer.msie <= 8) return;
+
+        expect(function() {
+          inject(function() {
+            throw 'test message';
+          });
+        }).toThrow('test message');
+      }));
     });
   });
 

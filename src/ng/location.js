@@ -289,14 +289,13 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#absUrl
-   * @methodOf ng.$location
+   * @name $location#absUrl
    *
    * @description
    * This method is getter only.
    *
    * Return full url representation with all segments encoded according to rules specified in
-   * {@link http://www.ietf.org/rfc/rfc3986.txt RFC 3986}.
+   * [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt).
    *
    * @return {string} full url
    */
@@ -304,8 +303,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#url
-   * @methodOf ng.$location
+   * @name $location#url
    *
    * @description
    * This method is getter / setter.
@@ -332,8 +330,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#protocol
-   * @methodOf ng.$location
+   * @name $location#protocol
    *
    * @description
    * This method is getter only.
@@ -346,8 +343,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#host
-   * @methodOf ng.$location
+   * @name $location#host
    *
    * @description
    * This method is getter only.
@@ -360,8 +356,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#port
-   * @methodOf ng.$location
+   * @name $location#port
    *
    * @description
    * This method is getter only.
@@ -374,8 +369,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#path
-   * @methodOf ng.$location
+   * @name $location#path
    *
    * @description
    * This method is getter / setter.
@@ -396,8 +390,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#search
-   * @methodOf ng.$location
+   * @name $location#search
    *
    * @description
    * This method is getter / setter.
@@ -444,8 +437,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#hash
-   * @methodOf ng.$location
+   * @name $location#hash
    *
    * @description
    * This method is getter / setter.
@@ -461,8 +453,7 @@ LocationHashbangInHtml5Url.prototype =
 
   /**
    * @ngdoc method
-   * @name ng.$location#replace
-   * @methodOf ng.$location
+   * @name $location#replace
    *
    * @description
    * If called, all changes to $location during current `$digest` will be replacing current history
@@ -495,16 +486,14 @@ function locationGetterSetter(property, preprocess) {
 
 
 /**
- * @ngdoc object
- * @name ng.$location
+ * @ngdoc service
+ * @name $location
  *
- * @requires $browser
- * @requires $sniffer
  * @requires $rootElement
  *
  * @description
  * The $location service parses the URL in the browser address bar (based on the
- * {@link https://developer.mozilla.org/en/window.location window.location}) and makes the URL
+ * [window.location](https://developer.mozilla.org/en/window.location)) and makes the URL
  * available to your application. Changes to the URL in the address bar are reflected into
  * $location service and changes to $location are reflected into the browser address bar.
  *
@@ -524,8 +513,8 @@ function locationGetterSetter(property, preprocess) {
  */
 
 /**
- * @ngdoc object
- * @name ng.$locationProvider
+ * @ngdoc provider
+ * @name $locationProvider
  * @description
  * Use the `$locationProvider` to configure how the application deep linking paths are stored.
  */
@@ -535,8 +524,7 @@ function $LocationProvider(){
 
   /**
    * @ngdoc property
-   * @name ng.$locationProvider#hashPrefix
-   * @methodOf ng.$locationProvider
+   * @name $locationProvider#hashPrefix
    * @description
    * @param {string=} prefix Prefix for hash part (containing path and search)
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
@@ -552,8 +540,7 @@ function $LocationProvider(){
 
   /**
    * @ngdoc property
-   * @name ng.$locationProvider#html5Mode
-   * @methodOf ng.$locationProvider
+   * @name $locationProvider#html5Mode
    * @description
    * @param {boolean=} mode Use HTML5 strategy if available.
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
@@ -569,14 +556,13 @@ function $LocationProvider(){
 
   /**
    * @ngdoc event
-   * @name ng.$location#$locationChangeStart
-   * @eventOf ng.$location
+   * @name $location#$locationChangeStart
    * @eventType broadcast on root scope
    * @description
    * Broadcasted before a URL will change. This change can be prevented by calling
    * `preventDefault` method of the event. See {@link ng.$rootScope.Scope#$on} for more
    * details about event object. Upon successful change
-   * {@link ng.$location#$locationChangeSuccess $locationChangeSuccess} is fired.
+   * {@link ng.$location#events_$locationChangeSuccess $locationChangeSuccess} is fired.
    *
    * @param {Object} angularEvent Synthetic event object.
    * @param {string} newUrl New URL
@@ -585,8 +571,7 @@ function $LocationProvider(){
 
   /**
    * @ngdoc event
-   * @name ng.$location#$locationChangeSuccess
-   * @eventOf ng.$location
+   * @name $location#$locationChangeSuccess
    * @eventType broadcast on root scope
    * @description
    * Broadcasted after a URL was changed.
@@ -629,6 +614,13 @@ function $LocationProvider(){
       }
 
       var absHref = elm.prop('href');
+
+      if (isObject(absHref) && absHref.toString() === '[object SVGAnimatedString]') {
+        // SVGAnimatedString.animVal should be identical to SVGAnimatedString.baseVal, unless during
+        // an animation.
+        absHref = urlResolve(absHref.animVal).href;
+      }
+
       var rewrittenUrl = $location.$$rewrite(absHref);
 
       if (absHref && !elm.attr('target') && rewrittenUrl && !event.isDefaultPrevented()) {
@@ -652,16 +644,17 @@ function $LocationProvider(){
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
       if ($location.absUrl() != newUrl) {
-        if ($rootScope.$broadcast('$locationChangeStart', newUrl,
-                                  $location.absUrl()).defaultPrevented) {
-          $browser.url($location.absUrl());
-          return;
-        }
         $rootScope.$evalAsync(function() {
           var oldUrl = $location.absUrl();
 
           $location.$$parse(newUrl);
-          afterLocationChange(oldUrl);
+          if ($rootScope.$broadcast('$locationChangeStart', newUrl,
+                                    oldUrl).defaultPrevented) {
+            $location.$$parse(oldUrl);
+            $browser.url(oldUrl);
+          } else {
+            afterLocationChange(oldUrl);
+          }
         });
         if (!$rootScope.$$phase) $rootScope.$digest();
       }

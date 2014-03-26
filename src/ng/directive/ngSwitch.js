@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngSwitch
+ * @name ngSwitch
  * @restrict EA
  *
  * @description
@@ -11,7 +11,7 @@
  * as specified in the template.
  *
  * The directive itself works similar to ngInclude, however, instead of downloading template code (or loading it
- * from the template cache), `ngSwitch` simply choses one of the nested elements and makes it visible based on which element
+ * from the template cache), `ngSwitch` simply chooses one of the nested elements and makes it visible based on which element
  * matches the value obtained from the evaluated expression. In other words, you define a container element
  * (where you place the directive), place an expression on the **`on="..."` attribute**
  * (or the **`ng-switch="..."` attribute**), define any inner elements inside of the directive and place
@@ -41,7 +41,6 @@
  * @scope
  * @priority 800
  * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
- * @paramDescription
  * On child elements add:
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
@@ -53,7 +52,7 @@
  *
  *
  * @example
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
       <div ng-controller="Ctrl">
         <select ng-model="selection" ng-options="item for item in items">
@@ -107,17 +106,20 @@
         top:0;
       }
     </file>
-    <file name="scenario.js">
+    <file name="protractor.js" type="protractor">
+      var switchElem = element(by.css('[ng-switch]'));
+      var select = element(by.model('selection'));
+
       it('should start in settings', function() {
-        expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Settings Div/);
+        expect(switchElem.getText()).toMatch(/Settings Div/);
       });
       it('should change to home', function() {
-        select('selection').option('home');
-        expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Home Span/);
+        select.element.all(by.css('option')).get(1).click();
+        expect(switchElem.getText()).toMatch(/Home Span/);
       });
       it('should select default', function() {
-        select('selection').option('other');
-        expect(element('.doc-example-live [ng-switch]').text()).toMatch(/default/);
+        select.element.all(by.css('option')).get(2).click();
+        expect(switchElem.getText()).toMatch(/default/);
       });
     </file>
   </example>
@@ -135,12 +137,31 @@ var ngSwitchDirective = ['$animate', function($animate) {
       var watchExpr = attr.ngSwitch || attr.on,
           selectedTranscludes,
           selectedElements,
+          previousElements,
           selectedScopes = [];
 
       scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
-        for (var i= 0, ii=selectedScopes.length; i<ii; i++) {
-          selectedScopes[i].$destroy();
-          $animate.leave(selectedElements[i]);
+        var i, ii = selectedScopes.length;
+        if(ii > 0) {
+          if(previousElements) {
+            for (i = 0; i < ii; i++) {
+              previousElements[i].remove();
+            }
+            previousElements = null;
+          }
+
+          previousElements = [];
+          for (i= 0; i<ii; i++) {
+            var selected = selectedElements[i];
+            selectedScopes[i].$destroy();
+            previousElements[i] = selected;
+            $animate.leave(selected, function() {
+              previousElements.splice(i, 1);
+              if(previousElements.length === 0) {
+                previousElements = null;
+              }
+            });
+          }
         }
 
         selectedElements = [];
@@ -168,11 +189,9 @@ var ngSwitchWhenDirective = ngDirective({
   transclude: 'element',
   priority: 800,
   require: '^ngSwitch',
-  compile: function(element, attrs) {
-    return function(scope, element, attr, ctrl, $transclude) {
-      ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
-      ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: $transclude, element: element });
-    };
+  link: function(scope, element, attrs, ctrl, $transclude) {
+    ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
+    ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: $transclude, element: element });
   }
 });
 

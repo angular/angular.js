@@ -4,7 +4,7 @@
 
 /**
  * @ngdoc directive
- * @name ngTouch.directive:ngSwipeLeft
+ * @name ngSwipeLeft
  *
  * @description
  * Specify custom behavior when an element is swiped to the left on a touchscreen device.
@@ -19,8 +19,8 @@
  * upon left swipe. (Event object is available as `$event`)
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
         </div>
@@ -28,13 +28,13 @@
           <button ng-click="reply()">Reply</button>
           <button ng-click="delete()">Delete</button>
         </div>
-      </doc:source>
-    </doc:example>
+      </file>
+    </example>
  */
 
 /**
  * @ngdoc directive
- * @name ngTouch.directive:ngSwipeRight
+ * @name ngSwipeRight
  *
  * @description
  * Specify custom behavior when an element is swiped to the right on a touchscreen device.
@@ -49,8 +49,8 @@
  * upon right swipe. (Event object is available as `$event`)
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example>
+      <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
         </div>
@@ -58,8 +58,8 @@
           <button ng-click="reply()">Reply</button>
           <button ng-click="delete()">Delete</button>
         </div>
-      </doc:source>
-    </doc:example>
+      </file>
+    </example>
  */
 
 function makeSwipeDirective(directiveName, direction, eventName) {

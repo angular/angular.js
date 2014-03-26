@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngCloak
+ * @name ngCloak
  * @restrict AC
  *
  * @description
@@ -18,11 +18,11 @@
  * `angular.min.js`.
  * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
- * <pre>
+ * ```css
  * [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
  *   display: none !important;
  * }
- * </pre>
+ * ```
  *
  * When this css rule is loaded by the browser, all html elements (including their children) that
  * are tagged with the `ngCloak` directive are hidden. When Angular encounters this directive
@@ -35,25 +35,25 @@
  *
  * Legacy browsers, like IE7, do not provide attribute selector support (added in CSS 2.1) so they
  * cannot match the `[ng\:cloak]` selector. To work around this limitation, you must add the css
- * class `ngCloak` in addition to the `ngCloak` directive as shown in the example below.
+ * class `ng-cloak` in addition to the `ngCloak` directive as shown in the example below.
  *
  * @element ANY
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
         <div id="template1" ng-cloak>{{ 'hello' }}</div>
         <div id="template2" ng-cloak class="ng-cloak">{{ 'hello IE7' }}</div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should remove the template directive and css class', function() {
-         expect(element('.doc-example-live #template1').attr('ng-cloak')).
-           not().toBeDefined();
-         expect(element('.doc-example-live #template2').attr('ng-cloak')).
-           not().toBeDefined();
+         expect($('#template1').getAttribute('ng-cloak')).
+           toBeNull();
+         expect($('#template2').getAttribute('ng-cloak')).
+           toBeNull();
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  *
  */
 var ngCloakDirective = ngDirective({

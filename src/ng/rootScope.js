@@ -27,17 +27,16 @@
 
 
 /**
- * @ngdoc object
- * @name ng.$rootScopeProvider
+ * @ngdoc provider
+ * @name $rootScopeProvider
  * @description
  *
  * Provider for the $rootScope service.
  */
 
 /**
- * @ngdoc function
- * @name ng.$rootScopeProvider#digestTtl
- * @methodOf ng.$rootScopeProvider
+ * @ngdoc method
+ * @name $rootScopeProvider#digestTtl
  * @description
  *
  * Sets the number of `$digest` iterations the scope should attempt to execute before giving up and
@@ -58,8 +57,8 @@
 
 
 /**
- * @ngdoc object
- * @name ng.$rootScope
+ * @ngdoc service
+ * @name $rootScope
  * @description
  *
  * Every application has a single root {@link ng.$rootScope.Scope scope}.
@@ -84,23 +83,23 @@ function $RootScopeProvider(){
       function( $injector,   $exceptionHandler,   $parse,   $browser) {
 
     /**
-     * @ngdoc function
-     * @name ng.$rootScope.Scope
+     * @ngdoc type
+     * @name $rootScope.Scope
      *
      * @description
      * A root scope can be retrieved using the {@link ng.$rootScope $rootScope} key from the
-     * {@link AUTO.$injector $injector}. Child scopes are created using the
-     * {@link ng.$rootScope.Scope#methods_$new $new()} method. (Most scopes are created automatically when
+     * {@link auto.$injector $injector}. Child scopes are created using the
+     * {@link ng.$rootScope.Scope#$new $new()} method. (Most scopes are created automatically when
      * compiled HTML template is executed.)
      *
      * Here is a simple scope snippet to show how you can interact with the scope.
-     * <pre>
+     * ```html
      * <file src="./test/ng/rootScopeSpec.js" tag="docs1" />
-     * </pre>
+     * ```
      *
      * # Inheritance
      * A scope can inherit from a parent scope, as in this example:
-     * <pre>
+     * ```js
          var parent = $rootScope;
          var child = parent.$new();
 
@@ -111,7 +110,7 @@ function $RootScopeProvider(){
          child.salutation = "Welcome";
          expect(child.salutation).toEqual('Welcome');
          expect(parent.salutation).toEqual('Hello');
-     * </pre>
+     * ```
      *
      *
      * @param {Object.<string, function()>=} providers Map of service factory which need to be
@@ -133,13 +132,13 @@ function $RootScopeProvider(){
       this.$$asyncQueue = [];
       this.$$postDigestQueue = [];
       this.$$listeners = {};
+      this.$$listenerCount = {};
       this.$$isolateBindings = {};
     }
 
     /**
      * @ngdoc property
-     * @name ng.$rootScope.Scope#$id
-     * @propertyOf ng.$rootScope.Scope
+     * @name $rootScope.Scope#$id
      * @returns {number} Unique scope ID (monotonically increasing alphanumeric sequence) useful for
      *   debugging.
      */
@@ -148,19 +147,18 @@ function $RootScopeProvider(){
     Scope.prototype = {
       constructor: Scope,
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$new
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$new
        * @function
        *
        * @description
        * Creates a new child {@link ng.$rootScope.Scope scope}.
        *
-       * The parent scope will propagate the {@link ng.$rootScope.Scope#methods_$digest $digest()} and
-       * {@link ng.$rootScope.Scope#methods_$digest $digest()} events. The scope can be removed from the
-       * scope hierarchy using {@link ng.$rootScope.Scope#methods_$destroy $destroy()}.
+       * The parent scope will propagate the {@link ng.$rootScope.Scope#$digest $digest()} and
+       * {@link ng.$rootScope.Scope#$digest $digest()} events. The scope can be removed from the
+       * scope hierarchy using {@link ng.$rootScope.Scope#$destroy $destroy()}.
        *
-       * {@link ng.$rootScope.Scope#methods_$destroy $destroy()} must be called on a scope when it is
+       * {@link ng.$rootScope.Scope#$destroy $destroy()} must be called on a scope when it is
        * desired for the scope and its child scopes to be permanently detached from the parent and
        * thus stop participating in model change detection and listener notification by invoking.
        *
@@ -185,13 +183,14 @@ function $RootScopeProvider(){
         } else {
           ChildScope = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. This will then show up as class
-            // name in the debugger.
+            // name in the web inspector.
           ChildScope.prototype = this;
           child = new ChildScope();
           child.$id = nextUid();
         }
         child['this'] = child;
         child.$$listeners = {};
+        child.$$listenerCount = {};
         child.$parent = this;
         child.$$watchers = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
@@ -205,19 +204,18 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$watch
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$watch
        * @function
        *
        * @description
        * Registers a `listener` callback to be executed whenever the `watchExpression` changes.
        *
-       * - The `watchExpression` is called on every call to {@link ng.$rootScope.Scope#methods_$digest
+       * - The `watchExpression` is called on every call to {@link ng.$rootScope.Scope#$digest
        *   $digest()} and should return the value that will be watched. (Since
-       *   {@link ng.$rootScope.Scope#methods_$digest $digest()} reruns when it detects changes the
+       *   {@link ng.$rootScope.Scope#$digest $digest()} reruns when it detects changes the
        *   `watchExpression` can execute multiple times per
-       *   {@link ng.$rootScope.Scope#methods_$digest $digest()} and should be idempotent.)
+       *   {@link ng.$rootScope.Scope#$digest $digest()} and should be idempotent.)
        * - The `listener` is called only when the value from the current `watchExpression` and the
        *   previous call to `watchExpression` are not equal (with the exception of the initial run,
        *   see below). The inequality is determined according to
@@ -229,13 +227,13 @@ function $RootScopeProvider(){
        *   iteration limit is 10 to prevent an infinite loop deadlock.
        *
        *
-       * If you want to be notified whenever {@link ng.$rootScope.Scope#methods_$digest $digest} is called,
+       * If you want to be notified whenever {@link ng.$rootScope.Scope#$digest $digest} is called,
        * you can register a `watchExpression` function with no `listener`. (Since `watchExpression`
-       * can execute multiple times per {@link ng.$rootScope.Scope#methods_$digest $digest} cycle when a
+       * can execute multiple times per {@link ng.$rootScope.Scope#$digest $digest} cycle when a
        * change is detected, be prepared for multiple calls to your listener.)
        *
        * After a watcher is registered with the scope, the `listener` fn is called asynchronously
-       * (via {@link ng.$rootScope.Scope#methods_$evalAsync $evalAsync}) to initialize the
+       * (via {@link ng.$rootScope.Scope#$evalAsync $evalAsync}) to initialize the
        * watcher. In rare cases, this is undesirable because the listener is called when the result
        * of `watchExpression` didn't change. To detect this scenario within the `listener` fn, you
        * can compare the `newVal` and `oldVal`. If these two values are identical (`===`) then the
@@ -245,7 +243,7 @@ function $RootScopeProvider(){
        *
        *
        * # Example
-       * <pre>
+       * ```js
            // let's assume that scope was dependency injected as the $rootScope
            var scope = $rootScope;
            scope.name = 'misko';
@@ -285,7 +283,7 @@ function $RootScopeProvider(){
            // No digest has been run so the counter will be zero
            expect(scope.foodCounter).toEqual(0);
 
-           // Run the digest but since food has not changed cout will still be zero
+           // Run the digest but since food has not changed count will still be zero
            scope.$digest();
            expect(scope.foodCounter).toEqual(0);
 
@@ -294,12 +292,12 @@ function $RootScopeProvider(){
            scope.$digest();
            expect(scope.foodCounter).toEqual(1);
 
-       * </pre>
+       * ```
        *
        *
        *
        * @param {(function()|string)} watchExpression Expression that is evaluated on each
-       *    {@link ng.$rootScope.Scope#methods_$digest $digest} cycle. A change in the return value triggers
+       *    {@link ng.$rootScope.Scope#$digest $digest} cycle. A change in the return value triggers
        *    a call to the `listener`.
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
@@ -351,14 +349,14 @@ function $RootScopeProvider(){
 
         return function() {
           arrayRemove(array, watcher);
+          lastDirtyWatch = null;
         };
       },
 
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$watchCollection
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$watchCollection
        * @function
        *
        * @description
@@ -373,7 +371,7 @@ function $RootScopeProvider(){
        *
        *
        * # Example
-       * <pre>
+       * ```js
           $scope.names = ['igor', 'matias', 'misko', 'james'];
           $scope.dataCount = 4;
 
@@ -392,38 +390,48 @@ function $RootScopeProvider(){
 
           //now there's been a change
           expect($scope.dataCount).toEqual(3);
-       * </pre>
+       * ```
        *
        *
-       * @param {string|Function(scope)} obj Evaluated as {@link guide/expression expression}. The
+       * @param {string|function(scope)} obj Evaluated as {@link guide/expression expression}. The
        *    expression value should evaluate to an object or an array which is observed on each
-       *    {@link ng.$rootScope.Scope#methods_$digest $digest} cycle. Any shallow change within the
+       *    {@link ng.$rootScope.Scope#$digest $digest} cycle. Any shallow change within the
        *    collection will trigger a call to the `listener`.
        *
-       * @param {function(newCollection, oldCollection, scope)} listener a callback function that is
-       *    fired with both the `newCollection` and `oldCollection` as parameters.
-       *    The `newCollection` object is the newly modified data obtained from the `obj` expression
-       *    and the `oldCollection` object is a copy of the former collection data.
-       *    The `scope` refers to the current scope.
+       * @param {function(newCollection, oldCollection, scope)} listener a callback function called
+       *    when a change is detected.
+       *    - The `newCollection` object is the newly modified data obtained from the `obj` expression
+       *    - The `oldCollection` object is a copy of the former collection data.
+       *      Due to performance considerations, the`oldCollection` value is computed only if the
+       *      `listener` function declares two or more arguments.
+       *    - The `scope` argument refers to the current scope.
        *
        * @returns {function()} Returns a de-registration function for this listener. When the
        *    de-registration function is executed, the internal watch operation is terminated.
        */
       $watchCollection: function(obj, listener) {
         var self = this;
-        var oldValue;
+        // the current value, updated on each dirty-check run
         var newValue;
+        // a shallow copy of the newValue from the last dirty-check run,
+        // updated to match newValue during dirty-check run
+        var oldValue;
+        // a shallow copy of the newValue from when the last change happened
+        var veryOldValue;
+        // only track veryOldValue if the listener is asking for it
+        var trackVeryOldValue = (listener.length > 1);
         var changeDetected = 0;
         var objGetter = $parse(obj);
         var internalArray = [];
         var internalObject = {};
+        var initRun = true;
         var oldLength = 0;
 
         function $watchCollectionWatch() {
           newValue = objGetter(self);
           var newLength, key;
 
-          if (!isObject(newValue)) {
+          if (!isObject(newValue)) { // if primitive
             if (oldValue !== newValue) {
               oldValue = newValue;
               changeDetected++;
@@ -445,7 +453,9 @@ function $RootScopeProvider(){
             }
             // copy the items to oldValue and look for changes.
             for (var i = 0; i < newLength; i++) {
-              if (oldValue[i] !== newValue[i]) {
+              var bothNaN = (oldValue[i] !== oldValue[i]) &&
+                  (newValue[i] !== newValue[i]);
+              if (!bothNaN && (oldValue[i] !== newValue[i])) {
                 changeDetected++;
                 oldValue[i] = newValue[i];
               }
@@ -489,40 +499,64 @@ function $RootScopeProvider(){
         }
 
         function $watchCollectionAction() {
-          listener(newValue, oldValue, self);
+          if (initRun) {
+            initRun = false;
+            listener(newValue, newValue, self);
+          } else {
+            listener(newValue, veryOldValue, self);
+          }
+
+          // make a copy for the next time a collection is changed
+          if (trackVeryOldValue) {
+            if (!isObject(newValue)) {
+              //primitive
+              veryOldValue = newValue;
+            } else if (isArrayLike(newValue)) {
+              veryOldValue = new Array(newValue.length);
+              for (var i = 0; i < newValue.length; i++) {
+                veryOldValue[i] = newValue[i];
+              }
+            } else { // if object
+              veryOldValue = {};
+              for (var key in newValue) {
+                if (hasOwnProperty.call(newValue, key)) {
+                  veryOldValue[key] = newValue[key];
+                }
+              }
+            }
+          }
         }
 
         return this.$watch($watchCollectionWatch, $watchCollectionAction);
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$digest
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$digest
        * @function
        *
        * @description
-       * Processes all of the {@link ng.$rootScope.Scope#methods_$watch watchers} of the current scope and
-       * its children. Because a {@link ng.$rootScope.Scope#methods_$watch watcher}'s listener can change
-       * the model, the `$digest()` keeps calling the {@link ng.$rootScope.Scope#methods_$watch watchers}
+       * Processes all of the {@link ng.$rootScope.Scope#$watch watchers} of the current scope and
+       * its children. Because a {@link ng.$rootScope.Scope#$watch watcher}'s listener can change
+       * the model, the `$digest()` keeps calling the {@link ng.$rootScope.Scope#$watch watchers}
        * until no more listeners are firing. This means that it is possible to get into an infinite
        * loop. This function will throw `'Maximum iteration limit exceeded.'` if the number of
        * iterations exceeds 10.
        *
        * Usually, you don't call `$digest()` directly in
        * {@link ng.directive:ngController controllers} or in
-       * {@link ng.$compileProvider#methods_directive directives}.
-       * Instead, you should call {@link ng.$rootScope.Scope#methods_$apply $apply()} (typically from within
-       * a {@link ng.$compileProvider#methods_directive directives}), which will force a `$digest()`.
+       * {@link ng.$compileProvider#directive directives}.
+       * Instead, you should call {@link ng.$rootScope.Scope#$apply $apply()} (typically from within
+       * a {@link ng.$compileProvider#directive directives}), which will force a `$digest()`.
        *
        * If you want to be notified whenever `$digest()` is called,
        * you can register a `watchExpression` function with
-       * {@link ng.$rootScope.Scope#methods_$watch $watch()} with no `listener`.
+       * {@link ng.$rootScope.Scope#$watch $watch()} with no `listener`.
        *
        * In unit tests, you may need to call `$digest()` to simulate the scope life cycle.
        *
        * # Example
-       * <pre>
+       * ```js
            var scope = ...;
            scope.name = 'misko';
            scope.counter = 0;
@@ -540,7 +574,7 @@ function $RootScopeProvider(){
            scope.name = 'adam';
            scope.$digest();
            expect(scope.counter).toEqual(1);
-       * </pre>
+       * ```
        *
        */
       $digest: function() {
@@ -629,7 +663,7 @@ function $RootScopeProvider(){
 
           // `break traverseScopesLoop;` takes us to here
 
-          if(dirty && !(ttl--)) {
+          if((dirty || asyncQueue.length) && !(ttl--)) {
             clearPhase();
             throw $rootScopeMinErr('infdig',
                 '{0} $digest() iterations reached. Aborting!\n' +
@@ -653,8 +687,7 @@ function $RootScopeProvider(){
 
       /**
        * @ngdoc event
-       * @name ng.$rootScope.Scope#$destroy
-       * @eventOf ng.$rootScope.Scope
+       * @name $rootScope.Scope#$destroy
        * @eventType broadcast on scope being destroyed
        *
        * @description
@@ -665,14 +698,13 @@ function $RootScopeProvider(){
        */
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$destroy
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$destroy
        * @function
        *
        * @description
        * Removes the current scope (and all of its children) from the parent scope. Removal implies
-       * that calls to {@link ng.$rootScope.Scope#methods_$digest $digest()} will no longer
+       * that calls to {@link ng.$rootScope.Scope#$digest $digest()} will no longer
        * propagate to the current scope and its children. Removal also implies that the current
        * scope is eligible for garbage collection.
        *
@@ -696,6 +728,8 @@ function $RootScopeProvider(){
         this.$$destroyed = true;
         if (this === $rootScope) return;
 
+        forEach(this.$$listenerCount, bind(null, decrementListenerCount, this));
+
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
         if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
@@ -708,9 +742,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$eval
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$eval
        * @function
        *
        * @description
@@ -719,14 +752,14 @@ function $RootScopeProvider(){
        * expressions.
        *
        * # Example
-       * <pre>
+       * ```js
            var scope = ng.$rootScope.Scope();
            scope.a = 1;
            scope.b = 2;
 
            expect(scope.$eval('a+b')).toEqual(3);
            expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
-       * </pre>
+       * ```
        *
        * @param {(string|function())=} expression An angular expression to be executed.
        *
@@ -741,9 +774,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$evalAsync
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$evalAsync
        * @function
        *
        * @description
@@ -754,7 +786,7 @@ function $RootScopeProvider(){
        *
        *   - it will execute after the function that scheduled the evaluation (preferably before DOM
        *     rendering).
-       *   - at least one {@link ng.$rootScope.Scope#methods_$digest $digest cycle} will be performed after
+       *   - at least one {@link ng.$rootScope.Scope#$digest $digest cycle} will be performed after
        *     `expression` execution.
        *
        * Any exceptions from the execution of the expression are forwarded to the
@@ -789,9 +821,8 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$apply
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$apply
        * @function
        *
        * @description
@@ -799,12 +830,12 @@ function $RootScopeProvider(){
        * framework. (For example from browser DOM events, setTimeout, XHR or third party libraries).
        * Because we are calling into the angular framework we need to perform proper scope life
        * cycle of {@link ng.$exceptionHandler exception handling},
-       * {@link ng.$rootScope.Scope#methods_$digest executing watches}.
+       * {@link ng.$rootScope.Scope#$digest executing watches}.
        *
        * ## Life cycle
        *
        * # Pseudo-Code of `$apply()`
-       * <pre>
+       * ```js
            function $apply(expr) {
              try {
                return $eval(expr);
@@ -814,17 +845,17 @@ function $RootScopeProvider(){
                $root.$digest();
              }
            }
-       * </pre>
+       * ```
        *
        *
        * Scope's `$apply()` method transitions through the following stages:
        *
        * 1. The {@link guide/expression expression} is executed using the
-       *    {@link ng.$rootScope.Scope#methods_$eval $eval()} method.
+       *    {@link ng.$rootScope.Scope#$eval $eval()} method.
        * 2. Any exceptions from the execution of the expression are forwarded to the
        *    {@link ng.$exceptionHandler $exceptionHandler} service.
-       * 3. The {@link ng.$rootScope.Scope#methods_$watch watch} listeners are fired immediately after the
-       *    expression was executed using the {@link ng.$rootScope.Scope#methods_$digest $digest()} method.
+       * 3. The {@link ng.$rootScope.Scope#$watch watch} listeners are fired immediately after the
+       *    expression was executed using the {@link ng.$rootScope.Scope#$digest $digest()} method.
        *
        *
        * @param {(string|function())=} exp An angular expression to be executed.
@@ -852,13 +883,12 @@ function $RootScopeProvider(){
       },
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$on
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$on
        * @function
        *
        * @description
-       * Listens on events of a given type. See {@link ng.$rootScope.Scope#methods_$emit $emit} for
+       * Listens on events of a given type. See {@link ng.$rootScope.Scope#$emit $emit} for
        * discussion of event life cycle.
        *
        * The event listener function format is: `function(event, args...)`. The `event` object
@@ -875,7 +905,7 @@ function $RootScopeProvider(){
        *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
        *
        * @param {string} name Event name to listen on.
-       * @param {function(event, args...)} listener Function to call when the event is emitted.
+       * @param {function(event, ...args)} listener Function to call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
@@ -885,34 +915,43 @@ function $RootScopeProvider(){
         }
         namedListeners.push(listener);
 
+        var current = this;
+        do {
+          if (!current.$$listenerCount[name]) {
+            current.$$listenerCount[name] = 0;
+          }
+          current.$$listenerCount[name]++;
+        } while ((current = current.$parent));
+
+        var self = this;
         return function() {
           namedListeners[indexOf(namedListeners, listener)] = null;
+          decrementListenerCount(self, 1, name);
         };
       },
 
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$emit
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$emit
        * @function
        *
        * @description
        * Dispatches an event `name` upwards through the scope hierarchy notifying the
-       * registered {@link ng.$rootScope.Scope#methods_$on} listeners.
+       * registered {@link ng.$rootScope.Scope#$on} listeners.
        *
        * The event life cycle starts at the scope on which `$emit` was called. All
-       * {@link ng.$rootScope.Scope#methods_$on listeners} listening for `name` event on this scope get
+       * {@link ng.$rootScope.Scope#$on listeners} listening for `name` event on this scope get
        * notified. Afterwards, the event traverses upwards toward the root scope and calls all
        * registered listeners along the way. The event will stop propagating if one of the listeners
        * cancels it.
        *
-       * Any exception emitted from the {@link ng.$rootScope.Scope#methods_$on listeners} will be passed
+       * Any exception emitted from the {@link ng.$rootScope.Scope#$on listeners} will be passed
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to emit.
-       * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
-       * @return {Object} Event object (see {@link ng.$rootScope.Scope#methods_$on}).
+       * @param {...*} args Optional one or more arguments which will be passed onto the event listeners.
+       * @return {Object} Event object (see {@link ng.$rootScope.Scope#$on}).
        */
       $emit: function(name, args) {
         var empty = [],
@@ -961,26 +1000,25 @@ function $RootScopeProvider(){
 
 
       /**
-       * @ngdoc function
-       * @name ng.$rootScope.Scope#$broadcast
-       * @methodOf ng.$rootScope.Scope
+       * @ngdoc method
+       * @name $rootScope.Scope#$broadcast
        * @function
        *
        * @description
        * Dispatches an event `name` downwards to all child scopes (and their children) notifying the
-       * registered {@link ng.$rootScope.Scope#methods_$on} listeners.
+       * registered {@link ng.$rootScope.Scope#$on} listeners.
        *
        * The event life cycle starts at the scope on which `$broadcast` was called. All
-       * {@link ng.$rootScope.Scope#methods_$on listeners} listening for `name` event on this scope get
+       * {@link ng.$rootScope.Scope#$on listeners} listening for `name` event on this scope get
        * notified. Afterwards, the event propagates to all direct and indirect scopes of the current
        * scope and calls all registered listeners along the way. The event cannot be canceled.
        *
-       * Any exception emitted from the {@link ng.$rootScope.Scope#methods_$on listeners} will be passed
+       * Any exception emitted from the {@link ng.$rootScope.Scope#$on listeners} will be passed
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to broadcast.
-       * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
-       * @return {Object} Event object, see {@link ng.$rootScope.Scope#methods_$on}
+       * @param {...*} args Optional one or more arguments which will be passed onto the event listeners.
+       * @return {Object} Event object, see {@link ng.$rootScope.Scope#$on}
        */
       $broadcast: function(name, args) {
         var target = this,
@@ -998,8 +1036,7 @@ function $RootScopeProvider(){
             listeners, i, length;
 
         //down while you can, then up and next sibling or up and next sibling until back at root
-        do {
-          current = next;
+        while ((current = next)) {
           event.currentScope = current;
           listeners = current.$$listeners[name] || [];
           for (i=0, length = listeners.length; i<length; i++) {
@@ -1021,12 +1058,14 @@ function $RootScopeProvider(){
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
           // this piece should be kept in sync with the traversal in $digest
-          if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+          // (though it differs due to having the extra check for $$listenerCount)
+          if (!(next = ((current.$$listenerCount[name] && current.$$childHead) ||
+              (current !== target && current.$$nextSibling)))) {
             while(current !== target && !(next = current.$$nextSibling)) {
               current = current.$parent;
             }
           }
-        } while ((current = next));
+        }
 
         return event;
       }
@@ -1053,6 +1092,16 @@ function $RootScopeProvider(){
       var fn = $parse(exp);
       assertArgFn(fn, name);
       return fn;
+    }
+
+    function decrementListenerCount(current, count, name) {
+      do {
+        current.$$listenerCount[name] -= count;
+
+        if (current.$$listenerCount[name] === 0) {
+          delete current.$$listenerCount[name];
+        }
+      } while ((current = current.$parent));
     }
 
     /**

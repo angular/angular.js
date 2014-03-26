@@ -20,6 +20,16 @@ describe('ngShow / ngHide', function() {
     }));
 
 
+    // https://github.com/angular/angular.js/issues/5414
+    it('should show if the expression is a function with a no arguments', inject(function($rootScope, $compile) {
+      element = jqLite('<div ng-show="exp"></div>');
+      element = $compile(element)($rootScope);
+      $rootScope.exp = function(){};
+      $rootScope.$digest();
+      expect(element).toBeShown();
+    }));
+
+
     it('should make hidden element visible', inject(function($rootScope, $compile) {
       element = jqLite('<div class="ng-hide" ng-show="exp"></div>');
       element = $compile(element)($rootScope);
@@ -63,7 +73,7 @@ describe('ngShow / ngHide animations', function() {
     body.removeAttr('ng-animation-running');
   });
 
-  beforeEach(module('mock.animate'));
+  beforeEach(module('ngAnimateMock'));
 
   beforeEach(module(function($animateProvider, $provide) {
     return function(_$rootElement_) {
@@ -81,16 +91,18 @@ describe('ngShow / ngHide animations', function() {
       ))($scope);
       $scope.$digest();
 
-      item = $animate.flushNext('removeClass').element;
-      expect(item.text()).toBe('data');
-      expect(item).toBeShown();
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.element.text()).toBe('data');
+      expect(item.element).toBeShown();
 
       $scope.on = false;
       $scope.$digest();
 
-      item = $animate.flushNext('addClass').element;
-      expect(item.text()).toBe('data');
-      expect(item).toBeHidden();
+      item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.element.text()).toBe('data');
+      expect(item.element).toBeHidden();
     }));
   });
 
@@ -104,16 +116,18 @@ describe('ngShow / ngHide animations', function() {
       ))($scope);
       $scope.$digest();
 
-      item = $animate.flushNext('addClass').element;
-      expect(item.text()).toBe('datum');
-      expect(item).toBeHidden();
+      item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.element.text()).toBe('datum');
+      expect(item.element).toBeHidden();
 
       $scope.off = false;
       $scope.$digest();
 
-      item = $animate.flushNext('removeClass').element;
-      expect(item.text()).toBe('datum');
-      expect(item).toBeShown();
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.element.text()).toBe('datum');
+      expect(item.element).toBeShown();
     }));
   });
 });

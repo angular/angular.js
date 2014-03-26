@@ -10,8 +10,8 @@ var nullFormCtrl = {
 };
 
 /**
- * @ngdoc object
- * @name ng.directive:form.FormController
+ * @ngdoc type
+ * @name form.FormController
  *
  * @property {boolean} $pristine True if user has not interacted with the form yet.
  * @property {boolean} $dirty True if user has already interacted with the form.
@@ -36,7 +36,7 @@ var nullFormCtrl = {
  *  - `pattern`
  *  - `required`
  *  - `url`
- * 
+ *
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
  * such as being valid/invalid or dirty/pristine.
@@ -46,8 +46,8 @@ var nullFormCtrl = {
  *
  */
 //asks for $scope to fool the BC controller module
-FormController.$inject = ['$element', '$attrs', '$scope'];
-function FormController(element, attrs) {
+FormController.$inject = ['$element', '$attrs', '$scope', '$animate'];
+function FormController(element, attrs, $scope, $animate) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
@@ -70,15 +70,13 @@ function FormController(element, attrs) {
   // convenience method for easy toggling of classes
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    element.
-      removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
-      addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+    $animate.removeClass(element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
+    $animate.addClass(element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$addControl
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$addControl
    *
    * @description
    * Register a control with the form.
@@ -97,9 +95,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$removeControl
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$removeControl
    *
    * @description
    * Deregister a control from the form.
@@ -118,9 +115,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setValidity
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$setValidity
    *
    * @description
    * Sets the validity of a form control.
@@ -166,9 +162,8 @@ function FormController(element, attrs) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setDirty
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$setDirty
    *
    * @description
    * Sets the form to a dirty state.
@@ -177,16 +172,16 @@ function FormController(element, attrs) {
    * state (ng-dirty class). This method will also propagate to parent forms.
    */
   form.$setDirty = function() {
-    element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
+    $animate.removeClass(element, PRISTINE_CLASS);
+    $animate.addClass(element, DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
     parentForm.$setDirty();
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setPristine
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#$setPristine
    *
    * @description
    * Sets the form to its pristine state.
@@ -199,7 +194,8 @@ function FormController(element, attrs) {
    * saving or resetting it.
    */
   form.$setPristine = function () {
-    element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+    $animate.removeClass(element, DIRTY_CLASS);
+    $animate.addClass(element, PRISTINE_CLASS);
     form.$dirty = false;
     form.$pristine = true;
     forEach(controls, function(control) {
@@ -211,7 +207,7 @@ function FormController(element, attrs) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngForm
+ * @name ngForm
  * @restrict EAC
  *
  * @description
@@ -226,12 +222,12 @@ function FormController(element, attrs) {
 
  /**
  * @ngdoc directive
- * @name ng.directive:form
+ * @name form
  * @restrict E
  *
  * @description
  * Directive that instantiates
- * {@link ng.directive:form.FormController FormController}.
+ * {@link form.FormController FormController}.
  *
  * If the `name` attribute is specified, the form controller is published onto the current scope under
  * this name.
@@ -249,10 +245,12 @@ function FormController(element, attrs) {
  *
  *
  * # CSS classes
- *  - `ng-valid` Is set if the form is valid.
- *  - `ng-invalid` Is set if the form is invalid.
- *  - `ng-pristine` Is set if the form is pristine.
- *  - `ng-dirty` Is set if the form is dirty.
+ *  - `ng-valid` is set if the form is valid.
+ *  - `ng-invalid` is set if the form is invalid.
+ *  - `ng-pristine` is set if the form is pristine.
+ *  - `ng-dirty` is set if the form is dirty.
+ *
+ * Keep in mind that ngAnimate can detect each of these classes when added and removed.
  *
  *
  * # Submitting a form and preventing the default action
@@ -287,15 +285,49 @@ function FormController(element, attrs) {
  * @param {string=} name Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.
  *
+ * ## Animation Hooks
+ *
+ * Animations in ngForm are triggered when any of the associated CSS classes are added and removed.
+ * These classes are: `.ng-pristine`, `.ng-dirty`, `.ng-invalid` and `.ng-valid` as well as any
+ * other validations that are performed within the form. Animations in ngForm are similar to how
+ * they work in ngClass and animations can be hooked into using CSS transitions, keyframes as well
+ * as JS animations.
+ *
+ * The following example shows a simple way to utilize CSS transitions to style a form element
+ * that has been rendered as invalid after it has been validated:
+ *
+ * <pre>
+ * //be sure to include ngAnimate as a module to hook into more
+ * //advanced animations
+ * .my-form {
+ *   transition:0.5s linear all;
+ *   background: white;
+ * }
+ * .my-form.ng-invalid {
+ *   background: red;
+ *   color:white;
+ * }
+ * </pre>
+ *
  * @example
-    <doc:example>
-      <doc:source>
+    <example deps="angular-animate.js" animations="true" fixBase="true">
+      <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.userType = 'guest';
          }
        </script>
-       <form name="myForm" ng-controller="Ctrl">
+       <style>
+        .my-form {
+          -webkit-transition:all linear 0.5s;
+          transition:all linear 0.5s;
+          background: transparent;
+        }
+        .my-form.ng-invalid {
+          background: red;
+        }
+       </style>
+       <form name="myForm" ng-controller="Ctrl" class="my-form">
          userType: <input name="input" ng-model="userType" required>
          <span class="error" ng-show="myForm.input.$error.required">Required!</span><br>
          <tt>userType = {{userType}}</tt><br>
@@ -304,20 +336,30 @@ function FormController(element, attrs) {
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
          <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
         </form>
-      </doc:source>
-      <doc:scenario>
+      </file>
+      <file name="protractor.js" type="protractor">
         it('should initialize to model', function() {
-         expect(binding('userType')).toEqual('guest');
-         expect(binding('myForm.input.$valid')).toEqual('true');
+          var userType = element(by.binding('userType'));
+          var valid = element(by.binding('myForm.input.$valid'));
+
+          expect(userType.getText()).toContain('guest');
+          expect(valid.getText()).toContain('true');
         });
 
         it('should be invalid if empty', function() {
-         input('userType').enter('');
-         expect(binding('userType')).toEqual('');
-         expect(binding('myForm.input.$valid')).toEqual('false');
+          var userType = element(by.binding('userType'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var userInput = element(by.model('userType'));
+
+          userInput.clear();
+          userInput.sendKeys('');
+
+          expect(userType.getText()).toEqual('userType =');
+          expect(valid.getText()).toContain('false');
         });
-      </doc:scenario>
-    </doc:example>
+      </file>
+    </example>
+ *
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngTransclude
+ * @name ngTransclude
  * @restrict AC
  *
  * @description
@@ -13,8 +13,8 @@
  * @element ANY
  *
  * @example
-   <doc:example module="transclude">
-     <doc:source>
+   <example module="transclude">
+     <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.title = 'Lorem Ipsum';
@@ -39,36 +39,33 @@
          <textarea ng-model="text"></textarea> <br/>
          <pane title="{{title}}">{{text}}</pane>
        </div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
         it('should have transcluded', function() {
-          input('title').enter('TITLE');
-          input('text').enter('TEXT');
-          expect(binding('title')).toEqual('TITLE');
-          expect(binding('text')).toEqual('TEXT');
+          var titleElement = element(by.model('title'));
+          titleElement.clear();
+          titleElement.sendKeys('TITLE');
+          var textElement = element(by.model('text'));
+          textElement.clear();
+          textElement.sendKeys('TEXT');
+          expect(element(by.binding('title')).getText()).toEqual('TITLE');
+          expect(element(by.binding('text')).getText()).toEqual('TEXT');
         });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  *
  */
 var ngTranscludeDirective = ngDirective({
-  controller: ['$element', '$transclude', function($element, $transclude) {
+  link: function($scope, $element, $attrs, controller, $transclude) {
     if (!$transclude) {
       throw minErr('ngTransclude')('orphan',
-          'Illegal use of ngTransclude directive in the template! ' +
-          'No parent directive that requires a transclusion found. ' +
-          'Element: {0}',
-          startingTag($element));
+       'Illegal use of ngTransclude directive in the template! ' +
+       'No parent directive that requires a transclusion found. ' +
+       'Element: {0}',
+       startingTag($element));
     }
 
-    // remember the transclusion fn but call it during linking so that we don't process transclusion before directives on
-    // the parent element even when the transclusion replaces the current element. (we can't use priority here because
-    // that applies only to compile fns and not controllers
-    this.$transclude = $transclude;
-  }],
-
-  link: function($scope, $element, $attrs, controller) {
-    controller.$transclude(function(clone) {
+    $transclude(function(clone) {
       $element.empty();
       $element.append(clone);
     });

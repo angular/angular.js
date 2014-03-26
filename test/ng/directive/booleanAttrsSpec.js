@@ -251,4 +251,28 @@ describe('ngHref', function() {
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('http://server');
   }));
+
+  if (isDefined(window.SVGElement)) {
+    describe('SVGAElement', function() {
+      it('should interpolate the expression and bind to xlink:href', inject(function($compile, $rootScope) {
+        element = $compile('<svg><a ng-href="some/{{id}}"></a></svg>')($rootScope);
+        var child = element.children('a');
+        $rootScope.$digest();
+        expect(child.attr('xlink:href')).toEqual('some/');
+
+        $rootScope.$apply(function() {
+          $rootScope.id = 1;
+        });
+        expect(child.attr('xlink:href')).toEqual('some/1');
+      }));
+
+
+      it('should bind xlink:href even if no interpolation', inject(function($rootScope, $compile) {
+        element = $compile('<svg><a ng-href="http://server"></a></svg>')($rootScope);
+        var child = element.children('a');
+        $rootScope.$digest();
+        expect(child.attr('xlink:href')).toEqual('http://server');
+      }));
+    });
+  }
 });

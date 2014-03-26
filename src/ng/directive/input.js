@@ -9,14 +9,14 @@
 */
 
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
-var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
+var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/i;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 
 var inputType = {
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.text
+   * @ngdoc input
+   * @name input[text]
    *
    * @description
    * Standard HTML text input with angular data binding.
@@ -39,8 +39,8 @@ var inputType = {
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example name="text-input-directive">
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.text = 'guest';
@@ -61,38 +61,40 @@ var inputType = {
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:scenario>
+        </file>
+        <file name="protractor.js" type="protractor">
+          var text = element(by.binding('text'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var input = element(by.model('text'));
+
           it('should initialize to model', function() {
-            expect(binding('text')).toEqual('guest');
-            expect(binding('myForm.input.$valid')).toEqual('true');
+            expect(text.getText()).toContain('guest');
+            expect(valid.getText()).toContain('true');
           });
 
           it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('');
+
+            expect(text.getText()).toEqual('text =');
+            expect(valid.getText()).toContain('false');
           });
 
           it('should be invalid if multi word', function() {
-            input('text').enter('hello world');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
+            input.clear();
+            input.sendKeys('hello world');
 
-          it('should not be trimmed', function() {
-            input('text').enter('untrimmed ');
-            expect(binding('text')).toEqual('untrimmed ');
-            expect(binding('myForm.input.$valid')).toEqual('true');
+            expect(valid.getText()).toContain('false');
           });
-        </doc:scenario>
-      </doc:example>
+        </file>
+      </example>
    */
   'text': textInputType,
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.number
+   * @ngdoc input
+   * @name input[number]
    *
    * @description
    * Text input with number validation and transformation. Sets the `number` validation
@@ -117,8 +119,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example name="number-input-directive">
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.value = 12;
@@ -137,33 +139,39 @@ var inputType = {
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:scenario>
+        </file>
+        <file name="protractor.js" type="protractor">
+          var value = element(by.binding('value'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var input = element(by.model('value'));
+
           it('should initialize to model', function() {
-           expect(binding('value')).toEqual('12');
-           expect(binding('myForm.input.$valid')).toEqual('true');
+            expect(value.getText()).toContain('12');
+            expect(valid.getText()).toContain('true');
           });
 
           it('should be invalid if empty', function() {
-           input('value').enter('');
-           expect(binding('value')).toEqual('');
-           expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('');
+            expect(value.getText()).toEqual('value =');
+            expect(valid.getText()).toContain('false');
           });
 
           it('should be invalid if over max', function() {
-           input('value').enter('123');
-           expect(binding('value')).toEqual('');
-           expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('123');
+            expect(value.getText()).toEqual('value =');
+            expect(valid.getText()).toContain('false');
           });
-        </doc:scenario>
-      </doc:example>
+        </file>
+      </example>
    */
   'number': numberInputType,
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.url
+   * @ngdoc input
+   * @name input[url]
    *
    * @description
    * Text input with URL validation. Sets the `url` validation error key if the content is not a
@@ -186,8 +194,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example name="url-input-directive">
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.text = 'http://google.com';
@@ -206,32 +214,40 @@ var inputType = {
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
            <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:scenario>
+        </file>
+        <file name="protractor.js" type="protractor">
+          var text = element(by.binding('text'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var input = element(by.model('text'));
+
           it('should initialize to model', function() {
-            expect(binding('text')).toEqual('http://google.com');
-            expect(binding('myForm.input.$valid')).toEqual('true');
+            expect(text.getText()).toContain('http://google.com');
+            expect(valid.getText()).toContain('true');
           });
 
           it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('');
+
+            expect(text.getText()).toEqual('text =');
+            expect(valid.getText()).toContain('false');
           });
 
           it('should be invalid if not url', function() {
-            input('text').enter('xxx');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('box');
+
+            expect(valid.getText()).toContain('false');
           });
-        </doc:scenario>
-      </doc:example>
+        </file>
+      </example>
    */
   'url': urlInputType,
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.email
+   * @ngdoc input
+   * @name input[email]
    *
    * @description
    * Text input with email validation. Sets the `email` validation error key if not a valid email
@@ -254,8 +270,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example name="email-input-directive">
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.text = 'me@example.com';
@@ -274,32 +290,39 @@ var inputType = {
              <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
              <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
            </form>
-        </doc:source>
-        <doc:scenario>
+         </file>
+        <file name="protractor.js" type="protractor">
+          var text = element(by.binding('text'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var input = element(by.model('text'));
+
           it('should initialize to model', function() {
-            expect(binding('text')).toEqual('me@example.com');
-            expect(binding('myForm.input.$valid')).toEqual('true');
+            expect(text.getText()).toContain('me@example.com');
+            expect(valid.getText()).toContain('true');
           });
 
           it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('');
+            expect(text.getText()).toEqual('text =');
+            expect(valid.getText()).toContain('false');
           });
 
           it('should be invalid if not email', function() {
-            input('text').enter('xxx');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+            input.clear();
+            input.sendKeys('xxx');
+
+            expect(valid.getText()).toContain('false');
           });
-        </doc:scenario>
-      </doc:example>
+        </file>
+      </example>
    */
   'email': emailInputType,
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.radio
+   * @ngdoc input
+   * @name input[radio]
    *
    * @description
    * HTML radio button.
@@ -309,38 +332,48 @@ var inputType = {
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {string} ngValue Angular expression which sets the value to which the expression should
+   *    be set when selected.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example name="radio-input-directive">
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.color = 'blue';
+             $scope.specialValue = {
+               "id": "12345",
+               "value": "green"
+             };
            }
          </script>
          <form name="myForm" ng-controller="Ctrl">
            <input type="radio" ng-model="color" value="red">  Red <br/>
-           <input type="radio" ng-model="color" value="green"> Green <br/>
+           <input type="radio" ng-model="color" ng-value="specialValue"> Green <br/>
            <input type="radio" ng-model="color" value="blue"> Blue <br/>
-           <tt>color = {{color}}</tt><br/>
+           <tt>color = {{color | json}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:scenario>
+          Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.
+        </file>
+        <file name="protractor.js" type="protractor">
           it('should change state', function() {
-            expect(binding('color')).toEqual('blue');
+            var color = element(by.binding('color'));
 
-            input('color').select('red');
-            expect(binding('color')).toEqual('red');
+            expect(color.getText()).toContain('blue');
+
+            element.all(by.model('color')).get(0).click();
+
+            expect(color.getText()).toContain('red');
           });
-        </doc:scenario>
-      </doc:example>
+        </file>
+      </example>
    */
   'radio': radioInputType,
 
 
   /**
-   * @ngdoc inputType
-   * @name ng.directive:input.checkbox
+   * @ngdoc input
+   * @name input[checkbox]
    *
    * @description
    * HTML checkbox.
@@ -353,8 +386,8 @@ var inputType = {
    *    interaction with the input element.
    *
    * @example
-      <doc:example>
-        <doc:source>
+      <example name="checkbox-input-directive">
+        <file name="index.html">
          <script>
            function Ctrl($scope) {
              $scope.value1 = true;
@@ -368,42 +401,76 @@ var inputType = {
            <tt>value1 = {{value1}}</tt><br/>
            <tt>value2 = {{value2}}</tt><br/>
           </form>
-        </doc:source>
-        <doc:scenario>
+        </file>
+        <file name="protractor.js" type="protractor">
           it('should change state', function() {
-            expect(binding('value1')).toEqual('true');
-            expect(binding('value2')).toEqual('YES');
+            var value1 = element(by.binding('value1'));
+            var value2 = element(by.binding('value2'));
 
-            input('value1').check();
-            input('value2').check();
-            expect(binding('value1')).toEqual('false');
-            expect(binding('value2')).toEqual('NO');
+            expect(value1.getText()).toContain('true');
+            expect(value2.getText()).toContain('YES');
+
+            element(by.model('value1')).click();
+            element(by.model('value2')).click();
+
+            expect(value1.getText()).toContain('false');
+            expect(value2.getText()).toContain('NO');
           });
-        </doc:scenario>
-      </doc:example>
+        </file>
+      </example>
    */
   'checkbox': checkboxInputType,
 
   'hidden': noop,
   'button': noop,
   'submit': noop,
-  'reset': noop
+  'reset': noop,
+  'file': noop
 };
 
+// A helper function to call $setValidity and return the value / undefined,
+// a pattern that is repeated a lot in the input validation logic.
+function validate(ctrl, validatorName, validity, value){
+  ctrl.$setValidity(validatorName, validity);
+  return validity ? value : undefined;
+}
+
+
+function addNativeHtml5Validators(ctrl, validatorName, element) {
+  var validity = element.prop('validity');
+  if (isObject(validity)) {
+    var validator = function(value) {
+      // Don't overwrite previous validation, don't consider valueMissing to apply (ng-required can
+      // perform the required validation)
+      if (!ctrl.$error[validatorName] && (validity.badInput || validity.customError ||
+          validity.typeMismatch) && !validity.valueMissing) {
+        ctrl.$setValidity(validatorName, false);
+        return;
+      }
+      return value;
+    };
+    ctrl.$parsers.push(validator);
+    ctrl.$formatters.push(validator);
+  }
+}
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  var validity = element.prop('validity');
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
-  var composing = false;
+  if (!$sniffer.android) {
+    var composing = false;
 
-  element.on('compositionstart', function() {
-    composing = true;
-  });
+    element.on('compositionstart', function(data) {
+      composing = true;
+    });
 
-  element.on('compositionend', function() {
-    composing = false;
-  });
+    element.on('compositionend', function() {
+      composing = false;
+      listener();
+    });
+  }
 
   var listener = function() {
     if (composing) return;
@@ -416,10 +483,18 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       value = trim(value);
     }
 
-    if (ctrl.$viewValue !== value) {
-      scope.$apply(function() {
+    if (ctrl.$viewValue !== value ||
+        // If the value is still empty/falsy, and there is no `required` error, run validators
+        // again. This enables HTML5 constraint validation errors to affect Angular validation
+        // even when the first character entered causes an error.
+        (validity && value === '' && !validity.valueMissing)) {
+      if (scope.$$phase) {
         ctrl.$setViewValue(value);
-      });
+      } else {
+        scope.$apply(function() {
+          ctrl.$setViewValue(value);
+        });
+      }
     }
   };
 
@@ -468,22 +543,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       patternValidator,
       match;
 
-  var validate = function(regexp, value) {
-    if (ctrl.$isEmpty(value) || regexp.test(value)) {
-      ctrl.$setValidity('pattern', true);
-      return value;
-    } else {
-      ctrl.$setValidity('pattern', false);
-      return undefined;
-    }
-  };
-
   if (pattern) {
+    var validateRegex = function(regexp, value) {
+      return validate(ctrl, 'pattern', ctrl.$isEmpty(value) || regexp.test(value), value);
+    };
     match = pattern.match(/^\/(.*)\/([gim]*)$/);
     if (match) {
       pattern = new RegExp(match[1], match[2]);
       patternValidator = function(value) {
-        return validate(pattern, value);
+        return validateRegex(pattern, value);
       };
     } else {
       patternValidator = function(value) {
@@ -494,7 +562,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
             'Expected {0} to be a RegExp but was {1}. Element: {2}', pattern,
             patternObj, startingTag(element));
         }
-        return validate(patternObj, value);
+        return validateRegex(patternObj, value);
       };
     }
 
@@ -506,13 +574,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMinlength) {
     var minlength = int(attr.ngMinlength);
     var minLengthValidator = function(value) {
-      if (!ctrl.$isEmpty(value) && value.length < minlength) {
-        ctrl.$setValidity('minlength', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('minlength', true);
-        return value;
-      }
+      return validate(ctrl, 'minlength', ctrl.$isEmpty(value) || value.length >= minlength, value);
     };
 
     ctrl.$parsers.push(minLengthValidator);
@@ -523,13 +585,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMaxlength) {
     var maxlength = int(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
-      if (!ctrl.$isEmpty(value) && value.length > maxlength) {
-        ctrl.$setValidity('maxlength', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('maxlength', true);
-        return value;
-      }
+      return validate(ctrl, 'maxlength', ctrl.$isEmpty(value) || value.length <= maxlength, value);
     };
 
     ctrl.$parsers.push(maxLengthValidator);
@@ -551,6 +607,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   });
 
+  addNativeHtml5Validators(ctrl, 'number', element);
+
   ctrl.$formatters.push(function(value) {
     return ctrl.$isEmpty(value) ? '' : '' + value;
   });
@@ -558,13 +616,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.min) {
     var minValidator = function(value) {
       var min = parseFloat(attr.min);
-      if (!ctrl.$isEmpty(value) && value < min) {
-        ctrl.$setValidity('min', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('min', true);
-        return value;
-      }
+      return validate(ctrl, 'min', ctrl.$isEmpty(value) || value >= min, value);
     };
 
     ctrl.$parsers.push(minValidator);
@@ -574,13 +626,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.max) {
     var maxValidator = function(value) {
       var max = parseFloat(attr.max);
-      if (!ctrl.$isEmpty(value) && value > max) {
-        ctrl.$setValidity('max', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('max', true);
-        return value;
-      }
+      return validate(ctrl, 'max', ctrl.$isEmpty(value) || value <= max, value);
     };
 
     ctrl.$parsers.push(maxValidator);
@@ -588,14 +634,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   ctrl.$formatters.push(function(value) {
-
-    if (ctrl.$isEmpty(value) || isNumber(value)) {
-      ctrl.$setValidity('number', true);
-      return value;
-    } else {
-      ctrl.$setValidity('number', false);
-      return undefined;
-    }
+    return validate(ctrl, 'number', ctrl.$isEmpty(value) || isNumber(value), value);
   });
 }
 
@@ -603,13 +642,7 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var urlValidator = function(value) {
-    if (ctrl.$isEmpty(value) || URL_REGEXP.test(value)) {
-      ctrl.$setValidity('url', true);
-      return value;
-    } else {
-      ctrl.$setValidity('url', false);
-      return undefined;
-    }
+    return validate(ctrl, 'url', ctrl.$isEmpty(value) || URL_REGEXP.test(value), value);
   };
 
   ctrl.$formatters.push(urlValidator);
@@ -620,13 +653,7 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    if (ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value)) {
-      ctrl.$setValidity('email', true);
-      return value;
-    } else {
-      ctrl.$setValidity('email', false);
-      return undefined;
-    }
+    return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
   };
 
   ctrl.$formatters.push(emailValidator);
@@ -689,7 +716,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:textarea
+ * @name textarea
  * @restrict E
  *
  * @description
@@ -717,7 +744,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:input
+ * @name input
  * @restrict E
  *
  * @description
@@ -739,8 +766,8 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *    interaction with the input element.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example name="input-directive">
+      <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.user = {name: 'guest', last: 'visitor'};
@@ -769,46 +796,61 @@ function checkboxInputType(scope, element, attr, ctrl) {
          <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br>
          <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
        </div>
-      </doc:source>
-      <doc:scenario>
+      </file>
+      <file name="protractor.js" type="protractor">
+        var user = element(by.binding('{{user}}'));
+        var userNameValid = element(by.binding('myForm.userName.$valid'));
+        var lastNameValid = element(by.binding('myForm.lastName.$valid'));
+        var lastNameError = element(by.binding('myForm.lastName.$error'));
+        var formValid = element(by.binding('myForm.$valid'));
+        var userNameInput = element(by.model('user.name'));
+        var userLastInput = element(by.model('user.last'));
+
         it('should initialize to model', function() {
-          expect(binding('user')).toEqual('{"name":"guest","last":"visitor"}');
-          expect(binding('myForm.userName.$valid')).toEqual('true');
-          expect(binding('myForm.$valid')).toEqual('true');
+          expect(user.getText()).toContain('{"name":"guest","last":"visitor"}');
+          expect(userNameValid.getText()).toContain('true');
+          expect(formValid.getText()).toContain('true');
         });
 
         it('should be invalid if empty when required', function() {
-          input('user.name').enter('');
-          expect(binding('user')).toEqual('{"last":"visitor"}');
-          expect(binding('myForm.userName.$valid')).toEqual('false');
-          expect(binding('myForm.$valid')).toEqual('false');
+          userNameInput.clear();
+          userNameInput.sendKeys('');
+
+          expect(user.getText()).toContain('{"last":"visitor"}');
+          expect(userNameValid.getText()).toContain('false');
+          expect(formValid.getText()).toContain('false');
         });
 
         it('should be valid if empty when min length is set', function() {
-          input('user.last').enter('');
-          expect(binding('user')).toEqual('{"name":"guest","last":""}');
-          expect(binding('myForm.lastName.$valid')).toEqual('true');
-          expect(binding('myForm.$valid')).toEqual('true');
+          userLastInput.clear();
+          userLastInput.sendKeys('');
+
+          expect(user.getText()).toContain('{"name":"guest","last":""}');
+          expect(lastNameValid.getText()).toContain('true');
+          expect(formValid.getText()).toContain('true');
         });
 
         it('should be invalid if less than required min length', function() {
-          input('user.last').enter('xx');
-          expect(binding('user')).toEqual('{"name":"guest"}');
-          expect(binding('myForm.lastName.$valid')).toEqual('false');
-          expect(binding('myForm.lastName.$error')).toMatch(/minlength/);
-          expect(binding('myForm.$valid')).toEqual('false');
+          userLastInput.clear();
+          userLastInput.sendKeys('xx');
+
+          expect(user.getText()).toContain('{"name":"guest"}');
+          expect(lastNameValid.getText()).toContain('false');
+          expect(lastNameError.getText()).toContain('minlength');
+          expect(formValid.getText()).toContain('false');
         });
 
         it('should be invalid if longer than max length', function() {
-          input('user.last').enter('some ridiculously long name');
-          expect(binding('user'))
-            .toEqual('{"name":"guest"}');
-          expect(binding('myForm.lastName.$valid')).toEqual('false');
-          expect(binding('myForm.lastName.$error')).toMatch(/maxlength/);
-          expect(binding('myForm.$valid')).toEqual('false');
+          userLastInput.clear();
+          userLastInput.sendKeys('some ridiculously long name');
+
+          expect(user.getText()).toContain('{"name":"guest"}');
+          expect(lastNameValid.getText()).toContain('false');
+          expect(lastNameError.getText()).toContain('maxlength');
+          expect(formValid.getText()).toContain('false');
         });
-      </doc:scenario>
-    </doc:example>
+      </file>
+    </example>
  */
 var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
   return {
@@ -829,30 +871,31 @@ var VALID_CLASS = 'ng-valid',
     DIRTY_CLASS = 'ng-dirty';
 
 /**
- * @ngdoc object
- * @name ng.directive:ngModel.NgModelController
+ * @ngdoc type
+ * @name ngModel.NgModelController
  *
  * @property {string} $viewValue Actual string value in the view.
  * @property {*} $modelValue The value in the model, that the control is bound to.
  * @property {Array.<Function>} $parsers Array of functions to execute, as a pipeline, whenever
        the control reads value from the DOM.  Each function is called, in turn, passing the value
-       through to the next. Used to sanitize / convert the value as well as validation.
-       For validation, the parsers should update the validity state using
-       {@link ng.directive:ngModel.NgModelController#methods_$setValidity $setValidity()},
+       through to the next. The last return value is used to populate the model.
+       Used to sanitize / convert the value as well as validation. For validation,
+       the parsers should update the validity state using
+       {@link ngModel.NgModelController#$setValidity $setValidity()},
        and return `undefined` for invalid values.
 
  *
  * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
        the model value changes. Each function is called, in turn, passing the value through to the
        next. Used to format / convert values for display in the control and validation.
- *      <pre>
+ *      ```js
  *      function formatter(value) {
  *        if (value) {
  *          return value.toUpperCase();
  *        }
  *      }
  *      ngModel.$formatters.push(formatter);
- *      </pre>
+ *      ```
  *
  * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
  *     view value has changed. It is called with no arguments, and its return value is ignored.
@@ -881,7 +924,7 @@ var VALID_CLASS = 'ng-valid',
  * Note that `contenteditable` is an HTML5 attribute, which tells the browser to let the element
  * contents be edited in place by the user.  This will not work on older browsers.
  *
- * <example module="customControl">
+ * <example name="NgModelController" module="customControl">
     <file name="style.css">
       [contenteditable] {
         border: 1px solid black;
@@ -939,22 +982,30 @@ var VALID_CLASS = 'ng-valid',
        <textarea ng-model="userContent"></textarea>
       </form>
     </file>
-    <file name="scenario.js">
-      it('should data-bind and become invalid', function() {
-        var contentEditable = element('[contenteditable]');
+    <file name="protractor.js" type="protractor">
+    it('should data-bind and become invalid', function() {
+      if (browser.params.browser == 'safari' || browser.params.browser == 'firefox') {
+        // SafariDriver can't handle contenteditable
+        // and Firefox driver can't clear contenteditables very well
+        return;
+      }
+      var contentEditable = element(by.css('[contenteditable]'));
+      var content = 'Change me!';
 
-        expect(contentEditable.text()).toEqual('Change me!');
-        input('userContent').enter('');
-        expect(contentEditable.text()).toEqual('');
-        expect(contentEditable.prop('className')).toMatch(/ng-invalid-required/);
-      });
+      expect(contentEditable.getText()).toEqual(content);
+
+      contentEditable.clear();
+      contentEditable.sendKeys(protractor.Key.BACK_SPACE);
+      expect(contentEditable.getText()).toEqual('');
+      expect(contentEditable.getAttribute('class')).toMatch(/ng-invalid-required/);
+    });
     </file>
  * </example>
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-    function($scope, $exceptionHandler, $attr, $element, $parse) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -975,9 +1026,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   }
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$render
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$render
    *
    * @description
    * Called when the view needs to be updated. It is expected that the user of the ng-model
@@ -986,9 +1036,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$render = noop;
 
   /**
-   * @ngdoc function
-   * @name { ng.directive:ngModel.NgModelController#$isEmpty
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$isEmpty
    *
    * @description
    * This is called when we need to determine if the value of the input is empty.
@@ -999,6 +1048,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * You can override this for input directives whose concept of being empty is different to the
    * default. The `checkboxInputType` directive does this because in its case a value of `false`
    * implies empty.
+   *
+   * @param {*} value Reference to check.
+   * @returns {boolean} True if `value` is empty.
    */
   this.$isEmpty = function(value) {
     return isUndefined(value) || value === '' || value === null || value !== value;
@@ -1016,15 +1068,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   // convenience method for easy toggling of classes
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $element.
-      removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
-      addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+    $animate.removeClass($element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
+    $animate.addClass($element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setValidity
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setValidity
    *
    * @description
    * Change the validity state, and notifies the form when the control changes validity. (i.e. it
@@ -1066,9 +1116,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setPristine
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setPristine
    *
    * @description
    * Sets the control to its pristine state.
@@ -1079,13 +1128,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$setPristine = function () {
     this.$dirty = false;
     this.$pristine = true;
-    $element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+    $animate.removeClass($element, DIRTY_CLASS);
+    $animate.addClass($element, PRISTINE_CLASS);
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:ngModel.NgModelController#$setViewValue
-   * @methodOf ng.directive:ngModel.NgModelController
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setViewValue
    *
    * @description
    * Update the view value.
@@ -1111,7 +1160,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     if (this.$pristine) {
       this.$dirty = true;
       this.$pristine = false;
-      $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
+      $animate.removeClass($element, PRISTINE_CLASS);
+      $animate.addClass($element, DIRTY_CLASS);
       parentForm.$setDirty();
     }
 
@@ -1162,13 +1212,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngModel
+ * @name ngModel
  *
  * @element input
  *
  * @description
  * The `ngModel` directive binds an `input`,`select`, `textarea` (or custom form control) to a
- * property on the scope using {@link ng.directive:ngModel.NgModelController NgModelController},
+ * property on the scope using {@link ngModel.NgModelController NgModelController},
  * which is created and exposed by this directive.
  *
  * `ngModel` is responsible for:
@@ -1177,7 +1227,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *   require.
  * - Providing validation behavior (i.e. required, number, email, url).
  * - Keeping the state of the control (valid/invalid, dirty/pristine, validation errors).
- * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`).
+ * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`) including animations.
  * - Registering the control with its parent {@link ng.directive:form form}.
  *
  * Note: `ngModel` will try to bind to the property given by evaluating the expression on the
@@ -1186,20 +1236,81 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *
  * For best practices on using `ngModel`, see:
  *
- *  - {@link https://github.com/angular/angular.js/wiki/Understanding-Scopes}
+ *  - [https://github.com/angular/angular.js/wiki/Understanding-Scopes]
  *
  * For basic examples, how to use `ngModel`, see:
  *
  *  - {@link ng.directive:input input}
- *    - {@link ng.directive:input.text text}
- *    - {@link ng.directive:input.checkbox checkbox}
- *    - {@link ng.directive:input.radio radio}
- *    - {@link ng.directive:input.number number}
- *    - {@link ng.directive:input.email email}
- *    - {@link ng.directive:input.url url}
+ *    - {@link input[text] text}
+ *    - {@link input[checkbox] checkbox}
+ *    - {@link input[radio] radio}
+ *    - {@link input[number] number}
+ *    - {@link input[email] email}
+ *    - {@link input[url] url}
  *  - {@link ng.directive:select select}
  *  - {@link ng.directive:textarea textarea}
  *
+ * # CSS classes
+ * The following CSS classes are added and removed on the associated input/select/textarea element
+ * depending on the validity of the model.
+ *
+ *  - `ng-valid` is set if the model is valid.
+ *  - `ng-invalid` is set if the model is invalid.
+ *  - `ng-pristine` is set if the model is pristine.
+ *  - `ng-dirty` is set if the model is dirty.
+ *
+ * Keep in mind that ngAnimate can detect each of these classes when added and removed.
+ *
+ * ## Animation Hooks
+ *
+ * Animations within models are triggered when any of the associated CSS classes are added and removed
+ * on the input element which is attached to the model. These classes are: `.ng-pristine`, `.ng-dirty`,
+ * `.ng-invalid` and `.ng-valid` as well as any other validations that are performed on the model itself.
+ * The animations that are triggered within ngModel are similar to how they work in ngClass and
+ * animations can be hooked into using CSS transitions, keyframes as well as JS animations.
+ *
+ * The following example shows a simple way to utilize CSS transitions to style an input element
+ * that has been rendered as invalid after it has been validated:
+ *
+ * <pre>
+ * //be sure to include ngAnimate as a module to hook into more
+ * //advanced animations
+ * .my-input {
+ *   transition:0.5s linear all;
+ *   background: white;
+ * }
+ * .my-input.ng-invalid {
+ *   background: red;
+ *   color:white;
+ * }
+ * </pre>
+ *
+ * @example
+ * <example deps="angular-animate.js" animations="true" fixBase="true">
+     <file name="index.html">
+       <script>
+        function Ctrl($scope) {
+          $scope.val = '1';
+        }
+       </script>
+       <style>
+         .my-input {
+           -webkit-transition:all linear 0.5s;
+           transition:all linear 0.5s;
+           background: transparent;
+         }
+         .my-input.ng-invalid {
+           color:white;
+           background: red;
+         }
+       </style>
+       Update input to see transitions when valid/invalid.
+       Integer is a valid value.
+       <form name="testForm" ng-controller="Ctrl">
+         <input ng-model="val" ng-pattern="/^\d+$/" name="anim" class="my-input" />
+       </form>
+     </file>
+ * </example>
  */
 var ngModelDirective = function() {
   return {
@@ -1223,10 +1334,13 @@ var ngModelDirective = function() {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngChange
+ * @name ngChange
  *
  * @description
- * Evaluate given expression when user changes the input.
+ * Evaluate the given expression when the user changes the input.
+ * The expression is evaluated immediately, unlike the JavaScript onchange event
+ * which only triggers at the end of a change (usually, when the user leaves the
+ * form element or presses the return key).
  * The expression is not evaluated when the value change is coming from the model.
  *
  * Note, this directive requires `ngModel` to be present.
@@ -1236,8 +1350,8 @@ var ngModelDirective = function() {
  * in input value.
  *
  * @example
- * <doc:example>
- *   <doc:source>
+ * <example name="ngChange-directive">
+ *   <file name="index.html">
  *     <script>
  *       function Controller($scope) {
  *         $scope.counter = 0;
@@ -1250,25 +1364,31 @@ var ngModelDirective = function() {
  *       <input type="checkbox" ng-model="confirmed" ng-change="change()" id="ng-change-example1" />
  *       <input type="checkbox" ng-model="confirmed" id="ng-change-example2" />
  *       <label for="ng-change-example2">Confirmed</label><br />
- *       debug = {{confirmed}}<br />
- *       counter = {{counter}}
+ *       <tt>debug = {{confirmed}}</tt><br/>
+ *       <tt>counter = {{counter}}</tt><br/>
  *     </div>
- *   </doc:source>
- *   <doc:scenario>
+ *   </file>
+ *   <file name="protractor.js" type="protractor">
+ *     var counter = element(by.binding('counter'));
+ *     var debug = element(by.binding('confirmed'));
+ *
  *     it('should evaluate the expression if changing from view', function() {
- *       expect(binding('counter')).toEqual('0');
- *       element('#ng-change-example1').click();
- *       expect(binding('counter')).toEqual('1');
- *       expect(binding('confirmed')).toEqual('true');
+ *       expect(counter.getText()).toContain('0');
+ *
+ *       element(by.id('ng-change-example1')).click();
+ *
+ *       expect(counter.getText()).toContain('1');
+ *       expect(debug.getText()).toContain('true');
  *     });
  *
  *     it('should not evaluate the expression if changing from model', function() {
- *       element('#ng-change-example2').click();
- *       expect(binding('counter')).toEqual('0');
- *       expect(binding('confirmed')).toEqual('true');
+ *       element(by.id('ng-change-example2')).click();
+
+ *       expect(counter.getText()).toContain('0');
+ *       expect(debug.getText()).toContain('true');
  *     });
- *   </doc:scenario>
- * </doc:example>
+ *   </file>
+ * </example>
  */
 var ngChangeDirective = valueFn({
   require: 'ngModel',
@@ -1310,7 +1430,7 @@ var requiredDirective = function() {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngList
+ * @name ngList
  *
  * @description
  * Text input that converts between a delimited string and an array of strings. The delimiter
@@ -1321,8 +1441,8 @@ var requiredDirective = function() {
  *   specified in form `/something/` then the value will be converted into a regular expression.
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example name="ngList-directive">
+      <file name="index.html">
        <script>
          function Ctrl($scope) {
            $scope.names = ['igor', 'misko', 'vojta'];
@@ -1339,22 +1459,28 @@ var requiredDirective = function() {
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
          <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
         </form>
-      </doc:source>
-      <doc:scenario>
+      </file>
+      <file name="protractor.js" type="protractor">
+        var listInput = element(by.model('names'));
+        var names = element(by.binding('{{names}}'));
+        var valid = element(by.binding('myForm.namesInput.$valid'));
+        var error = element(by.css('span.error'));
+
         it('should initialize to model', function() {
-          expect(binding('names')).toEqual('["igor","misko","vojta"]');
-          expect(binding('myForm.namesInput.$valid')).toEqual('true');
-          expect(element('span.error').css('display')).toBe('none');
+          expect(names.getText()).toContain('["igor","misko","vojta"]');
+          expect(valid.getText()).toContain('true');
+          expect(error.getCssValue('display')).toBe('none');
         });
 
         it('should be invalid if empty', function() {
-          input('names').enter('');
-          expect(binding('names')).toEqual('');
-          expect(binding('myForm.namesInput.$valid')).toEqual('false');
-          expect(element('span.error').css('display')).not().toBe('none');
-        });
-      </doc:scenario>
-    </doc:example>
+          listInput.clear();
+          listInput.sendKeys('');
+
+          expect(names.getText()).toContain('');
+          expect(valid.getText()).toContain('false');
+          expect(error.getCssValue('display')).not.toBe('none');        });
+      </file>
+    </example>
  */
 var ngListDirective = function() {
   return {
@@ -1399,7 +1525,7 @@ var ngListDirective = function() {
 var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 /**
  * @ngdoc directive
- * @name ng.directive:ngValue
+ * @name ngValue
  *
  * @description
  * Binds the given expression to the value of `input[select]` or `input[radio]`, so
@@ -1414,8 +1540,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  *   of the `input` element
  *
  * @example
-    <doc:example>
-      <doc:source>
+    <example name="ngValue-directive">
+      <file name="index.html">
        <script>
           function Ctrl($scope) {
             $scope.names = ['pizza', 'unicorns', 'robots'];
@@ -1434,17 +1560,19 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
             </label>
           <div>You chose {{my.favorite}}</div>
         </form>
-      </doc:source>
-      <doc:scenario>
+      </file>
+      <file name="protractor.js" type="protractor">
+        var favorite = element(by.binding('my.favorite'));
+
         it('should initialize to model', function() {
-          expect(binding('my.favorite')).toEqual('unicorns');
+          expect(favorite.getText()).toContain('unicorns');
         });
         it('should bind the values to the inputs', function() {
-          input('my.favorite').select('pizza');
-          expect(binding('my.favorite')).toEqual('pizza');
+          element.all(by.model('my.favorite')).get(0).click();
+          expect(favorite.getText()).toContain('pizza');
         });
-      </doc:scenario>
-    </doc:example>
+      </file>
+    </example>
  */
 var ngValueDirective = function() {
   return {

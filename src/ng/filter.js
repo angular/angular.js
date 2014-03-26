@@ -1,15 +1,15 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name ng.$filterProvider
+ * @ngdoc provider
+ * @name $filterProvider
  * @description
  *
  * Filters are just functions which transform input to an output. However filters need to be
  * Dependency Injected. To achieve this a filter definition consists of a factory function which is
  * annotated with dependencies and is responsible for creating a filter function.
  *
- * <pre>
+ * ```js
  *   // Filter registration
  *   function MyModule($provide, $filterProvider) {
  *     // create a service to demonstrate injection (not always needed)
@@ -28,12 +28,12 @@
  *       };
  *     });
  *   }
- * </pre>
+ * ```
  *
  * The filter function is registered with the `$injector` under the filter name suffix with
  * `Filter`.
- * 
- * <pre>
+ *
+ * ```js
  *   it('should be the same instance', inject(
  *     function($filterProvider) {
  *       $filterProvider.register('reverse', function(){
@@ -43,7 +43,7 @@
  *     function($filter, reverseFilter) {
  *       expect($filter('reverse')).toBe(reverseFilter);
  *     });
- * </pre>
+ * ```
  *
  *
  * For more information about how angular filters work, and how to create your own filters, see
@@ -51,19 +51,18 @@
  */
 /**
  * @ngdoc method
- * @name ng.$filterProvider#register
- * @methodOf ng.$filterProvider
+ * @name $filterProvider#register
  * @description
  * Register filter factory function.
  *
  * @param {String} name Name of the filter.
- * @param {function} fn The filter factory function which is injectable.
+ * @param {Function} fn The filter factory function which is injectable.
  */
 
 
 /**
- * @ngdoc function
- * @name ng.$filter
+ * @ngdoc service
+ * @name $filter
  * @function
  * @description
  * Filters are used for formatting data displayed to the user.
@@ -80,9 +79,8 @@ function $FilterProvider($provide) {
   var suffix = 'Filter';
 
   /**
-   * @ngdoc function
-   * @name ng.$controllerProvider#register
-   * @methodOf ng.$controllerProvider
+   * @ngdoc method
+   * @name $controllerProvider#register
    * @param {string|Object} name Name of the filter function, or an object map of filters where
    *    the keys are the filter names and the values are the filter factories.
    * @returns {Object} Registered filter instance, or if a map of filters was provided then a map
@@ -108,7 +106,7 @@ function $FilterProvider($provide) {
   }];
 
   ////////////////////////////////////////
-  
+
   /* global
     currencyFilter: false,
     dateFilter: false,

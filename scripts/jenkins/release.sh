@@ -1,38 +1,71 @@
 #!/bin/bash
 
+# tags the current commit as a release and publishes all artifacts to
+# the different repositories.
+# Note: This will also works if the commit is in the past!
+
 echo "#################################"
-echo "#### Cut release ################"
+echo "#### cut release     ############"
 echo "#################################"
 
-if [ "$1" != "patch" -a "$1" != "minor" -a "$1" != "major" ]; then
-  echo "Please specify the next version type: patch|minor|major"
-  exit 1
-fi
-BUMP_TYPE=$1
+ARG_DEFS=(
+  # require the git dryrun flag so the script can't be run without
+  # thinking about this!
+  "--git-push-dryrun=(true|false)"
+  # The sha to release. Needs to be the same as HEAD.
+  # given as parameter to double check.
+  "--commit-sha=(.*)"
+  # the version number of the release.
+  # e.g. 1.2.12 or 1.2.12-rc.1
+  "--version-number=([0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?)"
+  # the codename of the release
+  "--version-name=(.+)"
+)
 
-# Enable tracing and exit on first failure
-set -xe
-# Normalize working dir to script dir
-cd `dirname $0`/../..
+function init {
+  if [[ $(git rev-parse HEAD) != $(git rev-parse $COMMIT_SHA) ]]; then
+    echo "HEAD is not at $COMMIT_SHA"
+    usage
+  fi
 
+  if [[ ! $VERBOSE ]]; then
+    VERBOSE=false
+  fi
+  VERBOSE_ARG="--verbose=$VERBOSE"
+}
 
-# Bump versions: remove "-snapshot" suffix
-./scripts/jenkins/bump-remove-snapshot.sh
+function build {
+  cd ../..
 
-# Build
-./jenkins_build.sh
+  npm install --color false
+  grunt ci-checks package --no-color
 
-# Bump versions: Increment version and add "-snapshot"
-./scripts/jenkins/bump-increment.sh $BUMP_TYPE
+  cd $SCRIPT_DIR
+}
 
-echo "-- push to Github"
-# push to github
-git push
+function phase {
+  ACTION_ARG="--action=$1"
+  ../angular.js/tag-release.sh $ACTION_ARG $VERBOSE_ARG\
+    --version-number=$VERSION_NUMBER --version-name=$VERSION_NAME\
+    --commit-sha=$COMMIT_SHA
 
-# Update code.angularjs.org
-./scripts/code.angularjs.org/publish.sh
+  if [[ $1 == "prepare" ]]; then
+    # The build requires the tag to be set already!
+    build
+  fi
 
-# Update bower
-./scripts/bower/publish.sh
+  ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
+  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
+  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
+}
 
+function run {
+  # First prepare all scripts (build, test, commit, tag, ...),
+  # so we are sure everything is all right
+  phase prepare
+  # only then publish to github
+  phase publish
+}
 
+source $(dirname $0)/../utils.inc

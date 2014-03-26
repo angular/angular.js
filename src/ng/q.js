@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc service
- * @name ng.$q
+ * @name $q
  * @requires $rootScope
  *
  * @description
@@ -15,9 +15,9 @@
  * From the perspective of dealing with error handling, deferred and promise APIs are to
  * asynchronous programming what `try`, `catch` and `throw` keywords are to synchronous programming.
  *
- * <pre>
- *   // for the purpose of this example let's assume that variables `$q` and `scope` are
- *   // available in the current lexical scope (they could have been injected or passed in).
+ * ```js
+ *   // for the purpose of this example let's assume that variables `$q`, `scope` and `okToGreet`
+ *   // are available in the current lexical scope (they could have been injected or passed in).
  *
  *   function asyncGreet(name) {
  *     var deferred = $q.defer();
@@ -47,7 +47,7 @@
  *   }, function(update) {
  *     alert('Got notification: ' + update);
  *   });
- * </pre>
+ * ```
  *
  * At first it might not be obvious why this extra complexity is worth the trouble. The payoff
  * comes in the way of guarantees that promise and deferred APIs make, see
@@ -73,7 +73,7 @@
  *   constructed via `$q.reject`, the promise will be rejected instead.
  * - `reject(reason)` – rejects the derived promise with the `reason`. This is equivalent to
  *   resolving it with a rejection constructed via `$q.reject`.
- * - `notify(value)` - provides updates on the status of the promises execution. This may be called
+ * - `notify(value)` - provides updates on the status of the promise's execution. This may be called
  *   multiple times before the promise is either resolved or rejected.
  *
  * **Properties**
@@ -112,21 +112,21 @@
  *
  *   Because `finally` is a reserved word in JavaScript and reserved keywords are not supported as
  *   property names by ES3, you'll need to invoke the method like `promise['finally'](callback)` to
- *   make your code IE8 compatible.
+ *   make your code IE8 and Android 2.x compatible.
  *
  * # Chaining promises
  *
  * Because calling the `then` method of a promise returns a new derived promise, it is easily
  * possible to create a chain of promises:
  *
- * <pre>
+ * ```js
  *   promiseB = promiseA.then(function(result) {
  *     return result + 1;
  *   });
  *
  *   // promiseB will be resolved immediately after promiseA is resolved and its value
  *   // will be the result of promiseA incremented by 1
- * </pre>
+ * ```
  *
  * It is possible to create chains of any length and since a promise can be resolved with another
  * promise (which will defer its resolution further), it is possible to pause/defer resolution of
@@ -146,7 +146,7 @@
  *
  *  # Testing
  *
- *  <pre>
+ *  ```js
  *    it('should simulate promise', inject(function($q, $rootScope) {
  *      var deferred = $q.defer();
  *      var promise = deferred.promise;
@@ -166,7 +166,7 @@
  *      $rootScope.$apply();
  *      expect(resolvedValue).toEqual(123);
  *    }));
- *  </pre>
+ *  ```
  */
 function $QProvider() {
 
@@ -181,7 +181,7 @@ function $QProvider() {
 /**
  * Constructs a promise manager.
  *
- * @param {function(function)} nextTick Function for executing functions in the next turn.
+ * @param {function(Function)} nextTick Function for executing functions in the next turn.
  * @param {function(...*)} exceptionHandler Function into which unexpected exceptions are passed for
  *     debugging purposes.
  * @returns {object} Promise manager.
@@ -189,9 +189,10 @@ function $QProvider() {
 function qFactory(nextTick, exceptionHandler) {
 
   /**
-   * @ngdoc
-   * @name ng.$q#defer
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#defer
+   * @function
+   *
    * @description
    * Creates a `Deferred` object which represents a task which will finish in the future.
    *
@@ -223,7 +224,7 @@ function qFactory(nextTick, exceptionHandler) {
 
 
       reject: function(reason) {
-        deferred.resolve(reject(reason));
+        deferred.resolve(createInternalRejectedPromise(reason));
       },
 
 
@@ -345,9 +346,10 @@ function qFactory(nextTick, exceptionHandler) {
 
 
   /**
-   * @ngdoc
-   * @name ng.$q#reject
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#reject
+   * @function
+   *
    * @description
    * Creates a promise that is resolved as rejected with the specified `reason`. This api should be
    * used to forward rejection in a chain of promises. If you are dealing with the last promise in
@@ -359,7 +361,7 @@ function qFactory(nextTick, exceptionHandler) {
    * current promise, you have to "rethrow" the error by returning a rejection constructed via
    * `reject`.
    *
-   * <pre>
+   * ```js
    *   promiseB = promiseA.then(function(result) {
    *     // success: do something and resolve promiseB
    *     //          with the old or a new result
@@ -374,12 +376,18 @@ function qFactory(nextTick, exceptionHandler) {
    *     }
    *     return $q.reject(reason);
    *   });
-   * </pre>
+   * ```
    *
    * @param {*} reason Constant, message, exception or an object representing the rejection reason.
    * @returns {Promise} Returns a promise that was already resolved as rejected with the `reason`.
    */
   var reject = function(reason) {
+    var result = defer();
+    result.reject(reason);
+    return result.promise;
+  };
+
+  var createInternalRejectedPromise = function(reason) {
     return {
       then: function(callback, errback) {
         var result = defer();
@@ -398,9 +406,10 @@ function qFactory(nextTick, exceptionHandler) {
 
 
   /**
-   * @ngdoc
-   * @name ng.$q#when
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#when
+   * @function
+   *
    * @description
    * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
    * This is useful when you are dealing with an object that might or might not be a promise, or if
@@ -469,9 +478,10 @@ function qFactory(nextTick, exceptionHandler) {
 
 
   /**
-   * @ngdoc
-   * @name ng.$q#all
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#all
+   * @function
+   *
    * @description
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.
