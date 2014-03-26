@@ -50,12 +50,6 @@ function prepare {
     if [ -f $BUILD_DIR/$repo.js ] # ignore i18l
       then
         echo "-- Updating files in bower-$repo"
-        cd $TMP_DIR/bower-$repo
-        git reset --hard HEAD
-        git checkout master
-        git fetch --all
-        git reset --hard origin/master
-        cd $SCRIPT_DIR
         cp $BUILD_DIR/$repo.* $TMP_DIR/bower-$repo/
     fi
   done
