@@ -4,7 +4,7 @@
 @description
 
 <div class="alert alert-danger">
-**Note:** Angular Scenario Runner is depricated. If you're starting a new Angular project,
+**Note:** Angular Scenario Runner is deprecated. If you're starting a new Angular project,
 consider using [Protractor](https://github.com/angular/protractor).
 </div>
 
