@@ -134,7 +134,7 @@ string "very". Depending on which button is clicked, the `spice` model is set to
 
 <example module="spicyApp1">
   <file name="index.html">
-    <div ng-controller="SpicyCtrl">
+    <div ng-controller="SpicyController">
      <button ng-click="chiliSpicy()">Chili</button>
      <button ng-click="jalapenoSpicy()">Jalapeño</button>
      <p>The food is {{spice}} spicy!</p>
@@ -143,7 +143,7 @@ string "very". Depending on which button is clicked, the `spice` model is set to
   <file name="app.js">
     var myApp = angular.module('spicyApp1', []);
 
-    myApp.controller('SpicyCtrl', ['$scope', function($scope){
+    myApp.controller('SpicyController', ['$scope', function($scope) {
         $scope.spice = 'very';
 
         $scope.chiliSpicy = function() {
@@ -160,9 +160,9 @@ string "very". Depending on which button is clicked, the `spice` model is set to
 Things to notice in the example above:
 
 - The `ng-controller` directive is used to (implicitly) create a scope for our template, and the
-scope is augmented (managed) by the `SpicyCtrl` Controller.
-- `SpicyCtrl` is just a plain JavaScript function. As an (optional) naming convention the name
-starts with capital letter and ends with "Ctrl" or "Controller".
+scope is augmented (managed) by the `SpicyController` Controller.
+- `SpicyController` is just a plain JavaScript function. As an (optional) naming convention the name
+starts with capital letter and ends with "Controller" or "Controller".
 - Assigning a property to `$scope` creates or updates the model.
 - Controller methods can be created through direct assignment to scope (see the `chiliSpicy` method)
 - The Controller methods and properties are available in the template (for the `<div>` element and
@@ -175,7 +175,7 @@ previous example.
 
 <example module="spicyApp2">
   <file name="index.html">
-  <div ng-controller="SpicyCtrl">
+  <div ng-controller="SpicyController">
    <input ng-model="customSpice">
    <button ng-click="spicy('chili')">Chili</button>
    <button ng-click="spicy(customSpice)">Custom spice</button>
@@ -185,18 +185,18 @@ previous example.
   <file name="app.js">
     var myApp = angular.module('spicyApp2', []);
 
-    myApp.controller('SpicyCtrl', ['$scope', function($scope){
+    myApp.controller('SpicyController', ['$scope', function($scope) {
         $scope.customSpice = "wasabi";
         $scope.spice = 'very';
 
-        $scope.spicy = function(spice){
+        $scope.spicy = function(spice) {
             $scope.spice = spice;
         };
     }]);
   </file>
 </example>
 
-Notice that the `SpicyCtrl` Controller now defines just one method called `spicy`, which takes one
+Notice that the `SpicyController` Controller now defines just one method called `spicy`, which takes one
 argument called `spice`. The template then refers to this Controller method and passes in a string
 constant `'chili'` in the binding for the first button and a model property `customSpice` (bound to an
 input box) in the second button.
@@ -213,13 +213,13 @@ more information about scope inheritance.
 <example module="scopeInheritance">
   <file name="index.html">
     <div class="spicy">
-      <div ng-controller="MainCtrl">
+      <div ng-controller="MainController">
         <p>Good {{timeOfDay}}, {{name}}!</p>
 
-        <div ng-controller="ChildCtrl">
+        <div ng-controller="ChildController">
           <p>Good {{timeOfDay}}, {{name}}!</p>
 
-          <div ng-controller="GrandChildCtrl">
+          <div ng-controller="GrandChildController">
             <p>Good {{timeOfDay}}, {{name}}!</p>
           </div>
         </div>
@@ -234,14 +234,14 @@ more information about scope inheritance.
   </file>
   <file name="app.js">
       var myApp = angular.module('scopeInheritance', []);
-      myApp.controller('MainCtrl', ['$scope', function($scope){
+      myApp.controller('MainController', ['$scope', function($scope) {
         $scope.timeOfDay = 'morning';
         $scope.name = 'Nikki';
       }]);
-      myApp.controller('ChildCtrl', ['$scope', function($scope){
+      myApp.controller('ChildController', ['$scope', function($scope) {
         $scope.name = 'Mattie';
       }]);
-      myApp.controller('GrandChildCtrl', ['$scope', function($scope){
+      myApp.controller('GrandChildController', ['$scope', function($scope) {
         $scope.timeOfDay = 'evening';
         $scope.name = 'Gingerbreak Baby';
       }]);
@@ -252,11 +252,11 @@ Notice how we nested three `ng-controller` directives in our template. This will
 scopes being created for our view:
 
 - The root scope
-- The `MainCtrl` scope, which contains `timeOfDay` and `name` properties
-- The `ChildCtrl` scope, which inherits the `timeOfDay` property but overrides (hides) the `name`
+- The `MainController` scope, which contains `timeOfDay` and `name` properties
+- The `ChildController` scope, which inherits the `timeOfDay` property but overrides (hides) the `name`
 property from the previous
-- The `GrandChildCtrl` scope, which overrides (hides) both the `timeOfDay` property defined in `MainCtrl`
-and the `name` property defined in `ChildCtrl`
+- The `GrandChildController` scope, which overrides (hides) both the `timeOfDay` property defined in `MainController`
+and the `name` property defined in `ChildController`
 
 Inheritance works with methods in the same way as it does with properties. So in our previous
 examples, all of the properties could be replaced with methods that return string values.
@@ -316,11 +316,11 @@ describe('state', function() {
 
     beforeEach(inject(function($rootScope, $controller) {
         mainScope = $rootScope.$new();
-        $controller('MainCtrl', {$scope: mainScope});
+        $controller('MainController', {$scope: mainScope});
         childScope = mainScope.$new();
-        $controller('ChildCtrl', {$scope: childScope});
+        $controller('ChildController', {$scope: childScope});
         grandChildScope = childScope.$new();
-        $controller('GrandChildCtrl', {$scope: grandChildScope});
+        $controller('GrandChildController', {$scope: grandChildScope});
     }));
 
     it('should have over and selected', function() {
