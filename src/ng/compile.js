@@ -24,7 +24,7 @@
  * @function
  *
  * @description
- * Compiles an HTML string or DOM into a template and produces a template function, which
+ * Compiles an HTML string cor DOM into a template and produces a template function, which
  * can then be used to link {@link ng.$rootScope.Scope `scope`} and the template together.
  *
  * The compilation is a process of walking the DOM tree and matching DOM elements to
@@ -281,6 +281,13 @@
  * been cloned. For this reason it is **not** safe to do anything other than DOM transformations that
  * apply to all cloned DOM nodes within the compile function. Specifically, DOM listener registration
  * should be done in a linking function rather than in a compile function.
+ * </div>
+
+ * <div class="alert alert-warning">
+ * **Note:** The compile function cannot handle directives that are declared inside their own templates. 
+ * Because the compile function collects all directives in a template, it will compile the directive
+ * in the template, which itself declares the same template, and so on, causing infinite recursion.
+ * This can be avoided by manually using $compile inside the postLink function.
  * </div>
  *
  * <div class="alert alert-error">
