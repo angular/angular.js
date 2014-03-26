@@ -89,9 +89,9 @@ function.
 The following sample filter reverses a text string. In addition, it conditionally makes the
 text upper-case.
 
-<example module="MyReverseModule">
+<example module="myReverseModule">
   <file name="index.html">
-    <div ng-controller="Ctrl">
+    <div ng-controller="Controller">
       <input ng-model="greeting" type="text"><br>
       No filter: {{greeting}}<br>
       Reverse: {{greeting|reverse}}<br>
@@ -100,8 +100,8 @@ text upper-case.
   </file>
 
   <file name="script.js">
-    angular.module('MyReverseModule', []).
-      filter('reverse', function() {
+    angular.module('myReverseModule', [])
+      .filter('reverse', function() {
         return function(input, uppercase) {
           input = input || '';
           var out = "";
@@ -114,11 +114,10 @@ text upper-case.
           }
           return out;
         };
-      });
-
-    function Ctrl($scope) {
-      $scope.greeting = 'hello';
-    }
+      })
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.greeting = 'hello';
+      }]);
   </file>
 </example>
 
