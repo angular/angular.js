@@ -340,7 +340,7 @@ replaced the content and "lidless, wreathed in flame, 2 times" is present.
 ### Testing Directives With External Templates
 
 If your directive uses `templateUrl`, consider using
-{@link https://github.com/karma-runner/karma-ng-html2js-preprocessor karma-ng-html2js-preprocessor}
+[karma-ng-html2js-preprocessor](https://github.com/karma-runner/karma-ng-html2js-preprocessor)
 to pre-compile HTML templates and thus avoid having to load them over HTTP during test execution.
 Otherwise you may run into issues if the test directory hierarchy differs from the application's.
 
