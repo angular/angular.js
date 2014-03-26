@@ -559,7 +559,9 @@ angular.module('ngResource', ['ng']).
           promise = promise.then(
               function(response) {
                 var value = responseInterceptor(response);
-                (success||noop)(value, response.headers);
+                $q.when(value).then(function(value) {
+                  (success||noop)(value, response.headers);
+                });
                 return value;
               },
               responseErrorInterceptor);

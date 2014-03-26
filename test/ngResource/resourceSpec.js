@@ -600,11 +600,12 @@ describe("resource", function() {
 
   describe('promise api', function() {
 
-    var $rootScope;
+    var $rootScope, $q;
 
 
-    beforeEach(inject(function(_$rootScope_) {
+    beforeEach(inject(function(_$rootScope_, _$q_) {
       $rootScope = _$rootScope_;
+      $q = _$q_;
     }));
 
 
@@ -937,6 +938,57 @@ describe("resource", function() {
 
       var response = callback.mostRecentCall.args[0];
       expect(response.status).toBe(404);
+      expect(response.config).toBeDefined();
+    });
+
+    it('should call the success callback with the object returned from the interceptor, not a promise', function() {
+      CreditCard = $resource('/CreditCard', {}, {
+        query: {
+          method: 'get',
+          isArray: true,
+          interceptor: {
+            response: function(response) {
+              return $q.when(response.data);
+            }
+          }
+        }
+      });
+
+      $httpBackend.expect('GET', '/CreditCard').respond([{id: 1}]);
+
+      CreditCard.query(callback);
+
+      $httpBackend.flush();
+      expect(callback).toHaveBeenCalledOnce();
+
+      var response = callback.mostRecentCall.args[0];
+      expect(response.then).not.toBeDefined();
+      expect(response[0].id).toEqual(1);
+    });
+
+    it('should call the failure callback with the object returned from the interceptor, not a promise', function() {
+      CreditCard = $resource('/CreditCard', {}, {
+        query: {
+          method: 'get',
+          isArray: true,
+          interceptor: {
+            responseError: function(response) {
+              return $q.when(response);
+            }
+          }
+        }
+      });
+
+      $httpBackend.expect('GET', '/CreditCard').respond(404);
+
+      CreditCard.query(function() {}, callback);
+
+      $httpBackend.flush();
+      expect(callback).toHaveBeenCalledOnce();
+
+      var response = callback.mostRecentCall.args[0];
+      expect(response.then).not.toBeDefined();
+      expect(response.status).toEqual(404);
       expect(response.config).toBeDefined();
     });
   });
