@@ -9,7 +9,7 @@ correctly. For example:
 
 ```
 angular.module('myApp', [])
-  .controller('myCtrl', ['myService', function (myService) {
+  .controller('MyController', ['myService', function (myService) {
     // Do something with myService
   }]);
 ```
@@ -20,7 +20,7 @@ sure each dependency is defined will fix the problem.
 ```
 angular.module('myApp', [])
   .service('myService', function () { /* ... */ })
-  .controller('myCtrl', ['myService', function (myService) {
+  .controller('MyController', ['myService', function (myService) {
     // Do something with myService
   }]);
 ```
