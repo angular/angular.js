@@ -6,7 +6,7 @@ var basePackage = require('./config');
 
 module.exports = function(config) {
 
-  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.currentPackage.cdnVersion;
+  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.cdnVersion;
 
   var getVersion = function(component, sourceFolder, packageFile) {
     sourceFolder = sourceFolder || '../bower_components';
