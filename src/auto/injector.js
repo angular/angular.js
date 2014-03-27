@@ -614,7 +614,13 @@ function createInjector(modulesToLoad) {
           }));
 
 
-  forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
+  forEach(loadModules(modulesToLoad), function(fn) {
+    fn = fn || noop;
+    if(!angular.isFunction(fn)) {
+      fn = noop;
+    }
+    instanceInjector.invoke(fn);
+  });
 
   return instanceInjector;
 
