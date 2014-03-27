@@ -1229,11 +1229,11 @@ function checkboxInputType(scope, element, attr, ctrl) {
     return value !== trueValue;
   };
 
-  ctrl.$formatters.push(function(value) {
+  ctrl.$formatters.unshift(function(value) {
     return value === trueValue;
   });
 
-  ctrl.$parsers.push(function(value) {
+  ctrl.$parsers.unshift(function(value) {
     return value ? trueValue : falseValue;
   });
 }
