@@ -535,7 +535,7 @@ var uppercaseFilter = valueFn(uppercase);
            $scope.name = undefined;
          }
        </script>
-       <span>{ name | replace : [null, undefined, ""] : "N/A" }}</span>
+       <span>{{ name | replace : [null, undefined, ""] : "N/A" }}</span>
      </file>
    </example>
  *
