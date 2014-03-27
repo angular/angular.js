@@ -73,7 +73,29 @@
  *
  * @param {String} name Name of the filter function to retrieve
  * @return {Function} the filter function
- */
+ * @example
+   <example module="ngFilterExample">
+     <file name="index.html">
+       <div ng-controller="MainCtrl">
+        <h3>{{ hello }} </h3> 
+       </div>
+     </file>
+
+     <file name="script.js">
+      angular.module('ngFilterExample', []);
+      angular.module('ngFilterExample').filter("myUpperCaseFilter", function(){
+        return function(word){
+          return word.toUpperCase();
+        };
+      });
+
+      angular.module('ngFilterExample')
+        .controller('MainCtrl', function ($scope, $filter) {
+          $scope.hello = $filter('myUpperCaseFilter')('lowercase hello!');
+        });
+     </file>
+   </example>
+  */
 $FilterProvider.$inject = ['$provide'];
 function $FilterProvider($provide) {
   var suffix = 'Filter';
