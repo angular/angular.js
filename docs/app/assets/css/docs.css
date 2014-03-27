@@ -253,6 +253,9 @@ code.highlighted {
   z-index: 99;
   cursor: pointer;
   font-size: 16px;
+  -moz-appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
 }
 
 .picker:after {
