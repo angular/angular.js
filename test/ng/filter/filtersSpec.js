@@ -380,4 +380,43 @@ describe('filters', function() {
       expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-' + localDay + ' 03');
     });
   });
+
+  describe('replace', function() {
+    var replace;
+
+    beforeEach(inject(function($rootScope) {
+      replace = filter('replace');
+    }));
+
+    it('should do basic replacement', function() {
+      expect(replace("AB", ["AB"], 'ABC')).toEqual('ABC');
+    });
+
+    it('should replace null value with a new value', function() {
+      expect(replace(null, [null], 'ABC')).toEqual('ABC');
+    });
+
+    it('should replace undefined value with a new value', function() {
+      expect(replace(undefined, [undefined], 'ABC')).toEqual('ABC');
+    });
+
+    it('should replace empty string with a new value', function() {
+      expect(replace("", [""], 'ABC')).toEqual('ABC');
+    });
+
+    it('should replace null value with a new value if the value is in the list', function() {
+      expect(replace(null, [null, undefined, ""], 'ABC')).toEqual('ABC');
+      expect(replace(undefined, [null, undefined, ""], 'ABC')).toEqual('ABC');
+      expect(replace("", [null, undefined, ""], 'ABC')).toEqual('ABC');
+    });
+
+    it('should return the original value if nothing matched', function() {
+      expect(replace("ABC", [], 'ABCD')).toEqual('ABC');
+      expect(replace("ABC", ["ABCD"], 'ABCDE')).toEqual('ABC');
+    });
+
+    it('should return the original value if oldValues is not a list', function() {
+      expect(replace("ABC", "ABC", 'ABCD')).toEqual('ABC');
+    });
+  });
 });

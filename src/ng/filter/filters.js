@@ -511,3 +511,41 @@ var lowercaseFilter = valueFn(lowercase);
  * @see angular.uppercase
  */
 var uppercaseFilter = valueFn(uppercase);
+
+
+/**
+ * @ngdoc filter
+ * @name replace
+ * @function
+ *
+ * @description
+ *   Allows you to replace a set of values with a new value.
+ *
+ * @param {value} object Any JavaScript object to replace.
+ * @param {oldValues} Array List of values to replace.
+ * @param {newValue} object Any value in the oldValue list will be replaced with newValue.
+ * @returns {object} JavaScript object.
+ *
+ *
+ * @example
+   <example>
+     <file name="index.html">
+       <script>
+         function Ctrl($scope) {
+           $scope.name = undefined;
+         }
+       </script>
+       <span>{ name | replace : [null, undefined, ""] : "N/A" }}</span>
+     </file>
+   </example>
+ *
+ */
+replaceFilter.$inject = ['$locale'];
+function replaceFilter($locale) {
+  return function(value, oldValues, newValue) {
+    if (oldValues instanceof Array) {
+      if(oldValues.indexOf(value) !== -1) return newValue;
+    }
+    return value;
+  }
+}
