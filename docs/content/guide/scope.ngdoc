@@ -388,7 +388,7 @@ user enters text into the text field.
      1. the {@link ng.directive:ngModel ng-model} and {@link
         ng.directive:input input} {@link guide/directive
         directive} set up a `keydown` listener on the `<input>` control.
-     2. the {@link ng.$interpolate &#123;&#123;name&#125;&#125; } interpolation
+     2. the {@link ng.$interpolate interpolation}
         sets up a {@link ng.$rootScope.Scope#$watch $watch} to be notified of
         `name` changes.
   2. During the runtime phase:
@@ -400,8 +400,8 @@ user enters text into the text field.
      3. Angular applies the `name = 'X';` to the model.
      4. The {@link ng.$rootScope.Scope#$digest $digest} loop begins
      5. The {@link ng.$rootScope.Scope#$watch $watch} list detects a change
-        on the `name` property and notifies the {@link ng.$interpolate
-        &#123;&#123;name&#125;&#125; } interpolation, which in turn updates the DOM.
+        on the `name` property and notifies the {@link ng.$interpolate interpolation},
+        which in turn updates the DOM.
      6. Angular exits the execution context, which in turn exits the `keydown` event and with it
         the JavaScript execution context.
      7. The browser re-renders the view with update text.
