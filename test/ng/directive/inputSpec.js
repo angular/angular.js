@@ -1822,6 +1822,33 @@ describe('input', function() {
     });
 
 
+    it('should allow custom enumeration and ng-required', function() {
+      compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
+          'ng-false-value="n" ng-required="true">');
+
+      scope.$apply(function() {
+        scope.name = 'y';
+      });
+      expect(inputElm[0].checked).toBe(true);
+
+      scope.$apply(function() {
+        scope.name = 'n';
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      scope.$apply(function() {
+        scope.name = 'something else';
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.name).toEqual('y');
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.name).toBeUndefined();
+    });
+
+
     it('should be required if false', function() {
       compileInput('<input type="checkbox" ng:model="value" required />');
 
