@@ -653,33 +653,34 @@ function $LocationProvider(){
       }
 
       // Make relative links work in HTML5 mode for legacy browsers (or at least IE8 & 9)
-      // The href should be a regular url e.g. /link/somewhere or link/somewhere or ../somewhere or somewhere#anchor or http://example.com/somewhere
+      // The href should be a regular url e.g. /link/somewhere or link/somewhere or ../somewhere or
+      // somewhere#anchor or http://example.com/somewhere
       if (LocationMode === LocationHashbangInHtml5Url) {
-        // get the actual href attribute - see http://msdn.microsoft.com/en-us/library/ie/dd347148(v=vs.85).aspx
-        // TODO check browser is in standards mode
-        var href = elm[0].getAttribute('href');
+        // get the actual href attribute - see
+        // http://msdn.microsoft.com/en-us/library/ie/dd347148(v=vs.85).aspx
+        var href = elm.attr('href') || elm.attr('xlink:href');
 
-        if (href.indexOf('://' == -1)) {         // Ignore absolute URLs
+        if (href.indexOf('://') < 0) {         // Ignore absolute URLs
+          var prefix = '#' + hashPrefix;
           if (href[0] == '/') {
             // absolute path - replace old path
-            absHref = serverBase(absHref) + href;
+            absHref = appBase + prefix + href;
           } else if (href[0] == '#') {
             // local anchor
-            absHref = serverBase(absHref) + $location.path() + href;
+            absHref = appBase + prefix + ($location.path() || '/') + href;
           } else {
             // relative path - join with current path
             var stack = $location.path().split("/"),
               parts = href.split("/");
-            stack.pop(); // remove top file
             for (var i=0; i<parts.length; i++) {
               if (parts[i] == ".")
                 continue;
               else if (parts[i] == "..")
                 stack.pop();
-              else
+              else if (parts[i].length)
                 stack.push(parts[i]);
             }
-            absHref = serverBase(absHref) + stack.join("/");
+            absHref = appBase + prefix + stack.join('/');
           }
         }
       }
