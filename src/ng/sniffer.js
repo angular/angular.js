@@ -21,6 +21,9 @@ function $SnifferProvider() {
         android =
           int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
+        webkit =
+            int((/[a-z]*?webkit\/(\d+)/i.exec(lowercase(($window.navigator || {}).userAgent))
+                || [])[1]),
         document = $document[0] || {},
         documentMode = document.documentMode,
         vendorPrefix,
@@ -63,7 +66,8 @@ function $SnifferProvider() {
       // so let's not use the history API also
       // We are purposefully using `!(android < 4)` to cover the case when `android` is undefined
       // jshint -W018
-      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee),
+      history : !!($window.history && $window.history.pushState && !(android < 4) && !boxee
+          && !(webkit < 534)),
       // jshint +W018
       hashchange: 'onhashchange' in $window &&
                   // IE8 compatible mode lies

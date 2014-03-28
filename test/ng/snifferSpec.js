@@ -332,6 +332,29 @@ describe('$sniffer', function() {
         expect($sniffer.history).toBe(false);
       });
     });
+
+    it('should be false on Webkit versions older then 534.x.x', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        var win = {
+          history : {
+            pushState : noop
+          },
+          navigator : {
+            userAgent : 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_8; nl-nl) AppleWebkit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.history).toBe(false);
+      });
+    });
   });
 
   it('should provide the android version', function() {
