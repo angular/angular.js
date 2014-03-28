@@ -1,3 +1,6 @@
+### 1.2.x Updates
+All new 1.2.x CHANGELOG updates are now listed in the [1.2.x branch](https://github.com/angular/angular.js/blob/v1.2.x/CHANGELOG.md).
+
 <a name="1.3.0-beta.3"></a>
 # 1.3.0-beta.3 emotional-waffles (2014-03-21)
 
