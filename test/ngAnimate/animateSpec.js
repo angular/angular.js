@@ -1390,12 +1390,7 @@ describe("ngAnimate", function() {
           }));
 
           it("should intelligently cancel former timeouts and close off a series of elements a final timeout", function() {
-            var currentTimestamp = Date.now();
-            spyOn(Date,'now').andCallFake(function() {
-              return currentTimestamp;
-            });
-
-            var cancellations = 0;
+            var currentTimestamp, cancellations = 0;
             module(function($provide) {
               $provide.decorator('$timeout', function($delegate) {
                 var _cancel = $delegate.cancel;
@@ -1407,6 +1402,15 @@ describe("ngAnimate", function() {
                 };
                 return $delegate;
               });
+
+              return function($sniffer) {
+                if($sniffer.transitions) {
+                  currentTimestamp = Date.now();
+                  spyOn(Date,'now').andCallFake(function() {
+                    return currentTimestamp;
+                  });
+                }
+              }
             })
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
               if (!$sniffer.transitions) return;
