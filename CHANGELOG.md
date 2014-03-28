@@ -1,3 +1,77 @@
+<a name="1.3.0-beta.4"></a>
+# 1.3.0-beta.4 inconspicuous-deception (2014-03-28)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - prevent cancellation timestamp from being too far in the future
+  ([ff5cf736](https://github.com/angular/angular.js/commit/ff5cf736e5b8073c8121295743873ccd04cc7d6b),
+   [#6748](https://github.com/angular/angular.js/issues/6748))
+  - make CSS blocking optional for class-based animations
+  ([1bebe36a](https://github.com/angular/angular.js/commit/1bebe36aa938890d61188762ed618b1b5e193634),
+   [#6674](https://github.com/angular/angular.js/issues/6674), [#6739](https://github.com/angular/angular.js/issues/6739))
+  - run CSS animations before JS animations to avoid style inheritance
+  ([2317af68](https://github.com/angular/angular.js/commit/2317af68510fe3b67526282dad697ad4dc621a19),
+   [#6675](https://github.com/angular/angular.js/issues/6675))
+- **Scope:** aggressively clean up scope on $destroy to minimize leaks
+  ([f552f251](https://github.com/angular/angular.js/commit/f552f25171390e726ad7246ed18b994970bcf764),
+   [#6794](https://github.com/angular/angular.js/issues/6794), [#6856](https://github.com/angular/angular.js/issues/6856))
+- **doc-gen:** Run Gulp on Windows too
+  ([47ba6014](https://github.com/angular/angular.js/commit/47ba60146032c0bfadeaa9f3816644b31fc33315),
+   [#6346](https://github.com/angular/angular.js/issues/6346))
+- **filter.ngdoc:** Check if "input" variable is defined
+  ([4a6d4de5](https://github.com/angular/angular.js/commit/4a6d4de53ed1472c0cb2323292127495619d7ed9),
+   [#6819](https://github.com/angular/angular.js/issues/6819))
+- **input:** don't perform HTML5 validation on updated model-value
+  ([b472d027](https://github.com/angular/angular.js/commit/b472d0275f2900beba3b1f2fcee821369f8c15c1),
+   [#6796](https://github.com/angular/angular.js/issues/6796), [#6806](https://github.com/angular/angular.js/issues/6806))
+
+
+## Features
+
+- **$http:** add xhr statusText to completeRequest callback
+  ([1d2414ca](https://github.com/angular/angular.js/commit/1d2414ca93a0340840ea1e80c48edb51ec55cd48),
+   [#2335](https://github.com/angular/angular.js/issues/2335), [#2665](https://github.com/angular/angular.js/issues/2665), [#6713](https://github.com/angular/angular.js/issues/6713))
+
+
+## Breaking Changes
+
+- **$animate:** due to [1bebe36a](https://github.com/angular/angular.js/commit/1bebe36aa938890d61188762ed618b1b5e193634),
+
+  Any class-based animation code that makes use of transitions
+and uses the setup CSS classes (such as class-add and class-remove) must now
+provide a empty transition value to ensure that its styling is applied right
+away. In other words if your animation code is expecting any styling to be
+applied that is defined in the setup class then it will not be applied
+"instantly" unless a `transition:0s none` value is present in the styling
+for that CSS class. This situation is only the case if a transition is already
+present on the base CSS class once the animation kicks off.
+
+Before:
+
+    .animated.my-class-add {
+      opacity:0;
+      transition:0.5s linear all;
+    }
+    .animated.my-class-add.my-class-add-active {
+      opacity:1;
+    }
+
+After:
+
+    .animated.my-class-add {
+      transition:0s linear all;
+      opacity:0;
+    }
+    .animated.my-class-add.my-class-add-active {
+      transition:0.5s linear all;
+      opacity:1;
+    }
+
+Please view the documentation for ngAnimate for more info.
+
+
 <a name="1.3.0-beta.3"></a>
 # 1.3.0-beta.3 emotional-waffles (2014-03-21)
 
