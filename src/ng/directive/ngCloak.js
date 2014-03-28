@@ -57,7 +57,7 @@
  *
  */
 var ngCloakDirective = ngDirective({
-  compile: function(element, attr) {
+  link: function(scope, element, attr) {
     attr.$set('ngCloak', undefined);
     element.removeClass('ng-cloak');
   }
