@@ -1199,7 +1199,7 @@ angular.module('ngAnimate', ['ng'])
 
         //but it may not need to cancel out the existing timeout
         //if the timestamp is less than the previous one
-        var futureTimestamp = Date.now() + (totalTime * 1000);
+        var futureTimestamp = Date.now() + totalTime;
         if(futureTimestamp <= closingTimestamp) {
           return;
         }
