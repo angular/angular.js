@@ -779,15 +779,22 @@ describe('$location', function() {
 
     var root, link, originalBrowser, lastEventPreventDefault;
 
-    function configureService(linkHref, html5Mode, supportHist, attrs, content) {
+    function configureService(linkHref, html5Mode, supportHist, relLink, attrs, content) {
+      if (typeof relLink !== "boolean") {
+        content = attrs;
+        attrs = relLink;
+        relLink = false;
+      }
       module(function($provide, $locationProvider) {
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
         // fake the base behavior
-        if (linkHref[0] == '/') {
-          linkHref = 'http://host.com' + linkHref;
-        } else if(!linkHref.match(/:\/\//)) {
-          linkHref = 'http://host.com/base/' + linkHref;
+        if (!relLink) {
+          if (linkHref[0] == '/') {
+            linkHref = 'http://host.com' + linkHref;
+          } else if(!linkHref.match(/:\/\//)) {
+            linkHref = 'http://host.com/base/' + linkHref;
+          }
         }
 
         link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
@@ -1062,6 +1069,51 @@ describe('$location', function() {
         function($browser) {
           browserTrigger(link, 'click');
           expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should rewrite relative links relative to current path when history disabled', function() {
+      configureService('link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some/link');
+        }
+      );
+    });
+
+
+    it('should replace current path when link begins with "/" and history disabled', function() {
+      configureService('/link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should replace current hash fragment when link begins with "#" history disabled', function() {
+      configureService('#link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          // Initialize browser URL
+          $location.path('/some');
+          $location.hash('foo');
+          browserTrigger(link, 'click');
+          expect($location.hash()).toBe('link');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some#link');
         }
       );
     });
