@@ -751,6 +751,7 @@ function $RootScopeProvider(){
         }
         // recreate the $$destroyed flag
         this.$$destroyed = true;
+
       },
 
       /**
@@ -921,6 +922,7 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
+        if (this.$$destroyed) return noop;
         var namedListeners = this.$$listeners[name];
         if (!namedListeners) {
           this.$$listeners[name] = namedListeners = [];
@@ -933,10 +935,11 @@ function $RootScopeProvider(){
             current.$$listenerCount[name] = 0;
           }
           current.$$listenerCount[name]++;
-        } while ((current = current.$parent));
+        } while ((current = current.$parent) && !current.$$destroyed);
 
         var self = this;
         return function() {
+          if (self.$$destroyed) return;
           namedListeners[indexOf(namedListeners, listener)] = null;
           decrementListenerCount(self, 1, name);
         };
@@ -982,7 +985,7 @@ function $RootScopeProvider(){
             listenerArgs = concat([event], arguments, 1),
             i, length;
 
-        do {
+        while (scope && !scope.$$destroyed) {
           namedListeners = scope.$$listeners[name] || empty;
           event.currentScope = scope;
           for (i=0, length=namedListeners.length; i<length; i++) {
@@ -1005,7 +1008,7 @@ function $RootScopeProvider(){
           if (stopPropagation) return event;
           //traverse upwards
           scope = scope.$parent;
-        } while (scope);
+        }
 
         return event;
       },
@@ -1113,7 +1116,7 @@ function $RootScopeProvider(){
         if (current.$$listenerCount[name] === 0) {
           delete current.$$listenerCount[name];
         }
-      } while ((current = current.$parent));
+      } while ((current = current.$parent) && !current.$$destroyed);
     }
 
     /**
