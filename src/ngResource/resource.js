@@ -457,8 +457,14 @@ angular.module('ngResource', ['ng']).
               "Expected up to 4 arguments [params, data, success, error], got {0} arguments", arguments.length);
           }
 
-          var isInstanceCall = data instanceof Resource;
-          var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
+          var isInstanceCall = this instanceof Resource, value;
+
+          if (action.isArray) {
+              value = [];
+          } else {
+              value = isInstanceCall ? data : new Resource(data);
+          }
+
           var httpConfig = {};
           var responseInterceptor = action.interceptor && action.interceptor.response || defaultResponseInterceptor;
           var responseErrorInterceptor = action.interceptor && action.interceptor.responseError || undefined;
@@ -508,7 +514,7 @@ angular.module('ngResource', ['ng']).
 
           promise = promise.then(
               function(response) {
-                var value = responseInterceptor(response);
+                var value = responseInterceptor.call(data, response);
                 (success||noop)(value, response.headers);
                 return value;
               },
