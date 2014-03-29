@@ -118,7 +118,9 @@ and follow the instructions for setting up your computer.
       Windows command line.</li>
       <li><p>You need an http server running on your system, but if you don't already have one already
       installed, you can use <code>node</code> to run <code>scripts\web-server.js</code>, a simple bundled
-      http server.</p></li>
+      http server.(trouble ?? see this <a href="http://stackoverflow.com/questions/15658899/angular-js-tutorial-using-the-node-js-webserver">link</a> and
+      solution is "After you get the Windows command line window up, you'll have something like C:\Users\YourName> 
+      If you have followed prior instructions, the missing step after the Step 1 checkout is cd angular-phonecat This gets you into the correct directory that you previously cloned. Then enter node scripts\web-server.js"</p></li>
     </ol>
   </div>
 
