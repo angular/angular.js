@@ -163,16 +163,20 @@ __`test/unit/controllersSpec.js`:__
 
 ```js
 describe('PhoneCat controllers', function() {
+
   beforeEach(module('phonecatApp'));
 
   describe('PhoneListCtrl', function(){
-
-    it('should create "phones" model with 3 phones', inject(function($controller) {
-      var scope = {},
-          ctrl = $controller('PhoneListCtrl', { $scope: scope });
-
-      expect(scope.phones.length).toBe(3);
+    var scope, ctrl;
+  
+    beforeEach(inject(function ($rootScope, $controller) {
+      scope = $rootScope.$new();
+      ctrl = $controller('GreetingCtrl', { $scope: scope });
     }));
+
+    it('should create "phones" model with 3 phones', function() {
+      expect(scope.phones.length).toBe(3);
+    });
   });
 });
 ```
