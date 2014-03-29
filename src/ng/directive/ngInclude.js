@@ -52,7 +52,7 @@
        url of the template: <tt>{{template.url}}</tt>
        <hr/>
        <div class="slide-animate-container">
-         <div class="slide-animate" ng-include="template.url"></div>
+         <div class="slide-animate" ng-include="  'template.url'  "></div>
        </div>
      </div>
     </file>
