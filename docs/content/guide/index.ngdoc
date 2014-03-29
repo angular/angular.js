@@ -70,7 +70,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 This is a short list of libraries with specific support and documentation for working with Angular.  You can find a full list of all known Angular external libraries at [ngmodules.org](http://ngmodules.org/).
 
-* **Internationalization:** [angular-translate](http://pascalprecht.github.io/angular-translate/), [angular-gettext](http://angular-gettext.rocketeer.be/)
+* **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/)
 * **RESTful services:** [Restangular](https://github.com/mgonto/restangular)
 * **SQL and NoSQL backends:** [BreezeJS](http://www.breezejs.com/), [AngularFire](http://angularfire.com/)
 * **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/)
