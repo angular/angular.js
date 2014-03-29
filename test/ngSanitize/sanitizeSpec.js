@@ -239,6 +239,11 @@ describe('HTML', function() {
       expect(html).toEqual('<div>');
     });
 
+    it('should handle surrogate pair', function() {
+      writer.chars(String.fromCharCode(55357, 56374));
+      expect(html).toEqual('&#128054;');
+    });
+
     describe('explicitly disallow', function() {
       it('should not allow attributes', function() {
         writer.start('div', {id:'a', name:'a', style:'a'});
