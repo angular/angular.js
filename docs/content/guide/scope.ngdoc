@@ -268,7 +268,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
 
   4. **Mutation observation**
 
-     At the end `$apply`, Angular performs a {@link ng.$rootScope.Scope#$digest
+     At the end of `$apply`, Angular performs a {@link ng.$rootScope.Scope#$digest
      $digest} cycle on the root scope, which then propagates throughout all child scopes. During
      the `$digest` cycle, all `$watch`ed expressions or functions are checked for model mutation
      and if a mutation is detected, the `$watch` listener is called.
@@ -350,15 +350,15 @@ The diagram and the example below describe how Angular interacts with the browse
 
 Angular modifies the normal JavaScript flow by providing its own event processing loop. This
 splits the JavaScript into classical and Angular execution context. Only operations which are
-applied in Angular execution context will benefit from Angular data-binding, exception handling,
-property watching, etc... You can also use $apply() to enter Angular execution context from JavaScript. Keep in
+applied in the Angular execution context will benefit from Angular data-binding, exception handling,
+property watching, etc... You can also use $apply() to enter the Angular execution context from JavaScript. Keep in
 mind that in most places (controllers, services) $apply has already been called for you by the
 directive which is handling the event. An explicit call to $apply is needed only when
 implementing custom event callbacks, or when working with third-party library callbacks.
 
-  1. Enter Angular execution context by calling {@link guide/scope scope}`.`{@link
-     ng.$rootScope.Scope#$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
-     the work you wish to do in Angular execution context.
+  1. Enter the Angular execution context by calling {@link guide/scope scope}`.`{@link
+     ng.$rootScope.Scope#$apply $apply}`(stimulusFn)`, where `stimulusFn` is
+     the work you wish to do in the Angular execution context.
   2. Angular executes the `stimulusFn()`, which typically modifies application state.
   3. Angular enters the {@link ng.$rootScope.Scope#$digest $digest} loop. The
      loop is made up of two smaller loops which process {@link
