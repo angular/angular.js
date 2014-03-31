@@ -106,6 +106,10 @@ Note that we have provided the name of our application module to be loaded into 
 parameter of the {@link angular.bootstrap} function. Notice that `angular.bootstrap` will not create modules
 on the fly. You must create any custom {@link guide/module modules} before you pass them as a parameter.
 
+Also note that the ng-app directive is not used in the HTML when manually initializing the app, and that the
+call to `angular.bootstrap()` must happen *after* you've defined your directives, controllers, etc. Defining
+a controller (etc) after starting the bootstrap process (compilation) will not work.
+
 This is the sequence that your code should follow:
 
   1. After the page and all of the code is loaded, find the root element of your AngularJS
