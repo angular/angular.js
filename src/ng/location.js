@@ -45,6 +45,7 @@ function parseAppUrl(relativeUrl, locationObj, appBase) {
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
     locationObj.$$path = '/' + locationObj.$$path;
+    locationObj.replace();
   }
 }
 
