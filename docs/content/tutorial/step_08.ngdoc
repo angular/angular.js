@@ -130,6 +130,8 @@ __`test/unit/controllersSpec.js`:__
 ...
   describe('PhoneDetailCtrl', function(){
     var scope, $httpBackend, ctrl;
+    
+    beforeEach(module('phonecatApp'));
 
     beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
       $httpBackend = _$httpBackend_;
