@@ -124,7 +124,11 @@ step 5.
 __`test/unit/controllersSpec.js`:__
 
 ```js
-...
+
+  beforeEach(module('phonecatApp'));
+
+  ...
+
   describe('PhoneDetailCtrl', function(){
     var scope, $httpBackend, ctrl;
 
