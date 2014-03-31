@@ -7,6 +7,7 @@
 This page explains the Angular initialization process and how you can manually initialize Angular
 if necessary.
 
+
 ## Angular `<script>` Tag
 
 This example shows the recommended path for integrating Angular with what we call automatic
@@ -79,7 +80,6 @@ If the {@link ng.directive:ngApp `ng-app`} directive is found then Angular will:
 
 ## Manual Initialization
 
-
 If you need to have more control over the initialization process, you can use a manual
 bootstrapping method instead. Examples of when you'd need to do this include using script loaders
 or the need to perform an operation before Angular compiles a page.
@@ -88,23 +88,36 @@ Here is an example of manually initializing Angular:
 
 ```html
 <!doctype html>
-<html xmlns:ng="http://angularjs.org">
-  <body>
-    Hello {{'World'}}!
-    <script src="http://code.angularjs.org/angular.js"></script>
-    <script>
-       angular.element(document).ready(function() {
-         angular.module('myApp', []);
-         angular.bootstrap(document, ['myApp']);
-       });
-    </script>
-  </body>
+<html>
+<body>
+  Hello {{'World'}}!
+  <script src="http://code.angularjs.org/angular.js"></script>
+
+  <script>
+    angular.module('myApp', [])
+      .controller('MyController', ['$scope', function ($scope) {
+        $scope.greetMe = 'World';
+      }]);
+
+    angular.element(document).ready(function() {
+      angular.module('myApp', []);
+      angular.bootstrap(document, ['myApp']);
+    });
+  </script>
+</body>
 </html>
 ```
 
-Note that we have provided the name of our application module to be loaded into the injector as the second
+Note that we provided the name of our application module to be loaded into the injector as the second
 parameter of the {@link angular.bootstrap} function. Notice that `angular.bootstrap` will not create modules
 on the fly. You must create any custom {@link guide/module modules} before you pass them as a parameter.
+
+You should call `angular.bootstrap()` *after* you've loaded or defined your modules.
+You cannot add controllers, services, directives, etc after an application bootstraps.
+
+<div class="alert alert-warning">
+**Note:** You should not use the ng-app directive when manually bootstrapping your app.
+</div>
 
 This is the sequence that your code should follow:
 
@@ -113,6 +126,7 @@ This is the sequence that your code should follow:
 
   2. Call {@link angular.bootstrap} to {@link compiler compile} the element into an
   executable, bi-directionally bound application.
+
 
 ## Deferred Bootstrap
 
