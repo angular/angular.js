@@ -241,7 +241,7 @@ To run the tests, and then watch the files for changes: `npm test`.
             <tr ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
           </table>
 
-* Make the unit test fail by changing the `toBe(3)` statement to `toBe(4)`.
+* Make the unit test fail by changing `expect(scope.phones.length).toBe(3)` to instead use `toBe(4)`.
 
 
 # Summary
