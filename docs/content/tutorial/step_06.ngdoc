@@ -76,9 +76,12 @@ __`test/e2e/scenarios.js`__:
 ```js
 ...
     it('should render phone specific links', function() {
-      input('query').enter('nexus');
-      element('.phones li a').click();
-      expect(browser().location().url()).toBe('/phones/nexus-s');
+      var query = element(by.model('query'));
+      query.sendKeys('nexus');
+      element(by.css('.phones li a')).click();
+      browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split('#')[1]).toBe('/phones/nexus-s');
+      });
     });
 ...
 ```
@@ -86,8 +89,7 @@ __`test/e2e/scenarios.js`__:
 We added a new end-to-end test to verify that the app is generating correct links to the phone
 views that we will implement in the upcoming steps.
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-6/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
 
 
 # Experiments

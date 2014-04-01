@@ -96,18 +96,23 @@ describe('PhoneCat App', function() {
   describe('Phone list view', function() {
 
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html');
+      browser.get('app/index.html');
     });
 
 
     it('should filter the phone list as user types into the search box', function() {
-      expect(repeater('.phones li').count()).toBe(3);
 
-      input('query').enter('nexus');
-      expect(repeater('.phones li').count()).toBe(1);
+      var phoneList = element.all(by.repeater('phone in phones'));
+      var query = element(by.model('query'));
 
-      input('query').enter('motorola');
-      expect(repeater('.phones li').count()).toBe(2);
+      expect(phoneList.count()).toBe(3);
+
+      query.sendKeys('nexus');
+      expect(phoneList.count()).toBe(1);
+
+      query.clear();
+      query.sendKeys('motorola');
+      expect(phoneList.count()).toBe(2);
     });
   });
 });
@@ -117,20 +122,14 @@ Even though the syntax of this test looks very much like our controller unit tes
 Jasmine, the end-to-end test uses APIs of {@link guide/dev_guide.e2e-testing Angular's end-to-end
 test runner}.
 
-To run the end-to-end test, open one of the following in a new browser tab:
+Much like Karma is the test runner for unit tests, we use Protractor to run end-to-end tests.
+Try it with `npm run protractor`. End-to-end tests are slow, so unlike with unit tests, Protractor
+will exit after the test run and will not automatically rerun the test suite on every file change.
+To rerun the test suite, execute `npm run protractor` again.
 
-* node.js users: http://localhost:8000/test/e2e/runner.html
-* users with other http servers:
-`http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
-* casual reader: http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html
-
-Previously we've seen how Karma can be used to execute unit tests. Well, it can also run the
-end-to-end tests! Use `./scripts/e2e-test.sh` (if you are on Windows, run `scripts\e2e-test.bat`) script for that. End-to-end tests are slow, so unlike
-with unit tests, Karma will exit after the test run and will not automatically rerun the test
-suite on every file change. To rerun the test suite, execute the `e2e-test.sh` or `e2e-test.bat` script again.
-
-Note: You must ensure you've installed the karma-ng-scenario framework plugin prior to running the
-`e2e-test.sh` script. You can do this by issuing `npm install` into your terminal.
+Note: You must ensure you've installed the protractor and updated webdriver prior to running the
+`npm run protractor`. You can do this by issuing `npm install` and `npm run update-webdriver` into
+your terminal.
 
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
@@ -173,27 +172,23 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
   ```js
     it('should display the current filter value within an element with id "status"',
         function() {
-      expect(element('#status').text()).toMatch(/Current filter: \s*$/);
+      var statusElement = element(by.id('status'));
+      expect(statusElement.getText()).toMatch(/Current filter: \s*$/);
 
-      input('query').enter('nexus');
+      element(by.model('query')).sendKeys('nexus');
 
-      expect(element('#status').text()).toMatch(/Current filter: nexus\s*$/);
+      expect(statusElement.getText()).toMatch(/Current filter: nexus\s*$/);
 
       //alternative version of the last assertion that tests just the value of the binding
-      using('#status').expect(binding('query')).toBe('nexus');
+      expect(statusElement.element(by.binding('query'))).toBe('nexus');
     });
   ```
 
-  Refresh the browser tab with the end-to-end test runner to see the test fail. To make the test
-pass, edit the `index.html` template to add a `div` or `p` element with `id` `"status"` and content
-with the `query` binding, prefixed by "Current filter:". For instance:
+  Re-run `npm run protractor` to see the test fail. To make the test pass, edit the `index.html`
+template to add a `div` or `p` element with `id` `"status"` and content with the `query` binding,
+prefixed by "Current filter:". For instance:
 
           <div id="status">Current filter: {{query}}</div>
-
-* Add a `pause()` statement inside of an end-to-end test and rerun it. You'll see the runner pause;
-this gives you the opportunity to explore the state of your application while it is displayed in
-the browser. The app is live! You can change the search query to prove it. Notice how useful this
-is for troubleshooting end-to-end tests.
 
 
 # Summary

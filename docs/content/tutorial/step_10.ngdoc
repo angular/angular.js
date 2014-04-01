@@ -90,23 +90,22 @@ __`test/e2e/scenarios.js`:__
 ...
 
     it('should display the first phone image as the main phone image', function() {
-      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
 
     it('should swap main image if a thumbnail image is clicked on', function() {
-      element('.phone-thumbs li:nth-child(3) img').click();
-      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.2.jpg');
+      element(by.css('.phone-thumbs li:nth-child(3) img')).click();
+      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
 
-      element('.phone-thumbs li:nth-child(1) img').click();
-      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+      element(by.css('.phone-thumbs li:nth-child(1) img')).click();
+      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
   });
-});
 ```
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-10/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
+
 
 # Experiments
 
