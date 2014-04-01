@@ -422,6 +422,7 @@ iframe.example {
 
 .type-hint {
   display:inline-block;
+  background: gray;
 }
 
 .variables-matrix .type-hint {
@@ -567,7 +568,7 @@ h4 {
 }
 
 .return-arguments td:first-child {
-  width:100px; 
+  width:100px;
 }
 
 ul.methods > li,
