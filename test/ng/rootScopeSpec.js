@@ -874,6 +874,64 @@ describe('Scope', function() {
       $rootScope.$broadcast(EVENT);
       expect(spy.callCount).toBe(1);
     }));
+
+    it('should not throw when trying to listen to an event on a child scope of an already destroyed scope', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+        child = parent.$new();
+
+      parent.$destroy();
+      expect(function() {
+        var fn = child.$on('someEvent', angular.noop);
+        fn();
+      }).not.toThrow();
+    }));
+
+    it('should not throw when deregistering a listener on a child scope of an already destroyed scope', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+        child = parent.$new(),
+        fn = child.$on('someEvent', angular.noop);
+
+      parent.$destroy();
+      expect(function() { fn(); }).not.toThrow();
+    }));
+
+    it('should not throw when trying to destroy a child insolated scope of an already destroyed scope', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+        child = parent.$new(true),
+        fn = child.$on('someEvent', angular.noop);
+
+      parent.$destroy();
+      expect(function() { child.$destroy(); }).not.toThrow();
+    }));
+
+    it('should not throw when trying to listen to an event on an insolated child scope of an already destroyed scope', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+        child = parent.$new(true);
+
+      parent.$destroy();
+      expect(function() {
+        var fn = child.$on('someEvent', angular.noop);
+        fn();
+      }).not.toThrow();
+    }));
+
+    it('should not throw when deregistering a listener on an insolated child scope of an already destroyed scope', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+        child = parent.$new(true),
+        fn = child.$on('someEvent', angular.noop);
+
+      parent.$destroy();
+      expect(function() { fn(); }).not.toThrow();
+    }));
+
+    it('should not throw when trying to emit from an insolated child scope of a destroyed scope', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+        child = parent.$new(true),
+        fn = child.$on('someEvent', angular.noop);
+
+      parent.$destroy();
+      expect(function() { child.$emit('someEvent'); }).not.toThrow();
+    }));
   });
 
 
