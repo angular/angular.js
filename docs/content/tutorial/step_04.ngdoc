@@ -152,28 +152,36 @@ __`test/e2e/scenarios.js`:__
 
 ```js
 ...
-    it('should be possible to control phone order via the drop down select box',
-        function() {
-      //let's narrow the dataset to make the test assertions shorter
-      input('query').enter('tablet');
+    it('should be possible to control phone order via the drop down select box', function() {
 
-      expect(repeater('.phones li', 'Phone List').column('phone.name')).
-          toEqual(["Motorola XOOM\u2122 with Wi-Fi",
-                   "MOTOROLA XOOM\u2122"]);
+      var phoneNameColumn = element.all(by.repeater('phone in phones').column('{{phone.name}}'));
+      var query = element(by.model('query'));
 
-      select('orderProp').option('Alphabetical');
+      function getNames() {
+        return phoneNameColumn.map(function(elm) {
+          return elm.getText();
+        });
+      }
 
-      expect(repeater('.phones li', 'Phone List').column('phone.name')).
-          toEqual(["MOTOROLA XOOM\u2122",
-                   "Motorola XOOM\u2122 with Wi-Fi"]);
-    });
-...
+      query.sendKeys('tablet'); //let's narrow the dataset to make the test assertions shorter
+
+      expect(getNames()).toEqual([
+        "Motorola XOOM\u2122 with Wi-Fi",
+        "MOTOROLA XOOM\u2122"
+      ]);
+
+      element(by.model('orderProp')).findElement(by.css('option[value="name"]')).click();
+
+      expect(getNames()).toEqual([
+        "MOTOROLA XOOM\u2122",
+        "Motorola XOOM\u2122 with Wi-Fi"
+      ]);
+    });...
 ```
 
 The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-`runner.html` to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
 
 # Experiments
 

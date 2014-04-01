@@ -166,20 +166,19 @@ __`test/e2e/scenarios.js`:__
   describe('Phone detail view', function() {
 
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+      browser.get('app/index.html#/phones/nexus-s');
     });
 
 
     it('should display nexus-s page', function() {
-      expect(binding('phone.name')).toBe('Nexus S');
+      expect(element(by.binding('phone.name')).getText()).toBe('Nexus S');
     });
   });
 ...
 ```
 
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
 
 
 # Experiments
