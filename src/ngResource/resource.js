@@ -599,4 +599,4 @@ angular.module('ngResource', ['ng']).
     }
 
     return resourceFactory;
-  }
+  }]);
