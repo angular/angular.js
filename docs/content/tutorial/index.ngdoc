@@ -150,7 +150,13 @@ are working on the code.
 ## Running End to End Tests
 
 The project is preconfigured to use [Protractor][protractor] to run the end to end tests for the
-application.  Execute the Protractor test scripts against your application by running:
+application. Set up the binaries protractor needs to run by running:
+
+```
+npm run update-webdriver
+```
+(You will only need to do this once) Execute the Protractor test scripts against your application
+by running:
 
 ```
 npm run protractor
