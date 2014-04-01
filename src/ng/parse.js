@@ -393,7 +393,11 @@ var Parser = function (lexer, $filter, options) {
   this.options = options;
 };
 
-Parser.ZERO = function () { return 0; };
+Parser.ZERO = extend(function () {
+  return 0;
+}, {
+  constant: true
+});
 
 Parser.prototype = {
   constructor: Parser,
