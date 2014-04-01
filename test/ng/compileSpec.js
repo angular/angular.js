@@ -1681,6 +1681,19 @@ describe('$compile', function() {
                 }
               };
             });
+            directive('stscope' + uppercase(name), function(log) {
+              return {
+                scope: true,
+                restrict: 'CA',
+                template: '<span></span>',
+                compile: function() {
+                  return function (scope, element) {
+                    log(scope.$id);
+                    expect(element.data('$scope')).toBe(scope);
+                  };
+                }
+              };
+            });
             directive('trscope' + uppercase(name), function(log) {
               return {
                 scope: true,
@@ -1700,6 +1713,20 @@ describe('$compile', function() {
                 scope: {},
                 restrict: 'CA',
                 templateUrl: 'tiscope.html',
+                compile: function() {
+                  return function (scope, element) {
+                    iscope = scope;
+                    log(scope.$id);
+                    expect(element.data('$isolateScope')).toBe(scope);
+                  };
+                }
+              };
+            });
+            directive('stiscope' + uppercase(name), function(log) {
+              return {
+                scope: {},
+                restrict: 'CA',
+                template: '<span></span>',
                 compile: function() {
                   return function (scope, element) {
                     iscope = scope;
@@ -1883,6 +1910,13 @@ describe('$compile', function() {
                 expect(element.find('a').scope().$parent).toBe($rootScope);
               })
             );
+
+            it('should return the new scope for children in the directive sync template', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div stscope></div>')($rootScope);
+                expect(element.find('span').scope().$parent).toBe($rootScope);
+              })
+            );
           });
 
 
@@ -1925,6 +1959,14 @@ describe('$compile', function() {
                 expect(element.isolateScope()).not.toBe($rootScope);
               })
             );
+
+            it('should return the isolate scope for children in directive sync template', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div stiscope></div>')($rootScope);
+                expect(element.find('span').scope()).toBe(element.isolateScope());
+                expect(element.isolateScope()).not.toBe($rootScope);
+              })
+            );
           });
 
 
@@ -1949,6 +1991,17 @@ describe('$compile', function() {
                 element = $compile('<div><a ng-if="true" tiscope></a></div>')($rootScope);
                 $rootScope.$apply();
                 $httpBackend.flush();
+                directiveElement = element.find('a');
+                child = directiveElement.find('span');
+                expect(child.scope()).toBe(directiveElement.isolateScope());
+              })
+            );
+
+            it('should return the isolate scope for child elements in directive sync template', inject(
+              function($rootScope, $compile) {
+                var directiveElement, child;
+                element = $compile('<div><a ng-if="true" stiscope></a></div>')($rootScope);
+                $rootScope.$apply();
                 directiveElement = element.find('a');
                 child = directiveElement.find('span');
                 expect(child.scope()).toBe(directiveElement.isolateScope());
