@@ -1031,6 +1031,7 @@ describe('parser', function() {
 
           it('should mark complex expressions involving constant values as constant', inject(function($parse) {
             expect($parse('!true').constant).toBe(true);
+            expect($parse('-42').constant).toBe(true);
             expect($parse('1 - 1').constant).toBe(true);
             expect($parse('"foo" + "bar"').constant).toBe(true);
             expect($parse('5 != null').constant).toBe(true);
