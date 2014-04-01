@@ -3,6 +3,7 @@
 @step -1
 @description
 
+# PhoneCat Tutorial App
 
 A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
 the construction of an AngularJS web app. The app you will build is a catalog that displays a list
@@ -12,8 +13,8 @@ details for any device.
 <img class="diagram" src="img/tutorial/catalog_screen.png" width="488" height="413" alt="demo
 application running in the browser">
 
-Work through the tutorial to see how Angular makes browsers smarter — without the use of extensions
-or plug-ins. As you work through the tutorial, you will:
+Work through the tutorial to see how Angular makes browsers smarter — without the use of native
+extensions or plug-ins. As you work through the tutorial, you will:
 
 * See examples of how to use client-side data binding and dependency injection to build dynamic
 views of data that change immediately in response to user actions.
@@ -22,15 +23,13 @@ views of data that change immediately in response to user actions.
 * Learn how to use Angular services to make common web tasks, such as getting data into your app,
 easier.
 
-And all of this works in any browser without modification to the browser!
-
 When you finish the tutorial you will be able to:
 
-* Create a dynamic application that works in any browser.
+* Create a dynamic application that works in all modern browsers.
 * Define the differences between Angular and common JavaScript frameworks.
 * Understand how data binding works in AngularJS.
-* Use the angular-seed project to quickly boot-strap your own projects.
-* Create and run tests.
+* Create and run unit tests.
+* Create and run end to end tests.
 * Identify resources for learning more about AngularJS.
 
 The tutorial guides you through the entire process of building a simple application, including
@@ -43,86 +42,146 @@ really digging into it. If you're looking for a shorter introduction to AngularJ
 
 
 
-
-
-
-
 # Working with the code
 
-You can follow this tutorial and hack on the code in either the Mac/Linux or the Windows
-environment. The tutorial relies on the use of Git versioning system for source code management.
+You can follow along with this tutorial and hack on the code in either the Mac/Linux or the Windows
+environment. The tutorial relies on the use of the [Git][git] versioning system for source code
+management.
+
 You don't need to know anything about Git to follow the tutorial. Select one of the tabs below
 and follow the instructions for setting up your computer.
 
-<div class="tabbable" show="true">
-  <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux">
-    <ol>
-      <li><p>You'll need Git, which you can get from
-         <a href="http://git-scm.com/download" title="Git site download">the Git site</a>.</p></li>
-      <li><p>Clone the angular-phonecat repository located at
-      <a href="https://github.com/angular/angular-phonecat" title="Github Phonecat Repo">Github</a> by
-      running the following command:</p>
-      <pre>git clone https://github.com/angular/angular-phonecat.git</pre>
-      <p>This command creates the <code>angular-phonecat</code> directory in your current directory.</p></li>
-      <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
-      <pre>cd angular-phonecat</pre>
-      <p>The tutorial instructions, from now on, assume you are running all commands from the
-      <code>angular-phonecat</code> directory.</p></li>
-      <li><p>You will also need Node.js and Karma to run unit tests, so please verify that you have
-      <a href="http://nodejs.org/" title="NodeJS org">Node.js</a> v0.10 or better installed
-      and that the <code>node</code> executable is on your <code>PATH</code> by running the following
-      command in a terminal window:</p></li>
-      <pre>node --version</pre>
-      <div class="alert alert-info">**Helpful note:** If you need to run a different version of
-      node.js in your local environment, consider installing
-      <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
-      Node Version Manager (nvm)</a>.</div>
-      <p>Additionally install <a href="http://karma-runner.github.io/" title="Karma site">Karma</a> and
-      its plugins if you don't have it already:</p>
-      <pre>
-      npm install
-      </pre></li>
-      <li><p>You will need an http server running on your system. Mac and Linux machines typically
-      have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
-      to run <code>scripts/web-server.js</code>, a simple bundled http server.</p></li>
-    </ol>
-  </div>
 
-  <div class="tab-pane well" id="git-win" title="Git on Windows">
-    <ol>
-      <li><p>You will need Node.js and Karma to run unit tests, so please verify that you have
-        <a href="http://nodejs.org/" title="NodeJS site">Node.js</a> v0.10 or better installed
-        and that the <code>node</code> executable is on your <code>PATH</code> by running the following
-        command in a terminal window:</p>
-        <pre>node --version</pre>
-        <div class="alert alert-info">**Helpful note:** If you need to run a different version of
-        node.js in your local environment, consider installing
-        <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
-        Node Version Manager (nvm)</a>.</div>
-        <p>Additionally install <a href="http://karma-runner.github.io/" title="Karma site">Karma</a>
-        if you don't have it already:</p>
-        <pre>npm install -g karma</pre>
-      </li>
-      <li><p>You'll also need Git, which you can get from
-               <a href="http://git-scm.com/download" title="Git site download">the Git site</a>.</p></li>
-      <li><p>Clone the angular-phonecat repository located at <a
-      href="https://github.com/angular/angular-phonecat" "Github Angular-phonecat Repo">Github</a> by running
-      the following command:</p><pre>git clone https://github.com/angular/angular-phonecat.git</pre>
-      <p>This command creates the <code>angular-phonecat</code> directory in your current directory.</p></li>
-      <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
-      <pre>cd angular-phonecat</pre>
-      <p>The tutorial instructions assume you are running all commands from the <code>angular-phonecat</code>
-      directory.</p>
-      <p>You should run all <code>git</code> commands from Git bash.</p>
-      <p>Other commands like <code>test.bat</code> or <code>e2e-test.bat</code> should be executed from the
-      Windows command line.</li>
-      <li><p>You need an http server running on your system, but if you don't already have one already
-      installed, you can use <code>node</code> to run <code>scripts\web-server.js</code>, a simple bundled
-      http server.</p></li>
-    </ol>
-  </div>
+## Install Git
 
-The last thing to do is to make sure your computer has a web browser and a good text editor installed. Now,
-let's get some cool stuff done!
+You'll need Git, which you can get from [the Git site][git].
 
-<a href="tutorial/step_00" title="Next Step"><span class="btn btn-primary">Get Started!</span></a>
+Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by running the following
+command:
+
+```
+git clone https://github.com/angular/angular-phonecat.git
+```
+
+This command creates the `angular-phonecat` directory in your current directory.
+
+Change your current directory to `angular-phonecat`.
+
+```
+cd angular-phonecat
+```
+
+The tutorial instructions, from now on, assume you are running all commands from the
+`angular-phonecat` directory.
+
+
+## Install Node.js
+
+If you want to run the built-in web-server and the test tools then you will also need
+Node.js v0.10, or later.
+
+You can download Node.js from the [node.js website][node].
+
+
+You can check the version of Node.js that you have installed by running the following command:
+
+```
+node --version
+```
+
+<div class="alert alert-info"><strong>Helpful note:<strong> If you need to run a different versions of node.js
+  in your local environment, consider installing
+  <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
+    Node Version Manager (nvm)
+  </a>.
+</div>
+
+Once you have Node.js installed you can install the tool dependencies by running:
+
+```
+npm install
+```
+
+This command will download the following tools, into the `node_modules` directive:
+
+- [Bower][bower] - client-side code package manager
+- [http-server][http-server] - simple local static web server
+- [Karma][karma] - unit test runner
+- [protractor][protractor] - end 2 end test runner
+
+Running `npm install` will also automatically run `bower install`, which will download the Angular
+framework into the `bower_components` directory.
+
+The project is preconfigured with a number of npm helper scripts to make it easy to run the common
+tasks that you will need while developing.
+
+## Running Development Web Server
+
+The project is preconfigured to provide a simple static web server for hosting the application.
+Start the web server by running:
+
+```
+npm start
+```
+
+Now you can browse to the application at:
+
+```
+http://localhost:8000/app/index.html
+```
+
+## Running Unit Tests
+
+The project is preconfigured to use [Karma][karma] to run the unit tests for the application.  Start
+Karma by running:
+
+```
+npm test
+```
+
+This will start the Karma unit test runner, open up a Chrome browser and execute all the unit tests
+in this browser. Karma will then sit and watch all the source and test JavaScript files.
+Whenever one of these files changes Karma re-runs all the unit tests.
+
+It is good to leave this running all the time as you will get immediate feedback from Karma as you
+are working on the code.
+
+
+## Running End to End Tests
+
+The project is preconfigured to use [Protractor][protractor] to run the end to end tests for the
+application.  Execute the Protractor test scripts against your application by running:
+
+```
+npm run protractor
+```
+
+This will start the Protractor end to end test runner, open up a Chrome browser and execute all the
+end to end test scripts in this browser. Once the test scripts finish, the browser will close down
+and Protractor will exit.
+
+It is good to run the end to end tests whenever you make changes to the HTML views or want to check
+that the application as a whole is executing correctly.
+
+<div class="alert alert-info"><strong>Helpful note:</strong> Protractor requires that a web server is running
+  and serving up the application at the default URL: `http://localhost:8000/app/index.html`. You can
+  start the provided development server by running `npm start`.
+</div>
+
+
+# Get Started
+
+Now your environment is ready, it is time to get started developing the Angular PhoneCat
+application.
+
+<a href="tutorial/step_00" title="Next Step"><span class="btn btn-primary">Step 0 - Bootstrapping</span></a>
+
+
+
+[git]: http://git-scm.com/download
+[angular-phonecat]: https://github.com/angular/angular-phonecat
+[node]: http://nodejs.org/
+[protractor]: https://github.com/angular/protractor
+[bower]: http://bower.io/
+[http-server]: https://github.com/nodeapps/http-server
+[karma]: https://github.com/karma-runner/karma
