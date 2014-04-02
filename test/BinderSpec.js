@@ -196,7 +196,7 @@ describe('Binder', function() {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {
-      $compile('<div attr="before {{error.throw()}} after"></div>', null, true)($rootScope);
+      $compile('<div attr="before {{error.throw()}} after"></div>', null)($rootScope);
       var errorLogs = $exceptionHandler.errors;
       var count = 0;
 
