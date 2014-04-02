@@ -121,7 +121,7 @@ function shallowClearAndCopy(src, dst) {
  *   - **`transformRequest`** –
  *     `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
  *     transform function or an array of such functions. The transform function takes the http
- *     request body and headers and returns its transformed (typically serialized) version.
+ *     response body and headers and returns its transformed (typically serialized) version.
  *   - **`transformResponse`** –
  *     `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
  *     transform function or an array of such functions. The transform function takes the http
