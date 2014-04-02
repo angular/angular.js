@@ -1645,7 +1645,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           safeAddClass($element, value);
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
-          $element.attr('style', $element.attr('style') + ';' + value);
+          if($element.attr("style") !== value) {
+            $element.attr('style', $element.attr('style') + ';' + value);
+          }
           dst['style'] = (dst['style'] ? dst['style'] + ';' : '') + value;
           // `dst` will never contain hasOwnProperty as DOM parser won't let it.
           // You will get an "InvalidCharacterError: DOM Exception 5" error if you
