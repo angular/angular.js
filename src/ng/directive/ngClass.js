@@ -2,7 +2,7 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return function() {
+  return ['$animate', function($animate) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
@@ -20,46 +20,100 @@ function classDirective(name, selector) {
             // jshint bitwise: false
             var mod = $index & 1;
             if (mod !== old$index & 1) {
-              var classes = flattenClasses(scope.$eval(attr[name]));
+              var classes = arrayClasses(scope.$eval(attr[name]));
               mod === selector ?
-                attr.$addClass(classes) :
-                attr.$removeClass(classes);
+                addClasses(classes) :
+                removeClasses(classes);
             }
           });
         }
 
+        function addClasses(classes) {
+          var newClasses = digestClassCounts(classes, 1);
+          attr.$addClass(newClasses);
+        }
+
+        function removeClasses(classes) {
+          var newClasses = digestClassCounts(classes, -1);
+          attr.$removeClass(newClasses);
+        }
+
+        function digestClassCounts (classes, count) {
+          var classCounts = element.data('$classCounts') || {};
+          var classesToUpdate = [];
+          forEach(classes, function (className) {
+            if (count > 0 || classCounts[className]) {
+              classCounts[className] = (classCounts[className] || 0) + count;
+              if (classCounts[className] === +(count > 0)) {
+                classesToUpdate.push(className);
+              }
+            }
+          });
+          element.data('$classCounts', classCounts);
+          return classesToUpdate.join(' ');
+        }
+
+        function updateClasses (oldClasses, newClasses) {
+          var toAdd = arrayDifference(newClasses, oldClasses);
+          var toRemove = arrayDifference(oldClasses, newClasses);
+          toRemove = digestClassCounts(toRemove, -1);
+          toAdd = digestClassCounts(toAdd, 1);
+
+          if (toAdd.length === 0) {
+            $animate.removeClass(element, toRemove);
+          } else if (toRemove.length === 0) {
+            $animate.addClass(element, toAdd);
+          } else {
+            $animate.setClass(element, toAdd, toRemove);
+          }
+        }
 
         function ngClassWatchAction(newVal) {
           if (selector === true || scope.$index % 2 === selector) {
-            var newClasses = flattenClasses(newVal || '');
-            if(!oldVal) {
-              attr.$addClass(newClasses);
-            } else if(!equals(newVal,oldVal)) {
-              attr.$updateClass(newClasses, flattenClasses(oldVal));
+            var newClasses = arrayClasses(newVal || []);
+            if (!oldVal) {
+              addClasses(newClasses);
+            } else if (!equals(newVal,oldVal)) {
+              var oldClasses = arrayClasses(oldVal);
+              updateClasses(oldClasses, newClasses);
             }
           }
           oldVal = copy(newVal);
         }
-
-
-        function flattenClasses(classVal) {
-          if(isArray(classVal)) {
-            return classVal.join(' ');
-          } else if (isObject(classVal)) {
-            var classes = [], i = 0;
-            forEach(classVal, function(v, k) {
-              if (v) {
-                classes.push(k);
-              }
-            });
-            return classes.join(' ');
-          }
-
-          return classVal;
-        }
       }
     };
-  };
+
+    function arrayDifference(tokens1, tokens2) {
+      var values = [];
+
+      outer:
+      for(var i = 0; i < tokens1.length; i++) {
+        var token = tokens1[i];
+        for(var j = 0; j < tokens2.length; j++) {
+          if(token == tokens2[j]) continue outer;
+        }
+        values.push(token);
+      }
+      return values;
+    }
+
+    function arrayClasses (classVal) {
+      if (isArray(classVal)) {
+        return classVal;
+      } else if (isString(classVal)) {
+        return classVal.split(' ');
+      } else if (isObject(classVal)) {
+        var classes = [], i = 0;
+        forEach(classVal, function(v, k) {
+          if (v) {
+            classes.push(k);
+          }
+        });
+        return classes;
+      }
+      return classVal;
+    }
+  }];
 }
 
 /**

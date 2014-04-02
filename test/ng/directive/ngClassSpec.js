@@ -192,6 +192,19 @@ describe('ngClass', function() {
   }));
 
 
+  it("should allow ngClassOdd/Even on the same element with overlapping classes", inject(function($rootScope, $compile, $animate) {
+      var className;
+
+      element = $compile('<ul><li ng-repeat="i in [0,1,2]" ng-class-odd="\'same odd\'" ng-class-even="\'same even\'"></li><ul>')($rootScope);
+      $rootScope.$digest();
+      var e1 = jqLite(element[0].childNodes[1]);
+      var e2 = jqLite(element[0].childNodes[5]);
+      expect(e1.hasClass('same')).toBeTruthy();
+      expect(e1.hasClass('odd')).toBeTruthy();
+      expect(e2.hasClass('same')).toBeTruthy();
+      expect(e2.hasClass('odd')).toBeTruthy();
+  }));
+
   it('should allow both ngClass and ngClassOdd/Even with multiple classes', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
       '<li ng-repeat="i in [0,1]" ng-class="[\'A\', \'B\']" ' +
