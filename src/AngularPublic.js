@@ -48,6 +48,7 @@
     ngValueDirective,
     ngAttributeAliasDirectives,
     ngEventDirectives,
+    ngBindOnceDirectives,
 
     $AnchorScrollProvider,
     $AnimateProvider,
@@ -189,7 +190,8 @@ function publishExternalAPI(angular){
           ngInclude: ngIncludeFillContentDirective
         }).
         directive(ngAttributeAliasDirectives).
-        directive(ngEventDirectives);
+        directive(ngEventDirectives).
+        directive(ngBindOnceDirectives);
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $animate: $AnimateProvider,
