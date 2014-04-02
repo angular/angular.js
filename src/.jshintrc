@@ -135,6 +135,7 @@
     "JQLitePrototype": false,
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
+    "jqLiteIsTextNode": false,
 
     /* apis.js */
     "hashKey": false,
