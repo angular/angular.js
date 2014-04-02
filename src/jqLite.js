@@ -205,17 +205,19 @@ function jqLiteIsTextNode(html) {
 function jqLiteBuildFragment(html, context) {
   var elem, tmp, tag, wrap,
       fragment = context.createDocumentFragment(),
-      nodes = [], i;
+      nodes = [], i, j, jj;
 
   if (jqLiteIsTextNode(html)) {
     // Convert non-html into a text node
     nodes.push(context.createTextNode(html));
   } else {
+    tmp = fragment.appendChild(context.createElement('div'));
     // Convert html into DOM nodes
-    tmp = tmp || fragment.appendChild(context.createElement("div"));
     tag = (TAG_NAME_REGEXP.exec(html) || ["", ""])[1].toLowerCase();
     wrap = wrapMap[tag] || wrapMap._default;
-    tmp.innerHTML = wrap[1] + html.replace(XHTML_TAG_REGEXP, "<$1></$2>") + wrap[2];
+    tmp.innerHTML = '<div>&#160;</div>' +
+      wrap[1] + html.replace(XHTML_TAG_REGEXP, "<$1></$2>") + wrap[2];
+    tmp.removeChild(tmp.firstChild);
 
     // Descend through wrappers to the right content
     i = wrap[0];
@@ -223,7 +225,7 @@ function jqLiteBuildFragment(html, context) {
       tmp = tmp.lastChild;
     }
 
-    nodes = concat(nodes, tmp.childNodes);
+    for (j=0, jj=tmp.childNodes.length; j<jj; ++j) nodes.push(tmp.childNodes[j]);
 
     tmp = fragment.firstChild;
     tmp.textContent = "";
@@ -232,11 +234,7 @@ function jqLiteBuildFragment(html, context) {
   // Remove wrapper from fragment
   fragment.textContent = "";
   fragment.innerHTML = ""; // Clear inner HTML
-  forEach(nodes, function(node) {
-    fragment.appendChild(node);
-  });
-
-  return fragment;
+  return nodes;
 }
 
 function jqLiteParseHTML(html, context) {
@@ -247,11 +245,7 @@ function jqLiteParseHTML(html, context) {
     return [context.createElement(parsed[1])];
   }
 
-  if ((parsed = jqLiteBuildFragment(html, context))) {
-    return parsed.childNodes;
-  }
-
-  return [];
+  return jqLiteBuildFragment(html, context);
 }
 
 /////////////////////////////////////////////
@@ -271,6 +265,8 @@ function JQLite(element) {
 
   if (isString(element)) {
     jqLiteAddNodes(this, jqLiteParseHTML(element));
+    var fragment = jqLite(document.createDocumentFragment());
+    fragment.append(this);
   } else {
     jqLiteAddNodes(this, element);
   }
