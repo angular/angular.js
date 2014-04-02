@@ -1027,8 +1027,8 @@ describe('ngRepeat', function() {
       expect(newLis.length).toBe(2);
       expect(newLis[0]).toBe(lis[1]);
     });
-  });
 
+  });
 
   describe('compatibility', function() {
 
@@ -1037,7 +1037,7 @@ describe('ngRepeat', function() {
         transclude: 'element',
         controller: function($transclude, $scope, $element) {
           $transclude(function(transcludedNodes) {
-            $element.after(']]').after(transcludedNodes).after('[[');
+            $element.after('<span>]]</span>').after(transcludedNodes).after('<span>[[</span>');
           });
         }
       }));
@@ -1109,6 +1109,102 @@ describe('ngRepeat', function() {
       expect(element.find('div').length).toBe(6);
       expect(element.text()).not.toContain('if:1;');
     }));
+  });
+
+  describe('adding/removing the element itself', function() {
+    var detached;
+    beforeEach(function(){
+        scope.array = [1, 2, 3];
+        element = $compile(
+          '<ul>' +
+            '<li ng-repeat="item in array">{{item}};</li>' +
+          '</ul>'
+        )(scope);
+        scope.$digest();
+        detached = null;
+    });
+    afterEach(function(){
+      if(detached)
+        dealoc(detached);
+    });
+    it('should remove the corresponding comment node if an element is removed', function() {
+        element.find('li').eq(0).remove();
+        expect(sortedHtml(element)).toBe(
+          '<ul>' +
+          '<!-- ngRepeat: item in array -->' +
+          '<li ng-repeat="item in array">2;</li>' +
+          '<!-- end ngRepeat: item in array -->' +
+          '<li ng-repeat="item in array">3;</li>' +
+          '<!-- end ngRepeat: item in array -->' +
+          '</ul>'
+        );
+
+        element.find('li').eq(1).remove();
+        expect(sortedHtml(element)).toBe(
+          '<ul>' +
+          '<!-- ngRepeat: item in array -->' +
+          '<li ng-repeat="item in array">2;</li>' +
+          '<!-- end ngRepeat: item in array -->' +
+          '</ul>'
+        );
+    });
+    it('should remove the correspoding comment node if an element is detached', function(){
+        detached = element.find('li').eq(1).detach();
+        expect(sortedHtml(element)).toBe(
+          '<ul>' +
+          '<!-- ngRepeat: item in array -->' +
+          '<li ng-repeat="item in array">1;</li>' +
+          '<!-- end ngRepeat: item in array -->' +
+          '<li ng-repeat="item in array">3;</li>' +
+          '<!-- end ngRepeat: item in array -->' +
+          '</ul>'
+        );
+    });
+    it('should insert the correspoding comment node if an element is reattached', function(){
+      detached = element.find('li').eq(1).detach();
+      element.append(detached);
+      expect(sortedHtml(element)).toBe(
+        '<ul>' +
+        '<!-- ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">1;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">3;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">2;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '</ul>'
+      );
+    });
+    it('should reorder nodes if an element is inserted in the middle of another element-comment node pair', function(){
+      detached = element.find('li').eq(0).detach();
+      element.find('li').eq(1).after(detached);
+      expect(sortedHtml(element)).toBe(
+        '<ul>' +
+        '<!-- ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">2;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">3;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">1;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '</ul>'
+      );
+    });
+    it('should reorder nodes if an element is inserted before the ngRepeat opening comment node', function(){
+      detached = element.find('li').eq(2).detach();
+      element.prepend(detached);
+      expect(sortedHtml(element)).toBe(
+        '<ul>' +
+        '<!-- ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">3;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">1;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '<li ng-repeat="item in array">2;</li>' +
+        '<!-- end ngRepeat: item in array -->' +
+        '</ul>'
+      );
+    });
   });
 });
 

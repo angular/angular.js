@@ -1350,6 +1350,16 @@ function bindJQuery() {
     jqLitePatchJQueryRemove('remove', true, true, false);
     jqLitePatchJQueryRemove('empty', false, false, false);
     jqLitePatchJQueryRemove('html', false, false, true);
+
+    // Method signature:
+    //     jqLitePatchJQueryInsert(name)
+    // all jQuery methods that can insert an element into DOM
+    jqLitePatchJQueryInsert('append');
+    jqLitePatchJQueryInsert('prepend');
+    jqLitePatchJQueryInsert('before');
+    jqLitePatchJQueryInsert('after');
+    jqLitePatchJQueryInsert('replaceWith');
+    jqLitePatchJQueryInsert('wrapAll');
   } else {
     jqLite = JQLite;
   }

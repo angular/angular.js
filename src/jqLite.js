@@ -175,7 +175,43 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
         }
       }
     }
+    if(dispatchThis){
+      var elementsDetached = param ? jQuery(this).filter(param) : jQuery(this);
+      if(elementsDetached.length){
+        elementsDetached.triggerHandler('$detach', elementsDetached);
+      }
+    }
     return originalJqFn.apply(this, arguments);
+  }
+}
+
+function jqLitePatchJQueryInsert(name){
+  var originalJqFn = jQuery.fn[name];
+  originalJqFn = originalJqFn.$original || originalJqFn;
+  insertPatch.$original = originalJqFn;
+  jQuery.fn[name] = insertPatch;
+
+  function insertPatch() {
+    // jshint -W040
+    var elementsAttached,
+        arg = arguments[0];
+    if(typeof arg === "function"){
+      elementsAttached = jQuery();
+      var res,
+          self = this;
+      this.each(function(index){
+        res = arg.call(this, index, self.html());
+        elementsAttached = elementsAttached.add(res);
+      });
+    }
+    else{
+      elementsAttached = jQuery(arg);
+    }
+    var originalResult = originalJqFn.apply(this, arguments);
+    if(elementsAttached){
+      elementsAttached.triggerHandler('$attach', elementsAttached);
+    }
+    return originalResult;
   }
 }
 
@@ -775,16 +811,21 @@ forEach({
   },
 
   replaceWith: function(element, replaceNode) {
-    var index, parent = element.parentNode;
+    var nodeElem = new JQLite(replaceNode),
+        args = [],
+        index, parent = element.parentNode;
     jqLiteDealoc(element);
-    forEach(new JQLite(replaceNode), function(node){
+    forEach(nodeElem, function(node){
       if (index) {
         parent.insertBefore(node, index.nextSibling);
+        args = args.concat(node);
       } else {
         parent.replaceChild(node, element);
+        args = args.concat(node);
       }
       index = node;
     });
+    nodeElem.triggerHandler('$attach', args);
   },
 
   children: function(element) {
@@ -801,43 +842,59 @@ forEach({
   },
 
   append: function(element, node) {
-    forEach(new JQLite(node), function(child){
+    var nodeElem = new JQLite(node),
+        args = [];
+    forEach(nodeElem, function(child){
       if (element.nodeType === 1 || element.nodeType === 11) {
         element.appendChild(child);
+        args = args.concat(child);
       }
     });
+    nodeElem.triggerHandler('$attach', args);
   },
 
   prepend: function(element, node) {
+    var nodeElem = new JQLite(node),
+        args = [];
     if (element.nodeType === 1) {
       var index = element.firstChild;
-      forEach(new JQLite(node), function(child){
+      forEach(nodeElem, function(child){
         element.insertBefore(child, index);
+        args = args.concat(child);
       });
     }
+    nodeElem.triggerHandler('$attach', args);
   },
 
   wrap: function(element, wrapNode) {
-    wrapNode = jqLite(wrapNode)[0];
+    var wrapElem = jqLite(wrapNode);
+    wrapNode = wrapElem[0];
     var parent = element.parentNode;
     if (parent) {
       parent.replaceChild(wrapNode, element);
     }
     wrapNode.appendChild(element);
+    wrapElem.triggerHandler('$attach', wrapElem);
   },
 
   remove: function(element) {
+    var jelement = new JQLite(element);
+    jelement.triggerHandler('$detach', jelement);
     jqLiteDealoc(element);
     var parent = element.parentNode;
     if (parent) parent.removeChild(element);
   },
 
   after: function(element, newElement) {
-    var index = element, parent = element.parentNode;
-    forEach(new JQLite(newElement), function(node){
+    var nodeElem = new JQLite(newElement),
+        args = [],
+        index = element, parent = element.parentNode;
+    forEach(nodeElem, function(node){
       parent.insertBefore(node, index.nextSibling);
       index = node;
+      args = args.concat(node);
     });
+    nodeElem.triggerHandler('$attach', args);
   },
 
   addClass: jqLiteAddClass,
@@ -896,6 +953,29 @@ forEach({
     forEach(eventFns, function(fn) {
       fn.apply(element, event.concat(eventData));
     });
+  },
+
+  detach: function(element) {
+    var jelement = new JQLite(element);
+    jelement.triggerHandler('$detach', jelement);
+
+    function triggerDestroy(el){
+     if(el.nodeType === 1){
+       new JQLite(el).triggerHandler('$destroy');
+       for ( var i = 0, children = el.childNodes || []; i < children.length; i++) {
+         triggerDestroy(children[i]);
+       }
+     }
+    }
+
+    // jQuery 'detach' method calls jQuery 'remvove' method with additional parameter
+    // this casues that the jqLitePatchJQueryRemove that patches jQuery remove triggers $destroy events as well
+    // the following function mimics this behaviour
+    triggerDestroy(element);
+
+    var parent = element.parentNode;
+    if (parent) parent.removeChild(element);
+    return jelement;
   }
 }, function(fn, name){
   /**

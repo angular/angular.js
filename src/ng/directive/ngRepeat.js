@@ -369,7 +369,46 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
             if (!block.scope) {
               $transclude(childScope, function(clone) {
-                clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
+                var correspondingCommentElement = document.createComment(' end ngRepeat: ' + expression + ' ');
+
+                if(clone.length === 1){
+                  clone.on('$attach', function(event, origElem, origComment){
+                    // should append the original corresponding comment element
+                    if(origComment !== correspondingCommentElement){
+                      var parent = origElem.parentNode;
+                      if(parent){
+                        if(origElem.nextSibling)
+                          parent.insertBefore(correspondingCommentElement, origElem.nextSibling);
+                        else
+                          parent.appendChild(correspondingCommentElement);
+
+                        var nextSibling = correspondingCommentElement.nextSibling;
+                        // get first sibling comment node, or if it's a regular element don't bother
+                        while(nextSibling && nextSibling.nodeType !== 8 && nextSibling.nodeType !== 1)
+                          nextSibling = nextSibling.nextSibling;
+                        // inserted in the middle of another ngRepeat pair
+                        if(nextSibling && nextSibling.nodeType === 8 && /ngRepeat/i.test(nextSibling.nodeValue)){
+                            parent.removeChild(nextSibling);
+                            parent.insertBefore(nextSibling, origElem);
+                        }
+                      }
+                    }
+                  });
+                  clone.on('$detach', function(event, origElem, origComment){
+                    // should remove the original corresponding comment element
+                    if(origComment !== correspondingCommentElement){
+                      var parent = correspondingCommentElement.parentNode;
+                      if(parent)
+                        parent.removeChild(correspondingCommentElement);
+                    }
+                  });
+                  childScope.$on('$destroy', function(){
+                    clone.off('$attach');
+                    clone.off('$detach');
+                  });
+                }
+
+                clone[clone.length++] = correspondingCommentElement;
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 block.scope = childScope;
