@@ -614,5 +614,13 @@ describe('browser', function() {
       fakeDocument.basePath = '//google.com/base/path/';
       expect(browser.baseHref()).toEqual('/base/path/');
     });
+
+    it('should correctly resolve <base href> beginning with \'ms-appx://\' (Windows Store JS app) ', function() {
+      fakeDocument.basePath = 'ms-appx://io.mypackage.appname/base/path/';
+      expect(browser.baseHref()).toEqual('/base/path/');
+
+      fakeDocument.basePath = 'ms-appx://io.mypackage.appname/base/path/index.html';
+      expect(browser.baseHref()).toEqual('/base/path/index.html');
+    });
   });
 });

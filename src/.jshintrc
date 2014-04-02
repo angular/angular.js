@@ -23,6 +23,8 @@
     /* angular.js */
     "angular": false,
     "msie": false,
+    "windowsStore": false,
+    "MSApp": false,
     "jqLite": false,
     "jQuery": false,
     "slice": false,
@@ -120,6 +122,7 @@
     "jqNextId": false,
     "camelCase": false,
     "jqLitePatchJQueryRemove": false,
+    "jqLitePatchJQueryForWindowsStore": false,
     "JQLite": false,
     "jqLiteClone": false,
     "jqLiteDealoc": false,
