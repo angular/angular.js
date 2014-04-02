@@ -11,65 +11,27 @@ with the most important source code files, learn how to start the development se
 angular-seed, and run the application in the browser.
 
 
-<div class="tabbable" show="true" ng-model="$cookies.platformPreference">
-  <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux" value="gitUnix">
-    <ol>
-      <li><p>In <code>angular-phonecat</code> directory, run this command:</p>
-      <pre>git checkout -f step-0</pre>
-      <p>This resets your workspace to step 0 of the tutorial app.</p>
-      <p>You must repeat this for every future step in the tutorial and change the number to
-      the number of the step you are on. This will cause any changes you made within
-      your working directory to be lost.</p></li>
+In `angular-phonecat` directory, run this command:
 
-      <li>To see the app running in a browser, do one of the following:
-        <ul>
-          <li><b>For node.js users:</b>
-            <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>npm start</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a
-              href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a></li>
-            </ol>
-          </li>
-          <li><b>For other http servers:</b>
-            <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
-              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </div>
+```
+git checkout -f step-0
+```
 
 
-  <div class="tab-pane well" id="git-win" title="Git on Windows" value="gitWin">
-    <ol>
-      <li><p>Open Git bash and run this command (in <code>angular-phonecat</code> directory):</p>
-      <pre>git checkout -f step-0</pre>
-      <p>This resets your workspace to step 0 of the tutorial app.</p>
-      <p>You must repeat this for every future step in the tutorial and change the number to
-      the number of the step you are on. This will cause any changes you made within
-      your working directory to be lost.</p></li>
-      <li>To see the app running in a browser, do one of the following:
-        <ul>
-          <li><b>For node.js users:</b>
-            <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>node scripts\web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a></li>
-            </ol>
-          </li>
-          <li><b>For other http servers:</b>
-            <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
-              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </div>
-</div>
+This resets your workspace to step 0 of the tutorial app.
 
+You must repeat this for every future step in the tutorial and change the number to the number of
+the step you are on. This will cause any changes you made within your working directory to be lost.
+
+If you haven't already done so you need to install the dependencies by running:
+
+```
+npm install
+```
+
+To see the app running in a browser, open a *separate* terminal/command line tab or window, then
+run `npm start` to start the web server. Now, open a browser window for the app and navigate to
+<a href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a>
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
@@ -114,7 +76,7 @@ __`app/index.html`:__
 
 * AngularJS script tag:
 
-          <script src="../bower_components/angular/angular.js"></script>
+          <script src="../bower_components/angular/angular.js">
 
   This code downloads the `angular.js` script and registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
@@ -171,16 +133,17 @@ and one static binding, and our model is empty. That will soon change!
 
 ## What are all these files in my working directory?
 
-Most of the files in your working directory come from the [angular-seed project](https://github.com/angular/angular-seed) which is typically used to bootstrap
-new Angular projects. The seed project includes the latest Angular libraries, test libraries,
-scripts and a simple example app, all pre-configured for developing a typical web app.
+
+Most of the files in your working directory come from the [angular-seed project][angular-seed] which
+is typically used to bootstrap new Angular projects. The seed project is pre-configured to install
+the angular framework (via `bower`) and tools for developing a typical web app (via `npm`).
 
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
 
 * Removed the example app
 * Added phone images to `app/img/phones/`
 * Added phone data files (JSON) to `app/phones/`
-* Added [Bootstrap](http://getbootstrap.com) files to `app/css/` and `app/img/`
+* Added a dependency on [Bootstrap](http://getbootstrap.com) in the `bower.json` file.
 
 
 
@@ -199,9 +162,5 @@ Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 <ul doc-tutorial-nav="0"></ul>
 
-<div style="display: none">
-Note: During the bootstrap the injector and the root scope will then be associated with the
-   element on which the `ngApp` directive was declared, so when debugging the app you can retrieve
-   them from browser console via `angular.element(rootElement).scope()` and
-   `angular.element(rootElement).injector()`.
-</div>
+
+[angular-seed]: https://github.com/angular/angular-seed

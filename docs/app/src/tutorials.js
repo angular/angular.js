@@ -31,28 +31,18 @@ angular.module('tutorials', [])
 
 
 .directive('docTutorialReset', function() {
-  function tab(name, command, id, step) {
-    return '' +
-      '  <div class=\'tab-pane well\' title="' + name + '" value="' + id + '">\n' +
-      '    <ol>\n' +
-      '      <li><p>Reset the workspace to step ' + step + '.</p>' +
-      '        <pre>' + command + '</pre></li>\n' +
-      '      <li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Angular\'s server</a>.</p></li>\n' +
-      '    </ol>\n' +
-      '  </div>\n';
-  }
-
   return {
-    compile: function(element, attrs) {
-      var step = attrs.docTutorialReset;
-      element.html(
-        '<div ng-hide="show">' +
-          '<p><a href="" ng-click="show=true;$event.stopPropagation()">Workspace Reset Instructions  ➤</a></p>' +
-        '</div>\n' +
-        '<div class="tabbable" ng-show="show" ng-model="$cookies.platformPreference">\n' +
-          tab('Git on Mac/Linux', 'git checkout -f step-' + step, 'gitUnix', step) +
-          tab('Git on Windows', 'git checkout -f step-' + step, 'gitWin', step) +
-        '</div>\n');
-    }
+    scope: {
+      'step': '@docTutorialReset'
+    },
+    template:
+      '<div ng-hide="show">' +
+        '<p><a href="" ng-click="show=true;$event.stopPropagation()">Workspace Reset Instructions  ➤</a></p>' +
+      '</div>\n' +
+      '<div class="tabbable" ng-show="show">\n' +
+      '  <li><p>Reset the workspace to step {{step}}.</p>' +
+      '    <pre>git checkout -f step-{{step}}</pre></li>\n' +
+      '  <li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{{step}}/app">Angular\'s server</a>.</p></li>\n' +
+      '</div>\n'
   };
 });
