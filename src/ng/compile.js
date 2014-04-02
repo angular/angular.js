@@ -514,7 +514,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|thead|tbody|tfoot)(\s+[^>]*)?>/i;
+      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|thead|tbody|tfoot)(\s+[^>]*)?>/i,
+      SELECT_CONTENT_REGEXP = /^<\s*(option|optgroup)(\s+[^>]*)?>/i;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -1657,7 +1658,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       });
     }
 
-
+    /**
+     * On IE9, certain elements such as <thead> and <option> need to be
+     * wrapped with other elements like <table> and <select>, respectively.
+     *
+     * @param {string} template The template to check
+     * @returns {JqLite} The wrapped template
+     */
     function directiveTemplateContents(template) {
       var type;
       template = trim(template);
@@ -1672,6 +1679,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           return table.children('tr');
         }
         return table.children('tr').contents();
+      } else if ((type = SELECT_CONTENT_REGEXP.exec(template))) {
+        type = type[1].toLowerCase();
+        var select = jqLite('<select>' + template + '</select>');
+        if (/(option|optgroup)/.test(type)) {
+          return select.children(type);
+        }
       }
       return jqLite('<div>' +
                       template +
