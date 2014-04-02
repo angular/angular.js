@@ -874,7 +874,11 @@ forEach({
   },
 
   find: function(element, selector) {
-    if (element.getElementsByTagName) {
+    if (element.getElementsByClassName && selector.indexOf('.') === 0) {
+      return element.getElementsByClassName(selector.slice(1));
+    } else if (element.getElementById && selector.indexOf('#') === 0) {
+      return element.getElementById(selector.slice(1));
+    } else if (element.getElementsByTagName) {
       return element.getElementsByTagName(selector);
     } else {
       return [];
