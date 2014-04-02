@@ -84,9 +84,9 @@ __`app/index.html`:__
 <head>
   <meta charset="utf-8">
   <title>My HTML File</title>
+  <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/bootstrap.css">
-  <script src="lib/angular/angular.js"></script>
+  <script src="../bower_components/angular/angular.js"></script>
 </head>
 <body>
 
@@ -114,7 +114,7 @@ __`app/index.html`:__
 
 * AngularJS script tag:
 
-          <script src="lib/angular/angular.js">
+          <script src="../bower_components/angular/angular.js"></script>
 
   This code downloads the `angular.js` script and registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
