@@ -513,8 +513,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var hasDirectives = {},
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
-      CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      TABLE_CONTENT_REGEXP = /^<\s*(tr|th|td|thead|tbody|tfoot)(\s+[^>]*)?>/i;
+      CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -1256,7 +1255,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           if (directive.replace) {
             replaceDirective = directive;
-            $template = directiveTemplateContents(directiveValue);
+            if (jqLiteIsTextNode(directiveValue)) {
+              $template = [];
+            } else {
+              $template = jqLite(directiveValue);
+            }
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
@@ -1655,27 +1658,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
 
-    function directiveTemplateContents(template) {
-      var type;
-      template = trim(template);
-      if ((type = TABLE_CONTENT_REGEXP.exec(template))) {
-        type = type[1].toLowerCase();
-        var table = jqLite('<table>' + template + '</table>');
-        if (/(thead|tbody|tfoot)/.test(type)) {
-          return table.children(type);
-        }
-        table = table.children('tbody');
-        if (type === 'tr') {
-          return table.children('tr');
-        }
-        return table.children('tr').contents();
-      }
-      return jqLite('<div>' +
-                      template +
-                    '</div>').contents();
-    }
-
-
     function compileTemplateUrl(directives, $compileNode, tAttrs,
         $rootElement, childTranscludeFn, preLinkFns, postLinkFns, previousCompileContext) {
       var linkQueue = [],
@@ -1700,7 +1682,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           content = denormalizeTemplate(content);
 
           if (origAsyncDirective.replace) {
-            $template = directiveTemplateContents(content);
+            if (jqLiteIsTextNode(content)) {
+              $template = [];
+            } else {
+              $template = jqLite(content);
+            }
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
