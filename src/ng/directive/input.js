@@ -16,6 +16,7 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)$/;
+var DEFAULT_REGEXP = /\wdefault\w/;
 
 var inputType = {
 
@@ -924,15 +925,13 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   };
 
   // Allow adding/overriding bound events
-  if ((ctrl.$updateOn) && (ctrl.$updateOn.length)) {
+  if ((ctrl.$options.updateOn) && (ctrl.$options.updateOn.length)) {
     // bind to user-defined events
-    forEach(ctrl.$updateOn, function(ev) {
-      element.on(ev, listener);
-    });
+    element.on(ctrl.$options.updateOn, listener);
   }
 
   // setup default events if requested
-  if (!ctrl.$updateOn || (ctrl.$updateOnDefault)) {
+  if (!ctrl.$options.updateOn || (ctrl.$options.updateOnDefault)) {
     // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
     // input event on backspace, delete or cut
     if ($sniffer.hasEvent('input')) {
@@ -1213,14 +1212,12 @@ function radioInputType(scope, element, attr, ctrl) {
   };
 
   // Allow adding/overriding bound events
-  if ((ctrl.$updateOn) && (ctrl.$updateOn.length)) {
+  if ((ctrl.$options.updateOn) && (ctrl.$options.updateOn.length)) {
     // bind to user-defined events
-    forEach(ctrl.$updateOn, function(ev) {
-      element.on(ev, listener);
-    });
+    element.on(ctrl.$options.updateOn, listener);
   }
 
-  if (!ctrl.$updateOn || (ctrl.$updateOnDefault)) {
+  if (!ctrl.$options.updateOn || (ctrl.$options.updateOnDefault)) {
     element.on('click', listener);
   }
 
@@ -1246,14 +1243,12 @@ function checkboxInputType(scope, element, attr, ctrl) {
   };
 
   // Allow adding/overriding bound events
-  if ((ctrl.$updateOn) && (ctrl.$updateOn.length)) {
+  if ((ctrl.$options.updateOn) && (ctrl.$options.updateOn.length)) {
     // bind to user-defined events
-    forEach(ctrl.$updateOn, function(ev) {
-      element.on(ev, listener);
-    });
+    element.on(ctrl.$options.updateOn, listener);
   }
 
-  if (!ctrl.$updateOn || (ctrl.$updateOnDefault)) {
+  if (!ctrl.$options.updateOn || (ctrl.$options.updateOnDefault)) {
     element.on('click', listener);
   }
 
@@ -1715,7 +1710,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   // update the view value
-  this.$realSetViewValue = function(value) {
+  this.$$realSetViewValue = function(value) {
     this.$viewValue = value;
 
     // change to dirty
@@ -1771,15 +1766,18 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$setViewValue = function(value, trigger) {
     var that = this;
-    var debounceDelay = (isObject(this.$options.debounce) ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0) : this.$options.debounce) || 0;
+    var debounceDelay = (isObject(this.$options.debounce)
+        ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
+        : this.$options.debounce) || 0;
+
     that.$cancelDebounce();
     if ( debounceDelay ) {
       pendingDebounce = $timeout(function() {
         pendingDebounce = null;
-        that.$realSetViewValue(value);
+        that.$$realSetViewValue(value);
       }, debounceDelay);
     } else {
-      that.$realSetViewValue(value);
+      that.$$realSetViewValue(value);
     }
   };
 
@@ -1933,8 +1931,6 @@ var ngModelDirective = function() {
       // Pass the ng-model-options to the ng-model controller
       if ( ctrls[2] ) {
         modelCtrl.$options = ctrls[2].$options;
-        modelCtrl.$updateOn = ctrls[2].$updateOn;
-        modelCtrl.$updateOnDefault = ctrls[2].$updateOnDefault;
       }
 
       scope.$on('$destroy', function() {
@@ -2283,24 +2279,13 @@ var ngModelOptionsDirective = function() {
     controller: ['$scope', '$attrs', function($scope, $attrs) {
       var that = this;
       this.$options = $scope.$eval($attrs.ngModelOptions);
-      this.$updateOn = [];
       // Allow adding/overriding bound events
       if (this.$options.updateOn) {
-        if (!isArray(this.$options.updateOn)) {
-          this.$options.updateOn = [ this.$options.updateOn ];
-        }
-        this.$updateOnDefault = false;
-        // prepare a list of user-defined events
-        forEach(this.$options.updateOn, function(ev) {
-          ev = trim(ev).toLowerCase();
-          if (ev === 'default') {
-            that.$updateOnDefault = true;
-          } else {
-            that.$updateOn.push(ev);
-          }
-        });
+        // look up for default in event list
+        this.$options.updateOnDefault = DEFAULT_REGEXP.test(this.$options.updateOn);
+        this.$options.updateOn = this.$options.updateOn.replace(DEFAULT_REGEXP, '');
       } else {
-        this.$updateOnDefault = true;
+        this.$options.updateOnDefault = true;
       }
     }]
   };

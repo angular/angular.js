@@ -608,10 +608,13 @@ describe('input', function() {
   });
 
 
-  describe('ng-model-options attributes', function() {
+  describe('ngModelOptions attributes', function() {
 
     it('should allow overriding the model update trigger event on text inputs', function() {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-model-options="{updateOn: \'blur\'}" />');
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{updateOn: \'blur\'}"'+
+          '/>');
 
       changeInputValueTo('a');
       expect(scope.name).toBeUndefined();
@@ -621,7 +624,10 @@ describe('input', function() {
 
 
     it('should bind the element to a list of events', function() {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-model-options="{updateOn: [\'blur\', \'mousemove\']}" />');
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{updateOn: [\'blur\', \'mousemove\']}"'+
+          '/>');
 
       changeInputValueTo('a');
       expect(scope.name).toBeUndefined();
@@ -636,7 +642,10 @@ describe('input', function() {
 
 
     it('should allow keeping the default update behavior on text inputs', function() {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-model-options="{updateOn: \'default\'}" />');
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{updateOn: \'default\'}"'+
+          '/>');
 
       changeInputValueTo('a');
       expect(scope.name).toEqual('a');
@@ -644,7 +653,10 @@ describe('input', function() {
 
 
     it('should allow overriding the model update trigger event on checkboxes', function() {
-      compileInput('<input type="checkbox" ng-model="checkbox" ng-model-options="{updateOn: \'blur\'}"/>');
+      compileInput(
+          '<input type="checkbox" ng-model="checkbox" '+
+            'ng-model-options="{updateOn: \'blur\'}"'+
+          '/>');
 
       browserTrigger(inputElm, 'click');
       expect(scope.checkbox).toBe(undefined);
@@ -658,7 +670,10 @@ describe('input', function() {
 
 
     it('should allow keeping the default update behavior on checkboxes', function() {
-      compileInput('<input type="checkbox" ng-model="checkbox" ng-model-options="{updateOn: [\'blur\', \'default\']}" />');
+      compileInput(
+          '<input type="checkbox" ng-model="checkbox" '+
+            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+          '/>');
 
       browserTrigger(inputElm, 'click');
       expect(scope.checkbox).toBe(true);
@@ -670,9 +685,15 @@ describe('input', function() {
 
     it('should allow overriding the model update trigger event on radio buttons', function() {
       compileInput(
-          '<input type="radio" ng-model="color" value="white" ng-model-options="{updateOn: \'blur\'}" />' +
-          '<input type="radio" ng-model="color" value="red" ng-model-options="{updateOn: \'blur\'}" />' +
-          '<input type="radio" ng-model="color" value="blue"  ng-model-options="{updateOn: \'blur\'}" />');
+          '<input type="radio" ng-model="color" value="white" '+
+            'ng-model-options="{updateOn: \'blur\'}"'+
+          '/>' +
+          '<input type="radio" ng-model="color" value="red" '+
+            'ng-model-options="{updateOn: \'blur\'}"'+
+          '/>' +
+          '<input type="radio" ng-model="color" value="blue" '+
+            'ng-model-options="{updateOn: \'blur\'}"'+
+          '/>');
 
       scope.$apply(function() {
         scope.color = 'white';
@@ -688,9 +709,15 @@ describe('input', function() {
 
     it('should allow keeping the default update behavior on radio buttons', function() {
       compileInput(
-          '<input type="radio" ng-model="color" value="white" ng-model-options="{updateOn: [\'blur\', \'default\']}" />' +
-          '<input type="radio" ng-model="color" value="red" ng-model-options="{updateOn: [\'blur\', \'default\']}" />' +
-          '<input type="radio" ng-model="color" value="blue" ng-model-options="{updateOn: [\'blur\', \'default\']}" />');
+          '<input type="radio" ng-model="color" value="white" '+
+            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+          '/>' +
+          '<input type="radio" ng-model="color" value="red" '+
+            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+          '/>' +
+          '<input type="radio" ng-model="color" value="blue" '+
+            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+          '/>');
 
       scope.$apply(function() {
         scope.color = 'white';
@@ -701,7 +728,10 @@ describe('input', function() {
 
 
     it('should trigger only after timeout in text inputs', inject(function($timeout) {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-model-options="{ debounce: 10000 }" />');
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{ debounce: 10000 }"'+
+          '/>');
 
       changeInputValueTo('a');
       changeInputValueTo('b');
@@ -715,7 +745,10 @@ describe('input', function() {
 
 
     it('should trigger only after timeout in checkboxes', inject(function($timeout) {
-      compileInput('<input type="checkbox" ng-model="checkbox" ng-model-options="{ debounce: 10000 }" />');
+      compileInput(
+          '<input type="checkbox" ng-model="checkbox" '+
+            'ng-model-options="{ debounce: 10000 }"'+
+          '/>');
 
       browserTrigger(inputElm, 'click');
       expect(scope.checkbox).toBe(undefined);
@@ -729,8 +762,12 @@ describe('input', function() {
     it('should trigger only after timeout in radio buttons', inject(function($timeout) {
       compileInput(
           '<input type="radio" ng-model="color" value="white" />' +
-          '<input type="radio" ng-model="color" value="red" ng-model-options="{ debounce: 20000 }" />' +
-          '<input type="radio" ng-model="color" value="blue" ng-model-options="{ debounce: 30000 }" />');
+          '<input type="radio" ng-model="color" value="red" '+
+            'ng-model-options="{ debounce: 20000 }"'+
+          '/>' +
+          '<input type="radio" ng-model="color" value="blue" '+
+            'ng-model-options="{ debounce: 30000 }"'+
+          '/>');
 
       browserTrigger(inputElm[0], 'click');
       expect(scope.color).toBe('white');
@@ -743,8 +780,15 @@ describe('input', function() {
 
     }));
 
-    it('should allow selecting different debounce timeouts for each event', inject(function($timeout) {
-      compileInput('<input type="text" ng-model="name" name="alias" ng-model-options="{ updateOn: [\'default\', \'blur\'], debounce: {default: 10000, blur: 5000 } }" />');
+    it('should allow selecting different debounce timeouts for each event',
+      inject(function($timeout) {
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{'+
+              'updateOn: [\'default\', \'blur\'], '+
+              'debounce: {default: 10000, blur: 5000 }'+
+            '}"'+
+          '/>');
 
       changeInputValueTo('a');
       expect(scope.checkbox).toBe(undefined);
@@ -762,7 +806,10 @@ describe('input', function() {
 
 
     it('should allow selecting different debounce timeouts for each event on checkboxes', inject(function($timeout) {
-      compileInput('<input type="checkbox" ng-model="checkbox" ng-model-options="{ updateOn: [\'default\', \'blur\'], debounce: {default: 10000, blur: 5000 } }" />');
+      compileInput('<input type="checkbox" ng-model="checkbox" '+
+        'ng-model-options="{ '+
+          'updateOn: [\'default\', \'blur\'], debounce: {default: 10000, blur: 5000 } }"'+
+        '/>');
 
       inputElm[0].checked = false;
       browserTrigger(inputElm, 'click');
@@ -782,8 +829,11 @@ describe('input', function() {
 
 
     it('should inherit model update settings from ancestor elements', inject(function($timeout) {
-      var doc = $compile('<form name="test" ng-model-options="{ debounce: 10000, updateOn: \'blur\' }" >' +
-        '<input type="text" ng-model="name" name="alias" /></form>')(scope);
+      var doc = $compile(
+          '<form name="test" '+
+              'ng-model-options="{ debounce: 10000, updateOn: \'blur\' }" >' +
+            '<input type="text" ng-model="name" name="alias" />'+
+          '</form>')(scope);
 
       var input = doc.find('input').eq(0);
       input.val('a');
@@ -799,7 +849,11 @@ describe('input', function() {
 
 
     it('should allow cancelling pending updates', inject(function($timeout) {
-      compileInput('<form name="test"><input type="text" ng-model="name" name="alias" ng-model-options="{ debounce: 10000 }" /></form>');
+      compileInput(
+          '<form name="test">'+
+            '<input type="text" ng-model="name" name="alias" '+
+              'ng-model-options="{ debounce: 10000 }" />'+
+            '</form>');
       changeInputValueTo('a');
       expect(scope.name).toEqual(undefined);
       $timeout.flush(2000);
