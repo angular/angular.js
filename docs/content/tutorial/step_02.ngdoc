@@ -192,8 +192,8 @@ You can do this by issuing `npm install` into your terminal.
 To run the test, do the following:
 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
-   `./scripts/test.sh` (if you are on Windows, run scripts\test.bat) to start the Karma server (the
-   config file necessary to start the server is located at `./config/karma.conf.js`).
+   `npm test` to start the Karma server (the config file necessary to start the server is
+   located at `./test/karma.conf.js`).
 
 2. Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
    the background. Karma will use this browser for test execution.
