@@ -854,7 +854,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should decrement anscestor $$listenerCount entries', inject(function($rootScope) {
+    it('should decrement ancestor $$listenerCount entries', inject(function($rootScope) {
       var EVENT = 'fooEvent',
           spy = jasmine.createSpy('listener'),
           firstSecond = first.$new();
