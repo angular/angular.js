@@ -731,15 +731,40 @@ function $RootScopeProvider(){
 
         forEach(this.$$listenerCount, bind(null, decrementListenerCount, this));
 
+        // sever all the references to parent scopes (after this cleanup, the current scope should
+        // not be retained by any of our references and should be eligible for garbage collection)
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
         if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
         if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
 
-        // This is bogus code that works around Chrome's GC leak
-        // see: https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
+
+        // All of the code below is bogus code that works around V8's memory leak via optimized code
+        // and inline caches.
+        //
+        // see:
+        // - https://code.google.com/p/v8/issues/detail?id=2073#c26
+        // - https://github.com/angular/angular.js/issues/6794#issuecomment-38648909
+        // - https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
+
         this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
-            this.$$childTail = null;
+            this.$$childTail = this.$root = null;
+
+        // don't reset these to null in case some async task tries to register a listener/watch/task
+        this.$$listeners = {};
+        this.$$watchers = this.$$asyncQueue = this.$$postDigestQueue = [];
+
+        // prevent NPEs since these methods have references to properties we nulled out
+        this.$destroy = this.$digest = this.$apply = noop;
+        this.$on = this.$watch = function() { return noop; };
+
+
+        /* jshint -W103 */
+        // not all browsers have __proto__ so check first
+        if (this.__proto__) {
+          this.__proto__ = null;
+        }
+        /* jshint +W103 */
       },
 
       /**
