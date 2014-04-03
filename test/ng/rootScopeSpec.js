@@ -844,13 +844,15 @@ describe('Scope', function() {
       expect(log).toBe('123');
 
       first.$destroy();
+
+      // once a scope is destroyed apply should not do anything any more
       first.$apply();
-      expect(log).toBe('12323');
+      expect(log).toBe('123');
 
       first.$destroy();
       first.$destroy();
       first.$apply();
-      expect(log).toBe('1232323');
+      expect(log).toBe('123');
     }));
 
 
