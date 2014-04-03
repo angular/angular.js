@@ -252,6 +252,23 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual('http://server');
   }));
 
+  it('should not set the href if ng-href is empty', inject(function($rootScope, $compile) {
+    $rootScope.url = null;
+    element = $compile('<a ng-href="{{url}}"></a>')($rootScope);
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual(undefined);
+  }));
+
+  it('should remove the href if ng-href changes to empty', inject(function($rootScope, $compile) {
+    $rootScope.url = 'http://www.google.com/';
+    element = $compile('<a ng-href="{{url}}"></a>')($rootScope);
+    $rootScope.$digest();
+
+    $rootScope.url = null;
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual(undefined);
+  }));
+
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
       it('should interpolate the expression and bind to xlink:href', inject(function($compile, $rootScope) {
