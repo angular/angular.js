@@ -179,7 +179,7 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
       expect(statusElement.getText()).toMatch(/Current filter: nexus\s*$/);
 
       //alternative version of the last assertion that tests just the value of the binding
-      expect(statusElement.element(by.binding('query'))).toBe('nexus');
+      expect(element(by.binding('query')).getText()).toMatch(/Current filter: nexus\s*$/);
     });
   ```
 
