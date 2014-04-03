@@ -1211,7 +1211,7 @@ angular.module('ngAnimate', ['ng'])
           parentElement.data(NG_ANIMATE_PARENT_KEY, ++parentCounter);
           parentID = parentCounter;
         }
-        return parentID + '-' + extractElementNode(element).className;
+        return parentID + '-' + extractElementNode(element).getAttribute('class');
       }
 
       function animateSetup(animationEvent, element, className, calculationDecorator) {
@@ -1316,7 +1316,7 @@ angular.module('ngAnimate', ['ng'])
       function animateRun(animationEvent, element, className, activeAnimationComplete) {
         var node = extractElementNode(element);
         var elementData = element.data(NG_ANIMATE_CSS_DATA_KEY);
-        if(node.className.indexOf(className) == -1 || !elementData) {
+        if(node.getAttribute('class').indexOf(className) == -1 || !elementData) {
           activeAnimationComplete();
           return;
         }
