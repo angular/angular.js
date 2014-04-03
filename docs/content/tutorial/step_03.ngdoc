@@ -172,7 +172,7 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
     it('should display the current filter value within an element with id "status"',
         function() {
       var statusElement = element(by.id('status'));
-      expect(statusElement.getText()).toMatch(/Current filter: \s*$/);
+      expect(statusElement.getText()).toMatch(/Current filter:\s*$/);
 
       element(by.model('query')).sendKeys('nexus');
 
