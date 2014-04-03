@@ -898,6 +898,25 @@ describe('Scope', function() {
       var fn = child.$watch('somePath', function() {});
       expect(fn).toBe(noop);
     }));
+
+
+    it("should preserve all (own and inherited) model properties on a destroyed scope",
+        inject(function($rootScope) {
+      // This test simulates an async task (xhr response) interacting with the scope after the scope
+      // was destroyed. Since we can't abort the request, we should ensure that the task doesn't
+      // throw NPEs because the scope was cleaned up during destruction.
+
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.parentModel = 'parent';
+      child.childModel = 'child';
+
+      child.$destroy();
+
+      expect(child.parentModel).toBe('parent');
+      expect(child.childModel).toBe('child');
+    }));
   });
 
 

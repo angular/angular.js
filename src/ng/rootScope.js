@@ -757,14 +757,6 @@ function $RootScopeProvider(){
         // prevent NPEs since these methods have references to properties we nulled out
         this.$destroy = this.$digest = this.$apply = noop;
         this.$on = this.$watch = function() { return noop; };
-
-
-        /* jshint -W103 */
-        // not all browsers have __proto__ so check first
-        if (this.__proto__) {
-          this.__proto__ = null;
-        }
-        /* jshint +W103 */
       },
 
       /**
