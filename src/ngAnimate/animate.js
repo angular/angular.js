@@ -934,6 +934,7 @@ angular.module('ngAnimate', ['ng'])
         }
 
         if(skipAnimation) {
+          fireDOMOperation();
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
           fireDoneCallbackAsync();
