@@ -380,7 +380,7 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
         }
 
         attr.$observe(normalized, function(value) {
-          if (!value)
+          if (!value && attrName === 'src')
              return;
 
           attr.$set(name, value);
