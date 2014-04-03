@@ -3014,6 +3014,48 @@ describe("ngAnimate", function() {
       expect(element.hasClass('red')).toBe(true);
     }));
 
+    it("should properly add and remove CSS classes when multiple classes are applied",
+      inject(function($compile, $rootScope, $animate) {
+
+      $animate.enabled();
+
+      var exp = "{{ className ? 'before ' + className + ' after' : '' }}";
+      var element = $compile('<div class="' + exp + '"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      function assertClasses(str) {
+        var className = element.attr('class');
+        str.length == 0
+            ? className.length == 0
+            : expect(className.split(/\s+/)).toEqual(str.split(' '));
+      }
+
+      $rootScope.className = '';
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      assertClasses('');
+
+      $rootScope.className = 'one';
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      assertClasses('before one after');
+
+      $rootScope.className = 'two';
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      assertClasses('before after two');
+
+      $rootScope.className = '';
+      $rootScope.$digest();
+      //intentionally avoiding the triggerReflow operation
+
+      assertClasses('');
+    }));
+
     it("should avoid mixing up substring classes during add and remove operations", function() {
       var currentAnimation, currentFn;
       module(function($animateProvider) {
