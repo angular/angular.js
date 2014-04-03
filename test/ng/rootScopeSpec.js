@@ -876,6 +876,28 @@ describe('Scope', function() {
       $rootScope.$broadcast(EVENT);
       expect(spy.callCount).toBe(1);
     }));
+
+
+    it("should do nothing when a child event listener is registered after parent's destruction",
+        inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+      var fn = child.$on('someEvent', function() {});
+      expect(fn).toBe(noop);
+    }));
+
+
+    it("should do nothing when a child watch is registered after parent's destruction",
+        inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+      var fn = child.$watch('somePath', function() {});
+      expect(fn).toBe(noop);
+    }));
   });
 
 
