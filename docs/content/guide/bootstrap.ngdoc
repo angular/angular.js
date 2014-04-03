@@ -100,7 +100,6 @@ Here is an example of manually initializing Angular:
       }]);
 
     angular.element(document).ready(function() {
-      angular.module('myApp', []);
       angular.bootstrap(document, ['myApp']);
     });
   </script>
