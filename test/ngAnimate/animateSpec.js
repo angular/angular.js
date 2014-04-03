@@ -3730,5 +3730,42 @@ describe("ngAnimate", function() {
 
       expect(element.children().length).toBe(0);
     }));
+
+    describe('SVG', function() {
+      it('should properly apply transitions on an SVG element',
+        inject(function($animate, $rootScope, $compile, $rootElement, $sniffer) {
+
+        //jQuery doesn't handle SVG elements natively. Instead, an add-on library
+        //is required which is called jquery.svg.js. Therefore, when jQuery is
+        //active here there is no point to test this since it won't work by default.
+        if(!$sniffer.transitions || !_jqLiteMode) return;
+
+        ss.addRule('circle.ng-enter', '-webkit-transition:1s linear all;' +
+                                              'transition:1s linear all;');
+
+        var element = $compile('<svg width="500" height="500">' +
+                                 '<circle cx="15" cy="5" r="100" fill="orange" ng-if="on" />' +
+                               '</svg>')($rootScope);
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.$digest();
+
+        $rootScope.on = true;
+        $rootScope.$digest();
+        $animate.triggerReflow();
+
+        var child = element.find('circle');
+
+        expect(child.hasClass('ng-enter')).toBe(true);
+        expect(child.hasClass('ng-enter-active')).toBe(true);
+
+        browserTrigger(child, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+
+        expect(child.hasClass('ng-enter')).toBe(false);
+        expect(child.hasClass('ng-enter-active')).toBe(false);
+      }));
+    });
   });
 });
