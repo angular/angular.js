@@ -16,6 +16,7 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)$/;
+var DEFAULT_REGEXP = /(\b|^)default(\b|$)/;
 
 var inputType = {
 
@@ -879,6 +880,7 @@ function addNativeHtml5Validators(ctrl, validatorName, element) {
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop('validity');
+
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
@@ -895,9 +897,10 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
   }
 
-  var listener = function() {
+  var listener = function(ev) {
     if (composing) return;
-    var value = element.val();
+    var value = element.val(),
+        event = ev && ev.type;
 
     // By default we will trim the value
     // If the attribute ng-trim exists we will avoid trimming
@@ -912,50 +915,59 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         // even when the first character entered causes an error.
         (validity && value === '' && !validity.valueMissing)) {
       if (scope.$$phase) {
-        ctrl.$setViewValue(value);
+        ctrl.$setViewValue(value, event);
       } else {
         scope.$apply(function() {
-          ctrl.$setViewValue(value);
+          ctrl.$setViewValue(value, event);
         });
       }
     }
   };
 
-  // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
-  // input event on backspace, delete or cut
-  if ($sniffer.hasEvent('input')) {
-    element.on('input', listener);
-  } else {
-    var timeout;
-
-    var deferListener = function() {
-      if (!timeout) {
-        timeout = $browser.defer(function() {
-          listener();
-          timeout = null;
-        });
-      }
-    };
-
-    element.on('keydown', function(event) {
-      var key = event.keyCode;
-
-      // ignore
-      //    command            modifiers                   arrows
-      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
-
-      deferListener();
-    });
-
-    // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
-    if ($sniffer.hasEvent('paste')) {
-      element.on('paste cut', deferListener);
-    }
+  // Allow adding/overriding bound events
+  if (ctrl.$options && ctrl.$options.updateOn) {
+    // bind to user-defined events
+    element.on(ctrl.$options.updateOn, listener);
   }
 
-  // if user paste into input using mouse on older browser
-  // or form autocomplete on newer browser, we need "change" event to catch it
-  element.on('change', listener);
+  // setup default events if requested
+  if (!ctrl.$options || ctrl.$options.updateOnDefault) {
+    // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
+    // input event on backspace, delete or cut
+    if ($sniffer.hasEvent('input')) {
+      element.on('input', listener);
+    } else {
+      var timeout;
+
+      var deferListener = function(ev) {
+        if (!timeout) {
+          timeout = $browser.defer(function() {
+            listener(ev);
+            timeout = null;
+          });
+        }
+      };
+
+      element.on('keydown', function(event) {
+        var key = event.keyCode;
+
+        // ignore
+        //    command            modifiers                   arrows
+        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+
+        deferListener(event);
+      });
+
+      // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
+      if ($sniffer.hasEvent('paste')) {
+        element.on('paste cut', deferListener);
+      }
+    }
+
+    // if user paste into input using mouse on older browser
+    // or form autocomplete on newer browser, we need "change" event to catch it
+    element.on('change', listener);
+  }
 
   ctrl.$render = function() {
     element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
@@ -1191,13 +1203,23 @@ function radioInputType(scope, element, attr, ctrl) {
     element.attr('name', nextUid());
   }
 
-  element.on('click', function() {
+  var listener = function(ev) {
     if (element[0].checked) {
       scope.$apply(function() {
-        ctrl.$setViewValue(attr.value);
+        ctrl.$setViewValue(attr.value, ev && ev.type);
       });
     }
-  });
+  };
+
+  // Allow adding/overriding bound events
+  if (ctrl.$options && ctrl.$options.updateOn) {
+    // bind to user-defined events
+    element.on(ctrl.$options.updateOn, listener);
+  }
+
+  if (!ctrl.$options || ctrl.$options.updateOnDefault) {
+    element.on('click', listener);
+  }
 
   ctrl.$render = function() {
     var value = attr.value;
@@ -1214,11 +1236,21 @@ function checkboxInputType(scope, element, attr, ctrl) {
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
 
-  element.on('click', function() {
+  var listener = function(ev) {
     scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked);
+      ctrl.$setViewValue(element[0].checked, ev && ev.type);
     });
-  });
+  };
+
+  // Allow adding/overriding bound events
+  if (ctrl.$options && ctrl.$options.updateOn) {
+    // bind to user-defined events
+    element.on(ctrl.$options.updateOn, listener);
+  }
+
+  if (!ctrl.$options || ctrl.$options.updateOnDefault) {
+    element.on('click', listener);
+  }
 
   ctrl.$render = function() {
     element[0].checked = ctrl.$viewValue;
@@ -1380,10 +1412,10 @@ function checkboxInputType(scope, element, attr, ctrl) {
 var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sniffer, $filter) {
   return {
     restrict: 'E',
-    require: '?ngModel',
-    link: function(scope, element, attr, ctrl) {
-      if (ctrl) {
-        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
+    require: ['?ngModel'],
+    link: function(scope, element, attr, ctrls) {
+      if (ctrls[0]) {
+        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
                                                             $browser, $filter);
       }
     }
@@ -1529,8 +1561,8 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -1542,8 +1574,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$invalid = false;
   this.$name = $attr.name;
 
+
   var ngModelGet = $parse($attr.ngModel),
-      ngModelSet = ngModelGet.assign;
+      ngModelSet = ngModelGet.assign,
+      pendingDebounce = null;
 
   if (!ngModelSet) {
     throw minErr('ngModel')('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
@@ -1659,26 +1693,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc method
-   * @name ngModel.NgModelController#$setViewValue
+   * @name ngModel.NgModelController#$cancelDebounce
    *
    * @description
-   * Update the view value.
+   * Cancel a pending debounced update.
    *
-   * This method should be called when the view value changes, typically from within a DOM event handler.
-   * For example {@link ng.directive:input input} and
-   * {@link ng.directive:select select} directives call it.
-   *
-   * It will update the $viewValue, then pass this value through each of the functions in `$parsers`,
-   * which includes any validators. The value that comes out of this `$parsers` pipeline, be applied to
-   * `$modelValue` and the **expression** specified in the `ng-model` attribute.
-   *
-   * Lastly, all the registered change listeners, in the `$viewChangeListeners` list, are called.
-   *
-   * Note that calling this function does not trigger a `$digest`.
-   *
-   * @param {string} value Value from the view.
+   * This method should be called before directly update a debounced model from the scope in
+   * order to prevent unintended future changes of the model value because of a delayed event.
    */
-  this.$setViewValue = function(value) {
+  this.$cancelDebounce = function() {
+    if ( pendingDebounce ) {
+      $timeout.cancel(pendingDebounce);
+      pendingDebounce = null;
+    }
+  };
+
+  // update the view value
+  this.$$realSetViewValue = function(value) {
     this.$viewValue = value;
 
     // change to dirty
@@ -1704,6 +1735,48 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           $exceptionHandler(e);
         }
       });
+    }
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setViewValue
+   *
+   * @description
+   * Update the view value.
+   *
+   * This method should be called when the view value changes, typically from within a DOM event handler.
+   * For example {@link ng.directive:input input} and
+   * {@link ng.directive:select select} directives call it.
+   *
+   * It will update the $viewValue, then pass this value through each of the functions in `$parsers`,
+   * which includes any validators. The value that comes out of this `$parsers` pipeline, be applied to
+   * `$modelValue` and the **expression** specified in the `ng-model` attribute.
+   *
+   * Lastly, all the registered change listeners, in the `$viewChangeListeners` list, are called.
+   *
+   * All these actions will be debounced if the {@link ng.directive:ngModelOptions ngModelOptions}
+   * directive is used with a custom debounce for this particular event.
+   *
+   * Note that calling this function does not trigger a `$digest`.
+   *
+   * @param {string} value Value from the view.
+   * @param {string} trigger Event that triggered the update.
+   */
+  this.$setViewValue = function(value, trigger) {
+    var that = this;
+    var debounceDelay = this.$options && (isObject(this.$options.debounce)
+        ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
+        : this.$options.debounce) || 0;
+
+    that.$cancelDebounce();
+    if ( debounceDelay ) {
+      pendingDebounce = $timeout(function() {
+        pendingDebounce = null;
+        that.$$realSetViewValue(value);
+      }, debounceDelay);
+    } else {
+      that.$$realSetViewValue(value);
     }
   };
 
@@ -1844,7 +1917,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  */
 var ngModelDirective = function() {
   return {
-    require: ['ngModel', '^?form'],
+    require: ['ngModel', '^?form', '^?ngModelOptions'],
     controller: NgModelController,
     link: function(scope, element, attr, ctrls) {
       // notify others, especially parent forms
@@ -1853,6 +1926,11 @@ var ngModelDirective = function() {
           formCtrl = ctrls[1] || nullFormCtrl;
 
       formCtrl.$addControl(modelCtrl);
+
+      // Pass the ng-model-options to the ng-model controller
+      if ( ctrls[2] ) {
+        modelCtrl.$options = ctrls[2].$options;
+      }
 
       scope.$on('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
@@ -2120,5 +2198,97 @@ var ngValueDirective = function() {
         };
       }
     }
+  };
+};
+
+/**
+ * @ngdoc directive
+ * @name ngModelOptions
+ *
+ * @description
+ * Allows tuning how model updates are done. Using `ngModelOptions` you can specify a custom list of events
+ * that will trigger a model update and/or a debouncing delay so that the actual update only takes place
+ * when a timer expires; this timer will be reset after another change takes place.
+ *
+ * @param {Object=} Object that contains options to apply to the current model. Valid keys are:
+ *   - updateOn: string specifying which event should be the input bound to. You can set several events
+ *               using an space delimited list. There is a special event called `default` that
+ *               matches the default events belonging of the control.
+ *   - debounce: integer value which contains the debounce model update value in milliseconds. A value of 0
+ *               triggers an immediate update. If an object is supplied instead, you can specify a custom value
+ *               for each event. I.e.
+ *               `ngModelOptions="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
+ *
+ * @example
+
+  The following example shows how to override immediate updates. Changes on the inputs within the form will update the model
+  only when the control loses focus (blur event).
+
+  <example name="ngModelOptions-directive-1">
+    <file name="index.html">
+      <script>
+         function Ctrl($scope) {
+           $scope.user = { name: 'say', data: '' };
+         }
+      </script>
+      <div ng-controller="Ctrl">
+        <form>
+          Name:
+          <input type="text" ng-model="user.name" ng-model-options="{ updateOn: 'blur' }" name="uName" /><br />
+          Other data:
+          <input type="text" ng-model="user.data" name="uData" /><br />
+        </form>
+        <pre>user.name = <span ng-bind="user.name"></span></pre>
+      </div>
+    </file>
+    <file name="protractor.js" type="protractor">
+      var model = element(by.binding('user.name'));
+      var input = element(by.model('user.name'));
+      var other = element(by.model('user.data'));
+      it('should allow custom events', function() {
+        input.sendKeys(' hello');
+        expect(model.getText()).toEqual('say');
+        other.click();
+        expect(model.getText()).toEqual('say hello');
+      });
+    </file>
+  </example>
+
+  This one shows how to debounce model changes. Model will be updated only 500 milliseconds after last change.
+
+  <example name="ngModelOptions-directive-2">
+    <file name="index.html">
+      <script>
+         function Ctrl($scope) {
+           $scope.user = { name: 'say' };
+         }
+       </script>
+       <div ng-controller="Ctrl">
+        <form>
+          Name:
+          <input type="text" ng-model="user.name" name="uName" ng-model-options="{ debounce: 500 }" /><br />
+        </form>
+        <pre>user.name = <span ng-bind="user.name"></span></pre>
+      </div>
+    </file>
+  </example>
+ */
+var ngModelOptionsDirective = function() {
+  return {
+    controller: ['$scope', '$attrs', function($scope, $attrs) {
+      var that = this;
+      this.$options = $scope.$eval($attrs.ngModelOptions);
+      // Allow adding/overriding bound events
+      if (this.$options.updateOn) {
+        this.$options.updateOnDefault = false;
+        // extract "default" pseudo-event from list of events that can trigger a model update
+        this.$options.updateOn = this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
+          that.$options.updateOnDefault = true;
+          return ' ';
+        });
+      } else {
+        this.$options.updateOnDefault = true;
+      }
+    }]
   };
 };
