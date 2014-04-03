@@ -1,3 +1,49 @@
+<a name="1.2.16"></a>
+# 1.2.16 badger-enumeration (2014-04-03)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure the CSS driver properly works with SVG elements
+  ([38ea5426](https://github.com/angular/angular.js/commit/38ea542662b2b74703d583e3a637d65369fc26eb),
+   [#6030](https://github.com/angular/angular.js/issues/6030))
+  - prevent cancellation timestamp from being too far in the future
+  ([35d635cb](https://github.com/angular/angular.js/commit/35d635cbcbdc20f304781655f3563111afa6567f),
+   [#6748](https://github.com/angular/angular.js/issues/6748))
+  - run CSS animations before JS animations to avoid style inheritance
+  ([0e5106ec](https://github.com/angular/angular.js/commit/0e5106ec2ccc8596c589b89074d3b27d27bf395a),
+   [#6675](https://github.com/angular/angular.js/issues/6675))
+- **$parse:** mark constant unary minus expressions as constant
+  ([6e420ff2](https://github.com/angular/angular.js/commit/6e420ff28d9b3e76ac2c3598bf3797540ef8a1d3),
+   [#6932](https://github.com/angular/angular.js/issues/6932))
+- **Scope:**
+  - revert the __proto__ cleanup as that could cause regressions
+  ([2db66f5b](https://github.com/angular/angular.js/commit/2db66f5b695a06cff62a52e55e55d1a0a25eec2f))
+  - more scope clean up on $destroy to minimize leaks
+  ([7e4e696e](https://github.com/angular/angular.js/commit/7e4e696ec3adf9d6fc77a7aa7e0909a9675fd43a),
+   [#6794](https://github.com/angular/angular.js/issues/6794), [#6856](https://github.com/angular/angular.js/issues/6856), [#6968](https://github.com/angular/angular.js/issues/6968))
+  - aggressively clean up scope on $destroy to minimize leaks
+  ([8d4d437e](https://github.com/angular/angular.js/commit/8d4d437e8cd8d7cebab5d9ae5c8bcfeef2118ce9),
+   [#6794](https://github.com/angular/angular.js/issues/6794), [#6856](https://github.com/angular/angular.js/issues/6856))
+- **filter.ngdoc:** Check if "input" variable is defined
+  ([a275d539](https://github.com/angular/angular.js/commit/a275d539f9631d6ec64d03814b3b09420e6cf1ee),
+   [#6819](https://github.com/angular/angular.js/issues/6819))
+- **input:** don't perform HTML5 validation on updated model-value
+  ([b2363e31](https://github.com/angular/angular.js/commit/b2363e31023df8240113f68b4e01d942f8009b60),
+   [#6796](https://github.com/angular/angular.js/issues/6796), [#6806](https://github.com/angular/angular.js/issues/6806))
+- **ngClass:** handle ngClassOdd/Even affecting the same classes
+  ([55fe6d63](https://github.com/angular/angular.js/commit/55fe6d6331e501325c2658df8995dcc083fc4ffb),
+   [#5271](https://github.com/angular/angular.js/issues/5271))
+
+
+## Features
+
+- **$http:** add xhr statusText to completeRequest callback
+  ([32c09c1d](https://github.com/angular/angular.js/commit/32c09c1d195fcb98f6e29fc7e554a867f4762301),
+   [#2335](https://github.com/angular/angular.js/issues/2335), [#2665](https://github.com/angular/angular.js/issues/2665), [#6713](https://github.com/angular/angular.js/issues/6713))
+
+
 <a name="v1.2.15"></a>
 # v1.2.15 beer-underestimating (2014-03-21)
 
