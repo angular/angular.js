@@ -186,13 +186,13 @@ This allows us to extend the above example with these features:
 By default, any change to the content will trigger a model update and form validation. You can
 override this behavior using the {@link ng.directive:ngModelOptions ngModelOptions} directive to
 bind only to specified list of events. I.e. `ng-model-options="{ updateOn: "blur" }"` will update
-and validate only after the control loses focus. You can set a single event using an array instead
-of a string. I.e. `ng-model-options="{ updateOn: ["mousedown", "blur"] }"`
+and validate only after the control loses focus. You can set several events using a space delimited
+list. I.e. `ng-model-options="{ updateOn: 'mousedown blur' }"`
 
 If you want to keep the default behavior and just add new events that may trigger the model update
 and validation, add "default" as one of the specified events.
 
-I.e. `ng-model-options="{ updateOn: ["default", "blur"] }"`
+I.e. `ng-model-options="{ updateOn: 'default blur' }"`
 
 The following example shows how to override immediate updates. Changes on the inputs within the form will update the model 
 only when the control loses focus (blur event).
@@ -224,7 +224,6 @@ You can delay the model update/validation by using the `debounce` key with the
 {@link ng.directive:ngModelOptions ngModelOptions} directive. This delay will also apply to
 parsers, validators and model flags like `$dirty` or `$pristine`.
 
-
 I.e. `ng-model-options="{ debounce: 500 }"` will wait for half a second since
 the last content change before triggering the model update and form validation.
 
@@ -232,7 +231,7 @@ If custom triggers are used, custom debouncing timeouts can be set for each even
 in `debounce`. This can be useful to force immediate updates on some specific circumstances
 (like blur events).
 
-I.e. `ng-model-options="{ updateOn: ["default", "blur"], debounce: { default: 500, blur: 0 } }"`
+I.e. `ng-model-options="{ updateOn: 'default blur', debounce: { default: 500, blur: 0 } }"`
 
 If those attributes are added to an element, they will be applied to all the child elements and controls that inherit from it unless they are
 overridden.

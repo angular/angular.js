@@ -613,7 +613,7 @@ describe('input', function() {
     it('should allow overriding the model update trigger event on text inputs', function() {
       compileInput(
           '<input type="text" ng-model="name" name="alias" '+
-            'ng-model-options="{updateOn: \'blur\'}"'+
+            'ng-model-options="{ updateOn: \'blur\' }"'+
           '/>');
 
       changeInputValueTo('a');
@@ -626,7 +626,7 @@ describe('input', function() {
     it('should bind the element to a list of events', function() {
       compileInput(
           '<input type="text" ng-model="name" name="alias" '+
-            'ng-model-options="{updateOn: [\'blur\', \'mousemove\']}"'+
+            'ng-model-options="{ updateOn: \'blur mousemove\' }"'+
           '/>');
 
       changeInputValueTo('a');
@@ -644,7 +644,7 @@ describe('input', function() {
     it('should allow keeping the default update behavior on text inputs', function() {
       compileInput(
           '<input type="text" ng-model="name" name="alias" '+
-            'ng-model-options="{updateOn: \'default\'}"'+
+            'ng-model-options="{ updateOn: \'default\' }"'+
           '/>');
 
       changeInputValueTo('a');
@@ -655,7 +655,7 @@ describe('input', function() {
     it('should allow overriding the model update trigger event on checkboxes', function() {
       compileInput(
           '<input type="checkbox" ng-model="checkbox" '+
-            'ng-model-options="{updateOn: \'blur\'}"'+
+            'ng-model-options="{ updateOn: \'blur\' }"'+
           '/>');
 
       browserTrigger(inputElm, 'click');
@@ -672,7 +672,7 @@ describe('input', function() {
     it('should allow keeping the default update behavior on checkboxes', function() {
       compileInput(
           '<input type="checkbox" ng-model="checkbox" '+
-            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+            'ng-model-options="{ updateOn: \'blur default\' }"'+
           '/>');
 
       browserTrigger(inputElm, 'click');
@@ -686,13 +686,13 @@ describe('input', function() {
     it('should allow overriding the model update trigger event on radio buttons', function() {
       compileInput(
           '<input type="radio" ng-model="color" value="white" '+
-            'ng-model-options="{updateOn: \'blur\'}"'+
+            'ng-model-options="{ updateOn: \'blur\'}"'+
           '/>' +
           '<input type="radio" ng-model="color" value="red" '+
-            'ng-model-options="{updateOn: \'blur\'}"'+
+            'ng-model-options="{ updateOn: \'blur\'}"'+
           '/>' +
           '<input type="radio" ng-model="color" value="blue" '+
-            'ng-model-options="{updateOn: \'blur\'}"'+
+            'ng-model-options="{ updateOn: \'blur\'}"'+
           '/>');
 
       scope.$apply(function() {
@@ -710,13 +710,13 @@ describe('input', function() {
     it('should allow keeping the default update behavior on radio buttons', function() {
       compileInput(
           '<input type="radio" ng-model="color" value="white" '+
-            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+            'ng-model-options="{ updateOn: \'blur default\' }"'+
           '/>' +
           '<input type="radio" ng-model="color" value="red" '+
-            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+            'ng-model-options="{ updateOn: \'blur default\' }"'+
           '/>' +
           '<input type="radio" ng-model="color" value="blue" '+
-            'ng-model-options="{updateOn: [\'blur\', \'default\']}"'+
+            'ng-model-options="{ updateOn: \'blur default\' }"'+
           '/>');
 
       scope.$apply(function() {
@@ -785,8 +785,8 @@ describe('input', function() {
       compileInput(
           '<input type="text" ng-model="name" name="alias" '+
             'ng-model-options="{'+
-              'updateOn: [\'default\', \'blur\'], '+
-              'debounce: {default: 10000, blur: 5000 }'+
+              'updateOn: \'default blur\', '+
+              'debounce: { default: 10000, blur: 5000 }'+
             '}"'+
           '/>');
 
@@ -808,7 +808,7 @@ describe('input', function() {
     it('should allow selecting different debounce timeouts for each event on checkboxes', inject(function($timeout) {
       compileInput('<input type="checkbox" ng-model="checkbox" '+
         'ng-model-options="{ '+
-          'updateOn: [\'default\', \'blur\'], debounce: {default: 10000, blur: 5000 } }"'+
+          'updateOn: \'default blur\', debounce: { default: 10000, blur: 5000 } }"'+
         '/>');
 
       inputElm[0].checked = false;

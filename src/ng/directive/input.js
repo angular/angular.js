@@ -16,7 +16,7 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)$/;
-var DEFAULT_REGEXP = /\wdefault\w/;
+var DEFAULT_REGEXP = /(\b|^)default(\b|$)/;
 
 var inputType = {
 
@@ -925,13 +925,13 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   };
 
   // Allow adding/overriding bound events
-  if ((ctrl.$options.updateOn) && (ctrl.$options.updateOn.length)) {
+  if (ctrl.$options && ctrl.$options.updateOn) {
     // bind to user-defined events
     element.on(ctrl.$options.updateOn, listener);
   }
 
   // setup default events if requested
-  if (!ctrl.$options.updateOn || (ctrl.$options.updateOnDefault)) {
+  if (!ctrl.$options || ctrl.$options.updateOnDefault) {
     // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
     // input event on backspace, delete or cut
     if ($sniffer.hasEvent('input')) {
@@ -955,7 +955,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         //    command            modifiers                   arrows
         if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
 
-        deferListener();
+        deferListener(event);
       });
 
       // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
@@ -1212,12 +1212,12 @@ function radioInputType(scope, element, attr, ctrl) {
   };
 
   // Allow adding/overriding bound events
-  if ((ctrl.$options.updateOn) && (ctrl.$options.updateOn.length)) {
+  if (ctrl.$options && ctrl.$options.updateOn) {
     // bind to user-defined events
     element.on(ctrl.$options.updateOn, listener);
   }
 
-  if (!ctrl.$options.updateOn || (ctrl.$options.updateOnDefault)) {
+  if (!ctrl.$options || ctrl.$options.updateOnDefault) {
     element.on('click', listener);
   }
 
@@ -1238,17 +1238,17 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
   var listener = function(ev) {
     scope.$apply(function() {
-          ctrl.$setViewValue(element[0].checked, ev && ev.type);
-        });
+      ctrl.$setViewValue(element[0].checked, ev && ev.type);
+    });
   };
 
   // Allow adding/overriding bound events
-  if ((ctrl.$options.updateOn) && (ctrl.$options.updateOn.length)) {
+  if (ctrl.$options && ctrl.$options.updateOn) {
     // bind to user-defined events
     element.on(ctrl.$options.updateOn, listener);
   }
 
-  if (!ctrl.$options.updateOn || (ctrl.$options.updateOnDefault)) {
+  if (!ctrl.$options || ctrl.$options.updateOnDefault) {
     element.on('click', listener);
   }
 
@@ -1412,7 +1412,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sniffer, $filter) {
   return {
     restrict: 'E',
-    require: ['?ngModel', '^?ngModelOptions'],
+    require: ['?ngModel'],
     link: function(scope, element, attr, ctrls) {
       if (ctrls[0]) {
         (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
@@ -1573,7 +1573,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$valid = true;
   this.$invalid = false;
   this.$name = $attr.name;
-  this.$options = { debounce: {} };
 
 
   var ngModelGet = $parse($attr.ngModel),
@@ -1766,7 +1765,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$setViewValue = function(value, trigger) {
     var that = this;
-    var debounceDelay = (isObject(this.$options.debounce)
+    var debounceDelay = this.$options && (isObject(this.$options.debounce)
         ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
         : this.$options.debounce) || 0;
 
@@ -2212,13 +2211,13 @@ var ngValueDirective = function() {
  * when a timer expires; this timer will be reset after another change takes place.
  *
  * @param {Object=} Object that contains options to apply to the current model. Valid keys are:
- *   - updateOn: string specifying which event should be the input bound to. If an array is supplied instead,
- *               multiple events can be specified. There is a special event called `default` that
+ *   - updateOn: string specifying which event should be the input bound to. You can set several events
+ *               using an space delimited list. There is a special event called `default` that
  *               matches the default events belonging of the control.
  *   - debounce: integer value which contains the debounce model update value in milliseconds. A value of 0
  *               triggers an immediate update. If an object is supplied instead, you can specify a custom value
  *               for each event. I.e.
- *               `ngModelOptions="{ updateOn: ["default", "blur"], debounce: {'default': 500, 'blur': 0} }"`
+ *               `ngModelOptions="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
  *
  * @example
 
@@ -2281,9 +2280,12 @@ var ngModelOptionsDirective = function() {
       this.$options = $scope.$eval($attrs.ngModelOptions);
       // Allow adding/overriding bound events
       if (this.$options.updateOn) {
-        // look up for default in event list
-        this.$options.updateOnDefault = DEFAULT_REGEXP.test(this.$options.updateOn);
-        this.$options.updateOn = this.$options.updateOn.replace(DEFAULT_REGEXP, '');
+        this.$options.updateOnDefault = false;
+        // extract "default" pseudo-event from list of events that can trigger a model update
+        this.$options.updateOn = this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
+          that.$options.updateOnDefault = true;
+          return ' ';
+        });
       } else {
         this.$options.updateOnDefault = true;
       }
