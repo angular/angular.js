@@ -491,6 +491,14 @@ describe('angular', function() {
       expect(toKeyValue({key: [323,'value',true, 1234]})).
       toEqual('key=323&key=value&key&key=1234');
     });
+
+    it('should not serialize null values', function() {
+      expect(toKeyValue({nullKey: null, key: 'value'})).toEqual('key=value');
+    });
+
+    it('should not serialize undefined', function() {
+      expect(toKeyValue({undefinedKey: undefined, key: 'value'})).toEqual('key=value');
+    });
   });
 
 
