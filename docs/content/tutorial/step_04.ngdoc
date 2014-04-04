@@ -10,15 +10,11 @@ In this step, you will add a feature to let your users control the order of the 
 list. The dynamic ordering is implemented by creating a new model property, wiring it together with
 the repeater, and letting the data binding magic do the rest of the work.
 
+* In addition to the search box, the app displays a drop down menu that allows users to control the
+  order in which the phones are listed.
+
 
 <div doc-tutorial-reset="4"></div>
-
-
-You should see that in addition to the search box, the app displays a drop down menu that allows
-users to control the order in which the phones are listed.
-
-The most important differences between Steps 3 and 4 are listed below. You can see the full diff on
-[GitHub](https://github.com/angular/angular-phonecat/compare/step-3...step-4):
 
 
 ## Template
@@ -143,7 +139,7 @@ shared by all tests in the parent `describe` block.
 
 You should now see the following output in the Karma tab:
 
-        Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)
+<pre>Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)</pre>
 
 
 Let's turn our attention to the end-to-end test.

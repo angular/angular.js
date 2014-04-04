@@ -6,36 +6,71 @@
 <ul doc-tutorial-nav="11"></ul>
 
 
-In this step, you will improve the way our app fetches data.
+In this step, you will change the way our app fetches data.
+
+* We defined a custom service that represents a [RESTful][restful] client. Using this client we
+can make requests to the server for data in an easier way, without having to deal with the
+lower-level {@link ng.$http $http} API, HTTP methods and URLs.
 
 
 <div doc-tutorial-reset="11"></div>
 
+## Dependencies
 
-The next improvement we will make to our app is to define a custom service that represents a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) client. Using this client we
-can make XHR requests for data in an easier way, without having to deal with the lower-level {@link
-ng.$http $http} API, HTTP methods and URLs.
+The RESTful functionality is provided by Angular in the `ngResource` module, which is distributed
+separately from the core Angular framework.
 
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-10...step-11):
+We are using [Bower][bower] to install client side dependencies.  This step updates the
+`bower.json` configuration file to include the new dependency:
+
+```
+{
+  "name": "angular-seed",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-seed",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "1.2.x",
+    "angular-mocks": "~1.2.15",
+    "bootstrap": "~3.1.1",
+    "angular-route": "~1.2.15",
+    "angular-resource": "~1.2.15"
+  }
+}
+```
+
+The new dependency `"angular-resource": "~1.2.15"` tells bower to install a version of the
+angular-resource component that is compatible with version 1.2.15.  We must tell bower to download
+and install this dependency.
+
+If you have bower installed globally then you can run `bower install` but for this project we have
+preconfigured npm to run bower install for us:
+
+```
+npm install
+```
 
 
 ## Template
 
-The custom service is defined in `app/js/services.js` so we need to include this file in our layout
-template. Additionally, we also need to load the `angular-resource.js` file, which contains the
-{@link api/ngResource ngResource} module and in it the {@link api/ngResource.$resource $resource}
-service, that we'll soon use:
+Our custom resource service will be defined in `app/js/services.js` so we need to include this file
+in our layout template. Additionally, we also need to load the `angular-resource.js` file, which
+contains the {@link api/ngResource ngResource} module:
 
 __`app/index.html`.__
 
 ```html
 ...
+  <script src="../bower_components/angular-resource/angular-resource.js"></script>
   <script src="js/services.js"></script>
-  <script src="lib/angular/angular-resource.js"></script>
 ...
 ```
 
 ## Service
+
+We create our own service to provide access to the phone data on the server:
 
 __`app/js/services.js`.__
 
@@ -52,13 +87,12 @@ phonecatServices.factory('Phone', ['$resource',
 
 We used the module API to register a custom service using a factory function. We passed in the name
 of the service - 'Phone' - and the factory function. The factory function is similar to a
-controller's constructor in that both can declare dependencies via function arguments. The Phone
-service declared a dependency on the `$resource` service.
+controller's constructor in that both can declare dependencies to be injected via function
+arguments. The Phone service declared a dependency on the `$resource` service.
 
 The {@link ngResource.$resource `$resource`} service makes it easy to create a
-[RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) client with just a few
-lines of code. This client can then be used in our application, instead of the lower-level {@link
-ng.$http $http} service.
+[RESTful][restful] client with just a few lines of code. This client can then be used in our
+application, instead of the lower-level {@link ng.$http $http} service.
 
 __`app/js/app.js`.__
 
@@ -135,8 +169,8 @@ service correctly.
 The {@link ngResource.$resource $resource} service augments the response object
 with methods for updating and deleting the resource. If we were to use the standard `toEqual`
 matcher, our tests would fail because the test values would not match the responses exactly. To
-solve the problem, we use a newly-defined `toEqualData` [Jasmine matcher](https://github.com/pivotal/jasmine/wiki/Matchers). When the
-`toEqualData` matcher compares two objects, it takes only object properties into account and
+solve the problem, we use a newly-defined `toEqualData` [Jasmine matcher][jasmine-matchers]. When
+the `toEqualData` matcher compares two objects, it takes only object properties into account and
 ignores methods.
 
 
@@ -217,7 +251,7 @@ describe('PhoneCat controllers', function() {
 
 You should now see the following output in the Karma tab:
 
-    Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)
+<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)</pre>
 
 
 # Summary
@@ -227,3 +261,6 @@ learn how to improve this application with animations.
 
 
 <ul doc-tutorial-nav="11"></ul>
+
+[restful]: http://en.wikipedia.org/wiki/Representational_State_Transfer
+[jasmine-matchers]: https://github.com/pivotal/jasmine/wiki/Matchers

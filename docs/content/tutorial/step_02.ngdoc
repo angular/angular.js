@@ -9,18 +9,14 @@
 Now it's time to make the web page dynamic — with AngularJS. We'll also add a test that verifies the
 code for the controller we are going to add.
 
-There are many ways to structure the code for an application. For Angular apps, we encourage the
-use of [the Model-View-Controller (MVC)
-design pattern](http://en.wikipedia.org/wiki/Model–View–Controller) to decouple the code and to separate concerns. With that in mind, let's use a
-little Angular and JavaScript to add model, view, and controller components to our app.
+There are many ways to structure the code for an application. For Angular apps, we encourage the use of
+[the Model-View-Controller (MVC) design pattern](http://en.wikipedia.org/wiki/Model–View–Controller)
+to decouple the code and to separate concerns. With that in mind, let's use a little Angular and
+JavaScript to add model, view, and controller components to our app.
 
+- The list of three phones is now generated dynamically from data
 
 <div doc-tutorial-reset="2"></div>
-
-
-The app now contains a list with three phones.
-
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-1...step-2):
 
 
 ## View and Template
@@ -37,7 +33,7 @@ __`app/index.html`:__
 <html ng-app="phonecatApp">
 <head>
   ...
-  <script src="lib/angular/angular.js"></script>
+  <script src="../bower_components/angular/angular.js"></script>
   <script src="js/controllers.js"></script>
 </head>
 <body ng-controller="PhoneListCtrl">
@@ -53,21 +49,21 @@ __`app/index.html`:__
 </html>
 ```
 
-We replaced the hard-coded phone list with the
-{@link ng.directive:ngRepeat ngRepeat directive} and two
-{@link guide/expression Angular expressions} enclosed in curly braces:
-`{{phone.name}}` and `{{phone.snippet}}`:
+We replaced the hard-coded phone list with the {@link ng.directive:ngRepeat ngRepeat directive}
+and two {@link guide/expression Angular expressions}:
 
-* The `ng-repeat="phone in phones"` statement in the `<li>` tag is an Angular repeater. The
-repeater tells Angular to create a `<li>` element for each phone in the list using the first `<li>`
+* The `ng-repeat="phone in phones"` attribute in the `<li>` tag is an Angular repeater directive.
+The repeater tells Angular to create a `<li>` element for each phone in the list using the `<li>`
 tag as the template.
+* The expressions wrapped in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) will be replaced
+by the value of the expressions.
 
 We have added a new directive, called `ng-controller`, which attaches a `PhoneListCtrl`
-__controller__ to the DOM at this point.
+__controller__ to the DOM at this point:
 
-* As we've learned in {@link step_00 step 0}, the curly braces around `phone.name` and `phone.snippet` denote
-bindings. As opposed to evaluating constants, these expressions are referring to our application
-model, which was set up in our `PhoneListCtrl` controller.
+* The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}` denote
+bindings, which are referring to our application model, which is set up in our `PhoneListCtrl`
+controller.
 
 <img class="diagram" src="img/tutorial/tutorial_02.png">
 
@@ -128,23 +124,19 @@ To learn more about Angular scopes, see the {@link ng.$rootScope.Scope angular s
 ## Tests
 
 The "Angular way" of separating controller from the view, makes it easy to test code as it is being
-developed. If our controller is available on the global namespace then we can simply instantiate it
-with a mock `scope` object. Take a look at the following unit test for our controller:
-
-__`test/unit/controllersSpec.js`:__
+developed. If our controller is available on the global namespace then we could simply instantiate it
+with a mock `scope` object:
 
 ```js
-describe('PhoneCat controllers', function() {
+describe('PhoneListCtrl', function(){
 
-  describe('PhoneListCtrl', function(){
+  it('should create "phones" model with 3 phones', function() {
+    var scope = {},
+        ctrl = new PhoneListCtrl(scope);
 
-    it('should create "phones" model with 3 phones', function() {
-      var scope = {},
-          ctrl = new PhoneListCtrl(scope);
-
-      expect(scope.phones.length).toBe(3);
-    });
+    expect(scope.phones.length).toBe(3);
   });
+
 });
 ```
 
@@ -154,67 +146,72 @@ Angular. Since testing is such a critical part of software development, we make 
 tests in Angular so that developers are encouraged to write them.
 
 ### Testing non-Global Controllers
-In practice, you will not want to have your controller functions in the global namespace. Instead,
-we have registered our controllers in the `phonecatApp` module. In this case Angular provides a
-service, `$controller`, which will retrieve your controller by name.  Here is the same test using
-`$controller`:
+
+In practice, you will not want to have your controller functions in the global namespace.  Instead,
+you can see that we have registered it via an anonymous constructor function on the `phoneCatApp`
+module.
+
+In this case Angular provides a service, `$controller`, which will retrieve your controller by name.
+Here is the same test using `$controller`:
 
 __`test/unit/controllersSpec.js`:__
 
 ```js
-describe('PhoneCat controllers', function() {
+describe('PhoneListCtrl', function(){
+
   beforeEach(module('phonecatApp'));
 
-  describe('PhoneListCtrl', function(){
+  it('should create "phones" model with 3 phones', inject(function($controller) {
+    var scope = {},
+        ctrl = $controller('PhoneListCtrl', {$scope:scope});
 
-    it('should create "phones" model with 3 phones', inject(function($controller) {
-      var scope = {},
-          ctrl = $controller('PhoneListCtrl', { $scope: scope });
+    expect(scope.phones.length).toBe(3);
+  }));
 
-      expect(scope.phones.length).toBe(3);
-    }));
-  });
 });
 ```
 
-Don't forget that we need to load up the `phonecatApp` module into the test so that the controller
-is available to be injected.
+* Before each test we tell Angular to load the `phonecatApp` module.
+* We ask Angular to `inject` the `$controller` service into our test function
+* We use `$controller` to create an instance of the `PhoneListCtrl`
+* With this instance, we verify that the phones array property on the scope contains three records.
+
 
 ### Writing and Running Tests
+
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
-this tutorial in Jasmine. You can learn about Jasmine on the [Jasmine home page](http://jasmine.github.io/) and at the [Jasmine docs](http://jasmine.github.io/).
+this tutorial in Jasmine v1.3. You can learn about Jasmine on the [Jasmine home page][jasmine] and
+at the [Jasmine docs][jasmine-docs].
 
-The angular-seed project is pre-configured to run all unit tests using [Karma](http://karma-runner.github.io/). Ensure that the necessary karma plugins are installed.
-You can do this by issuing `npm install` into your terminal.
+The angular-seed project is pre-configured to run unit tests using [Karma][karma] but you will need
+to ensure that Karma and its necessary plugins are installed. You can do this by running
+`npm install`.
 
+To run the tests, and then watch the files for changes: `npm test`.
 
-To run the test, do the following:
-
-1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
-   `npm test` to start the Karma server (the config file necessary to start the server is
-   located at `./test/karma.conf.js`).
-
-2. Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
+* Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
    the background. Karma will use this browser for test execution.
+* You should see the following or similar output in the terminal:
 
-3. You should see the following or similar output in the terminal:
-
-             info: Karma server started at http://localhost:9876/
-             info (launcher): Starting  browser "Chrome"
-             info (Chrome 22.0): Connected on socket id tPUm9DXcLHtZTKbAEO-n
-             Chrome 22.0: Executed 1 of 1 SUCCESS (0.093 secs / 0.004 secs)
+  <pre>
+    info: Karma server started at http://localhost:9876/
+    info (launcher): Starting  browser "Chrome"
+    info (Chrome 22.0): Connected on socket id tPUm9DXcLHtZTKbAEO-n
+    Chrome 22.0: Executed 1 of 1 SUCCESS (0.093 secs / 0.004 secs)
+  </pre>
 
   Yay! The test passed! Or not...
-
-4. To rerun the tests, just change any of the source or test .js files. Karma will notice the change
+* To rerun the tests, just change any of the source or test .js files. Karma will notice the change
   and will rerun the tests for you. Now isn't that sweet?
 
 # Experiments
 
 * Add another binding to `index.html`. For example:
 
-          <p>Total number of phones: {{phones.length}}</p>
+  ```html
+  <p>Total number of phones: {{phones.length}}</p>
+  ```
 
 * Create a new model property in the controller and bind to it from the template. For example:
 
@@ -255,3 +252,7 @@ to the app.
 
 
 <ul doc-tutorial-nav="2"></ul>
+
+[jasmine]: http://jasmine.github.io/
+[jasmine-docs]: http://jasmine.github.io/1.3/introduction.html
+[karma]: http://karma-runner.github.io/
