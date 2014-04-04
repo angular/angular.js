@@ -10,14 +10,9 @@ In this step, you will add thumbnail images for the phones in the phone list, an
 now, will go nowhere. In subsequent steps you will use the links to display additional information
 about the phones in the catalog.
 
+* There are now links and images of the phones in the list.
 
 <div doc-tutorial-reset="6"></div>
-
-
-You should now see links and images of the phones in the list.
-
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-5...step-6):
-
 
 ## Data
 

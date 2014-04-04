@@ -11,13 +11,10 @@ from our server using one of Angular's built-in {@link guide/services services} 
 ng.$http $http}. We will use Angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
+* There are now a list of 20 phones, loaded from the server.
 
 <div doc-tutorial-reset="5"></div>
 
-
-You should now see a list of 20 phones.
-
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-4...step-5):
 
 ## Data
 The `app/phones/phones.json` file in your project is a dataset that contains a larger list of phones
@@ -165,9 +162,9 @@ __`test/unit/controllersSpec.js`:__
 
 Because we started using dependency injection and our controller has dependencies, constructing the
 controller in our tests is a bit more complicated. We could use the `new` operator and provide the
-constructor with some kind of fake `$http` implementation. However, the recommended (and easier) way
-is to create a controller in the test environment in the same way that Angular does it in the
-production code behind the scenes, as follows:
+constructor with some kind of fake `$http` implementation. However, Angular provides a mock `$http`
+service that we can use in unit tests.  We configure "fake" responses to server requests by calling
+methods on a service called $httpBackend:
 
 ```js
 describe('PhoneCat controllers', function() {
@@ -251,7 +248,7 @@ Finally, we verify that the default value of `orderProp` is set correctly:
 
 You should now see the following output in the Karma tab:
 
-       Chrome 22.0: Executed 2 of 2 SUCCESS (0.028 secs / 0.007 secs)
+<pre>Chrome 22.0: Executed 2 of 2 SUCCESS (0.028 secs / 0.007 secs)</pre>
 
 
 

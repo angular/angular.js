@@ -8,16 +8,11 @@
 
 In this step, you will add a clickable phone image swapper to the phone details page.
 
-
-<div doc-tutorial-reset="10"></div>
-
-
-The phone details view displays one large image of the current phone and several smaller thumbnail
+* The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
 clicking on the desired thumbnail image. Let's have a look at how we can do this with Angular.
 
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-9...step-10):
-
+<div doc-tutorial-reset="10"></div>
 
 ## Controller
 
