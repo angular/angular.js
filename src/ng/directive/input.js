@@ -2206,40 +2206,42 @@ var ngValueDirective = function() {
  * @name ngModelOptions
  *
  * @description
- * Allows tuning how model updates are done. Using `ngModelOptions` you can specify a custom list of events
- * that will trigger a model update and/or a debouncing delay so that the actual update only takes place
- * when a timer expires; this timer will be reset after another change takes place.
+ * Allows tuning how model updates are done. Using `ngModelOptions` you can specify a custom list of
+ * events that will trigger a model update and/or a debouncing delay so that the actual update only
+ * takes place when a timer expires; this timer will be reset after another change takes place.
  *
- * @param {Object=} Object that contains options to apply to the current model. Valid keys are:
- *   - updateOn: string specifying which event should be the input bound to. You can set several events
- *               using an space delimited list. There is a special event called `default` that
- *               matches the default events belonging of the control.
- *   - debounce: integer value which contains the debounce model update value in milliseconds. A value of 0
- *               triggers an immediate update. If an object is supplied instead, you can specify a custom value
- *               for each event. I.e.
- *               `ngModelOptions="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
+ * @param {Object} ngModelOptions options to apply to the current model. Valid keys are:
+ *   - `updateOn`: string specifying which event should be the input bound to. You can set several
+ *     events using an space delimited list. There is a special event called `default` that
+ *     matches the default events belonging of the control.
+ *   - `debounce`: integer value which contains the debounce model update value in milliseconds. A
+ *     value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
+ *     custom value for each event. For example:
+ *     `ngModelOptions="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
  *
  * @example
 
-  The following example shows how to override immediate updates. Changes on the inputs within the form will update the model
-  only when the control loses focus (blur event).
+  The following example shows how to override immediate updates. Changes on the inputs within the
+  form will update the model only when the control loses focus (blur event).
 
-  <example name="ngModelOptions-directive-1">
+  <example name="ngModelOptions-directive-blur">
     <file name="index.html">
-      <script>
-         function Ctrl($scope) {
-           $scope.user = { name: 'say', data: '' };
-         }
-      </script>
       <div ng-controller="Ctrl">
-        <form>
-          Name:
-          <input type="text" ng-model="user.name" ng-model-options="{ updateOn: 'blur' }" name="uName" /><br />
-          Other data:
-          <input type="text" ng-model="user.data" name="uData" /><br />
-        </form>
+        Name:
+        <input type="text"
+               ng-model="user.name"
+               ng-model-options="{ updateOn: 'blur' }" /><br />
+
+        Other data:
+        <input type="text" ng-model="user.data" /><br />
+
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
+    </file>
+    <file name="app.js">
+      function Ctrl($scope) {
+       $scope.user = { name: 'say', data: '' };
+      }
     </file>
     <file name="protractor.js" type="protractor">
       var model = element(by.binding('user.name'));
@@ -2256,20 +2258,20 @@ var ngValueDirective = function() {
 
   This one shows how to debounce model changes. Model will be updated only 500 milliseconds after last change.
 
-  <example name="ngModelOptions-directive-2">
+  <example name="ngModelOptions-directive-debounce">
     <file name="index.html">
-      <script>
-         function Ctrl($scope) {
-           $scope.user = { name: 'say' };
-         }
-       </script>
-       <div ng-controller="Ctrl">
-        <form>
-          Name:
-          <input type="text" ng-model="user.name" name="uName" ng-model-options="{ debounce: 500 }" /><br />
-        </form>
+      <div ng-controller="Ctrl">
+        Name:
+        <input type="text"
+               ng-model="user.name"
+               ng-model-options="{ debounce: 500 }" /><br />
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
+    </file>
+    <file name="app.js">
+      function Ctrl($scope) {
+        $scope.user = { name: 'say' };
+      }
     </file>
   </example>
  */
