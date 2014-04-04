@@ -195,19 +195,16 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Actual linking function.
   return function(scope, element, attr) {
     var clickHandler = $parse(attr.ngClick),
-        tapping = false,
         tapElement,  // Used to blur the element after a tap.
         startTime,   // Used to check if the tap was held too long.
         touchStartX,
         touchStartY;
 
     function resetState() {
-      tapping = false;
       element.removeClass(ACTIVE_CLASS_NAME);
     }
 
     element.on('touchstart', function(event) {
-      tapping = true;
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
       if(tapElement.nodeType == 3) {
@@ -242,7 +239,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       var y = e.clientY;
       var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
 
-      if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
+      if (diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
         // Call preventGhostClick so the clickbuster will catch the corresponding click.
         preventGhostClick(x, y);
 
