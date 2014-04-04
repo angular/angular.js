@@ -174,7 +174,7 @@ function $IntervalProvider() {
     interval.cancel = function(promise) {
       if (promise && promise.$$intervalId in intervals) {
         intervals[promise.$$intervalId].reject('canceled');
-        clearInterval(promise.$$intervalId);
+        $window.clearInterval(promise.$$intervalId);
         delete intervals[promise.$$intervalId];
         return true;
       }
