@@ -11,15 +11,10 @@ simple; we will add full text search (yes, it will be simple!). We will also wri
 test, because a good end-to-end test is a good friend. It stays with your app, keeps an eye on it,
 and quickly detects regressions.
 
-
-<div doc-tutorial-reset="3"></div>
-
-
-The app now has a search box. Notice that the phone list on the page changes depending on what a
+* The app now has a search box. Notice that the phone list on the page changes depending on what a
 user types into the search box.
 
-The most important differences between Steps 2 and 3 are listed below. You can see the full diff on
-[GitHub](https://github.com/angular/angular-phonecat/compare/step-2...step-3):
+<div doc-tutorial-reset="3"></div>
 
 
 ## Controller
@@ -118,22 +113,26 @@ describe('PhoneCat App', function() {
 });
 ```
 
+This test verifies that the search box and the repeater are correctly wired together. Notice how
+easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
+really is that easy to set up any functional, readable, end-to-end test.
+
+### Running End to End Tests with Protractor
 Even though the syntax of this test looks very much like our controller unit test written with
-Jasmine, the end-to-end test uses APIs of {@link guide/dev_guide.e2e-testing Angular's end-to-end
-test runner}.
+Jasmine, the end-to-end test uses APIs of [Protractor](https://github.com/angular/protractor). Read
+about the Protractor APIs at https://github.com/angular/protractor/blob/master/docs/api.md.
 
 Much like Karma is the test runner for unit tests, we use Protractor to run end-to-end tests.
 Try it with `npm run protractor`. End-to-end tests are slow, so unlike with unit tests, Protractor
 will exit after the test run and will not automatically rerun the test suite on every file change.
 To rerun the test suite, execute `npm run protractor` again.
 
-Note: You must ensure you've installed the protractor and updated webdriver prior to running the
-`npm run protractor`. You can do this by issuing `npm install` and `npm run update-webdriver` into
-your terminal.
+<div class="alert alert-info">
+  Note: You must ensure you've installed the protractor and updated webdriver prior to running the
+  `npm run protractor`. You can do this by issuing `npm install` and `npm run update-webdriver` into
+  your terminal.
+</div>
 
-This test verifies that the search box and the repeater are correctly wired together. Notice how
-easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
-really is that easy to set up any functional, readable, end-to-end test.
 
 # Experiments
 
