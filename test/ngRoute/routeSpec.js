@@ -208,6 +208,23 @@ describe('$route', function() {
   });
 
 
+  it('should route an array of paths', function () {
+    module(function($routeProvider) {
+      $routeProvider.when(['/path1', '/path2'], {template: 'shared template'});
+    });
+    inject(function($route, $location, $rootScope) {
+      $location.path('/path1');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($route.current.template).toEqual('shared template');
+
+      $location.path('/path2');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($route.current.template).toEqual('shared template');
+    });
+  });
+
   describe('should match a route that contains special chars in the path', function() {
     beforeEach(module(function($routeProvider) {
       $routeProvider.when('/$test.23/foo*(bar)/:baz', {templateUrl: 'test.html'});

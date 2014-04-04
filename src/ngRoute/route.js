@@ -45,7 +45,7 @@ function $RouteProvider(){
    * @ngdoc method
    * @name $routeProvider#when
    *
-   * @param {string} path Route path (matched against `$location.path`). If `$location.path`
+   * @param {string|array} path Route path (matched against `$location.path`). If `$location.path`
    *    contains redundant trailing slash or is missing one, the route will still match and the
    *    `$location.path` will be updated to add or drop the trailing slash to exactly match the
    *    route definition.
@@ -57,6 +57,9 @@ function $RouteProvider(){
    *        e.g.`:name*`. All characters are eagerly stored in `$routeParams` under the given `name`
    *        when the route matches.
    *    * `path` can contain optional named groups with a question mark: e.g.`:name?`.
+   *
+   *    * `path` can be an array of strings that adhere to the above rules.  Those strings will be
+   *        parsed as individual routes.
    *
    *    For example, routes like `/color/:color/largecode/:largecode*\/edit` will match
    *    `/color/brown/largecode/code/with/slashes/edit` and extract:
@@ -141,6 +144,15 @@ function $RouteProvider(){
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
+    // if path is an array, map the values it back to .when
+    if (angular.isArray(path)) {
+      for (var i = path.length - 1; i >= 0; i--) {
+        this.when(path[i], route);
+      }
+
+      return this;
+    }
+
     routes[path] = angular.extend(
       {reloadOnSearch: true},
       route,
