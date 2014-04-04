@@ -608,6 +608,175 @@ describe('input', function() {
   });
 
 
+  describe('ng-update-model attributes', function() {
+
+    it('should allow overriding the model update trigger event on text inputs', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-update-model-on="blur" />');
+
+      changeInputValueTo('a');
+      expect(scope.name).toBeUndefined();
+      browserTrigger(inputElm, 'blur');
+      expect(scope.name).toEqual('a');
+    });
+
+
+    it('should bind the element to a list of events on text inputs', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-update-model-on="blur, mousemove" />');
+
+      changeInputValueTo('a');
+      expect(scope.name).toBeUndefined();
+      browserTrigger(inputElm, 'blur');
+      expect(scope.name).toEqual('a');
+
+      changeInputValueTo('b');
+      expect(scope.name).toEqual('a');
+      browserTrigger(inputElm, 'mousemove');
+      expect(scope.name).toEqual('b');
+    });
+
+
+    it('should allow keeping the default update behavior on text inputs', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-update-model-on="default" />');
+
+      changeInputValueTo('a');
+      expect(scope.name).toEqual('a');
+    });
+
+
+    it('should allow overriding the model update trigger event on checkboxes', function() {
+      compileInput('<input type="checkbox" ng-model="checkbox" ng-update-model-on="blur" />');
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(undefined);
+
+      browserTrigger(inputElm, 'blur');
+      expect(scope.checkbox).toBe(true);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(true);
+    });
+
+
+    it('should allow keeping the default update behavior on checkboxes', function() {
+      compileInput('<input type="checkbox" ng-model="checkbox" ng-update-model-on="blur, default" />');
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(true);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(false);
+    });
+
+
+    it('should allow overriding the model update trigger event on radio buttons', function() {
+      compileInput(
+          '<input type="radio" ng-model="color" value="white" ng-update-model-on="blur" />' +
+          '<input type="radio" ng-model="color" value="red" ng-update-model-on="blur"  />' +
+          '<input type="radio" ng-model="color" value="blue" ng-update-model-on="blur" />');
+
+      scope.$apply(function() {
+        scope.color = 'white';
+      });
+      browserTrigger(inputElm[2], 'click');
+      expect(scope.color).toBe('white');
+
+      browserTrigger(inputElm[2], 'blur');
+      expect(scope.color).toBe('blue');
+
+    });
+
+
+    it('should allow keeping the default update behavior on radio buttons', function() {
+      compileInput(
+          '<input type="radio" ng-model="color" value="white" ng-update-model-on="blur, default" />' +
+          '<input type="radio" ng-model="color" value="red" ng-update-model-on="blur, default"  />' +
+          '<input type="radio" ng-model="color" value="blue" ng-update-model-on="blur, default" />');
+
+      scope.$apply(function() {
+        scope.color = 'white';
+      });
+      browserTrigger(inputElm[2], 'click');
+      expect(scope.color).toBe('blue');
+    });
+
+
+    it('should trigger only after timeout in text inputs', inject(function($timeout) {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-update-model-debounce="10000" />');
+
+      changeInputValueTo('a');
+      changeInputValueTo('b');
+      changeInputValueTo('c');
+      expect(scope.name).toEqual(undefined);
+      $timeout.flush();
+      expect(scope.name).toEqual('c');
+    }));
+
+
+    it('should trigger only after timeout in checkboxes', inject(function($timeout) {
+      compileInput('<input type="checkbox" ng-model="checkbox" ng-update-model-debounce="10000" />');
+
+      browserTrigger(inputElm, 'click');
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush();
+      expect(scope.checkbox).toBe(false);
+    }));
+
+
+    it('should allow selecting different debounce timeouts for each event', inject(function($timeout) {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-update-model-on="{ default: 10000, blur: 5000 }" />');
+
+      changeInputValueTo('a');
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush(4000);
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush(7000);
+      expect(scope.name).toEqual('a');
+      changeInputValueTo('b');
+      browserTrigger(inputElm, 'blur');
+      $timeout.flush(4000);
+      expect(scope.name).toEqual('a');
+      $timeout.flush(2000);
+      expect(scope.name).toEqual('b');
+    }));
+
+
+    it('should allow selecting different debounce timeouts for each event on checkboxes', inject(function($timeout) {
+      compileInput('<input type="checkbox" ng-model="checkbox" ng-update-model-on="{ default: 10000, blur: 5000 }" />');
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush(8000);
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush(3000);
+      expect(scope.checkbox).toBe(true);
+      browserTrigger(inputElm, 'click');
+      browserTrigger(inputElm, 'blur');
+      $timeout.flush(3000);
+      expect(scope.checkbox).toBe(true);
+      $timeout.flush(3000);
+      expect(scope.checkbox).toBe(false);
+
+    }));
+
+
+    it('should inherit model update settings from ancestor elements', inject(function($timeout) {
+      var doc = $compile('<form name="test" ng-update-model-on="blur" ng-update-model-debounce="10000">' +
+        '<input type="text" ng-model="name" name="alias" /></form>')(scope);
+
+      var input = doc.find('input').eq(0);
+      input.val('a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(input, 'blur');
+      expect(scope.name).toBe(undefined);
+      $timeout.flush();
+      expect(scope.name).toEqual('a');
+      dealoc(doc);
+    }));
+
+  });
+
+
   it('should allow complex reference binding', function() {
     compileInput('<input type="text" ng-model="obj[\'abc\'].name"/>');
 
