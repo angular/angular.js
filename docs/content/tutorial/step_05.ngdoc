@@ -120,8 +120,8 @@ There are two ways to overcome issues caused by minification:
     phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
 ```
 
-* Use the inline bracket notation which wraps the function to be injected into an array of strings
-  (representing the dependency names) followed by the function to be injected:
+* Use the inline bracket notation to wrap the required dependencies into an array of strings
+  (the dependency names) followed by the function that gets injected with those dependencies:
 
 ```js
     function PhoneListCtrl($scope, $http) {...}
