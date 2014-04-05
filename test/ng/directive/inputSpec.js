@@ -863,6 +863,21 @@ describe('input', function() {
       expect(scope.name).toEqual(undefined);
     }));
 
+
+    it("should reset the input value when cancelDebounce is called", inject(function($timeout) {
+      compileInput(
+          '<form name="test">'+
+            '<input type="text" ng-model="name" name="alias" '+
+              'ng-model-options="{ debounce: 2000 }" />'+
+            '</form>');
+      
+      inputElm.val('a');
+      scope.test.alias.$cancelDebounce();
+      expect(inputElm.val()).toBe('');
+      $timeout.flush(3000);
+      expect(inputElm.val()).toBe('');
+    }));
+
   });
 
   it('should allow complex reference binding', function() {
