@@ -1258,7 +1258,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (jqLiteIsTextNode(directiveValue)) {
               $template = [];
             } else {
-              $template = jqLite(directiveValue);
+              $template = jqLite(trim(directiveValue));
             }
             compileNode = $template[0];
 
@@ -1685,7 +1685,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (jqLiteIsTextNode(content)) {
               $template = [];
             } else {
-              $template = jqLite(content);
+              $template = jqLite(trim(content));
             }
             compileNode = $template[0];
 
