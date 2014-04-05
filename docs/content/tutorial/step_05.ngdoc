@@ -105,28 +105,30 @@ properties are considered private, and should not be accessed or modified.
 ### A Note on Minification
 
 Since Angular infers the controller's dependencies from the names of arguments to the controller's
-constructor function, if you were to [minify](http://goo.gl/SAnnsm) the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
-minified as well, and the dependency injector would not be able to identify services correctly.
+constructor function, if you were to [minify](http://goo.gl/SAnnsm) the JavaScript code for
+`PhoneListCtrl` controller, all of its function arguments would be minified as well, and the
+dependency injector would not be able to identify services correctly.
 
-There are two ways to overcome issues caused by minification:
+We can overcome this problem by annotating the function with the names of the dependencies, provided
+as strings, which will not get minified. There are two ways to provide these injection annotations:
 
-* You can create a `$inject` property on the controller function which holds an array of strings.
+* Create a `$inject` property on the controller function which holds an array of strings.
   Each string in the array is the name of the service to inject for the corresponding parameter.
-  In the case of our example we would write:
+  In our example we would write:
 
-```js
-    function PhoneListCtrl($scope, $http) {...}
-    PhoneListCtrl.$inject = ['$scope', '$http'];
-    phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
-```
+  ```js
+      function PhoneListCtrl($scope, $http) {...}
+      PhoneListCtrl.$inject = ['$scope', '$http'];
+      phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
+  ```
 
-* Use the inline bracket notation which wraps the function to be injected into an array of strings
-  (representing the dependency names) followed by the function to be injected:
+* Use an inline annotation where, instead of just providing the function, you provide an array.
+  This array contains a list of the service names, followed by the function itself.
 
-```js
-    function PhoneListCtrl($scope, $http) {...}
-    phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
-```
+  ```js
+      function PhoneListCtrl($scope, $http) {...}
+      phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
+  ```
 
 Both of these methods work with any function that can be injected by Angular, so it's up to your
 project's style guide to decide which one you use.
