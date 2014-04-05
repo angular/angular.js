@@ -537,7 +537,7 @@ where:
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
 to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
-end 2 end testing, where we want to ensure that all $timeouts have completed before completing the test.
+end-to-end testing, where we want to ensure that all $timeouts have completed before completing the test.
 We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
