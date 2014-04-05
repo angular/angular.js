@@ -132,10 +132,13 @@ __`app/index.html`:__
 </html>
 ```
 
-We have added to extra `<script>` tags in our index file to load up extra JavaScript files into our
+We have added an extra `<script>` tag to our index file to load up an extra JavaScript file into our
 application:
 
 - `angular-route.js` : defines the `ngRoute` module.
+
+This is in addition to the previously specified `<script>` tag:
+
 - `controllers.js` : defines a new `phonecatControllers` module.
 
 Note that we removed most of the code in the `index.html` template and replaced it with a single
