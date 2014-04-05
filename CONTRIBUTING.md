@@ -23,7 +23,7 @@ discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC
 
 ## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code or a mistake in the documentation, you can help us by
-submitting and issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
+submitting an issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
 with a fix.
 
 ***Localization Issue:*** *Angular.js uses the [Google Closure I18N library], to generate its own I18N files. This means that
