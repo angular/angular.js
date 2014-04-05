@@ -239,10 +239,11 @@ function shallowClearAndCopy(src, dst) {
      // we can create an instance as well
      var newCard = new CreditCard({number:'0123'});
      newCard.name = "Mike Smith";
-     newCard.$save();
-     // POST: /user/123/card {number:'0123', name:'Mike Smith'}
-     // server returns: {id:789, number:'0123', name: 'Mike Smith'};
-     expect(newCard.id).toEqual(789);
+     newCard.$save().then(function() {
+       // POST: /user/123/card {number:'0123', name:'Mike Smith'}
+       // server returns: {id:789, number:'0123', name: 'Mike Smith'};
+       expect(newCard.id).toEqual(789);
+     });
  * ```
  *
  * The object returned from this function execution is a resource "class" which has "static" method
