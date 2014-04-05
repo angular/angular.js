@@ -939,6 +939,112 @@ describe("resource", function() {
       expect(response.status).toBe(404);
       expect(response.config).toBeDefined();
     });
+
+    describe('when the response interceptor returns a promise', function() {
+      var makeCreditCard, $q;
+
+      beforeEach(inject(function(_$q_) {
+        makeCreditCard = function(interceptor) {
+          return $resource('/CreditCard', {}, {
+            query: {
+              method: 'get',
+              isArray: true,
+              interceptor: interceptor
+            }
+          });
+        };
+
+        $q = _$q_;
+
+        $httpBackend.expect('GET', '/CreditCard').respond([{id: 1}]);
+      }));
+
+      it('should call the success callback with the resolution value of the promise', function() {
+        CreditCard = makeCreditCard({
+          response: function(response) {
+            return $q.when(response.data);
+          }
+        });
+
+        CreditCard.query(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+
+        var response = callback.mostRecentCall.args[0];
+        expect(response.then).not.toBeDefined();
+        expect(response[0].id).toEqual(1);
+      });
+
+      it('should call the error callback with the rejection value of the promise', function() {
+        CreditCard = makeCreditCard({
+          response: function(response) {
+            return $q.reject(response);
+          }
+        });
+
+        CreditCard.query(function() {}, callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+
+        var response = callback.mostRecentCall.args[0];
+        expect(response.then).not.toBeDefined();
+        expect(response.status).toEqual(200);
+        expect(response.config).toBeDefined();
+      });
+    });
+
+    describe('when the responseError interceptor returns a promise', function() {
+      var makeCreditCard, $q;
+
+      beforeEach(inject(function(_$q_) {
+        makeCreditCard = function(interceptor) {
+          return $resource('/CreditCard', {}, {
+            query: {
+              method: 'get',
+              isArray: true,
+              interceptor: interceptor
+            }
+          });
+        };
+
+        $q = _$q_;
+
+        $httpBackend.expect('GET', '/CreditCard').respond(404);
+      }));
+
+      it('should call the success callback with the resolution value of the promise', function() {
+        CreditCard = makeCreditCard({
+          responseError: function(response) {
+            return $q.when({id: 1});
+          }
+        });
+
+        CreditCard.query(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+
+        var response = callback.mostRecentCall.args[0];
+        expect(response.then).not.toBeDefined();
+        expect(response.id).toEqual(1);
+      });
+
+      it('should call the error callback with the rejection value of the promise', function() {
+        CreditCard = makeCreditCard({
+          responseError: function(response) {
+            return $q.reject(response);
+          }
+        });
+
+        CreditCard.query(function() {}, callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+
+        var response = callback.mostRecentCall.args[0];
+        expect(response.then).not.toBeDefined();
+        expect(response.status).toEqual(404);
+        expect(response.config).toBeDefined();
+      });
+    });
   });
 
 

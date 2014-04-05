@@ -554,18 +554,36 @@ angular.module('ngResource', ['ng']).
           }, function(response) {
             value.$resolved = true;
 
-            (error||noop)(response);
-
             return $q.reject(response);
           });
 
           promise = promise.then(
               function(response) {
                 var value = responseInterceptor(response);
-                (success||noop)(value, response.headers);
+
+                $q.when(value).then(function(value) {
+                  (success||noop)(value, response.headers);
+                }, function(response) {
+                  (error||noop)(response);
+                });
+
                 return value;
               },
-              responseErrorInterceptor);
+              function(response) {
+                if (responseErrorInterceptor) {
+                  response = responseErrorInterceptor(response);
+                } else {
+                  response = $q.reject(response);
+                }
+
+                $q.when(response).then(function(value) {
+                  (success||noop)(value, response.headers);
+                }, function(response) {
+                  (error||noop)(response);
+                });
+
+                return response;
+              });
 
           if (!isInstanceCall) {
             // we are creating instance / collection
