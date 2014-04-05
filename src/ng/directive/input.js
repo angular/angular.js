@@ -1701,10 +1701,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * This method should be called before directly update a debounced model from the scope in
    * order to prevent unintended future changes of the model value because of a delayed event.
    */
-  this.$cancelDebounce = function() {
+  this.$cancelDebounce = function(skipRender) {
     if ( pendingDebounce ) {
       $timeout.cancel(pendingDebounce);
       pendingDebounce = null;
+      if ( !skipRender ) {
+        this.$resetModelValue();
+      }
     }
   };
 
@@ -1769,7 +1772,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
         : this.$options.debounce) || 0;
 
-    that.$cancelDebounce();
+    that.$cancelDebounce(true);
     if ( debounceDelay ) {
       pendingDebounce = $timeout(function() {
         pendingDebounce = null;
@@ -1782,6 +1785,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   var ctrl = this;
+
+  this.$resetModelValue = function() {
+    var formatters = ctrl.$formatters,
+        idx = formatters.length;
+
+    var value = ngModelGet($scope);
+    ctrl.$modelValue = value;
+    while(idx--) {
+      value = formatters[idx](value);
+    }
+
+    ctrl.$viewValue = value;
+    ctrl.$render();
+  };
 
   $scope.$watch(function ngModelWatch() {
     var value = ngModelGet($scope);
