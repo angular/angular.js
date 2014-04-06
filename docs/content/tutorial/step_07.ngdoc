@@ -11,7 +11,8 @@ multiple views by adding routing, using an Angular module called 'ngRoute'.
 
 * When you now navigate to `app/index.html`, you are redirected to `app/index.html#/phones`
   and the phone list appears in the browser.
-* When you click on a phone link the stub of a phone detail page is displayed.
+* When you click on a phone link the url changes to one specific to that phone and the stub of a
+  phone detail page is displayed.
 
 <div doc-tutorial-reset="7"></div>
 
@@ -132,11 +133,11 @@ __`app/index.html`:__
 </html>
 ```
 
-We have added to extra `<script>` tags in our index file to load up extra JavaScript files into our
+We have added two new `<script>` tags in our index file to load up extra JavaScript files into our
 application:
 
-- `angular-route.js` : defines the `ngRoute` module.
-- `controllers.js` : defines a new `phonecatControllers` module.
+- `angular-route.js` : defines the Angular `ngRoute` module, which provides us with routing.
+- `app.js` : this file now holds the root module of our application.
 
 Note that we removed most of the code in the `index.html` template and replaced it with a single
 line containing a div with the `ng-view` attribute. The code that we removed was placed into the
@@ -191,6 +192,15 @@ Note how we are using the `phoneId` expression which will be defined in the `Pho
 
 ## The App Module
 
+To improve the organization of the app, we are making use of Angular's `ngRoute` module and we've
+moved the controllers into their own module `phonecatControllers` (as shown below).
+
+We added `angular-route.js` to `index.html` and created a new `phonecatControllers` module in
+`controllers.js`. That's not all we need to do to be able to use their code, however. We also have
+to add the modules dependencies of our app. By listing these two modules as dependencies of
+`phonecatApp`, we can use the directives and services they provide.
+
+
 __`app/js/app.js`:__
 
 ```js
@@ -198,6 +208,16 @@ var phonecatApp = angular.module('phonecatApp', [
   'ngRoute',
   'phonecatControllers'
 ]);
+
+...
+```
+
+Notice the second argument passed to `angular.module`, `['ngRoute', 'phonecatControllers']`. This
+array lists the modules that `phonecatApp` depends on.
+
+
+```js
+...
 
 phonecatApp.config(['$routeProvider',
   function($routeProvider) {
@@ -216,31 +236,28 @@ phonecatApp.config(['$routeProvider',
   }]);
 ```
 
-Above, we added `angular-route.js` and `controllers.js` to `index.html`. That's not all we need to
-do to be able to use their code, however. We also have to add the modules dependencies of our app.
-To improve the organization of the app, we've moved the controllers into their own file defining its
-own module `phonecatControllers` (as shown below). By listing these two modules as dependencies of
-`phonecatApp`, we can use the directives and services they provide. Notice the second argument
-passed to `angular.module`, `['ngRoute', 'phonecatControllers']`. This array lists the modules that
-`phonecatApp` depends on.
-
-Using the `config` API we request the `$routeProvider` to be injected into our config function
-and use the {@link ngRoute.$routeProvider#when `$routeProvider.when`} API to define our routes.
+Using the `phonecatApp.config()` method, we request the `$routeProvider` to be injected into our
+config function and use the {@link ngRoute.$routeProvider#when `$routeProvider.when()`} method to
+define our routes.
 
 Our application routes are defined as follows:
 
-* The phone list view will be shown when the URL hash fragment is `/phones`. To construct this
-view, Angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
+* `when('/phones')`: The phone list view will be shown when the URL hash fragment is `/phones`. To
+  construct this view, Angular will use the `phone-list.html` template and the `PhoneListCtrl`
+  controller.
 
-* The phone details view will be shown when the URL hash fragment matches '/phone/:phoneId', where
-`:phoneId` is a variable part of the URL. To construct the phone details view, Angular will use the
-`phone-detail.html` template and the `PhoneDetailCtrl` controller.
+* `when('/phones/:phoneId')`: The phone details view will be shown when the URL hash fragment
+  matches '/phone/:phoneId', where `:phoneId` is a variable part of the URL. To construct the phone
+  details view, Angular will use the `phone-detail.html` template and the `PhoneDetailCtrl`
+  controller.
+
+* `otherwise({redirectTo: '/phones'})`:  triggers a redirection to `/phones` when the browser
+  address doesn't match either of our routes.
+
 
 We reused the `PhoneListCtrl` controller that we constructed in previous steps and we added a new,
 empty `PhoneDetailCtrl` controller to the `app/js/controllers.js` file for the phone details view.
 
-`$routeProvider.otherwise({redirectTo: '/phones'})` triggers a redirection to `/phones` when the browser
-address doesn't match either of our routes.
 
 Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
 the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
@@ -270,12 +287,14 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
   }]);
 ```
 
-Again, note that we created a new module called `phonecatControllers`. For small AngularJS applications,
-it's common to create just one module for all of your controllers if there are just a few. For larger apps,
-you will probably want to create separate modules for each major feature of your app.
+Again, note that we created a new module called `phonecatControllers`. For small AngularJS
+applications, it's common to create just one module for all of your controllers if there are just a
+few. As your application grows it is quite common to refactor your code into additional modules.
+For larger apps, you will probably want to create separate modules for each major feature of
+your app.
 
-Because our example app is relatively small, we'll add all of our controllers to this module.
-
+Because our example app is relatively small, we'll just add all of our controllers to the
+`phonecatControllers` module.
 
 
 ## Test
