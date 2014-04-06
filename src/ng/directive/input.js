@@ -1577,7 +1577,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign,
-      pendingDebounce = null;
+      pendingDebounce = null,
+      ctrl = this;
 
   if (!ngModelSet) {
     throw minErr('ngModel')('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
@@ -1693,19 +1694,26 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc method
-   * @name ngModel.NgModelController#$cancelDebounce
+   * @name ngModel.NgModelController#$cancelUpdate
    *
    * @description
-   * Cancel a pending debounced update.
+   * Cancel an update and reset the input element's value to prevent an update to the `$viewValue`,
+   * which may be caused by a pending debounced event or because the input is waiting for a some
+   * future event.
    *
-   * This method should be called before directly update a debounced model from the scope in
-   * order to prevent unintended future changes of the model value because of a delayed event.
+   * If you have an input that uses `ng-model-options` to set up debounced events or events such
+   * as blur you can have a situation where there is a period when the value of the input element
+   * is out of synch with the ngModel's `$viewValue`. You can run into difficulties if you try to
+   * update the ngModel's `$modelValue` programmatically before these debounced/future events have
+   * completed, because Angular's dirty checking mechanism is not able to tell whether the model
+   * has actually changed or not. This method should be called before directly updating a model
+   * from the scope in case you have an input with `ng-model-options` that do not include immediate
+   * update of the default trigger. This is important in order to make sure that this input field
+   * will be updated with the new value and any pending operation will be canceled.
    */
-  this.$cancelDebounce = function() {
-    if ( pendingDebounce ) {
-      $timeout.cancel(pendingDebounce);
-      pendingDebounce = null;
-    }
+  this.$cancelUpdate = function() {
+    $timeout.cancel(pendingDebounce);
+    this.$render();
   };
 
   // update the view value
@@ -1764,25 +1772,21 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} trigger Event that triggered the update.
    */
   this.$setViewValue = function(value, trigger) {
-    var that = this;
     var debounceDelay = this.$options && (isObject(this.$options.debounce)
         ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
         : this.$options.debounce) || 0;
 
-    that.$cancelDebounce();
-    if ( debounceDelay ) {
+    $timeout.cancel(pendingDebounce);
+    if (debounceDelay) {
       pendingDebounce = $timeout(function() {
-        pendingDebounce = null;
-        that.$$realSetViewValue(value);
+        ctrl.$$realSetViewValue(value);
       }, debounceDelay);
     } else {
-      that.$$realSetViewValue(value);
+      this.$$realSetViewValue(value);
     }
   };
 
   // model -> value
-  var ctrl = this;
-
   $scope.$watch(function ngModelWatch() {
     var value = ngModelGet($scope);
 

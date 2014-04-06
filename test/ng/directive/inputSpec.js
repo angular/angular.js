@@ -847,20 +847,46 @@ describe('input', function() {
       dealoc(doc);
     }));
 
-
-    it('should allow cancelling pending updates', inject(function($timeout) {
+    it('should allow canceling pending updates', inject(function($timeout) {
       compileInput(
-          '<form name="test">'+
-            '<input type="text" ng-model="name" name="alias" '+
-              'ng-model-options="{ debounce: 10000 }" />'+
-            '</form>');
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ debounce: 10000 }" />');
+
       changeInputValueTo('a');
       expect(scope.name).toEqual(undefined);
       $timeout.flush(2000);
-      scope.test.alias.$cancelDebounce();
+      scope.form.alias.$cancelUpdate();
       expect(scope.name).toEqual(undefined);
       $timeout.flush(10000);
       expect(scope.name).toEqual(undefined);
+    }));
+
+    it('should reset input val if cancelUpdate called during pending update', function() {
+      compileInput(
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ updateOn: \'blur\' }" />');
+      scope.$digest();
+
+      changeInputValueTo('a');
+      expect(inputElm.val()).toBe('a');
+      scope.form.alias.$cancelUpdate();
+      expect(inputElm.val()).toBe('');
+      browserTrigger(inputElm, 'blur');
+      expect(inputElm.val()).toBe('');
+    });
+
+    it('should reset input val if cancelUpdate called during debounce', inject(function($timeout) {
+      compileInput(
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ debounce: 2000 }" />');
+      scope.$digest();
+
+      changeInputValueTo('a');
+      expect(inputElm.val()).toBe('a');
+      scope.form.alias.$cancelUpdate();
+      expect(inputElm.val()).toBe('');
+      $timeout.flush(3000);
+      expect(inputElm.val()).toBe('');
     }));
 
   });
