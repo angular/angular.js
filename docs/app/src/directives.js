@@ -1,9 +1,5 @@
 angular.module('directives', [])
 
-.directive('code', function() {
-  return { restrict:'E', terminal: true };
-})
-
 /**
  * backToTop Directive
  * @param  {Function} $anchorScroll
