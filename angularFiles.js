@@ -17,6 +17,7 @@ angularFiles = {
     'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/document.js',
+    'src/ng/debounce.js',
     'src/ng/exceptionHandler.js',
     'src/ng/http.js',
     'src/ng/httpBackend.js',
