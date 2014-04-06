@@ -184,7 +184,7 @@ You can now rerun `npm run protractor` to see the tests run.
 
 # Experiments
 
-* Using the {@link https://github.com/angular/protractor/blob/master/docs/api.md Protractor API},
+* Using the [Protractor API](https://github.com/angular/protractor/blob/master/docs/api.md),
 write a test that verifies that we display 4 thumbnail images on the Nexus S details page.
 
 
