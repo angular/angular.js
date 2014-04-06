@@ -159,15 +159,20 @@ function forEach(obj, iterator, context) {
   return obj;
 }
 
-function sortedKeys(obj) {
-  var keys = [];
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      keys.push(key);
+var sortedKeys = Object.keys ?
+  function(obj){
+    return Object.keys(obj).sort();
+  } :
+  function sortedKeys(obj){
+    var keys = [];
+    var key;
+    for(key in obj){
+      if(obj.hasOwnProperty(key)){
+        keys.push(key);
+      }
     }
-  }
-  return keys.sort();
-}
+    return keys.sort();
+  };
 
 function forEachSorted(obj, iterator, context) {
   var keys = sortedKeys(obj);
