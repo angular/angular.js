@@ -139,7 +139,7 @@ tasks that you will need while developing:
 ### Running Development Web Server
 
 While Angular applications are purely client-side code, and it is possible to open them in a web
-browser directly from the file system, it is better to server them from a HTTP web server.  In
+browser directly from the file system, it is better to serve them from a HTTP web server.  In
 particular, for security reasons, most modern browsers will not allow JavaScript to make server
 requests if the page is loaded directly from the file system.
 
