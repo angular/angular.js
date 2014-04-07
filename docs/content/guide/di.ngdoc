@@ -283,8 +283,7 @@ someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope
 This avoids the creation of global functions for controllers and also protects against minification.
 
 Controllers are special in that, unlike services, there can be many instances of them in the
-application. For example, there would be one instance of a for every instance of the `ng-controller`
-directive in the template.
+application. For example, there would be one instance for every `ng-controller` directive in the template.
 
 Moreover, additional dependencies are made available to Controllers:
 
