@@ -408,6 +408,16 @@ LocationHashbangInHtml5Url.prototype =
    * comma-separated value. If `paramValue` is `null`, the parameter will be deleted.
    *
    * @return {string} search
+   * 
+   * @example If you want to get a specific value of the search, make sure you do not pass any arguments.
+   * 
+   * <example>
+    // This will return the `$location` object:
+    $location.search('what-you-want')
+    
+    // This will return give you the value you actually want:
+    $location.search()['what-you-want']
+   * </example>
    */
   search: function(search, paramValue) {
     switch (arguments.length) {
