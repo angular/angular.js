@@ -133,7 +133,7 @@ on `clientId` service. The factory service then uses NSA-proof encryption to pro
 token.
 
 Note: It is a best practice to name the factory functions as "<serviceId>Factory"
-(e.g. apiTokenFactory). While this names are not required, they help when navigating the code base
+(e.g. apiTokenFactory). While this naming convention is not required, it helps when navigating the code base
 or looking at stack traces in the debugger.
 
 Just like with Value recipe, Factory recipe can create a service of any type, whether it be a
