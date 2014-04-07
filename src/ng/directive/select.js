@@ -315,7 +315,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var displayFn = $parse(match[2] || match[1]),
             valueName = match[4] || match[6],
             keyName = match[5],
-            groupByFn = $parse(match[3] || ''),
+            groupByGet = $parse(match[3] || ''),
+            groupByFn = function (scope, locals) {
+              var result = groupByGet(scope, locals);
+              return isUndefined(result) ? '' : result;
+            },
             valueFn = $parse(match[2] ? match[1] : valueName),
             valuesFn = $parse(match[7]),
             track = match[8],
@@ -455,7 +459,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
             locals[valueName] = values[key];
 
-            optionGroupName = groupByFn(scope, locals) || '';
+            optionGroupName = groupByFn(scope, locals);
             if (!(optionGroup = optionGroups[optionGroupName])) {
               optionGroup = optionGroups[optionGroupName] = [];
               optionGroupNames.push(optionGroupName);
