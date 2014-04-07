@@ -798,6 +798,18 @@ describe("resource", function() {
         expect(promiseValue).toEqual({ value: 'transformed' });
         expect(successValue).toBe(promiseValue);
       });
+
+      it('should get instantiated with the correct constructor function', function(){
+	$httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+
+	CreditCard.prototype.someCustomMethod = function(){ return 'hello'; };
+
+	var cc = CreditCard.get({id: 123});
+
+	expect(cc.someCustomMethod).toBe(CreditCard.prototype.someCustomMethod);
+	expect(cc.someCustomMethod()).toEqual('hello');
+      });
+
     });
 
 
@@ -938,6 +950,21 @@ describe("resource", function() {
       var response = callback.mostRecentCall.args[0];
       expect(response.status).toBe(404);
       expect(response.config).toBeDefined();
+    });
+
+    it('should return a collection of objects instantiated with the correct constructor function', function(){
+      $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+
+      CreditCard.prototype.someCustomMethod = function(){ return 'hello'; };
+
+      var ccs = CreditCard.query({key: 'value'});
+
+      $httpBackend.flush();
+
+      expect(ccs[0].someCustomMethod).toBe(CreditCard.prototype.someCustomMethod);
+      expect(ccs[0].someCustomMethod()).toEqual('hello');
+      expect(ccs[1].someCustomMethod).toBe(CreditCard.prototype.someCustomMethod);
+      expect(ccs[1].someCustomMethod()).toEqual('hello');
     });
   });
 
