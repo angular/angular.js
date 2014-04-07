@@ -1659,20 +1659,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       if ($error[validationErrorKey]) invalidCount--;
       if (!invalidCount) {
         toggleValidCss(true);
-        this.$valid = true;
-        this.$invalid = false;
+        ctrl.$valid = true;
+        ctrl.$invalid = false;
       }
     } else {
       toggleValidCss(false);
-      this.$invalid = true;
-      this.$valid = false;
+      ctrl.$invalid = true;
+      ctrl.$valid = false;
       invalidCount++;
     }
 
     $error[validationErrorKey] = !isValid;
     toggleValidCss(isValid, validationErrorKey);
 
-    parentForm.$setValidity(validationErrorKey, isValid, this);
+    parentForm.$setValidity(validationErrorKey, isValid, ctrl);
   };
 
   /**
@@ -1686,8 +1686,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * state (ng-pristine class).
    */
   this.$setPristine = function () {
-    this.$dirty = false;
-    this.$pristine = true;
+    ctrl.$dirty = false;
+    ctrl.$pristine = true;
     $animate.removeClass($element, DIRTY_CLASS);
     $animate.addClass($element, PRISTINE_CLASS);
   };
@@ -1713,30 +1713,30 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$cancelUpdate = function() {
     $timeout.cancel(pendingDebounce);
-    this.$render();
+    ctrl.$render();
   };
 
   // update the view value
   this.$$realSetViewValue = function(value) {
-    this.$viewValue = value;
+    ctrl.$viewValue = value;
 
     // change to dirty
-    if (this.$pristine) {
-      this.$dirty = true;
-      this.$pristine = false;
+    if (ctrl.$pristine) {
+      ctrl.$dirty = true;
+      ctrl.$pristine = false;
       $animate.removeClass($element, PRISTINE_CLASS);
       $animate.addClass($element, DIRTY_CLASS);
       parentForm.$setDirty();
     }
 
-    forEach(this.$parsers, function(fn) {
+    forEach(ctrl.$parsers, function(fn) {
       value = fn(value);
     });
 
-    if (this.$modelValue !== value) {
-      this.$modelValue = value;
+    if (ctrl.$modelValue !== value) {
+      ctrl.$modelValue = value;
       ngModelSet($scope, value);
-      forEach(this.$viewChangeListeners, function(listener) {
+      forEach(ctrl.$viewChangeListeners, function(listener) {
         try {
           listener();
         } catch(e) {
@@ -1772,9 +1772,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} trigger Event that triggered the update.
    */
   this.$setViewValue = function(value, trigger) {
-    var debounceDelay = this.$options && (isObject(this.$options.debounce)
-        ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
-        : this.$options.debounce) || 0;
+    var debounceDelay = ctrl.$options && (isObject(ctrl.$options.debounce)
+        ? (ctrl.$options.debounce[trigger] || ctrl.$options.debounce['default'] || 0)
+        : ctrl.$options.debounce) || 0;
 
     $timeout.cancel(pendingDebounce);
     if (debounceDelay) {
@@ -1782,7 +1782,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$$realSetViewValue(value);
       }, debounceDelay);
     } else {
-      this.$$realSetViewValue(value);
+      ctrl.$$realSetViewValue(value);
     }
   };
 
