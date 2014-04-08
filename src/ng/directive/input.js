@@ -1703,13 +1703,53 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * If you have an input that uses `ng-model-options` to set up debounced events or events such
    * as blur you can have a situation where there is a period when the value of the input element
-   * is out of synch with the ngModel's `$viewValue`. You can run into difficulties if you try to
-   * update the ngModel's `$modelValue` programmatically before these debounced/future events have
-   * completed, because Angular's dirty checking mechanism is not able to tell whether the model
-   * has actually changed or not. This method should be called before directly updating a model
-   * from the scope in case you have an input with `ng-model-options` that do not include immediate
-   * update of the default trigger. This is important in order to make sure that this input field
-   * will be updated with the new value and any pending operation will be canceled.
+   * is out of synch with the ngModel's `$viewValue`.
+   *
+   * In this case, you can run into difficulties if you try to update the ngModel's `$modelValue`
+   * programmatically before these debounced/future events have resolved/occurred, because Angular's
+   * dirty checking mechanism is not able to tell whether the model has actually changed or not.
+   *
+   * The `$cancelUpdate()` method should be called before programmatically changing the model of an
+   * input which may have such events pending. This is important in order to make sure that the
+   * input field will be updated with the new model value and any pending operations are cancelled.
+   *
+   * <example name="ng-model-cancel-update" module="cancel-update-example">
+   *   <file name="app.js">
+   *     angular.module('cancel-update-example', [])
+   *
+   *     .controller('CancelUpdateCtrl', function($scope) {
+   *       $scope.resetWithCancel = function (e) {
+   *         if (e.keyCode == 27) {
+   *           $scope.myForm.myInput1.$cancelUpdate();
+   *           $scope.myValue = '';
+   *         }
+   *       };
+   *       $scope.resetWithoutCancel = function (e) {
+   *         if (e.keyCode == 27) {
+   *           $scope.myValue = '';
+   *         }
+   *       };
+   *     });
+   *   </file>
+   *   <file name="index.html">
+   *     <div ng-controller="CancelUpdateCtrl">
+   *       <p>Try typing something in each input.  See that the model only updates when you
+   *          blur off the input.
+   *        </p>
+   *        <p>Now see what happens if you start typing then press the Escape key</p>
+   *
+   *       <form name="myForm" ng-model-options="{ updateOn: 'blur' }">
+   *         <p>With $cancelUpdate()</p>
+   *         <input name="myInput1" ng-model="myValue" ng-keydown="resetWithCancel($event)"><br/>
+   *         myValue: "{{ myValue }}"
+   *
+   *         <p>Without $cancelUpdate()</p>
+   *         <input name="myInput2" ng-model="myValue" ng-keydown="resetWithoutCancel($event)"><br/>
+   *         myValue: "{{ myValue }}"
+   *       </form>
+   *     </div>
+   *   </file>
+   * </example>
    */
   this.$cancelUpdate = function() {
     $timeout.cancel(pendingDebounce);
@@ -2216,12 +2256,13 @@ var ngValueDirective = function() {
  *
  * Given the nature of `ngModelOptions`, the value displayed inside input fields in the view might
  * be different then the value in the actual model. This means that if you update the model you
- * should also invoke `$cancelUpdate` on the relevant input field in order to make sure it is
- * synchronized with the model and that any debounced action is canceled.
+ * should also invoke {@link ngModel.NgModelController `$cancelUpdate`} on the relevant input field in
+ * order to make sure it is synchronized with the model and that any debounced action is canceled.
  *
- * The easiest way to reference the control's `$cancelUpdate` method is by making sure the input
- * is placed inside a form that has a `name` attribute. This is important because form controllers
- * are published to the related scope under the name in their `name` attribute.
+ * The easiest way to reference the control's {@link ngModel.NgModelController `$cancelUpdate`}
+ * method is by making sure the input is placed inside a form that has a `name` attribute. This is
+ * important because `form` controllers are published to the related scope under the name in their
+ * `name` attribute.
  *
  * @param {Object} ngModelOptions options to apply to the current model. Valid keys are:
  *   - `updateOn`: string specifying which event should be the input bound to. You can set several
