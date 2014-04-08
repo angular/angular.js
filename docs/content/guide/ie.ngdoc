@@ -21,7 +21,7 @@ integration server runs all the tests against IE9, IE10, and IE11. See
 [ci.angularjs.org](http://ci.angularjs.org).
 
 We do not run tests on IE8 and below. A subset of the AngularJS functionality may work on these
-browesers, but it is up to you to test and decide whether it works for your particular app.
+browsers, but it is up to you to test and decide whether it works for your particular app.
 
 
 ## Short Version
