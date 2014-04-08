@@ -1577,7 +1577,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign,
-      pendingDebounce = null;
+      pendingDebounce = null,
+      ctrl = this;
 
   if (!ngModelSet) {
     throw minErr('ngModel')('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
@@ -1658,20 +1659,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       if ($error[validationErrorKey]) invalidCount--;
       if (!invalidCount) {
         toggleValidCss(true);
-        this.$valid = true;
-        this.$invalid = false;
+        ctrl.$valid = true;
+        ctrl.$invalid = false;
       }
     } else {
       toggleValidCss(false);
-      this.$invalid = true;
-      this.$valid = false;
+      ctrl.$invalid = true;
+      ctrl.$valid = false;
       invalidCount++;
     }
 
     $error[validationErrorKey] = !isValid;
     toggleValidCss(isValid, validationErrorKey);
 
-    parentForm.$setValidity(validationErrorKey, isValid, this);
+    parentForm.$setValidity(validationErrorKey, isValid, ctrl);
   };
 
   /**
@@ -1685,50 +1686,57 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * state (ng-pristine class).
    */
   this.$setPristine = function () {
-    this.$dirty = false;
-    this.$pristine = true;
+    ctrl.$dirty = false;
+    ctrl.$pristine = true;
     $animate.removeClass($element, DIRTY_CLASS);
     $animate.addClass($element, PRISTINE_CLASS);
   };
 
   /**
    * @ngdoc method
-   * @name ngModel.NgModelController#$cancelDebounce
+   * @name ngModel.NgModelController#$cancelUpdate
    *
    * @description
-   * Cancel a pending debounced update.
+   * Cancel an update and reset the input element's value to prevent an update to the `$viewValue`,
+   * which may be caused by a pending debounced event or because the input is waiting for a some
+   * future event.
    *
-   * This method should be called before directly update a debounced model from the scope in
-   * order to prevent unintended future changes of the model value because of a delayed event.
+   * If you have an input that uses `ng-model-options` to set up debounced events or events such
+   * as blur you can have a situation where there is a period when the value of the input element
+   * is out of synch with the ngModel's `$viewValue`. You can run into difficulties if you try to
+   * update the ngModel's `$modelValue` programmatically before these debounced/future events have
+   * completed, because Angular's dirty checking mechanism is not able to tell whether the model
+   * has actually changed or not. This method should be called before directly updating a model
+   * from the scope in case you have an input with `ng-model-options` that do not include immediate
+   * update of the default trigger. This is important in order to make sure that this input field
+   * will be updated with the new value and any pending operation will be canceled.
    */
-  this.$cancelDebounce = function() {
-    if ( pendingDebounce ) {
-      $timeout.cancel(pendingDebounce);
-      pendingDebounce = null;
-    }
+  this.$cancelUpdate = function() {
+    $timeout.cancel(pendingDebounce);
+    ctrl.$render();
   };
 
   // update the view value
   this.$$realSetViewValue = function(value) {
-    this.$viewValue = value;
+    ctrl.$viewValue = value;
 
     // change to dirty
-    if (this.$pristine) {
-      this.$dirty = true;
-      this.$pristine = false;
+    if (ctrl.$pristine) {
+      ctrl.$dirty = true;
+      ctrl.$pristine = false;
       $animate.removeClass($element, PRISTINE_CLASS);
       $animate.addClass($element, DIRTY_CLASS);
       parentForm.$setDirty();
     }
 
-    forEach(this.$parsers, function(fn) {
+    forEach(ctrl.$parsers, function(fn) {
       value = fn(value);
     });
 
-    if (this.$modelValue !== value) {
-      this.$modelValue = value;
+    if (ctrl.$modelValue !== value) {
+      ctrl.$modelValue = value;
       ngModelSet($scope, value);
-      forEach(this.$viewChangeListeners, function(listener) {
+      forEach(ctrl.$viewChangeListeners, function(listener) {
         try {
           listener();
         } catch(e) {
@@ -1764,25 +1772,21 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} trigger Event that triggered the update.
    */
   this.$setViewValue = function(value, trigger) {
-    var that = this;
-    var debounceDelay = this.$options && (isObject(this.$options.debounce)
-        ? (this.$options.debounce[trigger] || this.$options.debounce['default'] || 0)
-        : this.$options.debounce) || 0;
+    var debounceDelay = ctrl.$options && (isObject(ctrl.$options.debounce)
+        ? (ctrl.$options.debounce[trigger] || ctrl.$options.debounce['default'] || 0)
+        : ctrl.$options.debounce) || 0;
 
-    that.$cancelDebounce();
-    if ( debounceDelay ) {
+    $timeout.cancel(pendingDebounce);
+    if (debounceDelay) {
       pendingDebounce = $timeout(function() {
-        pendingDebounce = null;
-        that.$$realSetViewValue(value);
+        ctrl.$$realSetViewValue(value);
       }, debounceDelay);
     } else {
-      that.$$realSetViewValue(value);
+      ctrl.$$realSetViewValue(value);
     }
   };
 
   // model -> value
-  var ctrl = this;
-
   $scope.$watch(function ngModelWatch() {
     var value = ngModelGet($scope);
 
@@ -2210,6 +2214,15 @@ var ngValueDirective = function() {
  * events that will trigger a model update and/or a debouncing delay so that the actual update only
  * takes place when a timer expires; this timer will be reset after another change takes place.
  *
+ * Given the nature of `ngModelOptions`, the value displayed inside input fields in the view might
+ * be different then the value in the actual model. This means that if you update the model you
+ * should also invoke `$cancelUpdate` on the relevant input field in order to make sure it is
+ * synchronized with the model and that any debounced action is canceled.
+ *
+ * The easiest way to reference the control's `$cancelUpdate` method is by making sure the input
+ * is placed inside a form that has a `name` attribute. This is important because form controllers
+ * are published to the related scope under the name in their `name` attribute.
+ *
  * @param {Object} ngModelOptions options to apply to the current model. Valid keys are:
  *   - `updateOn`: string specifying which event should be the input bound to. You can set several
  *     events using an space delimited list. There is a special event called `default` that
@@ -2222,49 +2235,72 @@ var ngValueDirective = function() {
  * @example
 
   The following example shows how to override immediate updates. Changes on the inputs within the
-  form will update the model only when the control loses focus (blur event).
+  form will update the model only when the control loses focus (blur event). If `escape` key is
+  pressed while the input field is focused, the value is reset to the value in the current model.
 
   <example name="ngModelOptions-directive-blur">
     <file name="index.html">
       <div ng-controller="Ctrl">
-        Name:
-        <input type="text"
-               ng-model="user.name"
-               ng-model-options="{ updateOn: 'blur' }" /><br />
+        <form name="userForm">
+          Name:
+          <input type="text" name="userName"
+                 ng-model="user.name"
+                 ng-model-options="{ updateOn: 'blur' }"
+                 ng-keyup="cancel($event)" /><br />
 
-        Other data:
-        <input type="text" ng-model="user.data" /><br />
-
+          Other data:
+          <input type="text" ng-model="user.data" /><br />
+        </form>
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
     </file>
     <file name="app.js">
       function Ctrl($scope) {
-       $scope.user = { name: 'say', data: '' };
+        $scope.user = { name: 'say', data: '' };
+
+        $scope.cancel = function (e) {
+          if (e.keyCode == 27) {
+            $scope.userForm.userName.$cancelUpdate();
+          }
+        };
       }
     </file>
     <file name="protractor.js" type="protractor">
       var model = element(by.binding('user.name'));
       var input = element(by.model('user.name'));
       var other = element(by.model('user.data'));
+
       it('should allow custom events', function() {
         input.sendKeys(' hello');
         expect(model.getText()).toEqual('say');
         other.click();
         expect(model.getText()).toEqual('say hello');
       });
+
+      it('should $cancelUpdate when model changes', function() {
+        input.sendKeys(' hello');
+        expect(input.getAttribute('value')).toEqual('say hello');
+        input.sendKeys(protractor.Key.ESCAPE);
+        expect(input.getAttribute('value')).toEqual('say');
+        other.click();
+        expect(model.getText()).toEqual('say');
+      });
     </file>
   </example>
 
-  This one shows how to debounce model changes. Model will be updated only 500 milliseconds after last change.
+  This one shows how to debounce model changes. Model will be updated only 1 sec after last change.
+  If the `Clear` button is pressed, any debounced action is canceled and the value becomes empty.
 
   <example name="ngModelOptions-directive-debounce">
     <file name="index.html">
       <div ng-controller="Ctrl">
-        Name:
-        <input type="text"
-               ng-model="user.name"
-               ng-model-options="{ debounce: 500 }" /><br />
+        <form name="userForm">
+          Name:
+          <input type="text" name="userName"
+                 ng-model="user.name"
+                 ng-model-options="{ debounce: 1000 }" />
+          <button ng-click="userForm.userName.$cancelUpdate(); user.name=''">Clear</button><br />
+        </form>
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
     </file>
