@@ -734,74 +734,54 @@ describe('Scope', function() {
   });
 
   describe('$watchSet', function() {
-    var scope;
-    beforeEach(inject(function($rootScope) {
-      scope = $rootScope.$new();
+
+    it('should detect a change to any expression in the array', inject(function($rootScope, log) {
+      $rootScope.$watchSet(['a', 'b'], function(values, oldValues, scope) {
+        expect(scope).toBe($rootScope);
+        log(values + '-' + oldValues);
+      });
+
+      $rootScope.a = 'foo';
+      $rootScope.b = 'bar';
+      $rootScope.$digest();
+      expect(log).toEqual('foo,bar-foo,bar');
+
+      log.reset();
+      $rootScope.$digest();
+      expect(log).toEqual('');
+
+      log.reset();
+      $rootScope.a = 'a';
+      $rootScope.$digest();
+      expect(log).toEqual('a,bar-foo,bar');
+
+      log.reset();
+      $rootScope.a = 'A';
+      $rootScope.b = 'B';
+      $rootScope.$digest();
+      expect(log).toEqual('A,B-a,bar');
     }));
 
-    it('should skip empty sets', function() {
-      expect(scope.$watchSet([], null)()).toBeUndefined();
-    });
+    it('should return a function that allows listeners to be deregistered', inject(function($rootScope) {
+        var listener = jasmine.createSpy('watchSet listener'),
+          listenerRemove;
 
-    it('should treat set of 1 as direct watch', function() {
-      var lastValues = ['foo'];
-      var log = '';
-      var clean = scope.$watchSet(['a'], function(values, oldValues, s) {
-        log += values.join(',') + ';';
-        expect(s).toBe(scope);
-        expect(oldValues).toEqual(lastValues);
-        lastValues = values.slice();
-      });
+        listenerRemove = $rootScope.$watchSet(['a'], listener);
+        $rootScope.$digest(); //init
+        expect(listener).toHaveBeenCalled();
+        expect(listenerRemove).toBeDefined();
 
-      scope.a = 'foo';
-      scope.$digest();
-      expect(log).toEqual('foo;');
+        listener.reset();
+        $rootScope.a = 'bar';
+        $rootScope.$digest(); //trigger
+        expect(listener).toHaveBeenCalledOnce();
 
-      scope.$digest();
-      expect(log).toEqual('foo;');
-
-      scope.a = 'bar';
-      scope.$digest();
-      expect(log).toEqual('foo;bar;');
-
-      clean();
-      scope.a = 'xxx';
-      scope.$digest();
-      expect(log).toEqual('foo;bar;');
-    });
-
-    it('should detect a change to any one in a set', function() {
-      var lastValues = ['foo', 'bar'];
-      var log = '';
-      var clean = scope.$watchSet(['a', 'b'], function(values, oldValues, s) {
-        log += values.join(',') + ';';
-        expect(s).toBe(scope);
-        expect(oldValues).toEqual(lastValues);
-        lastValues = values.slice();
-      });
-
-      scope.a = 'foo';
-      scope.b = 'bar';
-      scope.$digest();
-      expect(log).toEqual('foo,bar;');
-
-      scope.$digest();
-      expect(log).toEqual('foo,bar;');
-
-      scope.a = 'a';
-      scope.$digest();
-      expect(log).toEqual('foo,bar;a,bar;');
-
-      scope.a = 'A';
-      scope.b = 'B';
-      scope.$digest();
-      expect(log).toEqual('foo,bar;a,bar;A,B;');
-
-      clean();
-      scope.a = 'xxx';
-      scope.$digest();
-      expect(log).toEqual('foo,bar;a,bar;A,B;');
-    });
+        listener.reset();
+        $rootScope.a = 'baz';
+        listenerRemove();
+        $rootScope.$digest(); //trigger
+        expect(listener).not.toHaveBeenCalled();
+      }));
   });
 
   describe('$destroy', function() {

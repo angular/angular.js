@@ -383,30 +383,23 @@ function $RootScopeProvider(){
       $watchSet: function (watchExpressions, listener) {
         if (watchExpressions.length === 0) return noop;
 
-        var oldValues = new Array(watchExpressions.length),
+        var self = this,
+            oldValues = new Array(watchExpressions.length),
             newValues = new Array(watchExpressions.length);
 
-        if (watchExpressions.length === 1) {
-          // Special case size of one
-          return this.$watch(watchExpressions[0], function (value, oldValue, scope) {
-            newValues[0] = value;
-            oldValues[0] = oldValue;
-            listener.call(this, newValues, oldValues, scope);
-          });
-        }
         var deregisterFns = [],
             changeCount = 0;
 
         forEach(watchExpressions, function (expr, i) {
-          deregisterFns.push(this.$watch(expr, function (value, oldValue) {
+          deregisterFns.push(self.$watch(expr, function (value, oldValue) {
             newValues[i] = value;
             oldValues[i] = oldValue;
             changeCount++;
           }));
-        }, this);
+        });
 
-        deregisterFns.push(this.$watch(function () {return changeCount;}, function (c, o, scope) {
-          listener.call(this, newValues, oldValues, scope);
+        deregisterFns.push(this.$watch(function () {return changeCount;}, function () {
+          listener.call(this, newValues, oldValues, self);
         }));
 
         return function () {
