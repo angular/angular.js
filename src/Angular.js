@@ -166,8 +166,8 @@ var sortedKeys = Object.keys ?
   function sortedKeys(obj){
     var keys = [];
     var key;
-    for(key in obj){
-      if(obj.hasOwnProperty(key)){
+    for (key in obj){
+      if (obj.hasOwnProperty(key)){
         keys.push(key);
       }
     }
