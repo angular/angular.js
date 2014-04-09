@@ -206,6 +206,8 @@ function shallowClearAndCopy(src, dst) {
  *      rejection), `false` before that. Knowing if the Resource has been resolved is useful in
  *      data-binding.
  *
+ *   - `$abort`: a method to abort the request if it has not completed yet.
+ *
  * @example
  *
  * # Credit card resource
@@ -317,7 +319,7 @@ function shallowClearAndCopy(src, dst) {
  * ```
  */
 angular.module('ngResource', ['ng']).
-  factory('$resource', ['$http', '$q', function($http, $q) {
+  factory('$resource', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
@@ -517,6 +519,17 @@ angular.module('ngResource', ['ng']).
             }
           });
 
+          // If parameters do not contain `timeout` which is a promise, create it,
+          // so that later this call can be aborted by resolving this promise.
+          var timeout = httpConfig.timeout;
+          var timeoutDeferred;
+          if (!timeout || !timeout.then) {
+            timeoutDeferred = $q.defer();
+            httpConfig.timeout = timeoutDeferred.promise;
+            // If timeout is specified in milliseconds, use it to abort via promise
+            if (timeout) $timeout(timeoutDeferred.resolve, timeout);
+          }
+
           if (hasBody) httpConfig.data = data;
           route.setUrlParams(httpConfig,
                              extend({}, extractParams(data, action.params || {}), params),
@@ -573,6 +586,7 @@ angular.module('ngResource', ['ng']).
             // - return the instance / collection
             value.$promise = promise;
             value.$resolved = false;
+            if (timeoutDeferred) value.$abort = timeoutDeferred.resolve;
 
             return value;
           }
