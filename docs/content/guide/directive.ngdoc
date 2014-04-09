@@ -18,7 +18,7 @@ how to implement them.
 ## What are Directives?
 
 At a high level, directives are markers on a DOM element (such as an attribute, element
-name, or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
+name, comment or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
 attach a specified behavior to that DOM element or even transform the DOM element and its children.
 
 Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngView`.
