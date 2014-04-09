@@ -77,6 +77,8 @@ function shallowClearAndCopy(src, dst) {
  *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), it will be respected.
  *
+ *   If the URL value is a function, it will be executed and the final URL must be returned.
+ *
  *   If you are using a url with a suffix, just add the suffix, like this:
  *   `$resource('http://example.com/resource.json')` or `$resource('http://example.com/:id.json')`
  *   or even `$resource('http://example.com/resource/:resource_id.:format')`
@@ -384,6 +386,7 @@ angular.module('ngResource', ['ng']).
             val,
             encodedVal;
 
+        if (isFunction(url)) { url = url(); }
         var urlParams = self.urlParams = {};
         forEach(url.split(/\W/), function(param){
           if (param === 'hasOwnProperty') {

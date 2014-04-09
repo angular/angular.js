@@ -259,6 +259,14 @@ describe("resource", function() {
     R.get({ relativePath: 'data.json' });
   });
 
+  it('should allow a function as resource url and call it', function () {
+    var P = '/Path/:a',
+        F = function () { return P; },
+        R = $resource(F);
+    $httpBackend.expect('GET', '/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
   it('should handle + in url params', function () {
     var R = $resource('/api/myapp/:myresource?from=:from&to=:to&histlen=:histlen');
     $httpBackend.expect('GET', '/api/myapp/pear+apple?from=2012-04-01&to=2012-04-29&histlen=3').respond('{}');
