@@ -1251,5 +1251,80 @@ describe('resource', function() {
       )
   });
 
+  it('should decorate array', function() {
+    var result = [
+      { thing: 'value1' },
+      { thing: 'value2' }
+    ];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond({});
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        arrayDecorate: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query();
+    $httpBackend.flush();
+
+    // Should have array and metadata
+    expect(models.length).toBe(2);
+    expect(models[0].thing).toEqual(result[0].thing);
+    expect(models[1].thing).toEqual(result[1].thing);
+    expect(models.meta).toBe('data');
+  });
+
+  it('should decorate on error', function() {
+    var model = {
+      untouched: true,
+      error: 'No Error'
+    };
+
+    model = new ($resource('URL', { }, {
+      save: {
+        method: 'POST',
+        errorDecorate: true
+      }
+    }))(model);
+
+    // Should have the config we passed the constructor
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('No Error');
+
+    $httpBackend.expectPOST('URL').respond(500, { error: 'An error occurred' });
+    model.$save();
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('An error occurred');
+  });
+
+  it('should decorate array on error', function() {
+    var result = [];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond(500, { error: 'An error occurred' });
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        arrayDecorate: true,
+        errorDecorate: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query();
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(angular.isArray(models)).toBeTruthy();
+    expect(models.meta).toBe('data');
+  });
 
 });
