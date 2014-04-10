@@ -134,7 +134,7 @@ tasks that you will need while developing:
 - `npm start` : start a local development web-server
 - `npm test` : start the Karma unit test runner
 - `npm run protractor` : run the Protractor end 2 end tests
-- `npm update-webdriver` : install the drivers needed by Protractor
+- `npm run update-webdriver` : install the drivers needed by Protractor
 
 ### Running Development Web Server
 
