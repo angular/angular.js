@@ -19,7 +19,7 @@
  * upon left swipe. (Event object is available as `$event`)
  *
  * @example
-    <example deps="angular-touch.js">
+    <example module="ngSwipeLeftExample" deps="angular-touch.js">
       <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
@@ -28,6 +28,9 @@
           <button ng-click="reply()">Reply</button>
           <button ng-click="delete()">Delete</button>
         </div>
+      </file>
+      <file name="script.js">
+        angular.module('ngSwipeLeftExample', ['ngTouch']);
       </file>
     </example>
  */
@@ -49,7 +52,7 @@
  * upon right swipe. (Event object is available as `$event`)
  *
  * @example
-    <example deps="angular-touch.js">
+    <example module="ngSwipeRightExample" deps="angular-touch.js">
       <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
@@ -58,6 +61,9 @@
           <button ng-click="reply()">Reply</button>
           <button ng-click="delete()">Delete</button>
         </div>
+      </file>
+      <file name="script.js">
+        angular.module('ngSwipeRightExample', ['ngTouch']);
       </file>
     </example>
  */
