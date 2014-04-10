@@ -22,50 +22,52 @@ changes to $location are reflected into the browser address bar.
 
 ## Comparing $location to window.location
 
+```html
 <table class="table">
-<thead>
+  <thead>
 
-  <tr>
-    <th class="empty-corner-lt"></th>
-    <th>window.location</th>
-    <th>$location service</th>
-  </tr>
+    <tr>
+      <th class="empty-corner-lt"></th>
+      <th>window.location</th>
+      <th>$location service</th>
+    </tr>
 
-</thead>
-<tbody>
+  </thead>
+  <tbody>
 
-  <tr>
-    <td class="head">purpose</td>
-    <td>allow read/write access to the current browser location</td>
-    <td>same</td>
-  </tr>
+    <tr>
+      <td class="head">purpose</td>
+      <td>allow read/write access to the current browser location</td>
+      <td>same</td>
+    </tr>
 
-  <tr>
-    <td class="head">API</td>
-    <td>exposes "raw" object with properties that can be directly modified</td>
-    <td>exposes jQuery-style getters and setters</td>
-  </tr>
+    <tr>
+      <td class="head">API</td>
+      <td>exposes "raw" object with properties that can be directly modified</td>
+      <td>exposes jQuery-style getters and setters</td>
+    </tr>
 
-  <tr>
-    <td class="head">integration with angular application life-cycle</td>
-    <td>none</td>
-    <td>knows about all internal life-cycle phases, integrates with $watch, ...</td>
-  </tr>
+    <tr>
+      <td class="head">integration with angular application life-cycle</td>
+      <td>none</td>
+      <td>knows about all internal life-cycle phases, integrates with $watch, ...</td>
+    </tr>
 
-  <tr>
-    <td class="head">seamless integration with HTML5 API</td>
-    <td>no</td>
-    <td>yes (with a fallback for legacy browsers)</td>
-  </tr>
+    <tr>
+      <td class="head">seamless integration with HTML5 API</td>
+      <td>no</td>
+      <td>yes (with a fallback for legacy browsers)</td>
+    </tr>
 
-  <tr>
-    <td class="head">aware of docroot/context from which the application is loaded</td>
-    <td>no - window.location.path returns "/docroot/actual/path"</td>
-    <td>yes - $location.path() returns "/actual/path"</td>
-  </tr>
+    <tr>
+      <td class="head">aware of docroot/context from which the application is loaded</td>
+      <td>no - window.location.path returns "/docroot/actual/path"</td>
+      <td>yes - $location.path() returns "/actual/path"</td>
+    </tr>
 
-</tbody>
+  </tbody>
 </table>
+```
 
 ## When should I use $location?
 Any time your application needs to react to a change in the current URL or if you want to change
@@ -657,6 +659,3 @@ function LocationController($scope, $location) {
 # Related API
 
 * {@link ng.$location $location API}
-
-
-
