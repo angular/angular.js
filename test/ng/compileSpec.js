@@ -3509,6 +3509,27 @@ describe('$compile', function() {
         expect(element.text()).toBe('Hello');
       });
     });
+
+
+    it('should throw ctreq with correct directive name, regardless of order', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('aDir', valueFn({
+          restrict: "E",
+          require: "ngModel",
+          link: noop
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          // a-dir will cause a ctreq error to be thrown. Previously, the error would reference
+          // the last directive in the chain (which in this case would be ngClick), based on
+          // priority and alphabetical ordering. This test verifies that the ordering does not
+          // affect which directive is referenced in the minErr message.
+          element = $compile('<a-dir ng-click="foo=bar"></a-dir>')($rootScope);
+        }).toThrowMinErr('$compile', 'ctreq',
+            "Controller 'ngModel', required by directive 'aDir', can't be found!");
+      });
+    });
   });
 
 
