@@ -19,7 +19,7 @@
  * upon left swipe. (Event object is available as `$event`)
  *
  * @example
-    <example>
+    <example deps="angular-touch.js">
       <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
@@ -49,7 +49,7 @@
  * upon right swipe. (Event object is available as `$event`)
  *
  * @example
-    <example>
+    <example deps="angular-touch.js">
       <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
