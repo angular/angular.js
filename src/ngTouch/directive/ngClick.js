@@ -25,7 +25,7 @@
  * upon tap. (Event object is available as `$event`)
  *
  * @example
-    <example>
+    <example deps="angular-touch.js">
       <file name="index.html">
         <button ng-click="count = count + 1" ng-init="count=0">
           Increment
