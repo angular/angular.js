@@ -56,8 +56,8 @@ initialization.
 
 Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
 evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
-for the {@link ng.directive:ngApp `ng-app`} directive which designates your application root.
-If the {@link ng.directive:ngApp `ng-app`} directive is found then Angular will:
+for the {@link ng.directive:ngApp `ngApp`} directive which designates your application root.
+If the {@link ng.directive:ngApp `ngApp`} directive is found then Angular will:
 
   * load the {@link guide/module module} associated with the directive.
   * create the application {@link auto.$injector injector}
