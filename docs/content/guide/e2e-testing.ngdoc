@@ -81,5 +81,5 @@ has an end to end test in the example under the `protractor.js` tag).
 
 ## Caveats
 
-Protractor does not work out-of-the-box with apps that manually bootstrap manually using
+Protractor does not work out-of-the-box with apps that bootstrap manually using
 `angular.bootstrap`. You must use the `ng-app` directive.
