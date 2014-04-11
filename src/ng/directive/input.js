@@ -16,7 +16,7 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)$/;
-var DEFAULT_REGEXP = /(\b|^)default(\b|$)/;
+var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 var inputType = {
 
@@ -878,6 +878,25 @@ function addNativeHtml5Validators(ctrl, validatorName, element) {
   }
 }
 
+function addUpdateOnListeners(scope, element, options, listener) {
+  if (options) {
+    if (options.updateOn) {
+      element.on(options.updateOn, function(ev) {
+        scope.$apply(function() {
+          listener(ev);
+        });
+      });
+    }
+
+    scope.$on('$updateInputModels', function(scopeEvent, ev) {
+      // Since this event can be triggered manually, we pass a dummy submit event
+      // in case no 'ev' argument is passed. This is important since $setViewValue
+      // will never debounce stuff that come from 'submit' trigger.
+      listener(ev || {type: 'submit'});
+    });
+  }
+}
+
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop('validity');
 
@@ -924,11 +943,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   };
 
-  // Allow adding/overriding bound events
-  if (ctrl.$options && ctrl.$options.updateOn) {
-    // bind to user-defined events
-    element.on(ctrl.$options.updateOn, listener);
-  }
+  addUpdateOnListeners(scope, element, ctrl.$options, listener);
 
   // setup default events if requested
   if (!ctrl.$options || ctrl.$options.updateOnDefault) {
@@ -1205,20 +1220,18 @@ function radioInputType(scope, element, attr, ctrl) {
 
   var listener = function(ev) {
     if (element[0].checked) {
-      scope.$apply(function() {
-        ctrl.$setViewValue(attr.value, ev && ev.type);
-      });
+      ctrl.$setViewValue(attr.value, ev && ev.type);
     }
   };
 
-  // Allow adding/overriding bound events
-  if (ctrl.$options && ctrl.$options.updateOn) {
-    // bind to user-defined events
-    element.on(ctrl.$options.updateOn, listener);
-  }
+  addUpdateOnListeners(scope, element, ctrl.$options, listener);
 
   if (!ctrl.$options || ctrl.$options.updateOnDefault) {
-    element.on('click', listener);
+    element.on('click', function(ev) {
+      scope.$apply(function() {
+        listener(ev);
+      });
+    });
   }
 
   ctrl.$render = function() {
@@ -1237,19 +1250,17 @@ function checkboxInputType(scope, element, attr, ctrl) {
   if (!isString(falseValue)) falseValue = false;
 
   var listener = function(ev) {
-    scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked, ev && ev.type);
-    });
+    ctrl.$setViewValue(element[0].checked, ev && ev.type);
   };
 
-  // Allow adding/overriding bound events
-  if (ctrl.$options && ctrl.$options.updateOn) {
-    // bind to user-defined events
-    element.on(ctrl.$options.updateOn, listener);
-  }
+  addUpdateOnListeners(scope, element, ctrl.$options, listener);
 
   if (!ctrl.$options || ctrl.$options.updateOnDefault) {
-    element.on('click', listener);
+    element.on('click', function(ev) {
+      scope.$apply(function() {
+        listener(ev);
+      });
+    });
   }
 
   ctrl.$render = function() {
@@ -1817,7 +1828,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         : ctrl.$options.debounce) || 0;
 
     $timeout.cancel(pendingDebounce);
-    if (debounceDelay) {
+    if (debounceDelay && trigger !== 'submit') {
       pendingDebounce = $timeout(function() {
         ctrl.$$realSetViewValue(value);
       }, debounceDelay);
@@ -2264,6 +2275,11 @@ var ngValueDirective = function() {
  * important because `form` controllers are published to the related scope under the name in their
  * `name` attribute.
  *
+ * Any pending changes will take place immediately when an enclosing form is submitted via the
+ * `submit` event. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
+ * to have access to the updated model. It is possible to flush the pending changes manually by
+ * triggering a scope event with name `$updateInputModels`.
+ *
  * @param {Object} ngModelOptions options to apply to the current model. Valid keys are:
  *   - `updateOn`: string specifying which event should be the input bound to. You can set several
  *     events using an space delimited list. There is a special event called `default` that
@@ -2358,13 +2374,13 @@ var ngModelOptionsDirective = function() {
       var that = this;
       this.$options = $scope.$eval($attrs.ngModelOptions);
       // Allow adding/overriding bound events
-      if (this.$options.updateOn) {
+      if (this.$options.updateOn !== undefined) {
         this.$options.updateOnDefault = false;
         // extract "default" pseudo-event from list of events that can trigger a model update
-        this.$options.updateOn = this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
+        this.$options.updateOn = trim(this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
           that.$options.updateOnDefault = true;
           return ' ';
-        });
+        }));
       } else {
         this.$options.updateOnDefault = true;
       }

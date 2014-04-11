@@ -847,6 +847,95 @@ describe('input', function() {
       dealoc(doc);
     }));
 
+    it('should trigger update on form submit', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+
+      var input = form.find('input').eq(0);
+      input.val('a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(form, 'submit');
+      expect(scope.name).toEqual('a');
+      dealoc(form);
+    });
+
+    it('should flush debounced events when form is submitted', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ debounce: 1000 }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+
+      var input = form.find('input').eq(0);
+      input.val('a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(form, 'submit');
+      expect(scope.name).toEqual('a');
+      dealoc(form);
+    });
+
+    it('should flush debounced events on $updateInputModels scope event', function() {
+      var input = $compile(
+        '<input type="text" ng-model="name" ' +
+          'ng-model-options="{ debounce: 1000 }" />')(scope);
+
+      input.val('a');
+      expect(scope.name).toEqual(undefined);
+      scope.$apply(function () {
+        scope.$broadcast('$updateInputModels');
+        expect(scope.name).toEqual('a');
+      });
+      dealoc(input);
+    });
+
+    it('should trigger update of checkbox on $updateInputModels', function() {
+      var input = $compile(
+        '<input type="checkbox" ng-model="name" ' +
+          'ng-model-options="{ debounce: 1000 }" />')(scope);
+      scope.$digest();
+
+      browserTrigger(input, 'click');
+      expect(scope.name).toEqual(undefined);
+      scope.$apply(function () {
+        scope.$broadcast('$updateInputModels');
+        expect(scope.name).toEqual(true);
+      });
+      dealoc(input);
+    });
+
+    it('should trigger update of radio buttons on $updateInputModels', function() {
+      var input = $compile(
+        '<input type="radio" ng-model="name" value="me" ' +
+          'ng-model-options="{ debounce: 1000 }" />')(scope);
+      scope.$digest();
+
+      browserTrigger(input, 'click');
+      expect(scope.name).toEqual(undefined);
+      scope.$apply(function () {
+        scope.$broadcast('$updateInputModels');
+        expect(scope.name).toEqual('me');
+      });
+      dealoc(input);
+    });
+
+    it('should trigger update before ng-submit is invoked', function() {
+      var form = $compile(
+          '<form name="test" ng-submit="submit()" ' +
+              'ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+
+      var input = form.find('input').eq(0);
+      input.val('a');
+      scope.submit = jasmine.createSpy('submit').andCallFake(function() {
+        expect(scope.name).toEqual('a');
+      });
+      browserTrigger(form, 'submit');
+      expect(scope.submit).toHaveBeenCalled();
+      dealoc(form);
+    });
+
     it('should allow canceling pending updates', inject(function($timeout) {
       compileInput(
         '<input type="text" ng-model="name" name="alias" '+
