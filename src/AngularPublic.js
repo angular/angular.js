@@ -222,3 +222,32 @@ function publishExternalAPI(angular){
     }
   ]);
 }
+
+/**
+ * @example
+ <example>
+ <file name="index.html">
+  <div ng-controller="Controller">
+  Full: <span>{{full}}</span>
+  <br>
+  Minor: <span>{{major}}</span>
+  <br>
+  Minor: <span>{{minor}}</span>
+  <br>
+  Dot: <span>{{dot}}</span>
+  <br>
+  CodeName: <span>{{codename}}</span>
+ </div>
+
+ <script>
+ function Controller($scope) {
+    $scope.full= angular.version.full;
+    $scope.minor= angular.version.minor;
+    $scope.dot= angular.version.dot;
+    $scope.codename= angular.version.codename;
+    $scope.major= angular.version.major;
+  }
+ </script>
+ </file>
+ </example>
+ */
