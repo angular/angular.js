@@ -78,12 +78,17 @@ utilize the browser's history (back and forward navigation) and bookmarks.
 As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} (DI) is at the core of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
-When the application bootstraps, Angular creates an injector that will be used for all DI stuff in
-this app. The injector itself doesn't know anything about what `$http` or `$route` services do, in
-fact it doesn't even know about the existence of these services unless it is configured with proper
-module definitions. The sole responsibilities of the injector are to load specified module
-definition(s), register all service providers defined in these modules, and when asked, inject
-a specified function with dependencies (services) that it lazily instantiates via their providers.
+When the application bootstraps, Angular creates an injector that will be used to find and inject all
+of the services that are required by your app. The injector itself doesn't know anything about what
+`$http` or `$route` services do, in fact it doesn't even know about the existence of these services 
+unless it is configured with proper module definitions. 
+
+The injector only carries out the following steps : 
+
+ * load the module definition(s) that you specify in your app
+ * register all Providers defined in these module definitions
+ * when asked to do so, inject a specified function and any necessary dependencies (services) that 
+   it lazily instantiates via their Providers.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
