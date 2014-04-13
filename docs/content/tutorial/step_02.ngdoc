@@ -227,7 +227,7 @@ To run the tests, and then watch the files for changes: `npm test`.
 
           expect(scope.name).toBe('World');
 
-* Create a repeater that constructs a simple table:
+* Create a repeater in `index.html` that constructs a simple table:
 
           <table>
             <tr><th>row number</th></tr>
