@@ -420,6 +420,7 @@ describe('input', function() {
     formElm = jqLite('<form name="form"></form>');
     formElm.append(inputElm);
     $compile(formElm)(scope);
+    scope.$digest();
   }
 
   beforeEach(inject(function($injector, _$sniffer_, _$browser_) {
@@ -915,7 +916,6 @@ describe('input', function() {
       compileInput(
         '<input type="text" ng-model="name" name="alias" '+
           'ng-model-options="{ updateOn: \'blur\' }" />');
-      scope.$digest();
 
       changeInputValueTo('a');
       expect(inputElm.val()).toBe('a');
@@ -929,7 +929,6 @@ describe('input', function() {
       compileInput(
         '<input type="text" ng-model="name" name="alias" '+
           'ng-model-options="{ debounce: 2000 }" />');
-      scope.$digest();
 
       changeInputValueTo('a');
       expect(inputElm.val()).toBe('a');
@@ -965,7 +964,6 @@ describe('input', function() {
   it('should report error on assignment error', function() {
     expect(function() {
       compileInput('<input type="text" ng-model="throw \'\'">');
-      scope.$digest();
     }).toThrowMinErr("$parse", "syntax", "Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
   });
 
@@ -996,7 +994,6 @@ describe('input', function() {
 
     it('should validate in-lined pattern', function() {
       compileInput('<input type="text" ng-model="value" ng-pattern="/^\\d\\d\\d-\\d\\d-\\d\\d\\d\\d$/" />');
-      scope.$digest();
 
       changeInputValueTo('x000-00-0000x');
       expect(inputElm).toBeInvalid();
@@ -1017,7 +1014,6 @@ describe('input', function() {
 
     it('should validate in-lined pattern with modifiers', function() {
       compileInput('<input type="text" ng-model="value" ng-pattern="/^abc?$/i" />');
-      scope.$digest();
 
       changeInputValueTo('aB');
       expect(inputElm).toBeValid();
@@ -1028,9 +1024,8 @@ describe('input', function() {
 
 
     it('should validate pattern from scope', function() {
-      compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
       scope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
-      scope.$digest();
+      compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
 
       changeInputValueTo('x000-00-0000x');
       expect(inputElm).toBeInvalid();
@@ -1153,7 +1148,6 @@ describe('input', function() {
     it('should come up blank when no value specified', function() {
       compileInput('<input type="month" ng-model="test" />');
 
-      scope.$digest();
       expect(inputElm.val()).toBe('');
 
       scope.$apply(function() {
@@ -1181,7 +1175,6 @@ describe('input', function() {
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="month" ng-model="value" name="alias" min="2013-01" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1202,7 +1195,6 @@ describe('input', function() {
     describe('max', function(){
       beforeEach(function (){
         compileInput('<input type="month" ng-model="value" name="alias" max="2013-01" />');
-        scope.$digest();
       });
 
       it('should validate', function (){
@@ -1279,7 +1271,6 @@ describe('input', function() {
     it('should come up blank when no value specified', function() {
       compileInput('<input type="week" ng-model="test" />');
 
-      scope.$digest();
       expect(inputElm.val()).toBe('');
 
       scope.$apply(function() {
@@ -1306,7 +1297,6 @@ describe('input', function() {
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="week" ng-model="value" name="alias" min="2013-W01" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1327,7 +1317,6 @@ describe('input', function() {
     describe('max', function(){
       beforeEach(function (){
         compileInput('<input type="week" ng-model="value" name="alias" max="2013-W01" />');
-        scope.$digest();
       });
 
       it('should validate', function (){
@@ -1403,7 +1392,6 @@ describe('input', function() {
     it('should come up blank when no value specified', function() {
       compileInput('<input type="datetime-local" ng-model="test" />');
 
-      scope.$digest();
       expect(inputElm.val()).toBe('');
 
       scope.$apply(function() {
@@ -1430,7 +1418,6 @@ describe('input', function() {
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="datetime-local" ng-model="value" name="alias" min="2000-01-01T12:30" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1451,7 +1438,6 @@ describe('input', function() {
     describe('max', function (){
       beforeEach(function (){
         compileInput('<input type="datetime-local" ng-model="value" name="alias" max="2019-01-01T01:02" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1472,7 +1458,6 @@ describe('input', function() {
     it('should validate even if max value changes on-the-fly', function(done) {
       scope.max = '2013-01-01T01:02';
       compileInput('<input type="datetime-local" ng-model="value" name="alias" max="{{max}}" />');
-      scope.$digest();
 
       changeInputValueTo('2014-01-01T12:34');
       expect(inputElm).toBeInvalid();
@@ -1487,7 +1472,6 @@ describe('input', function() {
     it('should validate even if min value changes on-the-fly', function(done) {
       scope.min = '2013-01-01T01:02';
       compileInput('<input type="datetime-local" ng-model="value" name="alias" min="{{min}}" />');
-      scope.$digest();
 
       changeInputValueTo('2010-01-01T12:34');
       expect(inputElm).toBeInvalid();
@@ -1557,7 +1541,6 @@ describe('input', function() {
     it('should come up blank when no value specified', function() {
       compileInput('<input type="time" ng-model="test" />');
 
-      scope.$digest();
       expect(inputElm.val()).toBe('');
 
       scope.$apply(function() {
@@ -1584,7 +1567,6 @@ describe('input', function() {
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="time" ng-model="value" name="alias" min="09:30" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1605,7 +1587,6 @@ describe('input', function() {
     describe('max', function (){
       beforeEach(function (){
         compileInput('<input type="time" ng-model="value" name="alias" max="22:30" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1626,7 +1607,6 @@ describe('input', function() {
     it('should validate even if max value changes on-the-fly', function(done) {
       scope.max = '21:02';
       compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
-      scope.$digest();
 
       changeInputValueTo('22:34');
       expect(inputElm).toBeInvalid();
@@ -1641,7 +1621,6 @@ describe('input', function() {
     it('should validate even if min value changes on-the-fly', function(done) {
       scope.min = '08:45';
       compileInput('<input type="time" ng-model="value" name="alias" min="{{min}}" />');
-      scope.$digest();
 
       changeInputValueTo('06:15');
       expect(inputElm).toBeInvalid();
@@ -1711,7 +1690,6 @@ describe('input', function() {
     it('should come up blank when no value specified', function() {
       compileInput('<input type="date" ng-model="test" />');
 
-      scope.$digest();
       expect(inputElm.val()).toBe('');
 
       scope.$apply(function() {
@@ -1738,7 +1716,6 @@ describe('input', function() {
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="date" ng-model="value" name="alias" min="2000-01-01" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1759,7 +1736,6 @@ describe('input', function() {
     describe('max', function (){
       beforeEach(function (){
         compileInput('<input type="date" ng-model="value" name="alias" max="2019-01-01" />');
-        scope.$digest();
       });
 
       it('should invalidate', function (){
@@ -1780,7 +1756,6 @@ describe('input', function() {
     it('should validate even if max value changes on-the-fly', function(done) {
       scope.max = '2013-01-01';
       compileInput('<input type="date" ng-model="value" name="alias" max="{{max}}" />');
-      scope.$digest();
 
       changeInputValueTo('2014-01-01');
       expect(inputElm).toBeInvalid();
@@ -1795,7 +1770,6 @@ describe('input', function() {
     it('should validate even if min value changes on-the-fly', function(done) {
       scope.min = '2013-01-01';
       compileInput('<input type="date" ng-model="value" name="alias" min="{{min}}" />');
-      scope.$digest();
 
       changeInputValueTo('2010-01-01');
       expect(inputElm).toBeInvalid();
@@ -1846,7 +1820,6 @@ describe('input', function() {
     it('should come up blank when no value specified', function() {
       compileInput('<input type="number" ng-model="age" />');
 
-      scope.$digest();
       expect(inputElm.val()).toBe('');
 
       scope.$apply(function() {
@@ -1875,7 +1848,6 @@ describe('input', function() {
 
       it('should validate', function() {
         compileInput('<input type="number" ng-model="value" name="alias" min="10" />');
-        scope.$digest();
 
         changeInputValueTo('1');
         expect(inputElm).toBeInvalid();
@@ -1891,7 +1863,6 @@ describe('input', function() {
       it('should validate even if min value changes on-the-fly', function(done) {
         scope.min = 10;
         compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
-        scope.$digest();
 
         changeInputValueTo('5');
         expect(inputElm).toBeInvalid();
@@ -1909,7 +1880,6 @@ describe('input', function() {
 
       it('should validate', function() {
         compileInput('<input type="number" ng-model="value" name="alias" max="10" />');
-        scope.$digest();
 
         changeInputValueTo('20');
         expect(inputElm).toBeInvalid();
@@ -1925,7 +1895,6 @@ describe('input', function() {
       it('should validate even if max value changes on-the-fly', function(done) {
         scope.max = 10;
         compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
-        scope.$digest();
 
         changeInputValueTo('5');
         expect(inputElm).toBeValid();
@@ -2352,7 +2321,6 @@ describe('input', function() {
 
     it('should set $invalid when model undefined', function() {
       compileInput('<input type="text" ng-model="notDefined" required />');
-      scope.$digest();
       expect(inputElm).toBeInvalid();
     });
 
@@ -2406,7 +2374,6 @@ describe('input', function() {
       compileInput('<input type="checkbox" ng-model="foo" ng-change="changeFn()">');
 
       scope.changeFn = jasmine.createSpy('changeFn');
-      scope.$digest();
       expect(scope.changeFn).not.toHaveBeenCalled();
 
       browserTrigger(inputElm, 'click');
@@ -2433,7 +2400,6 @@ describe('input', function() {
       compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
                    '<input type="radio" ng-model="selected" ng-value="false">' +
                    '<input type="radio" ng-model="selected" ng-value="1">');
-      scope.$digest();
 
       browserTrigger(inputElm[0], 'click');
       expect(scope.selected).toBe(true);
