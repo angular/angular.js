@@ -23,6 +23,19 @@ myModule.directive('myDirective', function factory() {
 });
 ```
 
+There is also an additional method of creating a two-way binding utilizing an optional scope parameter.
+```
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    scope: {
+      'bind': '=?localValue'
+    }
+    ...
+  }
+});
+```
+
 Following are invalid uses of this directive:
 ```
 <!-- ERROR because `1+2=localValue` is an invalid statement -->
