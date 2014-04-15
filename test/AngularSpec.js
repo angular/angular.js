@@ -687,7 +687,7 @@ describe('angular', function() {
       var appElement = jqLite('<div ng-app="ABC"></div>')[0];
       element.querySelectorAll['[ng-app]'] = [appElement];
       angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
@@ -695,7 +695,7 @@ describe('angular', function() {
       var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
       jqLite(document.body).append(appElement);
       angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
@@ -703,7 +703,7 @@ describe('angular', function() {
       var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
       element.querySelectorAll['.ng\\:app'] = [appElement];
       angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
@@ -711,14 +711,14 @@ describe('angular', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
       element.querySelectorAll['[ng\\:app]'] = [ appElement ];
       angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should bootstrap using class name', function() {
       var appElement = jqLite('<div class="ng-app: ABC;"></div>')[0];
       angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
@@ -726,21 +726,21 @@ describe('angular', function() {
       var appElement = jqLite('<div x-ng-app></div>')[0];
       element.querySelectorAll['[x-ng-app]'] = [ appElement ];
       angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
     it('should bootstrap anonymously using class only', function() {
       var appElement = jqLite('<div class="ng-app"></div>')[0];
       angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
     it('should bootstrap if the annotation is on the root element', function() {
       var appElement = jqLite('<div class="ng-app"></div>')[0];
       angularInit(appElement, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
@@ -778,24 +778,7 @@ describe('angular', function() {
       );
 
       dealoc(document);
-    });
-
-
-    it('should bootstrap in strict mode when ng-strict-di attribute is specified', function() {
-      bootstrapSpy = spyOn(angular, 'bootstrap').andCallThrough();
-      var appElement = jqLite('<div class="ng-app" ng-strict-di></div>');
-      angularInit(jqLite('<div></div>').append(appElement[0])[0], bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnce();
-      expect(bootstrapSpy.mostRecentCall.args[2].strictDi).toBe(true);
-
-      var injector = appElement.injector();
-      function testFactory($rootScope) {};
-      expect(function() {
-        injector.instantiate(testFactory);
-      }).toThrowMinErr('$injector', 'strictdi');
-
-      dealoc(appElement);
-    });
+    })
   });
 
 

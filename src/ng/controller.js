@@ -71,7 +71,7 @@ function $ControllerProvider() {
         assertArgFn(expression, constructor, true);
       }
 
-      instance = $injector.instantiate(expression, locals, constructor);
+      instance = $injector.instantiate(expression, locals);
 
       if (identifier) {
         if (!(locals && typeof locals.$scope == 'object')) {

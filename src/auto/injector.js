@@ -66,19 +66,7 @@ var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 var $injectorMinErr = minErr('$injector');
-
-function anonFn(fn) {
-  // For anonymous functions, showing at the very least the function signature can help in
-  // debugging.
-  var fnText = fn.toString().replace(STRIP_COMMENTS, ''),
-      args = fnText.match(FN_ARGS);
-  if (args) {
-    return 'function(' + (args[1] || '').replace(/[\s\r\n]+/, ' ') + ')';
-  }
-  return 'fn';
-}
-
-function annotate(fn, strictDi, name) {
+function annotate(fn) {
   var $inject,
       fnText,
       argDecl,
@@ -88,13 +76,6 @@ function annotate(fn, strictDi, name) {
     if (!($inject = fn.$inject)) {
       $inject = [];
       if (fn.length) {
-        if (strictDi) {
-          if (!isString(name) || !name) {
-            name = fn.name || anonFn(fn);
-          }
-          throw $injectorMinErr('strictdi',
-            '{0} is not using explicit annotation and cannot be invoked in strict mode', name);
-        }
         fnText = fn.toString().replace(STRIP_COMMENTS, '');
         argDecl = fnText.match(FN_ARGS);
         forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
@@ -606,8 +587,7 @@ function annotate(fn, strictDi, name) {
  */
 
 
-function createInjector(modulesToLoad, strictDi) {
-  strictDi = (strictDi === true);
+function createInjector(modulesToLoad) {
   var INSTANTIATING = {},
       providerSuffix = 'Provider',
       path = [],
@@ -625,13 +605,13 @@ function createInjector(modulesToLoad, strictDi) {
       providerInjector = (providerCache.$injector =
           createInternalInjector(providerCache, function() {
             throw $injectorMinErr('unpr', "Unknown provider: {0}", path.join(' <- '));
-          }, strictDi)),
+          })),
       instanceCache = {},
       instanceInjector = (instanceCache.$injector =
           createInternalInjector(instanceCache, function(servicename) {
             var provider = providerInjector.get(servicename + providerSuffix);
-            return instanceInjector.invoke(provider.$get, provider, undefined, servicename);
-          }, strictDi));
+            return instanceInjector.invoke(provider.$get, provider);
+          }));
 
 
   forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
@@ -763,14 +743,9 @@ function createInjector(modulesToLoad, strictDi) {
       }
     }
 
-    function invoke(fn, self, locals, serviceName){
-      if (typeof locals === 'string') {
-        serviceName = locals;
-        locals = null;
-      }
-
+    function invoke(fn, self, locals){
       var args = [],
-          $inject = annotate(fn, strictDi, serviceName),
+          $inject = annotate(fn),
           length, i,
           key;
 
@@ -796,7 +771,7 @@ function createInjector(modulesToLoad, strictDi) {
       return fn.apply(self, args);
     }
 
-    function instantiate(Type, locals, serviceName) {
+    function instantiate(Type, locals) {
       var Constructor = function() {},
           instance, returnedValue;
 
@@ -804,7 +779,7 @@ function createInjector(modulesToLoad, strictDi) {
       // e.g. someModule.factory('greeter', ['$window', function(renamed$window) {}]);
       Constructor.prototype = (isArray(Type) ? Type[Type.length - 1] : Type).prototype;
       instance = new Constructor();
-      returnedValue = invoke(Type, instance, locals, serviceName);
+      returnedValue = invoke(Type, instance, locals);
 
       return isObject(returnedValue) || isFunction(returnedValue) ? returnedValue : instance;
     }
@@ -821,4 +796,3 @@ function createInjector(modulesToLoad, strictDi) {
   }
 }
 
-createInjector.$$annotate = annotate;

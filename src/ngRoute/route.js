@@ -513,7 +513,7 @@ function $RouteProvider(){
 
               angular.forEach(locals, function(value, key) {
                 locals[key] = angular.isString(value) ?
-                    $injector.get(value) : $injector.invoke(value, null, null, key);
+                    $injector.get(value) : $injector.invoke(value);
               });
 
               if (angular.isDefined(template = next.template)) {
