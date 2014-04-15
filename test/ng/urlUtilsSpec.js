@@ -2,11 +2,11 @@
 
 describe('urlUtils', function() {
   describe('urlResolve', function() {
-    it('should normalize a relative url', function () {
+    it('should normalize a relative url', function() {
       expect(urlResolve("foo").href).toMatch(/^https?:\/\/[^/]+\/foo$/);
     });
 
-    it('should parse relative URL into component pieces', function () {
+    it('should parse relative URL into component pieces', function() {
       var parsed = urlResolve("foo");
       expect(parsed.href).toMatch(/https?:\/\//);
       expect(parsed.protocol).toMatch(/^https?/);
@@ -16,7 +16,7 @@ describe('urlUtils', function() {
     });
 
 
-    it('should return pathname as / if empty path provided', function () {
+    it('should return pathname as / if empty path provided', function() {
       //IE counts / as empty, necessary to use / so that pathname is not context.html
       var parsed = urlResolve('/');
       expect(parsed.pathname).toBe('/');

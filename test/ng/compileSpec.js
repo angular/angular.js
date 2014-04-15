@@ -3343,13 +3343,13 @@ describe('$compile', function() {
     });
 
 
-    it('should instantiate the controller after the isolate scope bindings are initialized (with template)', function () {
-      module(function () {
+    it('should instantiate the controller after the isolate scope bindings are initialized (with template)', function() {
+      module(function() {
         var Ctrl = function ($scope, log) {
           log('myFoo=' + $scope.myFoo);
         };
 
-        directive('myDirective', function () {
+        directive('myDirective', function() {
           return {
             scope: {
               myFoo: "="
@@ -3370,13 +3370,13 @@ describe('$compile', function() {
     });
 
 
-    it('should instantiate the controller after the isolate scope bindings are initialized (with templateUrl)', function () {
-      module(function () {
+    it('should instantiate the controller after the isolate scope bindings are initialized (with templateUrl)', function() {
+      module(function() {
         var Ctrl = function ($scope, log) {
           log('myFoo=' + $scope.myFoo);
         };
 
-        directive('myDirective', function () {
+        directive('myDirective', function() {
           return {
             scope: {
               myFoo: "="
@@ -3447,21 +3447,21 @@ describe('$compile', function() {
     });
 
 
-    it('should allow controller usage in pre-link directive functions with templateUrl', function () {
-      module(function () {
+    it('should allow controller usage in pre-link directive functions with templateUrl', function() {
+      module(function() {
         var Ctrl = function (log) {
           log('instance');
         };
 
-        directive('myDirective', function () {
+        directive('myDirective', function() {
           return {
             scope: true,
             templateUrl: 'hello.html',
             controller: Ctrl,
-            compile: function () {
+            compile: function() {
               return {
                 pre: function (scope, template, attr, ctrl) {},
-                post: function () {}
+                post: function() {}
               };
             }
           };
@@ -3480,21 +3480,21 @@ describe('$compile', function() {
     });
 
 
-    it('should allow controller usage in pre-link directive functions with a template', function () {
-      module(function () {
+    it('should allow controller usage in pre-link directive functions with a template', function() {
+      module(function() {
         var Ctrl = function (log) {
           log('instance');
         };
 
-        directive('myDirective', function () {
+        directive('myDirective', function() {
           return {
             scope: true,
             template: '<p>Hello</p>',
             controller: Ctrl,
-            compile: function () {
+            compile: function() {
               return {
                 pre: function (scope, template, attr, ctrl) {},
-                post: function () {}
+                post: function() {}
               };
             }
           };
@@ -4564,7 +4564,7 @@ describe('$compile', function() {
       expect(element.attr('test4')).toBe('Misko');
     }));
 
-    describe('when an attribute has a dash-separated name', function () {
+    describe('when an attribute has a dash-separated name', function() {
 
       it('should work with different prefixes', inject(function($compile, $rootScope) {
         $rootScope.name = "JamieMason";
@@ -4678,7 +4678,7 @@ describe('$compile', function() {
     }));
 
 
-    it('should throw error if unterminated', function () {
+    it('should throw error if unterminated', function() {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {
@@ -4696,7 +4696,7 @@ describe('$compile', function() {
     });
 
 
-    it('should correctly collect ranges on multiple directives on a single element', function () {
+    it('should correctly collect ranges on multiple directives on a single element', function() {
       module(function($compileProvider) {
         $compileProvider.directive('emptyDirective', function() {
           return function (scope, element) {
@@ -4728,7 +4728,7 @@ describe('$compile', function() {
     });
 
 
-    it('should throw error if unterminated (containing termination as a child)', function () {
+    it('should throw error if unterminated (containing termination as a child)', function() {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {

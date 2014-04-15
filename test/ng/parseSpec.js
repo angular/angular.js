@@ -12,8 +12,8 @@ describe('parser', function() {
   describe('lexer', function() {
     var lex;
 
-    beforeEach(function () {
-      lex = function () {
+    beforeEach(function() {
+      lex = function() {
         var lexer = new Lexer({csp: false, unwrapPromises: false});
         return lexer.lex.apply(lexer, arguments);
       };
@@ -496,7 +496,7 @@ describe('parser', function() {
         });
 
         it('should evaluate object methods in correct context (this)', function() {
-          var C = function () {
+          var C = function() {
             this.a = 123;
           };
           C.prototype.getA = function() {
@@ -509,7 +509,7 @@ describe('parser', function() {
         });
 
         it('should evaluate methods in correct context (this) in argument', function() {
-          var C = function () {
+          var C = function() {
             this.a = 123;
           };
           C.prototype.sum = function(value) {
@@ -536,7 +536,7 @@ describe('parser', function() {
           expect(scope.$eval("a().name")).toEqual("misko");
         });
 
-        it('should evaluate field access after array access', function () {
+        it('should evaluate field access after array access', function() {
           scope.items =  [{}, {name:'misko'}];
           expect(scope.$eval('items[1].name')).toEqual("misko");
         });
@@ -1102,7 +1102,7 @@ describe('parser', function() {
 
     var deferred, promise, q;
 
-    describe('unwrapPromises setting', function () {
+    describe('unwrapPromises setting', function() {
 
       beforeEach(inject(function($rootScope, $q) {
         scope = $rootScope;
@@ -1117,7 +1117,7 @@ describe('parser', function() {
       it('should not unwrap promises by default', inject(function ($parse) {
         scope.person = promise;
         scope.things = {person: promise};
-        scope.getPerson = function () { return promise; };
+        scope.getPerson = function() { return promise; };
 
         var getter = $parse('person');
         var propGetter = $parse('things.person');

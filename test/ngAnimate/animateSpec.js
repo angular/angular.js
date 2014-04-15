@@ -1588,7 +1588,7 @@ describe("ngAnimate", function() {
       });
 
 
-      describe('animation evaluation', function () {
+      describe('animation evaluation', function() {
 
         it('should re-evaluate the CSS classes for an animation each time',
           inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout, $compile) {

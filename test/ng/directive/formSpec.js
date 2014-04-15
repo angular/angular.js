@@ -68,7 +68,7 @@ describe('form', function() {
     expect(scope.myForm.alias).toBeDefined();
   });
 
-  it('should use ngForm value as form name when nested inside form', function () {
+  it('should use ngForm value as form name when nested inside form', function() {
     doc = $compile(
       '<form name="myForm">' +
         '<div ng-form="nestedForm"><input type="text" name="alias" ng-model="value"/></div>' +

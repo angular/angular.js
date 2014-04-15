@@ -280,7 +280,7 @@ function jqLiteClone(element) {
   return element.cloneNode(true);
 }
 
-function jqLiteDealoc(element){
+function jqLiteDealoc(element) {
   jqLiteRemoveData(element);
   for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
     jqLiteDealoc(children[i]);
@@ -566,7 +566,7 @@ forEach({
     }
   },
 
-  attr: function(element, name, value){
+  attr: function(element, name, value) {
     var lowercasedName = lowercase(name);
     if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
@@ -765,7 +765,7 @@ forEach({
 
   dealoc: jqLiteDealoc,
 
-  on: function onFn(element, type, fn, unsupported){
+  on: function onFn(element, type, fn, unsupported) {
     if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
 
     var events = jqLiteExpandoStore(element, 'events'),

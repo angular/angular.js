@@ -116,7 +116,7 @@ describe('$log', function() {
     );
   });
 
-  describe("$log.debug", function () {
+  describe("$log.debug", function() {
 
 	  beforeEach(initService(false));
 

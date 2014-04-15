@@ -1013,7 +1013,7 @@ describe('$http', function() {
         });
 
 
-        it('should ignore Blob objects', function () {
+        it('should ignore Blob objects', function() {
           if (!window.Blob) return;
 
           var blob = new Blob(['blob!'], { type: 'text/plain' });
@@ -1163,7 +1163,7 @@ describe('$http', function() {
         expect(callback.mostRecentCall.args[0]).toBe('content');
       }));
 
-      it('should cache request when cache is provided and no method specified', function () {
+      it('should cache request when cache is provided and no method specified', function() {
         doFirstCacheRequest();
 
         $http({url: '/url', cache: cache}).success(callback);
@@ -1301,7 +1301,7 @@ describe('$http', function() {
       });
 
 
-      it('should allow the cached value to be an empty string', function () {
+      it('should allow the cached value to be an empty string', function() {
         cache.put('/abc', '');
 
         callback.andCallFake(function (response, status, headers) {
@@ -1330,7 +1330,7 @@ describe('$http', function() {
           })
       );
 
-      describe('$http.defaults.cache', function () {
+      describe('$http.defaults.cache', function() {
 
         it('should be undefined by default', function() {
           expect($http.defaults.cache).toBeUndefined()

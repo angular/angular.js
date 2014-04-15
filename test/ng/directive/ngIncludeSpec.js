@@ -362,7 +362,7 @@ describe('ngInclude', function() {
         compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
       });
 
@@ -379,7 +379,7 @@ describe('ngInclude', function() {
 
       element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = true;
       });
@@ -387,7 +387,7 @@ describe('ngInclude', function() {
       expect($animate.queue.shift().event).toBe('enter');
       $animate.triggerCallbacks();
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'another.html';
         $rootScope.value = 'some-string';
       });
@@ -414,7 +414,7 @@ describe('ngInclude', function() {
         compileAndLink('<div><ng:include src="tpl"></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
       });
 
@@ -429,7 +429,7 @@ describe('ngInclude', function() {
 
       element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = false;
       });
@@ -437,12 +437,12 @@ describe('ngInclude', function() {
       expect($animate.queue.shift().event).toBe('enter');
       $animate.triggerCallbacks();
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = undefined;
       });
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = null;
       });

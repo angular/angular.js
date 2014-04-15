@@ -266,12 +266,12 @@ describe('Scope', function() {
           var d = $q.defer();
 
           d.resolve('Hello, world.');
-          $rootScope.$watch(function () {
+          $rootScope.$watch(function() {
               var $d2 = $q.defer();
               $d2.resolve('Goodbye.');
-              $d2.promise.then(function () { });
+              $d2.promise.then(function() { });
               return d.promise;
-          }, function () { return 0; });
+          }, function() { return 0; });
 
           expect(function() {
               $rootScope.$digest();
@@ -610,10 +610,10 @@ describe('Scope', function() {
           }).not.toThrow();
         });
 
-        it('should watch array-like objects like arrays', function () {
+        it('should watch array-like objects like arrays', function() {
           var arrayLikelog = [];
           $rootScope.$watchCollection('arrayLikeObject', function logger(obj) {
-            forEach(obj, function (element){
+            forEach(obj, function (element) {
               arrayLikelog.push(element.name);
             });
           });

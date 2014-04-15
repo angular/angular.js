@@ -306,7 +306,7 @@ function trace(name) {
 }
 
 var karmaDump = dump;
-window.dump = function () {
+window.dump = function() {
   karmaDump.apply(undefined, map(arguments, function(arg) {
     return angular.mock.dump(arg);
   }));

@@ -855,7 +855,7 @@ var inputType = {
 
 // A helper function to call $setValidity and return the value / undefined,
 // a pattern that is repeated a lot in the input validation logic.
-function validate(ctrl, validatorName, validity, value){
+function validate(ctrl, validatorName, validity, value) {
   ctrl.$setValidity(validatorName, validity);
   return validity ? value : undefined;
 }

@@ -13,7 +13,7 @@ describe('$location', function() {
   });
 
 
-  describe('File Protocol', function () {
+  describe('File Protocol', function() {
     var urlParsingNodePlaceholder;
 
     beforeEach(inject(function ($sniffer) {
@@ -43,7 +43,7 @@ describe('$location', function() {
     }));
 
 
-    it('should not include the drive name in path() on WIN', function (){
+    it('should not include the drive name in path() on WIN', function() {
       //See issue #4680 for details
       url = new LocationHashbangUrl('file:///base', '#!');
       url.$$parse('file:///base#!/foo?a=b&c#hash');
@@ -52,7 +52,7 @@ describe('$location', function() {
     });
 
 
-    it('should include the drive name if it was provided in the input url', function () {
+    it('should include the drive name if it was provided in the input url', function() {
       url = new LocationHashbangUrl('file:///base', '#!');
       url.$$parse('file:///base#!/C:/foo?a=b&c#hash');
 
@@ -671,7 +671,7 @@ describe('$location', function() {
       );
     });
 
-    it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
+    it('should correctly convert html5 url with path matching basepath to hashbang url', function() {
       initService(true, '!', false);
       inject(
         initBrowser('http://domain.com/base/index.html', '/base/index.html'),

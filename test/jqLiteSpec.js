@@ -185,7 +185,7 @@ describe('jqLite', function() {
       }
     );
 
-    it('should return null values', function () {
+    it('should return null values', function() {
       var ul = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>'),
           li = ul.find('li'),
           b = li.find('b');
@@ -365,7 +365,7 @@ describe('jqLite', function() {
       expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
-    it('should only remove the specified value when providing a property name to removeData', function () {
+    it('should only remove the specified value when providing a property name to removeData', function() {
       var selected = jqLite(a);
 
       expect(selected.data('prop1')).toBeUndefined();
@@ -710,7 +710,7 @@ describe('jqLite', function() {
 
       });
 
-      it('should allow toggling multiple classes without a condition', function () {
+      it('should allow toggling multiple classes without a condition', function() {
         var selector = jqLite([a, b]);
         expect(selector.toggleClass('abc cde')).toBe(selector);
         expect(jqLite(a).hasClass('abc')).toBe(true);
@@ -738,7 +738,7 @@ describe('jqLite', function() {
         expect(jqLite(b).hasClass('cde')).toBe(false);
       });
 
-      it('should allow toggling multiple classes with a condition', function () {
+      it('should allow toggling multiple classes with a condition', function() {
         var selector = jqLite([a, b]);
         selector.addClass('abc');
         expect(selector.toggleClass('abc cde', true)).toBe(selector);
@@ -755,7 +755,7 @@ describe('jqLite', function() {
         expect(jqLite(b).hasClass('cde')).toBe(false);
       });
 
-      it('should not break for null / undefined selectors', function () {
+      it('should not break for null / undefined selectors', function() {
         var selector = jqLite([a, b]);
         expect(selector.toggleClass(null)).toBe(selector);
         expect(selector.toggleClass(undefined)).toBe(selector);
@@ -890,7 +890,7 @@ describe('jqLite', function() {
       expect(input.val()).toEqual('abc');
     });
 
-    it('should get an array of selected elements from a multi select', function () {
+    it('should get an array of selected elements from a multi select', function() {
       expect(jqLite(
         '<select multiple>' +
           '<option selected>test 1</option>' +
@@ -1125,7 +1125,7 @@ describe('jqLite', function() {
       aElem.off('click', function() {});
     });
 
-    it('should do nothing when a specific listener was not registered', function () {
+    it('should do nothing when a specific listener was not registered', function() {
       var aElem = jqLite(a);
       aElem.on('click', function() {});
 
@@ -1289,10 +1289,10 @@ describe('jqLite', function() {
 
     // Only run this test for jqLite and not normal jQuery
     if ( _jqLiteMode ) {
-      it('should throw an error if a selector is passed', function () {
+      it('should throw an error if a selector is passed', function() {
         var aElem = jqLite(a);
         aElem.on('click', noop);
-        expect(function () {
+        expect(function() {
           aElem.off('click', noop, '.test');
         }).toThrowMatching(/\[jqLite:offargs\]/);
       });

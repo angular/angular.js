@@ -59,7 +59,7 @@ describe('injector', function() {
 
 
   it('should allow query names', function() {
-    providers('abc', function () { return ''; });
+    providers('abc', function() { return ''; });
 
     expect(injector.has('abc')).toBe(true);
     expect(injector.has('xyz')).toBe(false);
@@ -152,7 +152,7 @@ describe('injector', function() {
       fn.$inject = ['a'];
       expect(annotate(fn)).toBe(fn.$inject);
       expect(annotate(function() {})).toEqual([]);
-      expect(annotate(function () {})).toEqual([]);
+      expect(annotate(function() {})).toEqual([]);
       expect(annotate(function  () {})).toEqual([]);
       expect(annotate(function /* */ () {})).toEqual([]);
     });
@@ -605,7 +605,7 @@ describe('injector', function() {
 
 
       it('should decorate the missing service error with module function', function() {
-        function myModule(xyzzy){}
+        function myModule(xyzzy) {}
         expect(function() {
           createInjector([myModule]);
         }).toThrowMinErr(
@@ -615,7 +615,7 @@ describe('injector', function() {
 
 
       it('should decorate the missing service error with module array function', function() {
-        function myModule(xyzzy){}
+        function myModule(xyzzy) {}
         expect(function() {
           createInjector([['xyzzy', myModule]]);
         }).toThrowMinErr(

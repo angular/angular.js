@@ -151,7 +151,7 @@ describe('SCE', function() {
     it('should NOT unwrap values when the type is different', inject(function($sce) {
       var originalValue = "originalValue";
       var wrappedValue = $sce.trustAs($sce.HTML, originalValue);
-      expect(function () { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
+      expect(function() { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 

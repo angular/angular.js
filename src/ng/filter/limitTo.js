@@ -69,7 +69,7 @@
      </file>
    </example>
  */
-function limitToFilter(){
+function limitToFilter() {
   return function(input, limit) {
     if (!isArray(input) && !isString(input)) return input;
 

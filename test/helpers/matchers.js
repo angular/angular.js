@@ -203,7 +203,7 @@ beforeEach(function() {
         exceptionMessage = exception.message || exception;
       }
 
-      this.message = function () {
+      this.message = function() {
         return "Expected function " + not + "to throw " +
           namespace + "MinErr('" + code + "')" +
           (regex ? " matching " + regex.toString() : "") +

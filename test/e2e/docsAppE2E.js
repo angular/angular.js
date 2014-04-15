@@ -1,6 +1,6 @@
-describe('docs.angularjs.org', function () {
-  describe('App', function () {
-    // it('should filter the module list when searching', function () {
+describe('docs.angularjs.org', function() {
+  describe('App', function() {
+    // it('should filter the module list when searching', function() {
     //   browser.get();
     //   browser.waitForAngular();
 
@@ -13,7 +13,7 @@ describe('docs.angularjs.org', function () {
     // });
 
 
-    it('should change the page content when clicking a link to a service', function () {
+    it('should change the page content when clicking a link to a service', function() {
       browser.get('');
 
       var ngBindLink = element(by.css('.definition-table td a[href="api/ng/directive/ngClick"]'));
@@ -24,7 +24,7 @@ describe('docs.angularjs.org', function () {
     });
 
 
-    it('should show the functioning input directive example', function () {
+    it('should show the functioning input directive example', function() {
       browser.get('index-debug.html#!/api/ng/directive/input');
 
       //Wait for animation

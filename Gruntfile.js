@@ -37,7 +37,7 @@ module.exports = function(grunt) {
           hostname: '0.0.0.0',
           base: '.',
           keepalive: true,
-          middleware: function(connect, options){
+          middleware: function(connect, options) {
             return [
               //uncomment to enable CSP
               // util.csp(),
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
           // to avoid https://github.com/joyent/libuv/issues/826
           port: 8000,
           hostname: '0.0.0.0',
-          middleware: function(connect, options){
+          middleware: function(connect, options) {
             return [
               function(req, resp, next) {
                 // cache get requests to speed up tests on travis

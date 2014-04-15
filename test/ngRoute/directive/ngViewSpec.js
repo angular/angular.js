@@ -880,7 +880,7 @@ describe('ngView animations', function() {
     });
 
 
-  describe('autoscroll', function () {
+  describe('autoscroll', function() {
     var autoScrollSpy;
 
     function spyOnAnchorScroll() {

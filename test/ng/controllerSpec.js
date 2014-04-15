@@ -59,7 +59,7 @@ describe('$controller', function() {
     });
 
 
-    it('should throw an exception if a controller is called "hasOwnProperty"', function () {
+    it('should throw an exception if a controller is called "hasOwnProperty"', function() {
       expect(function() {
         $controllerProvider.register('hasOwnProperty', function($scope) {});
       }).toThrowMinErr('ng', 'badname', "hasOwnProperty is not a valid controller name");

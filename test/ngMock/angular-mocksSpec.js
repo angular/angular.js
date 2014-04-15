@@ -530,7 +530,7 @@ describe('ngMock', function() {
       log = '';
     }));
 
-    function logFn(text){ return function() {
+    function logFn(text) { return function() {
         log += text +';';
       };
     }
