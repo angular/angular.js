@@ -317,7 +317,7 @@ function $CacheFactoryProvider() {
    * @name $cacheFactory#info
    *
    * @description
-   * Get information about all the of the caches that have been created
+   * Get information about all the caches that have been created
    *
    * @returns {Object} - key-value map of `cacheId` to the result of calling `cache#info`
    */
