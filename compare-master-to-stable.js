@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/usr/bin/env node
 
 var util = require('util');
 var cp = require('child_process');
@@ -121,9 +121,12 @@ then(function (tags) {
     value();
 }).
 then(function (tags) {
+  var master = tags.pop();
+  var stable = tags.pop();
+
   return [
-    { name: 'v1.0.x', tag: tags[0] },
-    { name: 'master', tag: tags[1] }
+    { name: stable.replace(/\d+$/, 'x'), tag: stable },
+    { name: 'master', tag: master}
   ];
 }).
 then(allInSeries(function (branch) {

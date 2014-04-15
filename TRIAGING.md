@@ -61,9 +61,9 @@ This process based on the idea of minimizing user pain
 1. Label `origin: google` for issues from Google
 
 1. Assign a milestone:
-    * Current 1.x.y milestone - regressions and urgent bugs only
-    * Backlog - fixes; changes that should go into a patch release
-    * Ice Box - new features; changes that belong inß a major/minor release
+   * Backlog - triaged fixes and features, should be the default choice 
+   * Current 1.x.y milestone (e.g. 1.3.0-beta-2) - regressions and urgent bugs only
+    
 
 1. Unassign yourself from the issue
 

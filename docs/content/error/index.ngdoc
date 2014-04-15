@@ -2,6 +2,8 @@
 @name Error Reference
 @description
 
+# Error Reference
+
 Use the Error Reference manual to find information about error conditions in
 your AngularJS app. Errors thrown in production builds of AngularJS will log
 links to this site on the console.

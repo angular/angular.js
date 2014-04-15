@@ -45,6 +45,10 @@ angular.module('search', [])
   };
 }])
 
+.controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
+  $scope.results = docsSearch($location.path().split(/[\/\.:]/).pop());
+}])
+
 .factory('lunrSearch', function() {
   return function(properties) {
     if (window.RUNNING_IN_NG_TEST_RUNNER) return null;

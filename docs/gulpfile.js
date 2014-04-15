@@ -38,18 +38,22 @@ gulp.task('build-app', function() {
 gulp.task('assets', ['bower'], function() {
   return merge(
     gulp.src(['app/assets/**/*']).pipe(gulp.dest(outputFolder)),
-    copyComponent('bootstrap'),
+    copyComponent('bootstrap', '/dist/**/*'),
     copyComponent('open-sans-fontface'),
     copyComponent('lunr.js','/*.js'),
     copyComponent('google-code-prettify'),
-    copyComponent('jquery'),
+    copyComponent('jquery', '/jquery.*'),
     copyComponent('marked', '/**/*.js', '../node_modules', 'package.json')
   );
 });
 
 
 gulp.task('doc-gen', function() {
-  return docGenerator('docs.config.js').generateDocs();
+  return docGenerator('docs.config.js')
+    .generateDocs()
+    .catch(function(error) {
+      process.exit(1);
+    });
 });
 
 // JSHint the example and protractor test files

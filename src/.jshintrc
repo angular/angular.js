@@ -64,6 +64,7 @@
     "isWindow": false,
     "isScope": false,
     "isFile": false,
+    "isBlob": false,
     "isBoolean": false,
     "trim": false,
     "isElement": false,
@@ -137,6 +138,7 @@
     "JQLitePrototype": false,
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
+    "jqLiteIsTextNode": false,
 
     /* apis.js */
     "hashKey": false,

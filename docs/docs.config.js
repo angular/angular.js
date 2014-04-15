@@ -1,13 +1,12 @@
 var path = require('canonical-path');
-var gruntUtils = require('../lib/grunt/utils');
+var versionInfo = require('../lib/versions/version-info');
 var basePath = __dirname;
 
 var basePackage = require('./config');
 
 module.exports = function(config) {
 
-  var version = gruntUtils.getVersion();
-  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + version.cdn;
+  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.cdnVersion;
 
   var getVersion = function(component, sourceFolder, packageFile) {
     sourceFolder = sourceFolder || '../bower_components';
@@ -25,9 +24,12 @@ module.exports = function(config) {
     { pattern: '**/*.ngdoc', basePath: path.resolve(basePath, 'content') }
   ]);
 
+  config.set('processing.stopOnError', true);
+
   config.set('processing.errors.minerrInfoPath', path.resolve(basePath, '../build/errors.json'));
 
   config.set('rendering.outputFolder', '../build/docs');
+  config.set('rendering.contentsFolder', 'partials');
 
   config.set('logging.level', 'info');
 
@@ -38,7 +40,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ '../../../angular.js' ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         '../angular.js',
@@ -60,7 +62,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',
@@ -73,7 +75,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ '../../../angular.min.js' ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         '../angular.min.js',
@@ -95,7 +97,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.min.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',
@@ -111,7 +113,7 @@ module.exports = function(config) {
             '../../../angular.js'
           ]
         },
-        dependencyPath: '../../..'
+        dependencyPath: '../../../'
       },
       scripts: [
         'components/jquery-' + getVersion('jquery') + '/jquery.js',
@@ -134,7 +136,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.min.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',
@@ -147,7 +149,7 @@ module.exports = function(config) {
         commonFiles: {
           scripts: [ cdnUrl + '/angular.min.js' ]
         },
-        dependencyPath: cdnUrl
+        dependencyPath: cdnUrl + '/'
       },
       scripts: [
         cdnUrl + '/angular.min.js',
@@ -169,7 +171,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.min.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',

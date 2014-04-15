@@ -11,17 +11,17 @@ var AREA_NAMES = {
 };
 
 function getNavGroup(pages, area, pageSorter, pageMapper) {
-  
+
   var navItems = _(pages)
     // We don't want the child to include the index page as this is already catered for
     .omit(function(page) { return page.id === 'index'; })
- 
+
     // Apply the supplied sorting function
     .sortBy(pageSorter)
- 
+
     // Apply the supplied mapping function
     .map(pageMapper)
- 
+
     .value();
 
   return {
@@ -145,6 +145,9 @@ module.exports = {
     _(docs)
     .filter(function(doc) { return doc.area === 'api'; })
     .filter(function(doc) { return doc.docType === 'module'; })
+    .forEach(function(doc) { if ( !doc.path ) {
+      log.warn('Missing path property for ', doc.id);
+    }})
     .map(function(doc) { return _.pick(doc, ['id', 'module', 'docType', 'area']); })
     .tap(function(docs) {
       log.debug(docs);
@@ -173,7 +176,7 @@ module.exports = {
     //    - ngView
     //    - section "service"
     //    - $route
-    //    
+    //
     var areas = {};
     _(navPages)
       .groupBy('area')
@@ -187,12 +190,6 @@ module.exports = {
         var navGroupMapper = navGroupMappers[area.id] || navGroupMappers['pages'];
         area.navGroups = navGroupMapper(pages, area);
       });
-
-    _.forEach(docs, function(doc) {
-      if ( !doc.path ) {
-        log.warn('Missing path property for ', doc.id);
-      }
-    });
 
     // Extract a list of basic page information for mapping paths to paritals and for client side searching
     var pages = _(docs)

@@ -10,14 +10,9 @@ In this step, you will add thumbnail images for the phones in the phone list, an
 now, will go nowhere. In subsequent steps you will use the links to display additional information
 about the phones in the catalog.
 
+* There are now links and images of the phones in the list.
 
 <div doc-tutorial-reset="6"></div>
-
-
-You should now see links and images of the phones in the list.
-
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-5...step-6):
-
 
 ## Data
 
@@ -63,7 +58,7 @@ the element attribute.
 
 We also added phone images next to each record using an image tag with the {@link
 ng.directive:ngSrc ngSrc} directive. That directive prevents the
-browser from treating the angular `{{ expression }}` markup literally, and initiating a request to
+browser from treating the Angular `{{ expression }}` markup literally, and initiating a request to
 invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
 specified an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`).
 Using the `ngSrc` directive prevents the browser from making an http request to an invalid location.
@@ -76,9 +71,12 @@ __`test/e2e/scenarios.js`__:
 ```js
 ...
     it('should render phone specific links', function() {
-      input('query').enter('nexus');
-      element('.phones li a').click();
-      expect(browser().location().url()).toBe('/phones/nexus-s');
+      var query = element(by.model('query'));
+      query.sendKeys('nexus');
+      element(by.css('.phones li a')).click();
+      browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split('#')[1]).toBe('/phones/nexus-s');
+      });
     });
 ...
 ```
@@ -86,8 +84,7 @@ __`test/e2e/scenarios.js`__:
 We added a new end-to-end test to verify that the app is generating correct links to the phone
 views that we will implement in the upcoming steps.
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-6/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
 
 
 # Experiments

@@ -23,7 +23,7 @@ ARG_DEFS=(
 )
 
 function init {
-  if [[ $(git rev-parse --short HEAD) != $COMMIT_SHA ]]; then
+  if [[ $(git rev-parse HEAD) != $(git rev-parse $COMMIT_SHA) ]]; then
     echo "HEAD is not at $COMMIT_SHA"
     usage
   fi
@@ -56,12 +56,10 @@ function phase {
 
   ../code.angularjs.org/publish.sh $ACTION_ARG $VERBOSE_ARG
   ../bower/publish.sh $ACTION_ARG $VERBOSE_ARG
-  ../angular-seed/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
-  ../angular-phonecat/publish.sh $ACTION_ARG $VERBOSE_ARG --no-test=true
 }
 
 function run {
-  # First prepare all scripts (build, test, commit, tag, ...),
+  # First prepare all scripts (build, commit, tag, ...),
   # so we are sure everything is all right
   phase prepare
   # only then publish to github

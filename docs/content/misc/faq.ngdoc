@@ -72,7 +72,7 @@ The size of the file is < 36KB compressed and minified.
 
 ### Can I use the open-source Closure Library with Angular?
 
-Yes, you can use widgets from the [Closure Library](http://code.google.com/closure/library)
+Yes, you can use widgets from the [Closure Library](https://developers.google.com/closure/library/)
 in Angular.
 
 ### Does Angular use the jQuery library?

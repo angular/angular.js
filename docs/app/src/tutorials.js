@@ -21,38 +21,30 @@ angular.module('tutorials', [])
       element.addClass('btn-group');
       element.addClass('tutorial-nav');
       element.append(templateMerge(
-        '<a href="tutorial/{{prev}}"><li class="btn btn-primary"><i class="icon-step-backward"></i> Previous</li></a>\n' +
-        '<a href="http://angular.github.com/angular-phonecat/step-{{seq}}/app"><li class="btn btn-primary"><i class="icon-play"></i> Live Demo</li></a>\n' +
-        '<a href="https://github.com/angular/angular-phonecat/compare/step-{{diffLo}}...step-{{diffHi}}"><li class="btn btn-primary"><i class="icon-search"></i> Code Diff</li></a>\n' +
-        '<a href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="icon-step-forward"></i></li></a>', props));
+        '<a href="tutorial/{{prev}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-step-backward"></i> Previous</li></a>\n' +
+        '<a href="http://angular.github.io/angular-phonecat/step-{{seq}}/app"><li class="btn btn-primary"><i class="glyphicon glyphicon-play"></i> Live Demo</li></a>\n' +
+        '<a href="https://github.com/angular/angular-phonecat/compare/step-{{diffLo}}...step-{{diffHi}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> Code Diff</li></a>\n' +
+        '<a href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="glyphicon glyphicon-step-forward"></i></li></a>', props));
     }
   };
 })
 
 
 .directive('docTutorialReset', function() {
-  function tab(name, command, id, step) {
-    return '' +
-      '  <div class=\'tab-pane well\' title="' + name + '" value="' + id + '">\n' +
-      '    <ol>\n' +
-      '      <li><p>Reset the workspace to step ' + step + '.</p>' +
-      '        <pre>' + command + '</pre></li>\n' +
-      '      <li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Angular\'s server</a>.</p></li>\n' +
-      '    </ol>\n' +
-      '  </div>\n';
-  }
-
   return {
-    compile: function(element, attrs) {
-      var step = attrs.docTutorialReset;
-      element.html(
-        '<div ng-hide="show">' +
-          '<p><a href="" ng-click="show=true;$event.stopPropagation()">Workspace Reset Instructions  ➤</a></p>' +
-        '</div>\n' +
-        '<div class="tabbable" ng-show="show" ng-model="$cookies.platformPreference">\n' +
-          tab('Git on Mac/Linux', 'git checkout -f step-' + step, 'gitUnix', step) +
-          tab('Git on Windows', 'git checkout -f step-' + step, 'gitWin', step) +
-        '</div>\n');
-    }
+    scope: {
+      'step': '@docTutorialReset'
+    },
+    template:
+      '<p><a href="" ng-click="show=!show;$event.stopPropagation()">Workspace Reset Instructions  ➤</a></p>\n' +
+      '<div class="alert alert-info" ng-show="show">\n' +
+      '  <p>Reset the workspace to step {{step}}.</p>' +
+      '  <p><pre>git checkout -f step-{{step}}</pre></p>\n' +
+      '  <p>Refresh your browser or check out this step online: '+
+          '<a href="http://angular.github.io/angular-phonecat/step-{{step}}/app">Step {{step}} Live Demo</a>.</p>\n' +
+      '</div>\n' +
+      '<p>The most important changes are listed below. You can see the full diff on ' +
+        '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{step ? (step - 1): \'0~1\'}}...step-{{step}}">GitHub</a>\n' +
+      '</p>'
   };
 });

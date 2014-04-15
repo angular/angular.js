@@ -529,9 +529,25 @@ describe('$compile', function() {
             replace: true,
             template: '<th>TH</th>'
           }));
+          directive('replaceWithThead', valueFn({
+            replace: true,
+            template: '<thead><tr><td>TD</td></tr></thead>'
+          }));
           directive('replaceWithTbody', valueFn({
             replace: true,
             template: '<tbody><tr><td>TD</td></tr></tbody>'
+          }));
+          directive('replaceWithTfoot', valueFn({
+            replace: true,
+            template: '<tfoot><tr><td>TD</td></tr></tfoot>'
+          }));
+          directive('replaceWithOption', valueFn({
+            replace: true,
+            template: '<option>OPTION</option>'
+          }));
+          directive('replaceWithOptgroup', valueFn({
+            replace: true,
+            template: '<optgroup>OPTGROUP</optgroup>'
           }));
         }));
 
@@ -718,11 +734,39 @@ describe('$compile', function() {
           expect(nodeName_(element)).toMatch(/th/i);
         }));
 
+        it('should support templates with root <thead> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-thead></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/thead/i);
+        }));
+
         it('should support templates with root <tbody> tags', inject(function($compile, $rootScope) {
           expect(function() {
             element = $compile('<div replace-with-tbody></div>')($rootScope);
           }).not.toThrow();
           expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
+
+        it('should support templates with root <tfoot> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tfoot></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tfoot/i);
+        }));
+
+        it('should support templates with root <option> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-option></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/option/i);
+        }));
+
+        it('should support templates with root <optgroup> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-optgroup></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/optgroup/i);
         }));
       });
 
@@ -833,9 +877,25 @@ describe('$compile', function() {
               replace: true,
               templateUrl: 'th.html'
             }));
+            directive('replaceWithThead', valueFn({
+              replace: true,
+              templateUrl: 'thead.html'
+            }));
             directive('replaceWithTbody', valueFn({
               replace: true,
               templateUrl: 'tbody.html'
+            }));
+            directive('replaceWithTfoot', valueFn({
+              replace: true,
+              templateUrl: 'tfoot.html'
+            }));
+            directive('replaceWithOption', valueFn({
+              replace: true,
+              templateUrl: 'option.html'
+            }));
+            directive('replaceWithOptgroup', valueFn({
+              replace: true,
+              templateUrl: 'optgroup.html'
             }));
           }
         ));
@@ -1500,6 +1560,15 @@ describe('$compile', function() {
           expect(nodeName_(element)).toMatch(/th/i);
         }));
 
+        it('should support templates with root <thead> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('thead.html', '<thead><tr><td>TD</td></tr></thead>');
+          expect(function() {
+            element = $compile('<div replace-with-thead></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/thead/i);
+        }));
+
         it('should support templates with root <tbody> tags', inject(function($compile, $rootScope, $templateCache) {
           $templateCache.put('tbody.html', '<tbody><tr><td>TD</td></tr></tbody>');
           expect(function() {
@@ -1507,6 +1576,33 @@ describe('$compile', function() {
           }).not.toThrow();
           $rootScope.$digest();
           expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
+
+        it('should support templates with root <tfoot> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tfoot.html', '<tfoot><tr><td>TD</td></tr></tfoot>');
+          expect(function() {
+            element = $compile('<div replace-with-tfoot></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tfoot/i);
+        }));
+
+        it('should support templates with root <option> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('option.html', '<option>OPTION</option>');
+          expect(function() {
+            element = $compile('<div replace-with-option></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/option/i);
+        }));
+
+        it('should support templates with root <optgroup> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('optgroup.html', '<optgroup>OPTGROUP</optgroup>');
+          expect(function() {
+            element = $compile('<div replace-with-optgroup></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/optgroup/i);
         }));
       });
 
@@ -1866,15 +1962,14 @@ describe('$compile', function() {
 
 
   describe('interpolation', function() {
-    var observeSpy, directiveAttrs;
+    var observeSpy, directiveAttrs, deregisterObserver;
 
     beforeEach(module(function() {
       directive('observer', function() {
         return function(scope, elm, attr) {
           directiveAttrs = attr;
           observeSpy = jasmine.createSpy('$observe attr');
-
-          expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
+          deregisterObserver = attr.$observe('someAttr', observeSpy);
         };
       });
       directive('replaceSomeAttr', valueFn({
@@ -1969,6 +2064,18 @@ describe('$compile', function() {
         $rootScope.value = 'bound-value';
       });
       expect(observeSpy).toHaveBeenCalledOnceWith('bound-value');
+    }));
+
+
+    it('should return a deregistration function while observing an attribute', inject(function($rootScope, $compile) {
+      $compile('<div some-attr="{{value}}" observer></div>')($rootScope);
+
+      $rootScope.$apply('value = "first-value"');
+      expect(observeSpy).toHaveBeenCalledWith('first-value');
+
+      deregisterObserver();
+      $rootScope.$apply('value = "new-value"');
+      expect(observeSpy).not.toHaveBeenCalledWith('new-value');
     }));
 
 

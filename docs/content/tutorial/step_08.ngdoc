@@ -9,17 +9,14 @@
 In this step, you will implement the phone details view, which is displayed when a user clicks on a
 phone in the phone list.
 
+* When you click on a phone on the list, the phone details page with phone-specific information
+is displayed.
+
+To implement the phone details view we used {@link ng.$http $http} to fetch our data, and we
+fleshed out the `phone-detail.html` view template.
 
 <div doc-tutorial-reset="8"></div>
 
-
-Now when you click on a phone on the list, the phone details page with phone-specific information
-is displayed.
-
-To implement the phone details view we will use {@link ng.$http $http} to fetch
-our data, and we'll flesh out the `phone-detail.html` view template.
-
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-7...step-8):
 
 ## Data
 
@@ -79,7 +76,7 @@ route by the `$route` service.
 ## Template
 
 The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
-Note where we use the angular `{{expression}}` markup and `ngRepeat` to project phone data from
+Note where we use the Angular `{{expression}}` markup and `ngRepeat` to project phone data from
 our model into the view.
 
 
@@ -127,7 +124,11 @@ step 5.
 __`test/unit/controllersSpec.js`:__
 
 ```js
-...
+
+  beforeEach(module('phonecatApp'));
+
+  ...
+
   describe('PhoneDetailCtrl', function(){
     var scope, $httpBackend, ctrl;
 
@@ -153,7 +154,7 @@ __`test/unit/controllersSpec.js`:__
 
 You should now see the following output in the Karma tab:
 
-    Chrome 22.0: Executed 3 of 3 SUCCESS (0.039 secs / 0.012 secs)
+<pre>Chrome 22.0: Executed 3 of 3 SUCCESS (0.039 secs / 0.012 secs)</pre>
 
 
 We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that the
@@ -166,26 +167,25 @@ __`test/e2e/scenarios.js`:__
   describe('Phone detail view', function() {
 
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+      browser.get('app/index.html#/phones/nexus-s');
     });
 
 
     it('should display nexus-s page', function() {
-      expect(binding('phone.name')).toBe('Nexus S');
+      expect(element(by.binding('phone.name')).getText()).toBe('Nexus S');
     });
   });
 ...
 ```
 
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
 
 
 # Experiments
 
-* Using the {@link guide/dev_guide.e2e-testing Angular's end-to-end test runner API}, write a test
-that verifies that we display 4 thumbnail images on the Nexus S details page.
+* Using the [Protractor API](https://github.com/angular/protractor/blob/master/docs/api.md),
+write a test that verifies that we display 4 thumbnail images on the Nexus S details page.
 
 
 # Summary

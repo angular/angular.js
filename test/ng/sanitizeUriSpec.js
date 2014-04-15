@@ -37,13 +37,6 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe("unsafe:data:,foo");
     });
 
-    it('should not sanitize data: URIs for images', function() {
-      // image data uri
-      // ref: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
-      testUrl = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
-      expect(sanitizeImg(testUrl)).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
-    });
-
     it('should sanitize mailto: urls', function() {
       testUrl = "mailto:foo@bar.com";
       expect(sanitizeImg(testUrl)).toBe('unsafe:mailto:foo@bar.com');
@@ -113,6 +106,17 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
     });
 
+    it('should not sanitize blob urls', function() {
+      testUrl = "blob:///foo/bar.html";
+      expect(sanitizeImg(testUrl)).toBe('blob:///foo/bar.html');
+    });
+
+    it('should not sanitize data: URIs for images', function() {
+      // image data uri
+      // ref: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
+      testUrl = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+      expect(sanitizeImg(testUrl)).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+    });
 
     it('should allow reconfiguration of the src whitelist', function() {
       var returnVal;

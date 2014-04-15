@@ -10,15 +10,11 @@ In this step, you will add a feature to let your users control the order of the 
 list. The dynamic ordering is implemented by creating a new model property, wiring it together with
 the repeater, and letting the data binding magic do the rest of the work.
 
+* In addition to the search box, the app displays a drop down menu that allows users to control the
+  order in which the phones are listed.
+
 
 <div doc-tutorial-reset="4"></div>
-
-
-You should see that in addition to the search box, the app displays a drop down menu that allows
-users to control the order in which the phones are listed.
-
-The most important differences between Steps 3 and 4 are listed below. You can see the full diff on
-[GitHub](https://github.com/angular/angular-phonecat/compare/step-3...step-4):
 
 
 ## Template
@@ -91,7 +87,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
 record. This property is used to order phones by age.
 
 * We added a line to the controller that sets the default value of `orderProp` to `age`. If we had
-not set a default value here, the `orderBy` filter would remain uninitialized until our 
+not set a default value here, the `orderBy` filter would remain uninitialized until our
 user picked an option from the drop down menu.
 
   This is a good time to talk about two-way data-binding. Notice that when the app is loaded in the
@@ -117,7 +113,7 @@ describe('PhoneCat controllers', function() {
     var scope, ctrl;
 
     beforeEach(module('phonecatApp'));
-    
+
     beforeEach(inject(function($controller) {
       scope = {};
       ctrl = $controller('PhoneListCtrl', {$scope:scope});
@@ -143,7 +139,7 @@ shared by all tests in the parent `describe` block.
 
 You should now see the following output in the Karma tab:
 
-        Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)
+<pre>Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)</pre>
 
 
 Let's turn our attention to the end-to-end test.
@@ -152,28 +148,36 @@ __`test/e2e/scenarios.js`:__
 
 ```js
 ...
-    it('should be possible to control phone order via the drop down select box',
-        function() {
-      //let's narrow the dataset to make the test assertions shorter
-      input('query').enter('tablet');
+    it('should be possible to control phone order via the drop down select box', function() {
 
-      expect(repeater('.phones li', 'Phone List').column('phone.name')).
-          toEqual(["Motorola XOOM\u2122 with Wi-Fi",
-                   "MOTOROLA XOOM\u2122"]);
+      var phoneNameColumn = element.all(by.repeater('phone in phones').column('{{phone.name}}'));
+      var query = element(by.model('query'));
 
-      select('orderProp').option('Alphabetical');
+      function getNames() {
+        return phoneNameColumn.map(function(elm) {
+          return elm.getText();
+        });
+      }
 
-      expect(repeater('.phones li', 'Phone List').column('phone.name')).
-          toEqual(["MOTOROLA XOOM\u2122",
-                   "Motorola XOOM\u2122 with Wi-Fi"]);
-    });
-...
+      query.sendKeys('tablet'); //let's narrow the dataset to make the test assertions shorter
+
+      expect(getNames()).toEqual([
+        "Motorola XOOM\u2122 with Wi-Fi",
+        "MOTOROLA XOOM\u2122"
+      ]);
+
+      element(by.model('orderProp')).findElement(by.css('option[value="name"]')).click();
+
+      expect(getNames()).toEqual([
+        "MOTOROLA XOOM\u2122",
+        "Motorola XOOM\u2122 with Wi-Fi"
+      ]);
+    });...
 ```
 
 The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-`runner.html` to see the tests run, or you can see them running on [Angular's server](http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html).
+You can now rerun `npm run protractor` to see the tests run.
 
 # Experiments
 

@@ -2,7 +2,9 @@
 @name  Expressions
 @description
 
-Expressions are JavaScript-like code snippets that are usually placed in bindings such as
+# Angular Expressions
+
+Angular expressions are JavaScript-like code snippets that are usually placed in bindings such as
 `{{ expression }}`.
 
 For example, these are valid expressions in Angular:
@@ -88,7 +90,7 @@ You can try evaluating different expressions here:
 </example>
 
 
-# Context
+## Context
 
 Angular does not use JavaScript's `eval()` to evaluate expressions. Instead Angular's
 {@link ng.$parse $parse} service processes these expressions.
@@ -154,3 +156,44 @@ You cannot write a control flow statement in an expression. The reason behind th
 Angular philosophy that application logic should be in controllers, not the views. If you need a
 conditional, loop, or to throw from a view expression, delegate to a JavaScript method instead.
 
+## `$event`
+
+Directives like {@link ng.directive:ngClick `ngClick`} and {@link ng.directive:ngFocus `ngFocus`}
+expose a `$event` object within the scope of that expression.
+
+<example module="eventExampleApp">
+  <file name="index.html">
+    <div ng-controller="EventController">
+      <button ng-click="clickMe($event)">Event</button>
+      <p><code>$event</code>: <pre> {{$event | json}}</pre></p>
+      <p><code>clickEvent</code>: <pre>{{clickEvent | json}}</pre></p>
+    </div>
+  </file>
+
+  <file name="script.js">
+    angular.module('eventExampleApp', []).
+      controller('EventController', ['$scope', function($scope) {
+        /*
+         * expose the event object to the scope
+         */
+        $scope.clickMe = function(clickEvent) {
+          $scope.clickEvent = simpleKeys(clickEvent);
+          console.log(clickEvent);
+        };
+
+        /*
+         * return a copy of an object with only non-object keys
+         * we need this to avoid circular references
+         */
+        function simpleKeys (original) {
+          return Object.keys(original).reduce(function (obj, key) {
+            obj[key] = typeof original[key] === 'object' ? '{ ... }' : original[key];
+            return obj;
+          }, {});
+        }
+      }]);
+  </file>
+</example>
+
+Note in the example above how we can pass in `$event` to `clickMe`, but how it does not show up
+in `{{$event}}`. This is because `$event` is outside the scope of that binding.

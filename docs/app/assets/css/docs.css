@@ -184,10 +184,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 pre {
-  padding:15px;
-  border:1px solid #ddd;
-  display:block;
-  border-radius:5px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: block;
+  white-space: pre-wrap;
+  word-break: normal;
 }
 
 .aside-nav a,
@@ -420,6 +422,7 @@ iframe.example {
 
 .type-hint {
   display:inline-block;
+  background: gray;
 }
 
 .variables-matrix .type-hint {
@@ -464,6 +467,14 @@ iframe.example {
   background:rgb(189, 63, 66);
 }
 
+.type-hint-regexp {
+  background: rgb(90, 84, 189);
+}
+
+.type-hint-domelement {
+  background: rgb(95, 158, 160);
+}
+
 .runnable-example-frame {
   width:100%;
   height:300px;
@@ -501,10 +512,6 @@ h4 {
   padding-top:20px;
 }
 
-.improve-docs {
-  float:right;
-}
-
 .btn {
   color:#428bca;
   position: relative;
@@ -538,10 +545,17 @@ h4 {
   background:white!important;
 }
 
+.view-source, .improve-docs {
+  position:relative;
+  z-index:100;
+}
+
 .view-source {
   margin-right:10px;
-  padding-right:10px;
-  border-right:1px solid #999;
+}
+
+.improve-docs {
+  float:right;
 }
 
 .return-arguments,
@@ -554,7 +568,7 @@ h4 {
 }
 
 .return-arguments td:first-child {
-  width:100px; 
+  width:100px;
 }
 
 ul.methods > li,

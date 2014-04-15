@@ -31,6 +31,35 @@ describe('$$rAF', function() {
     expect(present).toBe(true);
   }));
 
+  describe('$timeout fallback', function() {
+    it("it should use a $timeout incase native rAF isn't suppored", function() {
+      var timeoutSpy = jasmine.createSpy('callback');
+
+      //we need to create our own injector to work around the ngMock overrides
+      var injector = createInjector(['ng', function($provide) {
+        $provide.value('$timeout', timeoutSpy);
+        $provide.value('$window', {
+          location : window.location,
+        });
+      }]);
+
+      var $$rAF = injector.get('$$rAF');
+      expect($$rAF.supported).toBe(false);
+
+      var message;
+      $$rAF(function() {
+        message = 'on';
+      });
+
+      expect(message).toBeUndefined();
+      expect(timeoutSpy).toHaveBeenCalled();
+
+      timeoutSpy.mostRecentCall.args[0]();
+
+      expect(message).toBe('on');
+    });
+  });
+
   describe('mocks', function() {
     it('should throw an error if no frames are present', inject(function($$rAF) {
       if($$rAF.supported) {
@@ -43,5 +72,30 @@ describe('$$rAF', function() {
         expect(failed).toBe(true);
       }
     }));
+  });
+
+  describe('mobile', function() {
+    it('should provide a cancellation method for an older version of Android', function() {
+      //we need to create our own injector to work around the ngMock overrides
+      var injector = createInjector(['ng', function($provide) {
+        $provide.value('$window', {
+          location : window.location,
+          webkitRequestAnimationFrame: jasmine.createSpy('$window.webkitRequestAnimationFrame'),
+          webkitCancelRequestAnimationFrame: jasmine.createSpy('$window.webkitCancelRequestAnimationFrame')
+        });
+      }]);
+
+      var $$rAF = injector.get('$$rAF');
+      var $window = injector.get('$window');
+      var cancel = $$rAF(function() {});
+
+      expect($$rAF.supported).toBe(true);
+
+      try {
+        cancel();
+      } catch(e) {}
+
+      expect($window.webkitCancelRequestAnimationFrame).toHaveBeenCalled();
+    });
   });
 });

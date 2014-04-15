@@ -25,6 +25,10 @@ module.exports = function(config) {
     require('./tag-defs/tutorial-step')
   ]);
 
+  config.append('processing.inlineTagDefinitions', [
+    require('./inline-tag-defs/type')
+  ]);
+
   config.set('processing.search.ignoreWordsFile', path.resolve(packagePath, 'ignore.words'));
 
   config.prepend('rendering.templateFolders', [
