@@ -209,60 +209,62 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       element.removeClass(ACTIVE_CLASS_NAME);
     }
 
-    element.on('touchstart', function(event) {
-      tapping = true;
-      tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
-      // Hack for Safari, which can target text nodes instead of containers.
-      if(tapElement.nodeType == 3) {
-        tapElement = tapElement.parentNode;
-      }
-
-      element.addClass(ACTIVE_CLASS_NAME);
-
-      startTime = Date.now();
-
-      var touches = event.touches && event.touches.length ? event.touches : [event];
-      var e = touches[0].originalEvent || touches[0];
-      touchStartX = e.clientX;
-      touchStartY = e.clientY;
-    });
-
-    element.on('touchmove', function(event) {
-      resetState();
-    });
-
-    element.on('touchcancel', function(event) {
-      resetState();
-    });
-
-    element.on('touchend', function(event) {
-      var diff = Date.now() - startTime;
-
-      var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
-          ((event.touches && event.touches.length) ? event.touches : [event]);
-      var e = touches[0].originalEvent || touches[0];
-      var x = e.clientX;
-      var y = e.clientY;
-      var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
-
-      if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
-        // Call preventGhostClick so the clickbuster will catch the corresponding click.
-        preventGhostClick(x, y);
-
-        // Blur the focused element (the button, probably) before firing the callback.
-        // This doesn't work perfectly on Android Chrome, but seems to work elsewhere.
-        // I couldn't get anything to work reliably on Android Chrome.
-        if (tapElement) {
-          tapElement.blur();
-        }
-
-        if (!angular.isDefined(attr.disabled) || attr.disabled === false) {
-          element.triggerHandler('click', [event]);
-        }
-      }
-
-      resetState();
-    });
+    if (angular.isFunction(Event.prototype.stopImmediatePropagation)) {
+        element.on('touchstart', function(event) {
+          tapping = true;
+          tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
+          // Hack for Safari, which can target text nodes instead of containers.
+          if(tapElement.nodeType == 3) {
+            tapElement = tapElement.parentNode;
+          }
+    
+          element.addClass(ACTIVE_CLASS_NAME);
+    
+          startTime = Date.now();
+    
+          var touches = event.touches && event.touches.length ? event.touches : [event];
+          var e = touches[0].originalEvent || touches[0];
+          touchStartX = e.clientX;
+          touchStartY = e.clientY;
+        });
+    
+        element.on('touchmove', function(event) {
+          resetState();
+        });
+    
+        element.on('touchcancel', function(event) {
+          resetState();
+        });
+    
+        element.on('touchend', function(event) {
+          var diff = Date.now() - startTime;
+    
+          var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
+              ((event.touches && event.touches.length) ? event.touches : [event]);
+          var e = touches[0].originalEvent || touches[0];
+          var x = e.clientX;
+          var y = e.clientY;
+          var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
+    
+          if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
+            // Call preventGhostClick so the clickbuster will catch the corresponding click.
+            preventGhostClick(x, y);
+    
+            // Blur the focused element (the button, probably) before firing the callback.
+            // This doesn't work perfectly on Android Chrome, but seems to work elsewhere.
+            // I couldn't get anything to work reliably on Android Chrome.
+            if (tapElement) {
+              tapElement.blur();
+            }
+    
+            if (!angular.isDefined(attr.disabled) || attr.disabled === false) {
+              element.triggerHandler('click', [event]);
+            }
+          }
+    
+          resetState();
+        });
+    }
 
     // Hack for iOS Safari's benefit. It goes searching for onclick handlers and is liable to click
     // something else nearby.
