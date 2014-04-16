@@ -148,7 +148,7 @@ tests in Angular so that developers are encouraged to write them.
 ### Testing non-Global Controllers
 
 In practice, you will not want to have your controller functions in the global namespace.  Instead,
-you can see that we have registered it via an anonymous constructor function on the `phoneCatApp`
+you can see that we have registered it via an anonymous constructor function on the `phonecatApp`
 module.
 
 In this case Angular provides a service, `$controller`, which will retrieve your controller by name.
