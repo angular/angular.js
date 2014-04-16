@@ -1613,12 +1613,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @returns {boolean} True if `value` is empty.
    */
   this.$isEmpty = function(value) {
-    var validity = $element.prop('validity');
-    if (isObject(validity)) {
-        return validity.valueMissing;
-    } else {
-        return isUndefined(value) || value === '' || value === null || value !== value;
-    }
+    return isUndefined(value) || value === '' || value === null || value !== value;
   };
 
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
@@ -2064,8 +2059,15 @@ var requiredDirective = function() {
       if (!ctrl) return;
       attr.required = true; // force truthy in case we are on non input element
 
+      var validity = elm.prop('validity');
+      if (!isObject(validity)) {
+        validity = {
+          valid: true
+        };
+      }
+
       var validator = function(value) {
-        if (attr.required && ctrl.$isEmpty(value)) {
+        if (attr.required && (validity.valueMissing || ctrl.$isEmpty(value))) {
           ctrl.$setValidity('required', false);
           return;
         } else {
