@@ -58,7 +58,7 @@ function $RouteProvider(){
    *        when the route matches.
    *    * `path` can contain optional named groups with a question mark: e.g.`:name?`.
    *
-   *    For example, routes like `/color/:color/largecode/:largecode*\/edit` will match
+   *    For example, routes like `/color/:color/largecode/:largecode*/edit` will match
    *    `/color/brown/largecode/code/with/slashes/edit` and extract:
    *
    *    * `color: brown`
