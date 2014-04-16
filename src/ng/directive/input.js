@@ -1236,6 +1236,12 @@ function checkboxInputType(scope, element, attr, ctrl) {
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
 
+  var intTrueValue = parseInt(trueValue, 10),
+      intFalseValue = parseInt(falseValue, 10);
+
+  if(!equals(intTrueValue, NaN)) trueValue = intTrueValue;
+  if(!equals(intFalseValue, NaN)) falseValue = intFalseValue;
+
   var listener = function(ev) {
     scope.$apply(function() {
       ctrl.$setViewValue(element[0].checked, ev && ev.type);
