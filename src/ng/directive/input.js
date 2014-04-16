@@ -1613,7 +1613,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @returns {boolean} True if `value` is empty.
    */
   this.$isEmpty = function(value) {
-    return isUndefined(value) || value === '' || value === null || value !== value;
+    var validity = $element.prop('validity');
+    if (isObject(validity)) {
+        return validity.valueMissing;
+    } else {
+        return isUndefined(value) || value === '' || value === null || value !== value;
+    }
   };
 
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
