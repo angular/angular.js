@@ -128,7 +128,9 @@ will exit after the test run and will not automatically rerun the test suite on 
 To rerun the test suite, execute `npm run protractor` again.
 
 <div class="alert alert-info">
-  Note: You must ensure you've installed the protractor and updated webdriver prior to running the
+  Note: You must ensure your application is being served via a web-server to test with protractor.
+  You can do this using `npm start`.
+  You also need to ensure you've installed the protractor and updated webdriver prior to running the
   `npm run protractor`. You can do this by issuing `npm install` and `npm run update-webdriver` into
   your terminal.
 </div>
