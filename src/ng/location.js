@@ -541,7 +541,8 @@ function locationGetterSetter(property, preprocess) {
  */
 function $LocationProvider(){
   var hashPrefix = '',
-      html5Mode = false;
+      html5Mode = false,
+      _baseHref;
 
   /**
    * @ngdoc property
@@ -576,6 +577,22 @@ function $LocationProvider(){
   };
 
   /**
+   * @ngdoc property
+   * @name ng.$locationProvider#baseHref
+   * @methodOf ng.$locationProvider
+   * @description
+   * In situations where it is desireable to specify an external URL within the `<base>` tag, for
+   * simplifying access to external resources, this configuration method will override the <base>
+   * tag and enable location rewrites to work as expected;
+   * 
+   * @param {string} href Base application url
+   */
+  this.baseHref = function(href) {
+    /* global BASE_HREF_REGEXP */
+    _baseHref = href && href.replace(BASE_HREF_REGEXP, '');
+  };
+
+  /**
    * @ngdoc event
    * @name $location#$locationChangeStart
    * @eventType broadcast on root scope
@@ -606,7 +623,8 @@ function $LocationProvider(){
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var $location,
         LocationMode,
-        baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
+        // if base[href] is undefined, it defaults to ''
+        baseHref = isString(_baseHref) ? _baseHref : $browser.baseHref(),
         initialUrl = $browser.url(),
         appBase;
 
