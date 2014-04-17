@@ -895,7 +895,14 @@ function $RootScopeProvider(){
             $rootScope.$digest();
           } catch (e) {
             $exceptionHandler(e);
-            throw e;
+            var ex = e; // Avoiding reassigning e
+            if (e.message && e.stack && e.stack.indexOf(e.message) == -1) {
+                // Safari & Fx's stack traces don't contain error.message content unlike those of Chrome and IE
+                // So if stack doesn't contain message, we create a new string that contains both.
+                // Since error.stack is read-only in Safari, I'm overriding e and not e.stack here.
+                ex = e.message + '\n' + e.stack;
+            }
+            throw $rootScopeMinErr('baddigest', "{0}", ex.stack || ex.message || ex);
           }
         }
       },
