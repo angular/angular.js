@@ -779,9 +779,12 @@ describe('$location', function() {
 
     var root, link, originalBrowser, lastEventPreventDefault;
 
-    function configureService(linkHref, html5Mode, supportHist, attrs, content) {
+    function configureService(linkHref, html5Mode, supportHist, attrs, content, allowRewrite) {
       module(function($provide, $locationProvider) {
         attrs = attrs ? ' ' + attrs + ' ' : '';
+        if (!isDefined(allowRewrite)) {
+          allowRewrite = true
+        }
 
         // fake the base behavior
         if (linkHref[0] == '/') {
@@ -795,6 +798,7 @@ describe('$location', function() {
         $provide.value('$sniffer', {history: supportHist});
         $locationProvider.html5Mode(html5Mode);
         $locationProvider.hashPrefix('!');
+        $locationProvider.rewriteLinks(allowRewrite);
         return function($rootElement, $document) {
           $rootElement.append(link);
           root = $rootElement[0];
@@ -946,6 +950,19 @@ describe('$location', function() {
 
     it('should not rewrite links with target specified', function() {
       configureService('/a?b=c', true, true, 'target="some-frame"');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it ('should not rewrite links when rewriting links is disabled', function() {
+      configureService('/a?b=c', true, true, '', 'some content', false);
       inject(
         initBrowser(),
         initLocation(),
