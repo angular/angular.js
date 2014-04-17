@@ -46,7 +46,6 @@ describe('module loader', function() {
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
       ['$provide', 'constant', ['abc', 123] ],
-      ['$injector', 'invoke', ['config'] ],
       ['$provide', 'provider', ['sk', 'sv'] ],
       ['$provide', 'factory', ['fk', 'fv'] ],
       ['$provide', 'service', ['a', 'aa'] ],
@@ -54,6 +53,9 @@ describe('module loader', function() {
       ['$filterProvider', 'register', ['f', 'ff'] ],
       ['$compileProvider', 'directive', ['d', 'dd'] ],
       ['$controllerProvider', 'register', ['ctrl', 'ccc']],
+    ]);
+    expect(myModule._configBlocks).toEqual([
+      ['$injector', 'invoke', ['config'] ],
       ['$injector', 'invoke', ['init2'] ]
     ]);
     expect(myModule._runBlocks).toEqual(['runBlock']);
