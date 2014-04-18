@@ -91,6 +91,7 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
   var appBaseNoFile = stripFile(appBase);
+  var baseFile = appBase.slice(appBaseNoFile.length);
   parseAbsoluteUrl(appBase, this, appBase);
 
 
@@ -133,7 +134,12 @@ function LocationHtml5Url(appBase, basePrefix) {
     if ( (appUrl = beginsWith(appBase, url)) !== undefined ) {
       prevAppUrl = appUrl;
       if ( (appUrl = beginsWith(basePrefix, appUrl)) !== undefined ) {
-        return appBaseNoFile + (beginsWith('/', appUrl) || appUrl);
+        var rewritten = beginsWith('/', appUrl) || appUrl;
+        if (rewritten.indexOf(baseFile) === 0) {
+          rewritten = rewritten.slice(baseFile.length);
+          rewritten = beginsWith('/', rewritten) || rewritten;
+        }
+        return appBaseNoFile + rewritten;
       } else {
         return appBase + prevAppUrl;
       }
@@ -618,7 +624,8 @@ function $LocationProvider(){
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
         initialUrl = $browser.url(),
-        appBase;
+        appBase,
+        baseFile;
 
     if (html5Mode) {
       appBase = serverBase(initialUrl) + (baseHref || '/');
