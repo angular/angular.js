@@ -114,12 +114,15 @@ function $InterpolateProvider() {
      *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
-     * @returns {function(context)} an interpolation function which is used to compute the
-     *    interpolated string. The function has these parameters:
+     * @returns {Object} An object describing the interpolation template string.
      *
-     *    * `context`: an object against which any expressions embedded in the strings are evaluated
-     *      against.
+     * The properties of the returned object include:
      *
+     * - `template` — `{string}` — original interpolation template string.
+     * - `separators` — `{Array.<string>}` — array of separators extracted from the template.
+     * - `expressions` — `{Array.<string>}` — array of expressions extracted from the template.
+     * - `compute` — {function(Array)()} — function that when called with an array of values will
+     *   compute the result of interpolation for the given interpolation template and values.
      */
     function $interpolate(text, mustHaveExpression, trustedContext) {
       var startIndex,
@@ -139,8 +142,8 @@ function $InterpolateProvider() {
              ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
           if (index !== startIndex) hasText = true;
           separators.push(text.substring(index, startIndex));
-          expressions.push(fn = interpolateParse(exp = text.substring(startIndex + startSymbolLength, endIndex)));
-          fn.exp = exp;
+          exp = text.substring(startIndex + startSymbolLength, endIndex);
+          expressions.push(exp);
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
         } else {
@@ -172,55 +175,51 @@ function $InterpolateProvider() {
 
       if (!mustHaveExpression || hasInterpolation) {
         concat.length = separators.length + expressions.length;
-        var computeFn = function (values, context) {
-          for(var i = 0, ii = expressions.length; i < ii; i++) {
-            concat[2*i] = separators[i];
-            concat[(2*i)+1] = values ? values[i] : expressions[i](context);
+
+        return extend(function interpolationFn(scope) {
+            var values = [];
+            forEach(interpolationFn.expressions, function(expression) {
+              values.push(scope.$eval(expression));
+            });
+            return interpolationFn.compute(values);
+          }, {
+          exp: text, //deprecated
+          template: text,
+          separators: separators,
+          expressions: expressions,
+          compute: function(values) {
+            for(var i = 0, ii = expressions.length; i < ii; i++) {
+              concat[2*i] = separators[i];
+              concat[(2*i)+1] = stringify(values[i]);
+            }
+            concat[2*ii] = separators[ii];
+            return concat.join('');
           }
-          concat[2*ii] = separators[ii];
-          return concat.join('');
-        };
-
-        fn = function(context) {
-          return computeFn(null, context);
-        };
-        fn.exp = text;
-
-        // hack in order to preserve existing api
-        fn.$$invoke = function (listener) {
-          return function (values, oldValues, scope) {
-            var current = computeFn(values, scope);
-            listener(current, this.$$lastInter == null ? current : this.$$lastInter, scope);
-            this.$$lastInter = current;
-          };
-        };
-        fn.separators = separators;
-        fn.expressions = expressions;
-        return fn;
+        });
       }
 
-      function interpolateParse(expression) {
-        var exp = $parse(expression);
-        return function (scope) {
-          try {
-            var value = exp(scope);
-            if (trustedContext) {
-              value = $sce.getTrusted(trustedContext, value);
-            } else {
-              value = $sce.valueOf(value);
-            }
-            if (value === null || isUndefined(value)) {
-              value = '';
-            } else if (typeof value != 'string') {
-              value = toJson(value);
-            }
-            return value;
-          } catch(err) {
-            var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
-              err.toString());
-            $exceptionHandler(newErr);
+      function stringify(value) {
+        try {
+
+          if (trustedContext) {
+            value = $sce.getTrusted(trustedContext, value);
+          } else {
+            value = $sce.valueOf(value);
           }
-        };
+
+          if (value === null || isUndefined(value)) {
+            value = '';
+          } else if (typeof value != 'string') {
+            value = toJson(value);
+          }
+
+          return value;
+
+        } catch(err) {
+          var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
+            err.toString());
+          $exceptionHandler(newErr);
+        }
       }
     }
 
