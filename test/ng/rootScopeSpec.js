@@ -777,6 +777,56 @@ describe('Scope', function() {
     });
   });
 
+  describe('$watchSet', function() {
+
+    it('should detect a change to any expression in the array', inject(function($rootScope, log) {
+      $rootScope.$watchSet(['a', 'b'], function(values, oldValues, scope) {
+        expect(scope).toBe($rootScope);
+        log(values + '-' + oldValues);
+      });
+
+      $rootScope.a = 'foo';
+      $rootScope.b = 'bar';
+      $rootScope.$digest();
+      expect(log).toEqual('foo,bar-foo,bar');
+
+      log.reset();
+      $rootScope.$digest();
+      expect(log).toEqual('');
+
+      log.reset();
+      $rootScope.a = 'a';
+      $rootScope.$digest();
+      expect(log).toEqual('a,bar-foo,bar');
+
+      log.reset();
+      $rootScope.a = 'A';
+      $rootScope.b = 'B';
+      $rootScope.$digest();
+      expect(log).toEqual('A,B-a,bar');
+    }));
+
+    it('should return a function that allows listeners to be deregistered', inject(function($rootScope) {
+        var listener = jasmine.createSpy('watchSet listener'),
+          listenerRemove;
+
+        listenerRemove = $rootScope.$watchSet(['a'], listener);
+        $rootScope.$digest(); //init
+        expect(listener).toHaveBeenCalled();
+        expect(listenerRemove).toBeDefined();
+
+        listener.reset();
+        $rootScope.a = 'bar';
+        $rootScope.$digest(); //trigger
+        expect(listener).toHaveBeenCalledOnce();
+
+        listener.reset();
+        $rootScope.a = 'baz';
+        listenerRemove();
+        $rootScope.$digest(); //trigger
+        expect(listener).not.toHaveBeenCalled();
+      }));
+  });
 
   describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
