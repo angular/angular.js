@@ -91,6 +91,7 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
   var appBaseNoFile = stripFile(appBase);
+  var baseFile = appBase.slice(appBaseNoFile.length);
   parseAbsoluteUrl(appBase, this, appBase);
 
 
@@ -133,7 +134,12 @@ function LocationHtml5Url(appBase, basePrefix) {
     if ( (appUrl = beginsWith(appBase, url)) !== undefined ) {
       prevAppUrl = appUrl;
       if ( (appUrl = beginsWith(basePrefix, appUrl)) !== undefined ) {
-        return appBaseNoFile + (beginsWith('/', appUrl) || appUrl);
+        var rewritten = beginsWith('/', appUrl) || appUrl;
+        if (rewritten.indexOf(baseFile) === 0) {
+          rewritten = rewritten.slice(baseFile.length);
+          rewritten = beginsWith('/', rewritten) || rewritten;
+        }
+        return appBaseNoFile + rewritten;
       } else {
         return appBase + prevAppUrl;
       }
@@ -618,7 +624,8 @@ function $LocationProvider(){
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
         initialUrl = $browser.url(),
-        appBase;
+        appBase,
+        baseFile;
 
     if (html5Mode) {
       appBase = serverBase(initialUrl) + (baseHref || '/');
@@ -655,7 +662,11 @@ function $LocationProvider(){
       // Make relative links work in HTML5 mode for legacy browsers (or at least IE8 & 9)
       // The href should be a regular url e.g. /link/somewhere or link/somewhere or ../somewhere or
       // somewhere#anchor or http://example.com/somewhere
-      if (LocationMode === LocationHashbangInHtml5Url) {
+      //
+      // For whatever reason, relative urls in angular apps with a router seem to not work
+      // correctly, and so similar work is also necessary for plain html5Mode. It may be desirable,
+      // down the line, to perform this work for all location modes.
+      if (LocationMode === LocationHashbangInHtml5Url || LocationMode === LocationHtml5Url) {
         // get the actual href attribute - see
         // http://msdn.microsoft.com/en-us/library/ie/dd347148(v=vs.85).aspx
         var href = elm.attr('href') || elm.attr('xlink:href');
