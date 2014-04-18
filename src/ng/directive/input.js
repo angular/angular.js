@@ -477,7 +477,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     if (composing) return;
     var value = element.val();
 
-    // IE (11 and under) seem to emit an 'input' event if the placeholder value changes. 
+    // IE (11 and under) seem to emit an 'input' event if the placeholder value changes.
     // We don't want to dirty the value when this happens, so we abort here. Unfortunately,
     // IE also sends input events for other non-input-related things, (such as focusing on a
     // form control), so this change is not entirely enough to solve this.
