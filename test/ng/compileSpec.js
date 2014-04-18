@@ -2080,6 +2080,8 @@ describe('$compile', function() {
 
 
     it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
+      // we need the interpolated attributes to be initialized so that linking fn in a component
+      // can access the value during link
       $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
       expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
