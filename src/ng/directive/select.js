@@ -609,8 +609,6 @@ var optionDirective = ['$interpolate', function($interpolate) {
             parent = element.parent(),
             selectCtrl = parent.data(selectCtrlName) ||
               parent.parent().data(selectCtrlName); // in case we are in optgroup
-        var newString;
-        var oldString;
 
         if (selectCtrl && selectCtrl.databound) {
           // For some reason Opera defaults to true and if not overridden this messes up the repeater.
@@ -621,12 +619,12 @@ var optionDirective = ['$interpolate', function($interpolate) {
         }
 
         if (interpolateFn) {
-          scope.$watchGroup(interpolateFn.expressions, function interpolateWatchAction(newVals, oldVals) {
-            oldString = newString;
-            newString = interpolateFn.compute(newVals);
-            attr.$set('value', newString);
-            if (oldString) selectCtrl.removeOption(oldString);
-            selectCtrl.addOption(newString);
+          scope.$watch(interpolateFn, function interpolateWatchAction(newVal, oldVal) {
+            attr.$set('value', newVal);
+            if (oldVal !== newVal) {
+              selectCtrl.removeOption(oldVal);
+            }
+            selectCtrl.addOption(newVal);
           });
         } else {
           selectCtrl.addOption(attr.value);
