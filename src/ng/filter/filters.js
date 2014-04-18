@@ -265,6 +265,15 @@ function ampmGetter(date, formats) {
   return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
 }
 
+function daySuffixGetter ( date, formats ) {
+	var day =  date.getDate();
+	if ( day > 4 ) {
+		day = 4;
+	}
+	return formats.DAYSUFFIXES ? formats.DAYSUFFIXES[day-1] : ['st','nd','rd','th'][day-1];
+}
+
+
 var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
     yy: dateGetter('FullYear', 2, 0, true),
@@ -292,9 +301,10 @@ var DATE_FORMATS = {
      Z: timeZoneGetter,
     ww: weekGetter(2),
      w: weekGetter(1)
+     D: daySuffixGetter,
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z|w+))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdDHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|D+H+|h+|m+|s+|a|Z|w+))(.*)/,
     NUMBER_STRING = /^\-?\d+$/;
 
 /**
@@ -331,6 +341,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
  *   * `'ww'`: ISO-8601 week of year (00-53)
  *   * `'w'`: ISO-8601 week of year (0-53)
+ *   * `'D'`: Ordinal suffix for the day of the month, 2 characters 
  *
  *   `format` string can also be one of the following predefined
  *   {@link guide/i18n localizable formats}:
