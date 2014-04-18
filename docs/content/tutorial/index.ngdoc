@@ -107,7 +107,7 @@ node --version
 
 <div class="alert alert-info">If you need to run a different versions of node.js
   in your local environment, consider installing
-  <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
+  <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link" target="_blank">
     Node Version Manager (nvm)
   </a>.
 </div>
