@@ -17,11 +17,7 @@ function parseHeaders(headers) {
     val = trim(line.substr(i + 1));
 
     if (key) {
-      if (parsed[key]) {
-        parsed[key] += ', ' + val;
-      } else {
-        parsed[key] = val;
-      }
+      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
     }
   });
 
