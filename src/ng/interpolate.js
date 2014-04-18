@@ -114,15 +114,10 @@ function $InterpolateProvider() {
      *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
-     * @returns {Object} An object describing the interpolation template string.
+     * @returns {function(context)} an interpolation function which is used to compute the
+     *    interpolated string. The function has these parameters:
      *
-     * The properties of the returned object include:
-     *
-     * - `template` — `{string}` — original interpolation template string.
-     * - `separators` — `{Array.<string>}` — array of separators extracted from the template.
-     * - `expressions` — `{Array.<string>}` — array of expressions extracted from the template.
-     * - `compute` — {function(Array)()} — function that when called with an array of values will
-     *   compute the result of interpolation for the given interpolation template and values.
+     * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
     function $interpolate(text, mustHaveExpression, trustedContext) {
       var startIndex,
@@ -130,12 +125,13 @@ function $InterpolateProvider() {
           index = 0,
           separators = [],
           expressions = [],
+          parseFns = [],
           textLength = text.length,
           hasInterpolation = false,
           hasText = false,
-          fn,
           exp,
-          concat = [];
+          concat = [],
+          lastValuesCache = { values: {}, results: {}};
 
       while(index < textLength) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
@@ -144,6 +140,7 @@ function $InterpolateProvider() {
           separators.push(text.substring(index, startIndex));
           exp = text.substring(startIndex + startSymbolLength, endIndex);
           expressions.push(exp);
+          parseFns.push($parse(exp));
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
         } else {
@@ -176,31 +173,16 @@ function $InterpolateProvider() {
       if (!mustHaveExpression || hasInterpolation) {
         concat.length = separators.length + expressions.length;
 
-        return extend(function interpolationFn(scope) {
-            var values = [];
-            forEach(interpolationFn.expressions, function(expression) {
-              values.push(scope.$eval(expression));
-            });
-            return interpolationFn.compute(values);
-          }, {
-          exp: text, //deprecated
-          template: text,
-          separators: separators,
-          expressions: expressions,
-          compute: function(values) {
-            for(var i = 0, ii = expressions.length; i < ii; i++) {
-              concat[2*i] = separators[i];
-              concat[(2*i)+1] = stringify(values[i]);
-            }
-            concat[2*ii] = separators[ii];
-            return concat.join('');
+        var compute = function(values) {
+          for(var i = 0, ii = expressions.length; i < ii; i++) {
+            concat[2*i] = separators[i];
+            concat[(2*i)+1] = values[i];
           }
-        });
-      }
+          concat[2*ii] = separators[ii];
+          return concat.join('');
+        };
 
-      function stringify(value) {
-        try {
-
+        var stringify = function (value) {
           if (trustedContext) {
             value = $sce.getTrusted(trustedContext, value);
           } else {
@@ -214,12 +196,59 @@ function $InterpolateProvider() {
           }
 
           return value;
+        };
 
-        } catch(err) {
-          var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
-            err.toString());
-          $exceptionHandler(newErr);
-        }
+        return extend(function interpolationFn(context) {
+            var scopeId = context.$id || 'notAScope';
+            var lastValues = lastValuesCache.values[scopeId];
+            var lastResult = lastValuesCache.results[scopeId];
+            var i = 0;
+            var ii = expressions.length;
+            var values = new Array(ii);
+            var val;
+            var inputsChanged = lastResult === undefined ? true: false;
+
+
+            // if we haven't seen this context before, initialize the cache and try to setup
+            // a cleanup routine that purges the cache when the scope goes away.
+            if (!lastValues) {
+              lastValues = [];
+              inputsChanged = true;
+              if (context.$on) {
+                context.$on('$destroy', function() {
+                  lastValuesCache.values[scopeId] = null;
+                  lastValuesCache.results[scopeId] = null;
+                });
+              }
+            }
+
+
+            try {
+              for (; i < ii; i++) {
+                val = stringify(parseFns[i](context));
+                if (val !== lastValues[i]) {
+                  inputsChanged = true;
+                }
+                values[i] = val;
+              }
+
+              if (inputsChanged) {
+                lastValuesCache.values[scopeId] = values;
+                lastValuesCache.results[scopeId] = lastResult = compute(values);
+              }
+            } catch(err) {
+              var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
+                  err.toString());
+              $exceptionHandler(newErr);
+            }
+
+            return lastResult;
+          }, {
+          // all of these properties are undocumented for now
+          exp: text, //just for compatibility with regular watchers created via $watch
+          separators: separators,
+          expressions: expressions
+        });
       }
     }
 

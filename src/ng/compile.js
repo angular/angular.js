@@ -1804,9 +1804,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
-            scope.$watchGroup(interpolateFn.expressions,
-                function textInterpolationWatchAction(newValues) {
-              node[0].nodeValue = interpolateFn.compute(newValues);
+            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+              node[0].nodeValue = value;
             });
           })
         });
@@ -1848,8 +1847,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             return {
               pre: function attrInterpolatePreLinkFn(scope, element, attr) {
                 var $$observers = (attr.$$observers || (attr.$$observers = {}));
-                var interpolationResult;
-                var lastInterpolationResult;
 
                 if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
                   throw $compileMinErr('nodomevents',
@@ -1868,25 +1865,21 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // initialize attr object so that it's ready in case we need the value for isolate
                 // scope initialization, otherwise the value would not be available from isolate
                 // directive's linking fn during linking phase
-                attr[name] = interpolationResult = interpolateFn(scope);
+                attr[name] = interpolateFn(scope);
 
                 ($$observers[name] || ($$observers[name] = [])).$$inter = true;
                 (attr.$$observers && attr.$$observers[name].$$scope || scope).
-                  $watchGroup(interpolateFn.expressions,
-                      function interpolationWatchAction(newValues) {
-
-                    lastInterpolationResult = interpolationResult;
-                    interpolationResult = interpolateFn.compute(newValues);
+                  $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
                     //special case for class attribute addition + removal
                     //so that class changes can tap into the animation
                     //hooks provided by the $animate service. Be sure to
                     //skip animations when the first digest occurs (when
                     //both the new and the old values are the same) since
                     //the CSS classes are the non-interpolated values
-                    if(name === 'class' && interpolationResult != lastInterpolationResult) {
-                      attr.$updateClass(interpolationResult, lastInterpolationResult);
+                    if(name === 'class' && newValue != oldValue) {
+                      attr.$updateClass(newValue, oldValue);
                     } else {
-                      attr.$set(name, interpolationResult);
+                      attr.$set(name, newValue);
                     }
                   });
               }
