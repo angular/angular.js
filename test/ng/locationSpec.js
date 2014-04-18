@@ -1119,6 +1119,51 @@ describe('$location', function() {
     });
 
 
+    it('should rewrite relative links relative to current path when history enabled', function() {
+      configureService('link', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/some/link');
+        }
+      );
+    });
+
+
+    it('should replace current path when link begins with "/" and history enabled', function() {
+      configureService('/link', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link');
+        }
+      );
+    });
+
+
+    it('should replace current hash fragment when link begins with "#" history enabled', function() {
+      configureService('#link', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          // Initialize browser URL
+          $location.path('/some');
+          $location.hash('foo');
+          browserTrigger(link, 'click');
+          expect($location.hash()).toBe('link');
+          expectRewriteTo($browser, 'http://host.com/base/some#link');
+        }
+      );
+    });
+
+
     // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
     if (!(msie < 9)) {
 

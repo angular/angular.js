@@ -655,7 +655,11 @@ function $LocationProvider(){
       // Make relative links work in HTML5 mode for legacy browsers (or at least IE8 & 9)
       // The href should be a regular url e.g. /link/somewhere or link/somewhere or ../somewhere or
       // somewhere#anchor or http://example.com/somewhere
-      if (LocationMode === LocationHashbangInHtml5Url) {
+      //
+      // For whatever reason, relative urls in angular apps with a router seem to not work
+      // correctly, and so similar work is also necessary for plain html5Mode. It may be desirable,
+      // down the line, to perform this work for all location modes.
+      if (LocationMode === LocationHashbangInHtml5Url || LocationMode === LocationHtml5Url) {
         // get the actual href attribute - see
         // http://msdn.microsoft.com/en-us/library/ie/dd347148(v=vs.85).aspx
         var href = elm.attr('href') || elm.attr('xlink:href');
