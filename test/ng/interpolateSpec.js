@@ -7,7 +7,6 @@ describe('$interpolate', function() {
     var interpolateFn = $interpolate('some text');
 
     expect(interpolateFn.exp).toBe('some text');
-    expect(interpolateFn.template).toBe('some text');
     expect(interpolateFn.separators).toEqual(['some text']);
     expect(interpolateFn.expressions).toEqual([]);
 
@@ -38,7 +37,6 @@ describe('$interpolate', function() {
     var interpolateFn = $interpolate('Hello {{name}}!');
 
     expect(interpolateFn.exp).toBe('Hello {{name}}!');
-    expect(interpolateFn.template).toBe('Hello {{name}}!');
     expect(interpolateFn.separators).toEqual(['Hello ', '!']);
     expect(interpolateFn.expressions).toEqual(['name']);
 
@@ -67,17 +65,21 @@ describe('$interpolate', function() {
       inject(['$sce', function($sce) { sce = $sce; }]);
     });
 
-    it('should NOT interpolate non-trusted expressions', inject(function($interpolate) {
-      var foo = "foo";
+    it('should NOT interpolate non-trusted expressions', inject(function($interpolate, $rootScope) {
+      var scope = $rootScope.$new();
+      scope.foo = "foo";
+
       expect(function() {
-        $interpolate('{{foo}}', true, sce.CSS).compute([foo]);
+        $interpolate('{{foo}}', true, sce.CSS)(scope);
       }).toThrowMinErr('$interpolate', 'interr');
     }));
 
-    it('should NOT interpolate mistyped expressions', inject(function($interpolate) {
-      var foo = sce.trustAsCss("foo");
+    it('should NOT interpolate mistyped expressions', inject(function($interpolate, $rootScope) {
+      var scope = $rootScope.$new();
+      scope.foo = sce.trustAsCss("foo");
+
       expect(function() {
-        $interpolate('{{foo}}', true, sce.HTML).compute([foo]);
+        $interpolate('{{foo}}', true, sce.HTML)(scope);
       }).toThrowMinErr('$interpolate', 'interr');
     }));
 
