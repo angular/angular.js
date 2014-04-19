@@ -102,7 +102,7 @@ var version = {
 };
 
 
-function publishExternalAPI(angular){
+function publishExternalAPI(angular) {
   extend(angular, {
     'bootstrap': bootstrap,
     'copy': copy,

@@ -279,12 +279,12 @@ describe('browser', function() {
       });
     });
 
-    describe('put via cookies(cookieName, string), if no <base href> ', function () {
-      beforeEach(function () {
+    describe('put via cookies(cookieName, string), if no <base href> ', function() {
+      beforeEach(function() {
         fakeDocument.basePath = undefined;
       });
 
-      it('should default path in cookie to "" (empty string)', function () {
+      it('should default path in cookie to "" (empty string)', function() {
         browser.cookies('cookie', 'bender');
         // This only fails in Safari and IE when cookiePath returns undefined
         // Where it now succeeds since baseHref return '' instead of undefined

@@ -337,7 +337,7 @@ function shallowClearAndCopy(src, dst) {
  * ```
  */
 angular.module('ngResource', ['ng']).
-  provider('$resource', function () {
+  provider('$resource', function() {
     var provider = this;
 
     this.defaults = {

@@ -34,7 +34,7 @@ function hashKey(obj) {
 /**
  * HashMap which can use objects as keys
  */
-function HashMap(array){
+function HashMap(array) {
   forEach(array, this.put, this);
 }
 HashMap.prototype = {

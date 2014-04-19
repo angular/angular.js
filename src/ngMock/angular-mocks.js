@@ -298,7 +298,7 @@ angular.mock.$LogProvider = function() {
     }
   };
 
-  this.$get = function () {
+  this.$get = function() {
     var $log = {
       log: function() { $log.log.logs.push(concat([], arguments, 0)); },
       warn: function() { $log.warn.logs.push(concat([], arguments, 0)); },
@@ -318,7 +318,7 @@ angular.mock.$LogProvider = function() {
      * @description
      * Reset all of the logging arrays to empty.
      */
-    $log.reset = function () {
+    $log.reset = function() {
       /**
        * @ngdoc property
        * @name $log#log.logs

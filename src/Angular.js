@@ -113,7 +113,7 @@
  * @param {string} string String to be converted to lowercase.
  * @returns {string} Lowercased string.
  */
-var lowercase = function(string){return isString(string) ? string.toLowerCase() : string;};
+var lowercase = function(string) { return isString(string) ? string.toLowerCase() : string; };
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
@@ -126,19 +126,19 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
  * @param {string} string String to be converted to uppercase.
  * @returns {string} Uppercased string.
  */
-var uppercase = function(string){return isString(string) ? string.toUpperCase() : string;};
+var uppercase = function(string) { return isString(string) ? string.toUpperCase() : string; };
 
 
 var manualLowercase = function(s) {
   /* jshint bitwise: false */
   return isString(s)
-      ? s.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);})
+      ? s.replace(/[A-Z]/g, function(ch) { return String.fromCharCode(ch.charCodeAt(0) | 32); })
       : s;
 };
 var manualUppercase = function(s) {
   /* jshint bitwise: false */
   return isString(s)
-      ? s.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);})
+      ? s.replace(/[a-z]/g, function(ch) { return String.fromCharCode(ch.charCodeAt(0) & ~32); })
       : s;
 };
 
@@ -402,11 +402,11 @@ noop.$inject = [];
      };
    ```
  */
-function identity($) {return $;}
+function identity($) { return $; }
 identity.$inject = [];
 
 
-function valueFn(value) {return function() {return value;};}
+function valueFn(value) { return function() {return value; }; }
 
 /**
  * @ngdoc function
@@ -420,7 +420,7 @@ function valueFn(value) {return function() {return value;};}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
  */
-function isUndefined(value){return typeof value === 'undefined';}
+function isUndefined(value) { return typeof value === 'undefined'; }
 
 
 /**
@@ -435,7 +435,7 @@ function isUndefined(value){return typeof value === 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
  */
-function isDefined(value){return typeof value !== 'undefined';}
+function isDefined(value) { return typeof value !== 'undefined'; }
 
 
 /**
@@ -451,7 +451,7 @@ function isDefined(value){return typeof value !== 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){return value != null && typeof value === 'object';}
+function isObject(value) { return value != null && typeof value === 'object'; }
 
 
 /**
@@ -466,7 +466,7 @@ function isObject(value){return value != null && typeof value === 'object';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
  */
-function isString(value){return typeof value === 'string';}
+function isString(value) { return typeof value === 'string'; }
 
 
 /**
@@ -481,7 +481,7 @@ function isString(value){return typeof value === 'string';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
  */
-function isNumber(value){return typeof value === 'number';}
+function isNumber(value) { return typeof value === 'number'; }
 
 
 /**
@@ -496,7 +496,7 @@ function isNumber(value){return typeof value === 'number';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Date`.
  */
-function isDate(value){
+function isDate(value) {
   return toString.call(value) === '[object Date]';
 }
 
@@ -530,7 +530,7 @@ function isArray(value) {
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Function`.
  */
-function isFunction(value){return typeof value === 'function';}
+function isFunction(value) { return typeof value === 'function'; }
 
 
 /**
@@ -614,7 +614,7 @@ function isElement(node) {
  * @param str 'key1,key2,...'
  * @returns {object} in the form of {key1:true, key2:true, ...}
  */
-function makeMap(str){
+function makeMap(str) {
   var obj = {}, items = str.split(","), i;
   for ( i = 0; i < items.length; i++ )
     obj[ items[i] ] = true;
@@ -760,7 +760,7 @@ function isLeafNode (node) {
  </file>
  </example>
  */
-function copy(source, destination){
+function copy(source, destination) {
   if (isWindow(source) || isScope(source)) {
     throw ngMinErr('cpws',
       "Can't copy! Making copies of Window or Scope instances is not supported.");
@@ -1425,7 +1425,7 @@ function bootstrap(element, modules, config) {
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
-function snake_case(name, separator){
+function snake_case(name, separator) {
   separator = separator || '_';
   return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
     return (pos ? separator : '') + letter.toLowerCase();

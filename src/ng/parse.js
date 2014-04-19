@@ -393,7 +393,7 @@ var Parser = function (lexer, $filter, options) {
   this.options = options;
 };
 
-Parser.ZERO = extend(function () {
+Parser.ZERO = extend(function() {
   return 0;
 }, {
   constant: true
@@ -435,7 +435,7 @@ Parser.prototype = {
     return value;
   },
 
-  primary: function () {
+  primary: function() {
     var primary;
     if (this.expect('(')) {
       primary = this.filterChain();
@@ -784,7 +784,7 @@ Parser.prototype = {
   },
 
   // This is used with json array declaration
-  arrayDeclaration: function () {
+  arrayDeclaration: function() {
     var elementFns = [];
     var allConstant = true;
     if (this.peekToken().text !== ']') {
@@ -814,7 +814,7 @@ Parser.prototype = {
     });
   },
 
-  object: function () {
+  object: function() {
     var keyValues = [];
     var allConstant = true;
     if (this.peekToken().text !== '}') {

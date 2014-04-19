@@ -61,7 +61,7 @@
    </example>
  */
 orderByFilter.$inject = ['$parse'];
-function orderByFilter($parse){
+function orderByFilter($parse) {
   return function(array, sortPredicate, reverseOrder) {
     if (!isArray(array)) return array;
     if (!sortPredicate) return array;
@@ -89,7 +89,7 @@ function orderByFilter($parse){
     for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
     return arrayCopy.sort(reverseComparator(comparator, reverseOrder));
 
-    function comparator(o1, o2){
+    function comparator(o1, o2) {
       for ( var i = 0; i < sortPredicate.length; i++) {
         var comp = sortPredicate[i](o1, o2);
         if (comp !== 0) return comp;
@@ -101,7 +101,7 @@ function orderByFilter($parse){
           ? function(a,b){return comp(b,a);}
           : comp;
     }
-    function compare(v1, v2){
+    function compare(v1, v2) {
       var t1 = typeof v1;
       var t2 = typeof v2;
       if (t1 == t2) {

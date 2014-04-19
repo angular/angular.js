@@ -193,7 +193,7 @@ function FormController(element, attrs, $scope, $animate) {
    * Setting a form back to a pristine state is often useful when we want to 'reuse' a form after
    * saving or resetting it.
    */
-  form.$setPristine = function () {
+  form.$setPristine = function() {
     $animate.removeClass(element, DIRTY_CLASS);
     $animate.addClass(element, PRISTINE_CLASS);
     form.$dirty = false;

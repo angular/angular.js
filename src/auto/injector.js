@@ -97,8 +97,8 @@ function annotate(fn, strictDi, name) {
         }
         fnText = fn.toString().replace(STRIP_COMMENTS, '');
         argDecl = fnText.match(FN_ARGS);
-        forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
-          arg.replace(FN_ARG, function(all, underscore, name){
+        forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg) {
+          arg.replace(FN_ARG, function(all, underscore, name) {
             $inject.push(name);
           });
         });
@@ -692,7 +692,7 @@ function createInjector(modulesToLoad, strictDi) {
   ////////////////////////////////////
   // Module Loading
   ////////////////////////////////////
-  function loadModules(modulesToLoad){
+  function loadModules(modulesToLoad) {
     var runBlocks = [], moduleFn, invokeQueue, i, ii;
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
@@ -763,7 +763,7 @@ function createInjector(modulesToLoad, strictDi) {
       }
     }
 
-    function invoke(fn, self, locals, serviceName){
+    function invoke(fn, self, locals, serviceName) {
       if (typeof locals === 'string') {
         serviceName = locals;
         locals = null;

@@ -807,7 +807,7 @@ describe('ngRepeat', function() {
   });
 
   it('should add separator comments after each item', inject(function ($compile, $rootScope) {
-    var check = function () {
+    var check = function() {
       var children = element.find('div');
       expect(children.length).toBe(3);
 
@@ -1008,7 +1008,7 @@ describe('ngRepeat', function() {
       expect(newLis[2]).toEqual(lis[1]);
     });
 
-    it('should be stable even if the collection is initially undefined', function () {
+    it('should be stable even if the collection is initially undefined', function() {
       scope.items = undefined;
       scope.$digest();
 
@@ -1067,7 +1067,7 @@ describe('ngRepeat', function() {
   });
 
 
-  describe('ngRepeatStart', function () {
+  describe('ngRepeatStart', function() {
     it('should grow multi-node repeater', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       $rootScope.books = [

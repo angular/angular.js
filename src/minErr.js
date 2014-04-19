@@ -29,7 +29,7 @@
  */
 
 function minErr(module) {
-  return function () {
+  return function() {
     var code = arguments[0],
       prefix = '[' + (module ? module + ':' : '') + code + '] ',
       template = arguments[1],
