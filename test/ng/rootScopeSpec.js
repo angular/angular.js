@@ -784,7 +784,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should treat set of 1 as direct watch', function() {
+    it('should work for a group with just a single expression', function() {
       var lastValues = ['foo'];
       var log = '';
       var clean = scope.$watchGroup(['a'], function(values, oldValues, s) {
@@ -812,7 +812,7 @@ describe('Scope', function() {
     });
 
 
-    it('should detect a change to any one in a set', function() {
+    it('should detect a change to any one expression in the group', function() {
       var lastValues = ['foo', 'bar'];
       var log = '';
 

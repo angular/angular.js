@@ -381,30 +381,22 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a de-registration function for all listeners.
        */
       $watchGroup: function(watchExpressions, listener) {
-        var oldValues = new Array(watchExpressions.length),
-            newValues = new Array(watchExpressions.length);
-
-        if (watchExpressions.length === 1) {
-          // Special case size of one
-          return this.$watch(watchExpressions[0], function (value, oldValue, scope) {
-            newValues[0] = value;
-            oldValues[0] = oldValue;
-            listener.call(this, newValues, oldValues, scope);
-          });
-        }
-        var deregisterFns = [],
-            changeCount = 0;
+        var oldValues = new Array(watchExpressions.length);
+        var newValues = new Array(watchExpressions.length);
+        var deregisterFns = [];
+        var changeCount = 0;
+        var self = this;
 
         forEach(watchExpressions, function (expr, i) {
-          deregisterFns.push(this.$watch(expr, function (value, oldValue) {
+          deregisterFns.push(self.$watch(expr, function (value, oldValue) {
             newValues[i] = value;
             oldValues[i] = oldValue;
             changeCount++;
           }));
         }, this);
 
-        deregisterFns.push(this.$watch(function () {return changeCount;}, function (c, o, scope) {
-          listener.call(this, newValues, oldValues, scope);
+        deregisterFns.push(self.$watch(function () {return changeCount;}, function () {
+          listener(newValues, oldValues, self);
         }));
 
         return function deregisterWatchGroup() {
