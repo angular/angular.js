@@ -413,10 +413,11 @@ LocationHashbangInHtml5Url.prototype =
    * Note: Path should always begin with forward slash (/), this method will add the forward slash
    * if it is missing.
    *
-   * @param {string=} path New path
+   * @param {(string|number)=} path New path
    * @return {string} path
    */
   path: locationGetterSetter('$$path', function(path) {
+    path = path.toString();
     return path.charAt(0) == '/' ? path : '/' + path;
   }),
 
@@ -471,7 +472,8 @@ LocationHashbangInHtml5Url.prototype =
       case 0:
         return this.$$search;
       case 1:
-        if (isString(search)) {
+        if (isString(search) || isNumber(search)) {
+          search = search.toString();
           this.$$search = parseKeyValue(search);
         } else if (isObject(search)) {
           // remove object undefined or null properties
@@ -508,10 +510,12 @@ LocationHashbangInHtml5Url.prototype =
    *
    * Change hash fragment when called with parameter and return `$location`.
    *
-   * @param {string=} hash New hash fragment
+   * @param {(string|number)=} hash New hash fragment
    * @return {string} hash
    */
-  hash: locationGetterSetter('$$hash', identity),
+  hash: locationGetterSetter('$$hash', function(hash) {
+    return hash.toString();
+  }),
 
   /**
    * @ngdoc method
