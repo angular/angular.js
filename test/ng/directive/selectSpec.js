@@ -986,9 +986,25 @@ describe('select', function() {
         expect(element.val()).toEqual('0');
         expect(element.find('option').eq(0).prop('selected')).toBeTruthy();
         expect(element.find('option').length).toEqual(2);
+
+
+        // reset and test 2nd data element selection.  this was known to fail in IE 10/11.
+        scope.$apply(function() {
+          scope.values = [{name: 'A'}, {name: 'B'}];
+          scope.selected = {};
+        });
+
+        // verify empty option exist
+        expect(element.find('option').length).toEqual(3);
+        expect(element.val()).toEqual('?');
+        expect(element.find('option').eq(0).val()).toEqual('?');
+
+        browserTrigger(element.find('option').eq(2));
+        expect(element.val()).toEqual('1');
+        expect(element.find('option').eq(1).prop('selected')).toBeTruthy();
+        expect(element.find('option').length).toEqual(2);
       });
     });
-
 
     describe('blank option', function () {
 
