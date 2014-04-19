@@ -87,6 +87,11 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/new/path?search=a&b=c&d#hash');
     });
 
+    it('path() should not break on numeric values', function() {
+      url.path(1);
+      expect(url.path()).toBe('/1');
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/1?search=a&b=c&d#hash');
+    });
 
     it('search() should accept string', function() {
       url.search('x=y&c');
@@ -127,6 +132,13 @@ describe('$location', function() {
     });
 
 
+    it('search() should accept numeric keys', function() {
+      url.search({1: 'one', 2: 'two'});
+      expect(url.search()).toEqual({'1': 'one', '2': 'two'});
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?1=one&2=two#hash');
+    });
+
+
     it('search() should handle multiple value', function() {
       url.search('a&b');
       expect(url.search()).toEqual({a: true, b: true});
@@ -143,6 +155,8 @@ describe('$location', function() {
     it('search() should handle single value', function() {
       url.search('ignore');
       expect(url.search()).toEqual({ignore: true});
+      url.search(1);
+      expect(url.search()).toEqual({1: true});
     });
 
 
@@ -160,6 +174,13 @@ describe('$location', function() {
       url.hash('new-hash');
       expect(url.hash()).toBe('new-hash');
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#new-hash');
+    });
+
+
+    it('hash() should accept numeric parameter', function() {
+      url.hash(5);
+      expect(url.hash()).toBe('5');
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#5');
     });
 
 
