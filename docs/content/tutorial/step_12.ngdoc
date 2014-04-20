@@ -113,7 +113,7 @@ with `ngResource`.
 __`app/js/animations.js`.__
 
 ```js
-angular.module('phonecatAnimations', ['ngAnimate']).
+angular.module('phonecatAnimations', ['ngAnimate']);
   // ...
   // this module will later be used to define animations
   // ...
@@ -132,7 +132,7 @@ angular.module('phonecatApp', [
   'phonecatControllers',
   'phonecatFilters',
   'phonecatServices',
-]).
+]);
 // ...
 ```
 
