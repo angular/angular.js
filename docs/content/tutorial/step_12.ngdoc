@@ -92,7 +92,7 @@ __`app/index.html`.__
   ...
 
   <!-- required module to enable animation support in AngularJS -->
-  <script src="../bower_components/angular/angular-animate.js"></script>
+  <script src="../bower_components/angular-animate/angular-animate.js"></script>
 
   <!-- for JavaScript Animations -->
   <script src="js/animations.js"></script>
