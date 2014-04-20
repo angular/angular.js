@@ -99,7 +99,7 @@ of configuring the injector. As opposed to AMD or require.js modules, Angular mo
 solve the problem of script load ordering or lazy script fetching. These goals are totally independent and
 both module systems can live side by side and fulfil their goals.
 
-For deepen your understanding of DI on Angular, see
+To deepen your understanding of DI on Angular, see
 [Understanding Dependency Injection](https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection).
 
 ## Template
