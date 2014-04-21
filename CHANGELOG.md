@@ -1,3 +1,74 @@
+<a name="v1.3.0-beta.6"></a>
+# v1.3.0-beta.6 expedient-caffeination (2014-04-21)
+
+
+## Bug Fixes
+
+- **$animate:** ensure class-based animations always perform a domOperation if skipped
+  ([708f2ba9](https://github.com/angular/angular.js/commit/708f2ba9843b665e417b93c7df907194565db991),
+   [#6957](https://github.com/angular/angular.js/issues/6957))
+- **$compile:**
+  - reference correct directive name in ctreq error
+  ([1192531e](https://github.com/angular/angular.js/commit/1192531e9b48cd90cbb601b0c0fdeb12340c1885),
+   [#7062](https://github.com/angular/angular.js/issues/7062), [#7067](https://github.com/angular/angular.js/issues/7067))
+  - fix regression which affected old jQuery releases
+  ([ef64169d](https://github.com/angular/angular.js/commit/ef64169db32ffdf5e0e3ae2154ac434c6a55378b))
+- **$location:**
+  - fix and test html5Mode url-parsing algorithm for legacy browsers
+  ([49e7c32b](https://github.com/angular/angular.js/commit/49e7c32bb45ce3984df6768ba7b2f6a723a4ebe7))
+  - make legacy browsers behave like modern ones in html5Mode
+  ([3f047704](https://github.com/angular/angular.js/commit/3f047704c70a957596371fec554d3e1fb066a29d),
+   [#6162](https://github.com/angular/angular.js/issues/6162), [#6421](https://github.com/angular/angular.js/issues/6421), [#6899](https://github.com/angular/angular.js/issues/6899), [#6832](https://github.com/angular/angular.js/issues/6832), [#6834](https://github.com/angular/angular.js/issues/6834))
+- **input:** don't dirty model when input event triggered due to placeholder change
+  ([ff428e72](https://github.com/angular/angular.js/commit/ff428e72837c85b9540ee9e5a3daa2c9477c90bb),
+   [#2614](https://github.com/angular/angular.js/issues/2614), [#5960](https://github.com/angular/angular.js/issues/5960))
+- **limitTo:** do not convert Infinity to NaN
+  ([5dee9e4a](https://github.com/angular/angular.js/commit/5dee9e4a33ab2a0be6d8a8099297be3028771e0b),
+   [#6771](https://github.com/angular/angular.js/issues/6771), [#7118](https://github.com/angular/angular.js/issues/7118))
+- **ngModelController:** introduce $cancelUpdate to cancel pending updates
+  ([940fcb40](https://github.com/angular/angular.js/commit/940fcb4090e96824a4abc50252aa36aaf239e937),
+   [#6994](https://github.com/angular/angular.js/issues/6994), [#7014](https://github.com/angular/angular.js/issues/7014))
+
+
+## Features
+
+- **$resource:** Make stripping of trailing slashes configurable.
+  ([3878be52](https://github.com/angular/angular.js/commit/3878be52f6d95fca4c386d4a5523f3c8fcb04270))
+- **Scope:** add `$watchGroup` method for observing a set of expressions
+  ([21f93163](https://github.com/angular/angular.js/commit/21f93163384f36fc4ae0934387339380e3dc3e9c))
+- **injector:** "strict-DI" mode which disables "automatic" function annotation
+  ([4b1695ec](https://github.com/angular/angular.js/commit/4b1695ec61aac8de7fcac1dfe8b4b420f9842c38),
+   [#6719](https://github.com/angular/angular.js/issues/6719), [#6717](https://github.com/angular/angular.js/issues/6717), [#4504](https://github.com/angular/angular.js/issues/4504), [#6069](https://github.com/angular/angular.js/issues/6069), [#3611](https://github.com/angular/angular.js/issues/3611))
+- **ngModelOptions:** custom triggers and debounce of ngModel updates
+  ([dbe381f2](https://github.com/angular/angular.js/commit/dbe381f29fc72490f8e3a5328d5c487b185fe652),
+   [#1285](https://github.com/angular/angular.js/issues/1285))
+
+
+## Performance Improvements
+
+- **$compile:** watch interpolated expressions individually
+  ([0ebfa0d1](https://github.com/angular/angular.js/commit/0ebfa0d112c8ba42242cb8353db91e93eb42b463))
+- **$interpolate:** speed up interpolation by recreating watchGroup approach
+  ([546cb429](https://github.com/angular/angular.js/commit/546cb429d9cea25a9bdadbb87dfd401366b0b908))
+
+
+## Breaking Changes
+
+- **$interpolate:** due to [88c2193c](https://github.com/angular/angular.js/commit/88c2193c71954b9e7e7e4bdf636a2b168d36300d),
+  the function returned by `$interpolate`
+  no longer has a `.parts` array set on it.
+
+  Instead it has two arrays:
+  * `.expressions`, an array of the expressions in the
+    interpolated text. The expressions are parsed with
+    `$parse`, with an extra layer converting them to strings
+    when computed
+  * `.separators`, an array of strings representing the
+    separations between interpolations in the text.
+    This array is **always** 1 item longer than the
+    `.expressions` array for easy merging with it
+
+
 <a name="1.3.0-beta.5"></a>
 # 1.3.0-beta.5 chimeric-glitterfication (2014-04-03)
 
