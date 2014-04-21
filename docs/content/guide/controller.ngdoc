@@ -273,8 +273,8 @@ involves injecting the {@link ng.$rootScope $rootScope} and {@link ng.$controlle
 
     myApp.controller('MyController', function($scope) {
       $scope.spices = [{"name":"pasilla", "spiciness":"mild"},
-                       {"name":"jalapeno", "spiceiness":"hot hot hot!"},
-                       {"name":"habanero", "spiceness":"LAVA HOT!!"}];
+                       {"name":"jalapeno", "spiciness":"hot hot hot!"},
+                       {"name":"habanero", "spiciness":"LAVA HOT!!"}];
       $scope.spice = "habanero";
     });
 ```
