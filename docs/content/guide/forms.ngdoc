@@ -185,7 +185,7 @@ This allows us to extend the above example with these features:
 
 By default, any change to the content will trigger a model update and form validation. You can
 override this behavior using the {@link ng.directive:ngModelOptions ngModelOptions} directive to
-bind only to specified list of events. I.e. `ng-model-options="{ updateOn: "blur" }"` will update
+bind only to specified list of events. I.e. `ng-model-options="{ updateOn: 'blur' }"` will update
 and validate only after the control loses focus. You can set several events using a space delimited
 list. I.e. `ng-model-options="{ updateOn: 'mousedown blur' }"`
 
@@ -202,7 +202,7 @@ only when the control loses focus (blur event).
     <div ng-controller="ControllerUpdateOn">
       <form>
         Name:
-        <input type="text" ng-model="user.name" ng-model-options="{ updateOn: "blur" }" /><br />
+        <input type="text" ng-model="user.name" ng-model-options="{ updateOn: 'blur' }" /><br />
         Other data:
         <input type="text" ng-model="user.data" /><br />
       </form>
