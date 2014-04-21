@@ -130,7 +130,8 @@ function $InterpolateProvider() {
           hasInterpolation = false,
           hasText = false,
           exp,
-          concat = [];
+          concat = [],
+          lastValuesCache = { values: {}, results: {}};
 
       while(index < textLength) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
@@ -172,9 +173,6 @@ function $InterpolateProvider() {
       if (!mustHaveExpression || hasInterpolation) {
         concat.length = separators.length + expressions.length;
 
-        var lastValues = [];
-        var lastResult;
-
         var compute = function(values) {
           for(var i = 0, ii = expressions.length; i < ii; i++) {
             concat[2*i] = separators[i];
@@ -201,11 +199,29 @@ function $InterpolateProvider() {
         };
 
         return extend(function interpolationFn(context) {
+            var scopeId = context.$id || 'notAScope';
+            var lastValues = lastValuesCache.values[scopeId];
+            var lastResult = lastValuesCache.results[scopeId];
             var i = 0;
             var ii = expressions.length;
             var values = new Array(ii);
             var val;
             var inputsChanged = lastResult === undefined ? true: false;
+
+
+            // if we haven't seen this context before, initialize the cache and try to setup
+            // a cleanup routine that purges the cache when the scope goes away.
+            if (!lastValues) {
+              lastValues = [];
+              inputsChanged = true;
+              if (context.$on) {
+                context.$on('$destroy', function() {
+                  lastValuesCache.values[scopeId] = null;
+                  lastValuesCache.results[scopeId] = null;
+                });
+              }
+            }
+
 
             try {
               for (; i < ii; i++) {
@@ -217,8 +233,8 @@ function $InterpolateProvider() {
               }
 
               if (inputsChanged) {
-                lastValues = values;
-                lastResult = compute(values);
+                lastValuesCache.values[scopeId] = values;
+                lastValuesCache.results[scopeId] = lastResult = compute(values);
               }
             } catch(err) {
               var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
