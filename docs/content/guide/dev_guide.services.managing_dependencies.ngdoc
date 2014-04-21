@@ -97,7 +97,7 @@ to declare their dependencies. It is important that the order of the string iden
 is the same as the order of argument names in the signature of the factory function. Unless the
 dependencies are inferred from the function signature, it is this array with IDs and their order
 that the injector uses to determine which services and in which order to inject. This becomes
-irrelevant however if you use a tool like ng-min in your workflow which allows you to use the simpler
+irrelevant however if you use a tool like [ng-min](https://github.com/btford/ngmin#ngmin) in your workflow which allows you to use the simpler
 signature notation within your codebase and automatically converts to the array notation prior to minifying.
 
 
