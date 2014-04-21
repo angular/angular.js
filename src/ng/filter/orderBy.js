@@ -9,7 +9,7 @@
  * Orders a specified `array` by the `expression` predicate.
  *
  * @param {Array} array The array to sort.
- * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be
+ * @param {function()|string|Object} expression A predicate to be
  *    used by the comparator to determine the order of elements.
  *
  *    Can be one of:
