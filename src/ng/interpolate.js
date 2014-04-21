@@ -114,11 +114,10 @@ function $InterpolateProvider() {
      *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
-     * @returns {function(scope)} an interpolation function which is used to compute the
+     * @returns {function(context)} an interpolation function which is used to compute the
      *    interpolated string. The function has these parameters:
      *
-     * - `scope`: a Scope instance against which any expressions embedded in the strings are
-     *     evaluated.
+     * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
     function $interpolate(text, mustHaveExpression, trustedContext) {
       var startIndex,
@@ -126,6 +125,7 @@ function $InterpolateProvider() {
           index = 0,
           separators = [],
           expressions = [],
+          parseFns = [],
           textLength = text.length,
           hasInterpolation = false,
           hasText = false,
@@ -139,6 +139,7 @@ function $InterpolateProvider() {
           separators.push(text.substring(index, startIndex));
           exp = text.substring(startIndex + startSymbolLength, endIndex);
           expressions.push(exp);
+          parseFns.push($parse(exp));
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
         } else {
@@ -182,7 +183,7 @@ function $InterpolateProvider() {
           return concat.join('');
         };
 
-        return extend(function interpolationFn(scope) {
+        return extend(function interpolationFn(context) {
             var i = 0;
             var ii = expressions.length;
             var values = new Array(ii);
@@ -191,7 +192,7 @@ function $InterpolateProvider() {
 
             try {
               for (; i < ii; i++) {
-                val = scope.$eval(expressions[i]);
+                val = parseFns[i](context);
                 if (val !== lastValues[i]) {
                   inputsChanged = true;
                 }
@@ -213,9 +214,7 @@ function $InterpolateProvider() {
           // all of these properties are undocumented for now
           exp: text, //just for compatibility with regular watchers created via $watch
           separators: separators,
-          expressions: expressions,
-          // TODO(i): remove. don't expose this at all. requires changing many tests
-          compute: compute
+          expressions: expressions
         });
       }
 
