@@ -779,83 +779,69 @@ describe('Scope', function() {
 
   describe('$watchGroup', function() {
     var scope;
-    beforeEach(inject(function($rootScope) {
+    var log;
+
+    beforeEach(inject(function($rootScope, _log_) {
       scope = $rootScope.$new();
+      log = _log_;
     }));
 
 
     it('should work for a group with just a single expression', function() {
-      var lastValues = ['foo'];
-      var log = '';
-      var clean = scope.$watchGroup(['a'], function(values, oldValues, s) {
-        log += values.join(',') + ';';
+      scope.$watchGroup(['a'], function(values, oldValues, s) {
         expect(s).toBe(scope);
-        expect(oldValues).toEqual(lastValues);
-        lastValues = values.slice();
+        log(oldValues + ' >>> ' + values);
       });
 
       scope.a = 'foo';
       scope.$digest();
-      expect(log).toEqual('foo;');
+      expect(log).toEqual('foo >>> foo');
 
+      log.reset();
       scope.$digest();
-      expect(log).toEqual('foo;');
+      expect(log).toEqual('');
 
       scope.a = 'bar';
       scope.$digest();
-      expect(log).toEqual('foo;bar;');
-
-      clean();
-      scope.a = 'xxx';
-      scope.$digest();
-      expect(log).toEqual('foo;bar;');
+      expect(log).toEqual('foo >>> bar');
     });
 
 
     it('should detect a change to any one expression in the group', function() {
-      var lastValues = ['foo', 'bar'];
-      var log = '';
-
       scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
-        log += values.join(',') + ';';
         expect(s).toBe(scope);
-        expect(oldValues).toEqual(lastValues);
-        lastValues = values.slice();
+        log(oldValues + ' >>> ' + values);
       });
 
       scope.a = 'foo';
       scope.b = 'bar';
       scope.$digest();
-      expect(log).toEqual('foo,bar;');
+      expect(log).toEqual('foo,bar >>> foo,bar');
 
-      log = '';
+      log.reset();
       scope.$digest();
       expect(log).toEqual('');
 
       scope.a = 'a';
       scope.$digest();
-      expect(log).toEqual('a,bar;');
+      expect(log).toEqual('foo,bar >>> a,bar');
 
-      log = '';
+      log.reset();
       scope.a = 'A';
       scope.b = 'B';
       scope.$digest();
-      expect(log).toEqual('A,B;');
+      expect(log).toEqual('a,bar >>> A,B');
     });
 
 
     it('should not call watch action fn when watchGroup was deregistered', function() {
-      var lastValues = ['foo', 'bar'];
-      var log = '';
-      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
-        log += values.join(',') + ';';
-        expect(s).toBe(scope);
-        expect(oldValues).toEqual(lastValues);
-        lastValues = values.slice();
+      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
       });
 
       deregister();
       scope.a = 'xxx';
+      scope.b = 'yyy';
       scope.$digest();
       expect(log).toEqual('');
     });
