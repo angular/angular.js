@@ -174,13 +174,30 @@ function $InterpolateProvider() {
 
         var lastValues = [];
         var lastResult;
+
         var compute = function(values) {
           for(var i = 0, ii = expressions.length; i < ii; i++) {
             concat[2*i] = separators[i];
-            concat[(2*i)+1] = stringify(values[i]);
+            concat[(2*i)+1] = values[i];
           }
           concat[2*ii] = separators[ii];
           return concat.join('');
+        };
+
+        var stringify = function (value) {
+          if (trustedContext) {
+            value = $sce.getTrusted(trustedContext, value);
+          } else {
+            value = $sce.valueOf(value);
+          }
+
+          if (value === null || isUndefined(value)) {
+            value = '';
+          } else if (typeof value != 'string') {
+            value = toJson(value);
+          }
+
+          return value;
         };
 
         return extend(function interpolationFn(context) {
@@ -192,7 +209,7 @@ function $InterpolateProvider() {
 
             try {
               for (; i < ii; i++) {
-                val = parseFns[i](context);
+                val = stringify(parseFns[i](context));
                 if (val !== lastValues[i]) {
                   inputsChanged = true;
                 }
@@ -216,22 +233,6 @@ function $InterpolateProvider() {
           separators: separators,
           expressions: expressions
         });
-      }
-
-      function stringify(value) {
-        if (trustedContext) {
-          value = $sce.getTrusted(trustedContext, value);
-        } else {
-          value = $sce.valueOf(value);
-        }
-
-        if (value === null || isUndefined(value)) {
-          value = '';
-        } else if (typeof value != 'string') {
-          value = toJson(value);
-        }
-
-        return value;
       }
     }
 
