@@ -1822,9 +1822,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} trigger Event that triggered the update.
    */
   this.$setViewValue = function(value, trigger) {
-    var debounceDelay = ctrl.$options && (isObject(ctrl.$options.debounce)
-        ? (ctrl.$options.debounce[trigger] || ctrl.$options.debounce['default'] || 0)
-        : ctrl.$options.debounce) || 0;
+    var debounceDelay = 0,
+        options = ctrl.$options,
+        debounce;
+
+    if(options && isDefined(options.debounce)) {
+      debounce = options.debounce;
+      if(isNumber(debounce)) {
+        debounceDelay = debounce;
+      } else if(isNumber(debounce[trigger])) {
+        debounceDelay = debounce[trigger];
+      } else if (isNumber(debounce['default'])) {
+        debounceDelay = debounce['default'];
+      }
+    }
 
     $timeout.cancel(pendingDebounce);
     if (debounceDelay) {
