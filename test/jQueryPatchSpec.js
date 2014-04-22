@@ -71,8 +71,8 @@ if (window.jQuery) {
       spy1 = jasmine.createSpy('span1.$destroy');
       spy2 = jasmine.createSpy('span2.$destroy');
       doc = $('<div><span class=first>abc</span><span class=second>xyz</span></div>');
-      doc.find('span.first').bind('$destroy', spy1);
-      doc.find('span.second').bind('$destroy', spy2);
+      doc.find('span.first').on('$destroy', spy1);
+      doc.find('span.second').on('$destroy', spy2);
     });
 
     afterEach(function() {
