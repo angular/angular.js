@@ -112,7 +112,16 @@ node --version
   </a>.
 </div>
 
-Once you have Node.js installed on your machine you can download the tool dependencies by running:
+```
+which bower
+```
+
+If no bower, run:
+```
+sudo npm install bower -g
+```
+
+Once you have Node.js and Bower installed on your machine you can download the tool dependencies by running:
 
 ```
 npm install
