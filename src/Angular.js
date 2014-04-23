@@ -10,7 +10,6 @@
     -push,
     -toString,
     -ngMinErr,
-    -_angular,
     -angularModule,
     -nodeName_,
     -uid,
@@ -161,8 +160,6 @@ var /** holds major version number for IE or NaN for real browsers */
     toString          = Object.prototype.toString,
     ngMinErr          = minErr('ng'),
 
-
-    _angular          = window.angular,
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
