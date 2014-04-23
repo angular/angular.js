@@ -141,6 +141,17 @@ tasks that you will need while developing:
 - `npm run protractor` : run the Protractor end 2 end tests
 - `npm run update-webdriver` : install the drivers needed by Protractor
 
+
+Note : if you are running behind a proxy, installation may failed. You'll have to create a `.bowerrc`
+file, near the `bower.json`file in the repositoy, with the following content :
+
+```
+{
+  "proxy":"http://proxy.mycompany.com:8080",
+  "https-proxy":"http://proxy.mycompany.com:8080"
+}
+```
+
 ### Running Development Web Server
 
 While Angular applications are purely client-side code, and it is possible to open them in a web
