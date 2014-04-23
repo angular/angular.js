@@ -347,6 +347,32 @@ function qFactory(nextTick, exceptionHandler) {
 
   /**
    * @ngdoc method
+   * @name $q#resolve
+   * @function
+   *
+   * @description
+   * Creates a promise that is immediately resolved with the specified value. This api is useful
+   * when you have an interface that expects a promise to be returned but the underlying function
+   * implemention is not asychronous. Instead of creating a deferred, resolving that and then
+   * returning the deferred promise, you can simply wrap your return object with a resolve promise.
+   *
+   * ```js
+   *   var fn = function (input) {
+   *     return $q.resolve(input + 2);
+   *   }
+   * ```
+   *
+   * @param {*} value Object for the resolve promise.
+   * @returns {Promise} Returns a resolved promise with the provided value.
+   */
+  var resolve = function(value) {
+    var result = defer();
+    result.resolve(value);
+    return result.promise;
+  };
+
+  /**
+   * @ngdoc method
    * @name $q#reject
    * @function
    *
@@ -518,6 +544,7 @@ function qFactory(nextTick, exceptionHandler) {
 
   return {
     defer: defer,
+    resolve: resolve,
     reject: reject,
     when: when,
     all: all
