@@ -926,6 +926,21 @@ describe('q', function() {
     });
   });
 
+  describe('resolve', function() {
+    it('should package a string into a resolved promise', function() {
+      var resolvedPromise = q.resolve('gonna happen');
+      promise.then(success(), error());
+      syncResolve(deferred, resolvedPromise);
+      expect(log).toEqual(['success(gonna happen)->gonna happen']);
+    });
+
+    it('should package an object into a resolved promise', function() {
+      var resolvedPromise = q.resolve({ foo: 'choo' });
+      promise.then(success(), error());
+      syncResolve(deferred, resolvedPromise);
+      expect(log).toEqual(['success({"foo":"choo"})->{"foo":"choo"}']);
+    });
+  });
 
   describe('reject', function() {
     it('should package a string into a rejected promise', function() {
