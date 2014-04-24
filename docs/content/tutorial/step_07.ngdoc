@@ -34,15 +34,15 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "private": true,
   "dependencies": {
     "angular": "1.2.x",
-    "angular-mocks": "~1.2.15",
+    "angular-mocks": "~1.2.x",
     "bootstrap": "~3.1.1",
-    "angular-route": "~1.2.15"
+    "angular-route": "~1.2.x"
   }
 }
 ```
 
-The new dependency `"angular-route": "~1.2.15"` tells bower to install a version of the
-angular-route component that is compatible with version 1.2.15.  We must tell bower to download
+The new dependency `"angular-route": "~1.2.x"` tells bower to install a version of the
+angular-route component that is compatible with version 1.2.x.  We must tell bower to download
 and install this dependency.
 
 If you have bower installed globally then you can run `bower install` but for this project we have

@@ -112,12 +112,7 @@ node --version
   </a>.
 </div>
 
-To install bower:
-```
-npm install -g bower
-```
-
-Once you have Node.js and Bower installed on your machine you can download the tool dependencies by running:
+Once you have Node.js installed on your machine you can download the tool dependencies by running:
 
 ```
 npm install
@@ -130,8 +125,14 @@ This command will download the following tools, into the `node_modules` director
 - [Karma][karma] - unit test runner
 - [Protractor][protractor] - end 2 end test runner
 
-Running `npm install` will also automatically run `bower install`, which will download the Angular
-framework into the `bower_components` directory.
+Running `npm install` will also automatically use bower to download the Angular framework into the
+`bower_components` directory.
+
+<div class="alert alert-info">
+  Note the angular-phonecat project is setup to install and run these utilities via npm scripts.
+  This means that you do not have to have any of these utilities installed globally on your system
+  to follow the tutorial.  See **Installing Helper Tools** below for more information.
+</div>
 
 The project is preconfigured with a number of npm helper scripts to make it easy to run the common
 tasks that you will need while developing:
@@ -140,6 +141,28 @@ tasks that you will need while developing:
 - `npm test` : start the Karma unit test runner
 - `npm run protractor` : run the Protractor end 2 end tests
 - `npm run update-webdriver` : install the drivers needed by Protractor
+
+### Install Helper Tools (optional)
+
+The Bower, Http-Server, Karma and Protractor modules are also executables, which can be installed
+globally and run directly from a terminal/command prompt. You don't need to do this to follow the
+tutorial, but if you decide you do want to run them directly, you can install these modules globally
+using, `sudo npm install -g ...`.
+
+For instance to install the Bower command line executable you would do:
+
+```
+sudo npm install -g bower
+```
+
+*(Omit the sudo if running on Windows)*
+
+Then you can run the bower tool directly, such as:
+
+```
+bower install
+```
+
 
 ### Running Development Web Server
 
