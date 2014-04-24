@@ -271,7 +271,7 @@ making calls to it when needed.
 ```js
 myModule.directive('my-directive', ['$animate', function($animate) {
   return function(element, scope, attrs) {
-    element.bind('click', function() {
+    element.on('click', function() {
       if(element.hasClass('clicked')) {
         $animate.removeClass(element, 'clicked');
       } else {

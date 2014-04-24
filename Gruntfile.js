@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = versionInfo.currentVersion;
-  NG_VERSION.cdn = versionInfo.currentPackage.cdnVersion;
+  NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-'+ NG_VERSION.full;
 
   //global beforeEach
@@ -279,7 +279,7 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);

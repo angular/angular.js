@@ -5,20 +5,13 @@
 
 <ul doc-tutorial-nav="9"></ul>
 
-
 In this step you will learn how to create your own custom display filter.
 
-
-<div doc-tutorial-reset="9"></div>
-
-
-Navigate to one of the detail pages.
-
-In the previous step, the details page displayed either "true" or "false" to indicate whether
+* In the previous step, the details page displayed either "true" or "false" to indicate whether
 certain phone features were present or not. We have used a custom filter to convert those text
 strings into glyphs: ✓ for "true", and ✘ for "false". Let's see what the filter code looks like.
 
-The most important changes are listed below. You can see the full diff on [GitHub](https://github.com/angular/angular-phonecat/compare/step-8...step-9):
+<div doc-tutorial-reset="9"></div>
 
 
 ## Custom Filter
@@ -118,7 +111,7 @@ access to the filter that we want to test.  See {@link angular.mock.inject angul
 
 You should now see the following output in the Karma tab:
 
-        Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)
+<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)</pre>
 
 
 # Experiments
@@ -131,9 +124,11 @@ following bindings to `index.html`:
   * `{{ 1304375948024 | date:"MM/dd/yyyy @ h:mma" }}`
 
 *  We can also create a model with an input element, and combine it with a filtered binding. Add
-the following to index.html:
+  the following to index.html:
 
-        <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+  ```html
+  <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+  ```
 
 
 # Summary

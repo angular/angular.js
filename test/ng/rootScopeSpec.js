@@ -603,6 +603,12 @@ describe('Scope', function() {
           expect(log.empty()).toEqual([{newVal: [{}, []], oldVal: ['b', {}, []]}]);
         });
 
+        it('should not infinitely digest when current value is NaN', function() {
+          $rootScope.obj = [NaN];
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
+        });
 
         it('should watch array-like objects like arrays', function () {
           var arrayLikelog = [];
@@ -771,6 +777,75 @@ describe('Scope', function() {
     });
   });
 
+  describe('$watchGroup', function() {
+    var scope;
+    var log;
+
+    beforeEach(inject(function($rootScope, _log_) {
+      scope = $rootScope.$new();
+      log = _log_;
+    }));
+
+
+    it('should work for a group with just a single expression', function() {
+      scope.$watchGroup(['a'], function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(oldValues + ' >>> ' + values);
+      });
+
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('foo >>> foo');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo >>> bar');
+    });
+
+
+    it('should detect a change to any one expression in the group', function() {
+      scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(oldValues + ' >>> ' + values);
+      });
+
+      scope.a = 'foo';
+      scope.b = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo,bar >>> foo,bar');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'a';
+      scope.$digest();
+      expect(log).toEqual('foo,bar >>> a,bar');
+
+      log.reset();
+      scope.a = 'A';
+      scope.b = 'B';
+      scope.$digest();
+      expect(log).toEqual('a,bar >>> A,B');
+    });
+
+
+    it('should not call watch action fn when watchGroup was deregistered', function() {
+      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      });
+
+      deregister();
+      scope.a = 'xxx';
+      scope.b = 'yyy';
+      scope.$digest();
+      expect(log).toEqual('');
+    });
+  });
 
   describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
@@ -838,17 +913,19 @@ describe('Scope', function() {
       expect(log).toBe('123');
 
       first.$destroy();
+
+      // once a scope is destroyed apply should not do anything any more
       first.$apply();
-      expect(log).toBe('12323');
+      expect(log).toBe('123');
 
       first.$destroy();
       first.$destroy();
       first.$apply();
-      expect(log).toBe('1232323');
+      expect(log).toBe('123');
     }));
 
 
-    it('should decrement anscestor $$listenerCount entries', inject(function($rootScope) {
+    it('should decrement ancestor $$listenerCount entries', inject(function($rootScope) {
       var EVENT = 'fooEvent',
           spy = jasmine.createSpy('listener'),
           firstSecond = first.$new();
@@ -867,6 +944,47 @@ describe('Scope', function() {
 
       $rootScope.$broadcast(EVENT);
       expect(spy.callCount).toBe(1);
+    }));
+
+
+    it("should do nothing when a child event listener is registered after parent's destruction",
+        inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+      var fn = child.$on('someEvent', function() {});
+      expect(fn).toBe(noop);
+    }));
+
+
+    it("should do nothing when a child watch is registered after parent's destruction",
+        inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+      var fn = child.$watch('somePath', function() {});
+      expect(fn).toBe(noop);
+    }));
+
+
+    it("should preserve all (own and inherited) model properties on a destroyed scope",
+        inject(function($rootScope) {
+      // This test simulates an async task (xhr response) interacting with the scope after the scope
+      // was destroyed. Since we can't abort the request, we should ensure that the task doesn't
+      // throw NPEs because the scope was cleaned up during destruction.
+
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.parentModel = 'parent';
+      child.childModel = 'child';
+
+      child.$destroy();
+
+      expect(child.parentModel).toBe('parent');
+      expect(child.childModel).toBe('child');
     }));
   });
 

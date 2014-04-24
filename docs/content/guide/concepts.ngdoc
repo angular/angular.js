@@ -2,10 +2,10 @@
 @name Conceptual Overview
 @description
 
-There are some concepts within Angular that you should understand before creating your first application.
-This section touches all important parts of Angular really quickly using a simple example.
-However, it won't explain all details.
-For a more in-depth explanation, have a look at the {@link tutorial/ tutorial}.
+# Conceptual Overview
+
+This section briefly touches on all of the important parts of AngularJS using a simple example.
+For a more in-depth explanation, see the {@link tutorial/ tutorial}.
 
 | Concept          | Description                     |
 |------------------|------------------------------------------|
@@ -25,7 +25,7 @@ For a more in-depth explanation, have a look at the {@link tutorial/ tutorial}.
 |{@link concepts#service Service}           | reusable business logic independent of views |
 
 
-# A first example: Data binding
+## A first example: Data binding
 
 In the following example we will build a form to calculate the costs of an invoice in different currencies.
 
@@ -97,7 +97,7 @@ recalculated and the DOM is updated with their values.
 The concept behind this is <a name="databinding">"{@link databinding two-way data binding}"</a>.
 
 
-# Adding UI logic: Controllers
+## Adding UI logic: Controllers
 
 Let's add some more logic to the example that allows us to enter and calculate the costs in
 different currencies and also pay the invoice.
@@ -181,7 +181,7 @@ The following graphic shows how everything works together after we introduced th
 
 <img style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-databinding2.png">
 
-# View independent business logic: Services
+## View independent business logic: Services
 
 Right now, the `InvoiceController` contains all logic of our example. When the application grows it
 is a good practice to move view independent logic from the controller into a so called
@@ -297,7 +297,7 @@ Angular uses this array syntax to define the dependencies so that the DI also wo
 the code, which will most probably rename the argument name of the controller constructor function
 to something shorter like `a`.
 
-# Accessing the backend
+## Accessing the backend
 
 Let's finish our example by fetching the exchange rates from the Yahoo Finance API.
 The following example shows how this is done with Angular:
@@ -379,8 +379,8 @@ The following example shows how this is done with Angular:
 </example>
 
 What changed?
-Our `currencyConverter` service of the `finance` module now uses the
-{@link ng.$http $http} service, a builtin service provided by Angular
-for accessing the backend. It is a wrapper around [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
-and [JSONP](http://en.wikipedia.org/wiki/JSONP) transports. Details can be found in the api docs of that service.
+Our `currencyConverter` service of the `finance` module now uses the {@link ng.$http `$http`}, a
+built-in service provided by Angular for accessing a server backend. `$http` is a wrapper around
+[`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+and [JSONP](http://en.wikipedia.org/wiki/JSONP) transports.
 

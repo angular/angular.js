@@ -112,11 +112,13 @@ describe("ngAnimate", function() {
             angular.element(document.body).append($rootElement);
 
             $animate.addClass(elm1, 'klass');
+            $animate.triggerReflow();
             expect(count).toBe(1);
 
             $animate.enabled(false);
 
             $animate.addClass(elm1, 'klass2');
+            $animate.triggerReflow();
             expect(count).toBe(1);
 
             $animate.enabled(true);
@@ -124,16 +126,19 @@ describe("ngAnimate", function() {
             elm1.append(elm2);
 
             $animate.addClass(elm2, 'klass');
+            $animate.triggerReflow();
             expect(count).toBe(2);
 
             $animate.enabled(false, elm1);
 
             $animate.addClass(elm2, 'klass2');
+            $animate.triggerReflow();
             expect(count).toBe(2);
 
             var root = angular.element($rootElement[0]);
             $rootElement.addClass('animated');
             $animate.addClass(root, 'klass2');
+            $animate.triggerReflow();
             expect(count).toBe(3);
           });
         });
@@ -188,12 +193,14 @@ describe("ngAnimate", function() {
 
             expect(captured).toBe(false);
             $animate.addClass(element, 'red');
+            $animate.triggerReflow();
             expect(captured).toBe(true);
 
             captured = false;
             $animate.enabled(false);
 
             $animate.addClass(element, 'blue');
+            $animate.triggerReflow();
             expect(captured).toBe(false);
 
             //clean up the mess
@@ -392,6 +399,7 @@ describe("ngAnimate", function() {
           inject(function($animate, $rootScope, $sniffer, $timeout) {
             child.attr('class','classify no');
             $animate.setClass(child, 'yes', 'no');
+            $animate.triggerReflow();
 
             expect(child.hasClass('yes')).toBe(true);
             expect(child.hasClass('no')).toBe(false);
@@ -433,6 +441,7 @@ describe("ngAnimate", function() {
           inject(function($animate, $rootScope, $sniffer, $timeout) {
             child.attr('class','classify no');
             $animate.setClass(child, 'yes', 'no');
+            $animate.triggerReflow();
 
             expect(child.hasClass('yes')).toBe(true);
             expect(child.hasClass('no')).toBe(false);
@@ -647,6 +656,7 @@ describe("ngAnimate", function() {
 
           $animate.addClass(child, 'custom-delay');
           $animate.addClass(child, 'custom-long-delay');
+          $animate.triggerReflow();
 
           expect(child.hasClass('animation-cancelled')).toBe(false);
           expect(child.hasClass('animation-ended')).toBe(false);
@@ -672,6 +682,7 @@ describe("ngAnimate", function() {
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
             $animate.addClass(element, 'custom-delay custom-long-delay');
+            $animate.triggerReflow();
             $timeout.flush(2000);
             $timeout.flush(20000);
             expect(element.hasClass('custom-delay')).toBe(true);
@@ -719,6 +730,37 @@ describe("ngAnimate", function() {
               $rootElement = _$rootElement_;
             };
           })
+        });
+
+        /* The CSS animation handler must always be rendered before the other JS animation
+           handlers. This is important since the CSS animation handler may place temporary
+           styling on the HTML element before the reflow commences which in turn may override
+           other transition or keyframe styles that any former JS animations may have placed
+           on the element: https://github.com/angular/angular.js/issues/6675 */
+        it("should always perform the CSS animation before the JS animation", function() {
+          var log = [];
+          module(function($animateProvider) {
+            //CSS animation handler
+            $animateProvider.register('', function() {
+              return {
+                leave : function() { log.push('css'); }
+              }
+            });
+            //custom JS animation handler
+            $animateProvider.register('.js-animation', function() {
+              return {
+                leave : function() { log.push('js'); }
+              }
+            });
+          });
+          inject(function($animate, $rootScope, $compile, $sniffer) {
+            if(!$sniffer.transitions) return;
+
+            element = $compile(html('<div class="js-animation"></div>'))($rootScope);
+            $animate.leave(element);
+            $rootScope.$digest();
+            expect(log).toEqual(['css','js']);
+          });
         });
 
 
@@ -1183,6 +1225,53 @@ describe("ngAnimate", function() {
               }
           }));
 
+          it("should place a hard block when a structural CSS transition is run",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+
+            if(!$sniffer.transitions) return;
+
+            ss.addRule('.leave-animation.ng-leave',
+              '-webkit-transition:5s linear all;' +
+                      'transition:5s linear all;' +
+                      'opacity:1;');
+
+            ss.addRule('.leave-animation.ng-leave.ng-leave-active', 'opacity:1');
+
+            element = $compile(html('<div class="leave-animation">1</div>'))($rootScope);
+
+            $animate.leave(element);
+            $rootScope.$digest();
+
+            expect(element.attr('style')).toMatch(/transition.*?:\s*none/);
+
+            $animate.triggerReflow();
+
+            expect(element.attr('style')).not.toMatch(/transition.*?:\s*none/);
+          }));
+
+          it("should not place a hard block when a class-based CSS transition is run",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+
+            if(!$sniffer.transitions) return;
+
+            ss.addRule('.my-class', '-webkit-transition:5s linear all;' +
+                                    'transition:5s linear all;');
+
+            element = $compile(html('<div>1</div>'))($rootScope);
+
+            $animate.addClass(element, 'my-class');
+
+            expect(element.attr('style')).not.toMatch(/transition.*?:\s*none/);
+            expect(element.hasClass('my-class')).toBe(false);
+            expect(element.hasClass('my-class-add')).toBe(true);
+
+            $animate.triggerReflow();
+
+            expect(element.attr('style')).not.toMatch(/transition.*?:\s*none/);
+            expect(element.hasClass('my-class')).toBe(true);
+            expect(element.hasClass('my-class-add')).toBe(true);
+            expect(element.hasClass('my-class-add-active')).toBe(true);
+          }));
 
           it("should stagger the items when the correct CSS class is provided",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
@@ -1301,24 +1390,47 @@ describe("ngAnimate", function() {
           }));
 
           it("should intelligently cancel former timeouts and close off a series of elements a final timeout", function() {
-            var cancellations = 0;
+            var currentTimestamp, cancellations = 0;
             module(function($provide) {
               $provide.decorator('$timeout', function($delegate) {
                 var _cancel = $delegate.cancel;
-                $delegate.cancel = function() {
-                  cancellations++;
-                  return _cancel.apply($delegate, arguments);
+                $delegate.cancel = function(timer) {
+                  if(timer) {
+                    cancellations++;
+                    return _cancel.apply($delegate, arguments);
+                  }
                 };
                 return $delegate;
               });
+
+              return function($sniffer) {
+                if($sniffer.transitions) {
+                  currentTimestamp = Date.now();
+                  spyOn(Date,'now').andCallFake(function() {
+                    return currentTimestamp;
+                  });
+                }
+              }
             })
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
               if (!$sniffer.transitions) return;
 
-              ss.addRule('.animate-me', '-webkit-transition:1s linear all;' +
+              ss.addRule('.animate-me div', '-webkit-transition:1s linear all;' +
                                                       'transition:1s linear all;');
 
-              element = $compile(html('<div><div class="animate-me" ng-repeat="item in items"></div></div>'))($rootScope);
+              ss.addRule('.animate-me-longer div', '-webkit-transition:1.5s linear all;' +
+                                                       'transition:1.5s linear all;');
+
+              element = $compile(html('<div class="animate-me-longer">' +
+                                      '  <div ng-repeat="item in items"></div>' +
+                                      '</div>'))($rootScope);
+              $rootScope.items = [0];
+              $rootScope.$digest();
+              $animate.triggerReflow();
+
+              currentTimestamp += 2250; //1.5 * 1500 = 2250
+
+              element[0].className = 'animate-me';
 
               $rootScope.items = [1,2,3,4,5,6,7,8,9,10];
               var totalOperations = $rootScope.items.length;
@@ -1327,9 +1439,11 @@ describe("ngAnimate", function() {
 
               $rootScope.items = [0];
               $animate.triggerReflow();
+
+              currentTimestamp += 1500; //1.5 * 1000 = 1500
               $timeout.flush(1500);
 
-              expect(cancellations).toBeLessThan(totalOperations);
+              expect(cancellations).toBe(1);
               expect(element.children().length).toBe(10);
               cancellations = 0;
 
@@ -1339,7 +1453,7 @@ describe("ngAnimate", function() {
               $animate.triggerReflow();
               $timeout.flush(1500);
               expect(element.children().length).toBe(1);
-              expect(cancellations).toBeLessThan(totalOperations);
+              expect(cancellations).toBe(1);
             });
           });
 
@@ -1650,10 +1764,12 @@ describe("ngAnimate", function() {
           $animate.addClass(element, 'on', function() {
             signature += 'A';
           });
+          $animate.triggerReflow();
 
           $animate.removeClass(element, 'on', function() {
             signature += 'B';
           });
+          $animate.triggerReflow();
 
           $animate.triggerCallbacks();
 
@@ -1676,6 +1792,7 @@ describe("ngAnimate", function() {
             signature += 'Z';
           });
 
+          $animate.triggerReflow();
           $animate.triggerCallbacks();
 
           expect(signature).toBe('Z');
@@ -1917,13 +2034,13 @@ describe("ngAnimate", function() {
           //actual animations
           captured = 'none';
           $animate.removeClass(element, 'some-class');
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(element.hasClass('some-class')).toBe(false);
           expect(captured).toBe('removeClass-some-class');
 
           captured = 'nothing';
           $animate.addClass(element, 'some-class');
-          $timeout.flush();
+          $animate.triggerReflow();
           expect(element.hasClass('some-class')).toBe(true);
           expect(captured).toBe('addClass-some-class');
         }));
@@ -1938,10 +2055,12 @@ describe("ngAnimate", function() {
           var element = jqLite(parent.find('span'));
 
           $animate.addClass(element,'klass');
+          $animate.triggerReflow();
 
           expect(element.hasClass('klass')).toBe(true);
 
           $animate.removeClass(element,'klass');
+          $animate.triggerReflow();
 
           expect(element.hasClass('klass')).toBe(false);
           expect(element.hasClass('klass-remove')).toBe(false);
@@ -1962,12 +2081,14 @@ describe("ngAnimate", function() {
           $animate.addClass(element,'klass', function() {
             signature += 'A';
           });
+          $animate.triggerReflow();
 
           expect(element.hasClass('klass')).toBe(true);
 
           $animate.removeClass(element,'klass', function() {
             signature += 'B';
           });
+          $animate.triggerReflow();
 
           $animate.triggerCallbacks();
           expect(element.hasClass('klass')).toBe(false);
@@ -2040,6 +2161,7 @@ describe("ngAnimate", function() {
           $animate.addClass(element,'klassy', function() {
             signature += 'X';
           });
+          $animate.triggerReflow();
 
           $timeout.flush(500);
 
@@ -2048,6 +2170,7 @@ describe("ngAnimate", function() {
           $animate.removeClass(element,'klassy', function() {
             signature += 'Y';
           });
+          $animate.triggerReflow();
 
           $timeout.flush(3000);
 
@@ -2546,12 +2669,15 @@ describe("ngAnimate", function() {
         var element = html($compile('<div class="classify"></div>')($rootScope));
 
         $animate.addClass(element, 'super');
+        $animate.triggerReflow();
         expect(element.data('classify')).toBe('add-super');
 
         $animate.removeClass(element, 'super');
+        $animate.triggerReflow();
         expect(element.data('classify')).toBe('remove-super');
 
         $animate.addClass(element, 'superguy');
+        $animate.triggerReflow();
         expect(element.data('classify')).toBe('add-superguy');
       });
     });
@@ -2756,12 +2882,14 @@ describe("ngAnimate", function() {
         $animate.enabled(true, element);
 
         $animate.addClass(child, 'awesome');
+        $animate.triggerReflow();
         expect(childAnimated).toBe(true);
 
         childAnimated = false;
         $animate.enabled(false, element);
 
         $animate.addClass(child, 'super');
+        $animate.triggerReflow();
         expect(childAnimated).toBe(false);
 
         $animate.leave(element);
@@ -2771,7 +2899,7 @@ describe("ngAnimate", function() {
     });
 
 
-    it("should disable all child animations on structural animations until the post animation" +
+    it("should disable all child animations on structural animations until the post animation " +
        "timeout has passed as well as all structural animations", function() {
       var intercepted, continueAnimation;
       module(function($animateProvider) {
@@ -2820,6 +2948,7 @@ describe("ngAnimate", function() {
         continueAnimation();
 
         $animate.addClass(child1, 'test');
+        $animate.triggerReflow();
         expect(child1.hasClass('test')).toBe(true);
 
         expect(element.children().length).toBe(2);
@@ -2877,6 +3006,7 @@ describe("ngAnimate", function() {
 
         $rootScope.bool = true;
         $rootScope.$digest();
+
         expect(intercepted).toBe(true);
       });
     });
@@ -2958,6 +3088,48 @@ describe("ngAnimate", function() {
       expect(element.hasClass('red')).toBe(true);
     }));
 
+    it("should properly add and remove CSS classes when multiple classes are applied",
+      inject(function($compile, $rootScope, $animate) {
+
+      $animate.enabled();
+
+      var exp = "{{ className ? 'before ' + className + ' after' : '' }}";
+      var element = $compile('<div class="' + exp + '"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      function assertClasses(str) {
+        var className = element.attr('class');
+        str.length == 0
+            ? className.length == 0
+            : expect(className.split(/\s+/)).toEqual(str.split(' '));
+      }
+
+      $rootScope.className = '';
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      assertClasses('');
+
+      $rootScope.className = 'one';
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      assertClasses('before one after');
+
+      $rootScope.className = 'two';
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      assertClasses('before after two');
+
+      $rootScope.className = '';
+      $rootScope.$digest();
+      //intentionally avoiding the triggerReflow operation
+
+      assertClasses('');
+    }));
+
     it("should avoid mixing up substring classes during add and remove operations", function() {
       var currentAnimation, currentFn;
       module(function($animateProvider) {
@@ -3014,9 +3186,13 @@ describe("ngAnimate", function() {
 
         $rootElement.addClass('animated');
         $animate.addClass($rootElement, 'green');
+        $animate.triggerReflow();
+
         expect(count).toBe(1);
 
         $animate.addClass($rootElement, 'red');
+        $animate.triggerReflow();
+
         expect(count).toBe(2);
       });
     });
@@ -3045,6 +3221,7 @@ describe("ngAnimate", function() {
         $rootElement.append(element);
 
         $animate.addClass(element, 'red');
+        $animate.triggerReflow();
 
         expect(steps).toEqual(['before','after']);
       });
@@ -3102,20 +3279,18 @@ describe("ngAnimate", function() {
       $animate.removeClass(element, 'base-class one two');
 
       //still true since we're before the reflow
-      expect(element.hasClass('base-class')).toBe(false);
+      expect(element.hasClass('base-class')).toBe(true);
 
       //this will cancel the remove animation
       $animate.addClass(element, 'base-class one two');
 
-      //the cancellation was a success and the class was added right away
-      //since there was no successive animation for the after animation
+      //the cancellation was a success and the class was removed right away
       expect(element.hasClass('base-class')).toBe(false);
 
       //the reflow...
       $animate.triggerReflow();
 
-      //the reflow DOM operation was commenced but it ran before so it
-      //shouldn't run agaun
+      //the reflow DOM operation was commenced...
       expect(element.hasClass('base-class')).toBe(true);
     }));
 
@@ -3460,6 +3635,7 @@ describe("ngAnimate", function() {
         ready = true;
       });
 
+      $animate.triggerReflow();
       $animate.triggerCallbacks();
       expect(ready).toBe(true);
     }));
@@ -3596,5 +3772,42 @@ describe("ngAnimate", function() {
 
       expect(element.children().length).toBe(0);
     }));
+
+    describe('SVG', function() {
+      it('should properly apply transitions on an SVG element',
+        inject(function($animate, $rootScope, $compile, $rootElement, $sniffer) {
+
+        //jQuery doesn't handle SVG elements natively. Instead, an add-on library
+        //is required which is called jquery.svg.js. Therefore, when jQuery is
+        //active here there is no point to test this since it won't work by default.
+        if(!$sniffer.transitions || !_jqLiteMode) return;
+
+        ss.addRule('circle.ng-enter', '-webkit-transition:1s linear all;' +
+                                              'transition:1s linear all;');
+
+        var element = $compile('<svg width="500" height="500">' +
+                                 '<circle cx="15" cy="5" r="100" fill="orange" ng-if="on" />' +
+                               '</svg>')($rootScope);
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.$digest();
+
+        $rootScope.on = true;
+        $rootScope.$digest();
+        $animate.triggerReflow();
+
+        var child = element.find('circle');
+
+        expect(child.hasClass('ng-enter')).toBe(true);
+        expect(child.hasClass('ng-enter-active')).toBe(true);
+
+        browserTrigger(child, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+
+        expect(child.hasClass('ng-enter')).toBe(false);
+        expect(child.hasClass('ng-enter-active')).toBe(false);
+      }));
+    });
   });
 });

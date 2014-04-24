@@ -1031,6 +1031,7 @@ describe('parser', function() {
 
           it('should mark complex expressions involving constant values as constant', inject(function($parse) {
             expect($parse('!true').constant).toBe(true);
+            expect($parse('-42').constant).toBe(true);
             expect($parse('1 - 1').constant).toBe(true);
             expect($parse('"foo" + "bar"').constant).toBe(true);
             expect($parse('5 != null').constant).toBe(true);
@@ -1044,7 +1045,7 @@ describe('parser', function() {
           }));
         });
 
-        describe('nulls in expressions', function() {
+        describe('null/undefined in expressions', function() {
           // simpleGetterFn1
           it('should return null for `a` where `a` is null', inject(function($rootScope) {
             $rootScope.a = null;
@@ -1090,6 +1091,19 @@ describe('parser', function() {
           it('should return undefined for `a.b.c.d.e.f.g` where `f` is null', inject(function($rootScope) {
             $rootScope.a = { b: { c: { d: { e: { f: null } } } } };
             expect($rootScope.$eval('a.b.c.d.e.f.g')).toBeUndefined();
+          }));
+
+
+          it('should return undefined if the return value of a function invocation is undefined',
+              inject(function($rootScope) {
+            $rootScope.fn = function() {};
+            expect($rootScope.$eval('fn()')).toBeUndefined();
+          }));
+
+          it('should ignore undefined values when doing addition/concatenation',
+              inject(function($rootScope) {
+            $rootScope.fn = function() {};
+            expect($rootScope.$eval('foo + "bar" + fn()')).toBe('bar');
           }));
         });
       });

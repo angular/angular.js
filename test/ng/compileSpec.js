@@ -541,6 +541,14 @@ describe('$compile', function() {
             replace: true,
             template: '<tfoot><tr><td>TD</td></tr></tfoot>'
           }));
+          directive('replaceWithOption', valueFn({
+            replace: true,
+            template: '<option>OPTION</option>'
+          }));
+          directive('replaceWithOptgroup', valueFn({
+            replace: true,
+            template: '<optgroup>OPTGROUP</optgroup>'
+          }));
         }));
 
 
@@ -746,6 +754,20 @@ describe('$compile', function() {
           }).not.toThrow();
           expect(nodeName_(element)).toMatch(/tfoot/i);
         }));
+
+        it('should support templates with root <option> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-option></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/option/i);
+        }));
+
+        it('should support templates with root <optgroup> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-optgroup></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/optgroup/i);
+        }));
       });
 
 
@@ -866,6 +888,14 @@ describe('$compile', function() {
             directive('replaceWithTfoot', valueFn({
               replace: true,
               templateUrl: 'tfoot.html'
+            }));
+            directive('replaceWithOption', valueFn({
+              replace: true,
+              templateUrl: 'option.html'
+            }));
+            directive('replaceWithOptgroup', valueFn({
+              replace: true,
+              templateUrl: 'optgroup.html'
             }));
           }
         ));
@@ -1556,6 +1586,24 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(nodeName_(element)).toMatch(/tfoot/i);
         }));
+
+        it('should support templates with root <option> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('option.html', '<option>OPTION</option>');
+          expect(function() {
+            element = $compile('<div replace-with-option></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/option/i);
+        }));
+
+        it('should support templates with root <optgroup> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('optgroup.html', '<optgroup>OPTGROUP</optgroup>');
+          expect(function() {
+            element = $compile('<div replace-with-optgroup></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/optgroup/i);
+        }));
       });
 
 
@@ -2032,6 +2080,8 @@ describe('$compile', function() {
 
 
     it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
+      // we need the interpolated attributes to be initialized so that linking fn in a component
+      // can access the value during link
       $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
       expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
@@ -3459,6 +3509,27 @@ describe('$compile', function() {
 
         expect(log).toEqual('instance');
         expect(element.text()).toBe('Hello');
+      });
+    });
+
+
+    it('should throw ctreq with correct directive name, regardless of order', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('aDir', valueFn({
+          restrict: "E",
+          require: "ngModel",
+          link: noop
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          // a-dir will cause a ctreq error to be thrown. Previously, the error would reference
+          // the last directive in the chain (which in this case would be ngClick), based on
+          // priority and alphabetical ordering. This test verifies that the ordering does not
+          // affect which directive is referenced in the minErr message.
+          element = $compile('<a-dir ng-click="foo=bar"></a-dir>')($rootScope);
+        }).toThrowMinErr('$compile', 'ctreq',
+            "Controller 'ngModel', required by directive 'aDir', can't be found!");
       });
     });
   });

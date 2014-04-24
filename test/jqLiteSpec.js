@@ -95,6 +95,36 @@ describe('jqLite', function() {
       expect(fragment.length).toBe(1);
       expect(fragment[0].nodeType).toBe(11);
     });
+
+
+    it('should allow construction of <option> elements', function() {
+      var nodes = jqLite('<option>');
+      expect(nodes.length).toBe(1);
+      expect(nodes[0].nodeName.toLowerCase()).toBe('option');
+    });
+
+
+    // Special tests for the construction of elements which are restricted (in the HTML5 spec) to
+    // being children of specific nodes.
+    forEach([
+      'caption',
+      'colgroup',
+      'col',
+      'optgroup',
+      'opt',
+      'tbody',
+      'td',
+      'tfoot',
+      'th',
+      'thead',
+      'tr'
+    ], function(name) {
+      it('should allow construction of <$NAME$> elements'.replace('$NAME$', name), function() {
+        var nodes = jqLite('<$NAME$>'.replace('$NAME$', name));
+        expect(nodes.length).toBe(1);
+        expect(nodes[0].nodeName.toLowerCase()).toBe(name);
+      });
+    });
   });
 
   describe('_data', function() {

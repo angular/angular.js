@@ -621,7 +621,9 @@ var optionDirective = ['$interpolate', function($interpolate) {
         if (interpolateFn) {
           scope.$watch(interpolateFn, function interpolateWatchAction(newVal, oldVal) {
             attr.$set('value', newVal);
-            if (newVal !== oldVal) selectCtrl.removeOption(oldVal);
+            if (oldVal !== newVal) {
+              selectCtrl.removeOption(oldVal);
+            }
             selectCtrl.addOption(newVal);
           });
         } else {

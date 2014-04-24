@@ -15,6 +15,19 @@ describe("$animate", function() {
       expect(element.contents().length).toBe(1);
     }));
 
+    it("should enter the element to the start of the parent container",
+      inject(function($animate, $compile, $rootScope) {
+
+      for(var i = 0; i < 5; i++) {
+        element.append(jqLite('<div> ' + i + '</div>'));
+      }
+
+      var child = jqLite('<div>first</div>');
+      $animate.enter(child, element);
+
+      expect(element.text()).toEqual('first 0 1 2 3 4');
+    }));
+
     it("should remove the element at the end of leave animation", inject(function($animate, $compile, $rootScope) {
       var child = $compile('<div></div>')($rootScope);
       element.append(child);

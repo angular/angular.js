@@ -38,12 +38,6 @@ function prepare {
   #
   echo "-- Updating code.angularjs.org"
   mkdir $REPO_DIR/$NEW_VERSION
-  cd $REPO_DIR
-  git reset --hard HEAD
-  git checkout master
-  git fetch --all
-  git reset --hard origin/master
-  cd $SCRIPT_DIR
   cp -r $BUILD_DIR/* $REPO_DIR/$NEW_VERSION/
 
   #

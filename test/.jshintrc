@@ -138,7 +138,6 @@
     "JQLitePrototype": false,
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
-    "jqLiteIsTextNode": false,
 
     /* apis.js */
     "hashKey": false,
@@ -164,7 +163,22 @@
     "DIRTY_CLASS": false,
 
     /* ng/directive/form.js */
-    "nullFormCtrl": false
+    "nullFormCtrl": false,
 
+    /* jasmine / karma */
+    "it": false,
+    "iit": false,
+    "describe": false,
+    "ddescribe": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "expect": false,
+    "jasmine": false,
+    "spyOn": false,
+
+    /* testabilityPatch / matchers */
+    "inject": false,
+    "module": false,
+    "dealoc": false
   }
 }

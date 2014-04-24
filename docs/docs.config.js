@@ -6,7 +6,7 @@ var basePackage = require('./config');
 
 module.exports = function(config) {
 
-  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.currentPackage.cdnVersion;
+  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.cdnVersion;
 
   var getVersion = function(component, sourceFolder, packageFile) {
     sourceFolder = sourceFolder || '../bower_components';
@@ -62,7 +62,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',
@@ -97,7 +97,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.min.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',
@@ -136,7 +136,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.min.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',
@@ -171,7 +171,7 @@ module.exports = function(config) {
         'js/docs.js'
       ],
       stylesheets: [
-        'components/bootstrap-' + getVersion('bootstrap') + '/dist/css/bootstrap.min.css',
+        'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
         'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
         'css/prettify-theme.css',
         'css/docs.css',

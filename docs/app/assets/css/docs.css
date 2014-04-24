@@ -422,6 +422,7 @@ iframe.example {
 
 .type-hint {
   display:inline-block;
+  background: gray;
 }
 
 .variables-matrix .type-hint {
@@ -468,6 +469,10 @@ iframe.example {
 
 .type-hint-regexp {
   background: rgb(90, 84, 189);
+}
+
+.type-hint-domelement {
+  background: rgb(95, 158, 160);
 }
 
 .runnable-example-frame {
@@ -563,7 +568,7 @@ h4 {
 }
 
 .return-arguments td:first-child {
-  width:100px; 
+  width:100px;
 }
 
 ul.methods > li,
