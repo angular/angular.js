@@ -51,6 +51,11 @@ describe('$interpolate', function() {
   }));
 
 
+  it('should interpolate with undefined context', inject(function($interpolate) {
+    expect($interpolate("Hello, world!{{bloop}}")()).toBe("Hello, world!");
+  }));
+
+
   describe('interpolating in a trusted context', function() {
     var sce;
     beforeEach(function() {
