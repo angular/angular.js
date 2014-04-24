@@ -1539,6 +1539,16 @@ describe('$location', function() {
       expect(location.url()).toBe('/not-starting-with-slash');
       expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
+
+
+    it('should not strip stuff from path just because it looks like Windows drive when its not',
+        function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html#http%3A%2F%2Fexample.com%2F');
+      expect(location.url()).toBe('/http://example.com/');
+      expect(location.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
+    });
   });
 
 
