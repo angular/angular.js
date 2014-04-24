@@ -199,7 +199,7 @@ function $InterpolateProvider() {
         };
 
         return extend(function interpolationFn(context) {
-            var scopeId = context.$id || 'notAScope';
+            var scopeId = (context && context.$id) || 'notAScope';
             var lastValues = lastValuesCache.values[scopeId];
             var lastResult = lastValuesCache.results[scopeId];
             var i = 0;
@@ -214,7 +214,7 @@ function $InterpolateProvider() {
             if (!lastValues) {
               lastValues = [];
               inputsChanged = true;
-              if (context.$on) {
+              if (context && context.$on) {
                 context.$on('$destroy', function() {
                   lastValuesCache.values[scopeId] = null;
                   lastValuesCache.results[scopeId] = null;
