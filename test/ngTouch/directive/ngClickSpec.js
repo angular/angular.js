@@ -600,5 +600,91 @@ describe('ngClick (touch)', function() {
 
       expect(called).toEqual(true);
     }));
+
+    it('should remove focus by default', inject(function($rootScope, $compile, $rootElement, $document) {
+      $document.find('body').append($rootElement);
+      $rootElement.append(
+          '<input ng-click="count = count + 1" type="text" >'
+      );
+      $compile($rootElement)($rootScope);
+
+      element = $rootElement.find('input').eq(0);
+
+      $rootScope.count = 0;
+
+      $rootScope.$digest();
+
+      expect($rootScope.count).toBe(0);
+
+      time = 10;
+      browserTrigger(element, 'touchstart',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+
+      time = 50;
+      browserTrigger(element, 'touchend',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+
+      expect($rootScope.count).toBe(1);
+
+      time = 90;
+      // Verify that it is blured so we don't get soft-keyboard
+      element[0].blur = jasmine.createSpy('blur');
+      browserTrigger(element, 'click',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+      expect(element[0].blur).toHaveBeenCalled();
+      $document.find('body').empty();
+    }));
+
+    it('should keep focus if it is specified', inject(function($rootScope, $compile, $rootElement, $document) {
+      $document.find('body').append($rootElement);
+      $rootElement.append(
+          '<input ng-click="count = count + 1" type="text" ng-touch="keep-focus" >'
+      );
+      $compile($rootElement)($rootScope);
+
+      element = $rootElement.find('input').eq(0);
+
+      $rootScope.count = 0;
+
+      $rootScope.$digest();
+
+      expect($rootScope.count).toBe(0);
+
+      time = 10;
+      browserTrigger(element, 'touchstart',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+
+      time = 50;
+      browserTrigger(element, 'touchend',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+
+      expect($rootScope.count).toBe(1);
+
+      time = 90;
+      // Verify that it is not blured so we do get soft-keyboard
+      element[0].blur = jasmine.createSpy('blur');
+      browserTrigger(element, 'click',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+      expect(element[0].blur).not.toHaveBeenCalled();
+      $document.find('body').empty();
+    }));
   });
 });

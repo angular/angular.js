@@ -157,8 +157,15 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     event.stopPropagation();
     event.preventDefault();
 
-    // Blur focused form elements
-    event.target && event.target.blur();
+    // Blur focused form elements only if the user did not specify to keep it.
+    // Specified by adding the attribute 'ng-touch' with the value 'keep-focus'.
+    if (!event.target.attributes['ng-touch']) {
+        event.target && event.target.blur();
+    } else {
+      if (event.target.attributes['ng-touch'].nodeValue !== 'keep-focus') {
+        event.target && event.target.blur();
+      }
+    }
   }
 
 
