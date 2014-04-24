@@ -207,7 +207,7 @@ someModule.factory('greeter', ['$window', function(renamed$window) {
 ```
 
 Here, instead of simply providing the factory function, we pass an array, whose elements consist of
-a list of strings (the names of the depenendencies) followed by the function itself.
+a list of strings (the names of the dependencies) followed by the function itself.
 
 Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
 where injection is supported.
