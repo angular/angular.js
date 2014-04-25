@@ -20,6 +20,11 @@ describe('$sniffer', function() {
       expect(sniffer({history: {}}).history).toBe(false);
       expect(sniffer({}).history).toBe(false);
     });
+
+    it('should be false XPCNativeWrapper is defined', function() {
+      var h = {pushState: noop, replaceState: noop};
+      expect(sniffer({history: h, XPCNativeWrapper: {}}).history).toBe(false);
+    });
   });
 
   describe('hashchange', function() {
