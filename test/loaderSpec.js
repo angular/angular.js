@@ -4,7 +4,7 @@ describe('module loader', function() {
   var window;
 
   beforeEach(function () {
-    window = {};
+    window = { console: { warn: function() {} } };
     setupModuleLoader(window);
   });
 
@@ -81,5 +81,17 @@ describe('module loader', function() {
 
   it('should expose `$$minErr` on the `angular` object', function() {
     expect(window.angular.$$minErr).toEqual(jasmine.any(Function));
+  })
+
+  it('should log warning when overriding module', function() {
+    var warnings = [];
+    spyOn(window.console, 'warn').andCallFake(function(msg) {
+      warnings.push(msg);
+    });
+
+    window.angular.module('randomModule', []);
+    window.angular.module('randomModule', []);
+
+    expect(warnings.length).toEqual(1);
   })
 });

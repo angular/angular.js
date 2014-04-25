@@ -87,8 +87,13 @@ function setupModuleLoader(window) {
 
       assertNotHasOwnProperty(name, 'module');
       if (requires && modules.hasOwnProperty(name)) {
+
+        if (window.console && window.console.warn) {
+          window.console.warn('Module ', name, ' is being replaced by another implementation. ');
+        }
         modules[name] = null;
       }
+
       return ensure(modules, name, function() {
         if (!requires) {
           throw $injectorMinErr('nomod', "Module '{0}' is not available! You either misspelled " +
