@@ -237,20 +237,6 @@ it('should show example', inject(
 ));
 ```
 
-### Crawling your app
-
-To allow indexing of your AJAX application, you have to add special meta tag in the head section of
-your document:
-
-```html
-<meta name="fragment" content="!" />
-```
-
-This will cause crawler bot to request links with `_escaped_fragment_` param so that your server
-can recognize the crawler and serve a HTML snapshots. For more information about this technique,
-see [Making AJAX Applications
-Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
-
 ## HTML5 mode
 
 In HTML5 mode, the `$location` service getters and setters interact with the browser URL address
@@ -343,20 +329,6 @@ are not prefixed with `.` and will not be intercepted by the `otherwise` rule in
 
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
 to entry point of your application (e.g. index.html)
-
-### Crawling your app
-
-If you want your AJAX application to be indexed by web crawlers, you will need to add the following
-meta tag to the HEAD section of your document:
-
-```html
-<meta name="fragment" content="!" />
-```
-
-This statement causes a crawler to request links with an empty `_escaped_fragment_` parameter so that
-your server can recognize the crawler and serve it HTML snapshots. For more information about this
-technique, see [Making AJAX
-Applications Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
 
 ### Relative links
 
@@ -524,6 +496,20 @@ forward slash if it is missing.
 
 Note that the `!` prefix in the hashbang mode is not part of `$location.path()`; it is actually
 hashPrefix.
+
+## Crawling your app
+
+To allow indexing of your AJAX application, you have to add special meta tag in the head section of
+your document:
+
+```html
+<meta name="fragment" content="!" />
+```
+
+This will cause crawler bot to request links with `_escaped_fragment_` param so that your server
+can recognize the crawler and serve a HTML snapshots. For more information about this technique,
+see [Making AJAX Applications
+Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
 
 
 # Testing with the $location service
