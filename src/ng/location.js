@@ -78,6 +78,57 @@ function serverBase(url) {
   return url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
 }
 
+function stripQueryBeforeHash(url) {
+  var indexOfQuery = url.indexOf('?');
+  var indexOfHash = url.indexOf('#');
+  if (indexOfQuery >= 0) {
+    if (indexOfHash < 0) {
+      url = url.slice(0, indexOfQuery);
+    } else if (indexOfQuery < indexOfHash) {
+      url = url.slice(0, indexOfQuery) + url.slice(indexOfHash);
+    }
+  }
+  return url;
+}
+
+function joinQuery(query1, query2) {
+  if (query1.length) {
+    if (query2.length) {
+      return query1 + '&' + query2.slice(1);
+    }
+    return query1;
+  }
+  return query2;
+}
+
+function rewriteSearchQuery(url, base, hashPrefix) {
+  var indexOfQuery = url.indexOf('?', base.length);
+  var indexOfHash = url.indexOf(hashPrefix, base.length);
+  var query;
+
+  if (indexOfQuery >= 0) {
+    if (indexOfQuery < indexOfHash) {
+      var preQuery = url.substr(indexOfQuery, indexOfHash - indexOfQuery);
+      var postQuery = url.indexOf('?', indexOfHash);
+      var postQueryHash = url.indexOf('#', postQuery);
+      var preFragQuery = (postQuery > 0 && postQueryHash > 0)
+          ? url.substr(postQuery, postQueryHash - postQuery)
+          : '';
+      url = url.replace(preQuery, '').replace(preFragQuery, '');
+      indexOfHash = url.indexOf(hashPrefix, base.length);
+
+      query = joinQuery(preQuery, preFragQuery);
+
+      url = url.substr(0, indexOfHash + hashPrefix.length)
+          + query
+          + url.slice(indexOfHash + hashPrefix.length);
+    } else if (indexOfHash < 0) {
+      query = url.slice(indexOfQuery);
+      url = url.replace(query, hashPrefix + query);
+    }
+  }
+  return url;
+}
 
 /**
  * LocationHtml5Url represents an url
@@ -168,8 +219,9 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    */
   this.$$parse = function(url) {
     var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
+    var tmp = beginsWith(hashPrefix, withoutBaseUrl);
     var withoutHashUrl = withoutBaseUrl.charAt(0) == '#'
-        ? beginsWith(hashPrefix, withoutBaseUrl)
+        ? tmp || (isUndefined(tmp) ? (withoutBaseUrl[1] === '?' && withoutBaseUrl.slice(1)) : '')
         : (this.$$html5)
           ? withoutBaseUrl
           : '';
@@ -250,13 +302,22 @@ function LocationHashbangUrl(appBase, hashPrefix) {
  */
 function LocationHashbangInHtml5Url(appBase, hashPrefix) {
   this.$$html5 = true;
+
+  // If appBase contains a query string, it needs to be removed, otherwise it breaks the initial
+  // search query of the app. Note that this occurs only if the initial search query precedes a
+  // hash fragment.
+  //
+  // Manually assign this to the arguments object, as the browser seems to avoid doing this in
+  // certain scenarios.
+  arguments[0] = appBase = stripQueryBeforeHash(appBase);
+
   LocationHashbangUrl.apply(this, arguments);
 
   var appBaseNoFile = stripFile(appBase);
 
   this.$$rewrite = function(url) {
     var appUrl;
-
+    url = rewriteSearchQuery(url, appBase, hashPrefix);
     if ( appBase == stripHash(url) ) {
       return url;
     } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
