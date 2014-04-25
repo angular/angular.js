@@ -37,10 +37,10 @@ Let's start with input fields for quantity and cost whose values are multiplied 
       <div ng-app ng-init="qty=1;cost=2">
         <b>Invoice:</b>
         <div>
-          Quantity: <input type="number" ng-model="qty" required >
+          Quantity: <input type="number" ng-model="qty">
         </div>
         <div>
-          Costs: <input type="number" ng-model="cost" required >
+          Costs: <input type="number" ng-model="cost">
         </div>
         <div>
           <b>Total:</b> {{qty * cost | currency}}
@@ -62,11 +62,8 @@ The first kind of new markup are the so called <a name="directive">"{@link direc
 They apply special behavior to attributes or elements in the HTML. In the example above we use the
 {@link ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
 initializes our application. Angular also defines a directive for the {@link ng.directive:input `input`}
-element that adds extra behavior to the element. E.g. it is able to automatically validate that the entered
-text is non empty by evaluating the `required` attribute.
-The {@link ng.directive:ngModel `ng-model`} directive stores/updates
-the value of the input field into/from a variable and shows the validation state of the input field by
-adding css classes. In the example we use these css classes to mark an empty input field with a red border.
+element that adds extra behavior to the element. The {@link ng.directive:ngModel `ng-model`} directive
+stores/updates the value of the input field into/from a variable.
 
 <div class="alert alert-info">
 **Custom directives to access the DOM**: In Angular, the only place where an application touches the DOM is
