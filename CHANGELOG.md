@@ -1,3 +1,20 @@
+<a name="v1.3.0-beta.7"></a>
+# v1.3.0-beta.7 proper-attribution (2014-04-25)
+
+
+## Bug Fixes
+
+- **$location:** don't clobber path during parsing of path
+  ([498835a1](https://github.com/angular/angular.js/commit/498835a1c4d0dc6397df4dd667796b09565fedf4),
+   [#7199](https://github.com/angular/angular.js/issues/7199))
+
+
+## Performance Improvements
+
+- **scope:** ~10x speedup from sharing the child scope class.
+  ([8377e818](https://github.com/angular/angular.js/commit/8377e81827a840b9eb64f119de4bcbaba0ceb3be))
+
+
 <a name="v1.3.0-beta.6"></a>
 # v1.3.0-beta.6 expedient-caffeination (2014-04-21)
 
