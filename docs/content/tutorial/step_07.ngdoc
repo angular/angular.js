@@ -147,8 +147,8 @@ __`app/partials/phone-list.html`:__
 
 ```html
 <div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span2">
+  <div class="row">
+    <div class="col-md-2">
       <!--Sidebar content-->
 
       Search: <input ng-model="query">
@@ -159,7 +159,7 @@ __`app/partials/phone-list.html`:__
       </select>
 
     </div>
-    <div class="span10">
+    <div class="col-md-10">
       <!--Body content-->
 
       <ul class="phones">
