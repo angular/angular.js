@@ -1,3 +1,5 @@
+'use strict';
+
 describe('private mocks', function() {
   describe('createMockStyleSheet', function() {
 
@@ -29,7 +31,7 @@ describe('private mocks', function() {
         return node.currentStyle ?
           node.currentStyle[key] :
           $window.getComputedStyle(node)[key];
-      };
+      }
     }));
 
   });

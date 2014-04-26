@@ -72,7 +72,8 @@ describe('ngClass', function() {
       $rootScope.$digest();
       expect(element.hasClass('A')).toBeFalsy();
       expect(element.hasClass('B')).toBeTruthy();
-  }));
+    })
+  );
 
 
   it('should support adding multiple classes via a space delimited string', inject(function($rootScope, $compile) {
@@ -203,7 +204,8 @@ describe('ngClass', function() {
       expect(e1.hasClass('odd')).toBeTruthy();
       expect(e2.hasClass('same')).toBeTruthy();
       expect(e2.hasClass('odd')).toBeTruthy();
-  }));
+    })
+  );
 
   it('should allow both ngClass and ngClassOdd/Even with multiple classes', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +

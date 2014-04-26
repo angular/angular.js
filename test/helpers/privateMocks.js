@@ -1,3 +1,5 @@
+'use strict';
+
 function createMockStyleSheet(doc, wind) {
   doc = doc ? doc[0] : document;
   wind = wind || window;
@@ -17,7 +19,7 @@ function createMockStyleSheet(doc, wind) {
         try {
           ss.addRule(selector, styles);
         }
-        catch(e) {}
+        catch(e2) {}
       }
     },
 
@@ -25,4 +27,4 @@ function createMockStyleSheet(doc, wind) {
       head.removeChild(node);
     }
   };
-};
+}

@@ -3,6 +3,7 @@
 describe('parser', function() {
 
   beforeEach(function() {
+    /* global getterFnCache: true, promiseWarningCache: true */
     // clear caches
     getterFnCache = {};
     promiseWarningCache = {};
@@ -13,6 +14,7 @@ describe('parser', function() {
     var lex;
 
     beforeEach(function () {
+      /* global Lexer: false */
       lex = function () {
         var lexer = new Lexer({csp: false, unwrapPromises: false});
         return lexer.lex.apply(lexer, arguments);
@@ -225,6 +227,7 @@ describe('parser', function() {
         }));
 
         it('should parse expressions', function() {
+          /*jshint -W006, -W007 */
           expect(scope.$eval("-1")).toEqual(-1);
           expect(scope.$eval("1 + 2.5")).toEqual(3.5);
           expect(scope.$eval("1 + -2.5")).toEqual(-1.5);
@@ -235,6 +238,7 @@ describe('parser', function() {
         });
 
         it('should parse comparison', function() {
+          /* jshint -W041 */
           expect(scope.$eval("false")).toBeFalsy();
           expect(scope.$eval("!true")).toBeFalsy();
           expect(scope.$eval("1==1")).toBeTruthy();
@@ -367,11 +371,11 @@ describe('parser', function() {
             // Assign to x1 and build path 'x1.x2.x3. ... .x[n]' to access the final value.
             scope.x1 = obj;
             var path = 'x1';
-            for (var i = 2; i <= pathLength; i++) {
+            for (i = 2; i <= pathLength; i++) {
               path += '.x' + i;
             }
             expect(scope.$eval(path)).toBe(42);
-            locals['x' + pathLength] = 'not 42'
+            locals['x' + pathLength] = 'not 42';
             expect(scope.$eval(path, locals)).toBe(42);
           });
         });
@@ -444,7 +448,7 @@ describe('parser', function() {
 
         it('should evaluate function call from a return value', function() {
           scope.val = 33;
-          scope.getter = function() { return function() { return this.val; }};
+          scope.getter = function() { return function() { return this.val; }; };
           expect(scope.$eval("getter()()")).toBe(33);
         });
 
@@ -580,6 +584,7 @@ describe('parser', function() {
         });
 
         it('should evaluate negation', function() {
+          /* jshint -W018 */
           expect(scope.$eval("!false || true")).toEqual(!false || true);
           expect(scope.$eval("!11 == 10")).toEqual(!11 == 10);
           expect(scope.$eval("12/6/2")).toEqual(12/6/2);
@@ -824,12 +829,12 @@ describe('parser', function() {
             // When not overridden, access should be restricted both by the dot operator and by the
             // index operator.
             expect(function() {
-              scope.$eval('foo.constructor()', scope)
+              scope.$eval('foo.constructor()', scope);
             }).toThrowMinErr(
                     '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
                     'Expression: foo.constructor()');
             expect(function() {
-              scope.$eval('foo["constructor"]()', scope)
+              scope.$eval('foo["constructor"]()', scope);
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
                     'Expression: foo["constructor"]()');
@@ -840,7 +845,7 @@ describe('parser', function() {
             };
             // Dot operator should still block it.
             expect(function() {
-              scope.$eval('foo.constructor()', scope)
+              scope.$eval('foo.constructor()', scope);
             }).toThrowMinErr(
                     '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
                     'Expression: foo.constructor()');

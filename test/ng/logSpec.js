@@ -1,3 +1,4 @@
+/* global $LogProvider: false */
 'use strict';
 
 function initService(debugEnabled) {
@@ -118,24 +119,24 @@ describe('$log', function() {
 
   describe("$log.debug", function () {
 
-	  beforeEach(initService(false));
+    beforeEach(initService(false));
 
-	  it("should skip debugging output if disabled", inject(
-	    function(){
-	      $window.console = {log: log,
-	                         warn: warn,
-	                         info: info,
-	                         error: error,
-	                         debug: debug};
-	    },
-	    function($log) {
-	      $log.log();
-	      $log.warn();
-	      $log.info();
-	      $log.error();
-	      $log.debug();
-	      expect(logger).toEqual('log;warn;info;error;');
-	    }
+    it("should skip debugging output if disabled", inject(
+      function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;warn;info;error;');
+      }
   ));
 
   });

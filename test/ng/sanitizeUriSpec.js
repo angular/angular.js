@@ -1,3 +1,4 @@
+/* jshint scripturl: true */
 'use strict';
 
 describe('sanitizeUri', function() {
@@ -12,7 +13,7 @@ describe('sanitizeUri', function() {
       };
       sanitizeImg = function(uri) {
         return $$sanitizeUri(uri, true);
-      }
+      };
     });
   });
 
@@ -223,10 +224,10 @@ describe('sanitizeUri', function() {
       expect(returnVal).toBe(sanitizeUriProvider);
 
       testUrl = "javascript:doEvilStuff()";
-        expect(sanitizeHref(testUrl)).toBe('javascript:doEvilStuff()');
+      expect(sanitizeHref(testUrl)).toBe('javascript:doEvilStuff()');
 
       testUrl = "http://recon/figured";
-        expect(sanitizeHref(testUrl)).toBe('unsafe:http://recon/figured');
+      expect(sanitizeHref(testUrl)).toBe('unsafe:http://recon/figured');
     });
 
   });

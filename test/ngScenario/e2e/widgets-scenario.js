@@ -1,3 +1,4 @@
+/* global using: false, binding: false, input: false, select: false, repeater: false */
 'use strict';
 
 describe('widgets', function() {
