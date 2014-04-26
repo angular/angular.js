@@ -27,7 +27,7 @@ describe('$$rAF', function() {
 
     try {
       $$rAF.flush();
-    } catch(e) {};
+    } catch(e) {}
     expect(present).toBe(true);
   }));
 

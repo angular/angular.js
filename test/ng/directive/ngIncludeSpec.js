@@ -112,7 +112,7 @@ describe('ngInclude', function() {
   it('should fire $includeContentRequested event on scope after making the xhr call', inject(
       function ($rootScope, $compile, $httpBackend) {
     var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event) {
-        expect(event.targetScope).toBe($rootScope);
+      expect(event.targetScope).toBe($rootScope);
     });
 
     $httpBackend.whenGET('url').respond('my partial');
@@ -233,7 +233,8 @@ describe('ngInclude', function() {
     var called = 0;
     // we want to assert only during first watch
     $rootScope.$watch(function() {
-      if (!called++) expect(element.text()).toBe('');
+      if (!called) expect(element.text()).toBe('');
+      called++;
     });
 
     $rootScope.$digest();
@@ -249,7 +250,7 @@ describe('ngInclude', function() {
     $rootScope.templateUrl = 'myUrl1';
     $rootScope.logger = function(msg) {
       log[msg] = true;
-    }
+    };
     $compile(element)($rootScope);
     expect(log).toEqual({});
 
@@ -460,7 +461,8 @@ describe('ngInclude', function() {
           $animate.triggerCallbacks();
 
           expect(autoScrollSpy).toHaveBeenCalledOnce();
-    }));
+        }
+    ));
   });
 });
 
@@ -569,8 +571,8 @@ describe('ngInclude and transcludes', function() {
 describe('ngInclude animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -611,7 +613,8 @@ describe('ngInclude animations', function() {
       var animation = $animate.queue.pop();
       expect(animation.event).toBe('enter');
       expect(animation.element.text()).toBe('data');
-  }));
+    })
+  );
 
   it('should fire off the leave animation',
     inject(function($compile, $rootScope, $templateCache, $animate) {
@@ -635,7 +638,8 @@ describe('ngInclude animations', function() {
       animation = $animate.queue.shift();
       expect(animation.event).toBe('leave');
       expect(animation.element.text()).toBe('data');
-  }));
+    })
+  );
 
   it('should animate two separate ngInclude elements',
     inject(function($compile, $rootScope, $templateCache, $animate) {
@@ -661,7 +665,8 @@ describe('ngInclude animations', function() {
       expect(itemA.attr('ng-include')).toBe('tpl');
       expect(itemB.attr('ng-include')).toBe('tpl');
       expect(itemA).not.toEqual(itemB);
-  }));
+    })
+  );
 
   it('should destroy the previous leave animation if a new one takes place', function() {
     module(function($provide) {

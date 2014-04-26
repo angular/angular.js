@@ -220,7 +220,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(eventFired).toEqual(true);
     }));
   });
-}
+};
 
 swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
 swipeTests('mouse', /* restrictBrowers */ false, 'mousedown',  'mousemove', 'mouseup');

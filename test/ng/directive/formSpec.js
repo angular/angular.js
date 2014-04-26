@@ -1,3 +1,4 @@
+/* global FormController: false */
 'use strict';
 
 describe('form', function() {
@@ -148,9 +149,9 @@ describe('form', function() {
         '<input name="hasOwnProperty" ng-model="some" />'+
         '<input name="other" ng-model="someOther" />'+
       '</form>');
-      expect(function() {
-	    $compile(doc)(scope);
-      }).toThrowMinErr('ng', 'badname');
+    expect(function() {
+      $compile(doc)(scope);
+    }).toThrowMinErr('ng', 'badname');
   });
 
 
@@ -177,7 +178,7 @@ describe('form', function() {
 
       scope.submitMe = function() {
         submitted = true;
-      }
+      };
 
       if (msie!=8) addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
 
@@ -218,11 +219,11 @@ describe('form', function() {
         // $location change) that will cause some directive to destroy the dom (e.g. ngView+$route)
         doc.empty();
         destroyed = true;
-      }
+      };
 
       scope.submitMe = function() {
         submitted = true;
-      }
+      };
 
       var assertPreventDefaultListener = function(e) {
         reloadPrevented = e.defaultPrevented || (e.returnValue === false);
@@ -434,7 +435,7 @@ describe('form', function() {
       expect(parent.$error.myRule).toBe(false);
       expect(child.$error.myRule).toBe(false);
     });
-  })
+  });
 
 
   describe('validation', function() {

@@ -35,7 +35,7 @@ describe('ngController', function() {
 
     $window.Public = function() {
       this.mark = 'works';
-    }
+    };
   }));
 
   afterEach(function() {

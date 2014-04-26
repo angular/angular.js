@@ -79,6 +79,7 @@ describe('ngRepeat', function() {
   });
 
   it('should iterate over an array-like class', function() {
+    /* jshint -W009 */
     function Collection() {}
     Collection.prototype = new Array();
     Collection.prototype.length = 0;
@@ -395,10 +396,10 @@ describe('ngRepeat', function() {
 
 
   it("should throw error when left-hand-side of ngRepeat can't be parsed", function() {
-      element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
-      $compile(element)(scope);
+    element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
+    $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toMatch(/^\[ngRepeat:iidexp\] '_item_' in '_item_ in _collection_' should be an identifier or '\(_key_, _value_\)' expression, but got 'i dont parse'\./);
+      toMatch(/^\[ngRepeat:iidexp\] '_item_' in '_item_ in _collection_' should be an identifier or '\(_key_, _value_\)' expression, but got 'i dont parse'\./);
   });
 
 
@@ -818,7 +819,7 @@ describe('ngRepeat', function() {
       expect(children[1].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
       expect(children[2].nextSibling.nodeType).toBe(8);
       expect(children[2].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
-    }
+    };
 
     $rootScope.values = [1, 2, 3];
 
@@ -1045,7 +1046,7 @@ describe('ngRepeat', function() {
       inject(function($compile, $rootScope) {
         element = $compile('<div><div ng-repeat="i in [1,2]" elm-trans>{{i}}</div></div>')($rootScope);
         $rootScope.$digest();
-        expect(element.text()).toBe('[[1]][[2]]')
+        expect(element.text()).toBe('[[1]][[2]]');
       });
     });
 
@@ -1143,8 +1144,8 @@ describe('ngRepeat and transcludes', function() {
 describe('ngRepeat animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -1268,6 +1269,7 @@ describe('ngRepeat animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('move');
       expect(item.element.text()).toBe('3');
-  }));
+    })
+  );
 
 });
