@@ -107,6 +107,9 @@ module.exports = function(grunt) {
       options: {
         jshintrc: true,
       },
+      tests: {
+        files: { src: 'test/**/*.js' },
+      },
       ng: {
         files: { src: files['angularSrc'] },
       },

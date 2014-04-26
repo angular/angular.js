@@ -1,3 +1,5 @@
+'use strict';
+
 beforeEach(function() {
 
   function cssMatcher(presentClasses, absentClasses) {
@@ -39,7 +41,7 @@ beforeEach(function() {
       }
     });
     return hidden;
-  };
+  }
 
   this.addMatchers({
     toBeInvalid: cssMatcher('ng-invalid', 'ng-valid'),
@@ -128,7 +130,7 @@ beforeEach(function() {
 
       this.message = function() {
         if (this.actual.callCount != 1) {
-          if (this.actual.callCount == 0) {
+          if (this.actual.callCount === 0) {
             return [
               'Expected spy ' + this.actual.identity + ' to have been called once with ' +
                 jasmine.pp(expectedArgs) + ' but it was never called.',

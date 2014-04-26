@@ -1,3 +1,6 @@
+/* global createHttpBackend: false, createMockXhr: false, MockXhr: false */
+'use strict';
+
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
@@ -279,7 +282,7 @@ describe('$httpBackend', function() {
       expect(response).toBe('response');
     });
 
-    $backend = createHttpBackend($browser, function() { return new SyncXhr() });
+    $backend = createHttpBackend($browser, function() { return new SyncXhr(); });
     $backend('GET', '/url', null, callback);
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -460,6 +463,7 @@ describe('$httpBackend', function() {
     });
 
     it('should convert 0 to 404 if no content - relative url', function() {
+      /* global urlParsingNode: true */
       var originalUrlParsingNode = urlParsingNode;
 
       //temporarily overriding the DOM element to pretend that the test runs origin with file:// protocol

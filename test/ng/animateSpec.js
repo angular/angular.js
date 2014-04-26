@@ -1,6 +1,10 @@
+'use strict';
+
 describe("$animate", function() {
 
   describe("without animation", function() {
+    var element, $rootElement;
+
     beforeEach(module(function() {
       return function($compile, _$rootElement_, $rootScope) {
         element = $compile('<div></div>')($rootScope);

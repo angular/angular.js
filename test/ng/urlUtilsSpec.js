@@ -20,7 +20,7 @@ describe('urlUtils', function() {
       //IE counts / as empty, necessary to use / so that pathname is not context.html
       var parsed = urlResolve('/');
       expect(parsed.pathname).toBe('/');
-    })
+    });
   });
 
   describe('isSameOrigin', function() {
