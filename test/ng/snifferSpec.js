@@ -80,7 +80,7 @@ describe('$sniffer', function() {
       // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
       mockDivElement = {oninput: noop};
 
-      expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
+      expect($sniffer.hasEvent('input')).toBe((msie <= 9) ? false : true);
     });
   });
 
