@@ -70,13 +70,50 @@
 function $RootScopeProvider(){
   var TTL = 10;
   var $rootScopeMinErr = minErr('$rootScope');
+
   var lastDirtyWatch = null;
+
+  // By default run in compatible mode.
+  var digestRun = null; //100;
+  var digestSleep = 50;
+  var maxConcurrentDigests = 2;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
       TTL = value;
     }
     return TTL;
+  };
+
+  // To allow compatible synchronous digest set run to null.
+  this.digestRun = function(value)
+  {
+    if (arguments.length)
+    {
+      digestRun = value;
+    }
+
+    return digestRun;
+  };
+
+  this.digestSleep = function(value)
+  {
+    if (arguments.length)
+    {
+      digestSleep = value;
+    }
+
+    return digestSleep;
+  };
+
+  this.maxConcurrentDigests = function (value)
+  {
+    if (arguments.length)
+    {
+      maxConcurrentDigests = value;
+    }
+
+    return maxConcurrentDigests;
   };
 
   this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
@@ -124,7 +161,7 @@ function $RootScopeProvider(){
      */
     function Scope() {
       this.$id = nextUid();
-      this.$$phase = this.$parent = this.$$watchers =
+      this.$$phase = this.$$digestTokens = this.$parent = this.$$watchers =
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
       this['this'] = this.$root =  this;
@@ -579,7 +616,8 @@ function $RootScopeProvider(){
        *
        */
       $digest: function() {
-        var watch, value, last,
+        var state = 'init',
+            watch, value, last,
             watchers,
             asyncQueue = this.$$asyncQueue,
             postDigestQueue = this.$$postDigestQueue,
@@ -587,104 +625,257 @@ function $RootScopeProvider(){
             dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
-            logIdx, logMsg, asyncTask;
+            logIdx, logMsg, asyncTask,
+            digestTokens,
+            token;
 
-        beginPhase('$digest');
+        if (digestRun == null)
+        {
+          while(step())
+          {
+            // Cycle until there are no more steps.
+          }
+        }
+        else
+        {
+          digestTokens = this.$$digestTokens || (this.$$digestTokens = []);
 
-        lastDirtyWatch = null;
+          while(digestTokens.length > maxConcurrentDigests)
+          {
+            token = digestTokens.pop();
 
-        do { // "while dirty" loop
-          dirty = false;
-          current = target;
-
-          while(asyncQueue.length) {
-            try {
-              asyncTask = asyncQueue.shift();
-              asyncTask.scope.$eval(asyncTask.expression);
-            } catch (e) {
-              clearPhase();
-              $exceptionHandler(e);
+            if (token)
+            {
+              token.resolve();
             }
-            lastDirtyWatch = null;
           }
 
-          traverseScopesLoop:
-          do { // "traverse the scopes" loop
-            if ((watchers = current.$$watchers)) {
-              // process our watches
-              length = watchers.length;
-              while (length--) {
-                try {
-                  watch = watchers[length];
-                  // Most common watches are on primitives, in which case we can short
-                  // circuit it with === operator, only when === fails do we use .equals
-                  if (watch) {
-                    if ((value = watch.get(current)) !== (last = watch.last) &&
-                        !(watch.eq
-                            ? equals(value, last)
-                            : (typeof value == 'number' && typeof last == 'number'
-                               && isNaN(value) && isNaN(last)))) {
-                      dirty = true;
-                      lastDirtyWatch = watch;
-                      watch.last = watch.eq ? copy(value) : value;
-                      watch.fn(value, ((last === initWatchVal) ? value : last), current);
-                      if (ttl < 5) {
-                        logIdx = 4 - ttl;
-                        if (!watchLog[logIdx]) watchLog[logIdx] = [];
-                        logMsg = (isFunction(watch.exp))
-                            ? 'fn: ' + (watch.exp.name || watch.exp.toString())
-                            : watch.exp;
-                        logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
-                        watchLog[logIdx].push(logMsg);
+          token = defer();
+          digestTokens.push(token);
+
+          $injector.get("$task")(step, digestRun, digestSleep, token.promise);
+        }
+
+        function defer()
+        {
+          var fn;
+
+          var deferred =
+          {
+            resolve: function()
+            {
+              removeToken();
+
+              if (fn)
+              {
+                var callback = fn;
+
+                fn = undefined;
+                callback();
+              }
+            },
+
+            promise:
+            {
+              then: function(callback)
+              {
+                fn = callback;
+
+                return this;
+              }
+            }
+          };
+
+          return deferred;
+        }
+
+        function removeToken()
+        {
+          if (token)
+          {
+            arrayRemove(digestTokens, token);
+            token = undefined;
+          }
+        }
+
+        function step()
+        {
+          beginPhase('$digest');
+
+          try
+          {
+cycle:
+            while(true)
+            {
+              switch(state)
+              {
+                default:
+                {
+                  return false;
+                }
+                case 'init':
+                {
+                  lastDirtyWatch = null;
+
+                  state = "while dirty";
+
+                  continue cycle;
+                }
+                case "while dirty":
+                {
+                  // "while dirty" loop
+                  dirty = false;
+                  current = target;
+
+                  while(asyncQueue.length)
+                  {
+                    try
+                    {
+                      asyncTask = asyncQueue.shift();
+                      asyncTask.scope.$eval(asyncTask.expression);
+                    }
+                    catch(e)
+                    {
+                      $exceptionHandler(e);
+                    }
+
+                    lastDirtyWatch = null;
+                  }
+
+                  state = "traverse the scopes";
+
+                  continue cycle;
+                }
+                case "traverse the scopes":
+                {
+                  // "traverse the scopes" loop
+                  if ((watchers = current.$$watchers))
+                  {
+                    // process our watches
+                    length = watchers.length;
+
+                    while(length--)
+                    {
+                      try
+                      {
+                        watch = watchers[length];
+                        // Most common watches are on primitives, in which case we can short
+                        // circuit it with === operator, only when === fails do we use .equals
+                        if (watch)
+                        {
+                          if ((value = watch.get(current)) !== (last = watch.last) &&
+                              !(watch.eq
+                                  ? equals(value, last)
+                                  : (typeof value == 'number' && typeof last == 'number'
+                                      && isNaN(value) && isNaN(last))))
+                          {
+                            dirty = true;
+                            lastDirtyWatch = watch;
+                            watch.last = watch.eq ? copy(value) : value;
+                            watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                            if (ttl < 5)
+                            {
+                              logIdx = 4 - ttl;
+                              if (!watchLog[logIdx]) watchLog[logIdx] = [];
+                              logMsg = (isFunction(watch.exp))
+                                  ? 'fn: ' + (watch.exp.name || watch.exp.toString())
+                                  : watch.exp;
+                              logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
+                              watchLog[logIdx].push(logMsg);
+                            }
+                          }
+                          else if ((digestRun == null) && (watch === lastDirtyWatch))
+                          {
+                            // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
+                            // have already been tested.
+                            dirty = false;
+
+                            state = "after traverse the scopes";
+
+                            continue cycle;
+                          }
+                        }
                       }
-                    } else if (watch === lastDirtyWatch) {
-                      // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
-                      // have already been tested.
-                      dirty = false;
-                      break traverseScopesLoop;
+                      catch(e)
+                      {
+                        $exceptionHandler(e);
+                      }
                     }
                   }
-                } catch (e) {
-                  clearPhase();
-                  $exceptionHandler(e);
+
+                  // Insanity Warning: scope depth-first traversal
+                  // yes, this code is a bit crazy, but it works and we have tests to prove it!
+                  // this piece should be kept in sync with the traversal in $broadcast
+                  if (!(next = (current.$$childHead ||
+                      (current !== target && current.$$nextSibling))))
+                  {
+                    while (current !== target && !(next = current.$$nextSibling))
+                    {
+                      current = current.$parent;
+                    }
+                  }
+
+                  if ((current = next))
+                  {
+                    state = "traverse the scopes";
+
+                    return true;
+                  }
+
+                  state = "after traverse the scopes";
+
+                  continue cycle;
+                }
+                case "after traverse the scopes":
+                {
+                  if ((dirty || asyncQueue.length) && !(ttl--))
+                  {
+                    throw $rootScopeMinErr('infdig',
+                        '{0} $digest() iterations reached. Aborting!\n' +
+                        'Watchers fired in the last 5 iterations: {1}',
+                        TTL, toJson(watchLog));
+                  }
+
+                  if (dirty || asyncQueue.length)
+                  {
+                    state = "while dirty";
+
+                    return true;
+                  }
+
+                  while (postDigestQueue.length)
+                  {
+                    try
+                    {
+                      postDigestQueue.shift()();
+                    }
+                    catch (e)
+                    {
+                      $exceptionHandler(e);
+                    }
+                  }
+
+                  removeToken();
+
+                  state = null;
+
+                  return false;
                 }
               }
             }
-
-            // Insanity Warning: scope depth-first traversal
-            // yes, this code is a bit crazy, but it works and we have tests to prove it!
-            // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead ||
-                (current !== target && current.$$nextSibling)))) {
-              while(current !== target && !(next = current.$$nextSibling)) {
-                current = current.$parent;
-              }
-            }
-          } while ((current = next));
-
-          // `break traverseScopesLoop;` takes us to here
-
-          if((dirty || asyncQueue.length) && !(ttl--)) {
-            clearPhase();
-            throw $rootScopeMinErr('infdig',
-                '{0} $digest() iterations reached. Aborting!\n' +
-                'Watchers fired in the last 5 iterations: {1}',
-                TTL, toJson(watchLog));
           }
+          catch(e)
+          {
+            removeToken();
 
-        } while (dirty || asyncQueue.length);
-
-        clearPhase();
-
-        while(postDigestQueue.length) {
-          try {
-            postDigestQueue.shift()();
-          } catch (e) {
-            $exceptionHandler(e);
+            throw e;
+          }
+          finally
+          {
+            clearPhase();
           }
         }
       },
-
 
       /**
        * @ngdoc event
