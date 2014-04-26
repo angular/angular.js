@@ -768,6 +768,59 @@ describe('$compile', function() {
           }).not.toThrow();
           expect(nodeName_(element)).toMatch(/optgroup/i);
         }));
+
+        if (window.SVGAElement) {
+          it('should support SVG templates using directive.type=svg', function() {
+            module(function() {
+              directive('svgAnchor', valueFn({
+                replace: true,
+                template: '<a xlink:href="{{linkurl}}">{{text}}</a>',
+                type: 'SVG',
+                scope: {
+                  linkurl: '@svgAnchor',
+                  text: '@?'
+                }
+              }));
+            });
+            inject(function($compile, $rootScope) {
+              element = $compile('<svg><g svg-anchor="/foo/bar" text="foo/bar!"></g></svg>')($rootScope);
+              var child = element.children().eq(0);
+              $rootScope.$digest();
+              expect(nodeName_(child)).toMatch(/a/i);
+              expect(child[0].constructor).toBe(window.SVGAElement);
+              expect(child[0].href.baseVal).toBe("/foo/bar");
+            });
+          });
+        }
+
+        // MathML is only natively supported in Firefox at the time of this test's writing,
+        // and even there, the browser does not export MathML element constructors globally.
+        // So the test is slightly limited in what it does. But as browsers begin to
+        // implement MathML natively, this can be tightened up to be more meaningful.
+        it('should support MathML templates using directive.type=math', function() {
+          module(function() {
+            directive('pow', valueFn({
+              replace: true,
+              transclude: true,
+              template: '<msup><mn>{{pow}}</mn></msup>',
+              type: 'MATH',
+              scope: {
+                pow: '@pow',
+              },
+              link: function(scope, elm, attr, ctrl, transclude) {
+                transclude(function(node) {
+                  elm.prepend(node[0]);
+                });
+              }
+            }));
+          });
+          inject(function($compile, $rootScope) {
+            element = $compile('<math><mn pow="2"><mn>8</mn></mn></math>')($rootScope);
+            $rootScope.$digest();
+            var child = element.children().eq(0);
+            expect(nodeName_(child)).toMatch(/msup/i);
+          });
+        });
       });
 
 
@@ -1612,6 +1665,61 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(nodeName_(element)).toMatch(/optgroup/i);
         }));
+
+        if (window.SVGAElement) {
+          it('should support SVG templates using directive.type=svg', function() {
+            module(function() {
+              directive('svgAnchor', valueFn({
+                replace: true,
+                templateUrl: 'template.html',
+                type: 'SVG',
+                scope: {
+                  linkurl: '@svgAnchor',
+                  text: '@?'
+                }
+              }));
+            });
+            inject(function($compile, $rootScope, $templateCache) {
+              $templateCache.put('template.html', '<a xlink:href="{{linkurl}}">{{text}}</a>');
+              element = $compile('<svg><g svg-anchor="/foo/bar" text="foo/bar!"></g></svg>')($rootScope);
+              $rootScope.$digest();
+              var child = element.children().eq(0);
+              expect(nodeName_(child)).toMatch(/a/i);
+              expect(child[0].constructor).toBe(window.SVGAElement);
+              expect(child[0].href.baseVal).toBe("/foo/bar");
+            });
+          });
+        }
+
+        // MathML is only natively supported in Firefox at the time of this test's writing,
+        // and even there, the browser does not export MathML element constructors globally.
+        // So the test is slightly limited in what it does. But as browsers begin to
+        // implement MathML natively, this can be tightened up to be more meaningful.
+        it('should support MathML templates using directive.type=math', function() {
+          module(function() {
+            directive('pow', valueFn({
+              replace: true,
+              transclude: true,
+              templateUrl: 'template.html',
+              type: 'MATH',
+              scope: {
+                pow: '@pow',
+              },
+              link: function(scope, elm, attr, ctrl, transclude) {
+                transclude(function(node) {
+                  elm.prepend(node[0]);
+                });
+              }
+            }));
+          });
+          inject(function($compile, $rootScope, $templateCache) {
+            $templateCache.put('template.html', '<msup><mn>{{pow}}</mn></msup>');
+            element = $compile('<math><mn pow="2"><mn>8</mn></mn></math>')($rootScope);
+            $rootScope.$digest();
+            var child = element.children().eq(0);
+            expect(nodeName_(child)).toMatch(/msup/i);
+          });
+        });
       });
 
 
