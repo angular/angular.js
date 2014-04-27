@@ -136,58 +136,56 @@ To rerun the test suite, execute `npm run protractor` again.
 
 # Experiments
 
-* Display the current value of the `query` model by adding a `{{query}}` binding into the
+### Display Current Query
+Display the current value of the `query` model by adding a `{{query}}` binding into the
 `index.html` template, and see how it changes when you type in the input box.
 
-* Let's see how we can get the current value of the `query` model to appear in the HTML page title.
+### Display Query in Title
+Let's see how we can get the current value of the `query` model to appear in the HTML page title.
 
-  You might think you could just add the `{{query}}` to the title tag element as follows:
+* Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
 
-          <title>Google Phone Gallery: {{query}}</title>
+  ```js
+    it('should display the current filter value in the title bar', function() {
+
+      expect(browser.getTitle()).toMatch(/Google Phone Gallery:\s*$/);
+
+      element(by.model('query')).sendKeys('nexus');
+
+      expect(browser.getTitle()).toMatch(/Google Phone Gallery: nexus$/);
+    });
+  ```
+
+  Run protractor (`npm run protractor`) to see this test fail.
+
+
+* You might think you could just add the `{{query}}` to the title tag element as follows:
+
+        <title>Google Phone Gallery: {{query}}</title>
 
   However, when you reload the page, you won't see the expected result. This is because the "query"
-  model lives in the scope, defined by the `ng-controller="PhoneListCtrl"` directive, on the body element:
+  model lives in the scope, defined by the `ng-controller="PhoneListCtrl"` directive, on the body
+  element:
 
           <body ng-controller="PhoneListCtrl">
 
   If you want to bind to the query model from the `<title>` element, you must __move__ the
-`ngController` declaration to the HTML element because it is the common parent of both the body
-and title elements:
+  `ngController` declaration to the HTML element because it is the common parent of both the body
+  and title elements:
 
           <html ng-app="phonecatApp" ng-controller="PhoneListCtrl">
 
   Be sure to __remove__ the `ng-controller` declaration from the body element.
 
-  While using double curlies works fine within the title element, you might have noticed that
+* Re-run `npm run protractor` to see the test now pass.
+
+* While using double curlies works fine within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
-solution would be to use the {@link ng.directive:ngBind
-ngBind} or {@link ng.directive:ngBindTemplate
-ngBindTemplate} directives, which are invisible to the user while the page is loading:
+solution would be to use the {@link ng.directive:ngBind ngBind} or
+{@link ng.directive:ngBindTemplate ngBindTemplate} directives, which are invisible to the user
+while the page is loading:
 
-          <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
-
-* Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
-
-  ```js
-    it('should display the current filter value within an element with id "status"',
-        function() {
-      var statusElement = element(by.id('status'));
-      expect(statusElement.getText()).toMatch(/Current filter:\s*$/);
-
-      element(by.model('query')).sendKeys('nexus');
-
-      expect(statusElement.getText()).toMatch(/Current filter: nexus\s*$/);
-
-      //alternative version of the last assertion that tests just the value of the binding
-      expect(element(by.binding('query')).getText()).toMatch(/Current filter: nexus\s*$/);
-    });
-  ```
-
-  Re-run `npm run protractor` to see the test fail. To make the test pass, edit the `index.html`
-template to add a `div` or `p` element with `id` `"status"` and content with the `query` binding,
-prefixed by "Current filter:". For instance:
-
-          <div id="status">Current filter: {{query}}</div>
+        <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
 
 
 # Summary
