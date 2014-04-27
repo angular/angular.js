@@ -323,18 +323,22 @@ __`app/css/animations.css`.__
 /* don't forget about the vendor-prefixes! */
 ```
 
-Nothing crazy here! Just a simple fade in and fade out effect between pages. The only out of the ordinary thing
-here is that we're using absolute positioning to position the next page (identified via `ng-enter`) on top of the
-previous page (the one that has the `ng-leave` class) while performing a cross fade animation in between. So
-as the previous page is just about to be removed, it fades out while the new page fades in right on top of it.
-Once the leave animation is over then element is removed and once the enter animation is complete then the
-`ng-enter` and `ng-enter-active` CSS classes are removed from the element rendering it to be position itself
-with its default CSS code (so no more absolute positioning once the animation is over). This works fluidly so
-that pages flow naturally between route changes without anything jumping around.
+Nothing crazy here! Just a simple fade in and fade out effect between pages. The only out of the
+ordinary thing here is that we're using absolute positioning to position the next page (identified
+via `ng-enter`) on top of the previous page (the one that has the `ng-leave` class) while performing
+a cross fade animation in between. So as the previous page is just about to be removed, it fades out
+while the new page fades in right on top of it.
 
-The CSS classes applied (the start and end classes) are much the same as with `ng-repeat`. Each time a new page is
-loaded the ng-view directive will create a copy of itself, download the template and append the contents. This
-ensures that all views are contained within a single HTML element which allows for easy animation control.
+Once the leave animation is over then element is removed and once the enter animation is complete
+then the `ng-enter` and `ng-enter-active` CSS classes are removed from the element rendering it to
+be position itself with its default CSS code (so no more absolute positioning once the animation is
+over). This works fluidly so that pages flow naturally between route changes without anything
+jumping around.
+
+The CSS classes applied (the start and end classes) are much the same as with `ng-repeat`. Each time
+a new page is loaded the ng-view directive will create a copy of itself, download the template and
+append the contents. This ensures that all views are contained within a single HTML element which
+allows for easy animation control.
 
 For more on CSS animations, see the
 [Web Platform documentation](http://docs.webplatform.org/wiki/css/properties/animations).
@@ -346,14 +350,14 @@ Let's add another animation to our application. Switching to our `phone-detail.h
 we see that we have a nice thumbnail swapper. By clicking on the thumbnails listed on the page,
 the profile phone image changes. But how can we change this around to add animations?
 
-Let's think about it first. Basically, when you click on a thumbnail image, you're changing the state of the profile image to reflect the newly
-selected thumbnail image.
+Let's think about it first. Basically, when you click on a thumbnail image, you're changing the
+state of the profile image to reflect the newly selected thumbnail image.
 The best way to specify state changes within HTML is to use classes.
-Much like before, how we used a CSS class to specify
-an animation, this time the animation will occur whenever the CSS class itself changes.
+Much like before, how we used a CSS class to specify an animation, this time the animation will
+occur whenever the CSS class itself changes.
 
-Whenever a new phone thumbnail is selected, the state changes and the `.active` CSS class is added to the matching
-profile image and the animation plays.
+Whenever a new phone thumbnail is selected, the state changes and the `.active` CSS class is added
+to the matching profile image and the animation plays.
 
 Let's get started and tweak our HTML code on the `phone-detail.html` page first:
 
@@ -379,18 +383,54 @@ __`app/partials/phone-detail.html`.__
 </ul>
 ```
 
-Just like with the thumbnails, we're using a repeater to display **all** the profile images as a list, however we're
-not animating any repeat-related animations. Instead, we're keeping our eye on the ng-class directive since whenever
-the `active` class is true then it will be applied to the element and will render as visible. Otherwise, the profile image
-is hidden. In our case, there is always one element that has the active class, and, therefore, there will always
-be one phone profile image visible on screen at all times.
+Just like with the thumbnails, we're using a repeater to display **all** the profile images as a
+list, however we're not animating any repeat-related animations. Instead, we're keeping our eye on
+the ng-class directive since whenever the `active` class is true then it will be applied to the
+element and will render as visible. Otherwise, the profile image is hidden. In our case, there is
+always one element that has the active class, and, therefore, there will always be one phone profile
+image visible on screen at all times.
 
-When the active class is added to the element, the `active-add` and the `active-add-active` classes are added just before
-to signal AngularJS to fire off an animation. When removed, the `active-remove` and the `active-remove-active` classes
-are applied to the element which in turn trigger another animation.
+When the active class is added to the element, the `active-add` and the `active-add-active` classes
+are added just before to signal AngularJS to fire off an animation. When removed, the
+`active-remove` and the `active-remove-active` classes are applied to the element which in turn
+trigger another animation.
+
+To ensure that the phone images are displayed correctly when the page is first loaded we also tweak
+the detail page CSS styles:
+
+__`app/css/app.css`__
+```css
+.phone-images {
+  background-color: white;
+  width: 450px;
+  height: 450px;
+  overflow: hidden;
+  position: relative;
+  float: left;
+}
+
+...
+
+img.phone {
+  float: left;
+  margin-right: 3em;
+  margin-bottom: 2em;
+  background-color: white;
+  padding: 2em;
+  height: 400px;
+  width: 400px;
+  display: none;
+}
+
+img.phone:first-child {
+  display: block;
+  }
+```
+
 
 You may be thinking that we're just going to create another CSS-enabled animation.
-Although we could do that, let's take the opportunity to learn how to create JavaScript-enabled animations with the `animation()` module method.
+Although we could do that, let's take the opportunity to learn how to create JavaScript-enabled
+animations with the `animation()` module method.
 
 __`app/js/animations.js`.__
 
