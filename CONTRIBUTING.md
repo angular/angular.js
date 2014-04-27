@@ -40,7 +40,7 @@ would like to implement a new feature then consider what kind of change it is:
 [dev mailing list][angular-dev] or [IRC][irc] so that we can better coordinate our efforts, prevent
 duplication of work, and help you to craft the change so that it is successfully accepted into the
 project.
-* **Small Changes** can be crafted and submitted to [GitHub Repository][github] as a Pull Request.
+* **Small Changes** can be crafted and submitted to the [GitHub Repository][github] as a Pull Request.
 
 
 ## <a name="docs"></a> Want a Doc Fix?
@@ -259,6 +259,7 @@ You can find out more detailed information about contributing in the
 [contribute]: http://docs.angularjs.org/misc/contribute
 [contributing]: http://docs.angularjs.org/misc/contribute
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
+[dev-doc]: https://docs.angularjs.org/guide
 [github]: https://github.com/angular/angular.js
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
