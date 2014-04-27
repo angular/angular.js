@@ -31,7 +31,7 @@
 */
 
 describe('q', function() {
-  var q, defer, deferred, promise, log;
+  var q, defer, reject, deferred, rejectedDeferred, promise, log;
 
   // The following private functions are used to help with logging for testing invocation of the
   // promise callbacks.
@@ -180,10 +180,15 @@ describe('q', function() {
   }
 
 
+
+
+
   beforeEach(function() {
     q = qFactory(mockNextTick.nextTick, noop),
+    reject = q.reject,
     defer = q.defer;
-    deferred =  defer()
+    deferred =  defer();
+    rejectedDeferred = reject('foo');
     promise = deferred.promise;
     log = [];
     mockNextTick.queue = [];
@@ -194,12 +199,52 @@ describe('q', function() {
     expect(mockNextTick.queue.length).toBe(0);
   });
 
+  describe('reject',function(){
+    it('should return a rejected promise',function(){
+      expect(typeof rejectedDeferred.then).toBe('function');
+      expect(typeof rejectedDeferred['catch']).toBe('function');
+      expect(typeof rejectedDeferred['finally']).toBe('function');
+    });
+
+    describe('then',function(){
+        it('should execute all fail callbacks in the registration order',function(){
+            rejectedDeferred.then(error(),success(1));
+            rejectedDeferred.then(error(),success(2));
+            expect(logStr()).toBe('');
+
+            mockNextTick.flush();
+            expect(logStr()).toBe('success1(foo)->foo; success2(foo)->foo');
+        });
+    });
+    describe('catch',function(){
+        it('should execute as a fail callback',function(){
+
+            rejectedDeferred.catch(success(1));
+            rejectedDeferred.catch(success(2));
+            expect(logStr()).toBe('');
+
+            mockNextTick.flush();
+            expect(logStr()).toBe('success1(foo)->foo; success2(foo)->foo');
+        });
+    });
+    describe('finally',function(){
+        it('should execute as a fail callback',function(){
+            rejectedDeferred.finally(success(1));
+            rejectedDeferred.finally(success(2));
+            expect(logStr()).toBe('');
+
+            mockNextTick.flush();
+            expect(logStr()).toBe('success1(foo)->foo; success2(foo)->foo');
+        });
+    });
+
+  });
 
   describe('defer', function() {
     it('should create a new deferred', function() {
-      expect(deferred.promise).toBeDefined();
-      expect(deferred.resolve).toBeDefined();
-      expect(deferred.reject).toBeDefined();
+      expect(typeof deferred.promise).toBe('object'); //patched to ensure type for better BDD
+      expect(typeof deferred.resolve).toBe('function'); //patched to ensure type for better BDD
+      expect(typeof deferred.reject).toBe('function'); //patched to ensure type for better BDD
     });
 
 
