@@ -153,6 +153,7 @@ describe('ngClass', function() {
     element.addClass('foo');
     $rootScope.dynCls = '';
     $rootScope.$digest();
+    expect(element[0].className).toBe('ng-scope');
   }));
 
 
@@ -160,6 +161,7 @@ describe('ngClass', function() {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = [undefined, null];
     $rootScope.$digest();
+    expect(element[0].className).toBe('ng-scope');
   }));
 
 
