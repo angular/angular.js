@@ -32,8 +32,7 @@ angular.module('ngCookies', ['ng']).
    * Requires the {@link ngCookies `ngCookies`} module to be installed.
    *
    * @example
-   <example>
-     <file name="index.html">
+   ```js
        <script>
          function ExampleController($cookies) {
            // Retrieving a cookie
@@ -42,8 +41,7 @@ angular.module('ngCookies', ['ng']).
            $cookies.myFavorite = 'oatmeal';
          }
        </script>
-     </file>
-   </example>
+   ```
    */
    factory('$cookies', ['$rootScope', '$browser', function ($rootScope, $browser) {
       var cookies = {},
@@ -138,6 +136,20 @@ angular.module('ngCookies', ['ng']).
    * Requires the {@link ngCookies `ngCookies`} module to be installed.
    *
    * @example
+   <example>
+     <file name="index.html">
+       <script>
+         function ExampleController($cookies) {
+           // Put cookie
+           $cookieStore.put('myFavorite','oatmeal');
+           // Get cookie
+           var favoriteCookie = $cookieStore.get('myFavorite');
+           // Removing a cookie
+           $cookieStore.remove('myFavorite');
+         }
+       </script>
+     </file>
+   </example>
    */
    factory('$cookieStore', ['$cookies', function($cookies) {
 
