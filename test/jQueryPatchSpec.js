@@ -30,10 +30,6 @@ if (window.jQuery) {
 
     describe('$detach event', function() {
 
-      it('should fire on detach()', function() {
-        doc.find('span').detach();
-      });
-
       it('should fire on remove()', function() {
         doc.find('span').remove();
       });
@@ -82,12 +78,6 @@ if (window.jQuery) {
     });
 
     describe('$detach event is not invoked in too many cases', function() {
-
-      it('should fire only on matched elements on detach(selector)', function() {
-        doc.find('span').detach('.second');
-        expect(spy2).toHaveBeenCalled();
-        expect(spy2.callCount).toEqual(1);
-      });
 
       it('should fire only on matched elements on remove(selector)', function() {
         doc.find('span').remove('.second');
