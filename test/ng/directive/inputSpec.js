@@ -642,6 +642,17 @@ describe('input', function() {
       expect(scope.name).toEqual('a');
     });
 
+    it('should allow overriding the model update trigger event on text areas', function() {
+      compileInput(
+          '<textarea ng-model="name" name="alias" '+
+            'ng-model-options="{ updateOn: \'blur\' }"'+
+          '/>');
+
+      changeInputValueTo('a');
+      expect(scope.name).toBeUndefined();
+      browserTrigger(inputElm, 'blur');
+      expect(scope.name).toEqual('a');
+    });
 
     it('should bind the element to a list of events', function() {
       compileInput(
