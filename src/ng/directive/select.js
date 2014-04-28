@@ -98,37 +98,37 @@ var ngOptionsMinErr = minErr('ngOptions');
           </ul>
           <hr/>
           Color (null not allowed):
-          <select ng-model="color" ng-options="c.name for c in colors"></select><br>
+          <select ng-model="colorValue" ng-options="color.name for color in colors"></select><br>
 
           Color (null allowed):
           <span  class="nullable">
-            <select ng-model="color" ng-options="c.name for c in colors">
+            <select ng-model="colorValue" ng-options="color.name for color in colors">
               <option value="">-- choose color --</option>
             </select>
           </span><br/>
 
           Color grouped by shade:
-          <select ng-model="color" ng-options="c.name group by c.shade for c in colors">
+          <select ng-model="colorValue" ng-options="color.name group by color.shade for color in colors">
           </select><br/>
 
 
           Select <a href ng-click="color={name:'not in list'}">bogus</a>.<br>
           <hr/>
-          Currently selected: {{ {selected_color:color}  }}
+          Currently selected: {{ {selected_color:colorValue}  }}
           <div style="border:solid 1px black; height:20px"
-               ng-style="{'background-color':color.name}">
+               ng-style="{'background-color':colorValue.name}">
           </div>
         </div>
       </file>
       <file name="protractor.js" type="protractor">
          it('should check ng-options', function() {
-           expect(element(by.binding('{selected_color:color}')).getText()).toMatch('red');
-           element.all(by.select('color')).first().click();
-           element.all(by.css('select[ng-model="color"] option')).first().click();
-           expect(element(by.binding('{selected_color:color}')).getText()).toMatch('black');
-           element(by.css('.nullable select[ng-model="color"]')).click();
-           element.all(by.css('.nullable select[ng-model="color"] option')).first().click();
-           expect(element(by.binding('{selected_color:color}')).getText()).toMatch('null');
+           expect(element(by.binding('{selected_color:colorValue}')).getText()).toMatch('red');
+           element.all(by.select('colorValue')).first().click();
+           element.all(by.css('select[ng-model="colorValue"] option')).first().click();
+           expect(element(by.binding('{selected_color:colorValue}')).getText()).toMatch('black');
+           element(by.css('.nullable select[ng-model="colorValue"]')).click();
+           element.all(by.css('.nullable select[ng-model="colorValue"] option')).first().click();
+           expect(element(by.binding('{selected_color:colorValue}')).getText()).toMatch('null');
          });
       </file>
     </example>
