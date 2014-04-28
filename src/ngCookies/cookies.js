@@ -133,6 +133,19 @@ angular.module('ngCookies', ['ng']).
    * deserialized by angular's toJson/fromJson.
    *
    * Requires the {@link ngCookies `ngCookies`} module to be installed.
+   *
+   * @example
+   *
+   * ```js
+   * function ExampleController($cookies) {
+   *   // Put cookie
+   *   $cookieStore.put('myFavorite','oatmeal');
+   *   // Get cookie
+   *   var favoriteCookie = $cookieStore.get('myFavorite');
+   *   // Removing a cookie
+   *   $cookieStore.remove('myFavorite');
+   * }
+   * ```
    */
    factory('$cookieStore', ['$cookies', function($cookies) {
 
