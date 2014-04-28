@@ -19,6 +19,11 @@ describe('$interpolate', function() {
     expect($interpolate('some text', true)).toBeUndefined();
   }));
 
+  it('should return undefined when there are bindings and strict is set to true',
+      inject(function($interpolate) {
+    expect($interpolate('test {{foo}}', false, null, true)({})).toBeUndefined();
+  }));
+
   it('should suppress falsy objects', inject(function($interpolate) {
     expect($interpolate('{{undefined}}')({})).toEqual('');
     expect($interpolate('{{null}}')({})).toEqual('');

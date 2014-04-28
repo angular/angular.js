@@ -105,6 +105,26 @@ function $InterpolateProvider() {
      *   expect(exp({name:'Angular'}).toEqual('Hello ANGULAR!');
      * ```
      *
+     * `$interpolate` takes an optional fourth argument, `allOrNothing`. If `allOrNothing` is
+     * `true`, the interpolation function will return `undefined` unless all embedded expressions
+     * evaluate to a value other than `undefined`.
+     *
+     * ```js
+     *   var $interpolate = ...; // injected
+     *   var context = {greeting: 'Hey', name: undefined };
+     *
+     *   // default "forgiving" mode
+     *   var exp = $interpolate('{{greeting}} {{name}}!');
+     *   expect(exp(context)).toEqual('Hello !');
+     *
+     *   // "allOrNothing" mode
+     *   exp = $interpolate('{{greeting}} {{name}}!', false, null, true);
+     *   expect(exp(context, true)).toBeUndefined();
+     *   context.name = 'Angular';
+     *   expect(exp(context, true)).toEqual('Hello Angular!');
+     * ```
+     *
+     * `allOrNothing` is useful for interpolating URLs. `ngSrc` and `ngSrcset` use this behavior.
      *
      * @param {string} text The text with markup to interpolate.
      * @param {boolean=} mustHaveExpression if set to true then the interpolation string must have
@@ -114,12 +134,15 @@ function $InterpolateProvider() {
      *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
+     * @param {boolean=} allOrNothing if `true`, then the returned function returns undefined
+     *    unless all embedded expressions evaluate to a value other than `undefined`.
      * @returns {function(context)} an interpolation function which is used to compute the
      *    interpolated string. The function has these parameters:
      *
      * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
-    function $interpolate(text, mustHaveExpression, trustedContext) {
+    function $interpolate(text, mustHaveExpression, trustedContext, allOrNothing) {
+      allOrNothing = !!allOrNothing;
       var startIndex,
           endIndex,
           index = 0,
@@ -182,16 +205,21 @@ function $InterpolateProvider() {
           return concat.join('');
         };
 
-        var stringify = function (value) {
+        var getValue = function (value) {
           if (trustedContext) {
             value = $sce.getTrusted(trustedContext, value);
           } else {
             value = $sce.valueOf(value);
           }
 
-          if (value === null || isUndefined(value)) {
+          return value;
+        };
+
+        var stringify = function (value) {
+          if (isUndefined(value) || value === null) {
             value = '';
-          } else if (typeof value != 'string') {
+          }
+          if (typeof value != 'string') {
             value = toJson(value);
           }
 
@@ -225,7 +253,11 @@ function $InterpolateProvider() {
 
             try {
               for (; i < ii; i++) {
-                val = stringify(parseFns[i](context));
+                val = getValue(parseFns[i](context));
+                if (allOrNothing && isUndefined(val)) {
+                  return;
+                }
+                val = stringify(val);
                 if (val !== lastValues[i]) {
                   inputsChanged = true;
                 }
