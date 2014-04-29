@@ -32,7 +32,8 @@ module.exports = function(config, specificOptions) {
     customLaunchers: {
       'SL_Chrome': {
         base: 'SauceLabs',
-        browserName: 'chrome'
+        browserName: 'chrome',
+        version: '34'
       },
       'SL_Firefox': {
         base: 'SauceLabs',
