@@ -37,7 +37,7 @@ angular.module('examples', [])
         exampleName = exampleNameParts.join(' - ');
 
         angular.forEach(manifest.files, function(filename) {
-          filePromises.push($http.get(exampleFolder + '/' + filename)
+          filePromises.push($http.get(exampleFolder + '/' + filename, { transformResponse: [] })
             .then(function(response) {
 
               // The manifests provide the production index file but Plunkr wants
