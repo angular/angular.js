@@ -184,10 +184,6 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 pre {
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  display: block;
   white-space: pre-wrap;
   word-break: normal;
 }
