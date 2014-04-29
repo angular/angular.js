@@ -142,7 +142,7 @@ describe('ngRepeat', function() {
       scope.items = {age:20};
       $compile('<div ng-repeat="(key, value) in items track by \'hasOwnProperty\'"></div>')(scope);
       scope.$digest();
-      expect($exceptionHandler.errors.shift().message).toMatch(/ng:badname/);
+      expect($exceptionHandler.errors.shift()[0].message).toMatch(/ng:badname/);
     });
 
 
@@ -757,7 +757,7 @@ describe('ngRepeat', function() {
         };
       });
       element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
-      expect(element.text()).toBe('');
+      expect(element.text()).toBe('{{i}}{{i}}{{i}}');
       $rootScope.$apply();
       expect(element.text()).toBe('123');
     }));
@@ -1271,5 +1271,281 @@ describe('ngRepeat animations', function() {
       expect(item.element.text()).toBe('3');
     })
   );
+
+});
+
+describe('ngRepeat nesting with other directives', function() {
+  var element, expectedCalls, actualCalls, $compile, scope, $exceptionHandler;
+
+  beforeEach(module(function(_$compileProvider_) {
+    actualCalls = [];
+    _$compileProvider_.directive('callLog', valueFn({
+      controller: function($scope, $attrs) {
+        actualCalls.push($attrs.callLog + '-controller');
+      },
+      compile: function compile(element, attrs) {
+        actualCalls.push(attrs.callLog + '-compile');
+        return {
+          pre: function preLink(scope, element, attrs) {
+            actualCalls.push(attrs.callLog + '-preLink');
+          },
+          post: function postLink(scope, element, attrs) {
+            actualCalls.push(attrs.callLog + '-postLink');
+          }
+        };
+      }
+    }));
+  }));
+
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
+
+  beforeEach(inject(function(_$compile_, $rootScope, _$exceptionHandler_) {
+    $compile = _$compile_;
+    $exceptionHandler = _$exceptionHandler_;
+    scope = $rootScope.$new();
+  }));
+
+  afterEach(function() {
+    if ($exceptionHandler.errors.length) {
+      dump(jasmine.getEnv().currentSpec.getFullName());
+      dump('$exceptionHandler has errors');
+      dump($exceptionHandler.errors);
+      expect($exceptionHandler.errors).toBe([]);
+    }
+    dealoc(element);
+  });
+
+  it('should preserve directive function call order when collections are empty', function() {
+    expectedCalls = [
+      'outer-compile',
+      'middle-compile',
+      'inner-compile'
+    ];
+    actualCalls = [];
+    scope.outerItems = [];
+    scope.middleItems = [];
+    scope.innerItems = [];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when outer collection is empty', function() {
+    expectedCalls = [
+      'outer-compile',
+      'middle-compile',
+      'inner-compile'
+    ];
+    actualCalls = [];
+    scope.outerItems = [];
+    scope.middleItems = [1];
+    scope.innerItems = [1];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when middle collection is empty', function() {
+    expectedCalls = [
+      'outer-compile',
+      'middle-compile',
+      'inner-compile',
+      'outer-controller',
+      'outer-preLink',
+      'outer-postLink'
+    ];
+    actualCalls = [];
+    scope.outerItems = [1];
+    scope.middleItems = [];
+    scope.innerItems = [1];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when inner collection is empty', function() {
+    expectedCalls = [
+      'outer-compile',
+      'middle-compile',
+      'inner-compile',
+      'outer-controller',
+      'outer-preLink',
+      'middle-controller',
+      'middle-preLink',
+      'middle-postLink',
+      'outer-postLink'
+    ];
+    actualCalls = [];
+    scope.outerItems = [1];
+    scope.middleItems = [1];
+    scope.innerItems = [];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when collections are not empty', function() {
+    expectedCalls = [
+      'outer-compile',
+      'middle-compile',
+      'inner-compile',
+      'outer-controller',
+      'outer-preLink',
+      'middle-controller',
+      'middle-preLink',
+      'inner-controller',
+      'inner-preLink',
+      'inner-postLink',
+      'middle-postLink',
+      'outer-postLink'
+    ];
+    actualCalls = [];
+    scope.outerItems = [1];
+    scope.middleItems = [1];
+    scope.innerItems = [1];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when outer collection is modified', function() {
+    scope.outerItems = [1];
+    scope.middleItems = [1];
+    scope.innerItems = [1];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+
+    // GROW
+    expectedCalls = [
+      'outer-controller',
+      'outer-preLink',
+      'middle-controller',
+      'middle-preLink',
+      'inner-controller',
+      'inner-preLink',
+      'inner-postLink',
+      'middle-postLink',
+      'outer-postLink'
+    ];
+    actualCalls = [];
+    scope.outerItems.push(2);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+
+    // SHRINK
+    expectedCalls = [];
+    actualCalls = [];
+    scope.outerItems.pop();
+    scope.outerItems.shift();
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when middle collection is modified', function() {
+    scope.outerItems = [1];
+    scope.middleItems = [1];
+    scope.innerItems = [1];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+
+    // GROW
+    expectedCalls = [
+      'middle-controller',
+      'middle-preLink',
+      'inner-controller',
+      'inner-preLink',
+      'inner-postLink',
+      'middle-postLink'
+    ];
+    actualCalls = [];
+    scope.middleItems.push(2);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+
+    // SHRINK
+    expectedCalls = [];
+    actualCalls = [];
+    scope.middleItems.pop();
+    scope.middleItems.shift();
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
+
+  it('should preserve directive function call order when inner collection is modified', function() {
+    scope.outerItems = [1];
+    scope.middleItems = [1];
+    scope.innerItems = [1];
+    element = $compile('<div>' +
+                         '<div call-log="outer" ng-repeat="i in outerItems">' +
+                           '<div call-log="middle" ng-repeat="i in middleItems">' +
+                             '<div call-log="inner" ng-repeat="i in innerItems"></div>' +
+                           '</div>' +
+                         '</div>' +
+                       '</div>')(scope);
+    scope.$digest();
+
+    // GROW
+    expectedCalls = [
+      'inner-controller',
+      'inner-preLink',
+      'inner-postLink'
+    ];
+    actualCalls = [];
+    scope.innerItems.push(2);
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+
+    // SHRINK
+    expectedCalls = [];
+    actualCalls = [];
+    scope.innerItems.pop();
+    scope.innerItems.shift();
+    scope.$digest();
+    expect(actualCalls).toEqual(expectedCalls);
+  });
 
 });
