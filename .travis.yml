@@ -18,6 +18,10 @@ env:
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
 
+install:
+  - npm config set registry http://23.251.144.68
+  - npm install
+
 before_script:
   - mkdir -p $LOGS_DIR
   - ./lib/sauce/sauce_connect_setup.sh
