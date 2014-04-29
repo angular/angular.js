@@ -64,7 +64,27 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 8.1',
         version: '11'
       },
-
+      'SL_iOS_7': {
+        base: 'SauceLabs',
+        browserName: 'iphone',
+        'device-orientation': 'portrait',
+        platform: 'OS X 10.9',
+        version: '7'
+      },
+      'SL_iOS_6': {
+        base: 'SauceLabs',
+        browserName: 'iphone',
+        'device-orientation': 'portrait',
+        platform: 'OS X 10.8',
+        version: '6.1'
+      },
+      'SL_Android_JellyBean': {
+        base: 'SauceLabs',
+        browserName: 'android',
+        'device-orientation': 'portrait',
+        platform: 'Linux',
+        version: '4.3'
+      },
       'BS_Chrome': {
         base: 'BrowserStack',
         browser: 'chrome',
@@ -103,6 +123,38 @@ module.exports = function(config, specificOptions) {
         browser_version: '11.0',
         os: 'Windows',
         os_version: '8.1'
+      },
+      'BS_iOS_7_iPhone': {
+        base: 'BrowserStack',
+        browser: "iphone",
+        browser_version: null,
+        device: "iPhone 5S",
+        os: "ios",
+        os_version: "7.0"
+      },
+      'BS_iOS_6_iPhone': {
+        base: 'BrowserStack',
+        browser: "iphone",
+        browser_version: null,
+        device: "iPhone 5",
+        os: "ios",
+        os_version: "6.0"
+      },
+      'BS_Android_Phone': {
+        base: 'BrowserStack',
+        browser: "android",
+        browser_version: null,
+        device: "LG Nexus 4",
+        os: "android",
+        os_version: "4.2"
+      },
+      'BS_Android_Tablet': {
+        base: 'BrowserStack',
+        browser: "android",
+        browser_version: null,
+        device: "Google Nexus 7",
+        os: "android",
+        os_version: "4.1"
       }
     }
   });
