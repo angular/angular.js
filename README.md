@@ -11,7 +11,7 @@ server-side communication, taming async callbacks with promises and deferreds; a
 navigation and deeplinking with hashbang urls or HTML5 pushState a piece of cake. The best of all:
 it makes development fun!
 
-* Web site: http://angularjs.org
+* Web site: http://angularjs.org  
 * Tutorial: http://docs.angularjs.org/tutorial
 * API Docs: http://docs.angularjs.org/api
 * Developer Guide: http://docs.angularjs.org/guide
