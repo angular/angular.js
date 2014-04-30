@@ -4028,7 +4028,12 @@ describe('$compile', function() {
 
 
 
-      it('should not leak if two "element" transclusions are on the same element', function() {
+      it('should not leak if two "element" transclusions are on the same element', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
         var calcCacheSize = function() {
           var size = 0;
           forEach(jqLite.cache, function(item, key) { size++; });
@@ -4056,7 +4061,11 @@ describe('$compile', function() {
       });
 
 
-      it('should not leak if two "element" transclusions are on the same element', function() {
+      it('should not leak if two "element" transclusions are on the same element', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
         var calcCacheSize = function() {
           var size = 0;
           forEach(jqLite.cache, function(item, key) { size++; });
@@ -4085,6 +4094,29 @@ describe('$compile', function() {
           expect(calcCacheSize()).toEqual(0);
         });
       });
+
+      if (jQuery) {
+        it('should clean up after a replaced element', inject(function ($compile) {
+          var privateData, firstRepeatedElem;
+
+          element = $compile('<div><div ng-repeat="x in xs">{{x}}</div></div>')($rootScope);
+
+          $rootScope.$apply('xs = [0,1]');
+          firstRepeatedElem = element.children('.ng-scope').eq(0);
+
+          expect(firstRepeatedElem.data('$scope')).toBeDefined();
+          privateData = jQuery._data(firstRepeatedElem[0]);
+          expect(privateData.events).toBeDefined();
+          expect(privateData.events.$destroy).toBeDefined();
+          expect(privateData.events.$destroy[0]).toBeDefined();
+
+          $rootScope.$apply('xs = null');
+
+          expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
+          privateData = jQuery._data(firstRepeatedElem[0]);
+          expect(privateData && privateData.events).not.toBeDefined();
+        }));
+      }
 
 
       it('should remove transclusion scope, when the DOM is destroyed', function() {

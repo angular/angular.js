@@ -3,6 +3,7 @@
   "browser": true,
   "globals": {
     "angular": false,
-    "expect": false
+    "expect": false,
+    "jQuery": false
   }
 }

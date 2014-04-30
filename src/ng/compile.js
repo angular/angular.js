@@ -2031,7 +2031,25 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
       var fragment = document.createDocumentFragment();
       fragment.appendChild(firstElementToRemove);
-      newNode[jqLite.expando] = firstElementToRemove[jqLite.expando];
+
+      // Copy over user data (that includes Angular's $scope etc.). Don't copy private
+      // data here because there's no public interface in jQuery to do that and copying over
+      // event listeners (which is the main use of private data) wouldn't work anyway.
+      jqLite(newNode).data(jqLite(firstElementToRemove).data());
+
+      // Remove data of the replaced element. We cannot just call .remove()
+      // on the element it since that would deallocate scope and event handlers that are still needed
+      // for the new node. Instead, remove the data "manually".
+      if (!jQuery) {
+        delete jqLite.cache[firstElementToRemove[jqLite.expando]];
+      } else {
+        // jQuery 2.x doesn't expose the data storage. Use jQuery.cleanData to clean up after the replaced
+        // element. Note that we need to use the original method here and not the one monkey-patched by Angular
+        // since the patched method emits the $destroy event causing the scope to be trashed and we do need
+        // the very same scope to work with the new element.
+        jQuery.cleanData.$$original([firstElementToRemove]);
+      }
+
       for (var k = 1, kk = elementsToRemove.length; k < kk; k++) {
         var element = elementsToRemove[k];
         jqLite(element).remove(); // must do this way to clean up expando

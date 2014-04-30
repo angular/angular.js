@@ -1956,6 +1956,13 @@ angular.mock.e2e.$httpBackendDecorator =
 
 
 angular.mock.clearDataCache = function() {
+  // jQuery 2.x doesn't expose data attached to elements. We could use jQuery.cleanData
+  // to clean up after elements but we'd first need to know which elements to clean up after.
+  // Skip it then.
+  if (window.jQuery) {
+    return;
+  }
+
   var key,
       cache = angular.element.cache;
 
