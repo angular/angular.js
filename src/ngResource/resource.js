@@ -603,6 +603,9 @@ angular.module('ngResource', ['ng']).
             promise = promise.then(
               function (response) {
                 var value = responseInterceptor(response);
+                if(action.saveAs){
+                  data[action.saveAs] = value;
+                }
                 (success || noop)(value, response.headers);
                 return value;
               },
