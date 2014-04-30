@@ -34,6 +34,8 @@ beforeEach(function() {
 });
 
 afterEach(function() {
+  var count, cache;
+
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
     var $rootElement = this.$injector.get('$rootElement');
@@ -46,25 +48,27 @@ afterEach(function() {
     $log.assertEmpty && $log.assertEmpty();
   }
 
-  // complain about uncleared jqCache references
-  var count = 0;
+  if (!window.jQuery) {
+    // jQuery 2.x doesn't expose the cache storage.
 
-  // This line should be enabled as soon as this bug is fixed: http://bugs.jquery.com/ticket/11775
-  //var cache = jqLite.cache;
-  var cache = angular.element.cache;
+    // complain about uncleared jqCache references
+    count = 0;
 
-  forEachSorted(cache, function(expando, key){
-    angular.forEach(expando.data, function(value, key){
-      count ++;
-      if (value && value.$element) {
-        dump('LEAK', key, value.$id, sortedHtml(value.$element));
-      } else {
-        dump('LEAK', key, angular.toJson(value));
-      }
+    cache = angular.element.cache;
+
+    forEachSorted(cache, function (expando, key) {
+      angular.forEach(expando.data, function (value, key) {
+        count++;
+        if (value && value.$element) {
+          dump('LEAK', key, value.$id, sortedHtml(value.$element));
+        } else {
+          dump('LEAK', key, angular.toJson(value));
+        }
+      });
     });
-  });
-  if (count) {
-    throw new Error('Found jqCache references that were not deallocated! count: ' + count);
+    if (count) {
+      throw new Error('Found jqCache references that were not deallocated! count: ' + count);
+    }
   }
 
 
@@ -95,8 +99,9 @@ function dealoc(obj) {
   if (obj) {
     if (angular.isElement(obj)) {
       cleanup(angular.element(obj));
-    } else {
-      for(var key in jqCache) {
+    } else if (!window.jQuery) {
+      // jQuery 2.x doesn't expose the cache storage.
+      for (var key in jqCache) {
         var value = jqCache[key];
         if (value.data && value.data.$scope == obj) {
           delete jqCache[key];

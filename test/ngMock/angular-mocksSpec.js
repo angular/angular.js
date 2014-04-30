@@ -706,6 +706,11 @@ describe('ngMock', function() {
 
 
   describe('angular.mock.clearDataCache', function() {
+    if (window.jQuery) {
+      // jQuery 2.x doesn't expose the cache storage.
+      return;
+    }
+
     function keys(obj) {
       var keysArr = [];
       for(var key in obj) {
