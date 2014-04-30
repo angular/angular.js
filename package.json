@@ -52,7 +52,8 @@
     "gulp-jshint": "~1.4.2",
     "jshint-stylish": "~0.1.5",
     "node-html-encoder": "0.0.2",
-    "sorted-object": "^1.0.0"
+    "sorted-object": "^1.0.0",
+    "qq": "^0.3.5"
   },
   "licenses": [
     {
