@@ -2322,7 +2322,6 @@ var ngValueDirective = function() {
       var other = element(by.model('user.data'));
 
       it('should allow custom events', function() {
-        input.click();
         input.sendKeys(' hello');
         expect(model.getText()).toEqual('say');
         other.click();
@@ -2330,7 +2329,6 @@ var ngValueDirective = function() {
       });
 
       it('should $cancelUpdate when model changes', function() {
-        input.click();
         input.sendKeys(' hello');
         expect(input.getAttribute('value')).toEqual('say hello');
         input.sendKeys(protractor.Key.ESCAPE);
