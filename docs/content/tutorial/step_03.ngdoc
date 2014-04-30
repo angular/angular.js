@@ -143,7 +143,7 @@ Display the current value of the `query` model by adding a `{{query}}` binding i
 ### Display Query in Title
 Let's see how we can get the current value of the `query` model to appear in the HTML page title.
 
-* Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
+* Add the following end-to-end test into the outer `describe` block within `test/e2e/scenarios.js`:
 
   ```js
     it('should display the current filter value in the title bar', function() {
