@@ -592,7 +592,7 @@ function annotate(fn, strictDi, name) {
  *    Local injection arguments:
  *
  *    * `$delegate` - The original service instance, which can be monkey patched, configured,
- *      decorated or delegated to.
+ *      decorated or delegated to. (Without explicit dependency in $delegate this instance will not be created)
  *
  * @example
  * Here we decorate the {@link ng.$log $log} service to convert warnings to errors by intercepting
@@ -684,8 +684,11 @@ function createInjector(modulesToLoad, strictDi) {
         orig$get = origProvider.$get;
 
     origProvider.$get = function() {
-      var origInstance = instanceInjector.invoke(orig$get, origProvider);
-      return instanceInjector.invoke(decorFn, null, {$delegate: origInstance});
+      var locals;
+      if (includes(annotate(decorFn), '$delegate')) {
+        locals = {$delegate: instanceInjector.invoke(orig$get, origProvider)};
+      }
+      return instanceInjector.invoke(decorFn, null, locals);
     };
   }
 
