@@ -996,12 +996,9 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       regexp = regex || undefined;
     });
 
-    var patternValidator = function(value) {
-      return validate(ctrl, 'pattern', ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value), value);
+    ctrl.$validators.pattern = function(value) {
+      return ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value);
     };
-
-    ctrl.$formatters.push(patternValidator);
-    ctrl.$parsers.push(patternValidator);
   }
 
   // min length validator
