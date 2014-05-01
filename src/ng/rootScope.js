@@ -1062,25 +1062,40 @@ function $RootScopeProvider(){
        * @param {function(event, ...args)} listener Function to call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $on: function(name, listener) {
-        var namedListeners = this.$$listeners[name];
-        if (!namedListeners) {
-          this.$$listeners[name] = namedListeners = [];
-        }
-        namedListeners.push(listener);
+      $on: function(names, listener) {
+        names = isArray(names) ? names : names.split(/\s+/);
 
-        var current = this;
-        do {
-          if (!current.$$listenerCount[name]) {
-            current.$$listenerCount[name] = 0;
+        var name,
+            namedListeners,
+            current;
+
+        for (var i = 0; i < names.length; i++) {
+          name = names[i];
+          namedListeners = this.$$listeners[name];
+          if (!namedListeners) {
+            this.$$listeners[name] = namedListeners = [];
           }
-          current.$$listenerCount[name]++;
-        } while ((current = current.$parent));
+          namedListeners.push(listener);
+
+          current = this;
+          do {
+            if (!current.$$listenerCount[name]) {
+              current.$$listenerCount[name] = 0;
+            }
+            current.$$listenerCount[name]++;
+          } while ((current = current.$parent));
+        }
 
         var self = this;
         return function() {
-          namedListeners[indexOf(namedListeners, listener)] = null;
-          decrementListenerCount(self, 1, name);
+          var name,
+              namedListeners;
+          for (var i = 0; i < names.length; i += 1) {
+            name = names[i];
+            namedListeners = self.$$listeners[name];
+            namedListeners[indexOf(namedListeners, listener)] = null;
+            decrementListenerCount(self, 1, name);
+          }
         };
       },
 

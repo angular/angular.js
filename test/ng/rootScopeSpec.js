@@ -1507,6 +1507,42 @@ describe('Scope', function() {
       }));
 
 
+      it('should listen to a whitespace-separated list of events', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new();
+
+        function eventFn() {
+          log += 'X';
+        }
+
+        child.$on('a b', eventFn);
+        expect(log).toEqual('');
+
+        child.$emit('a');
+        child.$broadcast('b');
+
+        expect(log).toEqual('XX');
+      }));
+
+
+      it('should listen to an array of events', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new();
+
+        function eventFn() {
+          log += 'X';
+        }
+
+        child.$on(['a', 'b'], eventFn);
+        expect(log).toEqual('');
+
+        child.$emit('a');
+        child.$broadcast('b');
+
+        expect(log).toEqual('XX');
+      }));
+
+
       it('should increment ancestor $$listenerCount entries', inject(function($rootScope) {
         var child1 = $rootScope.$new(),
             child2 = child1.$new(),
@@ -1552,6 +1588,34 @@ describe('Scope', function() {
           child.$broadcast('abc');
           expect(log).toEqual('');
           expect($rootScope.$$listenerCount['abc']).toBeUndefined();
+        }));
+
+        it('should remove multiple listeners', inject(function($rootScope) {
+          var log = '',
+              child = $rootScope.$new(),
+              listenerRemove;
+
+          function eventFn() {
+            log += 'X';
+          }
+
+          listenerRemove = child.$on('a b', eventFn);
+          expect(log).toEqual('');
+          expect(listenerRemove).toBeDefined();
+
+          child.$emit('a');
+          child.$broadcast('b');
+          expect(log).toEqual('XX');
+          expect($rootScope.$$listenerCount['a']).toBe(1);
+          expect($rootScope.$$listenerCount['b']).toBe(1);
+
+          log = '';
+          listenerRemove();
+          child.$emit('a');
+          child.$broadcast('b');
+          expect(log).toEqual('');
+          expect($rootScope.$$listenerCount['a']).toBeUndefined();
+          expect($rootScope.$$listenerCount['b']).toBeUndefined();
         }));
 
 
