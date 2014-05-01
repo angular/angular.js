@@ -2609,7 +2609,7 @@ describe('input', function() {
       compileInput('<input type="text" ng-model="name" name="alias" required />');
 
       scope.$apply(function() {
-        scope.name = '';
+        scope.name = null;
       });
 
       expect(inputElm).toBeInvalid();
