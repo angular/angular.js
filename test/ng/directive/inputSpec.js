@@ -1345,14 +1345,14 @@ describe('input', function() {
 
   describe('minlength', function() {
 
-    it('should invalid shorter than given minlength', function() {
+    it('should invalidate values that are shorter than the given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
-      expect(scope.value).toBeUndefined();
+      expect(inputElm).toBeInvalid();
 
       changeInputValueTo('aaa');
-      expect(scope.value).toBe('aaa');
+      expect(inputElm).toBeValid();
     });
 
     it('should listen on ng-minlength when minlength is observed', function() {
@@ -1373,14 +1373,14 @@ describe('input', function() {
 
   describe('maxlength', function() {
 
-    it('should invalid shorter than given maxlength', function() {
+    it('should invalidate values that are longer than the given maxlength', function() {
       compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
-      expect(scope.value).toBeUndefined();
+      expect(inputElm).toBeInvalid();
 
       changeInputValueTo('aaa');
-      expect(scope.value).toBe('aaa');
+      expect(inputElm).toBeValid();
     });
 
     it('should listen on ng-maxlength when maxlength is observed', function() {
