@@ -2265,7 +2265,7 @@ var ngValueDirective = function() {
  * takes place when a timer expires; this timer will be reset after another change takes place.
  *
  * Given the nature of `ngModelOptions`, the value displayed inside input fields in the view might
- * be different then the value in the actual model. This means that if you update the model you
+ * be different than the value in the actual model. This means that if you update the model you
  * should also invoke {@link ngModel.NgModelController `$cancelUpdate`} on the relevant input field in
  * order to make sure it is synchronized with the model and that any debounced action is canceled.
  *
