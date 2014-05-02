@@ -25,6 +25,10 @@ module.exports = function(config) {
     require('./tag-defs/tutorial-step')
   ]);
 
+  config.append('processing.defaultTagTransforms', [
+    require('dgeni-packages/jsdoc/tag-defs/transforms/trim-whitespace')
+  ]);
+
   config.append('processing.inlineTagDefinitions', [
     require('./inline-tag-defs/type')
   ]);

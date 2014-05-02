@@ -3,20 +3,20 @@ var log = require('winston');
 var fs = require('fs');
 var path = require('canonical-path');
 
-// Keywords to ignore
-var wordsToIgnore = [];
-var propertiesToIgnore;
-var areasToSearch;
-
-// Keywords start with "ng:" or one of $, _ or a letter
-var KEYWORD_REGEX = /^((ng:|[\$_a-z])[\w\-_]+)/;
-
 module.exports = {
   name: 'keywords',
   runAfter: ['docs-processed'],
   runBefore: ['adding-extra-docs'],
   description: 'This processor extracts all the keywords from the document',
-  init: function(config) {
+  process: function(docs, config) {
+
+    // Keywords to ignore
+    var wordsToIgnore = [];
+    var propertiesToIgnore;
+    var areasToSearch;
+
+    // Keywords start with "ng:" or one of $, _ or a letter
+    var KEYWORD_REGEX = /^((ng:|[\$_a-z])[\w\-_]+)/;
 
     // Load up the keywords to ignore, if specified in the config
     if ( config.processing.search && config.processing.search.ignoreWordsFile ) {
@@ -33,9 +33,6 @@ module.exports = {
 
     propertiesToIgnore = _.indexBy(config.get('processing.search.propertiesToIgnore', []));
     log.debug('Properties to ignore', propertiesToIgnore);
-
-  },
-  process: function(docs) {
 
     var ignoreWordsMap = _.indexBy(wordsToIgnore);
 
