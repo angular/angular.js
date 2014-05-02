@@ -18,7 +18,7 @@ extensions or plug-ins:
 
 * See examples of how to use client-side data binding to build dynamic views of data that change
   immediately in response to user actions.
-* See how Angular keeps your views in synch with your data without the need for DOM manipulation.
+* See how Angular keeps your views in sync with your data without the need for DOM manipulation.
 * Learn a better, easier way to test your web apps, with Karma and Protractor.
 * Learn how to use dependency injection and services to make common web tasks, such as getting data
   into your app, easier.
