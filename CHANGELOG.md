@@ -1,3 +1,191 @@
+<a name="1.3.0-beta.8"></a>
+# 1.3.0-beta.8 accidental-haiku (2014-05-09)
+
+
+## Bug Fixes
+
+- **$compile:** set $isolateScope correctly for sync template directives
+  ([562c4e42](https://github.com/angular/angular.js/commit/562c4e424b0ed5f8d4bffba0cd18e66db2059043),
+   [#6942](https://github.com/angular/angular.js/issues/6942))
+- **$httpBackend:** Add missing expectHEAD() method
+  ([e1d61784](https://github.com/angular/angular.js/commit/e1d6178457045e721872022f71227b277cb88726),
+   [#7320](https://github.com/angular/angular.js/issues/7320))
+- **$interpolate:** don't ReferenceError when context is undefined
+  ([924ee6db](https://github.com/angular/angular.js/commit/924ee6db06a2518224caada86769efedd21c0710),
+   [#7230](https://github.com/angular/angular.js/issues/7230), [#7237](https://github.com/angular/angular.js/issues/7237))
+- **grunt-utils:** ensure special inline CSS works when `angular` is not a global
+  ([af72f40a](https://github.com/angular/angular.js/commit/af72f40a5512daa97c1f175a59b547c33cff1dc0),
+   [#7176](https://github.com/angular/angular.js/issues/7176))
+- **injector:** invoke config blocks for module after all providers
+  ([c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
+   [#7139](https://github.com/angular/angular.js/issues/7139), [#7147](https://github.com/angular/angular.js/issues/7147))
+- **ngModelOptions:**
+  - enable overriding the default with a debounce of zero
+  ([c56e32a7](https://github.com/angular/angular.js/commit/c56e32a7fa44e2edd2c70f663906720c7c9ad898),
+   [#7205](https://github.com/angular/angular.js/issues/7205))
+  - initialize ngModelOptions in prelink
+  ([fbf5ab8f](https://github.com/angular/angular.js/commit/fbf5ab8f17d28efeadb492c5a252f0778643f072),
+   [#7281](https://github.com/angular/angular.js/issues/7281), [#7292](https://github.com/angular/angular.js/issues/7292))
+- **ngSanitize:** encode surrogate pair properly
+  ([627b0354](https://github.com/angular/angular.js/commit/627b0354ec35bef5c6dbfab6469168c2fadcbee5),
+   [#5088](https://github.com/angular/angular.js/issues/5088), [#6911](https://github.com/angular/angular.js/issues/6911))
+- **ngSrc, ngSrcset:** only interpolate if all expressions are defined
+  ([8d180383](https://github.com/angular/angular.js/commit/8d180383014cbe38d58ff3eab083f51cfcfb8dde),
+   [#6984](https://github.com/angular/angular.js/issues/6984))
+- **ngSwitch:** properly support case labels with different numbers of transclude fns
+  ([ac37915e](https://github.com/angular/angular.js/commit/ac37915ef64c60ec8f8d4e49e4d61d7baeb96ba0),
+   [#7372](https://github.com/angular/angular.js/issues/7372), [#7373](https://github.com/angular/angular.js/issues/7373))
+
+
+## Features
+
+- **$compile:** allow SVG and MathML templates via special `type` property
+  ([f0e12ea7](https://github.com/angular/angular.js/commit/f0e12ea7fea853192e4eead00b40d6041c5f914a),
+   [#7265](https://github.com/angular/angular.js/issues/7265))
+- **$interpolate:** add optional allOrNothing param
+  ([c2362e3f](https://github.com/angular/angular.js/commit/c2362e3f45e732a9defdb0ea59ce4ec5236fcd3a))
+- **FormController:** commit `$viewValue` of all child controls when form is submitted
+  ([a0ae07bd](https://github.com/angular/angular.js/commit/a0ae07bd4ee8d98654df4eb261d16ca55884e374),
+   [#7017](https://github.com/angular/angular.js/issues/7017))
+- **NgMessages:** introduce the NgMessages module and directives
+  ([0f4016c8](https://github.com/angular/angular.js/commit/0f4016c84a47e01a0fb993867dfd0a64828c089c))
+
+
+## Breaking Changes
+
+- **$http:** due to [ad4336f9](https://github.com/angular/angular.js/commit/ad4336f9359a073e272930f8f9bcd36587a8648f),
+
+
+Previously, it was possible to register a response interceptor like so:
+
+```js
+// register the interceptor as a service
+$provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
+  return function(promise) {
+    return promise.then(function(response) {
+      // do something on success
+      return response;
+    }, function(response) {
+      // do something on error
+      if (canRecover(response)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(response);
+    });
+  }
+});
+
+$httpProvider.responseInterceptors.push('myHttpInterceptor');
+```
+
+Now, one must use the newer API introduced in v1.1.4 (4ae46814), like so:
+
+```js
+$provide.factory('myHttpInterceptor', function($q) {
+  return {
+    response: function(response) {
+      // do something on success
+      return response;
+    },
+    responseError: function(response) {
+      // do something on error
+      if (canRecover(response)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(response);
+    }
+  };
+});
+
+$httpProvider.interceptors.push('myHttpInterceptor');
+```
+
+More details on the new interceptors API (which has been around as of v1.1.4) can be found at
+https://docs.angularjs.org/api/ng/service/$http#interceptors
+
+
+- **injector:** due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
+
+Previously, config blocks would be able to control behaviour of provider registration, due to being
+invoked prior to provider registration. Now, provider registration always occurs prior to configuration
+for a given module, and therefore config blocks are not able to have any control over a providers
+registration.
+
+**Example**:
+
+Previously, the following:
+
+```js
+angular.module('foo', [])
+  .provider('$rootProvider', function() {
+    this.$get = function() { ... }
+  })
+  .config(function($rootProvider) {
+    $rootProvider.dependentMode = "B";
+  })
+  .provider('$dependentProvider', function($rootProvider) {
+     if ($rootProvider.dependentMode === "A") {
+       this.$get = function() {
+        // Special mode!
+       }
+     } else {
+       this.$get = function() {
+         // something else
+       }
+    }
+  });
+```
+
+would have "worked", meaning behaviour of the config block between the registration of "$rootProvider"
+and "$dependentProvider" would have actually accomplished something and changed the behaviour of the
+app. This is no longer possible within a single module.
+
+
+- **ngModelOptions:** due to [adfc322b](https://github.com/angular/angular.js/commit/adfc322b04a58158fb9697e5b99aab9ca63c80bb),
+ 
+
+This commit changes the API on `NgModelController`, both semantically and
+in terms of adding and renaming methods.
+
+* `$setViewValue(value)` -
+This method still changes the `$viewValue` but does not immediately commit this
+change through to the `$modelValue` as it did previously.
+Now the value is committed only when a trigger specified in an associated
+`ngModelOptions` directive occurs. If `ngModelOptions` also has a `debounce` delay
+specified for the trigger then the change will also be debounced before being
+committed.
+In most cases this should not have a significant impact on how `NgModelController`
+is used: If `updateOn` includes `default` then `$setViewValue` will trigger
+a (potentially debounced) commit immediately.
+* `$cancelUpdate()` - is renamed to `$rollbackViewValue()` and has the same meaning,
+which is to revert the current `$viewValue` back to the `$lastCommittedViewValue`,
+to cancel any pending debounced updates and to re-render the input.
+
+To migrate code that used `$cancelUpdate()` follow the example below:
+
+Before:
+
+```js
+$scope.resetWithCancel = function (e) {
+  if (e.keyCode == 27) {
+    $scope.myForm.myInput1.$cancelUpdate();
+    $scope.myValue = '';
+  }
+};
+```
+
+After:
+
+```js
+$scope.resetWithCancel = function (e) {
+  if (e.keyCode == 27) {
+    $scope.myForm.myInput1.$rollbackViewValue();
+    $scope.myValue = '';
+  }
+}
+```
+
+
 <a name="v1.3.0-beta.7"></a>
 # v1.3.0-beta.7 proper-attribution (2014-04-25)
 
