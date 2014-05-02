@@ -1968,7 +1968,9 @@ function directiveNormalize(name) {
  * element attributes. The values reflect current binding state `{{ }}`. The normalization is
  * needed since all of these are treated as equivalent in Angular:
  *
+ * ```
  *    <span ng:bind="a" ng-bind="a" data-ng-bind="a" x-ng-bind="a">
+ * ```
  */
 
 /**
