@@ -129,18 +129,15 @@ var navGroupMappers = {
   }
 };
 
-var outputFolder;
-
 module.exports = {
   name: 'pages-data',
   description: 'This plugin will create a new doc that will be rendered as an angularjs module ' +
                'which will contain meta information about the pages and navigation',
-  runAfter: ['adding-extra-docs', 'component-groups-generate'],
+  runAfter: ['adding-extra-docs', 'component-groups-generate', 'compute-path'],
   runBefore: ['extra-docs-added'],
-  init: function(config) {
-    outputFolder = config.rendering.outputFolder;
-  },
-  process: function(docs) {
+  process: function(docs, config) {
+
+    var outputFolder = config.rendering.outputFolder;
 
     _(docs)
     .filter(function(doc) { return doc.area === 'api'; })
@@ -191,7 +188,7 @@ module.exports = {
         area.navGroups = navGroupMapper(pages, area);
       });
 
-    // Extract a list of basic page information for mapping paths to paritals and for client side searching
+    // Extract a list of basic page information for mapping paths to partials and for client side searching
     var pages = _(docs)
       .map(function(doc) {
         var page = _.pick(doc, [
