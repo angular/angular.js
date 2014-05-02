@@ -290,6 +290,24 @@ describe("ngAnimate", function() {
           expect(element.contents().length).toBe(1);
         }));
 
+        it("should animate the enter animation event with native dom elements",
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+          element[0].removeChild(child[0]);
+
+          expect(element.contents().length).toBe(0);
+          $animate.enter(child[0], element[0]);
+          $rootScope.$digest();
+
+          if($sniffer.transitions) {
+            $animate.triggerReflow();
+            expect(child.hasClass('ng-enter')).toBe(true);
+            expect(child.hasClass('ng-enter-active')).toBe(true);
+            browserTrigger(element, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          }
+
+          expect(element.contents().length).toBe(1);
+        }));
+
 
         it("should animate the leave animation event",
           inject(function($animate, $rootScope, $sniffer, $timeout) {
@@ -308,6 +326,22 @@ describe("ngAnimate", function() {
           expect(element.contents().length).toBe(0);
         }));
 
+        it("should animate the leave animation event with native dom elements",
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+
+          expect(element.contents().length).toBe(1);
+          $animate.leave(child[0]);
+          $rootScope.$digest();
+
+          if($sniffer.transitions) {
+            $animate.triggerReflow();
+            expect(child.hasClass('ng-leave')).toBe(true);
+            expect(child.hasClass('ng-leave-active')).toBe(true);
+            browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          }
+
+          expect(element.contents().length).toBe(0);
+        }));
 
         it("should animate the move animation event",
           inject(function($animate, $compile, $rootScope, $timeout, $sniffer) {
@@ -328,6 +362,24 @@ describe("ngAnimate", function() {
           expect(element.text()).toBe('21');
         }));
 
+        it("should animate the move animation event with native dom elements",
+          inject(function($animate, $compile, $rootScope, $timeout, $sniffer) {
+
+          $rootScope.$digest();
+          element.empty();
+
+          var child1 = $compile('<div>1</div>')($rootScope);
+          var child2 = $compile('<div>2</div>')($rootScope);
+          element.append(child1);
+          element.append(child2);
+          expect(element.text()).toBe('12');
+          $animate.move(child1[0], element[0], child2[0]);
+          $rootScope.$digest();
+          if($sniffer.transitions) {
+            $animate.triggerReflow();
+          }
+          expect(element.text()).toBe('21');
+        }));
 
         it("should animate the show animation event",
           inject(function($animate, $rootScope, $sniffer, $timeout) {
@@ -346,7 +398,6 @@ describe("ngAnimate", function() {
           expect(child.hasClass('ng-hide-remove-active')).toBe(false);
           expect(child).toBeShown();
         }));
-
 
         it("should animate the hide animation event",
           inject(function($animate, $rootScope, $sniffer, $timeout) {
@@ -401,6 +452,43 @@ describe("ngAnimate", function() {
           });
         });
 
+        it("should exclusively animate the setClass animation event with native dom elements", function() {
+          var count = 0, fallback = jasmine.createSpy('callback');
+          module(function($animateProvider) {
+            $animateProvider.register('.classify', function() {
+              return {
+                beforeAddClass : fallback,
+                addClass : fallback,
+                beforeRemoveClass : fallback,
+                removeClass : fallback,
+
+                beforeSetClass : function(element, add, remove, done) {
+                  count++;
+                  expect(add).toBe('yes');
+                  expect(remove).toBe('no');
+                  done();
+                },
+                setClass : function(element, add, remove, done) {
+                  count++;
+                  expect(add).toBe('yes');
+                  expect(remove).toBe('no');
+                  done();
+                }
+              };
+            });
+          });
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+            child.attr('class','classify no');
+            $animate.setClass(child[0], 'yes', 'no');
+            $animate.triggerReflow();
+
+            expect(child.hasClass('yes')).toBe(true);
+            expect(child.hasClass('no')).toBe(false);
+            expect(count).toBe(2);
+
+            expect(fallback).not.toHaveBeenCalled();
+          });
+        });
 
         it("should delegate down to addClass/removeClass if a setClass animation is not found", function() {
           var count = 0;
@@ -2003,6 +2091,39 @@ describe("ngAnimate", function() {
           expect(captured).toBe('addClass-some-class');
         }));
 
+        it("should perform the animation if passed native dom element",
+          inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout, $browser) {
+
+          var element = jqLite('<div class="klassy"></div>');
+          $rootElement.append(element);
+          body.append($rootElement);
+
+          //skipped animations
+          captured = 'none';
+          $animate.removeClass(element[0], 'some-class');
+          expect(element.hasClass('some-class')).toBe(false);
+          expect(captured).toBe('none');
+
+          element.addClass('some-class');
+
+          captured = 'nothing';
+          $animate.addClass(element[0], 'some-class');
+          expect(captured).toBe('nothing');
+          expect(element.hasClass('some-class')).toBe(true);
+
+          //actual animations
+          captured = 'none';
+          $animate.removeClass(element[0], 'some-class');
+          $animate.triggerReflow();
+          expect(element.hasClass('some-class')).toBe(false);
+          expect(captured).toBe('removeClass-some-class');
+
+          captured = 'nothing';
+          $animate.addClass(element[0], 'some-class');
+          $animate.triggerReflow();
+          expect(element.hasClass('some-class')).toBe(true);
+          expect(captured).toBe('addClass-some-class');
+        }));
 
         it("should add and remove CSS classes after an animation even if no animation is present",
           inject(function($animate, $rootScope, $sniffer, $rootElement) {
@@ -2132,6 +2253,37 @@ describe("ngAnimate", function() {
           expect(signature).toBe('XY');
         }));
 
+        it("should properly execute JS animations if passed native dom element",
+          inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout) {
+
+          var parent = jqLite('<div><span></span></div>');
+          $rootElement.append(parent);
+          body.append($rootElement);
+          var element = jqLite(parent.find('span'));
+
+          var signature = '';
+
+          $animate.addClass(element[0],'klassy', function() {
+            signature += 'X';
+          });
+          $animate.triggerReflow();
+
+          $timeout.flush(500);
+
+          expect(element.hasClass('klassy')).toBe(true);
+
+          $animate.removeClass(element[0],'klassy', function() {
+            signature += 'Y';
+          });
+          $animate.triggerReflow();
+
+          $timeout.flush(3000);
+
+          expect(element.hasClass('klassy')).toBe(false);
+
+          $animate.triggerCallbacks();
+          expect(signature).toBe('XY');
+        }));
 
         it("should properly execute CSS animations/transitions and use callbacks when using addClass / removeClass",
           inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout) {
