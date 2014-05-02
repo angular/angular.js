@@ -74,23 +74,31 @@ describe('Filter: filter', function() {
     var items = [{person: {name: 'John'}},
                  {person: {name: 'Rita'}},
                  {person: {name: 'Billy'}},
-                 {person: {name: 'Joan'}}];
+                 {person: {name: 'Joan'}},
+                 {person: {name: 'Albert', surname: 'Boada', contact: {country: 'Catalunya'}}}];
     expect(filter(items, {person: {name: 'Jo'}}).length).toBe(2);
     expect(filter(items, {person: {name: 'Jo'}})).toEqual([
       {person: {name: 'John'}}, {person: {name: 'Joan'}}
     ]);
+    expect(filter(items, {person: {name: 'Al',  surname: 'Bo'}})).toEqual([items[4]]);
+    expect(filter(items, {person: {name: 'foo', surname: 'Bo'}}).length).toBe(0);
+    expect(filter(items, {person: {name: 'Al',  surname: 'foo'}}).length).toBe(0);
+    expect(filter(items, {person: {name: 'Al',  contact: {country: 'cat'}}})).toEqual([items[4]]);
+    expect(filter(items, {person: {name: 'Al',  contact: {country: 'foo'}}}).length).toBe(0);
   });
 
 
   it('should match any properties for given "$" property', function() {
     var items = [{first: 'tom', last: 'hevery'},
                  {first: 'adam', last: 'hevery', alias: 'tom', done: false},
-                 {first: 'john', last: 'clark', middle: 'tommy'}];
+                 {first: 'john', last: 'clark', middle: 'tommy'},
+                 {first: 'Albert', contact: {country: 'Catalunya'}}];
     expect(filter(items, {$: 'tom'}).length).toBe(3);
-    expect(filter(items, {$: 'a'}).length).toBe(2);
+    expect(filter(items, {$: 'a'}).length).toBe(3);
     expect(filter(items, {$: false}).length).toBe(1);
     expect(filter(items, {$: 10}).length).toBe(0);
     expect(filter(items, {$: 'hevery'})[0]).toEqual(items[0]);
+    expect(filter(items, {$: 'Cat'})[0]).toEqual(items[3]);
   });
 
   it('should support boolean properties', function() {

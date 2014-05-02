@@ -137,13 +137,12 @@ function filterFilter() {
       } else {
         comparator = function(obj, text) {
           if (obj && text && typeof obj === 'object' && typeof text === 'object') {
-            for (var objKey in obj) {
-              if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey) &&
-                  comparator(obj[objKey], text[objKey])) {
-                return true;
+            for (var textKey in text) {
+              if (textKey.charAt(0) === '$' || !hasOwnProperty.call(text, textKey) ||
+                  !comparator(obj[textKey], text[textKey])) {
+                return false;
               }
             }
-            return false;
           }
           text = (''+text).toLowerCase();
           return (''+obj).toLowerCase().indexOf(text) > -1;
