@@ -2325,6 +2325,7 @@ var ngValueDirective = function() {
 
       it('should allow custom events', function() {
         input.sendKeys(' hello');
+        input.click();
         expect(model.getText()).toEqual('say');
         other.click();
         expect(model.getText()).toEqual('say hello');
