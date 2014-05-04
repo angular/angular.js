@@ -274,13 +274,13 @@ var popoverElement = function() {
       this.contentElement = angular.element(inner.childNodes[1]);
 
       //stop the click on the tooltip
-      this.element.bind('click', function(event) {
+      this.element.on('click', function(event) {
         event.preventDefault();
         event.stopPropagation();
       });
 
       var self = this;
-      angular.element(document.body).bind('click',function(event) {
+      angular.element(document.body).on('click',function(event) {
         if(self.visible()) self.hide();
       });
     },
@@ -359,7 +359,7 @@ directive.popover = ['popoverElement', function(popover) {
     restrict: 'A',
     priority : 500,
     link: function(scope, element, attrs) {
-      element.bind('click',function(event) {
+      element.on('click',function(event) {
         event.preventDefault();
         event.stopPropagation();
         if(popover.isSituatedAt(element) && popover.visible()) {
@@ -396,7 +396,7 @@ directive.foldout = ['$http', '$animate','$window', function($http, $animate, $w
       if(/\/build\//.test($window.location.href)) {
         url = '/build/docs' + url;
       }
-      element.bind('click',function() {
+      element.on('click',function() {
         scope.$apply(function() {
           if(!container) {
             if(loading) return;

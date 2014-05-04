@@ -67,7 +67,7 @@ __`app/index.html`:__
           <html ng-app>
 
   The `ng-app` attribute represents an Angular directive named `ngApp` (Angular uses
-  `name-with-dashes` for its custom attributes and `camelCase` for the corresponding directives
+  `spinal-case` for its custom attributes and `camelCase` for the corresponding directives
   which implement them).
   This directive is used to flag the html element that Angular should consider to be the root element
   of our application.

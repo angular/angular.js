@@ -13,6 +13,7 @@ describe('Scope', function() {
 
 
     it('should expose the constructor', inject(function($rootScope) {
+      /* jshint -W103 */
       if (msie) return;
       expect($rootScope.__proto__).toBe($rootScope.constructor.prototype);
     }));
@@ -251,7 +252,7 @@ describe('Scope', function() {
 
       try {
         $rootScope.$digest();
-        throw Error('Should have thrown exception');
+        throw new Error('Should have thrown exception');
       } catch(e) {
         expect(e.message.match(/"fn: (watcherA|function)/g).length).toBe(10);
       }
@@ -260,27 +261,27 @@ describe('Scope', function() {
 
     it('should prevent infinite loop when creating and resolving a promise in a watched expression', function() {
       module(function($rootScopeProvider) {
-          $rootScopeProvider.digestTtl(10);
+        $rootScopeProvider.digestTtl(10);
       });
       inject(function($rootScope, $q) {
-          var d = $q.defer();
+        var d = $q.defer();
 
-          d.resolve('Hello, world.');
-          $rootScope.$watch(function () {
-              var $d2 = $q.defer();
-              $d2.resolve('Goodbye.');
-              $d2.promise.then(function () { });
-              return d.promise;
-          }, function () { return 0; });
+        d.resolve('Hello, world.');
+        $rootScope.$watch(function () {
+          var $d2 = $q.defer();
+          $d2.resolve('Goodbye.');
+          $d2.promise.then(function () { });
+          return d.promise;
+        }, function () { return 0; });
 
-          expect(function() {
-              $rootScope.$digest();
-          }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n'+
-                  'Watchers fired in the last 5 iterations: []');
+        expect(function() {
+          $rootScope.$digest();
+        }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n'+
+                'Watchers fired in the last 5 iterations: []');
 
-          expect($rootScope.$$phase).toBeNull();
+        expect($rootScope.$$phase).toBeNull();
       });
-      });
+    });
 
 
     it('should not fire upon $watch registration on initial $digest', inject(function($rootScope) {
@@ -748,7 +749,7 @@ describe('Scope', function() {
         $rootScope.$watch(log.fn('w4'), function() {
           log('w4action');
           $rootScope.$evalAsync(function() {
-            log('evalAsync')
+            log('evalAsync');
           });
         });
         $rootScope.$digest();
@@ -777,6 +778,75 @@ describe('Scope', function() {
     });
   });
 
+  describe('$watchGroup', function() {
+    var scope;
+    var log;
+
+    beforeEach(inject(function($rootScope, _log_) {
+      scope = $rootScope.$new();
+      log = _log_;
+    }));
+
+
+    it('should work for a group with just a single expression', function() {
+      scope.$watchGroup(['a'], function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(oldValues + ' >>> ' + values);
+      });
+
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('foo >>> foo');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo >>> bar');
+    });
+
+
+    it('should detect a change to any one expression in the group', function() {
+      scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(oldValues + ' >>> ' + values);
+      });
+
+      scope.a = 'foo';
+      scope.b = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo,bar >>> foo,bar');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'a';
+      scope.$digest();
+      expect(log).toEqual('foo,bar >>> a,bar');
+
+      log.reset();
+      scope.a = 'A';
+      scope.b = 'B';
+      scope.$digest();
+      expect(log).toEqual('a,bar >>> A,B');
+    });
+
+
+    it('should not call watch action fn when watchGroup was deregistered', function() {
+      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      });
+
+      deregister();
+      scope.a = 'xxx';
+      scope.b = 'yyy';
+      scope.$digest();
+      expect(log).toEqual('');
+    });
+  });
 
   describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
@@ -1067,7 +1137,8 @@ describe('Scope', function() {
       expect($rootScope.$$asyncQueue).toEqual([
         {scope: $rootScope, expression: 'rootExpression'},
         {scope: childScope, expression: 'childExpression'},
-        {scope: isolateScope, expression: 'isolateExpression'}]);
+        {scope: isolateScope, expression: 'isolateExpression'}
+      ]);
     }));
 
 
@@ -1247,9 +1318,11 @@ describe('Scope', function() {
           });
         });
 
-        expect(function() { childScope2.$apply(function() {
-          childScope2.x = 'something';
-        }); }).toThrowMinErr('$rootScope', 'inprog', '$digest already in progress');
+        expect(function() {
+          childScope2.$apply(function() {
+            childScope2.x = 'something';
+          });
+        }).toThrowMinErr('$rootScope', 'inprog', '$digest already in progress');
       }));
     });
   });
@@ -1668,7 +1741,7 @@ describe('Scope', function() {
       expect(scope.greeting).toEqual(undefined);
 
       scope.$watch('name', function() {
-       scope.greeting = scope.salutation + ' ' + scope.name + '!';
+        scope.greeting = scope.salutation + ' ' + scope.name + '!';
       }); // initialize the watch
 
       expect(scope.greeting).toEqual(undefined);

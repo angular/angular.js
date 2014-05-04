@@ -39,6 +39,6 @@ describe("ScenarioSpec: Compilation", function() {
       var jQuery = angular.scenario.jQuery;
       expect(typeof jQuery).toEqual('function');
       expect(typeof jQuery('<div></div>').html).toEqual('function');
-    })
+    });
   });
 });

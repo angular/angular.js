@@ -1,6 +1,7 @@
 'use strict';
 
 describe('$interval', function() {
+  /* global $IntervalProvider: false */
 
   beforeEach(module(function($provide){
     var repeatFns = [],
@@ -58,7 +59,7 @@ describe('$interval', function() {
 
     expect(counter).toBe(0);
 
-    $window.flush(1000)
+    $window.flush(1000);
     expect(counter).toBe(1);
 
     $window.flush(1000);
@@ -113,7 +114,7 @@ describe('$interval', function() {
 
   it('should allow you to specify a number of iterations', inject(function($interval, $window) {
     var counter = 0;
-    $interval(function() {counter++}, 1000, 2);
+    $interval(function() {counter++;}, 1000, 2);
 
     $window.flush(1000);
     expect(counter).toBe(1);
@@ -157,7 +158,8 @@ describe('$interval', function() {
     $window.flush(1000);
 
     expect(log).toEqual([
-        'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2']);
+      'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2'
+    ]);
 
   }));
 

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('docs.angularjs.org', function () {
   describe('App', function () {
     // it('should filter the module list when searching', function () {

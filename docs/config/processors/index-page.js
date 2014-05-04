@@ -1,20 +1,18 @@
 var _ = require('lodash');
 var log = require('winston');
 var path = require('canonical-path');
-var deployment;
 
 module.exports = {
   name: 'index-page',
   runAfter: ['adding-extra-docs'],
   runBefore: ['extra-docs-added'],
   description: 'This processor creates docs that will be rendered as the index page for the app',
-  init: function(config) {
-    deployment = config.deployment;
+  process: function(docs, config) {
+
+    var deployment = config.deployment;
     if ( !deployment || !deployment.environments ) {
       throw new Error('No deployment environments found in the config.');
     }
-  },
-  process: function(docs) {
 
     // Collect up all the areas in the docs
     var areas = {};

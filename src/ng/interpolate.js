@@ -105,6 +105,26 @@ function $InterpolateProvider() {
      *   expect(exp({name:'Angular'}).toEqual('Hello ANGULAR!');
      * ```
      *
+     * `$interpolate` takes an optional fourth argument, `allOrNothing`. If `allOrNothing` is
+     * `true`, the interpolation function will return `undefined` unless all embedded expressions
+     * evaluate to a value other than `undefined`.
+     *
+     * ```js
+     *   var $interpolate = ...; // injected
+     *   var context = {greeting: 'Hey', name: undefined };
+     *
+     *   // default "forgiving" mode
+     *   var exp = $interpolate('{{greeting}} {{name}}!');
+     *   expect(exp(context)).toEqual('Hello !');
+     *
+     *   // "allOrNothing" mode
+     *   exp = $interpolate('{{greeting}} {{name}}!', false, null, true);
+     *   expect(exp(context, true)).toBeUndefined();
+     *   context.name = 'Angular';
+     *   expect(exp(context, true)).toEqual('Hello Angular!');
+     * ```
+     *
+     * `allOrNothing` is useful for interpolating URLs. `ngSrc` and `ngSrcset` use this behavior.
      *
      * @param {string} text The text with markup to interpolate.
      * @param {boolean=} mustHaveExpression if set to true then the interpolation string must have
@@ -114,43 +134,50 @@ function $InterpolateProvider() {
      *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
+     * @param {boolean=} allOrNothing if `true`, then the returned function returns undefined
+     *    unless all embedded expressions evaluate to a value other than `undefined`.
      * @returns {function(context)} an interpolation function which is used to compute the
      *    interpolated string. The function has these parameters:
      *
-     *    * `context`: an object against which any expressions embedded in the strings are evaluated
-     *      against.
-     *
+     * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
-    function $interpolate(text, mustHaveExpression, trustedContext) {
+    function $interpolate(text, mustHaveExpression, trustedContext, allOrNothing) {
+      allOrNothing = !!allOrNothing;
       var startIndex,
           endIndex,
           index = 0,
-          parts = [],
-          length = text.length,
+          separators = [],
+          expressions = [],
+          parseFns = [],
+          textLength = text.length,
           hasInterpolation = false,
-          fn,
+          hasText = false,
           exp,
-          concat = [];
+          concat = [],
+          lastValuesCache = { values: {}, results: {}};
 
-      while(index < length) {
+      while(index < textLength) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
              ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
-          (index != startIndex) && parts.push(text.substring(index, startIndex));
-          parts.push(fn = $parse(exp = text.substring(startIndex + startSymbolLength, endIndex)));
-          fn.exp = exp;
+          if (index !== startIndex) hasText = true;
+          separators.push(text.substring(index, startIndex));
+          exp = text.substring(startIndex + startSymbolLength, endIndex);
+          expressions.push(exp);
+          parseFns.push($parse(exp));
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
         } else {
-          // we did not find anything, so we have to add the remainder to the parts array
-          (index != length) && parts.push(text.substring(index));
-          index = length;
+          // we did not find an interpolation, so we have to add the remainder to the separators array
+          if (index !== textLength) {
+            hasText = true;
+            separators.push(text.substring(index));
+          }
+          break;
         }
       }
 
-      if (!(length = parts.length)) {
-        // we added, nothing, must have been an empty string.
-        parts.push('');
-        length = 1;
+      if (separators.length === expressions.length) {
+        separators.push('');
       }
 
       // Concatenating expressions makes it hard to reason about whether some combination of
@@ -159,44 +186,101 @@ function $InterpolateProvider() {
       // that's used is assigned or constructed by some JS code somewhere that is more testable or
       // make it obvious that you bound the value to some user controlled value.  This helps reduce
       // the load when auditing for XSS issues.
-      if (trustedContext && parts.length > 1) {
+      if (trustedContext && hasInterpolation && (hasText || expressions.length > 1)) {
           throw $interpolateMinErr('noconcat',
               "Error while interpolating: {0}\nStrict Contextual Escaping disallows " +
               "interpolations that concatenate multiple expressions when a trusted value is " +
               "required.  See http://docs.angularjs.org/api/ng.$sce", text);
       }
 
-      if (!mustHaveExpression  || hasInterpolation) {
-        concat.length = length;
-        fn = function(context) {
-          try {
-            for(var i = 0, ii = length, part; i<ii; i++) {
-              if (typeof (part = parts[i]) == 'function') {
-                part = part(context);
-                if (trustedContext) {
-                  part = $sce.getTrusted(trustedContext, part);
-                } else {
-                  part = $sce.valueOf(part);
-                }
-                if (part === null || isUndefined(part)) {
-                  part = '';
-                } else if (typeof part != 'string') {
-                  part = toJson(part);
-                }
-              }
-              concat[i] = part;
-            }
-            return concat.join('');
+      if (!mustHaveExpression || hasInterpolation) {
+        concat.length = separators.length + expressions.length;
+
+        var compute = function(values) {
+          for(var i = 0, ii = expressions.length; i < ii; i++) {
+            concat[2*i] = separators[i];
+            concat[(2*i)+1] = values[i];
           }
-          catch(err) {
-            var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
-                err.toString());
-            $exceptionHandler(newErr);
-          }
+          concat[2*ii] = separators[ii];
+          return concat.join('');
         };
-        fn.exp = text;
-        fn.parts = parts;
-        return fn;
+
+        var getValue = function (value) {
+          if (trustedContext) {
+            value = $sce.getTrusted(trustedContext, value);
+          } else {
+            value = $sce.valueOf(value);
+          }
+
+          return value;
+        };
+
+        var stringify = function (value) {
+          if (isUndefined(value) || value === null) {
+            value = '';
+          }
+          if (typeof value != 'string') {
+            value = toJson(value);
+          }
+
+          return value;
+        };
+
+        return extend(function interpolationFn(context) {
+            var scopeId = (context && context.$id) || 'notAScope';
+            var lastValues = lastValuesCache.values[scopeId];
+            var lastResult = lastValuesCache.results[scopeId];
+            var i = 0;
+            var ii = expressions.length;
+            var values = new Array(ii);
+            var val;
+            var inputsChanged = lastResult === undefined ? true: false;
+
+
+            // if we haven't seen this context before, initialize the cache and try to setup
+            // a cleanup routine that purges the cache when the scope goes away.
+            if (!lastValues) {
+              lastValues = [];
+              inputsChanged = true;
+              if (context && context.$on) {
+                context.$on('$destroy', function() {
+                  lastValuesCache.values[scopeId] = null;
+                  lastValuesCache.results[scopeId] = null;
+                });
+              }
+            }
+
+
+            try {
+              for (; i < ii; i++) {
+                val = getValue(parseFns[i](context));
+                if (allOrNothing && isUndefined(val)) {
+                  return;
+                }
+                val = stringify(val);
+                if (val !== lastValues[i]) {
+                  inputsChanged = true;
+                }
+                values[i] = val;
+              }
+
+              if (inputsChanged) {
+                lastValuesCache.values[scopeId] = values;
+                lastValuesCache.results[scopeId] = lastResult = compute(values);
+              }
+            } catch(err) {
+              var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
+                  err.toString());
+              $exceptionHandler(newErr);
+            }
+
+            return lastResult;
+          }, {
+          // all of these properties are undocumented for now
+          exp: text, //just for compatibility with regular watchers created via $watch
+          separators: separators,
+          expressions: expressions
+        });
       }
     }
 

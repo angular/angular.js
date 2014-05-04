@@ -39,7 +39,7 @@ __`app/js/app.js`:__
 
 ```js
 ...
-angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']).
+angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']);
 ...
 ```
 

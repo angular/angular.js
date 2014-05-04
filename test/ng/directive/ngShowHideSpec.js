@@ -55,9 +55,9 @@ describe('ngShow / ngHide', function() {
 describe('ngShow / ngHide animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
+  function html(content) {
     body.append($rootElement);
-    $rootElement.html(html);
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
