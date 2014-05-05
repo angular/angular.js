@@ -338,7 +338,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss a'` for en_US locale
  *     (e.g. Sep 3, 2010 12:05:08 pm)
  *   * `'short'`: equivalent to `'M/d/yy h:mm a'` for en_US  locale (e.g. 9/3/10 12:05 pm)
- *   * `'fullDate'`: equivalent to `'EEEE, MMMM d,y'` for en_US  locale
+ *   * `'fullDate'`: equivalent to `'EEEE, MMMM d, y'` for en_US  locale
  *     (e.g. Friday, September 3, 2010)
  *   * `'longDate'`: equivalent to `'MMMM d, y'` for en_US  locale (e.g. September 3, 2010)
  *   * `'mediumDate'`: equivalent to `'MMM d, y'` for en_US  locale (e.g. Sep 3, 2010)
