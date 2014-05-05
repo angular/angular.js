@@ -130,7 +130,7 @@ This command will download the following tools, into the `node_modules` director
 - [Bower][bower] - client-side code package manager
 - [Http-Server][http-server] - simple local static web server
 - [Karma][karma] - unit test runner
-- [Protractor][protractor] - end 2 end test runner
+- [Protractor][protractor] - end to end (E2E) test runner
 
 Running `npm install` will also automatically use bower to download the Angular framework into the
 `app/bower_components` directory.
@@ -146,7 +146,7 @@ tasks that you will need while developing:
 
 - `npm start` : start a local development web-server
 - `npm test` : start the Karma unit test runner
-- `npm run protractor` : run the Protractor end 2 end tests
+- `npm run protractor` : run the Protractor end to end (E2E) tests
 - `npm run update-webdriver` : install the drivers needed by Protractor
 
 ### Install Helper Tools (optional)
