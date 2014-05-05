@@ -65,7 +65,7 @@ __`app/index.html`.__
 
 ```html
 ...
-  <script src="../bower_components/angular-resource/angular-resource.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.js"></script>
   <script src="js/services.js"></script>
 ...
 ```
