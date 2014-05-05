@@ -93,7 +93,7 @@ Before you submit your pull request consider the following guidelines:
      ```
 
 * Create your patch, **including appropriate test cases**.
-* Follow our [Coding Rules](#coding-rules).
+* Follow our [Coding Rules](#rules).
 * Run the full Angular test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 * Commit your changes using a descriptive commit message that follows our
