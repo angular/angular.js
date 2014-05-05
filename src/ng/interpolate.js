@@ -23,7 +23,7 @@ var $interpolateMinErr = minErr('$interpolate');
   });
 
 
-  customInterpolationApp.controller('DemoController', function DemoController() {
+  customInterpolationApp.controller('DemoController', function() {
       this.label = "This binding is brought you by // interpolation symbols.";
   });
 </script>
