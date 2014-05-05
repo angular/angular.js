@@ -126,7 +126,7 @@ This command will download the following tools, into the `node_modules` director
 - [Protractor][protractor] - end 2 end test runner
 
 Running `npm install` will also automatically use bower to download the Angular framework into the
-`bower_components` directory.
+`app/bower_components` directory.
 
 <div class="alert alert-info">
   Note the angular-phonecat project is setup to install and run these utilities via npm scripts.
