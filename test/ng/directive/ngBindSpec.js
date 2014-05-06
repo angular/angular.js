@@ -45,6 +45,33 @@ describe('ngBind*', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('-0false');
     }));
+
+
+    it('should not update text when ng-once attribute is specified', inject(function($rootScope, $compile) {
+      element = $compile('<p ng-bind="foo" ng-once></p>')($rootScope);
+      $rootScope.foo = "test!";
+      $rootScope.$digest();
+      expect(element.text()).toBe("test!");
+
+      $rootScope.foo = "testier!";
+      $rootScope.$digest();
+      expect(element.text()).toBe("test!");
+    }));
+
+
+    it('should not update text when ng-lazy attribute is specified, once there is a value', inject(function($rootScope, $compile) {
+      element = $compile('<p ng-bind="foo" ng-lazy></p>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe("");
+
+      $rootScope.foo = "test!";
+      $rootScope.$digest();
+      expect(element.text()).toBe("test!");
+
+      $rootScope.foo = "testier!";
+      $rootScope.$digest();
+      expect(element.text()).toBe("test!");
+    }));
   });
 
 
@@ -78,6 +105,33 @@ describe('ngBind*', function() {
         $rootScope.html = '<div onclick="">hello</div>';
         $rootScope.$digest();
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      }));
+
+
+      it('should not update html when ng-once attribute is specified', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="html" ng-once></p>')($rootScope);
+        $rootScope.html = '<div onclick="">hello</div>';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+
+        $rootScope.html = '<img src="gerbils.jpg">';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+      }));
+
+
+      it('should not update html when ng-lazy attribute is specified, once there is a value', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="html" ng-lazy></p>')($rootScope);
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('');
+
+        $rootScope.html = '<div onclick="">hello</div>';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+
+        $rootScope.html = '<img src="gerbils.jpg">';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
       }));
     });
 
@@ -114,6 +168,39 @@ describe('ngBind*', function() {
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
 
+      it('should not update html when ng-once attribute is specified', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<div ng-bind-html="getHtml()" ng-once></p>')($rootScope);
+        $rootScope.getHtml = function() {
+          return $sce.trustAsHtml($rootScope.html);
+        };
+        $rootScope.html = '<div onclick="">hello</div>';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+
+        $rootScope.html = '<img src="gerbils.jpg">';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+      }));
+
+
+      it('should not update html when ng-lazy attribute is specified, once there is a value', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<div ng-bind-html="getHtml()" ng-lazy></p>')($rootScope);
+        $rootScope.getHtml = function() {
+          return $sce.trustAsHtml($rootScope.html);
+        };
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('');
+
+        $rootScope.html = '<div onclick="">hello</div>';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+
+        $rootScope.html = '<img src="gerbils.jpg">';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toBe('<div onclick="">hello</div>');
+      }));
+
+
       describe('when $sanitize is available', function() {
         beforeEach(function() { module('ngSanitize'); });
 
@@ -123,8 +210,34 @@ describe('ngBind*', function() {
           $rootScope.$digest();
           expect(angular.lowercase(element.html())).toEqual('<div>hello</div>');
         }));
+
+
+        it('should not update html when ng-once attribute is specified', inject(function($rootScope, $compile) {
+          element = $compile('<div ng-bind-html="html" ng-once></p>')($rootScope);
+          $rootScope.html = '<div onclick="">hello</div>';
+          $rootScope.$digest();
+          expect(lowercase(element.html())).toBe('<div>hello</div>');
+
+          $rootScope.html = '<img src="gerbils.jpg">';
+          $rootScope.$digest();
+          expect(lowercase(element.html())).toBe('<div>hello</div>');
+        }));
+
+
+        it('should not update html when ng-lazy attribute is specified, once there is a value', inject(function($rootScope, $compile) {
+          element = $compile('<div ng-bind-html="html" ng-lazy></p>')($rootScope);
+          $rootScope.$digest();
+          expect(lowercase(element.html())).toBe('');
+
+          $rootScope.html = '<div onclick="">hello</div>';
+          $rootScope.$digest();
+          expect(lowercase(element.html())).toBe('<div>hello</div>');
+
+          $rootScope.html = '<img src="gerbils.jpg">';
+          $rootScope.$digest();
+          expect(lowercase(element.html())).toBe('<div>hello</div>');
+        }));
       });
     });
-
   });
 });

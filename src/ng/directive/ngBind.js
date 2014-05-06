@@ -51,12 +51,20 @@
    </example>
  */
 var ngBindDirective = ngDirective(function(scope, element, attr) {
+  var lazy = !isUndefined(attr.ngLazy),
+      once = lazy || !isUndefined(attr.ngOnce);
   element.addClass('ng-binding').data('$binding', attr.ngBind);
-  scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
+  var unwatch = scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
     // We are purposefully using == here rather than === because we want to
     // catch when value is "null or undefined"
     // jshint -W041
-    element.text(value == undefined ? '' : value);
+    var val = value == undefined ? '' : value;
+    element.text(val);
+    if (once) {
+      if (!lazy || val) {
+        unwatch();
+      }
+    }
   });
 });
 
@@ -171,13 +179,21 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  */
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return function(scope, element, attr) {
+    var lazy = !isUndefined(attr.ngLazy),
+        once = lazy || !isUndefined(attr.ngOnce);
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
 
     var parsed = $parse(attr.ngBindHtml);
     function getStringValue() { return (parsed(scope) || '').toString(); }
 
-    scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
-      element.html($sce.getTrustedHtml(parsed(scope)) || '');
+    var unwatch = scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
+      var val = $sce.getTrustedHtml(parsed(scope)) || '';
+      element.html(val);
+      if (once) {
+        if (!lazy || val) {
+          unwatch();
+        }
+      }
     });
   };
 }];
