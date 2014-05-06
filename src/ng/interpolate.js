@@ -79,6 +79,9 @@ function $InterpolateProvider() {
   };
 
 
+  var _BIND_ONCE = '|';
+  var _BIND_LAZY = '%';
+
   this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
     var startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length;
@@ -162,8 +165,21 @@ function $InterpolateProvider() {
           if (index !== startIndex) hasText = true;
           separators.push(text.substring(index, startIndex));
           exp = text.substring(startIndex + startSymbolLength, endIndex);
+
+          var optionalMode = exp.charAt(0);
+          switch (optionalMode) {
+          case _BIND_ONCE:
+          case _BIND_LAZY:
+            exp = exp.slice(1);
+            break;
+          default:
+            optionalMode = false;
+          }
+
           expressions.push(exp);
-          parseFns.push($parse(exp));
+          var parseFn = $parse(exp);
+          parseFn.mode = optionalMode;
+          parseFns.push(parseFn);
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
         } else {
@@ -225,8 +241,10 @@ function $InterpolateProvider() {
 
           return value;
         };
+        var workFn;
+        var remaining = expressions.length;
 
-        return extend(function interpolationFn(context) {
+        return (workFn = extend(function interpolationFn(context) {
             var scopeId = (context && context.$id) || 'notAScope';
             var lastValues = lastValuesCache.values[scopeId];
             var lastResult = lastValuesCache.results[scopeId];
@@ -253,11 +271,39 @@ function $InterpolateProvider() {
 
             try {
               for (; i < ii; i++) {
-                val = getValue(parseFns[i](context));
+                var mode = parseFns[i].mode;
+                val = parseFns[i].finalValue;
+                if (isUndefined(val)) {
+                  val = getValue(parseFns[i](context));
+                }
                 if (allOrNothing && isUndefined(val)) {
                   return;
                 }
+
                 val = stringify(val);
+
+                switch (mode) {
+                  case _BIND_LAZY:
+                    if (!val) {
+                      break;
+                    }
+                    /* falls through */
+                  case _BIND_ONCE:
+                    parseFns[i].finalValue = val;
+
+                    // The mode needs to be reset, otherwise this path will be
+                    // taken again the next time the workFn is evaluated.
+                    parseFns[i].mode = false;
+
+                    if (--remaining === 0) {
+                      // If all expressions are finalized, there is no longer
+                      // a reason to watch this expression, and it can be
+                      // removed from scope.
+                      workFn.finalized = true;
+                    }
+                    break;
+                }
+
                 if (val !== lastValues[i]) {
                   inputsChanged = true;
                 }
@@ -279,8 +325,9 @@ function $InterpolateProvider() {
           // all of these properties are undocumented for now
           exp: text, //just for compatibility with regular watchers created via $watch
           separators: separators,
-          expressions: expressions
-        });
+          expressions: expressions,
+          finalized: !remaining
+        }));
       }
     }
 

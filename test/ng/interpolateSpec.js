@@ -284,4 +284,85 @@ describe('$interpolate', function() {
     }));
   });
 
+
+  describe('bind-once', function() {
+    var callbacks = [];
+    beforeEach(function() {
+      callbacks.length = 0;
+    });
+    beforeEach(module(function($provide) {
+      $provide.decorator('$parse', function($delegate) {
+        var $parse = $delegate;
+        return function(expr) {
+          var result = $parse(expr);
+          var spy = jasmine.createSpy('$parse'+callbacks.length);
+          spy.andCallFake(result);
+          callbacks.push(spy);
+          return spy;
+        };
+      });
+    }));
+
+    it('should evaluate parsed function only once', inject(function($interpolate, $rootScope) {
+      $rootScope.foo = "test!";
+      var interpolateFn = $interpolate("{{|foo}}");
+
+      expect(interpolateFn($rootScope)).toBe("test!");
+      expect(interpolateFn.finalized).toBe(true);
+
+      $rootScope.foo = "TESTIER!";
+
+      // should return the same result as the original call.
+      expect(interpolateFn($rootScope)).toBe("test!");
+
+      // The parseFn should not have been called again
+      expect(callbacks[0]).toHaveBeenCalledOnce();
+    }));
+
+
+    it('should evaluate non-finalized parseFns', inject(function($interpolate, $rootScope) {
+      $rootScope.foo = "test!";
+      $rootScope.bar = "";
+      var interpolateFn = $interpolate("{{|foo}}{{bar}}");
+
+      expect(interpolateFn($rootScope)).toBe("test!");
+      expect(interpolateFn.finalized).toBe(false);
+
+      $rootScope.bar = "TESTIER!";
+
+      expect(interpolateFn($rootScope)).toBe("test!TESTIER!");
+
+      expect(callbacks[0].callCount).toBe(1);
+      expect(callbacks[1].callCount).toBe(2);
+    }));
+
+
+    describe('lazy', function() {
+      it('should evaluate until value is truthy', inject(function($interpolate, $rootScope) {
+        var interpolateFn = $interpolate("{{%foo}}");
+        expect(interpolateFn($rootScope)).toBe("");
+        expect(interpolateFn.finalized).toBe(false);
+        $rootScope.foo = "OK";
+        expect(interpolateFn($rootScope)).toBe("OK");
+        expect(callbacks[0].callCount).toBe(2);
+        expect(interpolateFn.finalized).toBe(true);
+        expect(interpolateFn($rootScope)).toBe("OK");
+        expect(callbacks[0].callCount).toBe(2);
+      }));
+
+
+      it('should keep `finalized` false until all expressions are evaluated', inject(function($interpolate, $rootScope) {
+        var interpolateFn = $interpolate("{{%foo}}{{%bar}}");
+        expect(interpolateFn.finalized).toBe(false);
+        $rootScope.foo = "OK";
+        expect(interpolateFn($rootScope)).toBe("OK");
+        $rootScope.foo = "NOT";
+        expect(interpolateFn($rootScope)).toBe("OK");
+        expect(interpolateFn.finalized).toBe(false); // This fails
+        $rootScope.bar = "!";
+        expect(interpolateFn($rootScope)).toBe("OK!");
+        expect(interpolateFn.finalized).toBe(true);
+      }));
+    });
+  });
 });
