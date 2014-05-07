@@ -295,7 +295,8 @@ var DATE_FORMATS = {
 };
 
 var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z|w+))(.*)/,
-    NUMBER_STRING = /^\-?\d+$/;
+    NUMBER_STRING = /^\-?\d+$/,
+    ASP_JSON_STRING = /^\/?Date\((\-?\d+)/i; // https://github.com/moment/moment/blob/develop/moment.js#L49
 
 /**
  * @ngdoc filter
@@ -351,9 +352,10 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   (e.g. `"h 'o''clock'"`).
  *
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
- *    number) or various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.SSSZ and its
- *    shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ). If no timezone is
- *    specified in the string input, the time is considered to be in the local timezone.
+ *    number), various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.SSSZ and its
+ *    shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ) or ASP.NET JSON dates
+ *    such as /Date(milliseconds)/. If no timezone is specified in the string input, the time is
+ *    considered to be in the local timezone.
  * @param {string=} format Formatting rules (see Description). If not specified,
  *    `mediumDate` is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
@@ -421,6 +423,8 @@ function dateFilter($locale) {
     if (isString(date)) {
       if (NUMBER_STRING.test(date)) {
         date = int(date);
+      } else if (match = date.match(ASP_JSON_STRING)) {
+        date = int(match[1]);
       } else {
         date = jsonStringToDate(date);
       }
