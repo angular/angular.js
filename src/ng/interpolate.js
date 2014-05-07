@@ -111,7 +111,7 @@ function $InterpolateProvider() {
      *
      * ```js
      *   var $interpolate = ...; // injected
-     *   var context = {greeting: 'Hey', name: undefined };
+     *   var context = {greeting: 'Hello', name: undefined };
      *
      *   // default "forgiving" mode
      *   var exp = $interpolate('{{greeting}} {{name}}!');

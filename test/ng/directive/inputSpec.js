@@ -642,6 +642,17 @@ describe('input', function() {
       expect(scope.name).toEqual('a');
     });
 
+    it('should allow overriding the model update trigger event on text areas', function() {
+      compileInput(
+          '<textarea ng-model="name" name="alias" '+
+            'ng-model-options="{ updateOn: \'blur\' }"'+
+          '/>');
+
+      changeInputValueTo('a');
+      expect(scope.name).toBeUndefined();
+      browserTrigger(inputElm, 'blur');
+      expect(scope.name).toEqual('a');
+    });
 
     it('should bind the element to a list of events', function() {
       compileInput(
@@ -847,6 +858,25 @@ describe('input', function() {
       expect(scope.checkbox).toBe(false);
     }));
 
+    it('should allow selecting 0 for non-default debounce timeouts for each event on checkboxes', inject(function($timeout) {
+      compileInput('<input type="checkbox" ng-model="checkbox" '+
+        'ng-model-options="{ '+
+          'updateOn: \'default blur\', debounce: { default: 10000, blur: 0 } }"'+
+        '/>');
+
+      inputElm[0].checked = false;
+      browserTrigger(inputElm, 'click');
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush(8000);
+      expect(scope.checkbox).toBe(undefined);
+      $timeout.flush(3000);
+      expect(scope.checkbox).toBe(true);
+      inputElm[0].checked = true;
+      browserTrigger(inputElm, 'click');
+      browserTrigger(inputElm, 'blur');
+      $timeout.flush(0);
+      expect(scope.checkbox).toBe(false);
+    }));
 
     it('should inherit model update settings from ancestor elements', inject(function($timeout) {
       var doc = $compile(

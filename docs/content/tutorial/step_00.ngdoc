@@ -46,9 +46,9 @@ __`app/index.html`:__
 <head>
   <meta charset="utf-8">
   <title>My HTML File</title>
-  <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
   <link rel="stylesheet" href="css/app.css">
-  <script src="../bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
 </head>
 <body>
 
@@ -76,7 +76,7 @@ __`app/index.html`:__
 
 * AngularJS script tag:
 
-          <script src="../bower_components/angular/angular.js">
+          <script src="bower_components/angular/angular.js">
 
   This code downloads the `angular.js` script and registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
@@ -136,7 +136,8 @@ and one static binding, and our model is empty. That will soon change!
 
 Most of the files in your working directory come from the [angular-seed project][angular-seed] which
 is typically used to bootstrap new Angular projects. The seed project is pre-configured to install
-the angular framework (via `bower`) and tools for developing a typical web app (via `npm`).
+the angular framework (via `bower` into the `app/bower_components/` folder) and tools for developing
+a typical web app (via `npm`).
 
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
 

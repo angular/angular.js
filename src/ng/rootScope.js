@@ -15,7 +15,7 @@
  *
  * Loop operations are optimized by using while(count--) { ... }
  *   - this means that in order to keep the same order of execution as addition we have to add
- *     items to the array at the beginning (shift) instead of at the end (push)
+ *     items to the array at the beginning (unshift) instead of at the end (push)
  *
  * Child scopes are created and removed often
  *   - Using an array would be slow since inserts in middle are expensive so we use linked list

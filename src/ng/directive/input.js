@@ -1822,9 +1822,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} trigger Event that triggered the update.
    */
   this.$setViewValue = function(value, trigger) {
-    var debounceDelay = ctrl.$options && (isObject(ctrl.$options.debounce)
-        ? (ctrl.$options.debounce[trigger] || ctrl.$options.debounce['default'] || 0)
-        : ctrl.$options.debounce) || 0;
+    var debounceDelay = 0,
+        options = ctrl.$options,
+        debounce;
+
+    if(options && isDefined(options.debounce)) {
+      debounce = options.debounce;
+      if(isNumber(debounce)) {
+        debounceDelay = debounce;
+      } else if(isNumber(debounce[trigger])) {
+        debounceDelay = debounce[trigger];
+      } else if (isNumber(debounce['default'])) {
+        debounceDelay = debounce['default'];
+      }
+    }
 
     $timeout.cancel(pendingDebounce);
     if (debounceDelay) {
@@ -1973,22 +1984,24 @@ var ngModelDirective = function() {
   return {
     require: ['ngModel', '^?form', '^?ngModelOptions'],
     controller: NgModelController,
-    link: function(scope, element, attr, ctrls) {
-      // notify others, especially parent forms
+    link: {
+      pre: function(scope, element, attr, ctrls) {
+        // Pass the ng-model-options to the ng-model controller
+        if (ctrls[2]) {
+          ctrls[0].$options = ctrls[2].$options;
+        }
 
-      var modelCtrl = ctrls[0],
-          formCtrl = ctrls[1] || nullFormCtrl;
+        // notify others, especially parent forms
 
-      formCtrl.$addControl(modelCtrl);
+        var modelCtrl = ctrls[0],
+            formCtrl = ctrls[1] || nullFormCtrl;
 
-      // Pass the ng-model-options to the ng-model controller
-      if ( ctrls[2] ) {
-        modelCtrl.$options = ctrls[2].$options;
+        formCtrl.$addControl(modelCtrl);
+
+        scope.$on('$destroy', function() {
+          formCtrl.$removeControl(modelCtrl);
+        });
       }
-
-      scope.$on('$destroy', function() {
-        formCtrl.$removeControl(modelCtrl);
-      });
     }
   };
 };
@@ -2265,7 +2278,7 @@ var ngValueDirective = function() {
  * takes place when a timer expires; this timer will be reset after another change takes place.
  *
  * Given the nature of `ngModelOptions`, the value displayed inside input fields in the view might
- * be different then the value in the actual model. This means that if you update the model you
+ * be different than the value in the actual model. This means that if you update the model you
  * should also invoke {@link ngModel.NgModelController `$cancelUpdate`} on the relevant input field in
  * order to make sure it is synchronized with the model and that any debounced action is canceled.
  *
@@ -2323,6 +2336,7 @@ var ngValueDirective = function() {
 
       it('should allow custom events', function() {
         input.sendKeys(' hello');
+        input.click();
         expect(model.getText()).toEqual('say');
         other.click();
         expect(model.getText()).toEqual('say hello');
