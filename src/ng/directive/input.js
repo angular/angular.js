@@ -16,6 +16,7 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)$/;
+var TEL_REGEXP = /^[0-9+\(\)#\.\s\/ext-]+$/;
 var DEFAULT_REGEXP = /(\b|^)default(\b|$)/;
 
 var inputType = {
@@ -672,6 +673,83 @@ var inputType = {
 
   /**
    * @ngdoc input
+   * @name input[tel]
+   *
+   * @description
+   * HTML5 tel input validation.  Will display a text input in browsers that do no yet support tel inputs. 
+   * Sets the `tel` validation error key if the content is not a valid telephone number.
+   * 
+   *
+   * @param {string} ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
+   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+   *    minlength.
+   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+   *    maxlength.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+   *    patterns defined as scope expressions.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
+   *
+   * @example
+      <example name="tel-input-directive">
+        <file name="index.html">
+         <script>
+           function Ctrl($scope) {
+             $scope.text = '(415) 555-1234 x 601';
+           }
+         </script>
+         <form name="myForm" ng-controller="Ctrl">
+           URL: <input type="tel" name="input" ng-model="text" required>
+           <span class="error" ng-show="myForm.input.$error.required">
+             Required!</span>
+           <span class="error" ng-show="myForm.input.$error.tel">
+             Not valid telephone number!</span>
+           <tt>text = {{text}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+           <tt>myForm.$error.tel = {{!!myForm.$error.tel}}</tt><br/>
+          </form>
+        </file>
+        <file name="protractor.js" type="protractor">
+          var text = element(by.binding('text'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var input = element(by.model('text'));
+
+          it('should initialize to model', function() {
+            expect(text.getText()).toContain('(415) 555-1234 x 601');
+            expect(valid.getText()).toContain('true');
+          });
+
+          it('should be invalid if empty', function() {
+            input.clear();
+            input.sendKeys('');
+
+            expect(text.getText()).toEqual('text =');
+            expect(valid.getText()).toContain('false');
+          });
+
+          it('should be invalid if not telephone', function() {
+            input.clear();
+            input.sendKeys('box');
+
+            expect(valid.getText()).toContain('false');
+          });
+        </file>
+      </example>
+   */
+  'tel': telInputType,
+
+
+  /**
+   * @ngdoc input
    * @name input[email]
    *
    * @description
@@ -1194,6 +1272,17 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   ctrl.$formatters.push(urlValidator);
   ctrl.$parsers.push(urlValidator);
+}
+
+function telInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+  var telValidator = function(value) {
+    return validate(ctrl, 'tel', ctrl.$isEmpty(value) || TEL_REGEXP.test(value), value);
+  };
+
+  ctrl.$formatters.push(telValidator);
+  ctrl.$parsers.push(telValidator);
 }
 
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
