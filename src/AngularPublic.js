@@ -45,6 +45,10 @@
     ngChangeDirective,
     requiredDirective,
     requiredDirective,
+    minlengthDirective,
+    minlengthDirective,
+    maxlengthDirective,
+    maxlengthDirective,
     ngValueDirective,
     ngModelOptionsDirective,
     ngAttributeAliasDirectives,
@@ -184,6 +188,10 @@ function publishExternalAPI(angular){
             ngChange: ngChangeDirective,
             required: requiredDirective,
             ngRequired: requiredDirective,
+            ngMinlength: minlengthDirective,
+            minlength: minlengthDirective,
+            ngMaxlength: maxlengthDirective,
+            maxlength: maxlengthDirective,
             ngValue: ngValueDirective,
             ngModelOptions: ngModelOptionsDirective
         }).
