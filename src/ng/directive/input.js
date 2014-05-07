@@ -1000,22 +1000,6 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       return ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value);
     };
   }
-
-  // min length validator
-  if (attr.ngMinlength) {
-    var minlength = int(attr.ngMinlength);
-    ctrl.$validators.minlength = function(value) {
-      return ctrl.$isEmpty(value) || value.length >= minlength;
-    };
-  }
-
-  // max length validator
-  if (attr.ngMaxlength) {
-    var maxlength = int(attr.ngMaxlength);
-    ctrl.$validators.maxlength = function(value) {
-      return ctrl.$isEmpty(value) || value.length <= maxlength;
-    };
-  }
 }
 
 function weekParser(isoWeek) {
@@ -2178,6 +2162,43 @@ var requiredDirective = function() {
       attr.$observe('required', function() {
         ctrl.$validate();
       });
+    }
+  };
+};
+
+
+var maxlengthDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var maxlength = 0;
+      attr.$observe('maxlength', function(value) {
+        maxlength = int(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.maxlength = function(value) {
+        return ctrl.$isEmpty(value) || value.length <= maxlength;
+      };
+    }
+  };
+};
+
+var minlengthDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var minlength = 0;
+      attr.$observe('minlength', function(value) {
+        minlength = int(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.minlength = function(value) {
+        return ctrl.$isEmpty(value) || value.length >= minlength;
+      };
     }
   };
 };
