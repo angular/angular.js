@@ -37,7 +37,7 @@
  * ## Angular's jqLite
  * jqLite provides only the following jQuery methods:
  *
- * - [`addClass()`](http://api.jquery.com/addClass/)
+ * - [`addClass()`](http://api.jquery.com/addClass/)re
  * - [`after()`](http://api.jquery.com/after/)
  * - [`append()`](http://api.jquery.com/append/)
  * - [`attr()`](http://api.jquery.com/attr/)
@@ -812,7 +812,7 @@ forEach({
             var target = this, related = event.relatedTarget;
             var formElement = event.formElement;
             if ( !related && formElement ){
-              related = fromElement === target ? event.toElement : fromElement;
+              related = fromElement === ( event.target || event.srcElement ) ? event.toElement : fromElement;
             }
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
