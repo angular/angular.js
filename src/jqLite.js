@@ -810,6 +810,10 @@ forEach({
 
           onFn(element, eventmap[type], function(event) {
             var target = this, related = event.relatedTarget;
+            var formElement = event.formElement;
+            if ( !related && formElement ){
+              related = fromElement === target ? event.toElement : fromElement;
+            }
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
             if ( !related || (related !== target && !contains(target, related)) ){
