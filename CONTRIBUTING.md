@@ -8,7 +8,7 @@ today! Here are the guidelines we'd like you to follow:
  - [Issues and Bugs](#issue)
  - [Feature Requests](#feature)
  - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
+ - [Coding Rules](#coding-rules)
  - [Commit Message Guidelines](#commit)
  - [Signing the CLA](#cla)
  - [Further Info](#info)
@@ -160,7 +160,7 @@ from the main (upstream) repository:
     git pull --ff upstream master
     ```
 
-## <a name="rules"></a> Coding Rules
+## <a name="coding-rules"></a> Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All features or bug fixes **must be tested** by one or more [specs][unit-testing].
