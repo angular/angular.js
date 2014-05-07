@@ -4040,6 +4040,37 @@ describe('$compile', function() {
         });
 
       });
+
+
+      it('should transclude SVG content into SVG templates', function() {
+        if (!window.SVGCircleElement) return;
+        module(function() {
+          directive('svgRoot', valueFn({
+            restrict: 'A',
+            template: '<svg><g></g></svg>',
+            replace: true,
+            transclude: true,
+            link: function(scope, elem, attr, ctrl, transclude) {
+              transclude(scope, function(nodes) {
+                jqLite(nodes).addClass('test');
+                elem.children(0).append(nodes);
+              });
+            }
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          element = $compile('<div svg-root><circle cx="10" cy="10" r="10" ng-click="foo=88"/></div>')($rootScope);
+          $rootScope.$digest();
+          var circle = element.find('circle');
+          expect(circle.length).toBe(1);
+          expect(circle[0].constructor).toBe(window.SVGCircleElement);
+
+          // Ensure that the directives are still compiled
+          browserTrigger(circle, 'click');
+          expect($rootScope.foo).toBe(88);
+          expect(circle).toHaveClass('test');
+        });
+      });
     });
 
 

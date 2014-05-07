@@ -167,6 +167,14 @@ beforeEach(function() {
       this.message = function() {
         return "Expected '" + angular.mock.dump(this.actual) + "' to have class '" + clazz + "'.";
       };
+      var node = this.actual;
+      if (node.hasClass) node = node[0];
+      if (window.SVGElement && node instanceof window.SVGElement
+          && typeof node.className === "object") {
+        var tmp = document.createElement('div');
+        tmp.className = node.className.animVal;
+        return jqLite(tmp).hasClass(clazz);
+      }
       return this.actual.hasClass ?
               this.actual.hasClass(clazz) :
               angular.element(this.actual).hasClass(clazz);
