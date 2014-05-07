@@ -1368,6 +1368,24 @@ describe('input', function() {
 
       expect(value).toBe(5);
     });
+
+    it('should observe the standard minlength attribute and register it as a validator on the model', function() {
+      compileInput('<input type="text" name="input" ng-model="value" minlength="{{ min }}" />');
+      scope.$apply(function() {
+        scope.min = 10;
+      });
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.minlength).toBe(true);
+
+      scope.$apply(function() {
+        scope.min = 5;
+      });
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.input.$error.minlength).not.toBe(true);
+    });
   });
 
 
@@ -1395,6 +1413,24 @@ describe('input', function() {
       });
 
       expect(value).toBe(10);
+    });
+
+    it('should observe the standard maxlength attribute and register it as a validator on the model', function() {
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
+      scope.$apply(function() {
+        scope.max = 1;
+      });
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.maxlength).toBe(true);
+
+      scope.$apply(function() {
+        scope.max = 6;
+      });
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.input.$error.maxlength).not.toBe(true);
     });
   });
 
