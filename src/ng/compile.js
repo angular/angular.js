@@ -854,6 +854,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       safeAddClass($compileNodes, 'ng-scope');
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers){
         assertArg(scope, 'scope');
+
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
         var $linkNode = cloneConnectFn
@@ -874,6 +875,40 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
+
+        if (window.HTMLUnknownElement) {
+          // If any of these elements are HTMLUnknownElement, it may be necessary
+          // to fix them.
+          var _i, _ii;
+          for (_i = 0, _ii = $linkNode.length; _i < _ii; ++_i) {
+            if ($linkNode[_i].constructor === window.HTMLUnknownElement) {
+              var origParent = $linkNode[_i].parentNode;
+              var parent = origParent;
+              while (parent) {
+                if (window.SVGSVGElement && parent.constructor === window.SVGSVGElement) {
+                  var wrapper = document.createElement('div'), svg;
+                  wrapper.innerHTML = '<svg>' + reduce($linkNode, function(previous, current) {
+                    return previous + current.outerHTML;
+                  }, '') + '</svg>';
+                  svg = wrapper.childNodes[0];
+                  $linkNode.remove();
+                  $linkNode.length = 0;
+                  forEach(svg.childNodes, function(node) {
+                    svg.removeChild(node);
+                    $linkNode.push(node);
+                  });
+
+                  // Sadly, this needs to be re-linked ._.
+                  if (cloneConnectFn) cloneConnectFn($linkNode, scope);
+                  break;
+                }
+                parent = parent.parentNode;
+              }
+              break;
+            }
+          }
+        }
+
         if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode);
         return $linkNode;
       };

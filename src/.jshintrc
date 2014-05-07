@@ -70,6 +70,7 @@
     "isElement": false,
     "makeMap": false,
     "map": false,
+    "reduce": false,
     "size": false,
     "includes": false,
     "indexOf": false,

@@ -50,6 +50,7 @@
     -isElement,
     -makeMap,
     -map,
+    -reduce,
     -size,
     -includes,
     -indexOf,
@@ -638,6 +639,39 @@ function map(obj, iterator, context) {
     results.push(iterator.call(context, value, index, list));
   });
   return results;
+}
+
+
+/**
+ * @description
+ * Reduces a collection into a single accumulated value. Based on ES5 Array#reduce
+ *
+ * This is useful for performing operations on a collection, which should result in
+ * a single value, such as concatenating the outerHTML of a collection of DOM nodes
+ * into a single string.
+ *
+ * @param {Array} array The array to operate on.
+ * @param {Function(*, *, i, Array)} callback Count function to operate on each value in the
+ *    collection. The parameters are as follows:
+ *    - previousValue The previous accumulated value
+ *    - currentValue  The value from the current index in the collection
+ *    - index         The index of the current value
+ *    - array         A reference to the array being operated on
+ *
+ *    The callback should return the accumulated value.
+ * @param {*} initialValue The initial value for the accumulator
+ *
+ * @returns {*} The accumulated value, resulting from callback being called on each element
+ *    in the collection. See http://goo.gl/YwhaCh for more details.
+ */
+function reduce(array, callback, initialValue) {
+  var i;
+  var ii;
+  var previousValue = initialValue;
+  for (i = 0, ii = array.length; i < ii; ++i) {
+    previousValue = callback(previousValue, array[i], i, array);
+  }
+  return previousValue;
 }
 
 
