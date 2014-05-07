@@ -285,6 +285,155 @@ describe('NgModelController', function() {
       expect(ctrl.$render).toHaveBeenCalledOnce();
     });
   });
+
+  describe('$validators', function() {
+
+    it('should perform validations when $validate() is called', function() {
+      ctrl.$validators.uppercase = function(value) {
+        return (/^[A-Z]+$/).test(value);
+      };
+
+      ctrl.$modelValue = 'test';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(false);
+
+      ctrl.$modelValue = 'TEST';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(true);
+    });
+
+    it('should perform validations when $validate() is called', function() {
+      ctrl.$validators.uppercase = function(value) {
+        return (/^[A-Z]+$/).test(value);
+      };
+
+      ctrl.$modelValue = 'test';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(false);
+
+      ctrl.$modelValue = 'TEST';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(true);
+    });
+
+    it('should always perform validations using the parsed model value', function() {
+      var captures;
+      ctrl.$validators.raw = function() {
+        captures = arguments;
+        return captures[0];
+      };
+
+      ctrl.$parsers.push(function(value) {
+        return value.toUpperCase();
+      });
+
+      ctrl.$setViewValue('my-value');
+
+      expect(captures).toEqual(['MY-VALUE', 'my-value']);
+    });
+
+    it('should always perform validations using the formatted view value', function() {
+      var captures;
+      ctrl.$validators.raw = function() {
+        captures = arguments;
+        return captures[0];
+      };
+
+      ctrl.$formatters.push(function(value) {
+        return value + '...';
+      });
+
+      scope.$apply(function() {
+        scope.value = 'matias';
+      });
+
+      expect(captures).toEqual(['matias', 'matias...']);
+    });
+
+    it('should only perform validations if the view value is different', function() {
+      var count = 0;
+      ctrl.$validators.countMe = function() {
+        count++;
+      };
+
+      ctrl.$setViewValue('my-value');
+      expect(count).toBe(1);
+
+      ctrl.$setViewValue('my-value');
+      expect(count).toBe(1);
+
+      ctrl.$setViewValue('your-value');
+      expect(count).toBe(2);
+    });
+
+    it('should perform validations twice each time the model value changes within a digest', function() {
+      var count = 0;
+      ctrl.$validators.number = function(value) {
+        count++;
+        return (/^\d+$/).test(value);
+      };
+
+      function val(v) {
+        scope.$apply(function() {
+          scope.value = v;
+        });
+      }
+
+      val('');
+      expect(count).toBe(1);
+
+      val(1);
+      expect(count).toBe(2);
+
+      val(1);
+      expect(count).toBe(2);
+
+      val('');
+      expect(count).toBe(3);
+    });
+
+    it('should only validate to true if all validations are true', function() {
+      var curry = function(v) {
+        return function() {
+          return v;
+        };
+      };
+
+      ctrl.$validators.a = curry(true);
+      ctrl.$validators.b = curry(true);
+      ctrl.$validators.c = curry(false);
+
+      ctrl.$validate();
+      expect(ctrl.$valid).toBe(false);
+
+      ctrl.$validators.c = curry(true);
+
+      ctrl.$validate();
+      expect(ctrl.$valid).toBe(true);
+    });
+
+    it('should register invalid validations on the $error object', function() {
+      var curry = function(v) {
+        return function() {
+          return v;
+        };
+      };
+
+      ctrl.$validators.unique = curry(false);
+      ctrl.$validators.tooLong = curry(false);
+      ctrl.$validators.notNumeric = curry(true);
+
+      ctrl.$validate();
+
+      expect(ctrl.$error.unique).toBe(true);
+      expect(ctrl.$error.tooLong).toBe(true);
+      expect(ctrl.$error.notNumeric).not.toBe(true);
+    });
+  });
 });
 
 describe('ngModel', function() {
