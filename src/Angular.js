@@ -233,7 +233,10 @@ function forEach(obj, iterator, context) {
       for (key in obj) {
         // Need to check if hasOwnProperty exists,
         // as on IE8 the result of querySelectorAll is an object without a hasOwnProperty function
-        if (key != 'prototype' && key != 'length' && key != 'name' && (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
+        if (key != 'prototype' &&
+            key != 'length' &&
+            key != 'name' &&
+            (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
           iterator.call(context, obj[key], key);
         }
       }
@@ -293,7 +296,7 @@ function nextUid() {
   var index = uid.length;
   var digit;
 
-  while(index) {
+  while (index) {
     index--;
     digit = uid[index].charCodeAt(0);
     if (digit == 57 /*'9'*/) {
@@ -350,7 +353,7 @@ function extend(dst) {
     }
   });
 
-  setHashKey(dst,h);
+  setHashKey(dst, h);
   return dst;
 }
 
@@ -360,7 +363,13 @@ function int(str) {
 
 
 function inherit(parent, extra) {
-  return extend(new (extend(function() {}, {prototype:parent}))(), extra);
+  return extend(
+    new (extend(
+      function() {},
+      { prototype: parent })
+    )(),
+    extra
+  );
 }
 
 /**
@@ -399,11 +408,17 @@ noop.$inject = [];
      };
    ```
  */
-function identity($) {return $;}
+function identity($) {
+  return $;
+}
 identity.$inject = [];
 
 
-function valueFn(value) {return function() {return value;};}
+function valueFn(value) {
+  return function() {
+    return value;
+  };
+}
 
 /**
  * @ngdoc function
@@ -417,7 +432,9 @@ function valueFn(value) {return function() {return value;};}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
  */
-function isUndefined(value){return typeof value === 'undefined';}
+function isUndefined(value) {
+  return typeof value === 'undefined';
+}
 
 
 /**
@@ -432,7 +449,9 @@ function isUndefined(value){return typeof value === 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
  */
-function isDefined(value){return typeof value !== 'undefined';}
+function isDefined(value) {
+  return typeof value !== 'undefined';
+}
 
 
 /**
@@ -448,7 +467,9 @@ function isDefined(value){return typeof value !== 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){return value != null && typeof value === 'object';}
+function isObject(value) {
+  return value != null && typeof value === 'object';
+}
 
 
 /**
@@ -463,7 +484,9 @@ function isObject(value){return value != null && typeof value === 'object';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
  */
-function isString(value){return typeof value === 'string';}
+function isString(value) {
+  return typeof value === 'string';
+}
 
 
 /**
@@ -478,7 +501,9 @@ function isString(value){return typeof value === 'string';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
  */
-function isNumber(value){return typeof value === 'number';}
+function isNumber(value) {
+  return typeof value === 'number';
+}
 
 
 /**
@@ -527,7 +552,9 @@ function isArray(value) {
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Function`.
  */
-function isFunction(value){return typeof value === 'function';}
+function isFunction(value) {
+  return typeof value === 'function';
+}
 
 
 /**
@@ -598,7 +625,7 @@ var trim = (function() {
  * @description
  * Determines if a reference is a DOM element (or wrapped jQuery element).
  *
- * @param {*} value Reference to check.
+ * @param {*} node Reference to check.
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
@@ -611,10 +638,14 @@ function isElement(node) {
  * @param str 'key1,key2,...'
  * @returns {object} in the form of {key1:true, key2:true, ...}
  */
-function makeMap(str){
-  var obj = {}, items = str.split(","), i;
-  for ( i = 0; i < items.length; i++ )
-    obj[ items[i] ] = true;
+function makeMap(str) {
+  var obj = {},
+      items = str.split(",");
+
+  for (var i = 0; i < items.length; i++) {
+    obj[items[i]] = true;
+  }
+
   return obj;
 }
 
@@ -654,14 +685,17 @@ function map(obj, iterator, context) {
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
  */
 function size(obj, ownPropsOnly) {
-  var count = 0, key;
+  var count = 0,
+      key;
 
   if (isArray(obj) || isString(obj)) {
     return obj.length;
-  } else if (isObject(obj)){
-    for (key in obj)
-      if (!ownPropsOnly || obj.hasOwnProperty(key))
+  } else if (isObject(obj)) {
+    for (key in obj) {
+      if (!ownPropsOnly || obj.hasOwnProperty(key)) {
         count++;
+      }
+    }
   }
 
   return count;
@@ -673,30 +707,39 @@ function includes(array, obj) {
 }
 
 function indexOf(array, obj) {
-  if (array.indexOf) return array.indexOf(obj);
+  if (array.indexOf) {
+    return array.indexOf(obj);
+  }
 
   for (var i = 0; i < array.length; i++) {
-    if (obj === array[i]) return i;
+    if (obj === array[i]) {
+      return i;
+    }
   }
+
   return -1;
 }
 
 function arrayRemove(array, value) {
   var index = indexOf(array, value);
-  if (index >=0)
+
+  if (index >=0) {
     array.splice(index, 1);
+  }
+
   return value;
 }
 
-function isLeafNode (node) {
+function isLeafNode(node) {
   if (node) {
     switch (node.nodeName) {
-    case "OPTION":
-    case "PRE":
-    case "TITLE":
-      return true;
-    }
+      case "OPTION":
+      case "PRE":
+      case "TITLE":
+        return true;
+      }
   }
+
   return false;
 }
 
@@ -710,7 +753,7 @@ function isLeafNode (node) {
  * Creates a deep copy of `source`, which should be an object or an array.
  *
  * * If no destination is supplied, a copy of the object or array is created.
- * * If a destination is provided, all of its elements (for array) or properties (for objects)
+ * * If a destination is provided, all of its elements (for arrays) or properties (for objects)
  *   are deleted and then all elements/properties from the source are copied to it.
  * * If `source` is not an object or array (inc. `null` and `undefined`), `source` is returned.
  * * If `source` is identical to 'destination' an exception will be thrown.
@@ -718,7 +761,7 @@ function isLeafNode (node) {
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
  * @param {(Object|Array)=} destination Destination into which the source is copied. If
- *     provided, must be of the same type as `source`.
+ *                                      provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  *
  * @example
@@ -765,6 +808,7 @@ function copy(source, destination){
 
   if (!destination) {
     destination = source;
+
     if (source) {
       if (isArray(source)) {
         destination = copy(source, []);
@@ -777,11 +821,13 @@ function copy(source, destination){
       }
     }
   } else {
-    if (source === destination) throw ngMinErr('cpi',
-      "Can't copy! Source and destination are identical.");
+    if (source === destination) {
+      throw ngMinErr('cpi',
+        "Can't copy! Source and destination are identical.");
+    }
     if (isArray(source)) {
       destination.length = 0;
-      for ( var i = 0; i < source.length; i++) {
+      for (var i = 0; i < source.length; i++) {
         destination.push(copy(source[i]));
       }
     } else {
@@ -789,7 +835,7 @@ function copy(source, destination){
       forEach(destination, function(value, key){
         delete destination[key];
       });
-      for ( var key in source) {
+      for (var key in source) {
         destination[key] = copy(source[key]);
       }
       setHashKey(destination,h);
@@ -804,7 +850,7 @@ function copy(source, destination){
 function shallowCopy(src, dst) {
   dst = dst || {};
 
-  for(var key in src) {
+  for (var key in src) {
     // shallowCopy is only ever called by $compile nodeLinkFn, which has control over src
     // so we don't need to worry about using our custom hasOwnProperty here
     if (src.hasOwnProperty(key) && !(key.charAt(0) === '$' && key.charAt(1) === '$')) {
@@ -832,7 +878,7 @@ function shallowCopy(src, dst) {
  * * Both objects or values are of the same type and all of their properties are equal by
  *   comparing them with `angular.equals`.
  * * Both values are NaN. (In JavaScript, NaN == NaN => false. But we consider two NaN as equal)
- * * Both values represent the same regular expression (In JavasScript,
+ * * Both values represent the same regular expression (In JavaScript,
  *   /abc/ == /abc/ => false. But we consider two regular expressions as equal when their textual
  *   representation matches).
  *
@@ -847,8 +893,11 @@ function shallowCopy(src, dst) {
  */
 function equals(o1, o2) {
   if (o1 === o2) return true;
+
   if (o1 === null || o2 === null) return false;
+
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
+
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2) {
     if (t1 == 'object') {
@@ -989,7 +1038,7 @@ function toJson(obj, pretty) {
  * Deserializes a JSON string.
  *
  * @param {string} json JSON string to deserialize.
- * @returns {Object|Array|string|number} Deserialized thingy.
+ * @returns {Object|Array|string|number} Deserialized JSON object.
  */
 function fromJson(json) {
   return isString(json)
@@ -1002,7 +1051,7 @@ function toBoolean(value) {
   if (typeof value === 'function') {
     value = true;
   } else if (value && value.length !== 0) {
-    var v = lowercase("" + value);
+    var v = lowercase('' + value);
     value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == 'n' || v == '[]');
   } else {
     value = false;
@@ -1024,10 +1073,11 @@ function startingTag(element) {
   var TEXT_NODE = 3;
   var elemHtml = jqLite('<div>').append(element).html();
   try {
-    return element[0].nodeType === TEXT_NODE ? lowercase(elemHtml) :
-        elemHtml.
-          match(/^(<[^>]+>)/)[1].
-          replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
+    return element[0].nodeType === TEXT_NODE
+      ? lowercase(elemHtml)
+      : elemHtml
+          .match(/^(<[^>]+>)/)[1]
+          .replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
   } catch(e) {
     return lowercase(elemHtml);
   }
@@ -1041,7 +1091,7 @@ function startingTag(element) {
  * Tries to decode the URI component without throwing an exception.
  *
  * @private
- * @param str value potential URI component to check.
+ * @param {string} value potential URI component to check.
  * @returns {boolean} True if `value` can be decoded
  * with the decodeURIComponent function.
  */
@@ -1068,10 +1118,10 @@ function parseKeyValue(/**string*/keyValue) {
         var val = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
         if (!obj[key]) {
           obj[key] = val;
-        } else if(isArray(obj[key])) {
+        } else if (isArray(obj[key])) {
           obj[key].push(val);
         } else {
-          obj[key] = [obj[key],val];
+          obj[key] = [obj[key], val];
         }
       }
     }
@@ -1108,10 +1158,10 @@ function toKeyValue(obj) {
  *                     / "*" / "+" / "," / ";" / "="
  */
 function encodeUriSegment(val) {
-  return encodeUriQuery(val, true).
-             replace(/%26/gi, '&').
-             replace(/%3D/gi, '=').
-             replace(/%2B/gi, '+');
+  return encodeUriQuery(val, true)
+          .replace(/%26/gi, '&')
+          .replace(/%3D/gi, '=')
+          .replace(/%2B/gi, '+');
 }
 
 
@@ -1127,20 +1177,23 @@ function encodeUriSegment(val) {
  *                     / "*" / "+" / "," / ";" / "="
  */
 function encodeUriQuery(val, pctEncodeSpaces) {
-  return encodeURIComponent(val).
-             replace(/%40/gi, '@').
-             replace(/%3A/gi, ':').
-             replace(/%24/g, '$').
-             replace(/%2C/gi, ',').
-             replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
+  return encodeURIComponent(val)
+          .replace(/%40/gi, '@')
+          .replace(/%3A/gi, ':')
+          .replace(/%24/g, '$')
+          .replace(/%2C/gi, ',')
+          .replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
 }
 
 var ngAttrPrefixes = ['ng-', 'data-ng-', 'ng:', 'x-ng-'];
 
 function getNgAttribute(element, ngAttr) {
-  var attr, i, ii = ngAttrPrefixes.length, j, jj;
+  var attr,
+      attributePrefixLength = ngAttrPrefixes.length;
+
   element = jqLite(element);
-  for (i=0; i<ii; ++i) {
+
+  for (var i = 0; i < attributePrefixLength; ++i) {
     attr = ngAttrPrefixes[i] + ngAttr;
     if (isString(attr = element.attr(attr))) {
       return attr;
@@ -1183,7 +1236,7 @@ function getNgAttribute(element, ngAttr) {
  * document would not be compiled, the `AppController` would not be instantiated and the `{{ a+b }}`
  * would not be resolved to `3`.
  *
- * `ngApp` is the easiest, and most common, way to bootstrap an application.
+ * `ngApp` is the easiest and most common way to bootstrap an application.
  *
  <example module="ngAppDemo">
    <file name="index.html">
@@ -1295,6 +1348,7 @@ function angularInit(element, bootstrap) {
     names[name] = true;
     append(document.getElementById(name));
     name = name.replace(':', '\\:');
+
     if (element.querySelectorAll) {
       forEach(element.querySelectorAll('.' + name), append);
       forEach(element.querySelectorAll('.' + name + '\\:'), append);
@@ -1319,6 +1373,7 @@ function angularInit(element, bootstrap) {
       }
     }
   });
+
   if (appElement) {
     config.strictDi = getNgAttribute(appElement, "strict-di") !== null;
     bootstrap(appElement, module ? [module] : [], config);
@@ -1376,17 +1431,20 @@ function angularInit(element, bootstrap) {
  * @returns {auto.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules, config) {
-  if (!isObject(config)) config = {};
   var defaultConfig = {
     strictDi: false
   };
+
+  if (!isObject(config)) config = {};
+
   config = extend(defaultConfig, config);
+
   var doBootstrap = function() {
     element = jqLite(element);
 
     if (element.injector()) {
       var tag = (element[0] === document) ? 'document' : startingTag(element);
-      throw ngMinErr('btstrpd', "App Already Bootstrapped with this Element '{0}'", tag);
+      throw ngMinErr('btstrpd', "App already bootstrapped with this element '{0}'", tag);
     }
 
     modules = modules || [];
@@ -1394,6 +1452,7 @@ function bootstrap(element, modules, config) {
       $provide.value('$rootElement', element);
     }]);
     modules.unshift('ng');
+
     var injector = createInjector(modules, config.strictDi);
     injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animate',
        function(scope, element, compile, injector, animate) {
@@ -1432,7 +1491,8 @@ function snake_case(name, separator){
 function bindJQuery() {
   // bind to jQuery if present;
   jQuery = window.jQuery;
-  // reset to jQuery or default to us.
+
+  // reset to jQuery or default to jqLite.
   if (jQuery) {
     jqLite = jQuery;
     extend(jQuery.fn, {
@@ -1442,6 +1502,7 @@ function bindJQuery() {
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
+
     // Method signature:
     //     jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
     jqLitePatchJQueryRemove('remove', true, true, false);
@@ -1454,7 +1515,7 @@ function bindJQuery() {
 }
 
 /**
- * throw error if the argument is falsy.
+ * Throw error if the argument is falsy.
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
@@ -1465,16 +1526,17 @@ function assertArg(arg, name, reason) {
 
 function assertArgFn(arg, name, acceptArrayAnnotation) {
   if (acceptArrayAnnotation && isArray(arg)) {
-      arg = arg[arg.length - 1];
+    arg = arg[arg.length - 1];
   }
 
   assertArg(isFunction(arg), name, 'not a function, got ' +
-      (arg && typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
+    (arg && typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
+
   return arg;
 }
 
 /**
- * throw error if the name given is hasOwnProperty
+ * Throw error if the name given is hasOwnProperty
  * @param  {String} name    the name to test
  * @param  {String} context the context in which the name is used, such as module or directive
  */
@@ -1494,6 +1556,7 @@ function assertNotHasOwnProperty(name, context) {
 //TODO(misko): this function needs to be removed
 function getter(obj, path, bindFnToScope) {
   if (!path) return obj;
+
   var keys = path.split('.');
   var key;
   var lastInstance = obj;
@@ -1505,20 +1568,23 @@ function getter(obj, path, bindFnToScope) {
       obj = (lastInstance = obj)[key];
     }
   }
+
   if (!bindFnToScope && isFunction(obj)) {
     return bind(lastInstance, obj);
   }
+
   return obj;
 }
 
 /**
  * Return the DOM siblings between the first and last node in the given array.
- * @param {Array} array like object
+ * @param {Array} nodes array-like object
  * @returns {DOMElement} object containing the elements
  */
 function getBlockElements(nodes) {
   var startNode = nodes[0],
       endNode = nodes[nodes.length - 1];
+
   if (startNode === endNode) {
     return jqLite(startNode);
   }
