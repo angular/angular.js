@@ -1210,11 +1210,11 @@ function getNgAttribute(element, ngAttr) {
  * @element ANY
  * @param {angular.Module} ngApp an optional application
  *   {@link angular.module module} name to load.
- * @param {boolean=} ngStrictDi if this attribute is present on the app element, the injector will be
- *   created in "strict-di" mode. This means that the application will fail to invoke functions which
- *   do not use explicit function annotation (and are thus unsuitable for minification), as described
- *   in {@link guide/di the Dependency Injection guide}, and useful debugging info will assist in
- *   tracking down the root of these bugs.
+ * @param {boolean=} ngStrictDi if this attribute is present on the app element, the injector will
+ *   be created in "strict-di" mode. This means that the application will fail to invoke functions
+ *   which do not use explicit function annotation (and are thus unsuitable for minification), as
+ *   described in {@link guide/di the Dependency Injection guide}, and useful debugging info will
+ *   assist in tracking down the root of these bugs.
  *
  * @description
  *
@@ -1224,10 +1224,11 @@ function getNgAttribute(element, ngAttr) {
  *
  * Only one AngularJS application can be auto-bootstrapped per HTML document. The first `ngApp`
  * found in the document will be used to define the root element to auto-bootstrap as an
- * application. To run multiple applications in an HTML document you must manually bootstrap them using
- * {@link angular.bootstrap} instead. AngularJS applications cannot be nested within each other.
+ * application. To run multiple applications in an HTML document you must manually bootstrap them
+ * using {@link angular.bootstrap} instead.
+ * AngularJS applications cannot be nested within each other.
  *
- * You can specify an **AngularJS module** to be used as the root module for the application.  This
+ * You can specify an **AngularJS module** to be used as the root module for the application. This
  * module will be loaded into the {@link auto.$injector} when the application is bootstrapped and
  * should contain the application code needed or have dependencies on other modules that will
  * contain the code. See {@link angular.module} for more information.
