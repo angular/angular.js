@@ -395,7 +395,7 @@ LocationHashbangInHtml5Url.prototype =
     // fixed: path like '/.'
     var match = urlResolve(path);
     path = decodeURIComponent(match.pathname.charAt(0) === '/' ?
-      match.pathname.substring(1) : match.pathname)
+      match.pathname.substring(1) : match.pathname);
     path = path.replace(/\/*$/, '');
     return '/' + path;
   }),
