@@ -154,6 +154,57 @@ describe('form', function() {
     }).toThrowMinErr('ng', 'badname');
   });
 
+  describe('triggering commit value on submit', function () {
+    it('should trigger update on form submit', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(form, 'submit');
+      expect(scope.name).toEqual('a');
+      dealoc(form);
+    });
+
+    it('should trigger update on form submit with nested forms', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<div class="ng-form" name="child">' +
+              '<input type="text" ng-model="name" />' +
+            '</div>' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(form, 'submit');
+      expect(scope.name).toEqual('a');
+      dealoc(form);
+    });
+
+    it('should trigger update before ng-submit is invoked', function() {
+      var form = $compile(
+          '<form name="test" ng-submit="submit()" ' +
+              'ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      scope.submit = jasmine.createSpy('submit').andCallFake(function() {
+        expect(scope.name).toEqual('a');
+      });
+      browserTrigger(form, 'submit');
+      expect(scope.submit).toHaveBeenCalled();
+      dealoc(form);
+    });
+  });
 
   describe('preventing default submission', function() {
 
