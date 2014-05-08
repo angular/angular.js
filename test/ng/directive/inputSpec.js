@@ -885,11 +885,12 @@ describe('input', function() {
               'ng-model-options="{ debounce: 10000, updateOn: \'blur\' }" >' +
             '<input type="text" ng-model="name" name="alias" />'+
           '</form>')(scope);
+      scope.$digest();
 
-      var input = doc.find('input').eq(0);
-      input.val('a');
+      inputElm = doc.find('input').eq(0);
+      changeInputValueTo('a');
       expect(scope.name).toEqual(undefined);
-      browserTrigger(input, 'blur');
+      browserTrigger(inputElm, 'blur');
       expect(scope.name).toBe(undefined);
       $timeout.flush(2000);
       expect(scope.name).toBe(undefined);
@@ -898,7 +899,58 @@ describe('input', function() {
       dealoc(doc);
     }));
 
+    it('should flush debounced events when calling $commitViewValue directly', function() {
+      compileInput(
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ debounce: 1000 }" />');
+
+      changeInputValueTo('a');
+      expect(scope.name).toEqual(undefined);
+      scope.form.alias.$commitViewValue();
+      expect(scope.name).toEqual('a');
+    });
+
+    it('should cancel debounced events when calling $commitViewValue', inject(function($timeout) {
+      compileInput(
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ debounce: 1000 }"/>');
+
+      changeInputValueTo('a');
+      scope.form.alias.$commitViewValue();
+      expect(scope.name).toEqual('a');
+
+      scope.form.alias.$setPristine();
+      $timeout.flush(1000);
+      expect(scope.form.alias.$pristine).toBeTruthy();
+    }));
+
+    it('should reset input val if rollbackViewValue called during pending update', function() {
+      compileInput(
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ updateOn: \'blur\' }" />');
+
+      changeInputValueTo('a');
+      expect(inputElm.val()).toBe('a');
+      scope.form.alias.$rollbackViewValue();
+      expect(inputElm.val()).toBe('');
+      browserTrigger(inputElm, 'blur');
+      expect(inputElm.val()).toBe('');
+    });
+
     it('should allow canceling pending updates', inject(function($timeout) {
+      compileInput(
+        '<input type="text" ng-model="name" name="alias" '+
+          'ng-model-options="{ updateOn: \'blur\' }" />');
+
+      changeInputValueTo('a');
+      expect(scope.name).toEqual(undefined);
+      scope.form.alias.$rollbackViewValue();
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(inputElm, 'blur');
+      expect(scope.name).toEqual(undefined);
+    }));
+
+    it('should allow canceling debounced updates', inject(function($timeout) {
       compileInput(
         '<input type="text" ng-model="name" name="alias" '+
           'ng-model-options="{ debounce: 10000 }" />');
@@ -906,33 +958,33 @@ describe('input', function() {
       changeInputValueTo('a');
       expect(scope.name).toEqual(undefined);
       $timeout.flush(2000);
-      scope.form.alias.$cancelUpdate();
+      scope.form.alias.$rollbackViewValue();
       expect(scope.name).toEqual(undefined);
       $timeout.flush(10000);
       expect(scope.name).toEqual(undefined);
     }));
 
-    it('should reset input val if cancelUpdate called during pending update', function() {
+    it('should handle model updates correctly even if rollbackViewValue is not invoked', function() {
       compileInput(
         '<input type="text" ng-model="name" name="alias" '+
           'ng-model-options="{ updateOn: \'blur\' }" />');
 
       changeInputValueTo('a');
-      expect(inputElm.val()).toBe('a');
-      scope.form.alias.$cancelUpdate();
-      expect(inputElm.val()).toBe('');
+      scope.$apply(function() {
+        scope.name = 'b';
+      });
       browserTrigger(inputElm, 'blur');
-      expect(inputElm.val()).toBe('');
+      expect(scope.name).toBe('b');
     });
 
-    it('should reset input val if cancelUpdate called during debounce', inject(function($timeout) {
+    it('should reset input val if rollbackViewValue called during debounce', inject(function($timeout) {
       compileInput(
         '<input type="text" ng-model="name" name="alias" '+
           'ng-model-options="{ debounce: 2000 }" />');
 
       changeInputValueTo('a');
       expect(inputElm.val()).toBe('a');
-      scope.form.alias.$cancelUpdate();
+      scope.form.alias.$rollbackViewValue();
       expect(inputElm.val()).toBe('');
       $timeout.flush(3000);
       expect(inputElm.val()).toBe('');
