@@ -8,7 +8,7 @@ today! Here are the guidelines we'd like you to follow:
  - [Issues and Bugs](#issue)
  - [Feature Requests](#feature)
  - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
+ - [Coding Rules](#coding-rules)
  - [Commit Message Guidelines](#commit)
  - [Signing the CLA](#cla)
  - [Further Info](#info)
@@ -44,8 +44,8 @@ project.
 
 
 ## <a name="docs"></a> Want a Doc Fix?
-If you want to help improve the docs, it's a good idea to let others know what you're working on to 
-minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open). 
+If you want to help improve the docs, it's a good idea to let others know what you're working on to
+minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open).
 Comment on an issue to let others know what you're working on, or create a new issue if your work
 doesn't fit within the scope of any of the existing doc fix projects.
 
@@ -119,7 +119,7 @@ Before you submit your pull request consider the following guidelines:
     ```
 
 * In GitHub, send a pull request to `angular:master`.
-* If we suggest changes then 
+* If we suggest changes then
   * Make the required updates.
   * Re-run the Angular test suite to ensure tests are still passing.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
@@ -160,7 +160,7 @@ from the main (upstream) repository:
     git pull --ff upstream master
     ```
 
-## <a name="rules"></a> Coding Rules
+## <a name="coding-rules"></a> Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All features or bug fixes **must be tested** by one or more [specs][unit-testing].
@@ -237,7 +237,7 @@ reference GitHub issues that this commit **Closes**.
 
 A detailed explanation can be found in this [document][commit-message-format].
 
-## <a name="cla"></a> Signing the CLA 
+## <a name="cla"></a> Signing the CLA
 
 Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
 changes to be accepted, the CLA must be signed. It's a quick process, we promise!
@@ -257,6 +257,7 @@ You can find out more detailed information about contributing in the
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [contribute]: http://docs.angularjs.org/misc/contribute
+[dev-docs]: https://docs.angularjs.org/misc/contribute
 [contributing]: http://docs.angularjs.org/misc/contribute
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [github]: https://github.com/angular/angular.js

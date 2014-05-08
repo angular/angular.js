@@ -6,7 +6,7 @@
   "noempty": true,
   "nonew": true,
   "trailing": true,
-  "maxlen": 200,
+  "maxlen": 100,
   "boss": true,
   "eqnull": true,
   "expr": true,
