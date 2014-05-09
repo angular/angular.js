@@ -135,6 +135,10 @@ function $RouteProvider(){
    *      If the option is set to `true`, then the particular route can be matched without being
    *      case sensitive
    *
+   *    - `name` – `{string=}` – An optional path alias or route name.
+   *      Provides a simple way to navigate to a defined route using contextual $location
+   *      information without having to know path semantics.
+   *
    * @returns {Object} self
    *
    * @description
@@ -419,8 +423,11 @@ function $RouteProvider(){
      */
 
     var forceReload = false,
+        pendingRoutes = {},
         $route = {
           routes: routes,
+          to: {},
+          pathTo: {},
 
           /**
            * @ngdoc method
@@ -440,6 +447,32 @@ function $RouteProvider(){
         };
 
     $rootScope.$on('$locationChangeSuccess', updateRoute);
+
+    // Prepare any named routes for scripted access
+    angular.forEach(routes, function(route, path) {
+      var routeName = route.name;
+
+      if (routeName) {
+        $route.to[routeName] = function(params, search) {
+          var defer = pendingRoutes[routeName] = pendingRoutes[routeName] || $q.defer();
+
+          $location.path(interpolate(path.replace(/\*\/|\?\//g, '/'),
+                          angular.extend({}, $routeParams, params)
+                        ));
+
+          if (search) {
+            $location.search(checkSearch(search));
+          }
+
+          return defer.promise;
+        };
+
+        // Defines a routes path based on the params (does not include search params)
+        $route.pathTo[routeName] = function(params) {
+          return interpolate(path.replace(/\*|\?/g, ''), angular.extend({}, $routeParams, params));
+        };
+      }
+    });
 
     return $route;
 
@@ -550,10 +583,39 @@ function $RouteProvider(){
             if (next == $route.current) {
               $rootScope.$broadcast('$routeChangeError', next, last, error);
             }
-          });
+          })
+          // resolve named route changes
+          ['finally'](resolvePending);
       }
     }
 
+    /**
+     * @description
+     * Resolves any pending route changes triggered by name
+     */
+    function resolvePending() {
+      var currentName = $route.current.name;
+
+      angular.forEach(pendingRoutes, function(deferred, routeName) {
+        if (routeName === currentName) {
+          deferred.resolve($routeParams);
+        } else {
+          deferred.reject(currentName);
+        }
+      });
+
+      pendingRoutes = {};
+    }
+
+    /**
+     * @returns {Object} constructs search params for scripted route changes
+     */
+    function checkSearch(data) {
+      if (data === true) {
+        return $location.search();
+      }
+      return data;
+    }
 
     /**
      * @returns {Object} the current active route, by matching it against the URL

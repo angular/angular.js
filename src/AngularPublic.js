@@ -114,6 +114,7 @@ function publishExternalAPI(angular){
     'noop':noop,
     'bind':bind,
     'toJson': toJson,
+    'toKeyValue': toKeyValue,
     'fromJson': fromJson,
     'identity':identity,
     'isUndefined': isUndefined,
