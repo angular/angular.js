@@ -274,6 +274,12 @@ describe('$http', function() {
   describe('the instance', function() {
     var $httpBackend, $http, $rootScope;
 
+    beforeEach(module(function($httpProvider) {
+      $httpProvider.paramsSerializers.custom = function(params, callback) {
+          callback('foo', 'bar');
+        };
+    }));
+
     beforeEach(inject(['$rootScope', function($rs) {
       $rootScope = $rs;
 
@@ -340,6 +346,90 @@ describe('$http', function() {
       it('should not add question mark when params is empty', function() {
         $httpBackend.expect('GET', '/url').respond('');
         $http({url: '/url', params: {}, method: 'GET'});
+      });
+
+      describe('params serialization', function() {
+        it('should be possible to use key-value serialization', inject(function($httpBackend, $http) {
+          var testCases = [
+            {
+              params: {a: 1, b: 2},
+              serialized: 'a=1&b=2'
+            },
+            {
+              params: {a: 1, b: [2, 3]},
+              serialized: 'a=1&b=2&b=3'
+            },
+            {
+              params: {a: 'abc', b: {foo: 'bar'}},
+              serialized: 'a=abc&b=%7B%22foo%22:%22bar%22%7D'
+            }
+          ];
+          angular.forEach(testCases, function(testCase) {
+            $httpBackend.expect('GET', '/url?' + testCase.serialized).respond('');
+            $http({url: '/url', params: testCase.params, method: 'GET', paramsSerializer: 'keyValue'});
+          });
+        }));
+
+        it('should be possible to use JSON serialization', inject(function($httpBackend, $http) {
+          var testCases = [
+            {
+              params: {a: 1, b: 2},
+              serialized: 'a=1&b=2'
+            },
+            {
+              params: {a: 1, b: [2, 3]},
+              serialized: 'a=1&b=%5B2,3%5D'
+            },
+            {
+              params: {a: 'abc', b: {foo: 'bar'}},
+              serialized: 'a=abc&b=%7B%22foo%22:%22bar%22%7D'
+            }
+          ];
+          angular.forEach(testCases, function(testCase) {
+            $httpBackend.expect('GET', '/url?' + testCase.serialized).respond('');
+            $http({url: '/url', params: testCase.params, method: 'GET', paramsSerializer: 'JSON'});
+          });
+        }));
+
+        it('should be possible to use nonShallowJSON serialization', inject(function($httpBackend, $http) {
+          var testCases = [
+            {
+              params: {a: 1, b: 2},
+              serialized: 'a=1&b=2'
+            },
+            {
+              params: {a: 1, b: [2, 3]},
+              serialized: 'a=1&b%5B%5D=2&b%5B%5D=3' // a=1&b[]=2&b[]=3
+            },
+            {
+              params: {a: 1, b: [2, {foo: 'bar'}]},
+              serialized: 'a=1&b%5B%5D=2&b%5B%5D%5Bfoo%5D=bar' // a=1&b[]=2&b[][foo]=bar
+            },
+            {
+              params: {a: 'abc', b: {foo: 'bar', man: 'shell'}},
+              serialized: 'a=abc&b%5Bfoo%5D=bar&b%5Bman%5D=shell' // a=abc&b[foo]=bar&b[man]=shell
+            }
+          ];
+          angular.forEach(testCases, function(testCase) {
+            $httpBackend.expect('GET', '/url?' + testCase.serialized).respond('');
+            $http({url: '/url', params: testCase.params, method: 'GET', paramsSerializer: 'nonShallowJSON'});
+          });
+
+        }));
+
+        it('should be possible to use a custom serialization', inject(function($httpBackend, $http) {
+          function serializer(params, callback) {
+            callback('foo', 'bar');
+          }
+
+          $httpBackend.expect('GET', '/url?foo=bar').respond('');
+          $http({url: '/url', params: {}, method: 'GET', paramsSerializer: serializer});
+        }));
+
+        it('should be possible to use a predefined custom serializer', inject(function($httpBackend, $http) {
+          $httpBackend.expect('GET', '/url?foo=bar').respond('');
+          $http({url: '/url', params: {}, method: 'GET', paramsSerializer: 'custom'});
+        }));
       });
     });
 
