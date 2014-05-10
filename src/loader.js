@@ -20,7 +20,8 @@ function setupModuleLoader(window) {
 
   var angular = ensure(window, 'angular', Object);
 
-  // We need to expose `angular.$$minErr` to modules such as `ngResource` that reference it during bootstrap
+  // We need to expose `angular.$$minErr` to modules such as `ngResource`
+  // that reference it during bootstrap
   angular.$$minErr = angular.$$minErr || minErr;
 
   return ensure(angular, 'module', function() {
@@ -34,9 +35,8 @@ function setupModuleLoader(window) {
      * @description
      *
      * The `angular.module` is a global place for creating, registering and retrieving Angular
-     * modules.
-     * All modules (angular core or 3rd party) that should be available to an application must be
-     * registered using this mechanism.
+     * modules. All modules (Angular core or 3rd party) that should be available to an application
+     * must be registered using this mechanism.
      *
      * When passed two or more arguments, a new module is created.  If passed only one argument, an
      * existing module (the name passed as the first argument to `module`) is retrieved.
@@ -84,11 +84,12 @@ function setupModuleLoader(window) {
           throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
         }
       };
-
       assertNotHasOwnProperty(name, 'module');
+
       if (requires && modules.hasOwnProperty(name)) {
         modules[name] = null;
       }
+
       return ensure(modules, name, function() {
         if (!requires) {
           throw $injectorMinErr('nomod', "Module '{0}' is not available! You either misspelled " +

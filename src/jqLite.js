@@ -26,8 +26,8 @@
  * delegates to Angular's built-in subset of jQuery, called "jQuery lite" or "jqLite."
  *
  * <div class="alert alert-success">jqLite is a tiny, API-compatible subset of jQuery that allows
- * Angular to manipulate the DOM in a cross-browser compatible way. **jqLite** implements only the most
- * commonly needed functionality with the goal of having a very small footprint.</div>
+ * Angular to manipulate the DOM in a cross-browser compatible way. **jqLite** implements only the
+ * most commonly needed functionality with the goal of having a very small footprint.</div>
  *
  * To use jQuery, simply load it before `DOMContentLoaded` event fired.
  *
@@ -77,8 +77,8 @@
  *
  * ### Events
  * - `$destroy` - AngularJS intercepts all jqLite/jQuery's DOM destruction apis and fires this event
- *    on all DOM nodes being removed.  This can be used to clean up any 3rd party bindings to the DOM
- *    element before it is removed.
+ *    on all DOM nodes being removed.  This can be used to clean up any 3rd party bindings to the
+ *    DOM element before it is removed.
  *
  * ### Methods
  * - `controller(name)` - retrieves the controller of the current element or its parent. By default
@@ -88,9 +88,10 @@
  * - `injector()` - retrieves the injector of the current element or its parent.
  * - `scope()` - retrieves the {@link ng.$rootScope.Scope scope} of the current
  *   element or its parent.
- * - `isolateScope()` - retrieves an isolate {@link ng.$rootScope.Scope scope} if one is attached directly to the
- *   current element. This getter should be used only on elements that contain a directive which starts a new isolate
- *   scope. Calling `scope()` on this element always returns the original non-isolate scope.
+ * - `isolateScope()` - retrieves an isolate {@link ng.$rootScope.Scope scope} if one is attached
+ *   directly to the current element. This getter should be used only on elements that contain a
+ *   directive which starts a new isolate scope. Calling `scope()` on this element always returns
+ *   the original non-isolate scope.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
@@ -129,11 +130,11 @@ var jqLiteMinErr = minErr('jqLite');
  * @param name Name to normalize
  */
 function camelCase(name) {
-  return name.
-    replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+  return name
+    .replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
       return offset ? letter.toUpperCase() : letter;
-    }).
-    replace(MOZ_HACK_REGEXP, 'Moz$1');
+    })
+    .replace(MOZ_HACK_REGEXP, 'Moz$1');
 }
 
 /////////////////////////////////////////////
@@ -160,14 +161,14 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
     if (!getterIfNoArguments || param != null) {
       while(list.length) {
         set = list.shift();
-        for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
+        for (setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
           element = jqLite(set[setIndex]);
           if (fireEvent) {
             element.triggerHandler('$destroy');
           } else {
             fireEvent = !fireEvent;
           }
-          for(childIndex = 0, childLength = (children = element.children()).length;
+          for (childIndex = 0, childLength = (children = element.children()).length;
               childIndex < childLength;
               childIndex++) {
             list.push(jQuery(children[childIndex]));
@@ -186,7 +187,6 @@ var XHTML_TAG_REGEXP = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w
 
 var wrapMap = {
   'option': [1, '<select multiple="multiple">', '</select>'],
-
   'thead': [1, '<table>', '</table>'],
   'col': [2, '<table><colgroup>', '</colgroup></table>'],
   'tr': [2, '<table><tbody>', '</tbody></table>'],
@@ -264,7 +264,9 @@ function JQLite(element) {
   }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
-      throw jqLiteMinErr('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');
+      throw jqLiteMinErr('nosel',
+        'Looking up elements via selectors is not supported by jqLite!' +
+        'See: http://docs.angularjs.org/api/angular.element');
     }
     return new JQLite(element);
   }
@@ -282,18 +284,21 @@ function jqLiteClone(element) {
 
 function jqLiteDealoc(element){
   jqLiteRemoveData(element);
-  for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
+
+  for (var i = 0, children = element.childNodes || []; i < children.length; i++) {
     jqLiteDealoc(children[i]);
   }
 }
 
 function jqLiteOff(element, type, fn, unsupported) {
-  if (isDefined(unsupported)) throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
+  if (isDefined(unsupported)) {
+    throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
+  }
 
   var events = jqLiteExpandoStore(element, 'events'),
       handle = jqLiteExpandoStore(element, 'handle');
 
-  if (!handle) return; //no listeners registered
+  if (!handle) return; // no listeners registered
 
   if (isUndefined(type)) {
     forEach(events, function(eventHandler, type) {
@@ -374,8 +379,9 @@ function jqLiteData(element, key, value) {
 
 function jqLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
-  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
-      indexOf( " " + selector + " " ) > -1);
+
+  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ")
+          .indexOf( " " + selector + " " ) > -1);
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
@@ -411,7 +417,8 @@ function jqLiteAddNodes(root, elements) {
     elements = (!elements.nodeName && isDefined(elements.length) && !isWindow(elements))
       ? elements
       : [ elements ];
-    for(var i=0; i < elements.length; i++) {
+
+    for (var i=0; i < elements.length; i++) {
       root.push(elements[i]);
     }
   }
@@ -467,7 +474,7 @@ var JQLitePrototype = JQLite.prototype = {
     }
 
     // check if document already is loaded
-    if (document.readyState === 'complete'){
+    if (document.readyState === 'complete') {
       setTimeout(trigger);
     } else {
       this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
@@ -479,12 +486,16 @@ var JQLitePrototype = JQLite.prototype = {
   },
   toString: function() {
     var value = [];
-    forEach(this, function(e){ value.push('' + e);});
+    forEach(this, function(e) {
+      value.push('' + e);
+    });
     return '[' + value.join(', ') + ']';
   },
 
   eq: function(index) {
-      return (index >= 0) ? jqLite(this[index]) : jqLite(this[this.length + index]);
+    return (index >= 0)
+      ? jqLite(this[index])
+      : jqLite(this[this.length + index]);
   },
 
   length: 0,
@@ -502,6 +513,7 @@ var BOOLEAN_ATTR = {};
 forEach('multiple,selected,checked,disabled,readOnly,required,open'.split(','), function(value) {
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
+
 var BOOLEAN_ELEMENTS = {};
 forEach('input,select,option,textarea,button,form,details'.split(','), function(value) {
   BOOLEAN_ELEMENTS[uppercase(value)] = true;
@@ -521,7 +533,9 @@ forEach({
 
   scope: function(element) {
     // Can't use jqLiteData here directly so we stay compatible with jQuery!
-    return jqLite(element).data('$scope') || jqLiteInheritedData(element.parentNode || element, ['$isolateScope', '$scope']);
+    return jqLite(element).data('$scope')
+            || jqLiteInheritedData(element.parentNode
+            || element, ['$isolateScope', '$scope']);
   },
 
   isolateScope: function(element) {
@@ -568,6 +582,7 @@ forEach({
 
   attr: function(element, name, value){
     var lowercasedName = lowercase(name);
+
     if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
         if (!!value) {
@@ -604,6 +619,7 @@ forEach({
 
   text: (function() {
     var NODE_TYPE_TEXT_PROPERTY = [];
+
     if (msie < 9) {
       NODE_TYPE_TEXT_PROPERTY[1] = 'innerText';    /** Element **/
       NODE_TYPE_TEXT_PROPERTY[3] = 'nodeValue';    /** Text **/
@@ -611,14 +627,18 @@ forEach({
       NODE_TYPE_TEXT_PROPERTY[1] =                 /** Element **/
       NODE_TYPE_TEXT_PROPERTY[3] = 'textContent';  /** Text **/
     }
+
     getText.$dv = '';
+
     return getText;
 
     function getText(element, value) {
       var textProp = NODE_TYPE_TEXT_PROPERTY[element.nodeType];
+
       if (isUndefined(value)) {
         return textProp ? element[textProp] : '';
       }
+
       element[textProp] = value;
     }
   })(),
@@ -627,11 +647,13 @@ forEach({
     if (isUndefined(value)) {
       if (nodeName_(element) === 'SELECT' && element.multiple) {
         var result = [];
+
         forEach(element.options, function (option) {
           if (option.selected) {
             result.push(option.value || option.text);
           }
         });
+
         return result.length === 0 ? null : result;
       }
       return element.value;
@@ -643,9 +665,11 @@ forEach({
     if (isUndefined(value)) {
       return element.innerHTML;
     }
+
     for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
       jqLiteDealoc(childNodes[i]);
     }
+
     element.innerHTML = value;
   },
 
@@ -766,13 +790,20 @@ forEach({
   dealoc: jqLiteDealoc,
 
   on: function onFn(element, type, fn, unsupported){
-    if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+    if (isDefined(unsupported)) {
+      throw jqLiteMinErr('onargs',
+        'jqLite#on() does not support the `selector` or `eventData` parameters');
+    }
 
     var events = jqLiteExpandoStore(element, 'events'),
         handle = jqLiteExpandoStore(element, 'handle');
 
-    if (!events) jqLiteExpandoStore(element, 'events', events = {});
-    if (!handle) jqLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
+    if (!events) {
+      jqLiteExpandoStore(element, 'events', events = {});
+    }
+    if (!handle) {
+      jqLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
+    }
 
     forEach(type.split(' '), function(type){
       var eventFns = events[type];
@@ -844,7 +875,9 @@ forEach({
 
   replaceWith: function(element, replaceNode) {
     var index, parent = element.parentNode;
+
     jqLiteDealoc(element);
+
     forEach(new JQLite(replaceNode), function(node){
       if (index) {
         parent.insertBefore(node, index.nextSibling);
@@ -857,10 +890,12 @@ forEach({
 
   children: function(element) {
     var children = [];
+
     forEach(element.childNodes, function(element){
       if (element.nodeType === 1)
         children.push(element);
     });
+
     return children;
   },
 
@@ -888,9 +923,11 @@ forEach({
   wrap: function(element, wrapNode) {
     wrapNode = jqLite(wrapNode)[0];
     var parent = element.parentNode;
+
     if (parent) {
       parent.replaceChild(wrapNode, element);
     }
+
     wrapNode.appendChild(element);
   },
 
@@ -902,6 +939,7 @@ forEach({
 
   after: function(element, newElement) {
     var index = element, parent = element.parentNode;
+
     forEach(new JQLite(newElement), function(node){
       parent.insertBefore(node, index.nextSibling);
       index = node;
@@ -915,9 +953,11 @@ forEach({
     if (selector) {
       forEach(selector.split(' '), function(className){
         var classCondition = condition;
+
         if (isUndefined(classCondition)) {
           classCondition = !jqLiteHasClass(element, className);
         }
+
         (classCondition ? jqLiteAddClass : jqLiteRemoveClass)(element, className);
       });
     }
@@ -971,7 +1011,7 @@ forEach({
    */
   JQLite.prototype[name] = function(arg1, arg2, arg3) {
     var value;
-    for(var i=0; i < this.length; i++) {
+    for (var i = 0; i < this.length; i++) {
       if (isUndefined(value)) {
         value = fn(this[i], arg1, arg2, arg3);
         if (isDefined(value)) {
