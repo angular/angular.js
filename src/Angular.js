@@ -1449,6 +1449,9 @@ function bindJQuery() {
     // Prevent double-proxying.
     originalCleanData = originalCleanData.$$original || originalCleanData;
 
+    // All nodes removed from the DOM via various jQuery APIs like .remove()
+    // are passed through jQuery.cleanData. Monkey-patch this method to fire
+    // the $destroy event on all removed nodes.
     jQuery.cleanData = function(elems) {
       for (var i = 0, elem; (elem = elems[i]) != null; i++) {
         jQuery(elem).triggerHandler('$destroy');
