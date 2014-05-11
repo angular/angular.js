@@ -288,7 +288,7 @@ application. For example, there would be one instance for every `ng-controller` 
 Moreover, additional dependencies are made available to Controllers:
 
 * {@link scope `$scope`}: Controllers are always associated with a point in the DOM and so are provided with
-  access to the {@link scope scope} at that point. Other components, such as servies only have access to the
+  access to the {@link scope scope} at that point. Other components, such as services only have access to the
   singleton {@link $rootScope} service.
 * {@link $route} resolves: If a controller is instantiated as part of a route, then any values that
   are resolved as part of the route are made available for injection into the controller.
