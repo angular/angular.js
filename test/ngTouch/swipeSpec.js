@@ -384,6 +384,175 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.move).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
     }));
+
+    it('should allow you to move back and forth within the threshold', inject(function($rootScope, $swipe, $compile) {
+      var events = {
+        start: jasmine.createSpy('startSpy'),
+        move: jasmine.createSpy('moveSpy'),
+        cancel: jasmine.createSpy('cancelSpy'),
+        end: jasmine.createSpy('endSpy')
+      };
+
+      // default threshold is 10, 10
+      $swipe.bind(element, events);
+
+      expect(events.start).not.toHaveBeenCalled();
+      expect(events.move).not.toHaveBeenCalled();
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 100,
+        y: 40
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 100,
+        y: 45
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 100,
+        y: 35
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 100,
+        y: 45
+      });
+
+      expect(events.start).toHaveBeenCalled();
+      expect(events.move.calls.length).toBe(0);
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+    }));
+
+    it('should allow you to change the y threshold', inject(function($rootScope, $swipe, $compile) {
+      element = $compile('<div></div>')($rootScope);
+      var events = {
+        start: jasmine.createSpy('startSpy'),
+        move: jasmine.createSpy('moveSpy'),
+        cancel: jasmine.createSpy('cancelSpy'),
+        end: jasmine.createSpy('endSpy')
+      };
+
+      $swipe.bind(element, events, {
+        scrollThreshold: 30
+      });
+
+      expect(events.start).not.toHaveBeenCalled();
+      expect(events.move).not.toHaveBeenCalled();
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 100,
+        y: 40
+      });
+
+      expect(events.start).toHaveBeenCalled();
+
+      expect(events.move).not.toHaveBeenCalled();
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 100,
+        y: 69
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 100,
+        y: 11
+      });
+
+      expect(events.start).toHaveBeenCalled();
+
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.move.calls.length).toBe(0);
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 100,
+        y: 9
+      });
+
+      expect(events.cancel).toHaveBeenCalled();
+      expect(events.move.calls.length).toBe(0);
+      expect(events.end).not.toHaveBeenCalled();
+    }));
+
+    it('should allow you to change the x and y threshold', inject(function($rootScope, $swipe, $compile) {
+      element = $compile('<div></div>')($rootScope);
+      var events = {
+        start: jasmine.createSpy('startSpy'),
+        move: jasmine.createSpy('moveSpy'),
+        cancel: jasmine.createSpy('cancelSpy'),
+        end: jasmine.createSpy('endSpy')
+      };
+
+      $swipe.bind(element, events, {
+        swipeThreshold: 20,
+        scrollThreshold: 30
+      });
+
+      expect(events.start).not.toHaveBeenCalled();
+      expect(events.move).not.toHaveBeenCalled();
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 100,
+        y: 40
+      });
+
+      expect(events.start).toHaveBeenCalled();
+
+      expect(events.move).not.toHaveBeenCalled();
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.end).not.toHaveBeenCalled();
+
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 119,
+        y: 69
+      });
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.move.calls.length).toBe(0);
+
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 121,
+        y: 69
+      });
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.move.calls.length).toBe(1);
+
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 131,
+        y: 69
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 131,
+        y: 150
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 200,
+        y: 200
+      });
+
+      expect(events.cancel).not.toHaveBeenCalled();
+      expect(events.move.calls.length).toBe(4);
+    }));
+
   });
 };
 
