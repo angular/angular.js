@@ -1700,6 +1700,7 @@ describe('Scope', function() {
         it('should receive event object', inject(function($rootScope) {
           var scope = $rootScope,
               child = scope.$new(),
+              grandChild = child.$new(),
               event;
 
           child.$on('fooEvent', function(e) {
