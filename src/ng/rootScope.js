@@ -1104,7 +1104,7 @@ function $RootScopeProvider(){
         }
         Event.prototype.preventDefault = function() {
           this.defaultPrevented = true;
-        }
+        };
 
         var target = this,
             current = target,
