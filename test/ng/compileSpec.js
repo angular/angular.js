@@ -2317,6 +2317,20 @@ describe('$compile', function() {
     }));
 
 
+    it('should support interpolating text spread across multiple text nodes', inject(function($rootScope, $compile) {
+      var rawElement = document.createElement("div");
+      var textNode1 = document.createTextNode("{{foo");
+      var textNode2 = document.createTextNode("bar}}");
+      rawElement.appendChild(textNode1);
+      rawElement.appendChild(textNode2);
+
+      var element = $compile(rawElement)($rootScope);
+      $rootScope.foobar = "spam eggs";
+      $rootScope.$digest();
+      expect(element.text()).toBe("spam eggs");
+    }));
+
+
     it('should support custom start/end interpolation symbols in template and directive template',
         function() {
       module(function($interpolateProvider, $compileProvider) {

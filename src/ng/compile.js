@@ -843,7 +843,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
+      // We also need to call `normalize` on the nodes, because in some cases
+      // browsers (like IE11) allocate multiple text nodes when parsing a single block of HTML.
       forEach($compileNodes, function(node, index){
+        node.normalize();
+
         if (node.nodeType == 3 /* text node */ && node.nodeValue.match(/\S+/) /* non-empty */ ) {
           $compileNodes[index] = node = jqLite(node).wrap('<span></span>').parent()[0];
         }
