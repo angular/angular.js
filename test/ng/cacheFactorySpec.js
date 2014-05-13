@@ -114,6 +114,49 @@ describe('$cacheFactory', function() {
       }));
     });
 
+    describe('disable, enable', function (){
+      it('should disable cache', inject(function($cacheFactory) {
+        cache.put('key1', 'bar');
+        expect(cache.get('key1')).toBe('bar');
+
+        cache.disable();
+
+        cache.put('key1', 'bar');
+        expect(cache.get('key1')).toBeUndefined();
+      }));
+
+      it('should enable cache', inject(function($cacheFactory) {
+        cache.disable();
+        cache.enable();
+
+        cache.put('key1', 'bar');
+        expect(cache.get('key1')).toBe('bar');
+      }));
+
+      it('should always miss cache with get', inject(function($cacheFactory) {
+        cache.put('key1', 'bar');
+
+        cache.disable();
+
+        expect(cache.get('key1')).toBeUndefined();
+      }));
+
+      it('should always return undefined with put', inject(function($cacheFactory) {
+        var result;
+        cache.disable();
+
+        result = cache.put('key1', 'bar');
+        expect(result).toBeUndefined();
+      }));
+
+      it('should act per cacheFactory instance', inject(function($cacheFactory) {
+        var cache2 = $cacheFactory('test2');
+        cache.disable();
+        cache2.put('key1', 'bar');
+
+        expect(cache2.get('key1')).toBe('bar');
+      }));
+    });
 
     describe('info', function() {
 
