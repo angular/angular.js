@@ -12,6 +12,9 @@
  * Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag
  * too.
  *
+ * To disable the mouse click and drag functionality, add `ng-swipe-disable-mouse` to
+ * the `ng-swipe-left` or `ng-swipe-right` DOM Element.
+ *
  * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *
  * @element ANY
@@ -102,6 +105,7 @@ function makeSwipeDirective(directiveName, direction, eventName) {
       }
 
       $swipe.bind(element, {
+        'disableMouseEvents': angular.isDefined(attr['ngSwipeDisableMouse']),
         'start': function(coords, event) {
           startCoords = coords;
           valid = true;
