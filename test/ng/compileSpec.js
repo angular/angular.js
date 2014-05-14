@@ -1436,6 +1436,78 @@ describe('$compile', function() {
         ));
 
 
+        describe('nested transcludes', function() {
+
+          beforeEach(module(function($compileProvider) {
+
+            $compileProvider.directive('noop', valueFn({}));
+
+            $compileProvider.directive('sync', valueFn({
+              template: '<div ng-transclude></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('async', valueFn({
+              templateUrl: 'async',
+              transclude: true
+            }));
+
+            $compileProvider.directive('syncSync', valueFn({
+              template: '<div noop><div sync><div ng-transclude></div></div></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('syncAsync', valueFn({
+              template: '<div noop><div async><div ng-transclude></div></div></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('asyncSync', valueFn({
+              templateUrl: 'asyncSync',
+              transclude: true
+            }));
+
+            $compileProvider.directive('asyncAsync', valueFn({
+              templateUrl: 'asyncAsync',
+              transclude: true
+            }));
+
+          }));
+
+          beforeEach(inject(function($templateCache) {
+            $templateCache.put('async', '<div ng-transclude></div>');
+            $templateCache.put('asyncSync', '<div noop><div sync><div ng-transclude></div></div></div>');
+            $templateCache.put('asyncAsync', '<div noop><div async><div ng-transclude></div></div></div>');
+          }));
+
+
+          it('should allow nested transclude directives with sync template containing sync template', inject(function($compile, $rootScope) {
+            element = $compile('<div sync-sync>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text().trim()).toEqual('transcluded content');
+          }));
+
+          it('should allow nested transclude directives with sync template containing async template', inject(function($compile, $rootScope) {
+            element = $compile('<div sync-async>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text().trim()).toEqual('transcluded content');
+          }));
+
+          it('should allow nested transclude directives with async template containing sync template', inject(function($compile, $rootScope) {
+            element = $compile('<div async-sync>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text().trim()).toEqual('transcluded content');
+          }));
+
+          it('should allow nested transclude directives with async template containing asynch template', inject(function($compile, $rootScope) {
+            element = $compile('<div async-async>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text().trim()).toEqual('transcluded content');
+          }));
+        });
+
+
+
         it("should fail if replacing and template doesn't have a single root element", function() {
           module(function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');
