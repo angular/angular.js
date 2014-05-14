@@ -355,14 +355,14 @@ function $HttpProvider() {
      *
      * There are two kinds of interceptors (and two kinds of rejection interceptors):
      *
-     *   * `request`: interceptors get called with http `config` object. The function is free to
-     *     modify the `config` or create a new one. The function needs to return the `config`
-     *     directly or as a promise.
+     *   * `request`: interceptors get called with a http `config` object. The function is free to
+     *     modify the `config` object or create a new one. The function needs to return the `config`
+     *     object directly, or a promise containing the `config` or a new `config` object.
      *   * `requestError`: interceptor gets called when a previous interceptor threw an error or
      *     resolved with a rejection.
      *   * `response`: interceptors get called with http `response` object. The function is free to
-     *     modify the `response` or create a new one. The function needs to return the `response`
-     *     directly or as a promise.
+     *     modify the `response` object or create a new one. The function needs to return the `response`
+     *     object directly, or as a promise containing the `response` or a new `response` object.
      *   * `responseError`: interceptor gets called when a previous interceptor threw an error or
      *     resolved with a rejection.
      *
@@ -374,7 +374,7 @@ function $HttpProvider() {
      *       // optional method
      *       'request': function(config) {
      *         // do something on success
-     *         return config || $q.when(config);
+     *         return config;
      *       },
      *
      *       // optional method
@@ -391,7 +391,7 @@ function $HttpProvider() {
      *       // optional method
      *       'response': function(response) {
      *         // do something on success
-     *         return response || $q.when(response);
+     *         return response;
      *       },
      *
      *       // optional method
