@@ -832,7 +832,7 @@ function shallowCopy(src, dst) {
  * * Both objects or values are of the same type and all of their properties are equal by
  *   comparing them with `angular.equals`.
  * * Both values are NaN. (In JavaScript, NaN == NaN => false. But we consider two NaN as equal)
- * * Both values represent the same regular expression (In JavasScript,
+ * * Both values represent the same regular expression (In JavaScript,
  *   /abc/ == /abc/ => false. But we consider two regular expressions as equal when their textual
  *   representation matches).
  *
