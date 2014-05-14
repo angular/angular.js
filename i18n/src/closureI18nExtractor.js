@@ -15,6 +15,16 @@ var goog = { provide: function() {},
   require: function() {},
   i18n: {currency: {}, pluralRules: {}} };
 
+/**
+ * @enum {String}
+ */
+var closuredNames = {
+  DECIMALS:         'DECIMALS',
+  GET_VF:           'GET_VF',
+  GET_WT:           'GET_WT',
+  PLURAL_CATEGORY:  'PLURAL_CATEGORY'
+};
+
 function findLocaleId(str, type) {
   if (type === 'num') {
     return (str.match(/^NumberFormatSymbols_(.+)$/) || [])[1];
@@ -86,8 +96,12 @@ function pluralExtractor(content, localeInfo) {
       console.log('No select for lang [' + goog.LOCALE + ']');
       continue;
     }
-    var temp = goog.i18n.pluralRules.select.toString().
-        replace(/goog.i18n.pluralRules.Keyword/g, 'PLURAL_CATEGORY').replace(/\n/g, '');
+
+    var temp = goog.i18n.pluralRules.select.toString()
+        .replace(/goog.i18n.pluralRules.Keyword/g, closuredNames.PLURAL_CATEGORY)
+        .replace(/goog.i18n.pluralRules.get_vf_/g, closuredNames.GET_VF)
+        .replace(/goog.i18n.pluralRules.get_wt_/g, closuredNames.GET_WT)
+        .replace(/\n/g, '');
 
     ///@@ is a crazy place holder to be replaced before writing to file
     localeInfo[localeIds[i]].pluralCat = "@@" + temp + "@@";
@@ -158,13 +172,38 @@ function outputLocale(localeInfo, localeID) {
   }
   localeObj.id = correctedLocaleId(localeID);
 
+  /**
+   * @enum {String}
+   */
+  var closured = {};
+  closured[closuredNames.DECIMALS] = goog.i18n.pluralRules.decimals_.toString();
+  closured[closuredNames.GET_WT] = goog.i18n.pluralRules.get_wt_.toString();
+  closured[closuredNames.GET_VF] = goog.i18n.pluralRules.get_vf_.toString().replace(/goog.i18n.pluralRules.decimals_/g, closuredNames.DECIMALS);
+
+  /**
+   * @enum {String}
+   */
+  var PLURAL_CATEGORY = {
+    ZERO: "zero",
+    ONE: "one",
+    TWO: "two",
+    FEW: "few",
+    MANY: "many",
+    OTHER: "other"
+  };
+
+  closured[closuredNames.PLURAL_CATEGORY] = JSON.stringify(PLURAL_CATEGORY);
+
+
   var prefix =
       "'use strict';\n" +
-      'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
-          'var PLURAL_CATEGORY = {' +
-          'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
-          '};\n' +
-          '$provide.value("$locale", ';
+      'angular.module("ngLocale", [], ["$provide", function($provide) {\n';
+
+  for (var name in closured) {
+    prefix += 'var ' + name + ' = ' + closured[name] + ';\n';
+  }
+
+  prefix += '$provide.value("$locale", ';
 
   var suffix = ');\n}]);';
 

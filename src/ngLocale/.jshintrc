@@ -19,5 +19,7 @@
   "globals": {
     "angular": false
   },
-  "-W041": false
+  "-W041": false,
+  "shadow": true, /* locale files are generated from a 3rd party library that redeclares vars */
+  "funcscope": true /* locale files are generated from a 3rd party library that uses vars outside the definition scope */
 }

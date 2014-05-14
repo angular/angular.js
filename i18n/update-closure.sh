@@ -12,4 +12,5 @@ curl https://closure-library.googlecode.com/git/closure/goog/i18n/currency.js > 
 curl https://closure-library.googlecode.com/git/closure/goog/i18n/datetimesymbols.js > closure/datetimeSymbols.js
 curl https://closure-library.googlecode.com/git/closure/goog/i18n/datetimesymbolsext.js > closure/datetimeSymbolsExt.js
 curl https://closure-library.googlecode.com/git/closure/goog/i18n/numberformatsymbols.js > closure/numberSymbols.js
+curl https://closure-library.googlecode.com/git/closure/goog/i18n/numberformatsymbolsext.js > closure/numberSymbolsExt.js
 curl https://closure-library.googlecode.com/git/closure/goog/i18n/pluralrules.js > closure/pluralRules.js
