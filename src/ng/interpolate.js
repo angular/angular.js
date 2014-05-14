@@ -41,6 +41,8 @@ var $interpolateMinErr = minErr('$interpolate');
 function $InterpolateProvider() {
   var startSymbol = '{{';
   var endSymbol = '}}';
+  var escapedStartSymbol = '{{{{';
+  var escapedEndSymbol = '}}}}';
 
   /**
    * @ngdoc method
@@ -49,11 +51,15 @@ function $InterpolateProvider() {
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
    * @param {string=} value new value to set the starting symbol to.
+   * @param {string=} escaped the new value to set the escaped starting symbol to.
    * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
    */
-  this.startSymbol = function(value){
+  this.startSymbol = function(value, escaped){
     if (value) {
       startSymbol = value;
+      if (escaped && escaped !== value) {
+        escapedStartSymbol = '' + escaped;
+      }
       return this;
     } else {
       return startSymbol;
@@ -67,11 +73,15 @@ function $InterpolateProvider() {
    * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
    *
    * @param {string=} value new value to set the ending symbol to.
+   * @param {string=} escaped the new value to set the escaped ending symbol to.
    * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
    */
-  this.endSymbol = function(value){
+  this.endSymbol = function(value, escaped){
     if (value) {
       endSymbol = value;
+      if (escaped && escaped !== value) {
+        escapedEndSymbol = '' + escaped;
+      }
       return this;
     } else {
       return endSymbol;
@@ -81,7 +91,9 @@ function $InterpolateProvider() {
 
   this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
     var startSymbolLength = startSymbol.length,
-        endSymbolLength = endSymbol.length;
+        endSymbolLength = endSymbol.length,
+        escapedStartLength = escapedStartSymbol.length,
+        escapedEndLength = escapedEndSymbol.length;
 
     /**
      * @ngdoc service
@@ -154,23 +166,48 @@ function $InterpolateProvider() {
           hasText = false,
           exp,
           concat = [],
-          lastValuesCache = { values: {}, results: {}};
+          lastValuesCache = { values: {}, results: {}},
+          escapedStart = -1,
+          escapedEnd = -1,
+          escaped = true,
+          i = -1;
 
       while(index < textLength) {
-        if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
-             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
+        if (i < 0) {
+          i = index;
+        }
+
+        if (escaped) {
+          if ((escapedStart = text.indexOf(escapedStartSymbol, i)) != -1) {
+            if ((escapedEnd = text.indexOf(escapedEndSymbol, escapedStart + escapedStartLength))
+               != -1) {
+              escapedEnd += escapedEndLength;
+            } else {
+              escaped = false;
+            }
+          } else {
+            escaped = false;
+          }
+        }
+
+        if (((startIndex = text.indexOf(startSymbol, i)) != -1) &&
+             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) &&
+             (!escaped || escapedEnd < startIndex || escapedStart > endIndex + endSymbolLength) ) {
           if (index !== startIndex) hasText = true;
-          separators.push(text.substring(index, startIndex));
+          separators.push(unescape(text.substring(index, startIndex)));
           exp = text.substring(startIndex + startSymbolLength, endIndex);
           expressions.push(exp);
           parseFns.push($parse(exp));
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
+          i = -1;
+        } else if (escaped && startIndex >= 0 && escapedStart < (endIndex + endSymbolLength)) {
+          i = escapedEnd;
         } else {
           // we did not find an interpolation, so we have to add the remainder to the separators array
           if (index !== textLength) {
             hasText = true;
-            separators.push(text.substring(index));
+            separators.push(unescape(text.substring(index)));
           }
           break;
         }
@@ -315,6 +352,24 @@ function $InterpolateProvider() {
     $interpolate.endSymbol = function() {
       return endSymbol;
     };
+
+    function unescape(text) {
+      var i = 0, start, end, unescaped = "";
+      while (i < text.length) {
+        if (((start = text.indexOf(escapedStartSymbol, i)) != -1 &&
+            ((end = text.indexOf(escapedEndSymbol, start + escapedStartLength)) != -1))) {
+          end = end + escapedEndLength;
+          unescaped += text.substring(i, end).
+            replace(escapedStartSymbol, startSymbol).
+            replace(escapedEndSymbol, endSymbol);
+          i = end;
+        } else {
+          unescaped += text.substring(i);
+          break;
+        }
+      }
+      return unescaped;
+    }
 
     return $interpolate;
   }];
