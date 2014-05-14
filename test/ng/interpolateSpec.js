@@ -86,6 +86,8 @@ describe('$interpolate', function() {
     expect($interpolate('{{{{{{abc}}}}{{{{def}}}}')($rootScope)).toBe('{{{{abc}}{{def}}');
     expect($interpolate('{{{{abc}}}}{{{{def}}}}}}')($rootScope)).toBe('{{abc}}{{def}}}}');
     expect($interpolate('{{{{abc}}}}{{{{{{def}}}}')($rootScope)).toBe('{{abc}}{{{{def}}');
+    expect($interpolate('}}}}abc{{abc}}}}{{{{def}}}')($rootScope)).toBe('}}}}abcHello}}{{world}');
+    expect($interpolate('{{{{{{abc{{def}}}}}}')($rootScope)).toBe('{{{{abc{{def}}}}');
   }));
 
 

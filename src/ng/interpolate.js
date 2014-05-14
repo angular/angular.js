@@ -93,7 +93,8 @@ function $InterpolateProvider() {
     var startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length,
         escapedStartLength = escapedStartSymbol.length,
-        escapedEndLength = escapedEndSymbol.length;
+        escapedEndLength = escapedEndSymbol.length,
+        similarStartSymbols = escapedStartSymbol.indexOf(startSymbol) === 0;
 
     /**
      * @ngdoc service
@@ -193,6 +194,13 @@ function $InterpolateProvider() {
         if (((startIndex = text.indexOf(startSymbol, i)) != -1) &&
              ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) &&
              (!escaped || escapedEnd < startIndex || escapedStart > endIndex + endSymbolLength) ) {
+          if (escapedEnd < 0 && similarStartSymbols) {
+            while (escapedStart >= 0 && startIndex === escapedStart &&
+                 text.indexOf(startSymbol, startIndex) === startIndex) {
+              startIndex = escapedStart + startSymbolLength;
+              escapedStart = text.indexOf(escapedStartSymbol, startIndex + startSymbolLength);
+            }
+          }
           if (index !== startIndex) hasText = true;
           separators.push(unescape(text.substring(index, startIndex)));
           exp = text.substring(startIndex + startSymbolLength, endIndex);
