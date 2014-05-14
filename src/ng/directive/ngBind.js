@@ -51,13 +51,12 @@
    </example>
  */
 var ngBindDirective = valueFn({
-  require: '?^ngDir',
+  require: '?^dir',
   link: function(scope, element, attr, dirCtrl) {
     element.addClass('ng-binding').data('$binding', attr.ngBind);
-    var textChanger = dirCtrl ? dirCtrl.createTextChanger(scope, element.text(), false) : null;
     scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
-      if (textChanger) {
-        textChanger(value);
+      if (dirCtrl) {
+        dirCtrl.updateElementDir(element[0], value, false);
       }
       // We are purposefully using == here rather than === because we want to
       // catch when value is "null or undefined"
@@ -121,18 +120,22 @@ var ngBindDirective = valueFn({
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return {
-    require: '?^ngDir',
+    require: '?^dir',
     link: function(scope, element, attr, dirCtrl) {
       // TODO: move this to scenario runner
       var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
       element.addClass('ng-binding').data('$binding', interpolateFn);
-      var textChanger = dirCtrl ? dirCtrl.createTextChanger(scope, element.text(), false) : null;
-      attr.$observe('ngBindTemplate', function(value) {
-        if (textChanger) {
-          textChanger(value);
-        }
-        element.text(value);
-      });
+      if (dirCtrl) {
+        element.html(' ');
+        var textNode = element[0].childNodes[0];
+        scope.$watchGroup(interpolateFn.expressions, function(values) {
+          dirCtrl.interpolateTextNode(textNode, values, interpolateFn.separators);
+        });
+      } else {
+        attr.$observe('ngBindTemplate', function(value) {
+          element.text(value);
+        });
+      }
     }
   };
 }];
@@ -186,18 +189,17 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  */
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return {
-    require: '?^ngDir',
+    require: '?^dir',
     link: function(scope, element, attr, dirCtrl) {
       element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
 
       var parsed = $parse(attr.ngBindHtml);
       function getStringValue() { return (parsed(scope) || '').toString(); }
 
-      var textChanger = dirCtrl ? dirCtrl.createTextChanger(scope, element.text(), true) : null;
       scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
         var html = $sce.getTrustedHtml(parsed(scope)) || '';
-        if (textChanger) {
-          textChanger(html);
+        if (dirCtrl) {
+          dirCtrl.updateElementDir(element[0], html, true);
         }
 
         element.html(html);

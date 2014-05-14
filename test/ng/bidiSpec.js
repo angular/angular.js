@@ -5,7 +5,7 @@ describe('$bidi', function() {
   describe('directionForText', function() {
 
     // Test cases are copied from
-    // https://closure-library.googlecode.com/git/closure/goog/i18n/bidi_test.js
+    // https://github.com/google/closure-library/blob/master/closure/goog/i18n/bidi_test.js
     it('should return the correct values', inject(function($bidi) {
       expect(
         $bidi.estimateDirection('', false)).toEqual($bidi.Dir.NEUTRAL);
@@ -104,38 +104,6 @@ describe('$bidi', function() {
       expect(
         $bidi.estimateDirection(
           'foo/<b>\u05d0</b>', true)).toEqual($bidi.Dir.LTR);
-    }));
-
-    it('should work incrementally', inject(function($bidi) {
-
-      var direction = $bidi.estimateDirectionIncremental();
-      expect(direction.get()).toBe($bidi.Dir.NEUTRAL);
-
-      direction.add('abc def');
-      expect(direction.get()).toBe($bidi.Dir.LTR);
-
-      direction.add('\u05d0');
-      expect(direction.get()).toBe($bidi.Dir.LTR);
-
-      direction.add('\u05d0');
-      expect(direction.get()).toBe($bidi.Dir.RTL);
-
-      direction.remove('\u05d0');
-      expect(direction.get()).toBe($bidi.Dir.LTR);
-
-      direction.remove('\u05d0 a b');
-      expect(direction.get()).toBe($bidi.Dir.NEUTRAL);
-
-    }));
-
-  });
-
-  describe('applyDirToText', function() {
-
-    it('should add the correct unicode characters', inject(function($bidi) {
-      expect($bidi.applyDirToText($bidi.Dir.NEUTRAL, 'a')).toBe('a');
-      expect($bidi.applyDirToText($bidi.Dir.LTR, 'a')).toBe($bidi.Format.LRE + 'a' + $bidi.Format.PDF);
-      expect($bidi.applyDirToText($bidi.Dir.RTL, 'a')).toBe($bidi.Format.RLE + 'a' + $bidi.Format.PDF);
     }));
 
   });

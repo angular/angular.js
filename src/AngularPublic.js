@@ -7,6 +7,7 @@
     $LocaleProvider,
     $CompileProvider,
 
+    dirDirective,
     htmlAnchorDirective,
     inputDirective,
     inputDirective,
@@ -24,7 +25,6 @@
     ngCspDirective,
     ngCloakDirective,
     ngControllerDirective,
-    ngDirDirective,
     ngFormDirective,
     ngHideDirective,
     ngIfDirective,
@@ -151,6 +151,7 @@ function publishExternalAPI(angular){
       $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
+            dir: dirDirective,
             input: inputDirective,
             textarea: inputDirective,
             form: formDirective,
@@ -166,7 +167,6 @@ function publishExternalAPI(angular){
             ngClassOdd: ngClassOddDirective,
             ngCloak: ngCloakDirective,
             ngController: ngControllerDirective,
-            ngDir: ngDirDirective,
             ngForm: ngFormDirective,
             ngHide: ngHideDirective,
             ngIf: ngIfDirective,

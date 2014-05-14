@@ -382,20 +382,4 @@ describe('filters', function() {
       expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-' + localDay + ' 03');
     });
   });
-
-  describe('bidi', function() {
-    var bidiFilter, $bidi;
-
-    beforeEach(inject(function($filter, _$bidi_) {
-      bidiFilter = $filter('bidi');
-      $bidi = _$bidi_;
-    }));
-
-    it('should escape the given text using unicode characters', function() {
-      expect(bidiFilter(' ')).toBe(' ');
-      expect(bidiFilter('a')).toBe($bidi.Format.LRE + 'a' + $bidi.Format.PDF);
-      expect(bidiFilter('\u05d0')).toBe($bidi.Format.RLE + '\u05d0' + $bidi.Format.PDF);
-    });
-
-  });
 });

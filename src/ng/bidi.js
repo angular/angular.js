@@ -6,12 +6,18 @@
  * @requires $locale
  *
  * @description
- * Provides a way to estimate the text direction of a string or html fragment and to apply it
- * using unicode control characters.
+ * Provides a way to estimate the text direction of a string or html fragment or a locale.
+ * Uses by {@link ng.directive:dir dir} directive to provide bidirectional text support in templates.
  *
  * The implementation uses the
- * [bidi support of the Google Closure Library](https://closure-library.googlecode.com/git/closure/goog/i18n/bidi.js).
+ * [bidi support of the Google Closure Library](https://github.com/google/closure-library/blob/master/closure/goog/i18n/bidi.js).
  *
+ * This service is needed as not all browsers support the html5 standard
+ * (see [W3C dir=auto tests](http://www.w3.org/International/tests/html5/the-dir-attribute/results-dir-auto))
+ * and the html5 standard only looks for the first character with a strong directionality to the determine the
+ * directionality of the whole element (see
+ * [HTML5 dir attribute](http://www.whatwg.org/specs/web-apps/current-work/multipage/elements.html#the-dir-attribute)),
+ * which is a bit simplistic.
  */
 function $BidiProvider() {
   var googI18nBidi = googI18nBidiFactory();
@@ -20,9 +26,7 @@ function $BidiProvider() {
     return {
       Dir: googI18nBidi.Dir,
       Format: googI18nBidi.Format,
-      estimateDirection: estimateDirection,
-      estimateDirectionIncremental: googI18nBidi.estimateDirectionIncremental,
-      applyDirToText: applyDirToText,
+      estimateDirection: googI18nBidi.estimateDirection,
       localeDir: localeDir
     };
 
@@ -34,20 +38,6 @@ function $BidiProvider() {
       }
     }
   }];
-
-  function estimateDirection(value, isHtml) {
-    return googI18nBidi.estimateDirectionIncremental().add(value, isHtml).get();
-  }
-
-  function applyDirToText(dir, value) {
-    if (dir === googI18nBidi.Dir.RTL) {
-      value = googI18nBidi.enforceRtlInText(value);
-    } else if (dir === googI18nBidi.Dir.LTR) {
-      value = googI18nBidi.enforceLtrInText(value);
-    }
-    return value;
-  }
-
 }
 
 /**
@@ -229,29 +219,6 @@ function googI18nBidiFactory() {
     return rtlLocalesRe_.test(lang);
   };
 
-
-  /**
-   * Enforce RTL on both end of the given text piece using unicode BiDi formatting
-   * characters RLE and PDF.
-   * @param {string} text The piece of text that need to be wrapped.
-   * @return {string} The wrapped string after process.
-   */
-   var enforceRtlInText = function(text) {
-    return Format.RLE + text + Format.PDF;
-  };
-
-
-  /**
-   * Enforce LTR on both end of the given text piece using unicode BiDi formatting
-   * characters LRE and PDF.
-   * @param {string} text The piece of text that need to be wrapped.
-   * @return {string} The wrapped string after process.
-   */
-   var enforceLtrInText = function(text) {
-    return Format.LRE + text + Format.PDF;
-  };
-
-
   /**
    * Regular expression to split a string into "words" for directionality
    * estimation based on relative word counts.
@@ -277,9 +244,6 @@ function googI18nBidiFactory() {
 
 
   /**
-   * Adapter version of estimateDirection from the Closure library
-   * that is able to keep track of word counts over time.
-   *
    * Estimates the directionality of a string based on relative word counts.
    * If the number of RTL words is above a certain percentage of the total number
    * of strongly directional words, returns RTL.
@@ -299,70 +263,37 @@ function googI18nBidiFactory() {
    * - get:
    * @return {Dir} Estimated overall directionality of {@code str}.
    */
-  var estimateDirectionIncremental = function() {
-
+  var estimateDirection = function(str, opt_isHtml) {
     var rtlCount = 0;
     var totalCount = 0;
-    var hasWeaklyLtr = 0;
-    var result;
-
-    return result = {
-      add: add,
-      remove: remove,
-      get: get
-    };
-
-    function add(str, opt_isHtml) {
-      return update(str, opt_isHtml, inc);
-    }
-
-    function remove(str, opt_isHtml) {
-      return update(str, opt_isHtml, dec);
-    }
-
-    function inc(number) {
-      return number+1;
-    }
-
-    function dec(number) {
-      return number>0 ? number-1 : 0;
-    }
-
-    function update(str, opt_isHtml, incFn) {
-      str = str || '';
-      var tokens = stripHtmlIfNeeded_(str, opt_isHtml).
+    var hasWeaklyLtr = false;
+    var tokens = stripHtmlIfNeeded_(str, opt_isHtml).
         split(wordSeparatorRe_);
-      for (var i = 0; i < tokens.length; i++) {
-        var token = tokens[i];
-        if (startsWithRtl(token)) {
-          rtlCount = incFn(rtlCount);
-          totalCount = incFn(totalCount);
-        } else if (isRequiredLtrRe_.test(token)) {
-          hasWeaklyLtr = incFn(hasWeaklyLtr);
-        } else if (hasAnyLtr(token)) {
-          totalCount = incFn(totalCount);
-        } else if (hasNumeralsRe_.test(token)) {
-          hasWeaklyLtr = true;
-        }
+    for (var i = 0; i < tokens.length; i++) {
+      var token = tokens[i];
+      if (startsWithRtl(token)) {
+        rtlCount++;
+        totalCount++;
+      } else if (isRequiredLtrRe_.test(token)) {
+        hasWeaklyLtr = true;
+      } else if (hasAnyLtr(token)) {
+        totalCount++;
+      } else if (hasNumeralsRe_.test(token)) {
+        hasWeaklyLtr = true;
       }
-      return result; // for chaining
     }
 
-    function get() {
-      return totalCount === 0 ?
+    return totalCount === 0 ?
         (hasWeaklyLtr ? Dir.LTR : Dir.NEUTRAL) :
         (rtlCount / totalCount > rtlDetectionThreshold_ ?
-          Dir.RTL : Dir.LTR);
-    }
+            Dir.RTL : Dir.LTR);
   };
 
   return {
     Dir: Dir,
     Format: Format,
-    estimateDirectionIncremental: estimateDirectionIncremental,
-    isRtlLanguage: isRtlLanguage,
-    enforceRtlInText: enforceRtlInText,
-    enforceLtrInText: enforceLtrInText
+    estimateDirection: estimateDirection,
+    isRtlLanguage: isRtlLanguage
   };
 
 }
