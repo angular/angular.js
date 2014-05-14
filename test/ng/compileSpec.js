@@ -492,6 +492,15 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('nomerge', valueFn({
+            restrict: 'CAM',
+            replace: true,
+            template: '<div class="log" id="myid" high-log>No Merge!</div>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
           directive('append', valueFn({
             restrict: 'CAM',
             template: '<div class="log" style="width: 10px" high-log>Append!</div>',
@@ -594,6 +603,16 @@ describe('$compile', function() {
           expect(div.css('height')).toBe('20px');
           expect(div.attr('replace')).toEqual('');
           expect(div.attr('high-log')).toEqual('');
+        }));
+
+        it('should not merge attributes if they are the same', inject(function($compile, $rootScope) {
+          element = $compile(
+            '<div><div nomerge class="medium-log" id="myid"></div><div>')
+            ($rootScope);
+          var div = element.find('div');
+          expect(div.hasClass('medium-log')).toBe(true);
+          expect(div.hasClass('log')).toBe(true);
+          expect(div.attr('id')).toEqual('myid');
         }));
 
         it('should prevent multiple templates per element', inject(function($compile) {
