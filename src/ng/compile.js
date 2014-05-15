@@ -1485,6 +1485,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                       parentSet(scope, parentValue = isolateScope[scopeName]);
                     }
                   }
+                  parentValueWatch.$$unwatch = parentGet.$$unwatch;
                   return lastValue = parentValue;
                 }, null, parentGet.literal);
                 break;
@@ -1813,6 +1814,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           compile: valueFn(function textInterpolateLinkFn(scope, node) {
             var parent = node.parent(),
                 bindings = parent.data('$binding') || [];
+            // Need to interpolate again in case this is using one-time bindings in multiple clones
+            // of transcluded templates.
+            interpolateFn = $interpolate(text);
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
             scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
