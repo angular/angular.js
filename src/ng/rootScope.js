@@ -338,14 +338,6 @@ function $RootScopeProvider(){
           watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
         }
 
-        if (typeof watchExp == 'string' && get.constant) {
-          var originalFn = watcher.fn;
-          watcher.fn = function(newVal, oldVal, scope) {
-            originalFn.call(this, newVal, oldVal, scope);
-            arrayRemove(array, watcher);
-          };
-        }
-
         if (!array) {
           array = scope.$$watchers = [];
         }
@@ -391,17 +383,28 @@ function $RootScopeProvider(){
         var deregisterFns = [];
         var changeCount = 0;
         var self = this;
+        var unwatchFlags = new Array(watchExpressions.length);
+        var unwatchCount = watchExpressions.length;
 
         forEach(watchExpressions, function (expr, i) {
-          deregisterFns.push(self.$watch(expr, function (value, oldValue) {
+          var exprFn = $parse(expr);
+          deregisterFns.push(self.$watch(exprFn, function (value, oldValue) {
             newValues[i] = value;
             oldValues[i] = oldValue;
             changeCount++;
+            if (unwatchFlags[i] && !exprFn.$$unwatch) unwatchCount++;
+            if (!unwatchFlags[i] && exprFn.$$unwatch) unwatchCount--;
+            unwatchFlags[i] = exprFn.$$unwatch;
           }));
         }, this);
 
-        deregisterFns.push(self.$watch(function () {return changeCount;}, function () {
+        deregisterFns.push(self.$watch(watchGroupFn, function () {
           listener(newValues, oldValues, self);
+          if (unwatchCount === 0) {
+            watchGroupFn.$$unwatch = true;
+          } else {
+            watchGroupFn.$$unwatch = false;
+          }
         }));
 
         return function deregisterWatchGroup() {
@@ -409,6 +412,8 @@ function $RootScopeProvider(){
             fn();
           });
         };
+
+        function watchGroupFn() {return changeCount;}
       },
 
 
@@ -553,6 +558,7 @@ function $RootScopeProvider(){
               }
             }
           }
+          $watchCollectionWatch.$$unwatch = objGetter.$$unwatch;
           return changeDetected;
         }
 
@@ -644,6 +650,7 @@ function $RootScopeProvider(){
             dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
+            stableWatchesCandidates = [],
             logIdx, logMsg, asyncTask;
 
         beginPhase('$digest');
@@ -694,6 +701,7 @@ function $RootScopeProvider(){
                         logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
                         watchLog[logIdx].push(logMsg);
                       }
+                      if (watch.get.$$unwatch) stableWatchesCandidates.push({watch: watch, array: watchers});
                     } else if (watch === lastDirtyWatch) {
                       // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
                       // have already been tested.
@@ -738,6 +746,13 @@ function $RootScopeProvider(){
             postDigestQueue.shift()();
           } catch (e) {
             $exceptionHandler(e);
+          }
+        }
+
+        for (length = stableWatchesCandidates.length - 1; length >= 0; --length) {
+          var candidate = stableWatchesCandidates[length];
+          if (candidate.watch.get.$$unwatch) {
+            arrayRemove(candidate.array, candidate.watch);
           }
         }
       },
