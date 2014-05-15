@@ -1,7 +1,7 @@
 'use strict';
 
 describe('ngMessages', function() {
-
+  beforeEach(inject.strictDi());
   beforeEach(module('ngMessages'));
 
   function they(msg, vals, spec, focus) {
