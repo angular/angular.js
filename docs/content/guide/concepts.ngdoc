@@ -254,7 +254,7 @@ Let's refactor our example and move the currency conversion into a service in an
 
 What changed?
 We moved the `convertCurrency` function and the definition of the existing currencies
-into the new file `finance.js`. But how does the controller
+into the new file `finance2.js`. But how does the controller
 get a hold of the now separated function?
 
 This is where <a name="di">"{@link di Dependency Injection}"</a> comes into play.
