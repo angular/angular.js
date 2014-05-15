@@ -959,6 +959,67 @@ describe('parser', function() {
           }));
         });
 
+        describe('one-time binding', function() {
+          it('should only use the cache when it is not a one-time binding', inject(function($parse) {
+            expect($parse('foo')).toBe($parse('foo'));
+            expect($parse('::foo')).not.toBe($parse('::foo'));
+          }));
+
+          it('should stay stable once the value defined', inject(function($parse, $rootScope) {
+            var fn = $parse('::foo');
+            expect(fn.$$unwatch).not.toBe(true);
+            $rootScope.$watch(fn);
+
+            $rootScope.$digest();
+            expect(fn.$$unwatch).not.toBe(true);
+
+            $rootScope.foo = 'bar';
+            $rootScope.$digest();
+            expect(fn.$$unwatch).toBe(true);
+            expect(fn($rootScope)).toBe('bar');
+            expect(fn()).toBe('bar');
+
+            $rootScope.foo = 'man';
+            $rootScope.$digest();
+            expect(fn.$$unwatch).toBe(true);
+            expect(fn($rootScope)).toBe('bar');
+            expect(fn()).toBe('bar');
+          }));
+
+          it('should have a stable value if at the end of a $digest it has a defined value', inject(function($parse, $rootScope) {
+            var fn = $parse('::foo');
+            $rootScope.$watch(fn);
+            $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
+
+            $rootScope.foo = 'bar';
+            $rootScope.$digest();
+            expect(fn.$$unwatch).toBe(false);
+
+            $rootScope.foo = 'man';
+            $rootScope.$digest();
+            expect(fn.$$unwatch).toBe(true);
+            expect(fn($rootScope)).toBe('man');
+            expect(fn()).toBe('man');
+
+            $rootScope.foo = 'shell';
+            $rootScope.$digest();
+            expect(fn.$$unwatch).toBe(true);
+            expect(fn($rootScope)).toBe('man');
+            expect(fn()).toBe('man');
+          }));
+
+          it('should keep a copy of the stable element', inject(function($parse, $rootScope) {
+            var fn = $parse('::foo'),
+              value = {bar: 'bar'};
+            $rootScope.$watch(fn);
+            $rootScope.foo = value;
+            $rootScope.$digest();
+
+            value.baz = 'baz';
+            expect(fn()).toEqual({bar: 'bar'});
+
+          }));
+        });
 
         describe('locals', function() {
           it('should expose local variables', inject(function($parse) {
