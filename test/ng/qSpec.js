@@ -526,6 +526,96 @@ describe('q', function() {
       });
 
 
+      describe('context', function() {
+        it('should add context to resolve callback', function() {
+          var self = {};
+          var actual;
+          promise.context(self).then(function() {
+            actual = this;
+          });
+          syncResolve(deferred, 'foo');
+          expect(actual).toBe(self);
+        });
+
+
+        it('should add context to reject callback', function() {
+          var self = {};
+          var actual;
+          promise.context(self).catch(function() {
+            actual = this;
+          });
+          syncReject(deferred, 'foo');
+          expect(actual).toBe(self);
+        });
+
+
+        it('should add context to progress callback', function() {
+          var self = {};
+          var actual;
+          promise.context(self).then(null, null, function() {
+            actual = this;
+          });
+          deferred.notify();
+          syncResolve(deferred, 'foo');
+          expect(actual).toBe(self);
+        });
+
+
+        it('should add context to catch callback', function() {
+          var self = {};
+          var actual;
+          promise.context(self).catch(function() {
+            actual = this;
+          });
+          syncReject(deferred, 'foo');
+          expect(actual).toBe(self);
+        });
+
+
+        it('should add context to finally callback', function() {
+          var self = {};
+          var actual;
+          promise.context(self).finally(function() {
+            actual = this;
+          });
+          syncResolve(deferred, 'foo');
+          expect(actual).toBe(self);
+        });
+
+
+        it('should propogate the context down the chain', function() {
+          var self = {};
+          var actual;
+          promise.context(self).
+            then(function() {
+              actual = this;
+            }).
+            then(function() {
+              expect(this).toBe(actual);
+            });
+          syncResolve(deferred, 'foo');
+          expect(actual).toBe(self);
+        });
+
+
+        it('should only propogate the context down the chain', function() {
+          var self = {};
+          var actual;
+          var actualNotSelf;
+          promise.context(self).then(function() {
+            actual = this;
+          });
+          promise.then(function() {
+            actualNotSelf = this;
+          });
+          syncResolve(deferred, 'foo');
+          expect(actual).toBe(self);
+          expect(actualNotSelf).not.toBe(self);
+        });
+
+      });
+
+
       describe('then', function() {
         it('should allow registration of a success callback without an errback or progressback ' +
           'and resolve', function() {
