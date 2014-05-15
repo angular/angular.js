@@ -1018,13 +1018,19 @@ function $ParseProvider() {
     $parseOptions.csp = $sniffer.csp;
 
     return function(exp) {
-      var parsedExpression;
+      var parsedExpression,
+          oneTime;
 
       switch (typeof exp) {
         case 'string':
 
+          if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
+            oneTime = true;
+            exp = exp.substring(2);
+          }
+
           if (cache.hasOwnProperty(exp)) {
-            return cache[exp];
+            return oneTime ? oneTimeWrapper(cache[exp]) : cache[exp];
           }
 
           var lexer = new Lexer($parseOptions);
@@ -1037,13 +1043,42 @@ function $ParseProvider() {
             cache[exp] = parsedExpression;
           }
 
-          return parsedExpression;
+          if (parsedExpression.constant) {
+            parsedExpression.$$unwatch = true;
+          }
+
+          return oneTime ? oneTimeWrapper(parsedExpression) : parsedExpression;
 
         case 'function':
           return exp;
 
         default:
           return noop;
+      }
+
+      function oneTimeWrapper(expression) {
+        var stable = false,
+            lastValue;
+        oneTimeParseFn.literal = expression.literal;
+        oneTimeParseFn.constant = expression.constant;
+        oneTimeParseFn.assign = expression.assign;
+        return oneTimeParseFn;
+
+        function oneTimeParseFn(self, locals) {
+          if (!stable) {
+            lastValue = expression(self, locals);
+            oneTimeParseFn.$$unwatch = isDefined(lastValue);
+            if (oneTimeParseFn.$$unwatch && self && self.$$postDigestQueue) {
+              self.$$postDigestQueue.push(function () {
+                // create a copy if the value is defined and it is not a $sce value
+                if ((stable = isDefined(lastValue)) && !lastValue.$$unwrapTrustedValue) {
+                  lastValue = copy(lastValue);
+                }
+              });
+            }
+          }
+          return lastValue;
+        }
       }
     };
   }];
