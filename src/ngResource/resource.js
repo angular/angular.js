@@ -435,12 +435,17 @@ angular.module('ngResource', ['ng']).
                 return encodedVal + p1;
               });
             } else {
-              url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function (match,
+              url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W.*|$)", "g"), function(match,
                   leadingSlashes, tail) {
                 if (tail.charAt(0) == '/') {
                   return tail;
+                } else if (tail.match(/^\.:?\w+($|\?)/)) {
+                  // Collapse `/.` if found in the last URL path segment before the query
+                  // E.g. `http://url.com/id/.format?q=x` becomes `http://url.com/id.format?q=x`
+                  return tail;
                 } else {
-                  return leadingSlashes + tail;
+                  // Replace escaped `/\.` with `/.`
+                  return leadingSlashes + tail.replace(/^\\\./, '.');
                 }
               });
             }
@@ -450,12 +455,8 @@ angular.module('ngResource', ['ng']).
           if (self.defaults.stripTrailingSlashes) {
             url = url.replace(/\/+$/, '') || '/';
           }
-
-          // then replace collapse `/.` if found in the last URL path segment before the query
-          // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
-          url = url.replace(/\/\.(?=\w+($|\?))/, '.');
-          // replace escaped `/\.` with `/.`
-          config.url = url.replace(/\/\\\./, '/.');
+          
+          config.url = url;
 
 
           // set params - delegate param encoding to $http

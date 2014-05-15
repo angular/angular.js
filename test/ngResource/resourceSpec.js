@@ -1182,15 +1182,15 @@ describe("resource", function() {
     describe('escaping /. with /\\.', function() {
       it('should work with query()', function() {
         $httpBackend.expect('GET', '/users/.json').respond();
-        $resource('/users/\\.json').query();
+        $resource('/users/:user_id\\.json').query();
       });
       it('should work with get()', function() {
         $httpBackend.expect('GET', '/users/.json').respond();
-        $resource('/users/\\.json').get();
+        $resource('/users/:user_id\\.json').get();
       });
       it('should work with save()', function() {
         $httpBackend.expect('POST', '/users/.json').respond();
-        $resource('/users/\\.json').save({});
+        $resource('/users/:user_id\\.json').save({});
       });
     });
   });
