@@ -455,9 +455,8 @@ angular.module('ngResource', ['ng']).
           if (self.defaults.stripTrailingSlashes) {
             url = url.replace(/\/+$/, '') || '/';
           }
-          
-          config.url = url;
 
+          config.url = url;
 
           // set params - delegate param encoding to $http
           forEach(params, function (value, key) {
