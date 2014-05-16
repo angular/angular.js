@@ -1,3 +1,38 @@
+<a name="1.3.0-beta.9"></a>
+# 1.3.0-beta.9 release-naming (2014-05-16)
+
+
+## Bug Fixes
+
+- **$compile:** pass `transcludeFn` down to nested transclude directives
+  ([4f03dc5a](https://github.com/angular/angular.js/commit/4f03dc5a9650f3f22f78b438474322b4b8871dec),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+- **jqLite:** use jQuery only if jQuery.fn.on present
+  ([e9bc51cb](https://github.com/angular/angular.js/commit/e9bc51cb0964ea682c1654919174dacebd09fcf6))
+- **ngClass:** handle index changes when an item is unshifted
+  ([5fbd618c](https://github.com/angular/angular.js/commit/5fbd618c2ff0dbaa4e19d0fd0e55921ce7d89478),
+   [#7256](https://github.com/angular/angular.js/issues/7256))
+- **ngMessages:** annotate ngMessages controller for minification
+  ([0282ca97](https://github.com/angular/angular.js/commit/0282ca971df7923c8f3dba0eb0df544e244e5b93))
+- **numberFilter:** fix rounding error edge case
+  ([81d427b5](https://github.com/angular/angular.js/commit/81d427b5f0d3502f65e8db5beaa5ad837c9ede17),
+   [#7453](https://github.com/angular/angular.js/issues/7453), [#7478](https://github.com/angular/angular.js/issues/7478))
+
+
+## Features
+
+- **ngTouch:** add optional `ngSwipeDisableMouse` attribute to `ngSwipe` directives to ignore mouse events.
+  ([5a568b4f](https://github.com/angular/angular.js/commit/5a568b4f960cc5381b3911e3a6423aff2ff7f7f9),
+   [#6627](https://github.com/angular/angular.js/issues/6627), [#6626](https://github.com/angular/angular.js/issues/6626))
+
+
+## Breaking Changes
+
+- **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
+  the jQuery `detach()` method does not trigger the `$destroy` event.
+  If you want to destroy Angular data attached to the element, use `remove()`.
+
+
 <a name="1.3.0-beta.8"></a>
 # 1.3.0-beta.8 accidental-haiku (2014-05-09)
 
