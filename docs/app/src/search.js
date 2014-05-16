@@ -35,7 +35,7 @@ angular.module('search', [])
       }
     }
     if(result) {
-      $location.path(result.url);
+      $location.path(result.path);
       $scope.hideResults();
     }
   };
