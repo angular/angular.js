@@ -18,8 +18,6 @@
   "browser": true,
   "globals": {
     "angular": false,
-    "expect": false,
-    "beforeEach": false,
-    "afterEach": false
+    "expect": false
   }
 }
