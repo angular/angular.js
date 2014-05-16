@@ -130,7 +130,7 @@ injection of `$window`, `$scope`, and our `notify` service:
 </example>
 
 <div class="alert alert-danger">
-**Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming) your
+**Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming)) your
 code, your variable names will get renamed unless you use one of the annotation techniques above.
 </div>
 
