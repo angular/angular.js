@@ -17,9 +17,8 @@ function classDirective(name, selector) {
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
-            // jshint bitwise: false
-            var mod = $index & 1;
-            if (mod !== old$index & 1) {
+            var mod = $index % 2;
+            if (mod !== old$index % 2) {
               var classes = arrayClasses(scope.$eval(attr[name]));
               mod === selector ?
                 addClasses(classes) :
