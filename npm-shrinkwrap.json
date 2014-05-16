@@ -466,7 +466,7 @@
       "version": "0.0.2"
     },
     "dgeni": {
-      "version": "0.2.2",
+      "version": "0.3.0",
       "dependencies": {
         "rimraf": {
           "version": "2.2.6"
@@ -498,33 +498,11 @@
         },
         "di": {
           "version": "0.0.1"
-        },
-        "marked": {
-          "version": "0.2.10"
-        },
-        "glob": {
-          "version": "3.2.9",
-          "dependencies": {
-            "minimatch": {
-              "version": "0.2.14",
-              "dependencies": {
-                "lru-cache": {
-                  "version": "2.5.0"
-                },
-                "sigmund": {
-                  "version": "1.0.0"
-                }
-              }
-            },
-            "inherits": {
-              "version": "2.0.1"
-            }
-          }
         }
       }
     },
     "dgeni-packages": {
-      "version": "0.8.3",
+      "version": "0.9.1",
       "dependencies": {
         "lodash": {
           "version": "2.4.1"
@@ -552,7 +530,7 @@
           }
         },
         "nunjucks": {
-          "version": "1.0.4",
+          "version": "1.0.5",
           "dependencies": {
             "optimist": {
               "version": "0.6.1",
@@ -587,7 +565,60 @@
           "version": "0.7.1"
         },
         "esprima": {
-          "version": "1.1.1"
+          "version": "1.2.0"
+        },
+        "change-case": {
+          "version": "2.1.1",
+          "dependencies": {
+            "camel-case": {
+              "version": "0.1.0"
+            },
+            "constant-case": {
+              "version": "0.1.0"
+            },
+            "dot-case": {
+              "version": "0.1.0"
+            },
+            "is-lower-case": {
+              "version": "0.0.1"
+            },
+            "is-upper-case": {
+              "version": "0.0.1"
+            },
+            "lower-case": {
+              "version": "0.0.1"
+            },
+            "param-case": {
+              "version": "0.1.0"
+            },
+            "pascal-case": {
+              "version": "0.1.1"
+            },
+            "path-case": {
+              "version": "0.1.0"
+            },
+            "sentence-case": {
+              "version": "0.1.1"
+            },
+            "snake-case": {
+              "version": "0.1.1"
+            },
+            "swap-case": {
+              "version": "0.0.1"
+            },
+            "title-case": {
+              "version": "0.1.0"
+            },
+            "upper-case": {
+              "version": "0.0.1"
+            },
+            "upper-case-first": {
+              "version": "0.0.1"
+            }
+          }
+        },
+        "marked": {
+          "version": "0.2.10"
         }
       }
     },
@@ -2733,6 +2764,14 @@
               "version": "1.0.0"
             }
           }
+        }
+      }
+    },
+    "qq": {
+      "version": "0.3.5",
+      "dependencies": {
+        "q": {
+          "version": "0.8.4"
         }
       }
     },

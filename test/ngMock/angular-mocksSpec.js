@@ -929,6 +929,14 @@ describe('ngMock', function() {
       hb = $httpBackend;
     }));
 
+    it('should provide "expect" methods for each HTTP verb', function() {
+      expect(typeof hb.expectGET).toBe("function");
+      expect(typeof hb.expectPOST).toBe("function");
+      expect(typeof hb.expectPUT).toBe("function");
+      expect(typeof hb.expectPATCH).toBe("function");
+      expect(typeof hb.expectDELETE).toBe("function");
+      expect(typeof hb.expectHEAD).toBe("function");
+    });
 
     it('should respond with first matched definition', function() {
       hb.when('GET', '/url1').respond(200, 'content', {});

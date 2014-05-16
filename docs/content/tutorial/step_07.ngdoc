@@ -120,8 +120,8 @@ __`app/index.html`:__
 <html lang="en" ng-app="phonecatApp">
 <head>
 ...
-  <script src="../bower_components/angular/angular.js"></script>
-  <script src="../bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="js/app.js"></script>
   <script src="js/controllers.js"></script>
 </head>
@@ -247,7 +247,7 @@ Our application routes are defined as follows:
   controller.
 
 * `when('/phones/:phoneId')`: The phone details view will be shown when the URL hash fragment
-  matches '/phone/:phoneId', where `:phoneId` is a variable part of the URL. To construct the phone
+  matches '/phones/:phoneId', where `:phoneId` is a variable part of the URL. To construct the phone
   details view, Angular will use the `phone-detail.html` template and the `PhoneDetailCtrl`
   controller.
 

@@ -11,6 +11,6 @@ describe('ngSrcset', function() {
     $rootScope.image = {};
     element = $compile('<img ng-srcset="{{image.url}} 2x">')($rootScope);
     $rootScope.$digest();
-    expect(element.attr('srcset')).toEqual(' 2x');
+    expect(element.attr('srcset')).toBeUndefined();
   }));
 });

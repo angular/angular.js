@@ -28,29 +28,6 @@ describe('$http', function() {
 
   describe('$httpProvider', function() {
     describe('interceptors', function() {
-      it('should accept injected rejected response interceptor', function() {
-        var wasCalled = false;
-        module(function($httpProvider, $provide) {
-          $httpProvider.responseInterceptors.push('injectedInterceptor');
-          $provide.factory('injectedInterceptor', ['$q', function($q) {
-            return function(promise) {
-              return promise.then(null, function authInterceptor(response) {
-                wasCalled = true;
-                expect(response.status).toEqual(401);
-                return $q.reject(response);
-              });
-            };
-          }]);
-        });
-        inject(function($http, $httpBackend) {
-          $httpBackend.expect('GET', '/url').respond(401);
-          $http({method: 'GET', url: '/url'});
-          $httpBackend.flush();
-          expect(wasCalled).toEqual(true);
-        });
-      });
-
-
       it('should chain request, requestReject, response and responseReject interceptors', function() {
         module(function($httpProvider) {
           var savedConfig, savedResponse;
@@ -128,28 +105,6 @@ describe('$http', function() {
               }
             };
           });
-          $httpProvider.responseInterceptors.push(function($q) {
-            return function(promise) {
-              var defer = $q.defer();
-
-              promise.then(function(response) {
-                response.data = '[' + response.data + '] legacy-1';
-                defer.resolve(response);
-              });
-              return defer.promise;
-            };
-          });
-          $httpProvider.responseInterceptors.push(function($q) {
-            return function(promise) {
-              var defer = $q.defer();
-
-              promise.then(function(response) {
-                response.data = '[' + response.data + '] legacy-2';
-                defer.resolve(response);
-              });
-              return defer.promise;
-            };
-          });
         });
         inject(function($http, $httpBackend) {
           var response;
@@ -158,82 +113,7 @@ describe('$http', function() {
             response = r;
           });
           $httpBackend.flush();
-          expect(response.data).toEqual('{{[[response] legacy-1] legacy-2} inner} outer');
-        });
-      });
-    });
-
-
-    describe('response interceptors', function() {
-
-      it('should default to an empty array', module(function($httpProvider) {
-        expect($httpProvider.responseInterceptors).toEqual([]);
-      }));
-
-
-      it('should pass the responses through interceptors', function() {
-        module(function($httpProvider, $provide) {
-          $provide.factory('testInterceptor', function ($q) {
-            return function(httpPromise) {
-              return httpPromise.then(function(response) {
-                var deferred = $q.defer();
-                deferred.resolve({
-                  data: response.data + '?',
-                  status: 209,
-                  headers: response.headers,
-                  request: response.config
-                });
-                return deferred.promise;
-              });
-            };
-          });
-          // just change the response data and pass the response object along
-          $httpProvider.responseInterceptors.push(function() {
-            return function(httpPromise) {
-              return httpPromise.then(function(response) {
-                response.data += '!';
-                return response;
-              });
-            };
-          });
-
-          // return a new resolved promise representing modified response object
-          $httpProvider.responseInterceptors.push('testInterceptor');
-        });
-        inject(function($http, $httpBackend) {
-          $httpBackend.expect('GET', '/foo').respond(201, 'Hello');
-          $http.get('/foo').success(function(data, status) {
-            expect(data).toBe('Hello!?');
-            expect(status).toBe(209);
-            callback();
-          });
-          $httpBackend.flush();
-          expect(callback).toHaveBeenCalledOnce();
-        });
-      });
-
-
-      it('should support interceptors defined as services', function() {
-        module(function($provide, $httpProvider) {
-          $provide.factory('myInterceptor', function() {
-            return function(promise) {
-              return promise.then(function(response) {
-                response.data = uppercase(response.data);
-                return response;
-              });
-            };
-          });
-          $httpProvider.responseInterceptors.push('myInterceptor');
-        });
-        inject(function($http, $httpBackend) {
-          var response;
-
-          $httpBackend.expect('GET', '/test').respond('hello!');
-          $http.get('/test').success(function(data) {response = data;});
-          expect(response).toBeUndefined();
-
-          $httpBackend.flush();
-          expect(response).toBe('HELLO!');
+          expect(response.data).toEqual('{{response} inner} outer');
         });
       });
     });

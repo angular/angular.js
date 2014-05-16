@@ -83,7 +83,7 @@ On to more complex examples!
 ## Factory Recipe
 
 The Value recipe is very simple to write, but lacks some important features we often need when
-creating services.  Let's now look at the Value recipe's more powerful sibling, the Factory.The
+creating services.  Let's now look at the Value recipe's more powerful sibling, the Factory. The
 Factory recipe adds the following abilities:
 
 * ability to use other services (have dependencies)
@@ -97,7 +97,7 @@ created by this recipe.
 Note: All services in Angular are singletons. That means that the injector uses each recipe at most
 once to create the object. The injector then caches the reference for all future needs.
 
-Since Factory is more powerful version of Value recipe, you can construct the same service with it.
+Since Factory is more powerful version of the Value recipe, you can construct the same service with it.
 Using our previous `clientId` Value recipe example, we can rewrite it as a Factory recipe like
 this:
 
@@ -111,8 +111,8 @@ But given that the token is just a string literal, sticking with the Value recip
 appropriate as it makes the code easier to follow.
 
 Let's say, however, that we would also like to create a service that computes a token used for
-authentication against a remote API. This token will be called 'apiToken' and will be computed
-based on the `clientId` value and a secret stored in browser's local storage:
+authentication against a remote API. This token will be called `apiToken` and will be computed
+based on the `clientId` value and a secret stored in the browser's local storage:
 
 ```javascript
 myApp.factory('apiToken', ['clientId', function apiTokenFactory(clientId) {
@@ -132,7 +132,7 @@ In the code above, we see how the `apiToken` service is defined via the Factory 
 on `clientId` service. The factory service then uses NSA-proof encryption to produce an authentication
 token.
 
-Note: It is a best practice to name the factory functions as "<serviceId>Factory"
+Note: It is best practice to name the factory functions as `<serviceId>Factory`
 (e.g. apiTokenFactory). While this naming convention is not required, it helps when navigating the code base
 or looking at stack traces in the debugger.
 
@@ -143,7 +143,7 @@ primitive, object literal, function, or even an instance of a custom type.
 ## Service Recipe
 
 JavaScript developers often use custom types to write object-oriented code. Let's explore how we
-could launch a unicorn into space via our `unicornLauncher` service that is an instance of
+could launch a unicorn into space via our `unicornLauncher` service which is an instance of a
 custom type:
 
 ```javascript
@@ -187,7 +187,7 @@ myApp.service('unicornLauncher', ["apiToken", UnicornLauncher]);
 Much simpler!
 
 Note: Yes, we have called one of our service recipes 'Service'. We regret this and know that we'll
-be somehow punished for our mis-deed. It's like we named one of our offspring 'Children'. Boy,
+be somehow punished for our mis-deed. It's like we named one of our offspring 'Child'. Boy,
 that would mess with the teachers.
 
 

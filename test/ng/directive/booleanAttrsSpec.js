@@ -204,7 +204,7 @@ describe('ngSrcset', function() {
     var element = $compile('<div ng-srcset="some/{{id}} 2x"></div>')($rootScope);
 
     $rootScope.$digest();
-    expect(element.attr('srcset')).toEqual('some/ 2x');
+    expect(element.attr('srcset')).toBeUndefined();
 
     $rootScope.$apply(function() {
       $rootScope.id = 1;

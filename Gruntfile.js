@@ -122,6 +122,9 @@ module.exports = function(grunt) {
       ngLocale: {
         files: { src: 'src/ngLocale/**/*.js' },
       },
+      ngMessages: {
+        files: { src: 'src/ngMessages/**/*.js' },
+      },
       ngMock: {
         files: { src: 'src/ngMock/**/*.js' },
       },
@@ -190,6 +193,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-resource.js',
         src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
+      messages: {
+        dest: 'build/angular-messages.js',
+        src: util.wrap(files['angularModules']['ngMessages'], 'module')
+      },
       animate: {
         dest: 'build/angular-animate.js',
         src: util.wrap(files['angularModules']['ngAnimate'], 'module')
@@ -214,6 +221,7 @@ module.exports = function(grunt) {
       animate: 'build/angular-animate.js',
       cookies: 'build/angular-cookies.js',
       loader: 'build/angular-loader.js',
+      messages: 'build/angular-messages.js',
       touch: 'build/angular-touch.js',
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',

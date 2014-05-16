@@ -150,6 +150,10 @@ describe('filters', function() {
       expect(number(1234.567, 0)).toEqual("1,235");
       expect(number(1234.567, 1)).toEqual("1,234.6");
       expect(number(1234.567, 2)).toEqual("1,234.57");
+      expect(number(1.255,    0)).toEqual("1");
+      expect(number(1.255,    1)).toEqual("1.3");
+      expect(number(1.255,    2)).toEqual("1.26");
+      expect(number(1.255,    3)).toEqual("1.255");
     });
 
     it('should filter exponentially large numbers', function() {

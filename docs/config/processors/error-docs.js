@@ -5,16 +5,18 @@ var path = require('canonical-path');
 module.exports = {
   name: 'error-docs',
   description: 'Compute the various fields for docs in the Error area',
-  runAfter: ['tags-extracted'],
-  init: function(config, injectables) {
-    injectables.value('errorNamespaces', {});
-
-    var minerrInfoPath = config.get('processing.errors.minerrInfoPath');
-    if ( !minerrInfoPath ) {
-      throw new Error('Error in configuration: Please provide a path to the minerr info file (errors.json) ' +
-        'in the `config.processing.errors.minerrInfoPath` property');
-    }
-    injectables.value('minerrInfo', require(minerrInfoPath));
+  runAfter: ['tags-extracted', 'compute-path'],
+  runBefore: ['extra-docs-added'],
+  exports: {
+    errorNamespaces: ['factory', function() { return {}; }],
+    minerrInfo: ['factory', function(config) {
+      var minerrInfoPath = config.get('processing.errors.minerrInfoPath');
+      if ( !minerrInfoPath ) {
+        throw new Error('Error in configuration: Please provide a path to the minerr info file (errors.json) ' +
+          'in the `config.processing.errors.minerrInfoPath` property');
+      }
+      return require(minerrInfoPath);
+    }]
   },
   process: function(docs, partialNames, errorNamespaces, minerrInfo) {
 

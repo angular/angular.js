@@ -8,7 +8,7 @@ angular.module('search', [])
   }
 
   $scope.search = function(q) {
-    var MIN_SEARCH_LENGTH = 3;
+    var MIN_SEARCH_LENGTH = 2;
     if(q.length >= MIN_SEARCH_LENGTH) {
       var results = docsSearch(q);
       var totalAreas = 0;
@@ -35,7 +35,7 @@ angular.module('search', [])
       }
     }
     if(result) {
-      $location.path(result.url);
+      $location.path(result.path);
       $scope.hideResults();
     }
   };

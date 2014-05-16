@@ -308,6 +308,29 @@ describe('injector', function() {
       expect(log).toEqual('abABCD');
     });
 
+    it('should execute own config blocks after all own providers are invoked', function() {
+      var log = '';
+      angular.module('a', ['b'])
+      .config(function($aProvider) {
+        log += 'aConfig;';
+      })
+      .provider('$a', function() {
+        log += '$aProvider;';
+        this.$get = function() {};
+      });
+      angular.module('b', [])
+      .config(function($bProvider) {
+        log += 'bConfig;';
+      })
+      .provider('$b', function() {
+        log += '$bProvider;';
+        this.$get = function() {};
+      });
+
+      createInjector(['a']);
+      expect(log).toBe('$bProvider;bConfig;$aProvider;aConfig;');
+    });
+
     describe('$provide', function() {
 
       it('should throw an exception if we try to register a service called "hasOwnProperty"', function() {
