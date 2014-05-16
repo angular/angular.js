@@ -11,7 +11,7 @@ For a more in-depth explanation, see the {@link tutorial/ tutorial}.
 |------------------|------------------------------------------|
 |{@link concepts#template Template}          | HTML with additional markup |
 |{@link concepts#directive Directives}        | extend HTML with custom attributes and elements |
-|{@link concepts#model Model}             | the data that is shown to the user and with which the user interacts |
+|{@link concepts#model Model}             | the data shown to the user in the view and with which the user interacts |
 |{@link concepts#scope Scope}             | context where the model is stored so that controllers, directives and expressions can access it |
 |{@link concepts#expression Expressions}       | access variables and functions from the scope |
 |{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions |
@@ -19,9 +19,9 @@ For a more in-depth explanation, see the {@link tutorial/ tutorial}.
 |{@link concepts#view View}              | what the user sees (the DOM) |
 |{@link concepts#databinding Data Binding}      | sync data between the model and the view |
 |{@link concepts#controller Controller}        | the business logic behind views |
-|{@link concepts#di Dependency Injection} | Creates and wires objects / functions |
+|{@link concepts#di Dependency Injection} | Creates and wires objects and functions |
 |{@link concepts#injector Injector}          | dependency injection container |
-|{@link concepts#module Module}            | configures the Injector |
+|{@link concepts#module Module}            | a container for the different parts of an app including controllers, services, filters, directivess which configures the Injector |
 |{@link concepts#service Service}           | reusable business logic independent of views |
 
 
