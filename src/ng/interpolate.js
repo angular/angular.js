@@ -226,7 +226,7 @@ function $InterpolateProvider() {
           return value;
         };
 
-        return extend(function interpolationFn(context) {
+        return extend(function interpolationFn(context, newValues) {
             var scopeId = (context && context.$id) || 'notAScope';
             var lastValues = lastValuesCache.values[scopeId];
             var lastResult = lastValuesCache.results[scopeId];
@@ -253,7 +253,7 @@ function $InterpolateProvider() {
 
             try {
               for (; i < ii; i++) {
-                val = getValue(parseFns[i](context));
+                val = getValue(newValues ? newValues[i] : parseFns[i](context));
                 if (allOrNothing && isUndefined(val)) {
                   return;
                 }
@@ -279,7 +279,8 @@ function $InterpolateProvider() {
           // all of these properties are undocumented for now
           exp: text, //just for compatibility with regular watchers created via $watch
           separators: separators,
-          expressions: expressions
+          expressions: expressions,
+          $$parseFns: parseFns
         });
       }
     }

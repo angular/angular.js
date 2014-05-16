@@ -134,6 +134,7 @@ function $RootScopeProvider(){
       this.$$listeners = {};
       this.$$listenerCount = {};
       this.$$isolateBindings = {};
+      this.$$watchGroups = {};
     }
 
     /**
@@ -327,7 +328,8 @@ function $RootScopeProvider(){
               last: initWatchVal,
               get: get,
               exp: watchExp,
-              eq: !!objectEquality
+              eq: !!objectEquality,
+              unwatch: null
             };
 
         lastDirtyWatch = null;
@@ -338,12 +340,22 @@ function $RootScopeProvider(){
           watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
         }
 
-        if (typeof watchExp == 'string' && get.constant) {
+        if ((typeof watchExp == 'string' && get.constant) ||
+            (typeof watchExp === 'function' && get.constant)) {
           var originalFn = watcher.fn;
           watcher.fn = function(newVal, oldVal, scope) {
             originalFn.call(this, newVal, oldVal, scope);
             arrayRemove(array, watcher);
           };
+        }
+
+        if (isFunction(watchExp) && watchExp.$$interpolate) {
+          var oldValue = initWatchVal;
+          return this.$watchGroup(watchExp.$$parseFns, function(newVal, oldVal, scope) {
+            newVal = watchExp(scope, newVal);
+            listener(newVal, oldValue === initWatchVal ? newVal : oldValue, scope);
+            oldValue = newVal;
+          });
         }
 
         if (!array) {
@@ -352,6 +364,10 @@ function $RootScopeProvider(){
         // we use unshift since we use a while loop in $digest for speed.
         // the while loop reads in reverse order.
         array.unshift(watcher);
+
+        if (get.label) {
+          setWatchgroupIfUndefined(scope, get.label);
+        }
 
         return function deregisterWatch() {
           arrayRemove(array, watcher);
@@ -391,6 +407,8 @@ function $RootScopeProvider(){
         var deregisterFns = [];
         var changeCount = 0;
         var self = this;
+        var old = initWatchVal;
+        var i, ii;
 
         forEach(watchExpressions, function (expr, i) {
           deregisterFns.push(self.$watch(expr, function (value, oldValue) {
@@ -400,8 +418,11 @@ function $RootScopeProvider(){
           }));
         }, this);
 
-        deregisterFns.push(self.$watch(function () {return changeCount;}, function () {
-          listener(newValues, oldValues, self);
+        deregisterFns.push(self.$watch(function() {
+          return changeCount;
+        }, function(newVal, oldVal) {
+          listener(newValues, old, self);
+          old = oldValues;
         }));
 
         return function deregisterWatchGroup() {
@@ -675,7 +696,13 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if (watch) {
+                  if (watch && !watch.disabled && !watch.get.finalized) {
+
+                    if (watch.get.label && !isWatchgroupEnabled(current, watch.get.label)) {
+                      // Don't call disabled watchgroups
+                      continue;
+                    }
+
                     if ((value = watch.get(current)) !== (last = watch.last) &&
                         !(watch.eq
                             ? equals(value, last)
@@ -685,6 +712,19 @@ function $RootScopeProvider(){
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value) : value;
                       watch.fn(value, ((last === initWatchVal) ? value : last), current);
+
+                      if (watch.get.semantics && !watch.get.postDigest) {
+                        // Special $watch semantics may need to be handled specially
+                        switch (watch.get.semantics) {
+                        case BIND_EAGER:
+                          eagerDisableWatch(postDigestQueue, watch);
+                          break;
+                        case BIND_LAZY:
+                          lazyDisableWatch(postDigestQueue, watch);
+                          break;
+                        }
+                      }
+
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
                         if (!watchLog[logIdx]) watchLog[logIdx] = [];
@@ -1143,6 +1183,16 @@ function $RootScopeProvider(){
         }
 
         return event;
+      },
+
+      $enableWatchgroup: function(name) {
+        setWatchgroupEnabled(this, name, true);
+        return this;
+      },
+
+      $disableWatchgroup: function(name) {
+        setWatchgroupEnabled(this, name, false);
+        return this;
       }
     };
 
@@ -1184,5 +1234,76 @@ function $RootScopeProvider(){
      * because it's unique we can easily tell it apart from other values
      */
     function initWatchVal() {}
+
+    function setWatchgroupIfUndefined(scope, group) {
+      var groups = scope.$$watchGroups;
+      if (!groups.hasOwnProperty(group)) {
+        groups[group] = true;
+      }
+    }
+
+    function setWatchgroupEnabled(scope, group, enabled) {
+      var groups = scope.$$watchGroups;
+      var watchers;
+      var i;
+      var ii;
+      if (groups.hasOwnProperty(group)) {
+        groups[group] = !!enabled;
+        if (isArray(watchers = scope.$$watchers)) {
+          for (i=0, ii=watchers.length; i<ii; ++i) {
+            var watch = watchers[i];
+            if (isWatchgroupLabel(group, watch.get.label)) {
+              if (enabled && watch.get.$$parse) {
+                watch.get.finalized = false;
+                watch.get.finalValue = null;
+              }
+              watch.disabled = !enabled;
+            }
+          }
+        }
+      }
+    }
+
+    function isWatchgroupLabel(label, maybeLabel) {
+      if (isString(maybeLabel)) {
+        return maybeLabel === label;
+      } else if (isArray(maybeLabel)) {
+        return indexOf(maybeLabel, label) >= 0;
+      }
+      return false;
+    }
+
+    function isWatchgroupEnabled(scope, group) {
+      var groups = scope.$$watchGroups;
+      if (isString(group)) {
+        return !groups.hasOwnProperty(group) || groups[group] === true;
+      } else if (isArray(group)) {
+        // Return true if any of these groups are enabled
+        for (var i=0, ii=group.length; i<ii; ++i) {
+          if (isWatchgroupEnabled(group)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function eagerDisableWatch(queue, watch) {
+      queue.push(watch.get.postDigest = function() {
+        watch.disabled = true;
+        watch.get.finalized = true;
+        watch.get.postDigest = null;
+      });
+    }
+
+    function lazyDisableWatch(queue, watch) {
+      queue.push(watch.get.postDigest = function() {
+        if (!watch.get.wasNull) {
+          watch.disabled = true;
+          watch.get.finalized = true;
+        }
+        watch.get.postDigest = null;
+      });
+    }
   }];
 }
