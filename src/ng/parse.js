@@ -210,8 +210,12 @@ Lexer.prototype = {
   },
 
   isIdent: function(ch) {
+    // Check legitimate identifiers, including extended latin letters
     return ('a' <= ch && ch <= 'z' ||
             'A' <= ch && ch <= 'Z' ||
+            'À' <= ch && ch <= 'Ö' ||
+            'Ø' <= ch && ch <= 'ö' ||
+            'ø' <= ch && ch <= 'ÿ' ||
             '_' === ch || ch === '$');
   },
 

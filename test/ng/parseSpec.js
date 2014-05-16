@@ -182,6 +182,18 @@ describe('parser', function() {
       }).toThrowMinErr('$parse', 'lexerr', 'Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].');
     });
 
+    it('should not throw exception for latin letters with grave, accute, circumflex, tilde, diaeresis, ring above, cedilla', function() {
+      expect(function() {
+        lex("ÀáÊñÖåÇ");
+      }).not.toThrow();
+    });
+
+    it('should throw exception for signs among the extended characters ', function() {
+      expect(function() {
+        lex("€¿×÷");
+      }).toThrow();
+    });
+
     it('should tokenize number starting with a dot', function() {
       var tokens = lex(".5");
       expect(tokens[0].text).toEqual(0.5);
