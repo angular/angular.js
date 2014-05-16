@@ -130,8 +130,14 @@ injection of `$window`, `$scope`, and our `notify` service:
 </example>
 
 <div class="alert alert-danger">
-**Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming) your code,
-your variable names will get renamed unless you use one of the annotation techniques above.
+**Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming) your
+code, your variable names will get renamed unless you use one of the annotation techniques above.
+</div>
+
+<div class="alert alert-info">
+  If you use a tool like [ngmin](https://github.com/btford/ngmin#ngmin) in your workflow you can
+  use implicit dependency notation within your codebase and let **ngmin** automatically convert such
+  injectable functions to the array notation prior to minifying.
 </div>
 
 
