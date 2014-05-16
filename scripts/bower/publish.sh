@@ -26,6 +26,7 @@ function init {
     angular-sanitize
     angular-scenario
     angular-touch
+    angular-messages
   )
 }
 
