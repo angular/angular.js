@@ -1976,11 +1976,11 @@ if(window.jasmine || window.mocha) {
       };
 
 
-  beforeEach(function() {
+  (window.beforeEach || window.setup)(function() {
     currentSpec = this;
   });
 
-  afterEach(function() {
+  (window.afterEach || window.teardown)(function() {
     var injector = currentSpec.$injector;
 
     currentSpec.$injector = null;
