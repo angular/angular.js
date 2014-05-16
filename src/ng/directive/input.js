@@ -2090,8 +2090,15 @@ var requiredDirective = function() {
       if (!ctrl) return;
       attr.required = true; // force truthy in case we are on non input element
 
+      var validity = elm.prop('validity');
+      if (!isObject(validity)) {
+        validity = {
+          valid: true
+        };
+      }
+
       var validator = function(value) {
-        if (attr.required && ctrl.$isEmpty(value)) {
+        if (attr.required && (validity.valueMissing || ctrl.$isEmpty(value))) {
           ctrl.$setValidity('required', false);
           return;
         } else {
