@@ -322,6 +322,7 @@ function $RootScopeProvider(){
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
+            originalFn,
             watcher = {
               fn: listener,
               last: initWatchVal,
@@ -339,10 +340,17 @@ function $RootScopeProvider(){
         }
 
         if (typeof watchExp == 'string' && get.constant) {
-          var originalFn = watcher.fn;
+          originalFn = watcher.fn;
           watcher.fn = function(newVal, oldVal, scope) {
             originalFn.call(this, newVal, oldVal, scope);
             arrayRemove(array, watcher);
+          };
+        } else if (isFunction(watchExp) && watchExp.separators && watchExp.expressions) {
+          // Interpolated functions need to be unwatched when finalized.
+          originalFn = watcher.fn;
+          watcher.fn = function(newVal, oldVal, scope) {
+            originalFn.call(this, newVal, oldVal, scope);
+            if (watchExp.finalized) arrayRemove(array, watcher);
           };
         }
 

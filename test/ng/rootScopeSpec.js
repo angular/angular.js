@@ -394,6 +394,29 @@ describe('Scope', function() {
     }));
 
 
+    it('should unwatch finalized interpolation expressions', inject(function($rootScope, $interpolate) {
+      var scope = $rootScope.$new();
+      var interpolateFn = $interpolate("{{|foo}}{{%bar}}");
+      var listener = jasmine.createSpy('$listener');
+      scope.$watch(interpolateFn, listener);
+      scope.$digest();
+      expect(listener.callCount).toBe(1);
+      expect(listener.mostRecentCall.args[0]).toBe("");
+
+      scope.foo = "test!";
+      scope.bar = "testier!";
+      scope.$digest();
+      expect(listener.callCount).toBe(2);
+      expect(listener.mostRecentCall.args[0]).toBe("testier!");
+
+      scope.foo = "TEST!";
+      scope.bar = "TESTIER!";
+      scope.$digest();
+      expect(listener.mostRecentCall.args[0]).toBe("testier!");
+      expect(listener.callCount).toBe(2);
+    }));
+
+
     describe('$watch deregistration', function() {
 
       it('should return a function that allows listeners to be deregistered', inject(
