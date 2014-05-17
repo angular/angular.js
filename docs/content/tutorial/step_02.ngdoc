@@ -213,7 +213,7 @@ To run the tests, and then watch the files for changes: `npm test`.
   <p>Total number of phones: {{phones.length}}</p>
   ```
 
-* Create a new model property in the controller and bind to it from the template. For example:
+* Create a new model property in the controller in 'test/unit/controllersSpec.js' and bind to it from the template. For example:
 
           $scope.name = "World";
 
