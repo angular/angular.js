@@ -1755,8 +1755,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$commitViewValue = function() {
     var value = ctrl.$viewValue;
-    ctrl.$$lastCommittedViewValue = value;
     $timeout.cancel(pendingDebounce);
+    if (ctrl.$$lastCommittedViewValue === value) {
+      return;
+    }
+    ctrl.$$lastCommittedViewValue = value;
 
     // change to dirty
     if (ctrl.$pristine) {
