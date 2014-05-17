@@ -170,7 +170,7 @@ describe('NgModelController', function() {
 
       // invalid
       ctrl.$parsers.push(function() {return undefined;});
-      ctrl.$setViewValue('val');
+      ctrl.$setViewValue('val2');
       expect(spy).toHaveBeenCalledOnce();
     });
 
@@ -641,6 +641,16 @@ describe('input', function() {
       expect(scope.name).toBeUndefined();
       browserTrigger(inputElm, 'blur');
       expect(scope.name).toEqual('a');
+    });
+
+    it('should not dirty the input if nothing was changed before updateOn trigger', function() {
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{ updateOn: \'blur\' }"'+
+          '/>');
+
+      browserTrigger(inputElm, 'blur');
+      expect(scope.form.alias.$pristine).toBeTruthy();
     });
 
     it('should allow overriding the model update trigger event on text areas', function() {
