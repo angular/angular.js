@@ -656,7 +656,7 @@ describe('injector', function() {
             $provide.factory('service', function(service){});
             return function(service) {};
           }]);
-        }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: service');
+        }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: service <- service');
       });
 
 
@@ -667,7 +667,7 @@ describe('injector', function() {
             $provide.factory('b', function(a){});
             return function(a) {};
           }]);
-        }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: b <- a');
+        }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: a <- b <- a');
       });
 
     });
