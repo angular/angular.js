@@ -4,6 +4,15 @@ var $parseMinErr = minErr('$parse');
 var promiseWarningCache = {};
 var promiseWarning;
 
+var EXPR_REGEXP = /^\s*((::?)?((\w+):)?)?(.*)/m;
+var EXPR_META = 1;
+var EXPR_LABEL = 4;
+var EXPR_SEMANTICS = 2;
+var EXPR_EXPR = 5;
+
+var BIND_EAGER = ':';
+var BIND_LAZY = '::';
+
 // Sandboxing Angular Expressions
 // ------------------------------
 // Angular expressions are generally considered safe because these expressions only have direct
@@ -1250,8 +1259,17 @@ function $ParseProvider() {
 
       switch (typeof exp) {
         case 'string':
+          var match = EXPR_REGEXP.exec(exp);
+          var label = match[EXPR_LABEL];
+          var semantics = match[EXPR_SEMANTICS];
+          if (match[EXPR_META]) {
+            exp = exp.substring(match[EXPR_META].length);
+          }
 
           if (cache.hasOwnProperty(exp)) {
+            if (semantics || label) {
+              return statefulGetter(cache[exp], semantics, label);
+            }
             return cache[exp];
           }
 
@@ -1265,6 +1283,10 @@ function $ParseProvider() {
             cache[exp] = parsedExpression;
           }
 
+          if (semantics || label) {
+            return statefulGetter(parsedExpression, semantics, label);
+          }
+
           return parsedExpression;
 
         case 'function':
@@ -1275,4 +1297,54 @@ function $ParseProvider() {
       }
     };
   }];
+
+  /**
+   * statefulGetter
+   *
+   * Wraps a getter with a special function which serves to keep track of information
+   * pertinent to Scope, and prevent the expression from being cached.
+   *
+   * The wrapped function has the following extra properties:
+   *
+   *   - `semantics` -- The particular string representing the mode of parsing this expression
+   *                    falls
+   *
+   *   - `wasStable` -- A boolean value representing whether or not the value was the same (via
+   *                    identity) twice in a row or not
+   *
+   *   - `finalized` -- A boolean value representing whether the function has been finalized or
+   *                    not, used by $interpolate to prevent calling the resulting function.
+   *
+   *   - `wasNull`   -- A boolean value representing whether the result of the get was null or
+   *                    undefined. `false` indicates that the value was n'either.
+   *
+   *   - `label`     -- A name which may refer to the expression, so that it might be watched or
+   *                    unwatched easily on a Scope.
+   */
+  function statefulGetter(expr, semantics, label) {
+    var lastResult;
+    var key;
+    var getter = function(context, locals, self) {
+      var newResult = expr(context, locals, self);
+      getter.wasStable = newResult === lastResult;
+      getter.wasNull = newResult == null;
+      lastResult = newResult;
+      return newResult;
+    };
+
+    getter.semantics = semantics;
+    getter.wasStable = false;
+    getter.finalized = false;
+    getter.label = label;
+    getter.wasNull = true;
+    getter.$$parse = true;
+
+    for (key in expr) {
+      if (hasOwnProperty.call(expr, key)) {
+        getter[key] = expr[key];
+      }
+    }
+
+    return getter;
+  }
 }

@@ -478,6 +478,113 @@ describe('Scope', function() {
         expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
                              'watch2', 'watch3']);
       }));
+
+
+      describe('one-time binding', function() {
+        it('should unwatch eager one-time binding at end of digest', inject(function($rootScope) {
+          var i = 0;
+          var spy1 = jasmine.createSpy('spy1').andCallFake(function() {
+            if (i++ < 3) $rootScope.test += '!';
+          });
+          var spy2 = jasmine.createSpy('spy2');
+
+          $rootScope.$watch(":test", spy1);
+          $rootScope.$watch("test", spy2);
+
+          $rootScope.$apply('test = "Infinit"');
+          expect(spy1.callCount).toBe(4);
+          expect(spy1.mostRecentCall.args[0]).toBe("Infinit!!!");
+          spy1.reset();
+          spy2.reset();
+          $rootScope.$apply('test = "Zebragawk"');
+          expect(spy1.callCount).toBe(0);
+          expect(spy2.callCount).toBe(1);
+        }));
+
+
+        it('should unwatch lazy one-time binding at end of digest when value is not null', inject(function($rootScope) {
+          var i = 0;
+          var spy1 = jasmine.createSpy('spy1').andCallFake(function() {
+            if (i === 0) $rootScope.test = null;
+            else if (i === 1) $rootScope.test = 'non-null value';
+            ++i;
+          });
+          var spy2 = jasmine.createSpy('spy2');
+
+          $rootScope.$watch("test", spy1);
+          $rootScope.$watch("::test", spy2);
+
+          $rootScope.$apply('test = "test"');
+          expect(spy1.callCount).toBe(3);
+          expect(spy1.mostRecentCall.args[0]).toBe("non-null value");
+          expect(spy2.callCount).toBe(2);
+          expect(spy2.mostRecentCall.args[0]).toBe("non-null value");
+
+          $rootScope.$apply('test = "test"');
+          expect(spy1.callCount).toBe(4);
+          expect(spy2.callCount).toBe(2);
+        }));
+
+
+        it('should unwatch lazy one-time binding at end of digest when value is not undefined', inject(function($rootScope) {
+          var i = 0;
+          var spy1 = jasmine.createSpy('spy1').andCallFake(function() {
+            if (i === 0) delete $rootScope.test;
+            else if (i === 1) $rootScope.test = 'non-null value';
+            ++i;
+          });
+          var spy2 = jasmine.createSpy('spy2');
+
+          $rootScope.$watch("test", spy1);
+          $rootScope.$watch("::test", spy2);
+
+          $rootScope.$apply('test = "test"');
+          expect(spy1.callCount).toBe(3);
+          expect(spy1.mostRecentCall.args[0]).toBe("non-null value");
+          expect(spy2.callCount).toBe(2);
+          expect(spy2.mostRecentCall.args[0]).toBe("non-null value");
+
+          $rootScope.$apply('test = "test"');
+          expect(spy1.callCount).toBe(4);
+          expect(spy2.callCount).toBe(2);
+        }));
+
+
+        it('should re-check one-time watchers if group re-enabled', inject(function($rootScope) {
+          var spy = jasmine.createSpy('spy');
+          $rootScope.$watch('group:test', spy);
+
+          $rootScope.$apply('test = "Hello"');
+          expect(spy.callCount).toBe(1);
+
+          $rootScope.$apply('test = "Goodbye"');
+          expect(spy.callCount).toBe(1);
+
+          $rootScope.$enableWatchgroup('group');
+          $rootScope.$apply('test = "Hello, again!"');
+          expect(spy.callCount).toBe(2);
+          expect(spy.mostRecentCall.args[0]).toBe("Hello, again!");
+        }));
+      });
+
+
+      describe('labeled watchgroups', function() {
+        it('should not dirty-check disabled labels', inject(function($rootScope) {
+          var spy = jasmine.createSpy('spy!');
+          $rootScope.$watch('group:test', spy);
+
+          $rootScope.$disableWatchgroup('group');
+
+          $rootScope.$apply('test = "Cant see me!"');
+          expect(spy.callCount).toBe(0);
+
+          $rootScope.$enableWatchgroup('group');
+
+          $rootScope.$apply('test = "Here I am!"');
+          expect(spy.callCount).toBe(1);
+          expect(spy.mostRecentCall.args[0]).toBe("Here I am!");
+        }));
+      });
     });
 
 
