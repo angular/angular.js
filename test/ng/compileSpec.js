@@ -1484,25 +1484,25 @@ describe('$compile', function() {
           it('should allow nested transclude directives with sync template containing sync template', inject(function($compile, $rootScope) {
             element = $compile('<div sync-sync>transcluded content</div>')($rootScope);
             $rootScope.$digest();
-            expect(element.text().trim()).toEqual('transcluded content');
+            expect(trim(element.text())).toEqual('transcluded content');
           }));
 
           it('should allow nested transclude directives with sync template containing async template', inject(function($compile, $rootScope) {
             element = $compile('<div sync-async>transcluded content</div>')($rootScope);
             $rootScope.$digest();
-            expect(element.text().trim()).toEqual('transcluded content');
+            expect(trim(element.text())).toEqual('transcluded content');
           }));
 
           it('should allow nested transclude directives with async template containing sync template', inject(function($compile, $rootScope) {
             element = $compile('<div async-sync>transcluded content</div>')($rootScope);
             $rootScope.$digest();
-            expect(element.text().trim()).toEqual('transcluded content');
+            expect(trim(element.text())).toEqual('transcluded content');
           }));
 
           it('should allow nested transclude directives with async template containing asynch template', inject(function($compile, $rootScope) {
             element = $compile('<div async-async>transcluded content</div>')($rootScope);
             $rootScope.$digest();
-            expect(element.text().trim()).toEqual('transcluded content');
+            expect(trim(element.text())).toEqual('transcluded content');
           }));
         });
 
