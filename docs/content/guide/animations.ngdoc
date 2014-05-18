@@ -251,15 +251,18 @@ Although the CSS is a little different then what we saw before, the idea is the 
 A handful of common AngularJS directives support and trigger animation hooks whenever any major event occurs during its life cycle.
 The table below explains in detail which animation events are triggered
 
-| Directive                                                                           | Supported Animations                     |
-|-------------------------------------------------------------------------------------|------------------------------------------|
-| {@link ng.directive:ngRepeat#usage_animations ngRepeat}                               | enter, leave, and move                   |
-| {@link ngRoute.directive:ngView#usage_animations ngView}                              | enter and leave                          |
-| {@link ng.directive:ngInclude#usage_animations ngInclude}                             | enter and leave                          |
-| {@link ng.directive:ngSwitch#usage_animations ngSwitch}                               | enter and leave                          |
-| {@link ng.directive:ngIf#usage_animations ngIf}                                       | enter and leave                          |
-| {@link ng.directive:ngClass#usage_animations ngClass or &#123;&#123;class&#125;&#125;} | add and remove                           |
-| {@link ng.directive:ngShow#usage_animations ngShow & ngHide}                          | add and remove (the ng-hide class value) |
+ -| Directive                                                       | Supported Animations                                                     |
+ -|-----------------------------------------------------------------|--------------------------------------------------------------------------|
+ -| {@link ng.directive:ngRepeat#usage_animations ngRepeat}         | enter, leave and move                                                    |
+ -| {@link ngRoute.directive:ngView#usage_animations ngView}        | enter and leave                                                          |
+ -| {@link ng.directive:ngInclude#usage_animations ngInclude}       | enter and leave                                                          |
+ -| {@link ng.directive:ngSwitch#usage_animations ngSwitch}         | enter and leave                                                          |
+ -| {@link ng.directive:ngIf#usage_animations ngIf}                 | enter and leave                                                          |
+ -| {@link ng.directive:ngClass#usage_animations ngClass}           | add and remove                                                           |
+ -| {@link ng.directive:ngShow#usage_animations ngShow & ngHide}    | add and remove (the ng-hide class value)                                 |
+ -| {@link ng.directive:form#usage_animations form}                 | add and remove (dirty, pristine, valid, invalid & all other validations) |
+ -| {@link ng.directive:ngModel#usage_animations ngModel}           | add and remove (dirty, pristine, valid, invalid & all other validations) |
+
 
 For a full breakdown of the steps involved during each animation event, refer to the {@link ngAnimate.$animate API docs}.
 
