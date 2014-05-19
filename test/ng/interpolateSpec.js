@@ -98,6 +98,14 @@ describe('$interpolate', function() {
         expect($interpolate('{{foo}} -{{-bar-}}-')(obj)).toBe('Hello {{bar}}');
       });
     });
+
+
+    it('should not unescape incomplete escape expressions', inject(function($interpolate) {
+      expect($interpolate('{{{{foo{{foo}}')(obj)).toBe('{{{{fooHello');
+      expect($interpolate('}}}}foo{{foo}}')(obj)).toBe('}}}}fooHello');
+      expect($interpolate('foo{{foo}}{{{{')(obj)).toBe('fooHello{{{{');
+      expect($interpolate('foo{{foo}}}}}}')(obj)).toBe('fooHello}}}}');
+    }));
   });
 
 

@@ -115,6 +115,7 @@ function $InterpolateProvider() {
       } else {
         pieces.push(new Piece(text, isExpr));
       }
+      return pieces[pieces.length-1];
     }
 
     /**
@@ -191,7 +192,8 @@ function $InterpolateProvider() {
           lastValuesCache = { values: {}, results: {}},
           pieces = [],
           piece,
-          indexes = [];
+          indexes = [],
+          last;
 
       while (text.length) {
         var expr = EXPR_REGEXP.exec(text);
@@ -199,6 +201,16 @@ function $InterpolateProvider() {
         var until = text.length;
         var chunk;
         var from = 0;
+        var start;
+
+        if (!escaped && expr) {
+          index = 0;
+          from = expr.index;
+          while ((start = text.indexOf(escapedStartSymbol, index)) >= 0 && start <= from) {
+            index = until = start + escapedStartLength;
+            expr = null;
+          }
+        }
 
         if (expr) {
           until = expr.index;
@@ -214,8 +226,14 @@ function $InterpolateProvider() {
         if (until > 0) {
           chunk = isString(escaped) ? text.substring(0, from) + escaped  : text.substring(0, until);
           text = text.slice(until);
-          addPiece(chunk, false, pieces);
-          separators.push(chunk);
+          var newChunk = addPiece(chunk, false, pieces);
+          if (last && !last.isExpr && separators.length) {
+            separators[separators.length - 1] += chunk;
+          } else {
+            separators.push(chunk);
+          }
+          last = newChunk;
+          newChunk = null;
           hasText = true;
         } else {
           separators.push('');
@@ -223,7 +241,7 @@ function $InterpolateProvider() {
 
         if (expr) {
           text = text.slice(expr[0].length);
-          addPiece(expr[1], true, pieces);
+          last = addPiece(expr[1], true, pieces);
           expr = null;
           hasInterpolation = true;
         }
@@ -245,7 +263,7 @@ function $InterpolateProvider() {
         separators.push('');
       }
 
-      pieces = null;
+      last = pieces = null;
 
       // Concatenating expressions makes it hard to reason about whether some combination of
       // concatenated values are unsafe to use and could easily lead to XSS.  By requiring that a
