@@ -924,7 +924,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return linkFnFound ? compositeLinkFn : null;
 
       function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
-        var nodeLinkFn, childLinkFn, node, $node, childScope, i, ii, n;
+        var nodeLinkFn, childLinkFn, node, $node, childScope, childTranscludeFn, i, ii, n;
 
         // copy nodeList so that linking doesn't break due to live list updates.
         var nodeListLength = nodeList.length,
@@ -946,17 +946,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             } else {
               childScope = scope;
             }
-
-            // We need to create a new boundTranscludeFn if
-            //  - a directive on this element wants to transclude
-            //  or
-            //  - there is no boundTranscludeFn already and a transcludeFn was passed in
-            if ( nodeLinkFn.transcludeOnThisElement || (!boundTranscludeFn && transcludeFn) ) {
-              boundTranscludeFn = createBoundTranscludeFn(scope, nodeLinkFn.transclude || transcludeFn);
+            childTranscludeFn = nodeLinkFn.transclude;
+            if (childTranscludeFn || (!boundTranscludeFn && transcludeFn)) {
+              nodeLinkFn(childLinkFn, childScope, node, $rootElement,
+                createBoundTranscludeFn(scope, childTranscludeFn || transcludeFn)
+              );
+            } else {
+              nodeLinkFn(childLinkFn, childScope, node, $rootElement, boundTranscludeFn);
             }
-
-            nodeLinkFn(childLinkFn, childScope, node, $rootElement, boundTranscludeFn);
-
           } else if (childLinkFn) {
             childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
           }
@@ -1332,9 +1329,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === true;
-      nodeLinkFn.transcludeOnThisElement = hasTranscludeDirective;
-      nodeLinkFn.transclude = childTranscludeFn;
-
+      nodeLinkFn.transclude = hasTranscludeDirective && childTranscludeFn;
       previousCompileContext.hasElementTranscludeDirective = hasElementTranscludeDirective;
 
       // might be normal or delayed nodeLinkFn depending on if templateUrl is present
