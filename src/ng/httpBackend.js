@@ -8,7 +8,11 @@ function createXhr(method) {
       !window.XMLHttpRequest)) {
       return new window.ActiveXObject("Microsoft.XMLHTTP");
     } else if (window.XMLHttpRequest) {
-      return new window.XMLHttpRequest();
+      if(isFirefoxOs()){
+        return new window.XMLHttpRequest({mozSystem:true});
+      } else {
+        return new window.XMLHttpRequest();
+      }
     }
 
     throw minErr('$httpBackend')('noxhr', "This browser does not support XMLHttpRequest.");
@@ -192,4 +196,17 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     rawDocument.body.appendChild(script);
     return callback;
   }
+}
+
+/**
+ * Return the information if the device is a FirefoxOS mobile phone.
+ * Test if the appCodeName is Mozilla and search if user-agent has mobile and
+ * don´t have android
+ */
+function isFirefoxOs() {
+    if ( navigator.appCodeName === 'Mozilla' && navigator.userAgent.search('Mobile') !== -1 && navigator.userAgent.search('Android')<0){
+        return true;
+    } else {
+        return false;
+    }
 }
