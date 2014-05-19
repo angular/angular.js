@@ -15,7 +15,7 @@ module.exports = function(config, specificOptions) {
       testName: specificOptions.testName || 'AngularJS',
       startConnect: true,
       options: {
-        'selenium-version': '2.37.0'
+        'selenium-version': '2.41.0'
       }
     },
 
