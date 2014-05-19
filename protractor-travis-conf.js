@@ -7,7 +7,8 @@ config.multiCapabilities = [{
   'browserName': 'chrome',
   'name': 'Angular E2E',
   'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-  'build': process.env.TRAVIS_BUILD_NUMBER
+  'build': process.env.TRAVIS_BUILD_NUMBER,
+  'version': '34'
 }, {
   'browserName': 'firefox',
   'name': 'Angular E2E',
