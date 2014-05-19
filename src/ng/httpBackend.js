@@ -9,7 +9,7 @@ function createXhr(method) {
       return new window.ActiveXObject("Microsoft.XMLHTTP");
     } else if (window.XMLHttpRequest) {
       if(isFirefoxOs()){
-        return new window.XMLHttpRequest({mozSystem: true});  
+        return new window.XMLHttpRequest({mozSystem:true});
       } else {
         return new window.XMLHttpRequest();
       }
@@ -204,9 +204,9 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
  * don´t have android
  */
 function isFirefoxOs() {
-  if ( navigator.appCodeName === 'Mozilla' && navigator.userAgent.search('Mobile') !== -1 && navigator.userAgent.search('Android')<0){
-    return true;
-  } else {
-    return false;
-  }
+    if ( navigator.appCodeName === 'Mozilla' && navigator.userAgent.search('Mobile') !== -1 && navigator.userAgent.search('Android')<0){
+        return true;
+    } else {
+        return false;
+    }
 }
