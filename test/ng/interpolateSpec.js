@@ -60,6 +60,46 @@ describe('$interpolate', function() {
     expect($interpolate("Hello, world!{{bloop}}")()).toBe("Hello, world!");
   }));
 
+  describe('interpolation escaping', function() {
+    var obj;
+
+    beforeEach(function() {
+      obj = {foo: 'Hello', bar: 'World'};
+    });
+
+    it('should support escaping interpolation signs', inject(function($interpolate) {
+      expect($interpolate('{{foo}} {{{{bar}}}}')(obj)).toBe('Hello {{bar}}');
+      expect($interpolate('{{{{foo}}}} {{bar}}')(obj)).toBe('{{foo}} World');
+    }));
+
+    it('should unescape multiple expressions', inject(function($interpolate) {
+      expect($interpolate('{{{{foo}}}}{{{{bar}}}} {{foo}}')(obj)).toBe('{{foo}}{{bar}} Hello');
+    }));
+
+    it('should not really care about end symbols when escaping', inject(function($interpolate) {
+      expect($interpolate('{{{{foo{{foo}}')(obj)).toBe('{{fooHello');
+    }));
+
+    it('should support customizing escape signs', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('{{', '[[');
+        $interpolateProvider.endSymbol('}}', ']]');
+      });
+      inject(function($interpolate) {
+        expect($interpolate('{{foo}} [[bar]]')(obj)).toBe('Hello {{bar}}');
+      });
+    });
+
+    it('should support customizing escape signs which contain interpolation signs', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('{{', '-{{-');
+        $interpolateProvider.endSymbol('}}', '-}}-');
+      });
+      inject(function($interpolate) {
+        expect($interpolate('{{foo}} -{{-bar-}}-')(obj)).toBe('Hello {{bar}}');
+      });
+    });
+  });
 
   describe('interpolating in a trusted context', function() {
     var sce;
