@@ -61,6 +61,36 @@ describe('$interpolate', function() {
   }));
 
 
+  it('should not parse escaped interpolation expressions', inject(function($interpolate, $rootScope) {
+    $rootScope.foo = 'World';
+    expect($interpolate('Hello, {{{{foo}}}}!')($rootScope)).toBe('Hello, {{foo}}!');
+  }));
+
+
+  it('should parse expressions before escaped expressions', inject(function($interpolate, $rootScope) {
+    $rootScope.foo = 'World';
+    expect($interpolate('Hello, {{foo}}! ({{{{foo}}}})')($rootScope)).toBe('Hello, World! ({{foo}})');
+  }));
+
+
+  it('should parse expressions after escaped expressions', inject(function($interpolate, $rootScope) {
+    $rootScope.foo = 'World';
+    expect($interpolate('Hello, {{{{foo}}}} ({{foo}}!)')($rootScope)).toBe('Hello, {{foo}} (World!)');
+  }));
+
+
+  it('should not parse naively escaped expressions', inject(function($interpolate, $rootScope) {
+    $rootScope.abc = 'Hello';
+    $rootScope.def = 'world';
+    expect($interpolate('{{{{abc}}}}}}{{{{def}}}}')($rootScope)).toBe('{{abc}}}}{{def}}');
+    expect($interpolate('{{{{{{abc}}}}{{{{def}}}}')($rootScope)).toBe('{{{{abc}}{{def}}');
+    expect($interpolate('{{{{abc}}}}{{{{def}}}}}}')($rootScope)).toBe('{{abc}}{{def}}}}');
+    expect($interpolate('{{{{abc}}}}{{{{{{def}}}}')($rootScope)).toBe('{{abc}}{{{{def}}');
+    expect($interpolate('}}}}abc{{abc}}}}{{{{def}}}')($rootScope)).toBe('}}}}abcHello}}{{world}');
+    expect($interpolate('{{{{{{abc{{def}}}}}}')($rootScope)).toBe('{{{{abc{{def}}}}');
+  }));
+
+
   describe('interpolating in a trusted context', function() {
     var sce;
     beforeEach(function() {
