@@ -304,10 +304,17 @@ to various URLs and verify that the correct view was rendered.
 
 ```js
 ...
-  it('should redirect index.html to index.html#/phones', function() {
-    browser().navigateTo('app/index.html');
-    expect(browser().location().url()).toBe('/phones');
+   it('should redirect index.html to index.html#/phones', function() {
+    browser.get('app/index.html');
+    browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split('#')[1]).toBe('/phones');
+      });
   });
+
+  describe('Phone list view', function() {
+    beforeEach(function() {
+      browser.get('app/index.html#/phones');
+    });
 ...
 
   describe('Phone detail view', function() {
