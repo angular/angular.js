@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <script src="angular.js"></script>
+		<script>
+			function getNgPluralCatFun() {
+				var injector = angular.injector(["ng"]);
+				return injector.invoke(function($log, $locale){
+					return $locale.pluralCat;
+				});
+			}
+			var numErrors = 0;
+			var localeIdsWithErrors = {};
+		</script>
+	</head>
+	<body>
+		<h1>This is a test</h1>
+		<% _(localeIdsAndCldrPluralCatFuns).forEach(function(pair) { %>
+		<% var localeId = pair[0], cldrPluralCat = pair[1];  %>
+    <script src="i18n/angular-locale_<%= localeId %>.js"></script>
+		<script>
+			var localeId = '<%= localeId %>';
+			var ngPluralCat = getNgPluralCatFun();
+			var cldrPluralCat = <%= cldrPluralCat %>;
+			for (var i = 0; i < 1000000; i++) {
+				if (ngPluralCat(i) !== cldrPluralCat(i)) {
+					localeIdsWithErrors[localeId] = true;
+					numErrors++;
+				}
+			}
+		</script>
+		<% }); %>
+		<script>
+			console.log(numErrors);
+			console.log(Object.keys(localeIdsWithErrors));
+		</script>
+	</body>
+</html>
