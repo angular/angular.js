@@ -105,6 +105,13 @@ Check the version of Node.js that you have installed by running the following co
 node --version
 ```
 
+Or in Debian based distributions:
+
+```
+nodejs --version
+```
+
+
 <div class="alert alert-info">If you need to run a different versions of node.js
   in your local environment, consider installing
   <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
