@@ -156,7 +156,7 @@ function $InterpolateProvider() {
      * <example>
      *  <file name="index.html">
      *    <div ng-init="username='A user'">
-     *      <p ng-init="apptitle='Escaping demo'">{{apptitle}}: \{\{ username = "some jerk"; \}\}
+     *      <p ng-init="apptitle='Escaping demo'">{{apptitle}}: \{\{ username = "defaced value"; \}\}
      *        </p>
      *      <p><strong>{{username}}</strong> attempts to inject code which will deface the
      *        application, but fails to accomplish their task, because the server has correctly
