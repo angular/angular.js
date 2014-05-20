@@ -1065,10 +1065,15 @@ function $RootScopeProvider(){
             }
           }
           //if any listener on the current scope stops propagation, prevent bubbling
-          if (stopPropagation) return event;
+          if (stopPropagation) {
+            event.currentScope = null;
+            return event;
+          }
           //traverse upwards
           scope = scope.$parent;
         } while (scope);
+
+        event.currentScope = null;
 
         return event;
       },
@@ -1141,6 +1146,8 @@ function $RootScopeProvider(){
             }
           }
         }
+
+        event.currentScope = null;
 
         return event;
       }
