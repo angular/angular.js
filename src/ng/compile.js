@@ -841,12 +841,36 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // modify it.
         $compileNodes = jqLite($compileNodes);
       }
+
+      var isText = function(node) {
+        return node && node.nodeType === Node.TEXT_NODE;
+      };
+
+      var normalizeNode = function(node) {
+        var child, combined, lastSibling, _i, _len, _ref, _results;
+        lastSibling = null;
+        _ref = (node != null ? node.childNodes : void 0) || [];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          if (isText(child) && isText(lastSibling)) {
+            combined = lastSibling.nodeValue + child.nodeValue;
+            child.nodeValue = combined;
+            node.removeChild(lastSibling);
+          } else {
+            normalizeNode(child);
+          }
+          _results.push(lastSibling = child);
+        }
+        return _results;
+      };
+
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
       // We also need to call `normalize` on the nodes, because in some cases
       // browsers (like IE11) allocate multiple text nodes when parsing a single block of HTML.
       forEach($compileNodes, function(node, index){
-        node.normalize();
+        normalizeNode(node);
 
         if (node.nodeType == 3 /* text node */ && node.nodeValue.match(/\S+/) /* non-empty */ ) {
           $compileNodes[index] = node = jqLite(node).wrap('<span></span>').parent()[0];
