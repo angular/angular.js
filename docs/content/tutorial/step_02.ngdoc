@@ -223,7 +223,7 @@ To run the tests, and then watch the files for changes: `npm test`.
 
   Refresh your browser and verify that it says "Hello, World!".
 
-* Update the unit test for the controller in ./tests/unit/controllersSpec.js to reflect the previous change. For example by adding:
+* Update the unit test for the controller in ./test/unit/controllersSpec.js to reflect the previous change. For example by adding:
 
           expect(scope.name).toBe('World');
 

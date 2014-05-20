@@ -1,3 +1,38 @@
+<a name="1.3.0-beta.9"></a>
+# 1.3.0-beta.9 release-naming (2014-05-16)
+
+
+## Bug Fixes
+
+- **$compile:** pass `transcludeFn` down to nested transclude directives
+  ([4f03dc5a](https://github.com/angular/angular.js/commit/4f03dc5a9650f3f22f78b438474322b4b8871dec),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+- **jqLite:** use jQuery only if jQuery.fn.on present
+  ([e9bc51cb](https://github.com/angular/angular.js/commit/e9bc51cb0964ea682c1654919174dacebd09fcf6))
+- **ngClass:** handle index changes when an item is unshifted
+  ([5fbd618c](https://github.com/angular/angular.js/commit/5fbd618c2ff0dbaa4e19d0fd0e55921ce7d89478),
+   [#7256](https://github.com/angular/angular.js/issues/7256))
+- **ngMessages:** annotate ngMessages controller for minification
+  ([0282ca97](https://github.com/angular/angular.js/commit/0282ca971df7923c8f3dba0eb0df544e244e5b93))
+- **numberFilter:** fix rounding error edge case
+  ([81d427b5](https://github.com/angular/angular.js/commit/81d427b5f0d3502f65e8db5beaa5ad837c9ede17),
+   [#7453](https://github.com/angular/angular.js/issues/7453), [#7478](https://github.com/angular/angular.js/issues/7478))
+
+
+## Features
+
+- **ngTouch:** add optional `ngSwipeDisableMouse` attribute to `ngSwipe` directives to ignore mouse events.
+  ([5a568b4f](https://github.com/angular/angular.js/commit/5a568b4f960cc5381b3911e3a6423aff2ff7f7f9),
+   [#6627](https://github.com/angular/angular.js/issues/6627), [#6626](https://github.com/angular/angular.js/issues/6626))
+
+
+## Breaking Changes
+
+- **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
+  the jQuery `detach()` method does not trigger the `$destroy` event.
+  If you want to destroy Angular data attached to the element, use `remove()`.
+
+
 <a name="1.3.0-beta.8"></a>
 # 1.3.0-beta.8 accidental-haiku (2014-05-09)
 
@@ -142,7 +177,7 @@ app. This is no longer possible within a single module.
 
 
 - **ngModelOptions:** due to [adfc322b](https://github.com/angular/angular.js/commit/adfc322b04a58158fb9697e5b99aab9ca63c80bb),
- 
+
 
 This commit changes the API on `NgModelController`, both semantically and
 in terms of adding and renaming methods.
@@ -914,26 +949,30 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 ## Breaking Changes
 
 - **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
-       it is now necessary to separately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
+  it is now necessary to seperately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
 
-    To migrate your code, follow the example below:
+  To migrate your code, follow the example below:
 
-    Before:
+  Before:
 
-        // Will apply to POST, PUT and PATCH methods
-        $httpProvider.defaults.headers.post = {
-            "X-MY-CSRF-HEADER": "..."
-        };
+  ```
+  // Will apply to POST, PUT and PATCH methods
+  $httpProvider.defaults.headers.post = {
+    "X-MY-CSRF-HEADER": "..."
+  };
+  ```
 
-    After:
+  After:
 
-        // POST, PUT and PATCH default headers must be specified separately,
-        // as they do not share data.
-        $httpProvider.defaults.headers.post =
-            $httpProvider.defaults.headers.put =
-            $httpProviders.defaults.headers.patch = {
-                "X-MY-CSRF-HEADER": "..."
-            };
+  ```
+  // POST, PUT and PATCH default headers must be specified seperately,
+  // as they do not share data.
+  $httpProvider.defaults.headers.post =
+    $httpProvider.defaults.headers.put =
+    $httpProviders.defaults.headers.patch = {
+      "X-MY-CSRF-HEADER": "..."
+    };
+  ```
 
 <a name="1.2.8"></a>
 # 1.2.8 interdimensional-cartography (2014-01-10)

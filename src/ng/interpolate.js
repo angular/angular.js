@@ -216,11 +216,20 @@ function $InterpolateProvider() {
         };
 
         var stringify = function (value) {
-          if (isUndefined(value) || value === null) {
-            value = '';
+          if (value == null) { // null || undefined
+            return '';
           }
-          if (typeof value != 'string') {
-            value = toJson(value);
+          switch (typeof value) {
+            case 'string': {
+              break;
+            }
+            case 'number': {
+              value = '' + value;
+              break;
+            }
+            default: {
+              value = toJson(value);
+            }
           }
 
           return value;

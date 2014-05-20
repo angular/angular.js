@@ -66,6 +66,24 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBe(true);
     }));
 
+    it('should only swipe given ng-swipe-disable-mouse attribute for touch events', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-swipe-left="swiped = true" ng-swipe-disable-mouse></div>')($rootScope);
+      $rootScope.$digest();
+      expect($rootScope.swiped).toBeUndefined();
+
+      browserTrigger(element, startEvent, {
+        keys : [],
+        x : 100,
+        y : 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
+      expect(!!$rootScope.swiped).toBe(description !== 'mouse');
+    }));
+
     it('should pass event object', inject(function($rootScope, $compile) {
       element = $compile('<div ng-swipe-left="event = $event"></div>')($rootScope);
       $rootScope.$digest();
