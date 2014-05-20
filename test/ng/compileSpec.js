@@ -1567,6 +1567,40 @@ describe('$compile', function() {
           }));
         });
 
+        describe('transclude and children', function() {
+          beforeEach(module(function($compileProvider) {
+
+            $compileProvider.directive('myExample', valueFn({
+              scope: {},
+              link: function link(scope, element, attrs) {
+                var foo = element[0].querySelector('.foo');
+                scope.children = angular.element(foo).children().length;
+              },
+              template: '<div>' +
+                '<div>myExample {{children}}!</div>' +
+                '<div class="foo" ng-transclude></div>' +
+                '<div ng-if="children">has children</div>' +
+              '</div>',
+              transclude: true
+
+            }));
+
+          }));
+
+          it("should not pick up too many children when transcluding", inject(function($compile, $rootScope) {
+            var element = $compile('<div my-example></div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('myExample 0!');
+            dealoc(element);
+
+            element = $compile('<div my-example><p></p></div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('myExample 1!has children');
+            dealoc(element);
+          }));
+
+        });
+
 
 
         it("should fail if replacing and template doesn't have a single root element", function() {

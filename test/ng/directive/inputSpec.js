@@ -379,6 +379,11 @@ describe('ngModel', function() {
       $rootScope.inputPresent = false;
       $rootScope.$apply();
 
+      // This double apply is needed because ngAnimate destroys the ng-if element
+      // in a post-digest block which means that the update to $rootScope.myForm.$valid
+      // is done outside an apply block.
+      $rootScope.$apply();
+
       expect($rootScope.myForm.$valid).toBe(true);
       expect(isFormValid).toBe(true);
       expect($rootScope.myForm.myControl).toBeUndefined();
