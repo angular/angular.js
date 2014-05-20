@@ -1563,15 +1563,30 @@ describe('Scope', function() {
 
       describe('event object', function() {
         it('should have methods/properties', function() {
-          var event;
+          var eventFired = false;
+
           child.$on('myEvent', function(e) {
             expect(e.targetScope).toBe(grandChild);
             expect(e.currentScope).toBe(child);
             expect(e.name).toBe('myEvent');
+            eventFired = true;
+          });
+          grandChild.$emit('myEvent');
+          expect(eventFired).toBe(true);
+        });
+
+
+        it("should have it's `currentScope` property set to null after emit", function() {
+          var event;
+
+          child.$on('myEvent', function(e) {
             event = e;
           });
           grandChild.$emit('myEvent');
-          expect(event).toBeDefined();
+
+          expect(event.currentScope).toBe(null);
+          expect(event.targetScope).toBe(grandChild);
+          expect(event.name).toBe('myEvent');
         });
 
 
@@ -1584,6 +1599,7 @@ describe('Scope', function() {
           });
           event = grandChild.$emit('myEvent');
           expect(event.defaultPrevented).toBe(true);
+          expect(event.currentScope).toBe(null);
         });
       });
     });
@@ -1700,6 +1716,24 @@ describe('Scope', function() {
         it('should receive event object', inject(function($rootScope) {
           var scope = $rootScope,
               child = scope.$new(),
+              eventFired = false;
+
+          child.$on('fooEvent', function(event) {
+            eventFired = true;
+            expect(event.name).toBe('fooEvent');
+            expect(event.targetScope).toBe(scope);
+            expect(event.currentScope).toBe(child);
+          });
+          scope.$broadcast('fooEvent');
+
+          expect(eventFired).toBe(true);
+        }));
+
+
+        it("should have the event's `currentScope` property set to null after broadcast",
+            inject(function($rootScope) {
+          var scope = $rootScope,
+              child = scope.$new(),
               event;
 
           child.$on('fooEvent', function(e) {
@@ -1709,7 +1743,7 @@ describe('Scope', function() {
 
           expect(event.name).toBe('fooEvent');
           expect(event.targetScope).toBe(scope);
-          expect(event.currentScope).toBe(child);
+          expect(event.currentScope).toBe(null);
         }));
 
 
