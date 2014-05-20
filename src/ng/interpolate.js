@@ -41,6 +41,8 @@ var $interpolateMinErr = minErr('$interpolate');
 function $InterpolateProvider() {
   var startSymbol = '{{';
   var endSymbol = '}}';
+  var escapedStartSymbol = '{{{{';
+  var escapedEndSymbol = '}}}}';
 
   /**
    * @ngdoc method
@@ -49,11 +51,15 @@ function $InterpolateProvider() {
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
    * @param {string=} value new value to set the starting symbol to.
+   * @param {string=} escaped new value to set the escaped starting symbol to.
    * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
    */
-  this.startSymbol = function(value){
+  this.startSymbol = function(value, escaped){
     if (value) {
       startSymbol = value;
+      if (escaped) {
+        escapedStartSymbol = escaped;
+      }
       return this;
     } else {
       return startSymbol;
@@ -69,9 +75,12 @@ function $InterpolateProvider() {
    * @param {string=} value new value to set the ending symbol to.
    * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
    */
-  this.endSymbol = function(value){
+  this.endSymbol = function(value, escaped){
     if (value) {
       endSymbol = value;
+      if (escaped) {
+        escapedEndSymbol = escaped;
+      }
       return this;
     } else {
       return endSymbol;
@@ -81,7 +90,33 @@ function $InterpolateProvider() {
 
   this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
     var startSymbolLength = startSymbol.length,
-        endSymbolLength = endSymbol.length;
+        endSymbolLength = endSymbol.length,
+        escapedStartLength = escapedStartSymbol.length,
+        escapedEndLength = escapedEndSymbol.length,
+        escapedLength = escapedStartLength + escapedEndLength,
+        ESCAPED_EXPR_REGEXP = new RegExp(lit(escapedStartSymbol) + '((?:.|\n)*?)' + lit(escapedEndSymbol), 'm'),
+        EXPR_REGEXP = new RegExp(lit(startSymbol) + '((?:.|\n)*?)' + lit(endSymbol), 'm');
+
+    function lit(str) {
+      return str.replace(/([\(\)\[\]\{\}\+\\\^\$\.\!\?\*\=\:\|\-])/g, function(op) {
+        return '\\' + op;
+      });
+    }
+
+    function Piece(text, isExpr) {
+      this.text = text;
+      this.isExpr = isExpr;
+    }
+
+    function addPiece(text, isExpr, pieces) {
+      var lastPiece = pieces.length ? pieces[pieces.length - 1] : null;
+      if (!isExpr && lastPiece && !lastPiece.isExpr) {
+        lastPiece.text += text;
+      } else {
+        pieces.push(new Piece(text, isExpr));
+      }
+      return pieces[pieces.length-1];
+    }
 
     /**
      * @ngdoc service
@@ -152,33 +187,83 @@ function $InterpolateProvider() {
           textLength = text.length,
           hasInterpolation = false,
           hasText = false,
-          exp,
-          concat = [],
-          lastValuesCache = { values: {}, results: {}};
+          exp = text,
+          concat,
+          lastValuesCache = { values: {}, results: {}},
+          pieces = [],
+          piece,
+          indexes = [],
+          last;
 
-      while(index < textLength) {
-        if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
-             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
-          if (index !== startIndex) hasText = true;
-          separators.push(text.substring(index, startIndex));
-          exp = text.substring(startIndex + startSymbolLength, endIndex);
-          expressions.push(exp);
-          parseFns.push($parse(exp));
-          index = endIndex + endSymbolLength;
-          hasInterpolation = true;
-        } else {
-          // we did not find an interpolation, so we have to add the remainder to the separators array
-          if (index !== textLength) {
-            hasText = true;
-            separators.push(text.substring(index));
+      while (text.length) {
+        var expr = EXPR_REGEXP.exec(text);
+        var escaped = ESCAPED_EXPR_REGEXP.exec(text);
+        var until = text.length;
+        var chunk;
+        var from = 0;
+        var start;
+
+        if (!escaped && expr) {
+          index = 0;
+          from = expr.index;
+          while ((start = text.indexOf(escapedStartSymbol, index)) >= 0 && start <= from) {
+            index = until = start + escapedStartLength;
+            expr = null;
           }
-          break;
+        }
+
+        if (expr) {
+          until = expr.index;
+        }
+
+        if (escaped && escaped.index <= until) {
+          from = escaped.index;
+          until = escaped.index + escaped[0].length;
+          escaped = startSymbol + escaped[1] + endSymbol;
+          expr = null;
+        }
+
+        if (until > 0) {
+          chunk = isString(escaped) ? text.substring(0, from) + escaped  : text.substring(0, until);
+          text = text.slice(until);
+          var newChunk = addPiece(chunk, false, pieces);
+          if (last && !last.isExpr && separators.length) {
+            separators[separators.length - 1] += chunk;
+          } else {
+            separators.push(chunk);
+          }
+          last = newChunk;
+          newChunk = null;
+          hasText = true;
+        } else {
+          separators.push('');
+        }
+
+        if (expr) {
+          text = text.slice(expr[0].length);
+          last = addPiece(expr[1], true, pieces);
+          expr = null;
+          hasInterpolation = true;
+        }
+      }
+
+      concat = new Array(pieces.length);
+      for (index = 0; index < pieces.length; ++index) {
+        piece = pieces[index];
+        if (piece.isExpr) {
+          parseFns.push($parse(piece.text));
+          expressions.push(piece.text);
+          indexes.push(index);
+        } else {
+          concat[index] = piece.text;
         }
       }
 
       if (separators.length === expressions.length) {
         separators.push('');
       }
+
+      last = pieces = null;
 
       // Concatenating expressions makes it hard to reason about whether some combination of
       // concatenated values are unsafe to use and could easily lead to XSS.  By requiring that a
@@ -190,18 +275,14 @@ function $InterpolateProvider() {
           throw $interpolateMinErr('noconcat',
               "Error while interpolating: {0}\nStrict Contextual Escaping disallows " +
               "interpolations that concatenate multiple expressions when a trusted value is " +
-              "required.  See http://docs.angularjs.org/api/ng.$sce", text);
+              "required.  See http://docs.angularjs.org/api/ng.$sce", exp);
       }
 
       if (!mustHaveExpression || hasInterpolation) {
-        concat.length = separators.length + expressions.length;
-
         var compute = function(values) {
           for(var i = 0, ii = expressions.length; i < ii; i++) {
-            concat[2*i] = separators[i];
-            concat[(2*i)+1] = values[i];
+            concat[indexes[i]] = values[i];
           }
-          concat[2*ii] = separators[ii];
           return concat.join('');
         };
 
@@ -278,7 +359,7 @@ function $InterpolateProvider() {
                 lastValuesCache.results[scopeId] = lastResult = compute(values);
               }
             } catch(err) {
-              var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
+              var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", exp,
                   err.toString());
               $exceptionHandler(newErr);
             }
@@ -286,7 +367,7 @@ function $InterpolateProvider() {
             return lastResult;
           }, {
           // all of these properties are undocumented for now
-          exp: text, //just for compatibility with regular watchers created via $watch
+          exp: exp, //just for compatibility with regular watchers created via $watch
           separators: separators,
           expressions: expressions
         });
