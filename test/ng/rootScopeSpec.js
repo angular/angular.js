@@ -1572,6 +1572,10 @@ describe('Scope', function() {
           });
           grandChild.$emit('myEvent');
           expect(event).toBeDefined();
+
+          // Asynchronous expectation : current & target should be the same as above
+          expect(event.targetScope).toBe(grandChild);
+          expect(event.currentScope).toBe(child);
         });
 
 
@@ -1693,6 +1697,18 @@ describe('Scope', function() {
           expect(result.name).toBe('some');
           expect(result.targetScope).toBe(child1);
         });
+
+        it('should have preventDefault method and defaultPrevented property', function() {
+          var event = child2.$broadcast('myEvent');
+          expect(event.defaultPrevented).toBe(false);
+
+          grandChild21.$on('myEvent', function(event) {
+            event.preventDefault();
+          });
+          event = child2.$broadcast('myEvent');
+          expect(event.defaultPrevented).toBe(true);
+        });
+
       });
 
 
@@ -1700,18 +1716,21 @@ describe('Scope', function() {
         it('should receive event object', inject(function($rootScope) {
           var scope = $rootScope,
               child = scope.$new(),
+              grandChild = child.$new(),
               event;
 
           child.$on('fooEvent', function(e) {
+            expect(e.targetScope).toBe(scope);
+            expect(e.currentScope).toBe(child);
+            expect(e.name).toBe('fooEvent');
             event = e;
           });
           scope.$broadcast('fooEvent');
 
-          expect(event.name).toBe('fooEvent');
+          // Asynchronous expectation : current & target should be the same as above
           expect(event.targetScope).toBe(scope);
           expect(event.currentScope).toBe(child);
         }));
-
 
         it('should support passing messages as varargs', inject(function($rootScope) {
           var scope = $rootScope,

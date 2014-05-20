@@ -1029,25 +1029,33 @@ function $RootScopeProvider(){
        * @return {Object} Event object (see {@link ng.$rootScope.Scope#$on}).
        */
       $emit: function(name, args) {
+        function Event(currentScope) {
+          this.name = name;
+          this.currentScope = currentScope;
+          this.targetScope = target;
+          this.defaultPrevented = globalDefaultPrevented;
+        }
+        Event.prototype.preventDefault = function() {
+          // Deals with the current instance (this) and also the next ones with globalDefaultPrevented.
+          this.defaultPrevented = true;
+          globalDefaultPrevented = true;
+        };
+        Event.prototype.stopPropagation = function() {
+          stopPropagation = true;
+        };
+
         var empty = [],
             namedListeners,
+            target = this,
             scope = this,
             stopPropagation = false,
-            event = {
-              name: name,
-              targetScope: scope,
-              stopPropagation: function() {stopPropagation = true;},
-              preventDefault: function() {
-                event.defaultPrevented = true;
-              },
-              defaultPrevented: false
-            },
-            listenerArgs = concat([event], arguments, 1),
+            globalDefaultPrevented = false,
+            event = new Event(scope),
+            listenerArgs,
             i, length;
 
         do {
           namedListeners = scope.$$listeners[name] || empty;
-          event.currentScope = scope;
           for (i=0, length=namedListeners.length; i<length; i++) {
 
             // if listeners were deregistered, defragment the array
@@ -1059,6 +1067,8 @@ function $RootScopeProvider(){
             }
             try {
               //allow all listeners attached to the current scope to run
+              event = new Event(scope);
+              listenerArgs = concat([event], arguments, 1);
               namedListeners[i].apply(null, listenerArgs);
             } catch (e) {
               $exceptionHandler(e);
@@ -1069,7 +1079,6 @@ function $RootScopeProvider(){
           //traverse upwards
           scope = scope.$parent;
         } while (scope);
-
         return event;
       },
 
@@ -1096,23 +1105,28 @@ function $RootScopeProvider(){
        * @return {Object} Event object, see {@link ng.$rootScope.Scope#$on}
        */
       $broadcast: function(name, args) {
+        function Event(currentScope) {
+          this.name = name;
+          this.currentScope = currentScope;
+          this.targetScope = target;
+          this.defaultPrevented = globalDefaultPrevented;
+        }
+        Event.prototype.preventDefault = function() {
+          // Deals with the current instance (this) and also the next ones with globalDefaultPrevented.
+          this.defaultPrevented = true;
+          globalDefaultPrevented = true;
+        };
+
         var target = this,
             current = target,
             next = target,
-            event = {
-              name: name,
-              targetScope: target,
-              preventDefault: function() {
-                event.defaultPrevented = true;
-              },
-              defaultPrevented: false
-            },
-            listenerArgs = concat([event], arguments, 1),
+            listenerArgs,
+            globalDefaultPrevented = false,
+            event = new Event(current),
             listeners, i, length;
 
         //down while you can, then up and next sibling or up and next sibling until back at root
         while ((current = next)) {
-          event.currentScope = current;
           listeners = current.$$listeners[name] || [];
           for (i=0, length = listeners.length; i<length; i++) {
             // if listeners were deregistered, defragment the array
@@ -1124,6 +1138,8 @@ function $RootScopeProvider(){
             }
 
             try {
+              event = new Event(current);
+              listenerArgs = concat([event], arguments, 1);
               listeners[i].apply(null, listenerArgs);
             } catch(e) {
               $exceptionHandler(e);
