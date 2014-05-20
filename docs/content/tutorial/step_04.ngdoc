@@ -32,7 +32,7 @@ __`app/index.html`:__
 
   <ul class="phones">
     <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
-      {{phone.name}}
+      <span>{{phone.name}}</span>
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
