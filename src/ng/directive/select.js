@@ -45,8 +45,11 @@ var ngOptionsMinErr = minErr('ngOptions');
  *
  *   * for array data sources:
  *     * `label` **`for`** `value` **`in`** `array`
+ *     * `label` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
  *     * `select` **`as`** `label` **`for`** `value` **`in`** `array`
+ *     * `select` **`as`** `label` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
  *     * `label`  **`group by`** `group` **`for`** `value` **`in`** `array`
+ *     * `label`  **`group by`** `group` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
  *     * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
  *   * for object data sources:
  *     * `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
