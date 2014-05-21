@@ -67,6 +67,13 @@ access to the `git` command line tool.  The main commands that you will need to 
 - `git clone ...` : clone a remote repository onto your local machine
 - `git checkout ...` : check out a particular branch or a tagged version of the code to hack on
 
+If you are behind a proxy, you may need to run the following command to configure the way git connect to internet.
+
+```
+git config --global http.proxy http://proxy.company.com:8080
+```
+
+
 ### Download angular-phonecat
 
 Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by running the following
@@ -75,6 +82,9 @@ command:
 ```
 git clone --depth=14 https://github.com/angular/angular-phonecat.git
 ```
+
+
+
 
 This command creates the `angular-phonecat` directory in your current directory.
 
@@ -118,6 +128,13 @@ nodejs --version
     Node Version Manager (nvm)
   </a>.
 </div>
+
+If you are working behind a proxy, you need to configure it :
+
+```
+npm config set proxy http://proxy.company.com:8080
+npm config set https-proxy http://proxy.company.com:8080
+```
 
 Once you have Node.js installed on your machine you can download the tool dependencies by running:
 
