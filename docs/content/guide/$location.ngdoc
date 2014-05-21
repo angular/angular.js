@@ -482,10 +482,9 @@ use a lower level API, {@link ng.$window $window.location.href}.
 ## Using $location outside of the scope life-cycle
 
 `$location` knows about Angular's {@link ng.$rootScope.Scope scope} life-cycle. When a URL changes in
-the browser it updates the `$location` and calls `$apply` so that all $watchers / $observers are
-notified.
+the browser it updates the `$location` and calls `$apply` so that all watchers are notified.
 When you change the `$location` inside the `$digest` phase everything is ok; `$location` will
-propagate this change into browser and will notify all the $watchers / $observers.
+propagate this change into browser and will notify all the watchers.
 When you want to change the `$location` from outside Angular (for example, through a DOM Event or
 during testing) - you must call `$apply` to propagate the changes.
 
