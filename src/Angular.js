@@ -336,21 +336,41 @@ function setHashKey(obj, h) {
  * Extends the destination object `dst` by copying all of the properties from the `src` object(s)
  * to `dst`. You can specify multiple `src` objects.
  *
+ * - `extend(dst, src)` will default to a shallow extension of the `dst` object or array.
+ * - `extend(deep, dst, src)` will do a "deep" extension of the `dst` object if `deep` is `true`
+ *
+ * @param {Boolean} deep Optional, defaults to `false`. Determines whether extension recursively extends properties.
  * @param {Object} dst Destination object.
  * @param {...Object} src Source object(s).
  * @returns {Object} Reference to `dst`.
  */
 function extend(dst) {
-  var h = dst.$$hashKey;
-  forEach(arguments, function(obj){
-    if (obj !== dst) {
-      forEach(obj, function(value, key){
-        dst[key] = value;
-      });
-    }
+  var deep = false,
+      srcStart = 1,
+      src, h;
+
+  if(isBoolean(dst)) {
+    deep = dst;
+    dst = arguments[1];
+    srcStart = 2;
+  }
+
+  src = [].slice.call(arguments, srcStart);
+  h = dst.$$hashKey;
+
+  forEach(src, function(obj) {
+    forEach(obj, function(value, key) {
+      if(obj !== src) {
+        if(deep && isObject(value)) {
+          extend(deep, dst[key], value);
+        } else {
+          dst[key] = value;
+        }
+      }
+    });
   });
 
-  setHashKey(dst,h);
+  setHashKey(dst, h);
   return dst;
 }
 

@@ -179,6 +179,73 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+
+    it('should do shallow extensions', function (){
+      var src, dst, h;
+      src = {
+        alter: 'from source',
+        brandnew: 'from source',
+        child: {
+          brandnew: 'from source'
+        }
+      };
+      dst = {
+        alter: 'from destination',
+        untouched: 'from destination',
+        child: {
+          untouched: 'from destination'
+        }
+      };
+      h = hashKey(dst);
+
+      extend(dst, src);
+
+      expect(dst.alter).toBe('from source');
+      expect(dst.brandnew).toBe('from source');
+      expect(dst.untouched).toBe('from destination');
+
+      //same reference because it's a shallow extend
+      expect(dst.child).toBe(src.child);
+
+      // make sure we retain the old key
+      expect(hashKey(dst)).toEqual(h);
+    });
+
+    it('should do deep extensions', function(){
+      var src, dst, h;
+      src = {
+        alter: 'from source',
+        brandnew: 'from source',
+        child: {
+          alter: 'from source',
+          brandnew: 'from source'
+        }
+      };
+      dst = {
+        alter: 'from destination',
+        untouched: 'from destination',
+        child: {
+          alter: 'from destination',
+          untouched: 'from destination'
+        }
+      };
+      h = hashKey(dst);
+
+      extend(true, dst, src);
+
+      expect(dst.alter).toBe('from source');
+      expect(dst.brandnew).toBe('from source');
+      expect(dst.untouched).toBe('from destination');
+
+      // NOT same reference because it's a deep extend
+      expect(dst.child).not.toBe(src.child);
+      expect(dst.child.untouched).toBe('from destination');
+      expect(dst.child.brandnew).toBe('from source');
+      expect(dst.child.alter).toBe('from source');
+
+      // make sure we retain the old key
+      expect(hashKey(dst)).toEqual(h);
+    });
   });
 
   describe('shallow copy', function() {
