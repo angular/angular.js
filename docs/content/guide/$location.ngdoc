@@ -49,7 +49,7 @@ changes to $location are reflected into the browser address bar.
   <tr>
     <td class="head">integration with angular application life-cycle</td>
     <td>none</td>
-    <td>knows about all internal life-cycle phases, integrates with $watch, ...</td>
+    <td>knows about all internal life-cycle phases, integrates with {@link ng.$rootScope.Scope#$watch $watch}, ...</td>
   </tr>
 
   <tr>
@@ -482,10 +482,12 @@ use a lower level API, {@link ng.$window $window.location.href}.
 ## Using $location outside of the scope life-cycle
 
 `$location` knows about Angular's {@link ng.$rootScope.Scope scope} life-cycle. When a URL changes in
-the browser it updates the `$location` and calls `$apply` so that all $watchers / $observers are
-notified.
+the browser it updates the `$location` and calls `$apply` so that all
+{@link ng.$rootScope.Scope#$watch $watchers} /
+{@link ng.$compile.directive.Attributes#$observe $observers} are notified.
 When you change the `$location` inside the `$digest` phase everything is ok; `$location` will
-propagate this change into browser and will notify all the $watchers / $observers.
+propagate this change into browser and will notify all the {@link ng.$rootScope.Scope#$watch $watchers} /
+{@link ng.$compile.directive.Attributes#$observe $observers}.
 When you want to change the `$location` from outside Angular (for example, through a DOM Event or
 during testing) - you must call `$apply` to propagate the changes.
 
@@ -618,7 +620,7 @@ then uses the information it obtains to compose hashbang URLs (such as
 
 The Angular's compiler currently does not support two-way binding for methods (see [issue](https://github.com/angular/angular.js/issues/404)).  If you should require two-way binding
 to the $location object (using {@link input[text] ngModel} directive on an input
-field), you will need to specify an extra model property (e.g. `locationPath`) with two watchers
+field), you will need to specify an extra model property (e.g. `locationPath`) with two {@link ng.$rootScope.Scope#$watch $watchers}
 which push $location updates in both directions. For example:
 <example>
 <file name="index.html">
