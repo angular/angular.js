@@ -547,28 +547,56 @@ function isRegExp(value) {
  *
  * @private
  * @param {*} obj Object to check
- * @returns {boolean} True if `obj` is a window obj.
+ * @returns {boolean} True if `obj` is a window object.
  */
 function isWindow(obj) {
   return obj && obj.document && obj.location && obj.alert && obj.setInterval;
 }
 
 
+/**
+ * Checks if `obj` is a scope object.
+ *
+ * @private
+ * @param {*} obj Object to check
+ * @returns {boolean} True if `obj` is a scope object.
+ */
 function isScope(obj) {
   return obj && obj.$evalAsync && obj.$watch;
 }
 
 
+/**
+ * Checks if `obj` is a file object.
+ *
+ * @private
+ * @param {*} obj Object to check
+ * @returns {boolean} True if `obj` is a file object.
+ */
 function isFile(obj) {
   return toString.call(obj) === '[object File]';
 }
 
 
+/**
+ * Checks if `obj` is a blob object.
+ *
+ * @private
+ * @param {*} obj Object to check
+ * @returns {boolean} True if `obj` is a blob object.
+ */
 function isBlob(obj) {
   return toString.call(obj) === '[object Blob]';
 }
 
 
+/**
+ * Checks if `obj` is a boolean object.
+ *
+ * @private
+ * @param {*} obj Object to check
+ * @returns {boolean} True if `obj` is a boolean object.
+ */
 function isBoolean(value) {
   return typeof value === 'boolean';
 }
