@@ -121,6 +121,7 @@ describe('Scope', function() {
       inject(function($rootScope, $exceptionHandler, $log) {
         $rootScope.$watch('a', function() {throw new Error('abc');});
         $rootScope.a = 1;
+
         $rootScope.$digest();
         expect($exceptionHandler.errors[0].message).toEqual('abc');
         $log.assertEmpty();
@@ -128,6 +129,9 @@ describe('Scope', function() {
     });
 
     it('should clear phase if an exception interrupt $digest cycle', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
       inject(function($rootScope) {
         $rootScope.$watch('a', function() {throw new Error('abc');});
         $rootScope.a = 1;
@@ -220,7 +224,9 @@ describe('Scope', function() {
 
 
     it('should prevent infinite recursion and print watcher expression',function() {
-      module(function($rootScopeProvider) {
+      module(function($exceptionHandlerProvider, $rootScopeProvider)
+      {
+        $exceptionHandlerProvider.mode('log');
         $rootScopeProvider.digestTtl(100);
       });
       inject(function($rootScope) {
@@ -259,22 +265,24 @@ describe('Scope', function() {
 
 
     it('should prevent infinite loop when creating and resolving a promise in a watched expression', function() {
-      module(function($rootScopeProvider) {
-          $rootScopeProvider.digestTtl(10);
+      module(function($exceptionHandlerProvider, $rootScopeProvider) {
+        $exceptionHandlerProvider.mode('log');
+        $rootScopeProvider.digestTtl(10);
       });
       inject(function($rootScope, $q) {
           var d = $q.defer();
+          var value = 'Hello, world.';
 
-          d.resolve('Hello, world.');
+          d.resolve(value);
           $rootScope.$watch(function () {
               var $d2 = $q.defer();
               $d2.resolve('Goodbye.');
               $d2.promise.then(function () { });
-              return d.promise;
+              return value;
           }, function () { return 0; });
 
           expect(function() {
-              $rootScope.$digest();
+            $rootScope.$digest();
           }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n'+
                   'Watchers fired in the last 5 iterations: []');
 

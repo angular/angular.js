@@ -323,6 +323,124 @@ function qFactory(nextTick, exceptionHandler) {
           }, function(error) {
             return handleCallback(error, false);
           });
+        },
+
+        thenIf: function(condition, thenBlock, elseBlock)
+        {
+          return this.then(
+            function(value)
+            {
+              var test = condition && condition(value);
+
+              return !test ? next(elseBlock) :
+                !isFunction(test.then) ? next(thenBlock) :
+                test.then(
+                  function(value) { return next(value ? thenBlock : elseBlock); });
+
+              function next(block)
+              {
+                return block && block(value);
+              }
+            });
+        },
+
+        thenWhile: function(condition, body)
+        {
+          var self = this;
+          var deferred = defer();
+
+          next();
+
+          return deferred.promise;
+
+          function next()
+          {
+            self.
+              thenIf(condition, block, deferred.resolve)
+              ["catch"](deferred.reject);
+          }
+
+          function block(value)
+          {
+            var result = body && body(value);
+
+            result && isFunction(result.then) ?
+              result.then(next, deferred.reject) : next();
+          }
+        },
+
+        thenDoWhile: function(condition, body)
+        {
+          var self = this;
+
+          return self.then(body).
+            then(function() { return self.thenWhile(condition, body) });
+        },
+
+        thenForEach: function(items, body)
+        {
+          var self = this;
+
+          return self.then(
+            function(value)
+            {
+              var values = items(value);
+
+              return values && isFunction(values.then) ?
+                values.then(next) : next(values);
+
+              function next(values)
+              {
+                var i;
+
+                if (isArrayLike(values))
+                {
+                  return self.thenFor(
+                    function() { i = 0; },
+                    function() { return i < values.length; },
+                    function() { ++i; },
+                    function() { return body && body(values[i], i, value); });
+                }
+                else
+                {
+                  var keys = map(values, function(value, key) { return key; });
+
+                  return self.thenFor(
+                    function() { i = 0; },
+                    function() { return i < keys.length; },
+                    function() { ++i; },
+                    function()
+                    {
+                      var key = keys[i];
+
+                      return body && body(values[key], key, value);
+                    });
+                }
+              }
+            });
+        },
+
+        thenFor: function(init, condition, increment, body)
+        {
+          var self = this;
+          var fn = init;
+
+          return self.thenWhile(
+            function(value)
+            {
+              var result = fn && fn(value);
+
+              fn = increment;
+
+              return result && isFunction(result.then) ?
+                result.then(next) : next();
+
+              function next()
+              {
+                return condition && condition(value);
+              }
+            },
+            body);
         }
       }
     };
@@ -516,10 +634,21 @@ function qFactory(nextTick, exceptionHandler) {
     return deferred.promise;
   }
 
+  function run(callback)
+  {
+    var deferred = defer();
+    var result = callback && callback(deferred.promise);
+
+    deferred.resolve();
+
+    return result && isFunction(result.then) ? result : deferred.promise;
+  }
+
   return {
     defer: defer,
     reject: reject,
     when: when,
-    all: all
+    all: all,
+    run: run
   };
 }

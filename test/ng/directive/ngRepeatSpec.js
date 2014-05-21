@@ -295,7 +295,6 @@ describe('ngRepeat', function() {
 
     it('should iterate over object with changing primitive property values', function() {
       // test for issue #933
-
       element = $compile(
           '<ul>' +
             '<li ng-repeat="(key, value) in items track by $index">' +

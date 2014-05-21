@@ -33,7 +33,7 @@ angularFiles = {
     'src/ng/sce.js',
     'src/ng/sniffer.js',
     'src/ng/timeout.js',
-    'src/ng/task.js',
+    'src/ng/scheduler.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',
 

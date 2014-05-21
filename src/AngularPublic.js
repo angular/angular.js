@@ -216,7 +216,7 @@ function publishExternalAPI(angular){
         $sniffer: $SnifferProvider,
         $templateCache: $TemplateCacheProvider,
         $timeout: $TimeoutProvider,
-        $task: $TaskProvider,
+        $scheduler: $SchedulerProvider,
         $window: $WindowProvider,
         $$rAF: $$RAFProvider,
         $$asyncCallback : $$AsyncCallbackProvider
