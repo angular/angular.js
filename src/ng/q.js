@@ -246,12 +246,19 @@ function qFactory(nextTick, exceptionHandler) {
 
 
       promise: {
+        context: function(object) {
+          var result = this.then();
+          result.context_ = object;
+          return result;
+        },
+
         then: function(callback, errback, progressback) {
           var result = defer();
+          var context = this.context_;
 
           var wrappedCallback = function(value) {
             try {
-              result.resolve((isFunction(callback) ? callback : defaultCallback)(value));
+              result.resolve((isFunction(callback) ? callback : defaultCallback).call(context, value));
             } catch(e) {
               result.reject(e);
               exceptionHandler(e);
@@ -260,7 +267,7 @@ function qFactory(nextTick, exceptionHandler) {
 
           var wrappedErrback = function(reason) {
             try {
-              result.resolve((isFunction(errback) ? errback : defaultErrback)(reason));
+              result.resolve((isFunction(errback) ? errback : defaultErrback).call(context, reason));
             } catch(e) {
               result.reject(e);
               exceptionHandler(e);
@@ -269,7 +276,7 @@ function qFactory(nextTick, exceptionHandler) {
 
           var wrappedProgressback = function(progress) {
             try {
-              result.notify((isFunction(progressback) ? progressback : defaultCallback)(progress));
+              result.notify((isFunction(progressback) ? progressback : defaultCallback).call(context, progress));
             } catch(e) {
               exceptionHandler(e);
             }
@@ -281,6 +288,8 @@ function qFactory(nextTick, exceptionHandler) {
             value.then(wrappedCallback, wrappedErrback, wrappedProgressback);
           }
 
+          result.promise.context_ = context;
+
           return result.promise;
         },
 
@@ -289,6 +298,7 @@ function qFactory(nextTick, exceptionHandler) {
         },
 
         "finally": function(callback) {
+          var context = this.context_;
 
           function makePromise(value, resolved) {
             var result = defer();
@@ -303,7 +313,7 @@ function qFactory(nextTick, exceptionHandler) {
           function handleCallback(value, isResolved) {
             var callbackOutput = null;
             try {
-              callbackOutput = (callback ||defaultCallback)();
+              callbackOutput = (callback ||defaultCallback).call(context);
             } catch(e) {
               return makePromise(e, false);
             }
