@@ -1576,7 +1576,7 @@ describe('Scope', function() {
         });
 
 
-        it("should have it's `currentScope` property set to null after emit", function() {
+        it('should have its `currentScope` property set to null after emit', function() {
           var event;
 
           child.$on('myEvent', function(e) {
