@@ -152,9 +152,10 @@ Similarly, invoking a function `a.b.c()` on `undefined` or `null` simply returns
 
 ## No Control Flow Statements
 
-You cannot write a control flow statement in an expression. The reason behind this is core to the
-Angular philosophy that application logic should be in controllers, not the views. If you need a
-conditional, loop, or to throw from a view expression, delegate to a JavaScript method instead.
+Apart from the ternary operator (`a ? b : c`), you cannot write a control flow statement in an
+expression. The reason behind this is core to the Angular philosophy that application logic should
+be in controllers, not the views. If you need a real conditional, loop, or to throw from a view
+expression, delegate to a JavaScript method instead.
 
 ## `$event`
 
