@@ -385,5 +385,15 @@ describe('filters', function() {
       expect(date('2003-09-10T13:02:03.12Z', format)).toEqual('2003-09-' + localDay + ' 03');
       expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-' + localDay + ' 03');
     });
+
+    it('should support ASP.NET JSON dates', function () {
+      var format = 'yyyy-MM-d H:m:s';
+
+      var ed = new Date(1198908717000),
+          es = '2007-12-' + ed.getDate() + ' ' + ed.getHours() + ':' + ed.getMinutes() + ':' + ed.getSeconds();
+
+      expect(date('/Date(1198908717000)/', format)).toEqual(es);
+      expect(date('/Date(1198908717056-0700)/', format)).toEqual(es);
+    });
   });
 });
