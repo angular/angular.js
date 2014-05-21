@@ -59,7 +59,6 @@
  *       template: '<div></div>', // or // function(tElement, tAttrs) { ... },
  *       // or
  *       // templateUrl: 'directive.html', // or // function(tElement, tAttrs) { ... },
- *       replace: false,
  *       transclude: false,
  *       restrict: 'A',
  *       scope: false,
@@ -248,7 +247,7 @@
  * api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
- * #### `replace`
+ * #### `replace` ([*DEPRECATED*!], will be removed in next major release)
  * specify where the template should be inserted. Defaults to `false`.
  *
  * * `true` - the template will replace the current element.
