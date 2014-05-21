@@ -1078,4 +1078,149 @@ describe('$route', function() {
       });
     });
   });
+
+  describe('namedRoutes', function() {
+    it('should route and fire change event', function() {
+      var log = '',
+          lastRoute,
+          nextRoute;
+
+      module(function($routeProvider) {
+        $routeProvider.when('/Book/:book/Chapter/:chapter',
+            {controller: angular.noop, templateUrl: 'Chapter.html', name: 'chapter'});
+        $routeProvider.when('/Blank', {});
+      });
+      inject(function($route, $location, $rootScope) {
+        $rootScope.$on('$routeChangeStart', function(event, next, current) {
+          log += 'before();';
+          expect(current).toBe($route.current);
+          lastRoute = current;
+          nextRoute = next;
+        });
+        $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+          log += 'after();';
+          expect(current).toBe($route.current);
+          expect(lastRoute).toBe(last);
+          expect(nextRoute).toBe(current);
+        });
+
+        $route.to.chapter({book: 'Moby', chapter: 'Intro'}, 'p=123').
+            then(function(params) {
+              log += 'then();';
+              expect(params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
+            });
+        $rootScope.$digest();
+        $httpBackend.flush();
+        expect(log).toEqual('before();after();then();');
+        expect($location.url()).toEqual('/Book/Moby/Chapter/Intro?p=123');
+      });
+    });
+
+    it('should route with catch-all params and allow params to persist across routes', function() {
+      var log = '',
+          lastRoute,
+          nextRoute;
+
+      module(function($routeProvider) {
+        $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
+            {controller: angular.noop, templateUrl: 'Chapter.html', name: 'book1'});
+        $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
+            {controller: angular.noop, templateUrl: 'Chapter.html', name: 'book2'});
+        $routeProvider.when('/Blank', {});
+      });
+      inject(function($route, $location, $rootScope) {
+        $rootScope.$on('$routeChangeStart', function(event, next, current) {
+          log += 'before();';
+          expect(current).toBe($route.current);
+          lastRoute = current;
+          nextRoute = next;
+        });
+        $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+          log += 'after();';
+          expect(current).toBe($route.current);
+          expect(lastRoute).toBe(last);
+          expect(nextRoute).toBe(current);
+        });
+
+        $route.to.book1({book: 'Moby', chapter: 'Intro', highlight:'one'}, 'p=123').
+            then(function(params) {
+              log += 'then();';
+              expect(params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
+            });
+        $rootScope.$digest();
+        $httpBackend.flush();
+        expect(log).toEqual('before();after();then();');
+        expect($location.url()).toEqual('/Book1/Moby/Chapter/Intro/one/edit?p=123');
+
+        log = '';
+        $location.path('/Blank').search('ignore');
+        $rootScope.$digest();
+        expect(log).toEqual('before();after();');
+        expect($route.current.params).toEqual({ignore:true});
+
+        log = '';
+        $route.to.book1({book: 'Moby', chapter: 'Intro', highlight:'one/two'}, 'p=123').
+            then(function(params) {
+              log += 'then();';
+              expect(params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
+            });
+        $rootScope.$digest();
+        expect(log).toEqual('before();after();then();');
+        expect($location.url()).toEqual('/Book1/Moby/Chapter/Intro/one/two/edit?p=123');
+
+        log = '';
+        // Route to book2 and only change the book grouping
+        $route.to.book2({book:'Lord'}, true).
+            then(function(params) {
+              log += 'then();';
+              expect(params).toEqual({book:'Lord', chapter:'Intro', highlight:'one/two', p:'123'});
+            });
+        $rootScope.$digest();
+        expect(log).toEqual('before();after();then();');
+        expect($location.url()).toEqual('/Book2/Lord/one/two/Chapter/Intro?p=123');
+      });
+    });
+
+    it('should be possible to retrieve an interpolated path string for named routes', function() {
+      var log = '',
+          lastRoute,
+          nextRoute;
+
+      module(function($routeProvider) {
+        $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
+            {controller: angular.noop, templateUrl: 'Chapter.html', name: 'book1'});
+        $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
+            {controller: angular.noop, templateUrl: 'Chapter.html', name: 'book2'});
+        $routeProvider.when('/Blank', {});
+      });
+      inject(function($route, $location, $rootScope) {
+        $rootScope.$on('$routeChangeStart', function(event, next, current) {
+          log += 'before();';
+          expect(current).toBe($route.current);
+          lastRoute = current;
+          nextRoute = next;
+        });
+        $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+          log += 'after();';
+          expect(current).toBe($route.current);
+          expect(lastRoute).toBe(last);
+          expect(nextRoute).toBe(current);
+        });
+
+        $route.to.book1({book: 'Moby', chapter: 'Intro', highlight:'one/two'}, 'p=123').
+            then(function(params) {
+              log += 'then();';
+              expect(params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
+            });
+        $rootScope.$digest();
+        $httpBackend.flush();
+        expect(log).toEqual('before();after();then();');
+        expect($location.url()).toEqual('/Book1/Moby/Chapter/Intro/one/two/edit?p=123');
+
+        expect($route.pathTo.book2()).toEqual('/Book2/Moby/one/two/Chapter/Intro');
+        expect($route.pathTo.book2({book:'Lord'})).toEqual('/Book2/Lord/one/two/Chapter/Intro');
+        expect($route.pathTo.book1({book:'Lord'})).toEqual('/Book1/Lord/Chapter/Intro/one/two/edit');
+      });
+    });
+  });
 });

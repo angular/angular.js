@@ -89,7 +89,8 @@ angularFiles = {
     'ngRoute': [
       'src/ngRoute/route.js',
       'src/ngRoute/routeParams.js',
-      'src/ngRoute/directive/ngView.js'
+      'src/ngRoute/directive/ngView.js',
+      'src/ngRoute/directive/ngGoto.js'
     ],
     'ngSanitize': [
       'src/ngSanitize/sanitize.js',
