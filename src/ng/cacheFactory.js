@@ -95,7 +95,8 @@ function $CacheFactoryProvider() {
           capacity = (options && options.capacity) || Number.MAX_VALUE,
           lruHash = {},
           freshEnd = null,
-          staleEnd = null;
+          staleEnd = null,
+          disabled = false;
 
       /**
        * @ngdoc type
@@ -157,6 +158,8 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         put: function(key, value) {
+          if (disabled) return;
+
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
@@ -186,6 +189,8 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         get: function(key) {
+          if (disabled) return;
+
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
@@ -277,6 +282,32 @@ function $CacheFactoryProvider() {
          */
         info: function() {
           return extend({}, stats, {size: size});
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cacheFactory.Cache#disable
+         * @function
+         *
+         * @description
+         * Disables cache programatially, you can enable it later calling {@link $cacheFactory.Cache#enable}.
+         *
+         */
+        disable: function() {
+          disabled = true;
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cacheFactory.Cache#enable
+         * @function
+         *
+         * @description
+         * Enables cache programatially, you can disable it later calling {@link $cacheFactory.Cache#disable}.
+         *
+         */
+        enable: function() {
+          disabled = false;
         }
       };
 
