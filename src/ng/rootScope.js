@@ -145,7 +145,6 @@ function $RootScopeProvider(){
 
 
     Scope.prototype = {
-      constructor: Scope,
       /**
        * @ngdoc method
        * @name $rootScope.Scope#$new
@@ -1152,6 +1151,18 @@ function $RootScopeProvider(){
         return event;
       }
     };
+
+    if(Object.defineProperty){ // the browser supports 'defineProperty'
+      Object.defineProperty(Scope.prototype, 'constructor', {
+        writable: true,
+        configurable: true,
+        enumerable: false,
+        value: Scope
+      });
+    }
+    else{
+      Scope.prototype.constructor = Scope;
+    }
 
     var $rootScope = new Scope();
 
