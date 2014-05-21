@@ -21,7 +21,7 @@ For a more in-depth explanation, see the {@link tutorial/ tutorial}.
 |{@link concepts#controller Controller}        | the business logic behind views |
 |{@link concepts#di Dependency Injection} | Creates and wires objects and functions |
 |{@link concepts#injector Injector}          | dependency injection container |
-|{@link concepts#module Module}            | a container for the different parts of an app including controllers, services, filters, directivess which configures the Injector |
+|{@link concepts#module Module}            | a container for the different parts of an app including controllers, services, filters, directives which configures the Injector |
 |{@link concepts#service Service}           | reusable business logic independent of views |
 
 
