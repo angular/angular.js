@@ -17,7 +17,7 @@ production.
 To point your code to an angular script on the Google CDN server, use the following template.  This
 example points to the minified version 1.2.0:
 
-<pre>
+```
   <!doctype html>
   <html ng-app>
     <head>
@@ -27,7 +27,7 @@ example points to the minified version 1.2.0:
     <body>
     </body>
   </html>
-</pre>
+```
 
 Note that only versions 1.0.1 and above are available on the CDN, if you need an earlier version
 you can use the <http://code.angularjs.org/> URL which was the previous recommended location for
