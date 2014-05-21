@@ -1481,7 +1481,7 @@ var VALID_CLASS = 'ng-valid',
     </file>
     <file name="script.js">
       angular.module('customControl', []).
-        directive('contenteditable', function() {
+        directive('contenteditable', ['$sce', function($sce) {
           return {
             restrict: 'A', // only activate on element attribute
             require: '?ngModel', // get a hold of NgModelController
@@ -1490,7 +1490,7 @@ var VALID_CLASS = 'ng-valid',
 
               // Specify how UI should be updated
               ngModel.$render = function() {
-                element.html(ngModel.$viewValue || '');
+                element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
               };
 
               // Listen for change events to enable binding
@@ -1511,7 +1511,7 @@ var VALID_CLASS = 'ng-valid',
               }
             }
           };
-        });
+        }]);
     </file>
     <file name="index.html">
       <form name="myForm">
