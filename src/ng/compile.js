@@ -935,7 +935,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // return a linking function if we have found anything, null otherwise
       return linkFnFound ? compositeLinkFn : null;
 
-      function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
+      function compositeLinkFn(scope, nodeList, $rootElement, parentBoundTranscludeFn) {
         var nodeLinkFn, childLinkFn, node, $node, childScope, i, ii, n, childBoundTranscludeFn;
 
         // copy nodeList so that linking doesn't break due to live list updates.
@@ -962,24 +962,29 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             // We need to create a new boundTranscludeFn if
             //  - a directive on this element wants to transclude
             //  or
-            //  - there is no boundTranscludeFn already and a transcludeFn was passed in
-            if ( nodeLinkFn.transcludeOnThisElement || (!boundTranscludeFn && transcludeFn) ) {
-              childBoundTranscludeFn = createBoundTranscludeFn(scope, nodeLinkFn.transclude || transcludeFn);
+            //  - there is no parentBoundTranscludeFn already and a transcludeFn was passed in
+            if ( nodeLinkFn.transcludeOnThisElement || (!parentBoundTranscludeFn && transcludeFn) ) {
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, nodeLinkFn.transclude || transcludeFn, parentBoundTranscludeFn);
             } else {
-              childBoundTranscludeFn = boundTranscludeFn;
+              childBoundTranscludeFn = parentBoundTranscludeFn;
             }
 
             nodeLinkFn(childLinkFn, childScope, node, $rootElement, childBoundTranscludeFn);
 
           } else if (childLinkFn) {
-            childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
+            childLinkFn(scope, node.childNodes, undefined, parentBoundTranscludeFn);
           }
         }
       }
     }
 
-    function createBoundTranscludeFn(scope, transcludeFn) {
-      return function boundTranscludeFn(transcludedScope, cloneFn, controllers) {
+    function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
+
+      // If there is a previous boundTransclude function and it has a transclusionScope then
+      // use this instead of the current scope
+      scope = previousBoundTranscludeFn && previousBoundTranscludeFn.transclusionScope || scope;
+
+      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers) {
         var scopeCreated = false;
 
         if (!transcludedScope) {
@@ -994,6 +999,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
         return clone;
       };
+
+      // Store the transclusionScope for nested transclusions
+      boundTranscludeFn.transclusionScope = scope;
+
+      return boundTranscludeFn;
     }
 
     /**
@@ -1767,7 +1777,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               safeAddClass(jqLite(linkNode), oldClasses);
             }
             if (afterTemplateNodeLinkFn.transclude) {
-              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude);
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude, boundTranscludeFn);
             } else {
               childBoundTranscludeFn = boundTranscludeFn;
             }
