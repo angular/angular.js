@@ -3,7 +3,7 @@
 /**
  * @ngdoc filter
  * @name orderBy
- * @function
+ * @kind function
  *
  * @description
  * Orders a specified `array` by the `expression` predicate. It is ordered alphabetically
