@@ -12,9 +12,9 @@ set -e
 # before_script:
 #   - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
 
-CONNECT_URL="http://saucelabs.com/downloads/Sauce-Connect-latest.zip"
+CONNECT_URL="https://d2nkw87yt5k0to.cloudfront.net/downloads/sc-latest-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
-CONNECT_DOWNLOAD="Sauce_Connect.zip"
+CONNECT_DOWNLOAD="sc-latest-linux.tar.gz"
 
 CONNECT_LOG="$LOGS_DIR/sauce-connect"
 CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
@@ -24,7 +24,8 @@ CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
 mkdir -p $CONNECT_DIR
 cd $CONNECT_DIR
 curl $CONNECT_URL -o $CONNECT_DOWNLOAD 2> /dev/null 1> /dev/null
-unzip $CONNECT_DOWNLOAD > /dev/null
+mkdir sauce-connect
+tar --extract --file=$CONNECT_DOWNLOAD --strip-components=1 --directory=sauce-connect > /dev/null
 rm $CONNECT_DOWNLOAD
 
 SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
@@ -45,5 +46,5 @@ echo "Starting Sauce Connect in the background, logging into:"
 echo "  $CONNECT_LOG"
 echo "  $CONNECT_STDOUT"
 echo "  $CONNECT_STDERR"
-java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY \
+sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY $ARGS \
   --logfile $CONNECT_LOG 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &

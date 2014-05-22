@@ -154,7 +154,7 @@ rename the method parameter names. This makes this way of annotating only useful
 
 ### `$inject` Property Annotation
 
-To allow the minifers to rename the function parameters and still be able to inject right services,
+To allow the minifiers to rename the function parameters and still be able to inject right services,
 the function needs to be annotated with the `$inject` property. The `$inject` property is an array
 of service names to inject.
 
@@ -224,7 +224,7 @@ dependencies.
 - The `run` and `config` methods accept a function, which can also be injected with "service"
 components as dependencies.
 
-- Controllers are defined by an constructor function, which can be injected with any of the "service"
+- Controllers are defined by a constructor function, which can be injected with any of the "service"
 components as dependencies, but they can also be provided with special dependencies. See "DI in
 Controllers" below.
 
@@ -288,7 +288,7 @@ application. For example, there would be one instance for every `ng-controller` 
 Moreover, additional dependencies are made available to Controllers:
 
 * {@link scope `$scope`}: Controllers are always associated with a point in the DOM and so are provided with
-  access to the {@link scope scope} at that point. Other components, such as servies only have access to the
+  access to the {@link scope scope} at that point. Other components, such as services only have access to the
   singleton {@link $rootScope} service.
 * {@link $route} resolves: If a controller is instantiated as part of a route, then any values that
   are resolved as part of the route are made available for injection into the controller.

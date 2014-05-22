@@ -40,12 +40,13 @@ would like to implement a new feature then consider what kind of change it is:
 [dev mailing list][angular-dev] or [IRC][irc] so that we can better coordinate our efforts, prevent
 duplication of work, and help you to craft the change so that it is successfully accepted into the
 project.
-* **Small Changes** can be crafted and submitted to [GitHub Repository][github] as a Pull Request.
+* **Small Changes** can be crafted and submitted to the [GitHub Repository][github] as a Pull Request.
 
 
 ## <a name="docs"></a> Want a Doc Fix?
-If you want to help improve the docs, it's a good idea to let others know what you're working on to 
-minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open). 
+If you want to help improve the docs, it's a good idea to let others know what you're working on to
+minimize duplication of effort. Before starting, check out the issue queue for
+[Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open).
 Comment on an issue to let others know what you're working on, or create a new issue if your work
 doesn't fit within the scope of any of the existing doc fix projects.
 
@@ -84,7 +85,7 @@ Before you submit your pull request consider the following guidelines:
 
 * Search [GitHub](https://github.com/angular/angular.js/pulls) for an open or closed Pull Request
   that relates to your submission. You don't want to duplicate effort.
-* Please sign our [Contributor License Agreement (CLA)](#signing-the-cla) before sending pull
+* Please sign our [Contributor License Agreement (CLA)](#cla) before sending pull
   requests. We cannot accept code without this.
 * Make your changes in a new git branch
 
@@ -93,7 +94,7 @@ Before you submit your pull request consider the following guidelines:
      ```
 
 * Create your patch, **including appropriate test cases**.
-* Follow our [Coding Rules](#coding-rules).
+* Follow our [Coding Rules](#rules).
 * Run the full Angular test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 * Commit your changes using a descriptive commit message that follows our
@@ -259,6 +260,7 @@ You can find out more detailed information about contributing in the
 [contribute]: http://docs.angularjs.org/misc/contribute
 [contributing]: http://docs.angularjs.org/misc/contribute
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
+[dev-doc]: https://docs.angularjs.org/guide
 [github]: https://github.com/angular/angular.js
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html

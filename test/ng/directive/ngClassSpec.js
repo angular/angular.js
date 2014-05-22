@@ -153,6 +153,7 @@ describe('ngClass', function() {
     element.addClass('foo');
     $rootScope.dynCls = '';
     $rootScope.$digest();
+    expect(element[0].className).toBe('ng-scope');
   }));
 
 
@@ -160,6 +161,7 @@ describe('ngClass', function() {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = [undefined, null];
     $rootScope.$digest();
+    expect(element[0].className).toBe('ng-scope');
   }));
 
 
@@ -273,6 +275,28 @@ describe('ngClass', function() {
     element = $compile('<div ng-class="{foo:foo}"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.hasClass('foo')).toBe(false);
+  }));
+
+
+  it('should update ngClassOdd/Even when an item is added to the model', inject(function($rootScope, $compile) {
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in items" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'">i</li>' +
+      '<ul>')($rootScope);
+    $rootScope.items = ['b','c','d'];
+    $rootScope.$digest();
+
+    $rootScope.items.unshift('a');
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e4 = jqLite(element[0].childNodes[7]);
+
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeFalsy();
+
+    expect(e4.hasClass('even')).toBeTruthy();
+    expect(e4.hasClass('odd')).toBeFalsy();
   }));
 
 

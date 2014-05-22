@@ -86,7 +86,7 @@ Note that the names of arguments are significant, because the injector uses thes
 dependencies.
 
 
-<img  class="diagram" src="img/tutorial/xhr_service_final.png">
+<img  class="diagram" src="img/tutorial/tutorial_05.png">
 
 
 ### `$` Prefix Naming Convention

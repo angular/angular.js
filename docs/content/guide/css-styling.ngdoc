@@ -8,7 +8,7 @@ Angular sets these CSS classes. It is up to your application to provide useful s
 # CSS classes used by angular
 
 * `ng-scope`
-  - **Usage:** angular applies this class to any element that where a new {@link ng.$rootScope.Scope scope}
+  - **Usage:** angular applies this class to any element for which a new {@link api/ng.$rootScope.Scope scope}
     is defined. (see {@link guide/scope scope} guide for more information about scopes)
 
 * `ng-binding`
