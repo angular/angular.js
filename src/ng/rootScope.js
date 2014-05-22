@@ -108,19 +108,63 @@ function $RootScopeProvider()
   this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser', '$scheduler',
       function ($injector, $exceptionHandler, $parse, $browser, $scheduler)
       {
+        function DigestOptions() { };
+
+        DigestOptions.newQ = function()
+        {
+          var options = new DigestOptions();
+          var q = $scheduler(options);
+
+          options.q = q;
+
+          return q;
+        }
+
+        DigestOptions.prototype = $scheduler.options(asyncDigest);
+
+        // noop exception handler, as $digest already 
+        // reports error using $exceptionHandler.
+        DigestOptions.prototype.exceptionHandler = noop;
+
+        if (asyncDigest)
+        {
+          var digestHandler = DigestOptions.prototype.handler;
+
+          DigestOptions.prototype.handler = function(callback)
+          {
+            if (this.abort)
+            {
+              return;
+            }
+
+            if (currentDigestQ == this.q)
+            {
+              digestHandler.call(this, callback);
+            }
+            else
+            {
+              var q = currentDigestQ;
+
+              !q && beginPhase('$digest');
+              currentDigestQ = this.q;
+
+              try
+              {
+                digestHandler.call(this, callback);
+              }
+              finally
+              {
+                currentDigestQ = q;
+                !q && clearPhase();
+              }
+            }
+          }
+        }
+
         var digestQs = [];
         var currentDigestQ;
-        var digestQ = $scheduler(
-          // Default run time for async or null for sync digest.
-          asyncDigest ? undefined : null,
-          // Default sleep time.
-          undefined,
-          // Default handler.
-          undefined,
-          // noop exception handler, as $digest already 
-          // reports error using $exceptionHandler.
-          noop);
-
+        var digestQ;
+          
         /**
          * @ngdoc type
          * @name $rootScope.Scope
@@ -656,7 +700,19 @@ function $RootScopeProvider()
 
           $digestQ: function()
           {
-            return currentDigestQ || digestQ;
+            var q = currentDigestQ || digestQ;
+
+            if (!q)
+            {
+              q = DigestOptions.newQ();
+
+              if (!asyncDigest)
+              {
+                digestQ = q;
+              }
+            }
+
+            return q;
           },
 
           /**
@@ -708,7 +764,7 @@ function $RootScopeProvider()
            */
           $digest: function()
           {
-            var q, defer, resolved, error;
+            var q = this.$digestQ(), defer, resolved, error;
             var watch, value, last,
                 watchers,
                 asyncQueue = this.$$asyncQueue,
@@ -730,41 +786,10 @@ function $RootScopeProvider()
                 q.abort = true;
               }
 
-              q = $scheduler(
-                undefined,
-                undefined,
-                function(callback)
-                {
-                  digestQ.handler(
-                    callback &&
-                    function()
-                    {
-                      if (q.abort)
-                      {
-                        return;
-                      }
-
-                      beginPhase('$digest');
-                      currentDigestQ = q;
-
-                      try
-                      {
-                        callback();
-                      }
-                      finally
-                      {
-                        currentDigestQ = undefined;
-                        clearPhase();
-                      }
-                    });
-                },
-                noop);
-
               digestQs.push(q);
             }
             else
             {
-              q = digestQ;
               beginPhase('$digest');
             }
 

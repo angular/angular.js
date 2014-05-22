@@ -637,7 +637,7 @@ function qFactory(nextTick, exceptionHandler) {
   function run(callback)
   {
     var deferred = defer();
-    var result = callback && callback(deferred.promise);
+    var result = callback ? callback(deferred.promise) : nextTick();
 
     deferred.resolve();
 
