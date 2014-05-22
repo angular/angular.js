@@ -636,7 +636,7 @@ function $LocationProvider(){
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (event.ctrlKey || event.metaKey || event.which == 2) return;
+      if (event.ctrlKey || event.metaKey || event.which == 2 || event.which ==3) return;
 
       var elm = jqLite(event.target);
 
