@@ -393,9 +393,11 @@ LocationHashbangInHtml5Url.prototype =
    */
   path: locationGetterSetter('$$path', function(path) {
     // fixed: path like '/.'
+    var hashPart = path.match(/#.*/);
     var match = urlResolve(path);
-    path = decodeURIComponent(match.pathname.charAt(0) === '/' ?
-      match.pathname.substring(1) : match.pathname);
+    var pathname = match.pathname + ( hashPart && hashPart[0] || '' );
+    path = decodeURIComponent(pathname.charAt(0) === '/' ?
+      pathname.substring(1) : pathname);
     path = path.replace(/\/*$/, '');
     return '/' + path;
   }),
