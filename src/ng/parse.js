@@ -542,21 +542,17 @@ Parser.prototype = {
     var token = this.expect();
     var fn = this.$filter(token.text);
     var argsFn = [];
-    while (true) {
-      if ((token = this.expect(':'))) {
-        argsFn.push(this.expression());
-      } else {
-        var fnInvoke = function(self, locals, input) {
-          var args = [input];
-          for (var i = 0; i < argsFn.length; i++) {
-            args.push(argsFn[i](self, locals));
-          }
-          return fn.apply(self, args);
-        };
-        return function() {
-          return fnInvoke;
-        };
+    while(this.expect(':')) {
+      argsFn.push(this.expression());
+    }
+    return valueFn(fnInvoke);
+
+    function fnInvoke(self, locals, input) {
+      var args = [input];
+      for (var i = 0; i < argsFn.length; i++) {
+        args.push(argsFn[i](self, locals));
       }
+      return fn.apply(self, args);
     }
   },
 
