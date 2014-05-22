@@ -174,7 +174,6 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
 
       return function(scope, $element, $attr, ctrl, $transclude) {
         var changeCounter = 0,
-            currentScope,
             previousElement,
             currentElement;
 
@@ -182,10 +181,6 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
           if(previousElement) {
             previousElement.remove();
             previousElement = null;
-          }
-          if(currentScope) {
-            currentScope.$destroy();
-            currentScope = null;
           }
           if(currentElement) {
             $animate.leave(currentElement, function() {
@@ -207,7 +202,6 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
           if (src) {
             $http.get(src, {cache: $templateCache}).success(function(response) {
               if (thisChangeId !== changeCounter) return;
-              var newScope = scope.$new();
               ctrl.template = response;
 
               // Note: This will also link all children of ng-include that were contained in the original
@@ -216,16 +210,21 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
               // Note: We can't remove them in the cloneAttchFn of $transclude as that
               // function is called before linking the content, which would apply child
               // directives to non existing elements.
-              var clone = $transclude(newScope, function(clone) {
+              var clone = $transclude(function(clone, newScope) {
+
                 cleanupLastIncludeContent();
+
                 $animate.enter(clone, null, $element, afterAnimation);
+
+                currentElement = clone;
+
+                scope.$eval(onloadExp);
+
+                newScope.$evalAsync(function() {
+                  newScope.$emit('$includeContentLoaded');
+                });
               });
 
-              currentScope = newScope;
-              currentElement = clone;
-
-              currentScope.$emit('$includeContentLoaded');
-              scope.$eval(onloadExp);
             }).error(function() {
               if (thisChangeId === changeCounter) cleanupLastIncludeContent();
             });
