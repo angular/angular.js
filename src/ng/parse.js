@@ -212,7 +212,8 @@ Lexer.prototype = {
   isIdent: function(ch) {
     return ('a' <= ch && ch <= 'z' ||
             'A' <= ch && ch <= 'Z' ||
-            '_' === ch || ch === '$');
+            '_' === ch || ch === '$' ||
+            this.options.additionalIdentChars(ch));
   },
 
   isExpOperator: function(ch) {
@@ -1150,7 +1151,8 @@ function $ParseProvider() {
   var $parseOptions = {
     csp: false,
     unwrapPromises: false,
-    logPromiseWarnings: true
+    logPromiseWarnings: true,
+    additionalIdentChars: noop
   };
 
 
@@ -1231,6 +1233,54 @@ function $ParseProvider() {
       return this;
     } else {
       return $parseOptions.logPromiseWarnings;
+    }
+  };
+
+
+  /**
+   * @ngdoc method
+   * @name ng.$parseProvider#additionalIdentChars
+   * @methodOf ng.$parseProvider
+   * @description
+   *
+   * Allows extending of the set of character allowed in identifiers used in Angular expressions. The
+   * `fn` function will be passed a character as argument and is expected to return `true` or `false`,
+   * based on whether that character is allowed or not. It is useful when you want to have non-English
+   * Unicode letters in your identifiers.
+   *
+   * Since this function will be called with every characters outside of `/[a-zA-Z_$]/`, it’s a good
+   * idea to keep it simple and fast. When the character set you want to add is relativelly small, a
+   * string and `indexOf()` (as in the example below) is preferable to a regexp and `test()`. On the
+   * subject of performance, it is good to take advantage of how variable scope works in JS and
+   * define the character set — whether a large string or large regexp — *outside* of `fn` itself (as
+   * in the example below), so that it doesn’t have to be created on every function call.
+   *
+   * @param {function=} fn The function that will decide whether the given character is allowed or not.
+   *
+   * @returns {function|self} Returns the current setting when used as getter and self if used as
+   *                         setter.
+   *
+   * @example
+   * Let’s say that you’re developing an app for some business that has a domain language
+   * that is just hard to translate to English, and you want to try to use natural terminology, in
+   * Romanian. This snippet will allow you to use Romanian charactes:
+   *
+   * <pre>
+   *   app.config(function($parseProvider) {
+   *     var romanianCharacters = 'şŞţŢîÎăĂâÂ';
+   *
+   *     $parseProvider.additionalIdentChars(function(ch) {
+   *       return romanianCharacters.indexOf(ch) > -1;
+   *     });
+   *   });
+   * </pre>
+   */
+  this.additionalIdentChars = function(fn) {
+    if (isFunction(fn)) {
+      $parseOptions.additionalIdentChars = fn;
+      return this;
+    } else {
+      return $parseOptions.additionalIdentChars;
     }
   };
 
