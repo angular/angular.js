@@ -468,6 +468,7 @@ function dateFilter($locale) {
  *   the binding is automatically converted to JSON.
  *
  * @param {*} object Any JavaScript object (including arrays and primitive types) to filter.
+ * @param {boolean} pretty Override pretty mode default of pretty=true
  * @returns {string} JSON string.
  *
  *
@@ -475,18 +476,20 @@ function dateFilter($locale) {
    <example>
      <file name="index.html">
        <pre>{{ {'name':'value'} | json }}</pre>
+       <pre>{{ {'name2':'value2'} | json:false }}</pre>
      </file>
      <file name="protractor.js" type="protractor">
        it('should jsonify filtered objects', function() {
          expect(element(by.binding("{'name':'value'}")).getText()).toMatch(/\{\n  "name": ?"value"\n}/);
+         expect(element(by.binding("{'name2':'value2'}")).getText()).toMatch(/\{"name":"value"}/);
        });
      </file>
    </example>
  *
  */
 function jsonFilter() {
-  return function(object) {
-    return toJson(object, true);
+  return function(object, pretty) {
+    return toJson(object, (typeof pretty === 'undefined') ? true : pretty);
   };
 }
 

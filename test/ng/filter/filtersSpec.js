@@ -181,6 +181,10 @@ describe('filters', function() {
     it('should do basic filter', function() {
       expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
     });
+
+    it('should do accept pretty=false', function() {
+      expect(filter('json')({a:"b"}, false)).toEqual(toJson({a:"b"}, false));
+    });
   });
 
   describe('lowercase', function() {
