@@ -399,7 +399,7 @@ LocationHashbangInHtml5Url.prototype =
     var pathname = match.pathname + ( hashPart && hashPart[0] || '' );
     path = decodeURIComponent(pathname.charAt(0) === '/' ?
       pathname.substring(1) : pathname);
-    path = path.replace(/\/*$/, '');
+    // path = path.replace(/\/*$/, '');
     return '/' + path;
   }),
 
