@@ -65,7 +65,7 @@ function adjustMatchers(matchers) {
 /**
  * @ngdoc service
  * @name $sceDelegate
- * @function
+ * @kind function
  *
  * @description
  *
@@ -137,7 +137,7 @@ function $SceDelegateProvider() {
   /**
    * @ngdoc method
    * @name $sceDelegateProvider#resourceUrlWhitelist
-   * @function
+   * @kind function
    *
    * @param {Array=} whitelist When provided, replaces the resourceUrlWhitelist with the value
    *     provided.  This must be an array or null.  A snapshot of this array is used so further
@@ -166,7 +166,7 @@ function $SceDelegateProvider() {
   /**
    * @ngdoc method
    * @name $sceDelegateProvider#resourceUrlBlacklist
-   * @function
+   * @kind function
    *
    * @param {Array=} blacklist When provided, replaces the resourceUrlBlacklist with the value
    *     provided.  This must be an array or null.  A snapshot of this array is used so further
@@ -393,7 +393,7 @@ function $SceDelegateProvider() {
 /**
  * @ngdoc service
  * @name $sce
- * @function
+ * @kind function
  *
  * @description
  *
@@ -664,7 +664,7 @@ function $SceProvider() {
   /**
    * @ngdoc method
    * @name $sceProvider#enabled
-   * @function
+   * @kind function
    *
    * @param {boolean=} value If provided, then enables/disables SCE.
    * @return {boolean} true if SCE is enabled, false otherwise.
@@ -742,7 +742,7 @@ function $SceProvider() {
     /**
      * @ngdoc method
      * @name $sce#isEnabled
-     * @function
+     * @kind function
      *
      * @return {Boolean} true if SCE is enabled, false otherwise.  If you want to set the value, you
      * have to do it at module config time on {@link ng.$sceProvider $sceProvider}.

@@ -3,7 +3,7 @@
 /**
  * @ngdoc filter
  * @name filter
- * @function
+ * @kind function
  *
  * @description
  * Selects a subset of items from `array` and returns it as a new array.

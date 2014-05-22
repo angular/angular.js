@@ -141,7 +141,7 @@ function $CacheFactoryProvider() {
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#put
-         * @function
+         * @kind function
          *
          * @description
          * Inserts a named entry into the {@link $cacheFactory.Cache Cache} object to be
@@ -177,7 +177,7 @@ function $CacheFactoryProvider() {
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#get
-         * @function
+         * @kind function
          *
          * @description
          * Retrieves named data stored in the {@link $cacheFactory.Cache Cache} object.
@@ -201,7 +201,7 @@ function $CacheFactoryProvider() {
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#remove
-         * @function
+         * @kind function
          *
          * @description
          * Removes an entry from the {@link $cacheFactory.Cache Cache} object.
@@ -229,7 +229,7 @@ function $CacheFactoryProvider() {
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#removeAll
-         * @function
+         * @kind function
          *
          * @description
          * Clears the cache object of any entries.
@@ -245,7 +245,7 @@ function $CacheFactoryProvider() {
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#destroy
-         * @function
+         * @kind function
          *
          * @description
          * Destroys the {@link $cacheFactory.Cache Cache} object entirely,
@@ -262,7 +262,7 @@ function $CacheFactoryProvider() {
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#info
-         * @function
+         * @kind function
          *
          * @description
          * Retrieve information regarding a particular {@link $cacheFactory.Cache Cache}.
