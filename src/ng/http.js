@@ -117,7 +117,8 @@ function $HttpProvider() {
     },
 
     xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN'
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    paramsSerializer: 'keyValue'
   };
 
   /**
@@ -125,6 +126,62 @@ function $HttpProvider() {
    * array, on request, but reverse order, on response.
    */
   var interceptorFactories = this.interceptors = [];
+
+  /**
+   * The URL parameters serializers
+   */
+  var paramsSerializers = this.paramsSerializers = {
+    keyValue: keyValueParametersSerializer,
+    JSON: jsonParametersSerializer,
+    nonShallowJSON: nonShallowJSONParametersSerializer,
+    _default: keyValueParametersSerializer
+  };
+
+  function keyValueParametersSerializer(params, callback) {
+    forEachSorted(params, function(value, key) {
+      if (value === null || isUndefined(value)) return;
+      if (!isArray(value)) value = [value];
+
+      forEach(value, function(v) {
+        if (isObject(v)) {
+          v = toJson(v);
+        }
+        callback(key, v);
+        });
+      });
+  }
+
+  function jsonParametersSerializer(params, callback) {
+    forEachSorted(params, function(value, key) {
+      if (value === null || isUndefined(value)) return;
+      if (isArray(value) || isObject(value)) {
+        value = toJson(value);
+      }
+      callback(key, value);
+    });
+  }
+
+  function nonShallowJSONParametersSerializer(params, callback) {
+    function serialize(toSerialize, prefix, topLevel) {
+      if (toSerialize === null || isUndefined(toSerialize)) return;
+      if (isArray(toSerialize)) {
+        forEach(toSerialize, function(value) {
+          serialize(value, prefix + '[]');
+        });
+      } else if (isObject(toSerialize)) {
+        forEachSorted(toSerialize, function(value, key) {
+          serialize(value, prefix +
+              (topLevel ? '' : '[') +
+              key +
+              (topLevel ? '' : ']'));
+        });
+      } else {
+        callback(prefix, toSerialize);
+      }
+    }
+
+    serialize(params, '', true);
+  }
 
   this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
       function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
@@ -594,7 +651,8 @@ function $HttpProvider() {
       var config = {
         method: 'get',
         transformRequest: defaults.transformRequest,
-        transformResponse: defaults.transformResponse
+        transformResponse: defaults.transformResponse,
+        paramsSerializer: defaults.paramsSerializer
       };
       var headers = mergeHeaders(requestConfig);
 
@@ -852,7 +910,7 @@ function $HttpProvider() {
           promise = deferred.promise,
           cache,
           cachedResp,
-          url = buildUrl(config.url, config.params);
+          url = buildUrl(config.url, config.params, config.paramsSerializer);
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
@@ -939,26 +997,23 @@ function $HttpProvider() {
     }
 
 
-    function buildUrl(url, params) {
-          if (!params) return url;
-          var parts = [];
-          forEachSorted(params, function(value, key) {
-            if (value === null || isUndefined(value)) return;
-            if (!isArray(value)) value = [value];
+    function buildUrl(url, params, paramsSerializer) {
+      if (!params) return url;
 
-            forEach(value, function(v) {
-              if (isObject(v)) {
-                v = toJson(v);
-              }
-              parts.push(encodeUriQuery(key) + '=' +
-                         encodeUriQuery(v));
-            });
-          });
-          if(parts.length > 0) {
-            url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
-          }
-          return url;
-        }
+      var parts = [];
+      if (!isFunction(paramsSerializer)) {
+        paramsSerializer = paramsSerializers[paramsSerializer] ||
+            paramsSerializers._default;
+      }
+
+      paramsSerializer(params, function(key, value) {
+        parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
+      });
+      if(parts.length > 0) {
+        url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
+      }
+      return url;
+    }
 
 
   }];
