@@ -214,6 +214,28 @@ describe('ngSwitch', function() {
   }));
 
 
+
+  it('should use the correct transcluded scope', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('iso', valueFn({
+        restrict: 'E',
+        transclude: true,
+        template: '<div ng-switch="\'switch-val\'">'+
+                    '<p switch-when="switch-val"><div ng-transclude></div></p>'+
+                  '</div>',
+        scope: {}
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      $rootScope.val = 'transcluded content';
+      var element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+      $rootScope.$digest();
+      expect(trim(element.text())).toEqual('transcluded content');
+      dealoc(element);
+    });
+  });
+
+
   it('should properly support case labels with different numbers of transclude fns', inject(function($rootScope, $compile) {
     element = $compile(
       '<div ng-switch="mode">' +
