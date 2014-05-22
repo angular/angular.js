@@ -131,6 +131,18 @@ describe('parser', function() {
       expect(tokens[3].text).toEqual(':');
     });
 
+    it('should tokenize typeof, void, in and instanceof operators', function() {
+      var tokens = lex("typeof void instanceof in");
+      expect(tokens[0].text).toEqual('typeof');
+      expect(tokens[0].fn.toString().indexOf('typeof')).toNotEqual(-1);
+      expect(tokens[1].text).toEqual('void');
+      expect(tokens[1].fn.toString().indexOf('void')).toNotEqual(-1);
+      expect(tokens[2].text).toEqual('instanceof');
+      expect(tokens[2].fn.toString().indexOf('instanceof')).toNotEqual(-1);
+      expect(tokens[3].text).toEqual('in');
+      expect(tokens[3].fn.toString().indexOf('in')).toNotEqual(-1);
+    });
+
     it('should tokenize statements', function() {
       var tokens = lex("a;b;");
       expect(tokens[0].text).toEqual('a');
@@ -640,6 +652,44 @@ describe('parser', function() {
           scope.a = "a";
           scope.b = {c: "bc"};
           expect(scope.$eval('a + \n b.c + \r "\td" + \t \r\n\r "\r\n\n"')).toEqual("abc\td\r\n\n");
+        });
+
+        it('should support "typeof" operator', function() {
+          scope.str = 'str';
+          scope.obj = {};
+          expect(scope.$eval('typeof 1')).toBe('number');
+          expect(scope.$eval('typeof str')).toBe('string');
+          expect(scope.$eval('typeof obj')).toBe('object');
+          expect(scope.$eval('typeof "string literal" === "string"')).toBe(true);
+        });
+
+        it('should support "void" operator', function() {
+          scope.obj = {
+            num: 5,
+            increment: function() { return ++this.num; }
+          };
+          expect(scope.$eval('void 0')).toBe(undefined);
+          expect(scope.$eval('void obj.increment()')).toBe(undefined);
+          expect(scope.obj.num).toBe(6);
+        });
+
+        it('should support "instanceof" operator', function() {
+          scope.Fn = function(){};
+          scope.obj = new scope.Fn();
+          scope.date = new Date();
+          scope.arr = [1, 2, 3];
+          expect(scope.$eval('obj instanceof Fn')).toBe(true);
+          expect(scope.$eval('obj instanceof Fn === false')).toBe(false);
+          expect(scope.$eval('date instanceof Date')).toBe(true);
+          expect(scope.$eval('arr instanceof Array')).toBe(true);
+        });
+
+        it('should support "in" operator', function() {
+          scope.obj = { key: 'value' };
+          scope.prop = 'key';
+          expect(scope.$eval('"key" in obj')).toBe(true);
+          expect(scope.$eval('prop in obj')).toBe(true);
+          expect(scope.$eval('key in obj')).toBe(false);
         });
 
         describe('sandboxing', function() {

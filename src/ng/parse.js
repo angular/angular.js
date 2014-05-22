@@ -101,7 +101,11 @@ var OPERATORS = {
     '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
 //    '|':function(self, locals, a,b){return a|b;},
     '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
-    '!':function(self, locals, a){return !a(self, locals);}
+    '!':function(self, locals, a){return !a(self, locals);},
+    'typeof':function(self, locals, a){return typeof a(self, locals);},
+    'void':function(self, locals, a){return void a(self, locals);},
+    'instanceof':function(self, locals, a, b, globalFn){return a(self, locals) instanceof (b(self, locals) || window[globalFn]);},
+    'in':function(self, locals, a, b){return a(self, locals) in b(self, locals);}
 };
 /* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
@@ -131,6 +135,7 @@ Lexer.prototype = {
 
     var token;
     var json = [];
+    var operator;
 
     while (this.index < this.text.length) {
       this.ch = this.text.charAt(this.index);
@@ -138,6 +143,10 @@ Lexer.prototype = {
         this.readString(this.ch);
       } else if (this.isNumber(this.ch) || this.is('.') && this.isNumber(this.peek())) {
         this.readNumber();
+      } else if (operator = this.isOperator()){
+        var operatorFn = OPERATORS[operator];
+        this.tokens.push({index: this.index, text: operator, fn: operatorFn});
+        this.index += operator.length + 1;
       } else if (this.isIdent(this.ch)) {
         this.readIdent();
         // identifiers can only be if the preceding char was a { or ,
@@ -213,6 +222,13 @@ Lexer.prototype = {
     return ('a' <= ch && ch <= 'z' ||
             'A' <= ch && ch <= 'Z' ||
             '_' === ch || ch === '$');
+  },
+
+  isOperator: function(){
+    if(this.text.substr(this.index, this.index + 7) === 'typeof ') return 'typeof';
+    if(this.text.substr(this.index, this.index + 5) === 'void ') return 'void';
+    if(this.text.substr(this.index, this.index + 11) === 'instanceof ') return 'instanceof';
+    if(this.text.substr(this.index, this.index + 3) === 'in ') return 'in';
   },
 
   isExpOperator: function(ch) {
@@ -532,9 +548,9 @@ Parser.prototype = {
     });
   },
 
-  binaryFn: function(left, fn, right) {
+  binaryFn: function(left, fn, right, globalRight) {
     return extend(function(self, locals) {
-      return fn(self, locals, left, right);
+      return fn(self, locals, left, right, globalRight);
     }, {
       constant:left.constant && right.constant
     });
@@ -684,10 +700,29 @@ Parser.prototype = {
   },
 
   multiplicative: function() {
-    var left = this.unary();
+    var left = this.inOperator();
     var token;
     while ((token = this.expect('*','/','%'))) {
-      left = this.binaryFn(left, token.fn, this.unary());
+      left = this.binaryFn(left, token.fn, this.inOperator());
+    }
+    return left;
+  },
+
+  inOperator: function() {
+    var left = this.instance();
+    var token;
+    while ((token = this.expect('in'))) {
+      left = this.binaryFn(left, token.fn, this.instance());
+    }
+    return left;
+  },
+
+  instance: function() {
+    var left = this.unary();
+    var token;
+    while ((token = this.expect('instanceof'))) {
+      var globalFn = this.tokens[0].text;
+      left = this.binaryFn(left, token.fn, this.unary(), globalFn);
     }
     return left;
   },
@@ -698,7 +733,7 @@ Parser.prototype = {
       return this.primary();
     } else if ((token = this.expect('-'))) {
       return this.binaryFn(Parser.ZERO, token.fn, this.unary());
-    } else if ((token = this.expect('!'))) {
+    } else if ((token = this.expect('!', 'typeof', 'void'))) {
       return this.unaryFn(token.fn, this.unary());
     } else {
       return this.primary();
