@@ -1386,7 +1386,7 @@ angular.module('ngAnimate', ['ng'])
         });
 
         element.addClass(activeClassName);
-        var eventCacheKey = elementData.eventCacheKey + ' ' + activeClassName;
+        var eventCacheKey = elementData.cacheKey + ' ' + activeClassName;
         var timings = getElementAnimationDetails(element, eventCacheKey);
 
         var maxDuration = Math.max(timings.transitionDuration, timings.animationDuration);
