@@ -3972,9 +3972,9 @@ describe('$compile', function() {
       });
 
 
-      it('should throw on an ng-translude element inside no transclusion directive', function() {
+      it('should throw on an ng-transclude element inside no transclusion directive', function() {
         inject(function ($rootScope, $compile) {
-          // we need to do this because different browsers print empty attributres differently
+          // we need to do this because different browsers print empty attributes differently
           try {
             $compile('<div><div ng-transclude></div></div>')($rootScope);
           } catch(e) {
