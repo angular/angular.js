@@ -1,3 +1,69 @@
+<a name="1.3.0-beta.10"></a>
+# 1.3.0-beta.10 excessive-clarification (2014-05-23)
+
+
+## Bug Fixes
+
+- **$animate:** retain inline styles for property-specific transitions
+  ([98b9d68e](https://github.com/angular/angular.js/commit/98b9d68ea3ecfb521e9279c9cbfe93f8ba7d626e),
+   [#7503](https://github.com/angular/angular.js/issues/7503))
+- **$compile:** do not merge attrs that are the same for replace directives
+  ([1ab6e908](https://github.com/angular/angular.js/commit/1ab6e908b15470d59b52eb0ead20c755c66ec3b8),
+   [#7463](https://github.com/angular/angular.js/issues/7463))
+- **$parse:** remove deprecated promise unwrapping
+  ([fa6e411d](https://github.com/angular/angular.js/commit/fa6e411da26824a5bae55f37ce7dbb859653276d))
+- **Scope:** $broadcast and $emit should set event.currentScope to null
+  ([82f45aee](https://github.com/angular/angular.js/commit/82f45aee5bd84d1cc53fb2e8f645d2263cdaacbc),
+   [#7445](https://github.com/angular/angular.js/issues/7445), [#7523](https://github.com/angular/angular.js/issues/7523))
+- **ngModel:** do not dirty the input on $commitViewValue if nothing was changed
+  ([facd904a](https://github.com/angular/angular.js/commit/facd904a613e716151a13ab7460b5e6206e0442b),
+   [#7457](https://github.com/angular/angular.js/issues/7457), [#7495](https://github.com/angular/angular.js/issues/7495))
+
+
+## Features
+
+- **$interpolate:** escaped interpolation expressions
+  ([e3f78c17](https://github.com/angular/angular.js/commit/e3f78c17d3b5d3a714402d7314094aabe7f6512a),
+   [#5601](https://github.com/angular/angular.js/issues/5601), [#7517](https://github.com/angular/angular.js/issues/7517))
+- **{{ bindings }}:** lazy one-time binding support
+  ([cee429f0](https://github.com/angular/angular.js/commit/cee429f0aaebf32ef1c9aedd8447a48f163dd0a4),
+   [#7486](https://github.com/angular/angular.js/issues/7486), [#5408](https://github.com/angular/angular.js/issues/5408))
+- **ngMock:** add support of mocha tdd interface
+  ([854bf5b7](https://github.com/angular/angular.js/commit/854bf5b74d0395f4d2e30382102d3f5d1614ea11),
+   [#7489](https://github.com/angular/angular.js/issues/7489))
+
+
+## Performance Improvements
+
+- **$interpolate:** optimize value stringification
+  ([e927193d](https://github.com/angular/angular.js/commit/e927193de06500f01a2f893934250911cf1905e6),
+   [#7501](https://github.com/angular/angular.js/issues/7501))
+
+
+## Breaking Changes
+
+- **$compile:** due to [eec6394a](https://github.com/angular/angular.js/commit/eec6394a342fb92fba5270eee11c83f1d895e9fb), The `replace` flag for defining directives that
+  replace the element that they are on will be removed in the next major angular version.
+  This feature has difficult semantics (e.g. how attributes are merged) and leads to more
+  problems compared to what it solves. Also, with Web Components it is normal to have
+  custom elements in the DOM.
+
+- **$parse:** due to [fa6e411d](https://github.com/angular/angular.js/commit/fa6e411da26824a5bae55f37ce7dbb859653276d),
+  promise unwrapping has been removed. It has been deprecated since 1.2.0-rc.3.
+  It can no longer be turned on.
+  Two methods have been removed:
+  * `$parseProvider.unwrapPromises`
+  * `$parseProvider.logPromiseWarnings`
+
+- **Scope:** due to [82f45aee](https://github.com/angular/angular.js/commit/82f45aee5bd84d1cc53fb2e8f645d2263cdaacbc),
+  [#7445](https://github.com/angular/angular.js/issues/7445),
+  [#7523](https://github.com/angular/angular.js/issues/7523)
+  `$broadcast` and `$emit` will now reset the `currentScope` property of the event to
+  null once the event finished propagating. If any code depends on asynchronously accessing their
+  `currentScope` property, it should be migrated to use `targetScope` instead. All of these cases
+  should be considered programming bugs.
+
+
 <a name="1.3.0-beta.9"></a>
 # 1.3.0-beta.9 release-naming (2014-05-16)
 
