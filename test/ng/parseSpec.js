@@ -256,6 +256,8 @@ describe('parser', function() {
           expect(scope.$eval("2>=1")).toEqual(2>=1);
           expect(scope.$eval("true==2<3")).toEqual(true == 2<3);
           expect(scope.$eval("true===2<3")).toEqual(true === 2<3);
+          expect(scope.$eval("1===1===true")).toEqual(1 === 1 === true);
+          expect(scope.$eval("1<2<=1")).toEqual(1 < 2 <= 1);
         });
 
         it('should parse logical', function() {
