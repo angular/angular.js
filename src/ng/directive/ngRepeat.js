@@ -291,9 +291,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             trackByIdFn = trackByIdExpFn || trackByIdObjFn;
             // if object, extract keys, sort them and use to determine order of iteration over obj props
             collectionKeys = [];
-            for (key in collection) {
-              if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-                collectionKeys.push(key);
+            for (var itemKey in collection) {
+              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) != '$') {
+                collectionKeys.push(itemKey);
               }
             }
             collectionKeys.sort();
@@ -329,10 +329,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
          }
 
           // remove existing items
-          for (key in lastBlockMap) {
+          for (var blockKey in lastBlockMap) {
             // lastBlockMap is our own object so we don't need to use special hasOwnPropertyFn
-            if (lastBlockMap.hasOwnProperty(key)) {
-              block = lastBlockMap[key];
+            if (lastBlockMap.hasOwnProperty(blockKey)) {
+              block = lastBlockMap[blockKey];
               elementsToRemove = getBlockElements(block.clone);
               $animate.leave(elementsToRemove);
               forEach(elementsToRemove, function(element) { element[NG_REMOVED] = true; });
