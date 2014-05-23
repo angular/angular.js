@@ -1060,7 +1060,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
           break;
         case 3: /* Text Node */
-          addTextInterpolateDirective(directives, node.nodeValue);
+          addTextInterpolateDirective(directives, node);
           break;
         case 8: /* Comment */
           try {
@@ -1805,21 +1805,44 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
 
-    function addTextInterpolateDirective(directives, text) {
+    function addTextInterpolateDirective(directives, textNode) {
+      var whitespaceRe = /^\s*$/;
+      var text = textNode.nodeValue;
       var interpolateFn = $interpolate(text, true);
       if (interpolateFn) {
+        var singleInterpolationChild = isSingleInterpolationInParent(textNode);
         directives.push({
           priority: 0,
-          compile: valueFn(function textInterpolateLinkFn(scope, node) {
+          require: '^?dir',
+          compile: valueFn(function textInterpolateLinkFn(scope, node, attr, dirCtrl) {
             var parent = node.parent(),
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
-            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
-              node[0].nodeValue = value;
-            });
+            if (dirCtrl && !singleInterpolationChild) {
+              scope.$watchGroup(interpolateFn.expressions, function interpolateFnDirWatchAction(values) {
+                dirCtrl.interpolateTextNode(node[0], values, interpolateFn.separators);
+              });
+            } else {
+              scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+                if (dirCtrl && singleInterpolationChild) {
+                  dirCtrl.updateElementDir(node[0].parentNode, value, false);
+                }
+                node[0].nodeValue = value;
+              });
+            }
           })
         });
+      }
+
+      function isSingleInterpolationInParent(textNode) {
+        return textNode.parentNode.childNodes.length === 1 &&
+          interpolateFn.expressions.length === 1 &&
+          isEmpty(interpolateFn.separators[0]) && isEmpty(interpolateFn.separators[1]);
+      }
+
+      function isEmpty(s) {
+        return (s||'').match(/^\s*$/);
       }
     }
 
@@ -1868,9 +1891,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       directives.push({
         priority: 100,
+        require: '^?dir',
         compile: function() {
             return {
-              pre: function attrInterpolatePreLinkFn(scope, element, attr) {
+              pre: function attrInterpolatePreLinkFn(scope, element, attr, dirCtrl) {
                 var $$observers = (attr.$$observers || (attr.$$observers = {}));
 
                 if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
@@ -1891,23 +1915,35 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // initialize attr object so that it's ready in case we need the value for isolate
                 // scope initialization, otherwise the value would not be available from isolate
                 // directive's linking fn during linking phase
+                // Note that we don't need to apply bidi handling here as values for components
+                // should not be treated with unicode directionality embedding.
                 attr[name] = interpolateFn(scope);
-
                 ($$observers[name] || ($$observers[name] = [])).$$inter = true;
-                (attr.$$observers && attr.$$observers[name].$$scope || scope).
-                  $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
-                    //special case for class attribute addition + removal
-                    //so that class changes can tap into the animation
-                    //hooks provided by the $animate service. Be sure to
-                    //skip animations when the first digest occurs (when
-                    //both the new and the old values are the same) since
-                    //the CSS classes are the non-interpolated values
-                    if(name === 'class' && newValue != oldValue) {
-                      attr.$updateClass(newValue, oldValue);
-                    } else {
-                      attr.$set(name, newValue);
-                    }
+                var watchScope = attr.$$observers && attr.$$observers[name].$$scope || scope;
+                if (dirCtrl && !dirCtrl.isDirAwareAttribute(element, name)) {
+                  var oldValue;
+                  watchScope.$watchGroup(interpolateFn.expressions, function(values) {
+                    var value = dirCtrl.interpolateWithUnicodeEmbedding(values, interpolateFn.separators);
+                    interpolateFnWatchAction(value, oldValue);
+                    oldValue = value;
                   });
+                } else {
+                  watchScope.$watch(interpolateFn, interpolateFnWatchAction);
+                }
+
+                function interpolateFnWatchAction(newValue, oldValue) {
+                  //special case for class attribute addition + removal
+                  //so that class changes can tap into the animation
+                  //hooks provided by the $animate service. Be sure to
+                  //skip animations when the first digest occurs (when
+                  //both the new and the old values are the same) since
+                  //the CSS classes are the non-interpolated values
+                  if(name === 'class' && newValue != oldValue) {
+                    attr.$updateClass(newValue, oldValue);
+                  } else {
+                    attr.$set(name, newValue);
+                  }
+                }
               }
             };
           }

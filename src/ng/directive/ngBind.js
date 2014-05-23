@@ -50,15 +50,22 @@
      </file>
    </example>
  */
-var ngBindDirective = ngDirective(function(scope, element, attr) {
-  element.addClass('ng-binding').data('$binding', attr.ngBind);
-  scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
-    // We are purposefully using == here rather than === because we want to
-    // catch when value is "null or undefined"
-    // jshint -W041
-    element.text(value == undefined ? '' : value);
-  });
+var ngBindDirective = valueFn({
+  require: '?^dir',
+  link: function(scope, element, attr, dirCtrl) {
+    element.addClass('ng-binding').data('$binding', attr.ngBind);
+    scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
+      if (dirCtrl) {
+        dirCtrl.updateElementDir(element[0], value, false);
+      }
+      // We are purposefully using == here rather than === because we want to
+      // catch when value is "null or undefined"
+      // jshint -W041
+      element.text(value == undefined ? '' : value);
+    });
+  }
 });
+
 
 
 /**
@@ -112,13 +119,24 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
    </example>
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
-  return function(scope, element, attr) {
-    // TODO: move this to scenario runner
-    var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
-    element.addClass('ng-binding').data('$binding', interpolateFn);
-    attr.$observe('ngBindTemplate', function(value) {
-      element.text(value);
-    });
+  return {
+    require: '?^dir',
+    link: function(scope, element, attr, dirCtrl) {
+      // TODO: move this to scenario runner
+      var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
+      element.addClass('ng-binding').data('$binding', interpolateFn);
+      if (dirCtrl) {
+        element.html(' ');
+        var textNode = element[0].childNodes[0];
+        scope.$watchGroup(interpolateFn.expressions, function(values) {
+          dirCtrl.interpolateTextNode(textNode, values, interpolateFn.separators);
+        });
+      } else {
+        attr.$observe('ngBindTemplate', function(value) {
+          element.text(value);
+        });
+      }
+    }
   };
 }];
 
@@ -170,14 +188,22 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
    </example>
  */
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
-  return function(scope, element, attr) {
-    element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
+  return {
+    require: '?^dir',
+    link: function(scope, element, attr, dirCtrl) {
+      element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
 
-    var parsed = $parse(attr.ngBindHtml);
-    function getStringValue() { return (parsed(scope) || '').toString(); }
+      var parsed = $parse(attr.ngBindHtml);
+      function getStringValue() { return (parsed(scope) || '').toString(); }
 
-    scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
-      element.html($sce.getTrustedHtml(parsed(scope)) || '');
-    });
+      scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
+        var html = $sce.getTrustedHtml(parsed(scope)) || '';
+        if (dirCtrl) {
+          dirCtrl.updateElementDir(element[0], html, true);
+        }
+
+        element.html(html);
+      });
+    }
   };
 }];

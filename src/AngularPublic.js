@@ -7,6 +7,7 @@
     $LocaleProvider,
     $CompileProvider,
 
+    dirDirective,
     htmlAnchorDirective,
     inputDirective,
     inputDirective,
@@ -52,6 +53,7 @@
 
     $AnchorScrollProvider,
     $AnimateProvider,
+    $BidiProvider,
     $BrowserProvider,
     $CacheFactoryProvider,
     $ControllerProvider,
@@ -149,6 +151,7 @@ function publishExternalAPI(angular){
       $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
+            dir: dirDirective,
             input: inputDirective,
             textarea: inputDirective,
             form: formDirective,
@@ -195,6 +198,7 @@ function publishExternalAPI(angular){
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $animate: $AnimateProvider,
+        $bidi: $BidiProvider,
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,

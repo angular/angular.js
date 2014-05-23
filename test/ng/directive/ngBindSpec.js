@@ -45,6 +45,16 @@ describe('ngBind*', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('-0false');
     }));
+
+    it('should set the directionality using the dir property', inject(function($rootScope, $compile) {
+      element = $compile('<div dir="rtl"><span ng-bind="someProp"></span></div>')($rootScope);
+      $rootScope.someProp = 'a';
+      $rootScope.$digest();
+      var span = element.children();
+      expect(span.prop('dir')).toBe('ltr');
+      // Note: tests for calculating the directionality can be found in the dirController.
+    }));
+
   });
 
 
@@ -64,6 +74,15 @@ describe('ngBind*', function() {
       $rootScope.$digest();
       expect(fromJson(element.text())).toEqual({key:'value'});
     }));
+
+    it('should set the directionality using span wrapping', inject(function($rootScope, $compile) {
+      element = $compile('<div dir="rtl" ng-bind-template="a{{someProp}}"></div>')($rootScope);
+      $rootScope.someProp = 'a';
+      $rootScope.$digest();
+      expect(element.html()).toBe('a<span dir="ltr">a</span>');
+      // Note: tests for calculating the directionality can be found in the dirController.
+    }));
+
   });
 
 
@@ -79,6 +98,20 @@ describe('ngBind*', function() {
         $rootScope.$digest();
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
+
+      it('should set the directionality using the dir property', inject(function($rootScope, $compile) {
+        element = $compile('<div dir="rtl"><span ng-bind-html="html"></span></div>')($rootScope);
+        var span = element.children();
+
+        $rootScope.html = '<b></b>';
+        $rootScope.$digest();
+        expect(span.prop('dir')).toBe('');
+
+        $rootScope.html = '<b>someText</b>';
+        $rootScope.$digest();
+        expect(span.prop('dir')).toBe('ltr');
+      }));
+
     });
 
 
