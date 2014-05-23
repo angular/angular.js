@@ -120,11 +120,9 @@ Lexer.prototype = {
 
   lex: function (text) {
     this.text = text;
-
     this.index = 0;
     this.ch = undefined;
     this.lastCh = ':'; // can start regexp
-
     this.tokens = [];
 
     while (this.index < this.text.length) {
@@ -243,7 +241,6 @@ Lexer.prototype = {
     this.tokens.push({
       index: start,
       text: number,
-      literal: true,
       constant: true,
       fn: function() { return number; }
     });
@@ -296,7 +293,6 @@ Lexer.prototype = {
     // OPERATORS is our own object so we don't need to use special hasOwnPropertyFn
     if (OPERATORS.hasOwnProperty(ident)) {
       token.fn = OPERATORS[ident];
-      token.literal = true;
       token.constant = true;
     } else {
       var getter = getterFn(ident, this.options, this.text);
@@ -313,7 +309,7 @@ Lexer.prototype = {
 
     if (methodName) {
       this.tokens.push({
-        index:lastDot,
+        index: lastDot,
         text: '.'
       });
       this.tokens.push({
@@ -356,7 +352,6 @@ Lexer.prototype = {
           index: start,
           text: rawString,
           string: string,
-          literal: true,
           constant: true,
           fn: function() { return string; }
         });
@@ -391,7 +386,6 @@ Parser.prototype = {
 
   parse: function (text) {
     this.text = text;
-
     this.tokens = this.lexer.lex(text);
 
     var value = this.statements();
@@ -421,8 +415,10 @@ Parser.prototype = {
       if (!primary) {
         this.throwError('not a primary expression', token);
       }
-      primary.literal = !!token.literal;
-      primary.constant = !!token.constant;
+      if (token.constant) {
+        primary.constant = true;
+        primary.literal = true;
+      }
     }
 
     var next, context;
