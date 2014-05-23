@@ -66,24 +66,22 @@ angular.module('search', [])
 })
 
 .factory('docsSearch', ['$rootScope','lunrSearch', 'NG_PAGES',
-    function($rootScope, lunrSearch, NG_PAGES) {
-  if (window.RUNNING_IN_NG_TEST_RUNNER) {
-    return null;
-  }
+  function($rootScope, lunrSearch, NG_PAGES) {
+    if (window.RUNNING_IN_NG_TEST_RUNNER) return null;
 
-  var index = lunrSearch(function() {
-    this.ref('id');
-    this.field('title', {boost: 50});
-    this.field('keywords', { boost : 20 });
-  });
+    var index = lunrSearch(function() {
+      this.ref('id');
+      this.field('title', {boost: 50});
+      this.field('keywords', { boost : 20 });
+    });
 
-  angular.forEach(NG_PAGES, function(page, key) {
-    if(page.searchTerms) {
-      index.store({
-        id : key,
-        title : page.searchTerms.titleWords,
-        keywords : page.searchTerms.keywords
-      });
+    angular.forEach(NG_PAGES, function(page, key) {
+      if(page.searchTerms) {
+        index.store({
+          id : key,
+          title : page.searchTerms.titleWords,
+          keywords : page.searchTerms.keywords
+        });
     };
   });
 
