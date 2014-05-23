@@ -947,7 +947,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             //  or
             //  - there is no parentBoundTranscludeFn already and a transcludeFn was passed in
             if ( nodeLinkFn.transcludeOnThisElement || (!parentBoundTranscludeFn && transcludeFn) ) {
-              childBoundTranscludeFn = createBoundTranscludeFn(scope, nodeLinkFn.transclude || transcludeFn);
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, nodeLinkFn.transclude || transcludeFn, parentBoundTranscludeFn);
             } else {
               childBoundTranscludeFn = parentBoundTranscludeFn;
             }
@@ -961,8 +961,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     }
 
-    function createBoundTranscludeFn(scope, transcludeFn) {
-      return function boundTranscludeFn(transcludedScope, cloneFn, controllers) {
+    function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
+
+      // If there is a previous boundTransclude function and it has a transclusionScope then
+      // use this instead of the current scope
+      scope = previousBoundTranscludeFn && previousBoundTranscludeFn.transclusionScope || scope;
+
+      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers) {
         var scopeCreated = false;
 
         if (!transcludedScope) {
@@ -977,6 +982,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
         return clone;
       };
+
+      // Store the transclusionScope for nested transclusions
+      boundTranscludeFn.transclusionScope = scope;
+
+      return boundTranscludeFn;
     }
 
     /**
@@ -1749,7 +1759,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               safeAddClass(jqLite(linkNode), oldClasses);
             }
             if (afterTemplateNodeLinkFn.transclude) {
-              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude);
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude, boundTranscludeFn);
             } else {
               childBoundTranscludeFn = boundTranscludeFn;
             }

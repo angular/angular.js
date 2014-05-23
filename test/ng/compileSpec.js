@@ -4055,6 +4055,73 @@ describe('$compile', function() {
       });
 
 
+      describe('nested isolated scope transcludes', function() {
+        beforeEach(module(function($compileProvider) {
+
+          $compileProvider.directive('trans', valueFn({
+            restrict: 'E',
+            template: '<div ng-transclude></div>',
+            transclude: true
+          }));
+
+          $compileProvider.directive('transAsync', valueFn({
+            restrict: 'E',
+            templateUrl: 'transAsync',
+            transclude: true
+          }));
+
+          $compileProvider.directive('iso', valueFn({
+            restrict: 'E',
+            transclude: true,
+            template: '<trans><span ng-transclude></span></trans>',
+            scope: {}
+          }));
+          $compileProvider.directive('isoAsync1', valueFn({
+            restrict: 'E',
+            transclude: true,
+            template: '<trans-async><span ng-transclude></span></trans-async>',
+            scope: {}
+          }));
+          $compileProvider.directive('isoAsync2', valueFn({
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'isoAsync',
+            scope: {}
+          }));
+        }));
+
+        beforeEach(inject(function($templateCache) {
+          $templateCache.put('transAsync', '<div ng-transclude></div>');
+          $templateCache.put('isoAsync', '<trans-async><span ng-transclude></span></trans-async>');
+        }));
+
+
+        it('should pass the outer scope to the transclude on the isolated template sync-sync', inject(function($compile, $rootScope) {
+
+          $rootScope.val = 'transcluded content';
+          element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('transcluded content');
+        }));
+
+        it('should pass the outer scope to the transclude on the isolated template async-sync', inject(function($compile, $rootScope) {
+
+          $rootScope.val = 'transcluded content';
+          element = $compile('<iso-async1><span ng-bind="val"></span></iso-async1>')($rootScope);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('transcluded content');
+        }));
+
+        it('should pass the outer scope to the transclude on the isolated template async-async', inject(function($compile, $rootScope) {
+
+          $rootScope.val = 'transcluded content';
+          element = $compile('<iso-async2><span ng-bind="val"></span></iso-async2>')($rootScope);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('transcluded content');
+        }));
+
+      });
+
       describe('multiple siblings receiving transclusion', function() {
 
         it("should only receive transclude from parent", function() {
