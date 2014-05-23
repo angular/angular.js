@@ -978,7 +978,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var clone = transcludeFn(transcludedScope, cloneFn, controllers);
         if (scopeCreated) {
-          clone.on('$destroy', bind(transcludedScope, transcludedScope.$destroy));
+          clone.on('$destroy', function() { transcludedScope.$destroy(); });
         }
         return clone;
       };
