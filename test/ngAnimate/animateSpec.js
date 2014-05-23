@@ -3080,6 +3080,42 @@ describe("ngAnimate", function() {
       });
     });
 
+    it("should cache getComputedStyle with similar className values but with respect to the parent node",
+      inject(function($compile, $rootScope, $animate, $sniffer) {
+
+      if (!$sniffer.transitions) return;
+
+      $animate.enabled();
+
+      var html = '<div ng-class="{on:one}">first</div>' +
+                 '<div class="second">' +
+                 '  <div ng-class="{on:two}">second</div>' +
+                 '</div>';
+
+      ss.addRule('.second .on', '-webkit-transition:1s linear all;' +
+                                        'transition:1s linear all;');
+
+      var element = $compile(html)($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $rootScope.$apply(function() {
+        $rootScope.one = true;
+        $rootScope.two = true;
+      });
+
+      $animate.triggerReflow();
+
+      var inner = jqLite(jqLite(element[1]).find('div'));
+
+      expect(inner.hasClass('on-add')).toBe(true);
+      expect(inner.hasClass('on-add-active')).toBe(true);
+
+      browserTrigger(inner, 'animationend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+
+      expect(inner.hasClass('on-add')).toBe(false);
+      expect(inner.hasClass('on-add-active')).toBe(false);
+    }));
 
 
     it("should cancel and perform the dom operation only after the reflow has run",
