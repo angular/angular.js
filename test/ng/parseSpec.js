@@ -761,6 +761,10 @@ describe('parser', function() {
           }));
 
 
+          it('should NOT allow access to the Window or DOM returned from a function', inject(function($window, $document) {
+            scope.getWin = valueFn($window);
+            scope.getDoc = valueFn($document);
+
             expect(function() {
               scope.$eval('getWin()', scope);
             }).toThrowMinErr(
