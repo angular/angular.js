@@ -912,7 +912,7 @@
     },
     "grunt-jasmine-node": {
       "version": "0.1.0",
-      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7",
+      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs-checker": {
@@ -2690,22 +2690,109 @@
       }
     },
     "protractor": {
-      "version": "0.19.0",
+      "version": "0.23.1",
       "dependencies": {
+        "request": {
+          "version": "2.36.0",
+          "dependencies": {
+            "qs": {
+              "version": "0.6.6"
+            },
+            "json-stringify-safe": {
+              "version": "5.0.0"
+            },
+            "mime": {
+              "version": "1.2.11"
+            },
+            "forever-agent": {
+              "version": "0.5.2"
+            },
+            "node-uuid": {
+              "version": "1.4.1"
+            },
+            "tough-cookie": {
+              "version": "0.12.1",
+              "dependencies": {
+                "punycode": {
+                  "version": "1.2.4"
+                }
+              }
+            },
+            "form-data": {
+              "version": "0.1.2",
+              "dependencies": {
+                "combined-stream": {
+                  "version": "0.0.4",
+                  "dependencies": {
+                    "delayed-stream": {
+                      "version": "0.0.5"
+                    }
+                  }
+                },
+                "async": {
+                  "version": "0.2.10"
+                }
+              }
+            },
+            "tunnel-agent": {
+              "version": "0.4.0"
+            },
+            "http-signature": {
+              "version": "0.10.0",
+              "dependencies": {
+                "assert-plus": {
+                  "version": "0.1.2"
+                },
+                "asn1": {
+                  "version": "0.1.11"
+                },
+                "ctype": {
+                  "version": "0.5.2"
+                }
+              }
+            },
+            "oauth-sign": {
+              "version": "0.3.0"
+            },
+            "hawk": {
+              "version": "1.0.0",
+              "dependencies": {
+                "hoek": {
+                  "version": "0.9.1"
+                },
+                "boom": {
+                  "version": "0.4.2"
+                },
+                "cryptiles": {
+                  "version": "0.2.2"
+                },
+                "sntp": {
+                  "version": "0.2.4"
+                }
+              }
+            },
+            "aws-sign2": {
+              "version": "0.5.0"
+            }
+          }
+        },
         "selenium-webdriver": {
-          "version": "2.39.0"
+          "version": "2.41.0"
         },
         "minijasminenode": {
-          "version": "0.2.7"
+          "version": "0.4.0"
         },
         "saucelabs": {
           "version": "0.1.1"
         },
         "glob": {
-          "version": "3.2.9",
+          "version": "3.2.11",
           "dependencies": {
+            "inherits": {
+              "version": "2.0.1"
+            },
             "minimatch": {
-              "version": "0.2.14",
+              "version": "0.3.0",
               "dependencies": {
                 "lru-cache": {
                   "version": "2.5.0"
@@ -2714,9 +2801,6 @@
                   "version": "1.0.0"
                 }
               }
-            },
-            "inherits": {
-              "version": "2.0.1"
             }
           }
         },
@@ -2730,9 +2814,12 @@
               "version": "0.0.2"
             },
             "minimist": {
-              "version": "0.0.8"
+              "version": "0.0.10"
             }
           }
+        },
+        "lodash": {
+          "version": "2.4.1"
         }
       }
     },
