@@ -1153,6 +1153,25 @@ describe("ngAnimate", function() {
               expect(element.css('width')).toBe("200px");
             }));
 
+          it("should NOT overwrite styles when a transition with a specific property is used",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
+
+            if(!$sniffer.transitions) return;
+
+            var style = '-webkit-transition: border linear .2s;' +
+                                'transition: border linear .2s;';
+
+            ss.addRule('.on', style);
+            element = $compile(html('<div style="height:200px"></div>'))($rootScope);
+            $animate.addClass(element, 'on');
+
+            $animate.triggerReflow();
+
+            var now = Date.now();
+            browserTrigger(element,'transitionend', { timeStamp: now + 200, elapsedTime: 0.2 });
+            expect(element.css('height')).toBe("200px");
+          }));
+
 
           it("should animate for the highest duration",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
