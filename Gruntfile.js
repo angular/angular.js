@@ -220,8 +220,11 @@ module.exports = function(grunt) {
 
     "ddescribe-iit": {
       files: [
+        'src/**/*.js',
         'test/**/*.js',
-        '!test/ngScenario/DescribeSpec.js'
+        '!test/ngScenario/DescribeSpec.js',
+        '!src/ng/directive/booleanAttrs.js', // legitimate xit here
+        '!src/ngScenario/**/*.js'
       ]
     },
 
