@@ -29,8 +29,8 @@ describe('docs.angularjs.org', function () {
     it('should show the functioning input directive example', function () {
       browser.get('index-debug.html#!/api/ng/directive/input');
 
-      //Wait for animation
-      browser.sleep(500);
+      // Ensure that the page is loaded before trying to switch frames.
+      browser.waitForAngular();
 
       browser.switchTo().frame('example-input-directive');
 
