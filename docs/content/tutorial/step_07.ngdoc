@@ -185,7 +185,7 @@ We also added a placeholder template for the phone details view:
 __`app/partials/phone-detail.html`:__
 
 ```html
-TBD: detail view for {{phoneId}}
+TBD: detail view for <span>{{phoneId}}</span>
 ```
 
 Note how we are using the `phoneId` expression which will be defined in the `PhoneDetailCtrl` controller.
