@@ -4353,7 +4353,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
   ([commit](https://github.com/angular/angular.js/commit/78656fe0dfc99c341ce02d71e7006e9c05b1fe3f))
 
 - fn signature change for change listener functions registered via `scope.$watch` - this means that
-  the scope object can be listed in the arguments list only if its needed and skipped otherwise.
+  the scope object can be listed in the arguments list only if it's needed and skipped otherwise.
   ([commit](https://github.com/angular/angular.js/commit/0196411dbe179afe24f4faa6d6503ff3f69472da))
 
   - before: `scope.$watch('someModel', function(scope, newVal, oldVal) {})`
@@ -5287,7 +5287,7 @@ with the `$route` service
 - docs app UI polishing with dual scrolling and other improvements
 
 ### Bug Fixes
-- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat`
+- `select` widget now behaves correctly when its `option` items are created via `ng:repeat`
   (issue #170)
 - fix for async xhr cache issue #152 by adding `$browser.defer` and `$defer` service
 
