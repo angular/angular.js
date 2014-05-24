@@ -901,6 +901,11 @@ So where does this `myTabs` controller come from? Directives can specify control
 the unsurprisingly named `controller` option. As you can see, the `myTabs` directive uses this
 option. Just like `ngController`, this option attaches a controller to the template of the directive.
 
+If it is necessary to reference the controller or any functions bound to the controller's scope in
+the template, you can use the option `controllerAs` to specify the name of the controller as an alias.
+The directive needs to define a scope for this configuration to be used. This is particularly useful
+in the case when the directive is used as a component.
+
 Looking back at `myPane`'s definition, notice the last argument in its `link` function: `tabsCtrl`.
 When a directive requires a controller, it receives that controller as the fourth argument of its
 `link` function. Taking advantage of this, `myPane` can call the `addPane` function of `myTabs`.
