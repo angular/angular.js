@@ -5287,7 +5287,7 @@ with the `$route` service
 - docs app UI polishing with dual scrolling and other improvements
 
 ### Bug Fixes
-- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat`
+- `select` widget now behaves correctly when its `option` items are created via `ng:repeat`
   (issue #170)
 - fix for async xhr cache issue #152 by adding `$browser.defer` and `$defer` service
 

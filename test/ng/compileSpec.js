@@ -2962,7 +2962,7 @@ describe('$compile', function() {
         $rootScope.name = 'same';
         $rootScope.$apply();
 
-        //change origin back to it's previous value
+        //change origin back to its previous value
         $rootScope.name = 'aaa';
         $rootScope.$apply();
 
