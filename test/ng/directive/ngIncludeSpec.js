@@ -506,7 +506,7 @@ describe('ngInclude and transcludes', function() {
     });
   });
 
-  it("should compile it's content correctly (although we remove it later)", function() {
+  it("should compile its content correctly (although we remove it later)", function() {
     var testElement;
     module(function() {
       directive('test', function() {
