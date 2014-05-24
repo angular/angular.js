@@ -229,7 +229,7 @@ describe('jqLite', function() {
       dealoc(element);
     });
 
-    it('should retrieve scope attached to the html element if its requested on the document',
+    it('should retrieve scope attached to the html element if it\'s requested on the document',
         function() {
       var doc = jqLite(document),
           html = doc.find('html'),
@@ -299,7 +299,7 @@ describe('jqLite', function() {
     });
 
 
-    it('should retrieve injector attached to the html element if its requested on document',
+    it('should retrieve injector attached to the html element if it\'s requested on document',
         function() {
       var doc = jqLite(document),
           html = doc.find('html'),

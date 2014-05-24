@@ -1541,7 +1541,7 @@ describe('$location', function() {
     });
 
 
-    it('should not strip stuff from path just because it looks like Windows drive when its not',
+    it('should not strip stuff from path just because it looks like Windows drive when it\'s not',
         function() {
       location = new LocationHashbangUrl('http://server/pre/index.html', '#');
 
