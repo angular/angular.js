@@ -54,7 +54,7 @@ h1,h2,h3,h4,h5,h6 {
 
 .header .brand {
   padding-top: 6px;
-  padding-bottom: 0px;
+  padding-bottom: 0;
 }
 
 .header .brand img {
@@ -124,7 +124,7 @@ h1,h2,h3,h4,h5,h6 {
   font-size:1.2em;
   padding:0;
   margin:0;
-  border-bottom:1px soild #aaa;
+  border-bottom:1px solid #aaa;
   margin-bottom:5px;
 }
 
@@ -681,6 +681,6 @@ ul.events > li {
     content:", ";
   }
   #wrapper {
-    padding-bottom:0px;
+    padding-bottom:0;
   }
 }

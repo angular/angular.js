@@ -72,7 +72,7 @@ function writeLocaleFiles() {
     var content = closureI18nExtractor.outputLocale(localeInfo, localeID);
     if (!content) return;
     var correctedLocaleId = closureI18nExtractor.correctedLocaleId(localeID);
-    var filename = NG_LOCALE_DIR + 'angular-locale_' + correctedLocaleId + '.js'
+    var filename = NG_LOCALE_DIR + 'angular-locale_' + correctedLocaleId + '.js';
     console.log('Writing ' + filename);
     return qfs.write(filename, content)
         .then(function () {

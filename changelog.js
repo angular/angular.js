@@ -172,7 +172,7 @@ var writeChangelog = function(stream, commits, version) {
   printSection(stream, 'Features', sections.feat);
   printSection(stream, 'Performance Improvements', sections.perf);
   printSection(stream, 'Breaking Changes', sections.breaks, false);
-}
+};
 
 
 var getPreviousTag = function() {
