@@ -251,7 +251,19 @@ describe('PhoneCat controllers', function() {
 });
 ```
 
-You should now see the following output in the Karma tab:
+For our modified tests to work, however, Karma also has to be told to load the `angular-resource.js` file,
+so that the {@link api/ngResource ngResource} module becomes available to the testing framework.
+
+__`test/karma.conf.js`:__
+```js
+...
+      'app/bower_components/angular-route/angular-route.js',
+      'app/bower_components/angular-resource/angular-resource.js',
+      'app/bower_components/angular-mocks/angular-mocks.js',
+...
+```
+
+Once Karma has been restarted through ```npm test```, you should now see the following output in the Karma tab:
 
 <pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)</pre>
 
