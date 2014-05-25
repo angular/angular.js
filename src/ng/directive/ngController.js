@@ -31,11 +31,17 @@
  * @example
  * Here is a simple form for editing user contact information. Adding, removing, clearing, and
  * greeting are methods declared on the controller (see source tab). These methods can
- * easily be called from the angular markup. Notice that the scope becomes the `this` for the
- * controller's instance. This allows for easy access to the view data from the controller. Also
- * notice that any changes to the data are automatically reflected in the View without the need
- * for a manual update. The example is shown in two different declaration styles you may use
- * according to preference.
+ * easily be called from the angular markup. Any changes to the data are automatically reflected
+ * in the View without the need for a manual update.
+ *
+ * Two different declaration styles are included below: one which injects `scope` into the
+ * controller, and another which instead binds methods and properties directly onto the controller
+ * using `this`. The first option is more common in the Angular community, and is generally used
+ * in boilerplates and in this guide. However, there are advantages to binding properties directly
+ * to the controller and avoiding scope. Using `controller as` makes it obvious which controller
+ * you are accessing in the template when multiple controllers apply to an element. Since there
+ * is always a `.` in the bindings, you don't have to worry about prototypal inheritance masking
+ * primitives.
    <example>
      <file name="index.html">
       <script>
