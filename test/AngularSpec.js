@@ -1170,4 +1170,21 @@ describe('angular', function() {
       expect(isElement(array)).toBe(false);
     });
   });
+
+  describe('isPromise', function () {
+    it('should return a boolean value', inject(function($q) {
+      var promise = $q.when(1),
+        notPromiseCollection = [
+          true,
+          [1,2,3],
+          { some: 'object' },
+          undefined,
+          42
+        ];
+      angular.forEach(notPromiseCollection, function(np) {
+        expect(isPromise(np)).toEqual(false);
+      });
+      expect(isPromise(promise)).toEqual(true);
+    }));
+  });
 });
