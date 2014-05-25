@@ -253,7 +253,7 @@ You can find out more detailed information about contributing in the
 
 
 
-[Google Closure I18N library]: https://code.google.com/p/closure-library/source/browse/closure/goog/i18n/
+[Google Closure I18N library]: https://github.com/google/closure-library/tree/master/closure/goog/i18n
 [angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
