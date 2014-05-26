@@ -3797,6 +3797,42 @@ describe('$compile', function() {
       });
 
 
+      it('should not pass transclusion into a templateUrl directive', function() {
+
+        module(function($compileProvider) {
+
+          $compileProvider.directive('transFoo', valueFn({
+            template: '<div>' +
+              '<div no-trans-bar></div>' +
+              '<div ng-transclude>this one should get replaced with content</div>' +
+              '<div class="foo" ng-transclude></div>' +
+            '</div>',
+            transclude: true
+
+          }));
+
+          $compileProvider.directive('noTransBar', valueFn({
+            templateUrl: 'noTransBar.html',
+            transclude: false
+
+          }));
+        });
+
+        inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('noTransBar.html',
+            '<div>' +
+              // This ng-transclude is invalid. It should throw an error.
+              '<div class="bar" ng-transclude></div>' +
+            '</div>');
+
+          expect(function() {
+            element = $compile('<div trans-foo>content</div>')($rootScope);
+            $rootScope.$apply();
+          }).toThrowMinErr('ngTransclude', 'orphan',
+              'Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: <div class="bar" ng-transclude="">');
+        });
+      });
+
       it('should make the result of a transclusion available to the parent directive in post-linking phase' +
           '(template)', function() {
         module(function() {
