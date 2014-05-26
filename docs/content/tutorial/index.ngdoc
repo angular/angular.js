@@ -95,7 +95,7 @@ The tutorial instructions, from now on, assume you are running all commands from
 ### Install Node.js
 
 If you want to run the preconfigured local web-server and the test tools then you will also need
-[Node.js v0.10+][node].
+[Node.js v0.10.27+][node].
 
 You can download a Node.js installer for your operating system from http://nodejs.org/download/.
 
