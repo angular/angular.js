@@ -494,7 +494,7 @@ isn't required to do JavaScript animations with AngularJS, but we're going to us
 your own JavaScript animation library is beyond the scope of this tutorial. For more on
 `jQuery.animate`, see the [jQuery documentation](http://api.jquery.com/animate/).
 
-The `addClass` and `removeClass` callback functions are called whenever an a class is added or removed
+The `addClass` and `removeClass` callback functions are called whenever a class is added or removed
 on the element that contains the class we registered, which is in this case `.phone`. When the `.active`
 class is added to the element (via the `ng-class` directive) the `addClass` JavaScript callback will
 be fired with `element` passed in as a parameter to that callback. The last parameter passed in is the
