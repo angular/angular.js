@@ -206,6 +206,42 @@ describe('form', function() {
     });
   });
 
+  describe('rollback view value', function () {
+    it('should trigger rollback on form controls', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+            '<button ng-click="test.$rollbackViewValue()" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(inputElm.val()).toBe('a');
+      browserTrigger(form.find('button'), 'click');
+      expect(inputElm.val()).toBe('');
+      dealoc(form);
+    });
+
+    it('should trigger rollback on form controls with nested forms', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<div class="ng-form" name="child">' +
+              '<input type="text" ng-model="name" />' +
+            '</div>' +
+            '<button ng-click="test.$rollbackViewValue()" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(inputElm.val()).toBe('a');
+      browserTrigger(form.find('button'), 'click');
+      expect(inputElm.val()).toBe('');
+      dealoc(form);
+    });
+  });
+
   describe('preventing default submission', function() {
 
     it('should prevent form submission', function() {
