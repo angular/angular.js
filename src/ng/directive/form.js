@@ -76,6 +76,23 @@ function FormController(element, attrs, $scope, $animate) {
 
   /**
    * @ngdoc method
+   * @name form.FormController#$rollbackViewValue
+   *
+   * @description
+   * Rollback all form controls pending updates to the `$modelValue`.
+   *
+   * Updates may be pending by a debounced event or because the input is waiting for a some future
+   * event defined in `ng-model-options`. This method is typically needed by the reset button of
+   * a form that uses `ng-model-options` to pend updates.
+   */
+  form.$rollbackViewValue = function() {
+    forEach(controls, function(control) {
+      control.$rollbackViewValue();
+    });
+  };
+
+  /**
+   * @ngdoc method
    * @name form.FormController#$commitViewValue
    *
    * @description
