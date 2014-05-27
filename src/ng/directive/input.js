@@ -975,31 +975,6 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$render = function() {
     element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
   };
-
-  // pattern validator
-  if (attr.ngPattern) {
-    var regexp, patternExp = attr.ngPattern;
-    attr.$observe('pattern', function(regex) {
-      if(isString(regex)) {
-        var match = regex.match(REGEX_STRING_REGEXP);
-        if(match) {
-          regex = new RegExp(match[1], match[2]);
-        }
-      }
-
-      if (regex && !regex.test) {
-        throw minErr('ngPattern')('noregexp',
-          'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
-          regex, startingTag(element));
-      }
-
-      regexp = regex || undefined;
-    });
-
-    ctrl.$validators.pattern = function(value) {
-      return ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value);
-    };
-  }
 }
 
 function weekParser(isoWeek) {
@@ -2162,6 +2137,36 @@ var requiredDirective = function() {
       attr.$observe('required', function() {
         ctrl.$validate();
       });
+    }
+  };
+};
+
+
+var patternDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var regexp, patternExp = attr.ngPattern || attr.pattern;
+      attr.$observe('pattern', function(regex) {
+        if(isString(regex) && regex.length > 0) {
+          regex = new RegExp(regex);
+        }
+
+        if (regex && !regex.test) {
+          throw minErr('ngPattern')('noregexp',
+            'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
+            regex, startingTag(elm));
+        }
+
+        regexp = regex || undefined;
+        ctrl.$validate();
+      });
+
+      ctrl.$validators.pattern = function(value) {
+        return ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value);
+      };
     }
   };
 };

@@ -1331,12 +1331,59 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
     });
 
+    it('should perform validations when the ngPattern scope value changes', function() {
+      scope.regexp = /^[a-z]+$/;
+      compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
 
-    it('should throw an error when scope pattern is invalid', function() {
+      changeInputValueTo('abcdef');
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('123');
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.regexp = /^\d+$/;
+      });
+
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('abcdef');
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.regexp = '';
+      });
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should register "pattern" with the model validations when the pattern attribute is used', function() {
+      compileInput('<input type="text" name="input" ng-model="value" pattern="^\\d+$" />');
+
+      changeInputValueTo('abcd');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.pattern).toBe(true);
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeValid();
+      expect(scope.form.input.$error.pattern).not.toBe(true);
+    });
+
+    it('should not throw an error when scope pattern can\'t be found', function() {
       expect(function() {
         compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
         scope.$apply(function() {
-          scope.fooRegexp = '/...';
+          scope.foo = 'bar';
+        });
+      }).not.toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+    });
+
+    it('should throw an error when the scope pattern is not a regular expression', function() {
+      expect(function() {
+        compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
+        scope.$apply(function() {
+          scope.fooRegexp = {};
+          scope.foo = 'bar';
         });
       }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
