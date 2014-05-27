@@ -1814,9 +1814,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           compile: valueFn(function textInterpolateLinkFn(scope, node) {
             var parent = node.parent(),
                 bindings = parent.data('$binding') || [];
-            // Need to interpolate again in case this is using one-time bindings in multiple clones
+            // Need a clone in case this is using one-time bindings in multiple clones
             // of transcluded templates.
-            interpolateFn = $interpolate(text);
+            interpolateFn = interpolateFn.clone();
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
             scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {

@@ -1068,17 +1068,21 @@ function $ParseProvider() {
           if (!stable) {
             lastValue = expression(self, locals);
             oneTimeParseFn.$$unwatch = isDefined(lastValue);
-            if (oneTimeParseFn.$$unwatch && self && self.$$postDigestQueue) {
-              self.$$postDigestQueue.push(function () {
-                // create a copy if the value is defined and it is not a $sce value
-                if ((stable = isDefined(lastValue)) && !lastValue.$$unwrapTrustedValue) {
-                  lastValue = copy(lastValue);
-                }
-              });
+            if (oneTimeParseFn.$$unwatch && self && self.$$postDigestQueue && !oneTimeParseFn.$$postDigest) {
+              oneTimeParseFn.$$postDigest = true;
+              self.$$postDigestQueue.push(oneTimeParseCheckFn);
             }
           }
           return lastValue;
         }
+
+        function oneTimeParseCheckFn() {
+          // create a copy if the value is defined and it is not a $sce value
+          oneTimeParseFn.$$postDigest = false;
+          if ((stable = isDefined(lastValue)) && !lastValue.$$unwrapTrustedValue) {
+            lastValue = copy(lastValue);
+          }
+        }      
       }
     };
   }];
