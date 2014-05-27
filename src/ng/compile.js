@@ -847,7 +847,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               compileNodes($compileNodes, transcludeFn, $compileNodes,
                            maxPriority, ignoreDirective, previousCompileContext);
       safeAddClass($compileNodes, 'ng-scope');
-      return function publicLinkFn(scope, cloneConnectFn, transcludeControllers){
+      return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
@@ -869,7 +869,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
-        if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode);
+        if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode, parentBoundTranscludeFn);
         return $linkNode;
       };
     }
@@ -985,10 +985,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
 
-      // If there is a previous boundTransclude function and it has a transclusionScope then
-      // use this instead of the current scope
-      scope = previousBoundTranscludeFn && previousBoundTranscludeFn.transclusionScope || scope;
-
       var boundTranscludeFn = function(transcludedScope, cloneFn, controllers) {
         var scopeCreated = false;
 
@@ -998,15 +994,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           scopeCreated = true;
         }
 
-        var clone = transcludeFn(transcludedScope, cloneFn, controllers);
+        var clone = transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn);
         if (scopeCreated) {
           clone.on('$destroy', function() { transcludedScope.$destroy(); });
         }
         return clone;
       };
-
-      // Store the transclusionScope for nested transclusions
-      boundTranscludeFn.transclusionScope = scope;
 
       return boundTranscludeFn;
     }
@@ -1786,7 +1779,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               // Copy in CSS classes from original node
               safeAddClass(jqLite(linkNode), oldClasses);
             }
-            if (afterTemplateNodeLinkFn.transclude) {
+            if (afterTemplateNodeLinkFn.transcludeOnThisElement) {
               childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude, boundTranscludeFn);
             } else {
               childBoundTranscludeFn = boundTranscludeFn;
