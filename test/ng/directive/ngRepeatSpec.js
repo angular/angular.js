@@ -1195,6 +1195,21 @@ describe('ngRepeat and transcludes', function() {
     });
   });
 
+
+  it('should set the state before linking', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('assertA', valueFn(function(scope) {
+        // This linking function asserts that a is set.
+        // If we only test this by asserting binding, it will work even if the value is set later.
+        expect(scope.a).toBeDefined();
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      var element = $compile('<div><span ng-repeat="a in [1]"><span assert-a></span></span></div>')($rootScope);
+      $rootScope.$digest();
+      dealoc(element);
+    });
+  });
 });
 
 describe('ngRepeat animations', function() {
