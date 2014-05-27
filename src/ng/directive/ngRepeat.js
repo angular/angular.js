@@ -360,6 +360,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 $animate.move(getBlockElements(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
+              updateScope(block.scope, index);
             } else {
               // new item which we don't know about
               $transclude(function(clone, scope) {
@@ -372,9 +373,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // by a directive with templateUrl when it's template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
+                updateScope(block.scope, index);
               });
             }
-            updateScope(block.scope, index);
           }
           lastBlockMap = nextBlockMap;
         });
