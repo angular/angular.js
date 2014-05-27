@@ -61,6 +61,44 @@
        </div>
      </file>
    </example>
+   
+    <example>
+<file name="controller.html">
+<script>
+    function Ctrl($scope, $filter) {
+     $scope.friends =
+               [{name:'John', phone:'555-1212', age:10},
+                {name:'Mary', phone:'555-9876', age:19},
+                {name:'Mike', phone:'555-4321', age:21},
+                {name:'Adam', phone:'555-5678', age:35},
+                {name:'Julie', phone:'555-8765', age:29}]
+
+      $scope.order = function(predicate, reverse) {
+        $scope.friends = $filter('orderBy')($scope.friends, predicate, reverse);
+      }
+      $scope.order('-age',false) ;
+    }
+  </script>
+  <div ng-controller="Ctrl">
+    <table class="friend">
+      <tr>
+        <th><a href="" ng-click="reverse=false;order('name',false)">Name</a>
+          (
+          <a href="" ng-click="order('-name',false)">^</a>)</th>
+        <th><a href="" ng-click="reverse=!reverse;order('phone',reverse)">Phone Number</a>
+        </th>
+        <th><a href="" ng-click="reverse=!reverse;order('age',reverse)">Age</a>
+        </th>
+      </tr>
+      <tr ng-repeat="friend in friends">
+        <td>{{friend.name}}</td>
+        <td>{{friend.phone}}</td>
+        <td>{{friend.age}}</td>
+      </tr>
+    </table>
+  </div>
+</file>
+</example>
  */
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse){
