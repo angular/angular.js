@@ -218,6 +218,25 @@ describe('angular', function() {
       expect(clone.hello).toBeUndefined();
       expect(clone.goodbye).toBe("world");
     });
+
+    it('should handle arrays', function() {
+      var original = [{}, 1],
+          clone = [];
+
+      var aCopy = shallowCopy(original);
+      expect(aCopy).not.toBe(original);
+      expect(aCopy).toEqual(original);
+      expect(aCopy[0]).toBe(original[0]);
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone).toEqual(original);
+    });
+
+    it('should handle primitives', function() {
+      expect(shallowCopy('test')).toBe('test');
+      expect(shallowCopy(3)).toBe(3);
+      expect(shallowCopy(true)).toBe(true);
+    });
   });
 
   describe('elementHTML', function() {
