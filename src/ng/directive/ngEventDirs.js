@@ -262,8 +262,18 @@ forEach(
  * @example
    <example>
      <file name="index.html">
-      <input ng-keyup="count = count + 1" ng-init="count=0">
-      key up count: {{count}}
+      <ul>
+         <li>
+            <input ng-keyup="count = count + 1" ng-init="count=0">key up count: {{count}}
+         </li>
+         <li>
+            <input ng-keyup="event=$event">
+            <ul>
+               <li>event keyCode: {{event.keyCode | json}}</li>
+               <li>event altKey: {{event.altKey }}</li>
+            </ul>
+         </li>
+      </ul>
      </file>
    </example>
  */
