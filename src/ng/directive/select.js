@@ -283,7 +283,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         // we need to work of an array, so we need to see if anything was inserted/removed
         scope.$watch(function selectMultipleWatch() {
           if (!equals(lastView, ctrl.$viewValue)) {
-            lastView = copy(ctrl.$viewValue);
+            lastView = shallowCopy(ctrl.$viewValue);
             ctrl.$render();
           }
         });
