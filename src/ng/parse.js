@@ -1072,7 +1072,7 @@ function $ParseProvider() {
               self.$$postDigestQueue.push(function () {
                 // create a copy if the value is defined and it is not a $sce value
                 if ((stable = isDefined(lastValue)) && !lastValue.$$unwrapTrustedValue) {
-                  lastValue = copy(lastValue);
+                  lastValue = copy(lastValue, null);
                 }
               });
             }
