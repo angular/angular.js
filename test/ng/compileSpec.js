@@ -1516,6 +1516,180 @@ describe('$compile', function() {
         ));
 
 
+        describe('nested transcludes', function() {
+
+          beforeEach(module(function($compileProvider) {
+
+            $compileProvider.directive('noop', valueFn({}));
+
+            $compileProvider.directive('sync', valueFn({
+              template: '<div ng-transclude></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('async', valueFn({
+              templateUrl: 'async',
+              transclude: true
+            }));
+
+            $compileProvider.directive('syncSync', valueFn({
+              template: '<div noop><div sync><div ng-transclude></div></div></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('syncAsync', valueFn({
+              template: '<div noop><div async><div ng-transclude></div></div></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('asyncSync', valueFn({
+              templateUrl: 'asyncSync',
+              transclude: true
+            }));
+
+            $compileProvider.directive('asyncAsync', valueFn({
+              templateUrl: 'asyncAsync',
+              transclude: true
+            }));
+
+          }));
+
+          beforeEach(inject(function($templateCache) {
+            $templateCache.put('async', '<div ng-transclude></div>');
+            $templateCache.put('asyncSync', '<div noop><div sync><div ng-transclude></div></div></div>');
+            $templateCache.put('asyncAsync', '<div noop><div async><div ng-transclude></div></div></div>');
+          }));
+
+
+          it('should allow nested transclude directives with sync template containing sync template', inject(function($compile, $rootScope) {
+            element = $compile('<div sync-sync>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+
+          it('should allow nested transclude directives with sync template containing async template', inject(function($compile, $rootScope) {
+            element = $compile('<div sync-async>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+
+          it('should allow nested transclude directives with async template containing sync template', inject(function($compile, $rootScope) {
+            element = $compile('<div async-sync>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+
+          it('should allow nested transclude directives with async template containing asynch template', inject(function($compile, $rootScope) {
+            element = $compile('<div async-async>transcluded content</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+        });
+
+        describe('nested isolated scope transcludes', function() {
+          beforeEach(module(function($compileProvider) {
+
+            $compileProvider.directive('trans', valueFn({
+              restrict: 'E',
+              template: '<div ng-transclude></div>',
+              transclude: true
+            }));
+
+            $compileProvider.directive('transAsync', valueFn({
+              restrict: 'E',
+              templateUrl: 'transAsync',
+              transclude: true
+            }));
+
+            $compileProvider.directive('iso', valueFn({
+              restrict: 'E',
+              transclude: true,
+              template: '<trans><span ng-transclude></span></trans>',
+              scope: {}
+            }));
+            $compileProvider.directive('isoAsync1', valueFn({
+              restrict: 'E',
+              transclude: true,
+              template: '<trans-async><span ng-transclude></span></trans-async>',
+              scope: {}
+            }));
+            $compileProvider.directive('isoAsync2', valueFn({
+              restrict: 'E',
+              transclude: true,
+              templateUrl: 'isoAsync',
+              scope: {}
+            }));
+          }));
+
+          beforeEach(inject(function($templateCache) {
+            $templateCache.put('transAsync', '<div ng-transclude></div>');
+            $templateCache.put('isoAsync', '<trans-async><span ng-transclude></span></trans-async>');
+          }));
+
+
+          it('should pass the outer scope to the transclude on the isolated template sync-sync', inject(function($compile, $rootScope) {
+
+            $rootScope.val = 'transcluded content';
+            element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+
+          it('should pass the outer scope to the transclude on the isolated template async-sync', inject(function($compile, $rootScope) {
+
+            $rootScope.val = 'transcluded content';
+            element = $compile('<iso-async1><span ng-bind="val"></span></iso-async1>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+
+          it('should pass the outer scope to the transclude on the isolated template async-async', inject(function($compile, $rootScope) {
+
+            $rootScope.val = 'transcluded content';
+            element = $compile('<iso-async2><span ng-bind="val"></span></iso-async2>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('transcluded content');
+          }));
+
+        });
+
+        describe('transclude and children', function() {
+          beforeEach(module(function($compileProvider) {
+
+            $compileProvider.directive('myExample', valueFn({
+              scope: {},
+              link: function link(scope, element, attrs) {
+                var foo = element[0].querySelector('.foo');
+                scope.children = angular.element(foo).children().length;
+              },
+              template: '<div>' +
+                '<div>myExample {{children}}!</div>' +
+                '<div ng-if="children">has children</div>' +
+                '<div class="foo" ng-transclude></div>' +
+              '</div>',
+              transclude: true
+
+            }));
+
+          }));
+
+          it("should not pick up too many children when transcluding", inject(function($compile, $rootScope) {
+            var element = $compile('<div my-example></div>')($rootScope);
+            $rootScope.$digest();
+            $rootScope.$digest();
+            expect(element.text()).toEqual('myExample 0!');
+            dealoc(element);
+
+            element = $compile('<div my-example><p></p></div>')($rootScope);
+            $rootScope.$digest();
+            $rootScope.$digest();
+            expect(element.text()).toEqual('myExample 1!has children');
+            dealoc(element);
+          }));
+
+        });
+
+
         it("should fail if replacing and template doesn't have a single root element", function() {
           module(function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');

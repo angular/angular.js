@@ -566,6 +566,28 @@ describe('ngInclude and transcludes', function() {
       expect(root[0]).toBe(element[0]);
     });
   });
+
+
+  it('should use the correct transcluded scope', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('iso', valueFn({
+        restrict: 'E',
+        transclude: true,
+        template: '<div ng-include="\'include.html\'"></div>',
+        scope: {}
+      }));
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('<div ng-transclude></div>');
+      $rootScope.val = 'transcluded content';
+      element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(trim(element.text())).toEqual('transcluded content');
+    });
+  });
+
+
 });
 
 describe('ngInclude animations', function() {
