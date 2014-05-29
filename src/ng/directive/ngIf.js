@@ -89,8 +89,8 @@ var ngIfDirective = ['$animate', function($animate) {
 
           if (toBoolean(value)) {
             if (!childScope) {
-              childScope = $scope.$new();
-              $transclude(childScope, function (clone) {
+              $transclude(function (clone, newScope) {
+                childScope = newScope;
                 clone[clone.length++] = document.createComment(' end ngIf: ' + $attr.ngIf + ' ');
                 // Note: We only need the first/last node of the cloned nodes.
                 // However, we need to keep the reference to the jqlite wrapper as it might be changed later

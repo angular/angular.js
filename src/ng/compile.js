@@ -924,7 +924,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                       !childNodes.length)
             ? null
             : compileNodes(childNodes,
-                 nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
+                 nodeLinkFn ? (
+                  (nodeLinkFn.transcludeOnThisElement || !nodeLinkFn.templateOnThisElement)
+                     && nodeLinkFn.transclude) : transcludeFn);
 
         linkFns.push(nodeLinkFn, childLinkFn);
         linkFnFound = linkFnFound || nodeLinkFn || childLinkFn;
@@ -935,8 +937,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // return a linking function if we have found anything, null otherwise
       return linkFnFound ? compositeLinkFn : null;
 
-      function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
-        var nodeLinkFn, childLinkFn, node, $node, childScope, childTranscludeFn, i, ii, n;
+      function compositeLinkFn(scope, nodeList, $rootElement, parentBoundTranscludeFn) {
+        var nodeLinkFn, childLinkFn, node, $node, childScope, i, ii, n, childBoundTranscludeFn;
 
         // copy nodeList so that linking doesn't break due to live list updates.
         var nodeListLength = nodeList.length,
@@ -958,23 +960,36 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             } else {
               childScope = scope;
             }
-            childTranscludeFn = nodeLinkFn.transclude;
-            if (childTranscludeFn || (!boundTranscludeFn && transcludeFn)) {
-              nodeLinkFn(childLinkFn, childScope, node, $rootElement,
-                createBoundTranscludeFn(scope, childTranscludeFn || transcludeFn)
-              );
+
+            if ( nodeLinkFn.transcludeOnThisElement ) {
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, nodeLinkFn.transclude, parentBoundTranscludeFn);
+
+            } else if (!nodeLinkFn.templateOnThisElement && parentBoundTranscludeFn) {
+              childBoundTranscludeFn = parentBoundTranscludeFn;
+
+            } else if (!parentBoundTranscludeFn && transcludeFn) {
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, transcludeFn);
+
             } else {
-              nodeLinkFn(childLinkFn, childScope, node, $rootElement, boundTranscludeFn);
+              childBoundTranscludeFn = null;
             }
+
+            nodeLinkFn(childLinkFn, childScope, node, $rootElement, childBoundTranscludeFn);
+
           } else if (childLinkFn) {
-            childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
+            childLinkFn(scope, node.childNodes, undefined, parentBoundTranscludeFn);
           }
         }
       }
     }
 
-    function createBoundTranscludeFn(scope, transcludeFn) {
-      return function boundTranscludeFn(transcludedScope, cloneFn, controllers) {
+    function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
+
+      // If there is a previous boundTransclude function and it has a transclusionScope then
+      // use this instead of the current scope
+      scope = previousBoundTranscludeFn && previousBoundTranscludeFn.transclusionScope || scope;
+
+      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers) {
         var scopeCreated = false;
 
         if (!transcludedScope) {
@@ -985,10 +1000,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var clone = transcludeFn(transcludedScope, cloneFn, controllers);
         if (scopeCreated) {
-          clone.on('$destroy', bind(transcludedScope, transcludedScope.$destroy));
+          clone.on('$destroy', function() { transcludedScope.$destroy(); });
         }
         return clone;
       };
+
+      // Store the transclusionScope for nested transclusions
+      boundTranscludeFn.transclusionScope = scope;
+
+      return boundTranscludeFn;
     }
 
     /**
@@ -1166,6 +1186,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           templateDirective = previousCompileContext.templateDirective,
           nonTlbTranscludeDirective = previousCompileContext.nonTlbTranscludeDirective,
           hasTranscludeDirective = false,
+          hasTemplate = false,
           hasElementTranscludeDirective = previousCompileContext.hasElementTranscludeDirective,
           $compileNode = templateAttrs.$$element = jqLite(compileNode),
           directive,
@@ -1256,6 +1277,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (directive.template) {
+          hasTemplate = true;
           assertNoDuplicate('template', templateDirective, directive, $compileNode);
           templateDirective = directive;
 
@@ -1305,6 +1327,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (directive.templateUrl) {
+          hasTemplate = true;
           assertNoDuplicate('template', templateDirective, directive, $compileNode);
           templateDirective = directive;
 
@@ -1313,7 +1336,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
 
           nodeLinkFn = compileTemplateUrl(directives.splice(i, directives.length - i), $compileNode,
-              templateAttrs, jqCollection, childTranscludeFn, preLinkFns, postLinkFns, {
+              templateAttrs, jqCollection, hasTranscludeDirective && childTranscludeFn, preLinkFns, postLinkFns, {
                 controllerDirectives: controllerDirectives,
                 newIsolateScopeDirective: newIsolateScopeDirective,
                 templateDirective: templateDirective,
@@ -1341,7 +1364,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === true;
-      nodeLinkFn.transclude = hasTranscludeDirective && childTranscludeFn;
+      nodeLinkFn.transcludeOnThisElement = hasTranscludeDirective;
+      nodeLinkFn.templateOnThisElement = hasTemplate;
+      nodeLinkFn.transclude = childTranscludeFn;
+
       previousCompileContext.hasElementTranscludeDirective = hasElementTranscludeDirective;
 
       // might be normal or delayed nodeLinkFn depending on if templateUrl is present
@@ -1761,7 +1787,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               safeAddClass(jqLite(linkNode), oldClasses);
             }
             if (afterTemplateNodeLinkFn.transclude) {
-              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude);
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude, boundTranscludeFn);
             } else {
               childBoundTranscludeFn = boundTranscludeFn;
             }

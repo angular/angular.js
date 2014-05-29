@@ -1175,6 +1175,26 @@ describe('ngRepeat and transcludes', function() {
       dealoc(element);
     });
   });
+
+
+  it('should use the correct transcluded scope', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('iso', valueFn({
+        restrict: 'E',
+        transclude: true,
+        template: '<div ng-repeat="a in [1]"><div ng-transclude></div></div>',
+        scope: {}
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      $rootScope.val = 'transcluded content';
+      var element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+      $rootScope.$digest();
+      expect(trim(element.text())).toEqual('transcluded content');
+      dealoc(element);
+    });
+  });
+
 });
 
 describe('ngRepeat animations', function() {
