@@ -81,7 +81,7 @@ function $RootScopeProvider(){
 
   this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
       function( $injector,   $exceptionHandler,   $parse,   $browser) {
-
+    var $timeout;
     /**
      * @ngdoc type
      * @name $rootScope.Scope
@@ -641,7 +641,7 @@ function $RootScopeProvider(){
        * ```
        *
        */
-      $digest: function() {
+      $digest: function(calledByFn) {
         var watch, value, last,
             watchers,
             asyncQueue = this.$$asyncQueue,
@@ -972,6 +972,21 @@ function $RootScopeProvider(){
         }
       },
 
+
+      $applyAsync: function(timeout) {
+        if (!$timeout) {
+          $timeout = $injector.get('$timeout');
+        }
+        if (!isNumber(timeout)) {
+          timeout = 0;
+        }
+
+        if (!applyingAsync) {
+          applyingAsync = true;
+          $timeout(applyAsync, timeout, false);
+        }
+      },
+
       /**
        * @ngdoc method
        * @name $rootScope.Scope#$on
@@ -1169,6 +1184,7 @@ function $RootScopeProvider(){
     };
 
     var $rootScope = new Scope();
+    var applyingAsync = false;
 
     return $rootScope;
 
@@ -1199,6 +1215,15 @@ function $RootScopeProvider(){
           delete current.$$listenerCount[name];
         }
       } while ((current = current.$parent));
+    }
+
+    function applyAsync() {
+      applyingAsync = false;
+      try {
+        $rootScope.$digest("applyAsync");
+      } catch (e) {
+        $exceptionHandler(e);
+      }
     }
 
     /**
