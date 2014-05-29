@@ -4057,6 +4057,35 @@ describe('$compile', function() {
         });
       });
 
+
+      it('should expose transcludeFn in compile fn even for templateUrl', function() {
+        module(function() {
+          directive('transInCompile', valueFn({
+            transclude: true,
+            // template: '<div class="foo">whatever</div>',
+            templateUrl: 'foo.html',
+            compile: function(_, __, transclude) {
+              return function(scope, element) {
+                transclude(scope, function(clone, scope) {
+                  element.html('');
+                  element.append(clone);
+                });
+              };
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('foo.html', '<div class="foo">whatever</div>');
+
+          compile('<div trans-in-compile>transcluded content</div>');
+          $rootScope.$apply();
+
+          expect(trim(element.text())).toBe('transcluded content');
+        });
+      });
+
+
       it('should make the result of a transclusion available to the parent directive in post-linking phase' +
           '(template)', function() {
         module(function() {
