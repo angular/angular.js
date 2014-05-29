@@ -868,8 +868,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        if (cloneConnectFn) cloneConnectFn($linkNode, scope);
-        if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode);
+        var overrides = {};
+        if (cloneConnectFn) {
+          angular.extend(overrides, cloneConnectFn($linkNode, scope));
+        }
+        if (compositeLinkFn && !overrides.alreadyLinked) {
+          compositeLinkFn(scope, $linkNode, $linkNode);
+        }
         return $linkNode;
       };
     }

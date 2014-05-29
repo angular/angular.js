@@ -4180,6 +4180,28 @@ describe('$compile', function() {
 
       });
 
+      it('should skip automatic linking if the user indicates they want to take care of it themselves', function() {
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(function(clone) {
+                $compile(clone)(scope);
+                return {
+                  alreadyLinked: true
+                };
+              });
+            }
+          }));
+        });
+        inject(function($compile) {
+          $rootScope.list = ['Initial'];
+          element = $compile('<div transclude><div ng-init="list.push(\'Compiled\')"></div></div>')($rootScope);
+          $rootScope.$apply();
+          expect($rootScope.list).toEqual(['Initial', 'Compiled']);
+        });
+      });
+
       it('should expose the directive controller to transcluded children', function() {
         var capturedChildCtrl;
         module(function() {
