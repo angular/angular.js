@@ -14,3 +14,9 @@ ng\:form {
   transition:0s all!important;
   -webkit-transition:0s all!important;
 }
+
+/* show the element during a show/hide animation when the
+ * animation is ongoing, but the .ng-hide class is active */
+.ng-hide-add-active, .ng-hide-remove {
+  display: block!important;
+}
