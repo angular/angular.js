@@ -9,3 +9,7 @@
 ng\:form {
   display: block;
 }
+
+.ng-hide.ng-animate {
+  display: block!important;
+}
