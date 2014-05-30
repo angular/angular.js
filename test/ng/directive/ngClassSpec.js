@@ -210,20 +210,20 @@ describe('ngClass', function() {
   );
 
   it('should allow ngClass with overlapping classes', inject(function($rootScope, $compile, $animate) {
-      element = $compile('<div ng-class="{\'same yes\': test, \'same no\': !test}"></div>')($rootScope);
-      $rootScope.$digest();
+    element = $compile('<div ng-class="{\'same yes\': test, \'same no\': !test}"></div>')($rootScope);
+    $rootScope.$digest();
 
-      expect(element).toHaveClass('same');
-      expect(element).not.toHaveClass('yes');
-      expect(element).toHaveClass('no');
+    expect(element).toHaveClass('same');
+    expect(element).not.toHaveClass('yes');
+    expect(element).toHaveClass('no');
 
-      $rootScope.$apply(function() {
-        $rootScope.test = true;
-      });
+    $rootScope.$apply(function() {
+      $rootScope.test = true;
+    });
 
-      expect(element).toHaveClass('same');
-      expect(element).toHaveClass('yes');
-      expect(element).not.toHaveClass('no');
+    expect(element).toHaveClass('same');
+    expect(element).toHaveClass('yes');
+    expect(element).not.toHaveClass('no');
   }));
 
   it('should allow both ngClass and ngClassOdd/Even with multiple classes', inject(function($rootScope, $compile) {
