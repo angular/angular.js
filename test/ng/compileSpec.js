@@ -2196,6 +2196,22 @@ describe('$compile', function() {
         })
     );
 
+    it('should one-time bind if the expression starts with a space and two colons', inject(
+            function($rootScope, $compile) {
+              $rootScope.name = 'angular';
+              element = $compile('<div name="attr: {{::name}}">text: {{ ::name }}</div>')($rootScope);
+              expect($rootScope.$$watchers.length).toBe(2);
+              $rootScope.$digest();
+              expect(element.text()).toEqual('text: angular');
+              expect(element.attr('name')).toEqual('attr: angular');
+              expect($rootScope.$$watchers.length).toBe(0);
+              $rootScope.name = 'not-angular';
+              $rootScope.$digest();
+              expect(element.text()).toEqual('text: angular');
+              expect(element.attr('name')).toEqual('attr: angular');
+            })
+        );
+
 
     it('should process attribute interpolation in pre-linking phase at priority 100', function() {
       module(function() {
