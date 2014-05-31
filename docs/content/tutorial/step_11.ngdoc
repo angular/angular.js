@@ -164,6 +164,22 @@ we require, so in these cases, we can add a callback to process the server respo
 
 ## Test
 
+Because we're now using the {@link ngResource ngResource} module, it's necessary to also need to
+update the Karma config file with angular-resource so the new tests will pass.
+
+__`test/karma.conf.js`:__
+
+```js
+    files : [
+      'app/bower_components/angular/angular.js',
+      'app/bower_components/angular-route/angular-route.js',
+      'app/bower_components/angular-resource/angular-resource.js',
+      'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/js/**/*.js',
+      'test/unit/**/*.js'
+    ],
+```
+
 We have modified our unit tests to verify that our new service is issuing HTTP requests and
 processing them as expected. The tests also check that our controllers are interacting with the
 service correctly.
@@ -174,7 +190,6 @@ matcher, our tests would fail because the test values would not match the respon
 solve the problem, we use a newly-defined `toEqualData` [Jasmine matcher][jasmine-matchers]. When
 the `toEqualData` matcher compares two objects, it takes only object properties into account and
 ignores methods.
-
 
 __`test/unit/controllersSpec.js`:__
 
@@ -191,7 +206,7 @@ describe('PhoneCat controllers', function() {
 
   beforeEach(module('phonecatApp'));
   beforeEach(module('phonecatServices'));
-
+```
 
   describe('PhoneListCtrl', function(){
     var scope, ctrl, $httpBackend;
