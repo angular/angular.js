@@ -193,6 +193,7 @@ ignores methods.
 
 __`test/unit/controllersSpec.js`:__
 
+
 ```js
 describe('PhoneCat controllers', function() {
 
@@ -206,7 +207,7 @@ describe('PhoneCat controllers', function() {
 
   beforeEach(module('phonecatApp'));
   beforeEach(module('phonecatServices'));
-```
+
 
   describe('PhoneListCtrl', function(){
     var scope, ctrl, $httpBackend;
