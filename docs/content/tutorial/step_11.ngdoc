@@ -251,6 +251,20 @@ describe('PhoneCat controllers', function() {
 });
 ```
 
+We also need to update the Karma config file with angular-resource in order for the unit tests to work.
+__`test/karma.conf.js`:__
+
+```js
+    files : [
+      'app/bower_components/angular/angular.js',
+      'app/bower_components/angular-route/angular-route.js',
+      'app/bower_components/angular-resource/angular-resource.js',
+      'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/js/**/*.js',
+      'test/unit/**/*.js'
+    ],
+```
+
 You should now see the following output in the Karma tab:
 
 <pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)</pre>
