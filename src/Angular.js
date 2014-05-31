@@ -1425,8 +1425,8 @@ function bootstrap(element, modules, config) {
     }]);
     modules.unshift('ng');
     var injector = createInjector(modules, config.strictDi);
-    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animate',
-       function(scope, element, compile, injector, animate) {
+    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector',
+       function(scope, element, compile, injector) {
         scope.$apply(function() {
           element.data('$injector', injector);
           compile(element)(scope);
