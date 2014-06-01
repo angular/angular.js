@@ -105,7 +105,7 @@ __`app/index.html`.__
 
 <div class="alert alert-error">
   **Important:** Be sure to use jQuery version `1.10.x`, as AngularJS does not yet support jQuery `2.x`. Also, be sure
-  to load jQuery before all AngularJS modules, as otherwise AngularJS wont detect the presence of jQuery and animations
+  to load jQuery before all AngularJS modules, because otherwise AngularJS wont detect the presence of jQuery and animations
   wont work as expected.
 </div>
 
