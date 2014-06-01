@@ -261,7 +261,7 @@ function $HttpProvider() {
      * # Transforming Requests and Responses
      *
      * Both requests and responses can be transformed using transform functions. By default, Angular
-     * applies these transformations:
+     * applies the request and response transformations below:
      *
      * Request transformations:
      *
