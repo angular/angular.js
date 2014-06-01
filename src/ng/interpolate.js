@@ -190,7 +190,6 @@ function $InterpolateProvider() {
           index = 0,
           separators = [],
           expressions = [],
-          parseFns = [],
           textLength = text.length,
           hasInterpolation = false,
           hasText = false,
@@ -205,7 +204,6 @@ function $InterpolateProvider() {
           separators.push(text.substring(index, startIndex));
           exp = text.substring(startIndex + startSymbolLength, endIndex);
           expressions.push(exp);
-          parseFns.push($parse(exp));
           index = endIndex + endSymbolLength;
           hasInterpolation = true;
         } else {
@@ -283,13 +281,20 @@ function $InterpolateProvider() {
           return value;
         };
 
-        return extend(function interpolationFn(context) {
+        var clone = function() {
+          var i;
+          var ii = expressions.length;
+          var values = new Array(ii);
+          var parseFns = new Array(ii);
+
+          for (i = 0; i < ii; i++) {
+            parseFns[i] = $parse(expressions[i]);
+          }
+
+          return extend(function interpolationFn(context) {
             var scopeId = (context && context.$id) || 'notAScope';
             var lastValues = lastValuesCache.values[scopeId];
             var lastResult = lastValuesCache.results[scopeId];
-            var i = 0;
-            var ii = expressions.length;
-            var values = new Array(ii);
             var val;
             var inputsChanged = lastResult === undefined ? true: false;
 
@@ -307,10 +312,9 @@ function $InterpolateProvider() {
               }
             }
 
-
             try {
               interpolationFn.$$unwatch = true;
-              for (; i < ii; i++) {
+              for (i = 0; i < ii; i++) {
                 val = getValue(parseFns[i](context));
                 if (allOrNothing && isUndefined(val)) {
                   interpolationFn.$$unwatch = undefined;
@@ -336,11 +340,15 @@ function $InterpolateProvider() {
 
             return lastResult;
           }, {
-          // all of these properties are undocumented for now
-          exp: text, //just for compatibility with regular watchers created via $watch
-          separators: separators,
-          expressions: expressions
-        });
+            // all of these properties are undocumented for now
+            exp: text, //just for compatibility with regular watchers created via $watch
+            separators: separators,
+            expressions: expressions,
+            clone: clone
+          });
+        };
+
+        return clone();
       }
     }
 
