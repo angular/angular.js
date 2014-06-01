@@ -94,7 +94,7 @@ $provide.value("$locale", {
       }
     ]
   },
-  "id": "fr-gp",
+  "id": "fr-sn",
   "pluralCat": function (n) {  if (n >= 0 && n <= 2 && n != 2) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

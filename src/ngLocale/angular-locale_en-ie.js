@@ -65,6 +65,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ".",
+    "DEFAULT_PRECISION": 2,
     "GROUP_SEP": ",",
     "PATTERNS": [
       {

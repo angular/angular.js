@@ -21,6 +21,7 @@ function convertNumberData(dataObj, currencySymbols) {
 
   if (currencySymbols[dataObj.DEF_CURRENCY_CODE]) {
     numberFormats.CURRENCY_SYM = currencySymbols[dataObj.DEF_CURRENCY_CODE][1];
+    numberFormats.DEFAULT_PRECISION = (currencySymbols[dataObj.DEF_CURRENCY_CODE][0] === 0) ? 0 : 2;
   } else {
     if (dataObj.DEF_CURRENCY_CODE == 'MTL') {
       numberFormats.CURRENCY_SYM = '₤'; //for some reason this is missing in closure
@@ -29,6 +30,7 @@ function convertNumberData(dataObj, currencySymbols) {
       var code = numberFormats.CURRENCY_SYM = dataObj.DEF_CURRENCY_CODE;
       console.log(code +' has no currency symbol in closure, used ' + code + ' instead!');
     }
+    numberFormats.DEFAULT_PRECISION = 2;
   }
   return numberFormats;
 }
