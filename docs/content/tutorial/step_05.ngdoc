@@ -140,6 +140,10 @@ anonymous function when registering the controller:
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
 ```
 
+If you use the anonymous function syntax, the way you initialize your Angular app needs to change.
+Instead of a simple `ng-app` in your markup, you'll need `ng-app='phonecatApp'`. Otherwise, you'll
+get errors that your controller is undefined (not a function).
+
 From this point onward, we're going to use the inline method in the tutorial. With that in mind,
 let's add the annotations to our `PhoneListCtrl`:
 
