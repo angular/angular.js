@@ -612,6 +612,12 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         enter : function(element, parentElement, afterElement, doneCallback) {
+          element       = angular.element(element);
+          if(parentElement)
+            { parentElement = angular.element(parentElement); }
+          if(afterElement)
+            { afterElement  = angular.element(afterElement);  }
+
           this.enabled(false, element);
           $delegate.enter(element, parentElement, afterElement);
           $rootScope.$$postDigest(function() {
@@ -651,6 +657,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         leave : function(element, doneCallback) {
+          element = angular.element(element);
           cancelChildAnimations(element);
           this.enabled(false, element);
           $rootScope.$$postDigest(function() {
@@ -694,6 +701,12 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         move : function(element, parentElement, afterElement, doneCallback) {
+          element           = angular.element(element);
+          if(parentElement)
+            { parentElement = angular.element(parentElement); }
+          if(afterElement)
+            { afterElement  = angular.element(afterElement);  }
+
           cancelChildAnimations(element);
           this.enabled(false, element);
           $delegate.move(element, parentElement, afterElement);
@@ -733,6 +746,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         addClass : function(element, className, doneCallback) {
+          element = angular.element(element);
           element = stripCommentsFromElement(element);
           performAnimation('addClass', className, element, null, null, function() {
             $delegate.addClass(element, className);
@@ -769,6 +783,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         removeClass : function(element, className, doneCallback) {
+          element = angular.element(element);
           element = stripCommentsFromElement(element);
           performAnimation('removeClass', className, element, null, null, function() {
             $delegate.removeClass(element, className);
@@ -803,6 +818,7 @@ angular.module('ngAnimate', ['ng'])
          *   CSS classes have been set on the element
          */
         setClass : function(element, add, remove, doneCallback) {
+          element = angular.element(element);
           element = stripCommentsFromElement(element);
           performAnimation('setClass', [add, remove], element, null, null, function() {
             $delegate.setClass(element, add, remove);
@@ -815,7 +831,7 @@ angular.module('ngAnimate', ['ng'])
          * @function
          *
          * @param {boolean=} value If provided then set the animation on or off.
-         * @param {DOMElement=} element If provided then the element will be used to represent the enable/disable operation
+         * @param {DOMElement} element If provided then the element will be used to represent the enable/disable operation
          * @return {boolean} Current animation state.
          *
          * @description
