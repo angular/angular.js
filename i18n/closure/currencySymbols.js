@@ -33,6 +33,8 @@
 
 
 goog.provide('goog.i18n.currency');
+goog.provide('goog.i18n.currency.CurrencyInfo');
+goog.provide('goog.i18n.currency.CurrencyInfoTier2');
 
 
 /**
@@ -46,7 +48,7 @@ goog.i18n.currency.PRECISION_MASK_ = 0x07;
  * Whether the currency sign should be positioned after the number.
  * @private
  */
-goog.i18n.currency.POSITION_FLAG_ = 0x08;
+goog.i18n.currency.POSITION_FLAG_ = 0x10;
 
 
 /**
@@ -57,15 +59,26 @@ goog.i18n.currency.SPACE_FLAG_ = 0x20;
 
 
 /**
+ * Whether tier2 was enabled already by calling addTier2Support().
+ * @private
+ */
+goog.i18n.currency.tier2Enabled_ = false;
+
+
+/**
  * This function will add tier2 currency support. Be default, only tier1
  * (most popular currencies) are supported. If an application really needs
  * to support some of the rarely used currencies, it should call this function
  * before any other functions in this namespace.
  */
 goog.i18n.currency.addTier2Support = function() {
-  for (var key in goog.i18n.currency.CurrencyInfoTier2) {
-    goog.i18n.currency.CurrencyInfo[key] =
-        goog.i18n.currency.CurrencyInfoTier2[key];
+  // Protection from executing this these again and again.
+  if (!goog.i18n.currency.tier2Enabled_) {
+    for (var key in goog.i18n.currency.CurrencyInfoTier2) {
+      goog.i18n.currency.CurrencyInfo[key] =
+          goog.i18n.currency.CurrencyInfoTier2[key];
+    }
+    goog.i18n.currency.tier2Enabled_ = true;
   }
 };
 
@@ -244,7 +257,7 @@ goog.i18n.currency.adjustPrecision = function(pattern, currencyCode) {
  * the currency sign should be positioned after the number. Valid values are 0
  * (before the number) or 16 (after the number). The space flag indicates
  * whether a space should be inserted between the currency sign and number.
- * Valid values are 0 (no space) and 24 (space).
+ * Valid values are 0 (no space) and 32 (space).
  *
  * The number in the array is calculated by adding together the mask and flag
  * values. For example:
@@ -252,52 +265,67 @@ goog.i18n.currency.adjustPrecision = function(pattern, currencyCode) {
  * 0: no precision (0), currency sign first (0), no space (0)
  * 2: two decimals precision (2), currency sign first (0), no space (0)
  * 18: two decimals precision (2), currency sign last (16), no space (0)
- * 42: two decimals precision (2), currency sign last (16), space (24)
+ * 50: two decimals precision (2), currency sign last (16), space (32)
  *
  * @type {!Object.<!Array>}
  */
 goog.i18n.currency.CurrencyInfo = {
   'AED': [2, 'dh', '\u062f.\u0625.', 'DH'],
+  'ALL': [0, 'Lek', 'Lek'],
   'AUD': [2, '$', 'AU$'],
   'BDT': [2, '\u09F3', 'Tk'],
+  'BGN': [2, 'lev', 'lev'],
   'BRL': [2, 'R$', 'R$'],
   'CAD': [2, '$', 'C$'],
+  'CDF': [2, 'FrCD', 'CDF'],
   'CHF': [2, 'CHF', 'CHF'],
   'CLP': [0, '$', 'CL$'],
   'CNY': [2, '¥', 'RMB¥'],
   'COP': [0, '$', 'COL$'],
   'CRC': [0, '\u20a1', 'CR\u20a1'],
-  'CZK': [2, 'K\u010d', 'K\u010d'],
+  'CZK': [50, 'K\u010d', 'K\u010d'],
   'DKK': [18, 'kr', 'kr'],
   'DOP': [2, '$', 'RD$'],
   'EGP': [2, '£', 'LE'],
-  'EUR': [18, '€', '€'],
+  'ETB': [2, 'Birr', 'Birr'],
+  'EUR': [2, '€', '€'],
   'GBP': [2, '£', 'GB£'],
   'HKD': [2, '$', 'HK$'],
+  'HRK': [2, 'kn', 'kn'],
+  'HUF': [0, 'Ft', 'Ft'],
+  'IDR': [0, 'Rp', 'Rp'],
   'ILS': [2, '\u20AA', 'IL\u20AA'],
   'INR': [2, '\u20B9', 'Rs'],
+  'IRR': [0, 'Rial', 'IRR'],
   'ISK': [0, 'kr', 'kr'],
   'JMD': [2, '$', 'JA$'],
   'JPY': [0, '¥', 'JP¥'],
   'KRW': [0, '\u20A9', 'KR₩'],
   'LKR': [2, 'Rs', 'SLRs'],
+  'LTL': [2, 'Lt', 'Lt'],
+  'LVL': [2, 'Ls', 'Ls'],
   'MNT': [0, '\u20AE', 'MN₮'],
   'MXN': [2, '$', 'Mex$'],
   'MYR': [2, 'RM', 'RM'],
-  'NOK': [18, 'kr', 'NOkr'],
+  'NOK': [50, 'kr', 'NOkr'],
   'PAB': [2, 'B/.', 'B/.'],
   'PEN': [2, 'S/.', 'S/.'],
   'PHP': [2, '\u20B1', 'Php'],
   'PKR': [0, 'Rs', 'PKRs.'],
-  'RUB': [42, 'руб.', 'руб.'],
+  'PLN': [50, 'z\u0142', 'z\u0142'],
+  'RON': [2, 'RON', 'RON'],
+  'RSD': [0, 'din', 'RSD'],
+  'RUB': [50, 'руб.', 'руб.'],
   'SAR': [2, 'Rial', 'Rial'],
   'SEK': [2, 'kr', 'kr'],
   'SGD': [2, '$', 'S$'],
   'THB': [2, '\u0e3f', 'THB'],
   'TRY': [2, 'TL', 'YTL'],
   'TWD': [2, 'NT$', 'NT$'],
+  'TZS': [0, 'TSh', 'TSh'],
+  'UAH': [2, '\u20B4', 'UAH'],
   'USD': [2, '$', 'US$'],
-  'UYU': [2, '$', 'UY$'],
+  'UYU': [2, '$', '$U'],
   'VND': [0, '\u20AB', 'VN\u20AB'],
   'YER': [0, 'Rial', 'Rial'],
   'ZAR': [2, 'R', 'ZAR']
@@ -309,16 +337,14 @@ goog.i18n.currency.CurrencyInfo = {
  * @type {!Object.<!Array>}
  */
 goog.i18n.currency.CurrencyInfoTier2 = {
-  'AFN': [16, 'Af.', 'AFN'],
-  'ALL': [0, 'Lek', 'Lek'],
+  'AFN': [48, 'Af.', 'AFN'],
   'AMD': [0, 'Dram', 'dram'],
   'AOA': [2, 'Kz', 'Kz'],
   'ARS': [2, '$', 'AR$'],
   'AWG': [2, 'Afl.', 'Afl.'],
   'AZN': [2, 'man.', 'man.'],
-  'BAM': [18, 'KM', 'KM'],
+  'BAM': [2, 'KM', 'KM'],
   'BBD': [2, '$', 'Bds$'],
-  'BGN': [2, 'lev', 'lev'],
   'BHD': [3, 'din', 'din'],
   'BIF': [0, 'FBu', 'FBu'],
   'BMD': [2, '$', 'BD$'],
@@ -329,14 +355,12 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'BWP': [2, 'P', 'pula'],
   'BYR': [0, 'BYR', 'BYR'],
   'BZD': [2, '$', 'BZ$'],
-  'CDF': [2, 'FrCD', 'CDF'],
   'CUC': [1, '$', 'CUC$'],
   'CUP': [2, '$', 'CU$'],
   'CVE': [2, 'CVE', 'Esc'],
   'DJF': [0, 'Fdj', 'Fdj'],
   'DZD': [2, 'din', 'din'],
   'ERN': [2, 'Nfk', 'Nfk'],
-  'ETB': [2, 'Birr', 'Birr'],
   'FJD': [2, '$', 'FJ$'],
   'FKP': [2, '£', 'FK£'],
   'GEL': [2, 'GEL', 'GEL'],
@@ -347,12 +371,8 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'GTQ': [2, 'Q', 'GTQ'],
   'GYD': [0, '$', 'GY$'],
   'HNL': [2, 'L', 'HNL'],
-  'HRK': [2, 'kn', 'kn'],
   'HTG': [2, 'HTG', 'HTG'],
-  'HUF': [0, 'Ft', 'Ft'],
-  'IDR': [0, 'Rp', 'Rp'],
   'IQD': [0, 'din', 'IQD'],
-  'IRR': [0, 'Rial', 'IRR'],
   'JOD': [3, 'din', 'JOD'],
   'KES': [2, 'Ksh', 'Ksh'],
   'KGS': [2, 'KGS', 'KGS'],
@@ -366,8 +386,6 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'LBP': [0, 'L£', 'LBP'],
   'LRD': [2, '$', 'L$'],
   'LSL': [2, 'LSL', 'LSL'],
-  'LTL': [2, 'Lt', 'Lt'],
-  'LVL': [2, 'Ls', 'Ls'],
   'LYD': [3, 'din', 'LD'],
   'MAD': [2, 'dh', 'MAD'],
   'MDL': [2, 'MDL', 'MDL'],
@@ -386,11 +404,8 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'NZD': [2, '$', 'NZ$'],
   'OMR': [3, 'Rial', 'OMR'],
   'PGK': [2, 'PGK', 'PGK'],
-  'PLN': [2, 'z\u0142', 'z\u0142'],
   'PYG': [0, 'Gs', 'PYG'],
   'QAR': [2, 'Rial', 'QR'],
-  'RON': [2, 'RON', 'RON'],
-  'RSD': [0, 'din', 'RSD'],
   'RWF': [0, 'RF', 'RF'],
   'SBD': [2, '$', 'SI$'],
   'SCR': [2, 'SCR', 'SCR'],
@@ -400,16 +415,13 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'SOS': [0, 'SOS', 'SOS'],
   'SRD': [2, '$', 'SR$'],
   'STD': [0, 'Db', 'Db'],
-  'SYP': [16, '£', 'SY£'],
+  'SYP': [0, '£', 'SY£'],
   'SZL': [2, 'SZL', 'SZL'],
   'TJS': [2, 'Som', 'TJS'],
   'TND': [3, 'din', 'DT'],
   'TOP': [2, 'T$', 'T$'],
   'TTD': [2, '$', 'TT$'],
-  'TZS': [0, 'TSh', 'TSh'],
-  'UAH': [2, '\u20B4', 'UAH'],
   'UGX': [0, 'UGX', 'UGX'],
-  'UYU': [1, '$', '$U'],
   'UZS': [0, 'so\u02bcm', 'UZS'],
   'VEF': [2, 'Bs', 'Bs'],
   'VUV': [0, 'VUV', 'VUV'],
