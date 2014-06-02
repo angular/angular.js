@@ -78,7 +78,7 @@ function classDirective(name, selector) {
               updateClasses(oldClasses, newClasses);
             }
           }
-          oldVal = copy(newVal);
+          oldVal = shallowCopy(newVal);
         }
       }
     };
@@ -106,7 +106,7 @@ function classDirective(name, selector) {
         var classes = [], i = 0;
         forEach(classVal, function(v, k) {
           if (v) {
-            classes.push(k);
+            classes = classes.concat(k.split(' '));
           }
         });
         return classes;

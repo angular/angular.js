@@ -146,6 +146,20 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+
+    it('should handle circular references when circularRefs is turned on', function () {
+      var a = {b: {a: null}, self: null, selfs: [null, null, [null]]};
+      a.b.a = a;
+      a.self = a;
+      a.selfs = [a, a.b, [a]];
+
+      var aCopy = copy(a, null);
+      expect(aCopy).toEqual(a);
+
+      expect(aCopy).not.toBe(a);
+      expect(aCopy).toBe(aCopy.self);
+      expect(aCopy.selfs[2]).not.toBe(a.selfs[2]);
+    });
   });
 
   describe("extend", function() {
@@ -217,6 +231,25 @@ describe('angular', function() {
       expect(shallowCopy(original, clone)).toBe(clone);
       expect(clone.hello).toBeUndefined();
       expect(clone.goodbye).toBe("world");
+    });
+
+    it('should handle arrays', function() {
+      var original = [{}, 1],
+          clone = [];
+
+      var aCopy = shallowCopy(original);
+      expect(aCopy).not.toBe(original);
+      expect(aCopy).toEqual(original);
+      expect(aCopy[0]).toBe(original[0]);
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone).toEqual(original);
+    });
+
+    it('should handle primitives', function() {
+      expect(shallowCopy('test')).toBe('test');
+      expect(shallowCopy(3)).toBe(3);
+      expect(shallowCopy(true)).toBe(true);
     });
   });
 
