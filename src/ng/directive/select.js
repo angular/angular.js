@@ -342,13 +342,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         // clear contents, we'll add what's needed based on the model
         selectElement.empty();
         var lastKey;
-        selectElement.on('change keyup', function() {
+        selectElement.on('change keyup', function(event) {
           scope.$apply(function() {
             var optionGroup,
                 collection = valuesFn(scope) || [],
                 locals = {},
                 key, value, optionElement, index, groupIndex, length, groupLength, trackIndex;
-
+                
             if (multiple) {
               value = [];
               for (groupIndex = 0, groupLength = optionGroupsCache.length;
@@ -375,14 +375,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               }
             } else {
               key = selectElement.val();
-              if (lastKey === undefined) {
-                  lastKey = key;
-              } else {
-                  if (lastKey === key) {
-                      return;
-                  } else {
-                      lastKey = key;
-                  }
+              lastKey = lastKey || key;
+              if (event.type === 'keyup') {
+                if (key === lastKey) {
+                    return;
+                } else {
+                    lastKey = key;
+                }
               }
               if (key == '?') {
                 value = undefined;
@@ -398,6 +397,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                     }
                   }
                 } else {
+                    
                   locals[valueName] = collection[key];
                   if (keyName) locals[keyName] = key;
                   value = valueFn(scope, locals);
