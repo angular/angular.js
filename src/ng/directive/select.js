@@ -341,8 +341,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         // clear contents, we'll add what's needed based on the model
         selectElement.empty();
-
-        selectElement.on('change', function() {
+        var lastKey;
+        selectElement.on('change keyup', function() {
           scope.$apply(function() {
             var optionGroup,
                 collection = valuesFn(scope) || [],
@@ -375,6 +375,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               }
             } else {
               key = selectElement.val();
+              if (lastKey === undefined) {
+                  lastKey = key;
+              } else {
+                  if (lastKey === key) {
+                      return;
+                  } else {
+                      lastKey = key;
+                  }
+              }
               if (key == '?') {
                 value = undefined;
               } else if (key === ''){
