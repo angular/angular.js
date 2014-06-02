@@ -114,55 +114,6 @@ describe('Scope', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
-    it('should not keep constant literals on the watch queue', inject(function($rootScope) {
-      $rootScope.$watch('[]', function() {});
-      $rootScope.$watch('{}', function() {});
-      expect($rootScope.$$watchers.length).toEqual(2);
-      $rootScope.$digest();
-
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
-
-    it('should clean up stable watches on the watch queue', inject(function($rootScope, $parse) {
-      $rootScope.$watch($parse('::foo'), function() {});
-      expect($rootScope.$$watchers.length).toEqual(1);
-
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
-
-      $rootScope.foo = 'foo';
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
-
-    it('should claen up stable watches from $watchCollection', inject(function($rootScope, $parse) {
-      $rootScope.$watchCollection('::foo', function() {});
-      expect($rootScope.$$watchers.length).toEqual(1);
-
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
-
-      $rootScope.foo = [];
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
-
-    it('should clean up stable watches from $watchGroup', inject(function($rootScope, $parse) {
-      $rootScope.$watchGroup(['::foo', '::bar'], function() {});
-      expect($rootScope.$$watchers.length).toEqual(3);
-
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(3);
-
-      $rootScope.foo = 'foo';
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(2);
-
-      $rootScope.bar = 'bar';
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
-
     it('should delegate exceptions', function() {
       module(function($exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');

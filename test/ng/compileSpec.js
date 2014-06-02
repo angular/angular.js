@@ -2201,39 +2201,6 @@ describe('$compile', function() {
     );
 
 
-    it('should one-time bind if the expression starts with two colons', inject(
-        function($rootScope, $compile) {
-          $rootScope.name = 'angular';
-          element = $compile('<div name="attr: {{::name}}">text: {{::name}}</div>')($rootScope);
-          expect($rootScope.$$watchers.length).toBe(2);
-          $rootScope.$digest();
-          expect(element.text()).toEqual('text: angular');
-          expect(element.attr('name')).toEqual('attr: angular');
-          expect($rootScope.$$watchers.length).toBe(0);
-          $rootScope.name = 'not-angular';
-          $rootScope.$digest();
-          expect(element.text()).toEqual('text: angular');
-          expect(element.attr('name')).toEqual('attr: angular');
-        })
-    );
-
-    it('should one-time bind if the expression starts with a space and two colons', inject(
-            function($rootScope, $compile) {
-              $rootScope.name = 'angular';
-              element = $compile('<div name="attr: {{::name}}">text: {{ ::name }}</div>')($rootScope);
-              expect($rootScope.$$watchers.length).toBe(2);
-              $rootScope.$digest();
-              expect(element.text()).toEqual('text: angular');
-              expect(element.attr('name')).toEqual('attr: angular');
-              expect($rootScope.$$watchers.length).toBe(0);
-              $rootScope.name = 'not-angular';
-              $rootScope.$digest();
-              expect(element.text()).toEqual('text: angular');
-              expect(element.attr('name')).toEqual('attr: angular');
-            })
-        );
-
-
     it('should process attribute interpolation in pre-linking phase at priority 100', function() {
       module(function() {
         directive('attrLog', function(log) {
@@ -2842,83 +2809,6 @@ describe('$compile', function() {
         });
 
         expect(element.html()).toBe('value: from-parent');
-      });
-    });
-
-
-    it('should be possible to one-time bind a parameter on a component with a template', function() {
-      module(function() {
-        directive('otherTplDir', function() {
-          return {
-            scope: {param: '@', anotherParam: '=' },
-            template: 'value: {{param}}, another value {{anotherParam}}'
-          };
-        });
-      });
-
-      function countWatches(scope) {
-        var result = 0;
-        while (scope !== null) {
-          result += (scope.$$watchers && scope.$$watchers.length) || 0;
-          result += countWatches(scope.$$childHead);
-          scope = scope.$$nextSibling;
-        }
-        return result;
-      }
-
-      inject(function($rootScope) {
-        compile('<div other-tpl-dir param="{{::foo}}" another-param="::bar"></div>');
-        expect(countWatches($rootScope)).toEqual(3);
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: , another value ');
-        expect(countWatches($rootScope)).toEqual(3);
-
-        $rootScope.foo = 'from-parent';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value ');
-        expect(countWatches($rootScope)).toEqual(2);
-
-        $rootScope.foo = 'not-from-parent';
-        $rootScope.bar = 'some value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
-        expect(countWatches($rootScope)).toEqual(1);
-
-        $rootScope.bar = 'some new value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
-      });
-    });
-
-
-    it('should be possible to one-time bind a parameter on a component with a templateUrl', function() {
-      module(function() {
-        directive('otherTplDir', function() {
-          return {
-            scope: {param: '@', anotherParam: '=' },
-            templateUrl: 'other.html'
-          };
-        });
-      });
-
-      inject(function($rootScope, $templateCache) {
-        $templateCache.put('other.html', 'value: {{param}}, another value {{anotherParam}}');
-        compile('<div other-tpl-dir param="{{::foo}}" another-param="::bar"></div>');
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: , another value ');
-
-        $rootScope.foo = 'from-parent';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value ');
-
-        $rootScope.foo = 'not-from-parent';
-        $rootScope.bar = 'some value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
-
-        $rootScope.bar = 'some new value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
       });
     });
 

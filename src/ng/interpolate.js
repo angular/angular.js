@@ -309,11 +309,9 @@ function $InterpolateProvider() {
 
 
             try {
-              interpolationFn.$$unwatch = true;
               for (; i < ii; i++) {
                 val = getValue(parseFns[i](context));
                 if (allOrNothing && isUndefined(val)) {
-                  interpolationFn.$$unwatch = undefined;
                   return;
                 }
                 val = stringify(val);
@@ -321,7 +319,6 @@ function $InterpolateProvider() {
                   inputsChanged = true;
                 }
                 values[i] = val;
-                interpolationFn.$$unwatch = interpolationFn.$$unwatch && parseFns[i].$$unwatch;
               }
 
               if (inputsChanged) {
