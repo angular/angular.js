@@ -17,7 +17,7 @@ $provide.value("$locale", {
       "\u0161e\u0161tadienis"
     ],
     "MONTH": [
-      "sausis",
+      "sausio",
       "vasaris",
       "kovas",
       "balandis",
@@ -41,7 +41,7 @@ $provide.value("$locale", {
     ],
     "SHORTMONTH": [
       "Saus.",
-      "Vas.",
+      "Vas",
       "Kov.",
       "Bal.",
       "Geg.",
