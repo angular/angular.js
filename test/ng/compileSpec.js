@@ -2152,6 +2152,19 @@ describe('$compile', function() {
   describe('interpolation', function() {
     var observeSpy, directiveAttrs, deregisterObserver;
 
+    function countWatchers(scope) {
+      var count = 0,
+        head = scope.$$nodeGroupsHead.$watchers,
+        tail = scope.$$nodeGroupsCurrentTail.$watchers;
+
+      while (tail && head !== tail) {
+        count++;
+        head = head.next;
+      }
+      if (tail) count++;
+      return count;
+    }
+
     beforeEach(module(function() {
       directive('observer', function() {
         return function(scope, elm, attr) {
@@ -2184,11 +2197,11 @@ describe('$compile', function() {
         function($rootScope, $compile) {
           $rootScope.name = 'angular';
           element = $compile('<div name="attr: {{::name}}">text: {{::name}}</div>')($rootScope);
-          expect($rootScope.$$watchers.length).toBe(2);
+          expect(countWatchers($rootScope)).toBe(2);
           $rootScope.$digest();
           expect(element.text()).toEqual('text: angular');
           expect(element.attr('name')).toEqual('attr: angular');
-          expect($rootScope.$$watchers.length).toBe(0);
+          expect(countWatchers($rootScope)).toBe(0);
           $rootScope.name = 'not-angular';
           $rootScope.$digest();
           expect(element.text()).toEqual('text: angular');
@@ -2200,11 +2213,11 @@ describe('$compile', function() {
             function($rootScope, $compile) {
               $rootScope.name = 'angular';
               element = $compile('<div name="attr: {{::name}}">text: {{ ::name }}</div>')($rootScope);
-              expect($rootScope.$$watchers.length).toBe(2);
+              expect(countWatchers($rootScope)).toBe(2);
               $rootScope.$digest();
               expect(element.text()).toEqual('text: angular');
               expect(element.attr('name')).toEqual('attr: angular');
-              expect($rootScope.$$watchers.length).toBe(0);
+              expect(countWatchers($rootScope)).toBe(0);
               $rootScope.name = 'not-angular';
               $rootScope.$digest();
               expect(element.text()).toEqual('text: angular');
@@ -2835,33 +2848,36 @@ describe('$compile', function() {
         });
       });
 
-      function countWatches(scope) {
-        var result = 0;
-        while (scope !== null) {
-          result += (scope.$$watchers && scope.$$watchers.length) || 0;
-          result += countWatches(scope.$$childHead);
-          scope = scope.$$nextSibling;
+      function countAllWatches(scope) {
+        var count = 0,
+          head = scope.$$nodeGroupsHead.$watchers,
+          tail = scope.$$nodeGroupsTail.$watchers;
+
+        while (tail && head !== tail) {
+          count++;
+          head = head.next;
         }
-        return result;
+        if (tail) count++;
+        return count;
       }
 
       inject(function($rootScope) {
         compile('<div other-tpl-dir param="{{::foo}}" another-param="::bar"></div>');
-        expect(countWatches($rootScope)).toEqual(3);
+        expect(countAllWatches($rootScope)).toEqual(3);
         $rootScope.$digest();
         expect(element.html()).toBe('value: , another value ');
-        expect(countWatches($rootScope)).toEqual(3);
+        expect(countAllWatches($rootScope)).toEqual(3);
 
         $rootScope.foo = 'from-parent';
         $rootScope.$digest();
         expect(element.html()).toBe('value: from-parent, another value ');
-        expect(countWatches($rootScope)).toEqual(2);
+        expect(countAllWatches($rootScope)).toEqual(2);
 
         $rootScope.foo = 'not-from-parent';
         $rootScope.bar = 'some value';
         $rootScope.$digest();
         expect(element.html()).toBe('value: from-parent, another value some value');
-        expect(countWatches($rootScope)).toEqual(1);
+        expect(countAllWatches($rootScope)).toEqual(1);
 
         $rootScope.bar = 'some new value';
         $rootScope.$digest();
