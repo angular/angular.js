@@ -992,21 +992,13 @@ function $ParseProvider() {
     $parseOptions.csp = $sniffer.csp;
 
     return function(exp) {
-      var parsedExpression,
-          oneTime;
+      var parsedExpression;
 
       switch (typeof exp) {
         case 'string':
 
-          exp = trim(exp);
-
-          if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
-            oneTime = true;
-            exp = exp.substring(2);
-          }
-
           if (cache.hasOwnProperty(exp)) {
-            return oneTime ? oneTimeWrapper(cache[exp]) : cache[exp];
+            return cache[exp];
           }
 
           var lexer = new Lexer($parseOptions);
@@ -1019,7 +1011,7 @@ function $ParseProvider() {
             cache[exp] = parsedExpression;
           }
 
-          return oneTime || parsedExpression.constant ? oneTimeWrapper(parsedExpression) : parsedExpression;
+          return parsedExpression;
 
         case 'function':
           return exp;
@@ -1027,32 +1019,5 @@ function $ParseProvider() {
         default:
           return noop;
       }
-
-      function oneTimeWrapper(expression) {
-        var stable = false,
-            lastValue;
-        oneTimeParseFn.literal = expression.literal;
-        oneTimeParseFn.constant = expression.constant;
-        oneTimeParseFn.assign = expression.assign;
-        return oneTimeParseFn;
-
-        function oneTimeParseFn(self, locals) {
-          if (!stable) {
-            lastValue = expression.constant && lastValue ? lastValue : expression(self, locals);
-            oneTimeParseFn.$$unwatch = isDefined(lastValue);
-            if (oneTimeParseFn.$$unwatch && self && self.$$postDigestQueue) {
-              self.$$postDigestQueue.push(function () {
-                // create a copy if the value is defined and it is not a $sce value
-                if ((stable = isDefined(lastValue)) &&
-                    (lastValue === null || !lastValue.$$unwrapTrustedValue)) {
-                  lastValue = copy(lastValue, null);
-                }
-              });
-            }
-          }
-          return lastValue;
-        }
-      }
-    };
   }];
 }

@@ -58,42 +58,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('shyam;');
   });
 
-  it('should be possible to use one-time bindings on the collection', function() {
-    element = $compile(
-      '<ul>' +
-        '<li ng-repeat="item in ::items">{{item.name}};</li>' +
-      '</ul>')(scope);
-
-    scope.$digest();
-
-    scope.items = [{name: 'misko'}, {name:'shyam'}];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(2);
-    expect(element.text()).toEqual('misko;shyam;');
-    scope.items.push({name: 'adam'});
-    scope.$digest();
-    expect(element.find('li').length).toEqual(2);
-    expect(element.text()).toEqual('misko;shyam;');
-  });
-
-  it('should be possible to use one-time bindings on the content', function() {
-    element = $compile(
-      '<ul>' +
-        '<li ng-repeat="item in items">{{::item.name}};</li>' +
-      '</ul>')(scope);
-
-    scope.$digest();
-
-    scope.items = [{name: 'misko'}, {name:'shyam'}];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(2);
-    expect(element.text()).toEqual('misko;shyam;');
-    scope.items.push({name: 'adam'});
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('misko;shyam;adam;');
-  });
-
 
   it('should iterate over an array-like object', function() {
     element = $compile(

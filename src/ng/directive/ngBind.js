@@ -181,11 +181,7 @@ var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
 
     var parsed = $parse(attr.ngBindHtml);
-    function getStringValue() {
-      var value = parsed(scope);
-      getStringValue.$$unwatch = parsed.$$unwatch;
-      return (value || '').toString();
-    }
+    function getStringValue() { return (parsed(scope) || '').toString(); }
 
     scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
       element.html($sce.getTrustedHtml(parsed(scope)) || '');

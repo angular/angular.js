@@ -788,9 +788,7 @@ function $SceProvider() {
         return parsed;
       } else {
         return function sceParseAsTrusted(self, locals) {
-          var result = sce.getTrusted(type, parsed(self, locals));
-          sceParseAsTrusted.$$unwatch = parsed.$$unwatch;
-          return result;
+          return sce.getTrusted(type, parsed(self, locals));
         };
       }
     };
