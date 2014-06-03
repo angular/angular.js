@@ -129,7 +129,7 @@ myApp.factory('apiToken', ['clientId', function apiTokenFactory(clientId) {
 ```
 
 In the code above, we see how the `apiToken` service is defined via the Factory recipe that depends
-on `clientId` service. The factory service then uses NSA-proof encryption to produce an authentication
+on the `clientId` service. The factory service then uses NSA-proof encryption to produce an authentication
 token.
 
 Note: It is best practice to name the factory functions as `<serviceId>Factory`
