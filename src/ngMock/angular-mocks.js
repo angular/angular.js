@@ -434,7 +434,7 @@ angular.mock.$LogProvider = function() {
  * move forward by `millis` milliseconds and trigger any functions scheduled to run in that
  * time.
  *
- * @param {function()} fn A function that should be called repeatedly.
+ * @param {function(iteration)} fn A function that should be called repeatedly. Iteration count parameter is provided.
  * @param {number} delay Number of milliseconds between each function call.
  * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
  *   indefinitely.
