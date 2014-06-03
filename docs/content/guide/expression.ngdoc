@@ -95,16 +95,18 @@ You can try evaluating different expressions here:
 Angular does not use JavaScript's `eval()` to evaluate expressions. Instead Angular's
 {@link ng.$parse $parse} service processes these expressions.
 
-Unlike JavaScript, where names default to global `window` properties, Angular expressions must use
-{@link ng.$window `$window`} explicitly to refer to the global `window` object. For example, if you
-want to call `alert()` in an expression you must use `$window.alert()`. This restriction is
-intentional. It prevents accidental access to the global state – a common source of subtle bugs.
+Angular expressions do not have access to global variables like `window`, `document` or `location`.
+This restriction is intentional. It prevents accidental access to the global state – a common source of subtle bugs.
+
+Instead use services like `$window` and `$location` in functions called from expressions. Such services
+provide mockable access to globals.
 
 <example>
   <file name="index.html">
     <div class="example2" ng-controller="Cntl1">
       Name: <input ng-model="name" type="text"/>
       <button ng-click="greet()">Greet</button>
+      <button ng-click="window.alert('Should not see me')">Won't greet</button>
     </div>
   </file>
 
