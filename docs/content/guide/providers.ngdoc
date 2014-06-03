@@ -97,7 +97,7 @@ created by this recipe.
 Note: All services in Angular are singletons. That means that the injector uses each recipe at most
 once to create the object. The injector then caches the reference for all future needs.
 
-Since Factory is more powerful version of the Value recipe, you can construct the same service with it.
+Since Factory is more a powerful version of the Value recipe, you can construct the same service with it.
 Using our previous `clientId` Value recipe example, we can rewrite it as a Factory recipe like
 this:
 
