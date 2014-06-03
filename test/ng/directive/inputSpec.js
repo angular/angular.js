@@ -51,6 +51,8 @@ describe('NgModelController', function() {
 
 
   it('should init the properties', function() {
+    expect(ctrl.$untouched).toBe(true);
+    expect(ctrl.$touched).toBe(false);
     expect(ctrl.$dirty).toBe(false);
     expect(ctrl.$pristine).toBe(true);
     expect(ctrl.$valid).toBe(true);
@@ -130,6 +132,28 @@ describe('NgModelController', function() {
       ctrl.$setPristine();
       expect(ctrl.$dirty).toBe(false);
       expect(ctrl.$pristine).toBe(true);
+    });
+  });
+
+  describe('setUntouched', function() {
+
+    it('should set control to its untouched state', function() {
+      ctrl.$setTouched();
+
+      ctrl.$setUntouched();
+      expect(ctrl.$touched).toBe(false);
+      expect(ctrl.$untouched).toBe(true);
+    });
+  });
+
+  describe('setTouched', function() {
+
+    it('should set control to its touched state', function() {
+      ctrl.$setUntouched();
+
+      ctrl.$setTouched();
+      expect(ctrl.$touched).toBe(true);
+      expect(ctrl.$untouched).toBe(false);
     });
   });
 
@@ -265,13 +289,14 @@ describe('NgModelController', function() {
 
 describe('ngModel', function() {
 
-  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty)',
+  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
       inject(function($compile, $rootScope, $sniffer) {
     var element = $compile('<input type="email" ng-model="value" />')($rootScope);
 
     $rootScope.$digest();
     expect(element).toBeValid();
     expect(element).toBePristine();
+    expect(element).toBeUntouched();
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
@@ -297,6 +322,9 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
+    browserTrigger(element, 'blur');
+    expect(element).toBeTouched();
+
     dealoc(element);
   }));
 
@@ -307,6 +335,23 @@ describe('ngModel', function() {
 
     expect(element).toBeInvalid();
     expect(element).toHaveClass('ng-invalid-required');
+  }));
+
+  it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
+    var element = $compile('<form name="myForm">' +
+                             '<input name="myControl" ng-model="value" >' +
+                           '</form>')($rootScope);
+    var inputElm = element.find('input');
+    var control = $rootScope.myForm.myControl;
+
+    expect(control.$touched).toBe(false);
+    expect(control.$untouched).toBe(true);
+
+    browserTrigger(inputElm, 'blur');
+    expect(control.$touched).toBe(true);
+    expect(control.$untouched).toBe(false);
+
+    dealoc(element);
   }));
 
 
@@ -2685,6 +2730,22 @@ describe('NgModel animations', function() {
     var animations = findElementAnimations(input, $animate.queue);
     assertValidAnimation(animations[0], 'removeClass', 'ng-dirty');
     assertValidAnimation(animations[1], 'addClass', 'ng-pristine');
+  }));
+
+  it('should trigger an animation when untouched', inject(function($animate) {
+    model.$setUntouched();
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'setClass', 'ng-untouched');
+    expect(animations[0].args[2]).toBe('ng-touched');
+  }));
+
+  it('should trigger an animation when touched', inject(function($animate) {
+    model.$setTouched();
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'setClass', 'ng-touched', 'ng-untouched');
+    expect(animations[0].args[2]).toBe('ng-untouched');
   }));
 
   it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
