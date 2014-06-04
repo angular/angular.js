@@ -55,12 +55,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE\u0e17\u0e35\u0e48 d MMMM G y",
     "longDate": "d MMMM y",
-    "medium": "d MMM y H:mm:ss",
+    "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
-    "mediumTime": "H:mm:ss",
-    "short": "d/M/yyyy H:mm",
-    "shortDate": "d/M/yyyy",
-    "shortTime": "H:mm"
+    "mediumTime": "HH:mm:ss",
+    "short": "d/M/yy HH:mm",
+    "shortDate": "d/M/yy",
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u0e3f",
@@ -86,14 +86,14 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
+        "negPre": "\u00a4-",
+        "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
       }
     ]
   },
   "id": "th",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

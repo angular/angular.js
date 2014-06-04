@@ -1131,8 +1131,13 @@ describe('angular', function() {
     });
 
 
-    it('should not serialize properties starting with $', function() {
-      expect(toJson({$few: 'v', $$some:'value'}, false)).toEqual('{}');
+    it('should not serialize properties starting with $$', function() {
+      expect(toJson({$$some:'value'}, false)).toEqual('{}');
+    });
+
+
+    it('should serialize properties starting with $', function() {
+      expect(toJson({$few: 'v'}, false)).toEqual('{"$few":"v"}');
     });
 
 

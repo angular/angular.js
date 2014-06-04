@@ -1024,6 +1024,8 @@ function $ParseProvider() {
       switch (typeof exp) {
         case 'string':
 
+          exp = trim(exp);
+
           if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
             oneTime = true;
             exp = exp.substring(2);
