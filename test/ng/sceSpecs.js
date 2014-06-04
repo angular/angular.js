@@ -209,6 +209,31 @@ describe('SCE', function() {
       expect($sce.parseAsJs('"string"')()).toBe("string");
     }));
 
+    it('should be possible to do one-time binding', function () {
+      module(provideLog);
+      inject(function($sce, $rootScope, log) {
+        $rootScope.$watch($sce.parseAsHtml('::foo'), function(value) {
+          log(value+'');
+        });
+
+        $rootScope.$digest();
+        expect(log).toEqual('undefined'); // initial listener call
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.HTML, 'trustedValue');
+        expect($rootScope.$$watchers.length).toBe(1);
+        $rootScope.$digest();
+
+        expect($rootScope.$$watchers.length).toBe(0);
+        expect(log).toEqual('trustedValue');
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.HTML, 'anotherTrustedValue');
+        $rootScope.$digest();
+        expect(log).toEqual(''); // watcher no longer active
+      });
+    });
+
     it('should NOT parse constant non-literals', inject(function($sce) {
       // Until there's a real world use case for this, we're disallowing
       // constant non-literals.  See $SceParseProvider.

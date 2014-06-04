@@ -991,33 +991,88 @@ function $ParseProvider() {
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     $parseOptions.csp = $sniffer.csp;
 
-    return function(exp) {
-      var parsedExpression;
+    return function(exp, interceptorFn) {
+      var parsedExpression, oneTime,
+          cacheKey = (exp = trim(exp));
 
       switch (typeof exp) {
         case 'string':
+          if (cache.hasOwnProperty(cacheKey)) {
+            parsedExpression = cache[cacheKey];
+          } else {
+            if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
+              oneTime = true;
+              exp = exp.substring(2);
+            }
 
-          if (cache.hasOwnProperty(exp)) {
-            return cache[exp];
+            var lexer = new Lexer($parseOptions);
+            var parser = new Parser(lexer, $filter, $parseOptions);
+            parsedExpression = parser.parse(exp);
+
+            if (parsedExpression.constant) parsedExpression.$$watchDelegate = constantWatch;
+            else if (oneTime) parsedExpression.$$watchDelegate = oneTimeWatch;
+
+            if (cacheKey !== 'hasOwnProperty') {
+              // Only cache the value if it's not going to mess up the cache object
+              // This is more performant that using Object.prototype.hasOwnProperty.call
+              cache[cacheKey] = parsedExpression;
+            }
           }
-
-          var lexer = new Lexer($parseOptions);
-          var parser = new Parser(lexer, $filter, $parseOptions);
-          parsedExpression = parser.parse(exp);
-
-          if (exp !== 'hasOwnProperty') {
-            // Only cache the value if it's not going to mess up the cache object
-            // This is more performant that using Object.prototype.hasOwnProperty.call
-            cache[exp] = parsedExpression;
-          }
-
-          return parsedExpression;
+          return addInterceptor(parsedExpression, interceptorFn);
 
         case 'function':
-          return exp;
+          return addInterceptor(exp, interceptorFn);
 
         default:
-          return noop;
+          return addInterceptor(noop, interceptorFn);
       }
+    };
+
+    function oneTimeWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
+      var unwatch, lastValue;
+      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+        return parsedExpression(scope);
+      }, function oneTimeListener(value, old, scope) {
+        lastValue = value;
+        if (isFunction(listener)) {
+          listener.apply(this, arguments);
+        }
+        if (isDefined(value)) {
+          scope.$$postDigest(function () {
+            if (isDefined(lastValue)) {
+              unwatch();
+            }
+          });
+        }
+      }, objectEquality, deregisterNotifier);
+    }
+
+    function constantWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
+      var unwatch;
+      return unwatch = scope.$watch(function constantWatch(scope) {
+        return parsedExpression(scope);
+      }, function constantListener(value, old, scope) {
+        if (isFunction(listener)) {
+          listener.apply(this, arguments);
+        }
+        unwatch();
+      }, objectEquality, deregisterNotifier);
+    }
+
+    function addInterceptor(parsedExpression, interceptorFn) {
+      if (isFunction(interceptorFn)) {
+        var fn = function interceptedExpression(scope, locals) {
+          var value = parsedExpression(scope, locals);
+          var result = interceptorFn(value, scope, locals);
+          // we only return the interceptor's result if the
+          // initial value is defined (for bind-once)
+          return isDefined(value) ? result : value;
+        };
+        fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+        return fn;
+      } else {
+        return parsedExpression;
+      }
+    }
   }];
 }

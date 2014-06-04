@@ -114,6 +114,55 @@ describe('Scope', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
+    it('should not keep constant literals on the watch queue', inject(function($rootScope) {
+      $rootScope.$watch('[]', function() {});
+      $rootScope.$watch('{}', function() {});
+      expect($rootScope.$$watchers.length).toEqual(2);
+      $rootScope.$digest();
+
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
+    it('should clean up stable watches on the watch queue', inject(function($rootScope) {
+      $rootScope.$watch('::foo', function() {});
+      expect($rootScope.$$watchers.length).toEqual(1);
+
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(1);
+
+      $rootScope.foo = 'foo';
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
+    it('should clean up stable watches from $watchCollection', inject(function($rootScope) {
+      $rootScope.$watchCollection('::foo', function() {});
+      expect($rootScope.$$watchers.length).toEqual(1);
+
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(1);
+
+      $rootScope.foo = [];
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
+    it('should clean up stable watches from $watchGroup', inject(function($rootScope) {
+      $rootScope.$watchGroup(['::foo', '::bar'], function() {});
+      expect($rootScope.$$watchers.length).toEqual(3);
+
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(3);
+
+      $rootScope.foo = 'foo';
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(2);
+
+      $rootScope.bar = 'bar';
+      $rootScope.$digest();
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
     it('should delegate exceptions', function() {
       module(function($exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');
@@ -477,6 +526,34 @@ describe('Scope', function() {
         expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
                              'watch2', 'watch3']);
       }));
+
+      describe('deregisterNotifier', function () {
+        it('should call the deregisterNotifier when the watch is deregistered', inject(
+          function($rootScope) {
+            var notifier = jasmine.createSpy('deregisterNotifier');
+            var listenerRemove = $rootScope.$watch('noop', noop, false, notifier);
+
+            expect(notifier).not.toHaveBeenCalled();
+
+            listenerRemove();
+            expect(notifier).toHaveBeenCalledOnce();
+          }));
+
+
+        it('should call the deregisterNotifier when a one-time expression is stable', inject(
+          function($rootScope) {
+            var notifier = jasmine.createSpy('deregisterNotifier');
+            $rootScope.$watch('::foo', noop, false, notifier);
+
+            expect(notifier).not.toHaveBeenCalledOnce();
+            $rootScope.$digest();
+            expect(notifier).not.toHaveBeenCalledOnce();
+
+            $rootScope.foo = 'foo';
+            $rootScope.$digest();
+            expect(notifier).toHaveBeenCalledOnce();
+          }));
+      });
     });
 
 
@@ -853,6 +930,7 @@ describe('Scope', function() {
       scope.$digest();
       expect(log).toEqual('');
     });
+
   });
 
   describe('$destroy', function() {

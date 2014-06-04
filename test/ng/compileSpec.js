@@ -2201,6 +2201,39 @@ describe('$compile', function() {
     );
 
 
+    it('should one-time bind if the expression starts with two colons', inject(
+        function($rootScope, $compile) {
+          $rootScope.name = 'angular';
+          element = $compile('<div name="attr: {{::name}}">text: {{::name}}</div>')($rootScope);
+          expect($rootScope.$$watchers.length).toBe(2);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('text: angular');
+          expect(element.attr('name')).toEqual('attr: angular');
+          expect($rootScope.$$watchers.length).toBe(0);
+          $rootScope.name = 'not-angular';
+          $rootScope.$digest();
+          expect(element.text()).toEqual('text: angular');
+          expect(element.attr('name')).toEqual('attr: angular');
+        })
+    );
+
+    it('should one-time bind if the expression starts with a space and two colons', inject(
+        function($rootScope, $compile) {
+          $rootScope.name = 'angular';
+          element = $compile('<div name="attr: {{::name}}">text: {{ ::name }}</div>')($rootScope);
+          expect($rootScope.$$watchers.length).toBe(2);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('text: angular');
+          expect(element.attr('name')).toEqual('attr: angular');
+          expect($rootScope.$$watchers.length).toBe(0);
+          $rootScope.name = 'not-angular';
+          $rootScope.$digest();
+          expect(element.text()).toEqual('text: angular');
+          expect(element.attr('name')).toEqual('attr: angular');
+        })
+    );
+
+
     it('should process attribute interpolation in pre-linking phase at priority 100', function() {
       module(function() {
         directive('attrLog', function(log) {
@@ -2810,6 +2843,157 @@ describe('$compile', function() {
 
         expect(element.html()).toBe('value: from-parent');
       });
+    });
+
+
+    describe('bind-once', function () {
+
+      function countWatches(scope) {
+        var result = 0;
+        while (scope !== null) {
+          result += (scope.$$watchers && scope.$$watchers.length) || 0;
+          result += countWatches(scope.$$childHead);
+          scope = scope.$$nextSibling;
+        }
+        return result;
+      }
+
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '=', param2: '='},
+              template: '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}'
+            };
+          });
+        });
+
+        inject(function($rootScope) {
+          compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
+          expect(countWatches($rootScope)).toEqual(7); // 5 -> template watch group, 2 -> '='
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(7);
+
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:foo;4:');
+          expect(countWatches($rootScope)).toEqual(5);
+
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:foo;4:bar');
+        });
+      });
+
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '@', param2: '@'},
+              template: '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}'
+            };
+          });
+        });
+
+        inject(function($rootScope) {
+          compile('<div other-tpl-dir param1="{{::foo}}" param2="{{bar}}"></div>');
+          expect(countWatches($rootScope)).toEqual(7); // 5 -> template watch group, 2 -> {{ }}
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(5); // (- 2) -> bind-once in template
+
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:;4:');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:;4:');
+        });
+      });
+
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '=', param2: '='},
+              templateUrl: 'other.html'
+            };
+          });
+        });
+
+        inject(function($rootScope, $templateCache) {
+          $templateCache.put('other.html', '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}');
+          compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(7); // 5 -> template watch group, 2 -> '='
+
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:foo;4:');
+          expect(countWatches($rootScope)).toEqual(5);
+
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:foo;4:bar');
+        });
+      });
+
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '@', param2: '@'},
+              templateUrl: 'other.html'
+            };
+          });
+        });
+
+        inject(function($rootScope, $templateCache) {
+          $templateCache.put('other.html', '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}');
+          compile('<div other-tpl-dir param1="{{::foo}}" param2="{{bar}}"></div>');
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(5); // (5 - 2) -> template watch group, 2 -> {{ }}
+
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:;4:');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:;4:');
+        });
+      });
+
     });
 
 

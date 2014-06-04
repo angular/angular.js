@@ -181,9 +181,13 @@ var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
 
     var parsed = $parse(attr.ngBindHtml);
-    function getStringValue() { return (parsed(scope) || '').toString(); }
+    var changeDetector = $parse(attr.ngBindHtml, function getStringValue(value) {
+          return (value || '').toString();
+        });
 
-    scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
+    scope.$watch(changeDetector, function ngBindHtmlWatchAction() {
+      // we re-evaluate the expr because we want a TrustedValueHolderType
+      // for $sce, not a string
       element.html($sce.getTrustedHtml(parsed(scope)) || '');
     });
   };
