@@ -98,8 +98,9 @@
  * @returns {Object} jQuery object.
  */
 
+JQLite.expando = 'ng';
+
 var jqCache = JQLite.cache = {},
-    jqName = JQLite.expando = 'ng' + new Date().getTime(),
     jqId = 1,
     addEventListenerFn = (window.document.addEventListener
       ? function(element, type, fn) {element.addEventListener(type, fn, false);}
@@ -309,7 +310,7 @@ function jqLiteOff(element, type, fn, unsupported) {
 }
 
 function jqLiteRemoveData(element, name) {
-  var expandoId = element[jqName],
+  var expandoId = element.ng,
       expandoStore = jqCache[expandoId];
 
   if (expandoStore) {
@@ -323,17 +324,17 @@ function jqLiteRemoveData(element, name) {
       jqLiteOff(element);
     }
     delete jqCache[expandoId];
-    element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
+    element.ng = undefined; // don't delete DOM expandos. IE and Chrome don't like it
   }
 }
 
 function jqLiteExpandoStore(element, key, value) {
-  var expandoId = element[jqName],
+  var expandoId = element.ng,
       expandoStore = jqCache[expandoId || -1];
 
   if (isDefined(value)) {
     if (!expandoStore) {
-      element[jqName] = expandoId = jqNextId();
+      element.ng = expandoId = jqNextId();
       expandoStore = jqCache[expandoId] = {};
     }
     expandoStore[key] = value;
