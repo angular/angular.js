@@ -1308,6 +1308,20 @@ describe('$http', function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
       }));
+
+
+      it('should reject promise when timeout promise resolves', inject(function($timeout) {
+        var onFulfilled = jasmine.createSpy('onFulfilled');
+        var onRejected = jasmine.createSpy('onRejected');
+        $httpBackend.expect('GET', '/some').respond(200);
+
+        $http({method: 'GET', url: '/some', timeout: $timeout(noop, 10)}).then(onFulfilled, onRejected);
+
+        $timeout.flush(100);
+
+        expect(onFulfilled).not.toHaveBeenCalled();
+        expect(onRejected).toHaveBeenCalledOnce();
+      }));
     });
 
 
