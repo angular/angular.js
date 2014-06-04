@@ -37,3 +37,17 @@ elements. For example:
 ```
 <b>Hello</b> World!
 ```
+
+Watch out for html comments at the beginning or end of templates, as these can cause this error as
+well.  Consider the following template:
+
+```
+<div class='container'>
+  <div class='wrapper>
+     ...
+  </div> <!-- wrapper -->
+</div> <!-- container -->
+```
+
+The `<!-- container -->` comment is interpreted as a second root element and causes the template to
+be invalid.
