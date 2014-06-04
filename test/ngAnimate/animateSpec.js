@@ -3344,6 +3344,15 @@ describe("ngAnimate", function() {
         }
         node._setAttribute(prop, val);
       };
+      node._classListAdd = node.classList.add;
+      node.classList.add = function(cssClass) {
+        if (cssClass === 'trigger-class') {
+          var propertyKey = ($sniffer.vendorPrefix == 'Webkit' ? '-webkit-' : '') + 'transition-property';
+          capturedProperty = element.css(propertyKey);
+        }
+
+        return node._classListAdd.apply(node.classList, arguments);
+      };
 
       expect(capturedProperty).toBe('none');
       $animate.addClass(element, 'trigger-class');
