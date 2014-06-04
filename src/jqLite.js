@@ -316,7 +316,10 @@ function jqLiteData(element, key, value) {
   }
 
   if (isSetter) {
-    data[key] = value;
+    // set data only on Elements and Documents
+    if (element.nodeType === 1 || element.nodeType === 9) {
+      data[key] = value;
+    }
   } else {
     if (keyDefined) {
       if (isSimpleGetter) {
