@@ -241,8 +241,10 @@ function jqLiteClone(element) {
 
 function jqLiteDealoc(element){
   jqLiteRemoveData(element);
-  for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
-    jqLiteDealoc(children[i]);
+  var childElement;
+  for ( var i = 0, children = element.children, l = (children && children.length) || 0; i < l; i++) {
+    childElement = children[i];
+    jqLiteDealoc(childElement);
   }
 }
 
