@@ -1885,7 +1885,7 @@ describe('$compile', function() {
 
         it('should allow creation of new scopes', inject(function($rootScope, $compile, log) {
           element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('002; log-002-001; LOG');
+          expect(log).toEqual('2; log-2-1; LOG');
           expect(element.find('span').hasClass('ng-scope')).toBe(true);
         }));
 
@@ -1893,7 +1893,7 @@ describe('$compile', function() {
         it('should allow creation of new isolated scopes for directives', inject(
             function($rootScope, $compile, log) {
           element = $compile('<div><span iscope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('log-001-no-parent; LOG; 002');
+          expect(log).toEqual('log-1-no-parent; LOG; 2');
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
@@ -1905,11 +1905,11 @@ describe('$compile', function() {
           $httpBackend.expect('GET', 'tscope.html').respond('<a log>{{name}}; scopeId: {{$id}}</a>');
           element = $compile('<div><span tscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('log-002-001; LOG; 002');
+          expect(log).toEqual('log-2-1; LOG; 2');
           $rootScope.name = 'Jozo';
           $rootScope.$apply();
-          expect(element.text()).toBe('Jozo; scopeId: 002');
-          expect(element.find('span').scope().$id).toBe('002');
+          expect(element.text()).toBe('Jozo; scopeId: 2');
+          expect(element.find('span').scope().$id).toBe(2);
         }));
 
 
@@ -1919,11 +1919,11 @@ describe('$compile', function() {
               respond('<p><a log>{{name}}; scopeId: {{$id}}</a></p>');
           element = $compile('<div><span trscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('log-002-001; LOG; 002');
+          expect(log).toEqual('log-2-1; LOG; 2');
           $rootScope.name = 'Jozo';
           $rootScope.$apply();
-          expect(element.text()).toBe('Jozo; scopeId: 002');
-          expect(element.find('a').scope().$id).toBe('002');
+          expect(element.text()).toBe('Jozo; scopeId: 2');
+          expect(element.find('a').scope().$id).toBe(2);
         }));
 
 
@@ -1933,12 +1933,12 @@ describe('$compile', function() {
               respond('<p><a log>{{name}}; scopeId: {{$id}} |</a></p>');
           element = $compile('<div><span ng-repeat="i in [1,2,3]" trscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('log-003-002; LOG; 003; log-005-004; LOG; 005; log-007-006; LOG; 007');
+          expect(log).toEqual('log-3-2; LOG; 3; log-5-4; LOG; 5; log-7-6; LOG; 7');
           $rootScope.name = 'Jozo';
           $rootScope.$apply();
-          expect(element.text()).toBe('Jozo; scopeId: 003 |Jozo; scopeId: 005 |Jozo; scopeId: 007 |');
-          expect(element.find('p').scope().$id).toBe('003');
-          expect(element.find('a').scope().$id).toBe('003');
+          expect(element.text()).toBe('Jozo; scopeId: 3 |Jozo; scopeId: 5 |Jozo; scopeId: 7 |');
+          expect(element.find('p').scope().$id).toBe(3);
+          expect(element.find('a').scope().$id).toBe(3);
         }));
 
 
@@ -1947,7 +1947,7 @@ describe('$compile', function() {
           $httpBackend.expect('GET', 'tiscope.html').respond('<a log></a>');
           element = $compile('<div><span tiscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('log-002-001; LOG; 002');
+          expect(log).toEqual('log-2-1; LOG; 2');
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
@@ -1967,7 +1967,7 @@ describe('$compile', function() {
                   '</b>' +
                 '</div>'
               )($rootScope);
-            expect(log).toEqual('002; 003; log-003-002; LOG; log-002-001; LOG; 004; log-004-001; LOG');
+            expect(log).toEqual('2; 3; log-3-2; LOG; log-2-1; LOG; 4; log-4-1; LOG');
           })
         );
 
@@ -1976,7 +1976,7 @@ describe('$compile', function() {
             'the scope', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div class="scope-a; scope-b"></div>')($rootScope);
-            expect(log).toEqual('002; 002');
+            expect(log).toEqual('2; 2');
           })
         );
 
@@ -2012,7 +2012,7 @@ describe('$compile', function() {
         it('should create new scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div scope-a></div>')($rootScope);
-            expect(log).toEqual('002');
+            expect(log).toEqual('2');
           })
         );
 
@@ -2020,7 +2020,7 @@ describe('$compile', function() {
         it('should create isolate scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div iscope></div>')($rootScope);
-            expect(log).toEqual('002');
+            expect(log).toEqual('2');
           })
         );
 
@@ -3871,8 +3871,8 @@ describe('$compile', function() {
           element = $compile('<div><div trans>T:{{$parent.$id}}-{{$id}}<span>;</span></div></div>')
               ($rootScope);
           $rootScope.$apply();
-          expect(element.text()).toEqual('W:001-002;T:001-003;');
-          expect(jqLite(element.find('span')[0]).text()).toEqual('T:001-003');
+          expect(element.text()).toEqual('W:1-2;T:1-3;');
+          expect(jqLite(element.find('span')[0]).text()).toEqual('T:1-3');
           expect(jqLite(element.find('span')[1]).text()).toEqual(';');
         });
       });
@@ -4308,7 +4308,7 @@ describe('$compile', function() {
         inject(function($compile) {
           element = $compile('<div transclude>{{$id}}</div>')($rootScope);
           $rootScope.$apply();
-          expect(element.text()).toBe($rootScope.$id);
+          expect(element.text()).toBe('' + $rootScope.$id);
         });
 
       });
@@ -4544,7 +4544,7 @@ describe('$compile', function() {
               ($rootScope);
           $rootScope.$apply();
           expect(log).toEqual('compile: <!-- trans: text -->; link; LOG; LOG; HIGH');
-          expect(element.text()).toEqual('001-002;001-003;');
+          expect(element.text()).toEqual('1-2;1-3;');
         });
       });
 
