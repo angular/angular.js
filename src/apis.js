@@ -22,7 +22,18 @@ function hashKey(obj) {
       // must invoke on object to keep the right this
       key = obj.$$hashKey();
     } else if (key === undefined) {
-      key = obj.$$hashKey = nextUid();
+      key = nextUid();
+      // create a non-enumerable $$hashKey property if possible.
+      if (typeof Object.defineProperty == 'function') {
+        Object.defineProperty(obj, '$$hashKey', {
+          value: key,
+          enumerable: false,
+          configurable: true,
+          writable: true
+        });
+      } else {
+        obj.$$hashKey = key;
+      }
     }
   } else {
     key = obj;
