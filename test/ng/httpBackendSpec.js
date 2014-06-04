@@ -294,6 +294,12 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should call overrideMimeType', function() {
+    $backend('GET', '/some.url', null, callback, {}, null, null, null, 'text/plain;charset=x-user-defined');
+    expect(MockXhr.$$lastInstance.$$overrideMimeType).toBe('text/plain;charset=x-user-defined');
+  });
+
+
   describe('responseType', function() {
 
     it('should set responseType and return xhr.response', function() {

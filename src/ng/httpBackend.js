@@ -40,7 +40,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
   var ABORTED = -1;
 
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, overrideMimeType) {
     var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
@@ -118,6 +118,10 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
             throw e;
           }
         }
+      }
+
+      if (overrideMimeType) {
+        xhr.overrideMimeType(overrideMimeType);
       }
 
       xhr.send(post || null);
