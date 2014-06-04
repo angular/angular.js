@@ -215,6 +215,8 @@ describe('parser', function() {
         window.document.securityPolicy = originalSecurityPolicy;
       });
 
+      beforeEach(module(provideLog));
+
       beforeEach(inject(function ($rootScope) {
         scope = $rootScope;
       }));
@@ -1075,6 +1077,86 @@ describe('parser', function() {
           var scope = {};
           fn.assign(scope, 123);
           expect(scope).toEqual({a:123});
+        }));
+      });
+
+      describe('one-time binding', function() {
+        it('should always use the cache', inject(function($parse) {
+          expect($parse('foo')).toBe($parse('foo'));
+          expect($parse('::foo')).toBe($parse('::foo'));
+        }));
+
+        it('should not affect calling the parseFn directly', inject(function($parse, $rootScope) {
+          var fn = $parse('::foo');
+          $rootScope.$watch(fn);
+
+          $rootScope.foo = 'bar';
+          expect($rootScope.$$watchers.length).toBe(1);
+          expect(fn($rootScope)).toEqual('bar');
+
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(fn($rootScope)).toEqual('bar');
+
+          $rootScope.foo = 'man';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(fn($rootScope)).toEqual('man');
+
+          $rootScope.foo = 'shell';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(fn($rootScope)).toEqual('shell');
+        }));
+
+        it('should stay stable once the value defined', inject(function($parse, $rootScope, log) {
+          var fn = $parse('::foo');
+          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(1);
+
+          $rootScope.foo = 'bar';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(log).toEqual('bar');
+          log.reset();
+
+          $rootScope.foo = 'man';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(log).toEqual('');
+        }));
+
+        it('should have a stable value if at the end of a $digest it has a defined value', inject(function($parse, $rootScope, log) {
+          var fn = $parse('::foo');
+          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+          $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
+
+          $rootScope.foo = 'bar';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(2);
+          expect(log).toEqual('');
+
+          $rootScope.foo = 'man';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(1);
+          expect(log).toEqual('; man');
+
+          $rootScope.foo = 'shell';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(1);
+          expect(log).toEqual('; man');
+        }));
+
+        it('should not throw if the stable value is `null`', inject(function($parse, $rootScope) {
+          var fn = $parse('::foo');
+          $rootScope.$watch(fn);
+          $rootScope.foo = null;
+          $rootScope.$digest();
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(fn()).toEqual(null);
         }));
       });
 

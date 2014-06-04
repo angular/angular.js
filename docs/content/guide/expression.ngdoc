@@ -202,3 +202,122 @@ expose a `$event` object within the scope of that expression.
 
 Note in the example above how we can pass in `$event` to `clickMe`, but how it does not show up
 in `{{$event}}`. This is because `$event` is outside the scope of that binding.
+
+
+## One-time binding
+
+An expression that starts with `::` is considered a one-time expression. One-time expressions
+will stop recalculating once they are stable, which happens after the first digest if the expression
+result is a non-undefined value (see value stabilization algorithm below).
+
+<example module="oneTimeBidingExampleApp">
+  <file name="index.html">
+    <div ng-controller="EventController">
+      <button ng-click="clickMe($event)">Click Me</button>
+      <p id="one-time-binding-example">One time binding: {{::name}}</p>
+      <p id="normal-binding-example">Normal binding: {{name}}</p>
+    </div>
+  </file>
+  <file name="script.js">
+    angular.module('oneTimeBidingExampleApp', []).
+      controller('EventController', ['$scope', function($scope) {
+        var counter = 0;
+        var names = ['Igor', 'Misko', 'Chirayu', 'Lucas'];
+        /*
+         * expose the event object to the scope
+         */
+        $scope.clickMe = function(clickEvent) {
+          $scope.name = names[counter % names.length];
+          counter++;
+        };
+      }]);
+  </file>
+  <file name="protractor.js" type="protractor">
+    it('should freeze binding after its value has stabilized', function() {
+      var oneTimeBiding = element(by.id('one-time-binding-example'));
+      var normalBinding = element(by.id('normal-binding-example'));
+
+      expect(oneTimeBiding.getText()).toEqual('One time binding:');
+      expect(normalBinding.getText()).toEqual('Normal binding:');
+      element(by.buttonText('Click Me')).click();
+
+      expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
+      expect(normalBinding.getText()).toEqual('Normal binding: Igor');
+      element(by.buttonText('Click Me')).click();
+
+      expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
+      expect(normalBinding.getText()).toEqual('Normal binding: Misko');
+
+      element(by.buttonText('Click Me')).click();
+      element(by.buttonText('Click Me')).click();
+
+      expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
+      expect(normalBinding.getText()).toEqual('Normal binding: Lucas');
+    });
+  </file>
+</example>
+
+
+### Why this feature
+
+The main purpose of one-time binding expression is to provide a way to create a binding
+that gets deregistered and frees up resources once the binding is stabilized.
+Reducing the number of expressions being watched makes the digest loop faster and allows more
+information to be displayed at the same time.
+
+
+### Value stabilization algorithm
+
+One-time binding expressions will retain the value of the expression at the end of the
+digest cycle as long as that value is not undefined. If the value of the expression is set
+within the digest loop and later, within the same digest loop, it is set to undefined,
+then the expression is not fulfilled and will remain watched.
+
+  1. Given an expression that starts with `::` when a digest loop is entered and expression
+     is dirty-checked store the value as V
+  2. If V is not undefined mark the result of the expression as stable and schedule a task
+     to deregister the watch for this expression when we exit the digest loop
+  3. Process the digest loop as normal
+  4. When digest loop is done and all the values have settled process the queue of watch
+     deregistration tasks. For each watch to be deregistered check if it still evaluates
+     to value that is not `undefined`. If that's the case, deregister the watch. Otherwise
+     keep dirty-checking the watch in the future digest loops by following the same
+     algorithm starting from step 1
+
+
+### How to benefit from one-time binding
+
+When interpolating text or attributes. If the expression, once set, will not change
+then it is a candidate for one-time expression.
+
+```html
+  <div name="attr: {{::color}}">text: {{::name}}</div>
+```
+
+When using a directive with bidirectional binding and the parameters will not change
+
+```js
+someModule.directive('someDirective', function() {
+  return {
+    scope: {
+      name: '=',
+      color: '@'
+    },
+    template: '{{name}}: {{color}}'
+  };
+});
+```
+
+```html
+  <div some-directive name=“::myName” color=“My color is {{::myColor}}”></div>
+```
+
+
+When using a directive that takes an expression
+
+```html
+<ul>
+  <li ng-repeat="item in ::items">{{item.name}};</li>
+</ul>
+```
+
