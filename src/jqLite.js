@@ -349,18 +349,32 @@ function jqLiteRemoveClass(element, cssClasses) {
 }
 
 function jqLiteAddClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
-                            .replace(/[\n\t]/g, " ");
+  if (cssClasses) {
 
-    forEach(cssClasses.split(' '), function(cssClass) {
-      cssClass = trim(cssClass);
-      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
-        existingClasses += cssClass + ' ';
+    // if browser and element support classList api use it
+    if (element.classList) {
+      cssClasses = trim(cssClasses);
+      if (cssClasses) {
+        cssClasses = cssClasses.split(/\s+/);
+        if (cssClasses.length === 1) {
+          element.classList.add(cssClasses[0]);
+        } else {
+          element.classList.add.apply(element.classList, cssClasses);
+        }
       }
-    });
+    } else if (element.setAttribute) {
+      var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+          .replace(/[\n\t]/g, " ");
 
-    element.setAttribute('class', trim(existingClasses));
+      forEach(cssClasses.split(' '), function (cssClass) {
+        cssClass = trim(cssClass);
+        if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+          existingClasses += cssClass + ' ';
+        }
+      });
+
+      element.setAttribute('class', trim(existingClasses));
+    }
   }
 }
 
