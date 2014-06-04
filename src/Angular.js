@@ -229,8 +229,9 @@ function isArrayLike(obj) {
  * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.
  */
+
 function forEach(obj, iterator, context) {
-  var key;
+  var key, length;
   if (obj) {
     if (isFunction(obj)) {
       for (key in obj) {
@@ -243,8 +244,9 @@ function forEach(obj, iterator, context) {
     } else if (obj.forEach && obj.forEach !== forEach) {
       obj.forEach(iterator, context);
     } else if (isArrayLike(obj)) {
-      for (key = 0; key < obj.length; key++)
+      for (key = 0, length = obj.length; key < length; key++) {
         iterator.call(context, obj[key], key);
+      }
     } else {
       for (key in obj) {
         if (obj.hasOwnProperty(key)) {
