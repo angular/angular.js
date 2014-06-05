@@ -38,6 +38,18 @@ describe('ngShow / ngHide', function() {
       $rootScope.$digest();
       expect(element).toBeShown();
     }));
+
+
+    it('should follow javascript `truthy`/`falsy` logic', inject(function($rootScope, $compile) {
+      var cases = ['[]', 'f', [], [''], 'false', {}, function() {}, function(f) {}, 0, false, null, undefined, '', NaN];
+      element = jqLite('<div ng-show="exp"></div>');
+      element = $compile(element)($rootScope);
+      angular.forEach(cases, function(value) {
+        $rootScope.exp = value;
+        $rootScope.$digest();
+        expect(element)[value ? 'toBeShown' : 'toBeHidden']();
+      });
+    }));
   });
 
   describe('ngHide', function() {
@@ -48,6 +60,18 @@ describe('ngShow / ngHide', function() {
       $rootScope.exp = true;
       $rootScope.$digest();
       expect(element).toBeHidden();
+    }));
+
+
+    it('should follow javascript `truthy`/`falsy` logic', inject(function($rootScope, $compile) {
+      var cases = ['[]', 'f', [], [''], 'false', {}, function() {}, function(f) {}, 0, false, null, undefined, '', NaN];
+      element = jqLite('<div ng-hide="exp"></div>');
+      element = $compile(element)($rootScope);
+      angular.forEach(cases, function(value) {
+        $rootScope.exp = value;
+        $rootScope.$digest();
+        expect(element)[value ? 'toBeHidden' : 'toBeShown']();
+      });
     }));
   });
 });

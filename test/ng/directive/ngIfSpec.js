@@ -136,6 +136,18 @@ describe('ngIf', function () {
     expect(element.text()).toBe('before;after;');
   });
 
+  it('should evaluate using javascript `truthy`/`falsy` logic', function () {
+    var cases = ['[]', 'f', [], [''], 'false', {}, function() {}, function(f) {}, 0, false, null, undefined, '', NaN];
+    element.append($compile(
+        '<div ng-if="value">Lucas</div>'
+    )($scope));
+    angular.forEach(cases, function(value) {
+      $scope.value = value;
+      $scope.$apply();
+      expect(element.text()).toBe(value ? 'Lucas' : '');
+    });
+  });
+
   it('should restore the element to its compiled state', function() {
     $scope.value = true;
     makeIf('value');

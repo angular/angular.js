@@ -162,8 +162,8 @@
  */
 var ngShowDirective = ['$animate', function($animate) {
   return function(scope, element, attr) {
-    scope.$watch(attr.ngShow, function ngShowWatchAction(value){
-      $animate[toBoolean(value) ? 'removeClass' : 'addClass'](element, 'ng-hide');
+    scope.$watch('!!(' + attr.ngShow + ')', function ngShowWatchAction(value){
+      $animate[value ? 'removeClass' : 'addClass'](element, 'ng-hide');
     });
   };
 }];
@@ -318,8 +318,8 @@ var ngShowDirective = ['$animate', function($animate) {
  */
 var ngHideDirective = ['$animate', function($animate) {
   return function(scope, element, attr) {
-    scope.$watch(attr.ngHide, function ngHideWatchAction(value){
-      $animate[toBoolean(value) ? 'addClass' : 'removeClass'](element, 'ng-hide');
+    scope.$watch('!!(' + attr.ngHide + ')', function ngHideWatchAction(value){
+      $animate[value ? 'addClass' : 'removeClass'](element, 'ng-hide');
     });
   };
 }];
