@@ -1809,23 +1809,31 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
 
-    function addTextInterpolateDirective(directives, text) {
-      var interpolateFn = $interpolate(text, true);
-      if (interpolateFn) {
-        directives.push({
-          priority: 0,
-          compile: valueFn(function textInterpolateLinkFn(scope, node) {
-            var parent = node.parent(),
-                bindings = parent.data('$binding') || [];
-            bindings.push(interpolateFn);
-            safeAddClass(parent.data('$binding', bindings), 'ng-binding');
-            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
-              node[0].nodeValue = value;
-            });
-          })
-        });
+      function addTextInterpolateDirective(directives, text) {
+        var interpolateFn = $interpolate(text, true);
+        if (interpolateFn) {
+          directives.push({
+            priority: 0,
+            compile: function textInterpolateCompileFn(templateNode) {
+              // when transcluding a template that has bindings in the root
+              // then we don't have a parent and should do this in the linkFn
+              var parent = templateNode.parent(), hasCompileParent = parent.length;
+              if (hasCompileParent) safeAddClass(templateNode.parent(), 'ng-binding');
+
+              return function textInterpolateLinkFn(scope, node) {
+                var parent = node.parent(),
+                  bindings = parent.data('$binding') || [];
+                bindings.push(interpolateFn);
+                parent.data('$binding', bindings);
+                if (!hasCompileParent) safeAddClass(parent, 'ng-binding');
+                scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+                  node[0].nodeValue = value;
+                });
+              };
+            }
+          });
+        }
       }
-    }
 
 
     function getTrustedContext(node, attrNormalizedName) {
