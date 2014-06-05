@@ -963,6 +963,8 @@ describe('jqLite', function() {
         },
         detachEvent: noop
       };
+      window.window = window;
+
       var log;
       var jWindow = jqLite(window).on('hashchange', function() {
         log = 'works!';
