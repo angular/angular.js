@@ -330,8 +330,8 @@ describe('$compile', function() {
             elementName = parts.shift();
             parts.sort();
             parts.unshift(elementName);
-            forEach(parts, function(value, key){
-              if (value.substring(0,3) !== 'ng-') {
+            forEach(parts, function(value){
+              if (value.substring(0,2) !== 'ng') {
                 value = value.replace('=""', '');
                 var match = value.match(/=(.*)/);
                 if (match && match[1].charAt(0) != '"') {
