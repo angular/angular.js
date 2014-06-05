@@ -1012,8 +1012,12 @@ function $ParseProvider() {
             var parser = new Parser(lexer, $filter, $parseOptions);
             parsedExpression = parser.parse(exp);
 
-            if (parsedExpression.constant) parsedExpression.$$watchDelegate = constantWatch;
-            else if (oneTime) parsedExpression.$$watchDelegate = oneTimeWatch;
+            if (parsedExpression.constant) {
+              parsedExpression.$$watchDelegate = constantWatch;
+            } else if (oneTime) {
+              parsedExpression.$$watchDelegate = parsedExpression.literal ?
+                oneTimeLiteralWatch : oneTimeWatch;
+            }
 
             if (cacheKey !== 'hasOwnProperty') {
               // Only cache the value if it's not going to mess up the cache object
@@ -1048,6 +1052,30 @@ function $ParseProvider() {
           });
         }
       }, objectEquality);
+    }
+
+    function oneTimeLiteralWatch(scope, listener, objectEquality, parsedExpression) {
+      var unwatch;
+      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+        return parsedExpression(scope);
+      }, function oneTimeListener(value, old, scope) {
+        if (isFunction(listener)) {
+          listener.call(this, value, old, scope);
+        }
+        if (isAllDefined(value)) {
+          scope.$$postDigest(function () {
+            if(isAllDefined(value)) unwatch();
+          });
+        }
+      }, objectEquality);
+
+      function isAllDefined(value) {
+        var allDefined = true;
+        forEach(value, function (val) {
+          if (!isDefined(val)) allDefined = false;
+        });
+        return allDefined;
+      }
     }
 
     function constantWatch(scope, listener, objectEquality, parsedExpression) {
