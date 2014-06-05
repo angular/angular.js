@@ -425,6 +425,16 @@ angular.module('ngAnimate', ['ng'])
         element.data(NG_ANIMATE_STATE, data);
       }
 
+      function runAnimationPostDigest(fn) {
+        var cancelFn;
+        $rootScope.$$postDigest(function() {
+          cancelFn = fn();
+        });
+        return function() {
+          cancelFn && cancelFn();
+        };
+      }
+
       function lookup(name) {
         if (name) {
           var matches = [],
@@ -648,6 +658,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {DOMElement} parentElement the parent element of the element that will be the focus of the enter animation
          * @param {DOMElement} afterElement the sibling element (which is the previous element) of the element that will be the focus of the enter animation
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
+         * @return {function} the animation cancellation function
         */
         enter : function(element, parentElement, afterElement, doneCallback) {
           element = angular.element(element);
@@ -656,9 +667,8 @@ angular.module('ngAnimate', ['ng'])
 
           blockElementAnimations(element);
           $delegate.enter(element, parentElement, afterElement);
-          $rootScope.$$postDigest(function() {
-            element = stripCommentsFromElement(element);
-            performAnimation('enter', 'ng-enter', element, parentElement, afterElement, noop, doneCallback);
+          return runAnimationPostDigest(function() {
+            return performAnimation('enter', 'ng-enter', stripCommentsFromElement(element), parentElement, afterElement, noop, doneCallback);
           });
         },
 
@@ -691,13 +701,16 @@ angular.module('ngAnimate', ['ng'])
          *
          * @param {DOMElement} element the element that will be the focus of the leave animation
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
+         * @return {function} the animation cancellation function
         */
         leave : function(element, doneCallback) {
           element = angular.element(element);
+
           cancelChildAnimations(element);
           blockElementAnimations(element);
-          $rootScope.$$postDigest(function() {
-            performAnimation('leave', 'ng-leave', stripCommentsFromElement(element), null, null, function() {
+          this.enabled(false, element);
+          return runAnimationPostDigest(function() {
+            return performAnimation('leave', 'ng-leave', stripCommentsFromElement(element), null, null, function() {
               $delegate.leave(element);
             }, doneCallback);
           });
@@ -735,6 +748,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {DOMElement} parentElement the parentElement element of the element that will be the focus of the move animation
          * @param {DOMElement} afterElement the sibling element (which is the previous element) of the element that will be the focus of the move animation
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
+         * @return {function} the animation cancellation function
         */
         move : function(element, parentElement, afterElement, doneCallback) {
           element = angular.element(element);
@@ -744,9 +758,8 @@ angular.module('ngAnimate', ['ng'])
           cancelChildAnimations(element);
           blockElementAnimations(element);
           $delegate.move(element, parentElement, afterElement);
-          $rootScope.$$postDigest(function() {
-            element = stripCommentsFromElement(element);
-            performAnimation('move', 'ng-move', element, parentElement, afterElement, noop, doneCallback);
+          return runAnimationPostDigest(function() {
+            return performAnimation('move', 'ng-move', stripCommentsFromElement(element), parentElement, afterElement, noop, doneCallback);
           });
         },
 
@@ -778,11 +791,12 @@ angular.module('ngAnimate', ['ng'])
          * @param {DOMElement} element the element that will be animated
          * @param {string} className the CSS class that will be added to the element and then animated
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
+         * @return {function} the animation cancellation function
         */
         addClass : function(element, className, doneCallback) {
           element = angular.element(element);
           element = stripCommentsFromElement(element);
-          performAnimation('addClass', className, element, null, null, function() {
+          return performAnimation('addClass', className, element, null, null, function() {
             $delegate.addClass(element, className);
           }, doneCallback);
         },
@@ -815,11 +829,12 @@ angular.module('ngAnimate', ['ng'])
          * @param {DOMElement} element the element that will be animated
          * @param {string} className the CSS class that will be animated and then removed from the element
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
+         * @return {function} the animation cancellation function
         */
         removeClass : function(element, className, doneCallback) {
           element = angular.element(element);
           element = stripCommentsFromElement(element);
-          performAnimation('removeClass', className, element, null, null, function() {
+          return performAnimation('removeClass', className, element, null, null, function() {
             $delegate.removeClass(element, className);
           }, doneCallback);
         },
@@ -848,13 +863,14 @@ angular.module('ngAnimate', ['ng'])
          *   removed from it
          * @param {string} add the CSS classes which will be added to the element
          * @param {string} remove the CSS class which will be removed from the element
-         * @param {Function=} done the callback function (if provided) that will be fired after the
+         * @param {function=} done the callback function (if provided) that will be fired after the
          *   CSS classes have been set on the element
+         * @return {function} the animation cancellation function
          */
         setClass : function(element, add, remove, doneCallback) {
           element = angular.element(element);
           element = stripCommentsFromElement(element);
-          performAnimation('setClass', [add, remove], element, null, null, function() {
+          return performAnimation('setClass', [add, remove], element, null, null, function() {
             $delegate.setClass(element, add, remove);
           }, doneCallback);
         },
@@ -905,13 +921,14 @@ angular.module('ngAnimate', ['ng'])
       */
       function performAnimation(animationEvent, className, element, parentElement, afterElement, domOperation, doneCallback) {
 
+        var noopCancel = noop;
         var runner = animationRunner(element, animationEvent, className);
         if(!runner) {
           fireDOMOperation();
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
           closeAnimation();
-          return;
+          return noopCancel;
         }
 
         className = runner.className;
@@ -945,7 +962,7 @@ angular.module('ngAnimate', ['ng'])
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
           closeAnimation();
-          return;
+          return noopCancel;
         }
 
         var skipAnimation = false;
@@ -993,7 +1010,7 @@ angular.module('ngAnimate', ['ng'])
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
           fireDoneCallbackAsync();
-          return;
+          return noopCancel;
         }
 
         if(animationEvent == 'leave') {
@@ -1045,6 +1062,8 @@ angular.module('ngAnimate', ['ng'])
             runner.after(closeAnimation);
           }
         });
+
+        return runner.cancel;
 
         function fireDOMCallback(animationPhase) {
           var eventName = '$animate:' + animationPhase;

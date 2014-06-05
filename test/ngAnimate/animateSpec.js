@@ -590,6 +590,99 @@ describe("ngAnimate", function() {
         }));
 
 
+        it("should trigger a cancellation when the return function is called upon any animation", function() {
+          var captures = {};
+
+          module(function($animateProvider) {
+            $animateProvider.register('.track-me', function() {
+              return {
+                enter       : track('enter'),
+                leave       : track('leave'),
+                move        : track('move'),
+                addClass    : track('addClass'),
+                removeClass : track('removeClass'),
+                setClass    : track('setClass')
+              };
+
+              function track(type) {
+                return function(element, add, remove, done) {
+                  done = done || remove || add;
+                  return function(cancelled) {
+                    captures[type]=cancelled;
+                  };
+                };
+              }
+            });
+          });
+          inject(function($animate, $sniffer, $rootScope, $timeout) {
+
+            var fn;
+            $animate.enabled(true);
+            $rootScope.$digest();
+            element[0].removeChild(child[0]);
+            child.addClass('track-me');
+
+            //enter
+            fn = $animate.enter(child, element);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+
+            expect(captures.enter).toBeUndefined();
+            fn();
+            expect(captures.enter).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //move
+            element.append(after);
+            fn = $animate.move(child, element, after);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+
+            expect(captures.move).toBeUndefined();
+            fn();
+            expect(captures.move).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //addClass
+            fn = $animate.addClass(child, 'ng-hide');
+            $animate.triggerReflow();
+
+            expect(captures.addClass).toBeUndefined();
+            fn();
+            expect(captures.addClass).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //removeClass
+            fn = $animate.removeClass(child, 'ng-hide');
+            $animate.triggerReflow();
+
+            expect(captures.removeClass).toBeUndefined();
+            fn();
+            expect(captures.removeClass).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //setClass
+            child.addClass('red');
+            fn = $animate.setClass(child, 'blue', 'red');
+            $animate.triggerReflow();
+
+            expect(captures.setClass).toBeUndefined();
+            fn();
+            expect(captures.setClass).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //leave
+            fn = $animate.leave(child);
+            $rootScope.$digest();
+
+            expect(captures.leave).toBeUndefined();
+            fn();
+            expect(captures.leave).toBeTruthy();
+            $animate.triggerCallbacks();
+          });
+        });
+
+
         it("should not run if animations are disabled",
           inject(function($animate, $rootScope, $timeout, $sniffer) {
 

@@ -791,7 +791,7 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
             element : arguments[0],
             args : arguments
           });
-          $delegate[method].apply($delegate, arguments);
+          return $delegate[method].apply($delegate, arguments);
         };
       });
 
