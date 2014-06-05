@@ -91,6 +91,37 @@ describe("resource", function() {
   });
 
 
+  it('should send the PUT  verb on instance with parameter alias', function() {
+    $httpBackend.expect('PUT', '/resource/123')
+      .respond({success: 'ok'});
+
+    var Resource = $resource('/resource/:id', {id:'@id'}, {
+      put: { method: 'PUT' }
+    });
+    var resource = new Resource({id: 123});
+    resource.$put().then(callback);
+  });
+
+  it('should send a verb on instance without parameter alias', function() {
+    $httpBackend.expect('PUT', '/resource/123')
+      .respond({success: 'ok'});
+
+    var Resource = $resource('/resource/:id', {}, {
+      put: { method: 'PUT' }
+    });
+    var resource = new Resource({id: 123});
+    resource.$put().then(callback);
+  });
+
+  it('should send the DELETE verb on instance', function() {
+    $httpBackend.expect('DELETE', '/resource/123', {id:'@id'})
+      .respond({success: 'ok'});
+
+    var Resource = $resource('/resource/:id');
+    var resource = new Resource({id: 123});
+    resource.$delete().then(callback);
+  });
+
   it("should build resource", function() {
     expect(typeof CreditCard).toBe('function');
     expect(typeof CreditCard.get).toBe('function');
