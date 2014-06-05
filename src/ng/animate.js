@@ -127,6 +127,7 @@ var $AnimateProvider = ['$provide', function($provide) {
             ? after.after(element)
             : parent.prepend(element);
         async(done);
+        return noop;
       },
 
       /**
@@ -143,6 +144,7 @@ var $AnimateProvider = ['$provide', function($provide) {
       leave : function(element, done) {
         element.remove();
         async(done);
+        return noop;
       },
 
       /**
@@ -166,7 +168,7 @@ var $AnimateProvider = ['$provide', function($provide) {
       move : function(element, parent, after, done) {
         // Do not remove element before insert. Removing will cause data associated with the
         // element to be dropped. Insert will implicitly do the remove.
-        this.enter(element, parent, after, done);
+        return this.enter(element, parent, after, done);
       },
 
       /**
@@ -183,13 +185,14 @@ var $AnimateProvider = ['$provide', function($provide) {
        *   className value has been added to the element
        */
       addClass : function(element, className, done) {
-        className = isString(className) ?
-                      className :
-                      isArray(className) ? className.join(' ') : '';
+        className = !isString(className)
+                        ? (isArray(className) ? className.join(' ') : '')
+                        : className;
         forEach(element, function (element) {
           jqLiteAddClass(element, className);
         });
         async(done);
+        return noop;
       },
 
       /**
@@ -213,6 +216,7 @@ var $AnimateProvider = ['$provide', function($provide) {
           jqLiteRemoveClass(element, className);
         });
         async(done);
+        return noop;
       },
 
       /**
@@ -235,6 +239,7 @@ var $AnimateProvider = ['$provide', function($provide) {
           jqLiteRemoveClass(element, remove);
         });
         async(done);
+        return noop;
       },
 
       enabled : noop
