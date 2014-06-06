@@ -181,7 +181,7 @@ angular.scenario.dsl('binding', function() {
   return function(name) {
     return this.addFutureAction("select binding '" + name + "'",
       function($window, $document, done) {
-        var values = $document.elements().bindings($window.angular.element, name);
+        var values = $document.elements().bindings($window.ssp.angular.element, name);
         if (!values.length) {
           return done("Binding selector '" + name + "' did not match.");
         }
@@ -268,7 +268,7 @@ angular.scenario.dsl('repeater', function() {
   chain.column = function(binding) {
     return this.addFutureAction("repeater '" + this.label + "' column '" + binding + "'",
       function($window, $document, done) {
-        done(null, $document.elements().bindings($window.angular.element, binding));
+        done(null, $document.elements().bindings($window.ssp.angular.element, binding));
     });
   };
 
@@ -278,7 +278,7 @@ angular.scenario.dsl('repeater', function() {
         var matches = $document.elements().slice(index, index + 1);
         if (!matches.length)
           return done('row ' + index + ' out of bounds');
-        done(null, matches.bindings($window.angular.element));
+        done(null, matches.bindings($window.ssp.angular.element));
     });
   };
 

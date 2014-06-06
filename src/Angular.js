@@ -1,5 +1,8 @@
 'use strict';
 
+window.ssp = window.ssp || {};
+window.ssp.angular = window.ssp.angular || {};
+
 /* We need to tell jshint what variables are being exported */
 /* global
     -angular,
@@ -162,9 +165,9 @@ var /** holds major version number for IE or NaN for real browsers */
     ngMinErr          = minErr('ng'),
 
 
-    _angular          = window.angular,
+    _angular          = window.ssp.angular,
     /** @name angular */
-    angular           = window.angular || (window.angular = {}),
+    angular           = window.ssp.angular || (window.ssp.angular = {}),
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];

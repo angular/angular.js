@@ -68,9 +68,9 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
       try {
         var $window = self.getWindow_();
 
-        if ($window.angular) {
+        if ($window.ssp.angular) {
           // Disable animations
-          $window.angular.resumeBootstrap([['$provide', function($provide) {
+          $window.ssp.angular.resumeBootstrap([['$provide', function($provide) {
             return ['$animate', function($animate) {
               $animate.enabled(false);
             }];
@@ -102,11 +102,11 @@ angular.scenario.Application.prototype.executeAction = function(action) {
   if (!$window.document) {
     throw 'Sandbox Error: Application document not accessible.';
   }
-  if (!$window.angular) {
+  if (!$window.ssp.angular) {
     return action.call(this, $window, _jQuery($window.document));
   }
   angularInit($window.document, function(element) {
-    var $injector = $window.angular.element(element).injector();
+    var $injector = $window.ssp.angular.element(element).injector();
     var $element = _jQuery(element);
 
     $element.injector = function() {
