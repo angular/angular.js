@@ -2,16 +2,10 @@
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak],
 .ng-cloak, .x-ng-cloak,
-.ng-hide {
+.ng-hide:not(.ng-animate) {
   display: none !important;
 }
 
 ng\:form {
   display: block;
-}
-
-/* show the element during a show/hide animation when the
- * animation is ongoing, but the .ng-hide class is active */
-.ng-hide-add-active, .ng-hide-remove {
-  display: block!important;
 }
