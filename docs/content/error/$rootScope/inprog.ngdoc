@@ -84,8 +84,8 @@ function MyController($scope, thirdPartyComponent) {
 }
 ```
 
-We expect that our callback will be call asynchronously, and so from outside Angular. Therefore, we
-correctly wrap our application code that interacts with Angular inside a call to `$apply`.
+We expect that our callback will be called asynchronously, and so from outside Angular. Therefore, we
+correctly wrap our application code that interacts with Angular in a call to `$apply`.
 
 The problem comes if `getData()` decides to call the callback handler synchronously; perhaps it has
 the data already cached in memory and so it immediately calls the callback to return the data,
