@@ -66,42 +66,6 @@ function $LogProvider(){
     return {
       /**
        * @ngdoc method
-       * @name $log#log
-       *
-       * @description
-       * Write a log message
-       */
-      log: consoleLog('log'),
-
-      /**
-       * @ngdoc method
-       * @name $log#info
-       *
-       * @description
-       * Write an information message
-       */
-      info: consoleLog('info'),
-
-      /**
-       * @ngdoc method
-       * @name $log#warn
-       *
-       * @description
-       * Write a warning message
-       */
-      warn: consoleLog('warn'),
-
-      /**
-       * @ngdoc method
-       * @name $log#error
-       *
-       * @description
-       * Write an error message
-       */
-      error: consoleLog('error'),
-
-      /**
-       * @ngdoc method
        * @name $log#debug
        *
        * @description
@@ -115,7 +79,42 @@ function $LogProvider(){
             fn.apply(self, arguments);
           }
         };
-      }())
+      }()),
+
+      /**
+       * @ngdoc method
+       * @name $log#error
+       *
+       * @description
+       * Write an error message
+       */
+      error: consoleLog('error'),
+
+      /**
+       * @ngdoc method
+       * @name $log#info
+       *
+       * @description
+       * Write an information message
+       */
+      info: consoleLog('info'),
+      /**
+       * @ngdoc method
+       * @name $log#log
+       *
+       * @description
+       * Write a log message
+       */
+      log: consoleLog('log'),
+
+      /**
+       * @ngdoc method
+       * @name $log#warn
+       *
+       * @description
+       * Write a warning message
+       */
+      warn: consoleLog('warn')
     };
 
     function formatError(arg) {
