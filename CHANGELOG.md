@@ -1,3 +1,103 @@
+<a name="1.2.17"></a>
+# 1.2.17 - quantum disentanglement (2014-06-06)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - remove the need to add `display:block!important` for `ngShow`/`ngHide`
+  ([55b2f0e8](https://github.com/angular/angular.js/commit/55b2f0e8620465559016b424967d90a86af597c0),
+   [#3813](https://github.com/angular/angular.js/issues/3813))
+  - retain inline styles for property-specific transitions
+  ([ad08638c](https://github.com/angular/angular.js/commit/ad08638c0ae61a22ce43d0b40e1220065b867672),
+   [#7503](https://github.com/angular/angular.js/issues/7503))
+  - ensure class-based animations always perform a DOM operation if skipped
+  ([34d07403](https://github.com/angular/angular.js/commit/34d0740350a50ff2c3a076eaad1e8122283448c3),
+   [#6957](https://github.com/angular/angular.js/issues/6957))
+- **$compile:**
+  - do not merge attrs that are the same for replace directives
+  ([b635903e](https://github.com/angular/angular.js/commit/b635903ec435ea355b0f3688c7372627d01e23e2),
+   [#7463](https://github.com/angular/angular.js/issues/7463))
+  - pass `transcludeFn` down to nested transclude directives
+  ([11385060](https://github.com/angular/angular.js/commit/113850602de2f8bc396df4ffd54bb0f1be565b17),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+  - set `$isolateScope` correctly for sync template directives
+  ([5319621a](https://github.com/angular/angular.js/commit/5319621afd0edf60aef177a0e98dbb7c282cc418),
+   [#6942](https://github.com/angular/angular.js/issues/6942))
+  - reference correct directive name in `ctreq` error
+  ([6bea0591](https://github.com/angular/angular.js/commit/6bea0591095c19f747c08ef24cc60b34d28b2824),
+   [#7062](https://github.com/angular/angular.js/issues/7062), [#7067](https://github.com/angular/angular.js/issues/7067))
+  - fix regression which affected old jQuery releases
+  ([a97a172e](https://github.com/angular/angular.js/commit/a97a172ee9f9bcff4d4d84854ded0c72fa0f7e9a))
+- **$httpBackend:** don't error when JSONP callback is called with no parameter
+  ([a7ccb753](https://github.com/angular/angular.js/commit/a7ccb7531c92fb976c6058aef2bb18316075efb2),
+   [#7031](https://github.com/angular/angular.js/issues/7031))
+- **$location:**
+  - don't clobber path during parsing of path
+  ([02058bfb](https://github.com/angular/angular.js/commit/02058bfbe27296c5441fc247e5a451da83c74134),
+   [#7199](https://github.com/angular/angular.js/issues/7199))
+  - fix and test html5Mode url-parsing algorithm for legacy browsers
+  ([24f7999b](https://github.com/angular/angular.js/commit/24f7999bc16e347208aa18c418da85489286674b))
+  - make legacy browsers behave like modern ones in html5Mode
+  ([e0203660](https://github.com/angular/angular.js/commit/e0203660d3af56c5a94e0a9b69c10fd5dabcf577),
+   [#6162](https://github.com/angular/angular.js/issues/6162), [#6421](https://github.com/angular/angular.js/issues/6421), [#6899](https://github.com/angular/angular.js/issues/6899), [#6832](https://github.com/angular/angular.js/issues/6832), [#6834](https://github.com/angular/angular.js/issues/6834))
+- **angular.copy:** support circular references in the value being copied
+  ([5c997209](https://github.com/angular/angular.js/commit/5c99720934edc35dd462b1ad02c4d0205683d917),
+   [#7618](https://github.com/angular/angular.js/issues/7618))
+- **grunt-utils:** ensure special inline CSS works when `angular` is not a global
+  ([d4231171](https://github.com/angular/angular.js/commit/d4231171582eb41d37bbb908eed23f074ab12f3f),
+   [#7176](https://github.com/angular/angular.js/issues/7176))
+- **input:**
+  - fix `ReferenceError` in event listener
+  ([2d7cb14a](https://github.com/angular/angular.js/commit/2d7cb14a167560edc1356dcec6f9e100ed7ac691))
+  - don't dirty model when input event is triggered due to a placeholder change
+  ([109e5d1d](https://github.com/angular/angular.js/commit/109e5d1d39015af8ade1dc2aff31a2355fbab0a6),
+   [#2614](https://github.com/angular/angular.js/issues/2614), [#5960](https://github.com/angular/angular.js/issues/5960))
+- **jqLite:** use jQuery only if `jQuery.fn.on` is present
+  ([fafcd628](https://github.com/angular/angular.js/commit/fafcd6285a6799c4e377ea33011ae3a01aac49a6))
+- **limitTo:** do not convert `Infinity` to `NaN`
+  ([fcdac65a](https://github.com/angular/angular.js/commit/fcdac65aedfdf48dd2e11d6e5850e03ec188f068),
+   [#6771](https://github.com/angular/angular.js/issues/6771), [#7118](https://github.com/angular/angular.js/issues/7118))
+- **ngAnimate:** `$animate` methods should accept native DOM elements
+  ([9227a5db](https://github.com/angular/angular.js/commit/9227a5db947a78e3dbe8b91d5dac5d67444c855c))
+- **ngClass:**
+  - support multiple classes in key
+  ([85ce5d0d](https://github.com/angular/angular.js/commit/85ce5d0db9fc4ee5636015fc042224785f9aa997))
+  - handle index changes when an item is unshifted
+  ([a4cc9e19](https://github.com/angular/angular.js/commit/a4cc9e194468573bae5232f63044459d0de6638f),
+   [#7256](https://github.com/angular/angular.js/issues/7256))
+- **ngLocale:** fix i18n code-generation to support `get_vf_`, `decimals_`, and `get_wt_`
+  ([96a31476](https://github.com/angular/angular.js/commit/96a314766c41bbb18bcddeddd25c8e566ab76acd))
+- **ngSanitize:** encode surrogate pair properly
+  ([3d0b49c0](https://github.com/angular/angular.js/commit/3d0b49c07f10c0a723c91629c63705647b690d81),
+   [#5088](https://github.com/angular/angular.js/issues/5088), [#6911](https://github.com/angular/angular.js/issues/6911))
+- **ngSwitch:** properly support case labels with different numbers of transclude fns
+  ([32aa4915](https://github.com/angular/angular.js/commit/32aa491588fe4982d4056e89a5d0dd19cf835e72))
+- **numberFilter:** fix rounding error edge case
+  ([0388eed7](https://github.com/angular/angular.js/commit/0388eed7e52fdbb832a5b4ef466420a128a43800),
+   [#7453](https://github.com/angular/angular.js/issues/7453), [#7478](https://github.com/angular/angular.js/issues/7478))
+
+
+## Features
+
+- **injector:** "strict-DI" mode which disables "automatic" function annotation
+  ([f5a04f59](https://github.com/angular/angular.js/commit/f5a04f59cf8e8dd6d1806059e3d7fe440aa1613e),
+   [#6719](https://github.com/angular/angular.js/issues/6719), [#6717](https://github.com/angular/angular.js/issues/6717), [#4504](https://github.com/angular/angular.js/issues/4504), [#6069](https://github.com/angular/angular.js/issues/6069), [#3611](https://github.com/angular/angular.js/issues/3611))
+- **ngMock:** add support of mocha tdd interface
+  ([6d1c6772](https://github.com/angular/angular.js/commit/6d1c67727ab872c44addc783ef1406952142d89e),
+   [#7489](https://github.com/angular/angular.js/issues/7489))
+
+
+## Performance Improvements
+
+- **$interpolate:** optimize value stringification
+  ([9d4fa33e](https://github.com/angular/angular.js/commit/9d4fa33e35d73ab28a8a187e20dfbe1f77055825),
+   [#7501](https://github.com/angular/angular.js/issues/7501))
+- **scope:** 10x. Share the child scope class.
+  ([9ab9bf6b](https://github.com/angular/angular.js/commit/9ab9bf6b415aa216cfbfda040286e5ec99f56ee0))
+
+
+
 <a name="1.2.16"></a>
 # 1.2.16 badger-enumeration (2014-04-03)
 
