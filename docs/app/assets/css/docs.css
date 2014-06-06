@@ -218,9 +218,8 @@ code.highlighted {
 
 .picker {
   position: relative;
-  width: auto;
+  width: 100%;
   display: inline-block;
-  margin: 0 0 2px 1.2%;
   overflow: hidden;
   border: 1px solid #e5e5e5;
   -webkit-border-radius: 4px;
@@ -243,8 +242,7 @@ code.highlighted {
   display: block;
   min-width: 100%;
   width: 120%;
-  height: 34px;
-  padding: 6px 30px 6px 15px;
+  padding: 6px 30px 6px 25px;
   color: #555555;
   border: none;
   background: transparent;
@@ -410,10 +408,6 @@ iframe.example {
   position:relative;
 }
 
-.main-body-grid .side-navigation.ng-hide {
-  display:block!important;
-}
-
 .variables-matrix td {
   vertical-align:top;
   padding:5px;
@@ -514,7 +508,6 @@ h4 {
 .btn {
   color:#428bca;
   position: relative;
-  width: auto;
   display: inline-block;
   margin: 0 0 2px;
   overflow: hidden;
@@ -586,7 +579,7 @@ ul.events > li {
 
 @media only screen and (max-width : 768px) {
   .picker, .picker select {
-    width:auto;
+    width:100%;
     display:block;
     margin-bottom:10px;
   }
@@ -620,12 +613,6 @@ ul.events > li {
   .main-header-grid > .grid-right,
   .main-body-grid > .grid-right {
     margin-left:0;
-  }
-  .main-body-grid .side-navigation {
-    display:block!important;
-  }
-  .main-body-grid .side-navigation.ng-hide {
-    display:none!important;
   }
   .nav-index-group .nav-index-listing {
     display:inline-block;
