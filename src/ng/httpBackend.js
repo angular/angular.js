@@ -38,6 +38,7 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
   var ABORTED = -1;
+  var TIMEOUT = -2;
 
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
@@ -68,6 +69,14 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         }
       });
 
+      // The fake timeout mechanism relies on xhr.abort(), so it's necessary to do this so that the
+      // expected behaviour occurs.
+      xhr.onabort = function() {
+        if (status === undefined) {
+          status = ABORTED;
+        }
+      };
+
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
       // response is in the cache. the promise api will ensure that to the app code the api is
       // always async
@@ -81,9 +90,13 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         // Safari respectively.
         if (xhr && xhr.readyState == 4) {
           var responseHeaders = null,
-              response = null;
+              response = null,
+              statusText = '';
 
-          if(status !== ABORTED) {
+          if (status === TIMEOUT) {
+            statusText = 'Timeout';
+          } else if(status !== ABORTED) {
+            statusText = xhr.statusText || '';
             responseHeaders = xhr.getAllResponseHeaders();
 
             // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -95,7 +108,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
               status || xhr.status,
               response,
               responseHeaders,
-              xhr.statusText || '');
+              statusText);
         }
       };
 
@@ -131,7 +144,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
 
 
     function timeoutRequest() {
-      status = ABORTED;
+      status = TIMEOUT;
       jsonpDone && jsonpDone();
       xhr && xhr.abort();
     }

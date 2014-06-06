@@ -164,7 +164,7 @@ describe('$httpBackend', function() {
 
   it('should not try to read response data when request is aborted', function() {
     callback.andCallFake(function(status, response, headers) {
-      expect(status).toBe(-1);
+      expect(status).toBe(-2);
       expect(response).toBe(null);
       expect(headers).toBe(null);
     });
@@ -183,7 +183,7 @@ describe('$httpBackend', function() {
 
   it('should abort request on timeout', function() {
     callback.andCallFake(function(status, response) {
-      expect(status).toBe(-1);
+      expect(status).toBe(-2);
     });
 
     $backend('GET', '/url', null, callback, {}, 2000);
@@ -204,7 +204,7 @@ describe('$httpBackend', function() {
 
   it('should abort request on timeout promise resolution', inject(function($timeout) {
     callback.andCallFake(function(status, response) {
-      expect(status).toBe(-1);
+      expect(status).toBe(-2);
     });
 
     $backend('GET', '/url', null, callback, {}, $timeout(noop, 2000));
