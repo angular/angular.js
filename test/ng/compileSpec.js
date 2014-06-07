@@ -4901,6 +4901,83 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
+    it('should bind after digest but not before when after overridden attribute', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span test="123" ng-attr-test="{{name}}"></span>')($rootScope);
+      expect(element.attr('test')).toBe('123');
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+    }));
+
+    it('should bind after digest but not before when before overridden attribute', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span ng-attr-test="{{name}}" test="123"></span>')($rootScope);
+      expect(element.attr('test')).toBe('123');
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+    }));
+
+
+    describe('in directive', function() {
+      beforeEach(module(function() {
+        directive('syncTest', function(log) {
+          return {
+            link: {
+              pre: function(s, e, attr) { log(attr.test); },
+              post: function(s, e, attr) { log(attr.test); }
+            }
+          };
+        });
+        directive('asyncTest', function(log) {
+          return {
+            templateUrl: 'async.html',
+            link: {
+              pre: function(s, e, attr) { log(attr.test); },
+              post: function(s, e, attr) { log(attr.test); }
+            }
+          };
+        });
+      }));
+
+      beforeEach(inject(function($templateCache) {
+        $templateCache.put('async.html', '<h1>Test</h1>');
+      }));
+
+      it('should provide post-digest value in synchronous directive link functions when after overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div sync-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+
+      it('should provide post-digest value in synchronous directive link functions when before overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div sync-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+
+
+      it('should provide post-digest value in asynchronous directive link functions when after overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div async-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        $rootScope.$digest();
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+
+      it('should provide post-digest value in asynchronous directive link functions when before overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div async-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        $rootScope.$digest();
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+    });
 
     it('should work with different prefixes', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";
