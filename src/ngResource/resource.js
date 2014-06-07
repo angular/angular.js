@@ -179,7 +179,7 @@ function shallowClearAndCopy(src, dst) {
  *   read, update, delete) on server-side data like this:
  *   ```js
  *   var User = $resource('/user/:userId', {userId:'@id'});
- *   var user = User.get({userId:123}, function(user) {
+ *   var user = User.get({userId:123}, function() {
  *     user.abc = true;
  *     user.$save();
  *   });
@@ -191,7 +191,9 @@ function shallowClearAndCopy(src, dst) {
  *   usually the resource is assigned to a model which is then rendered by the view. Having an empty
  *   object results in no rendering, once the data arrives from the server then the object is
  *   populated with the data and the view automatically re-renders itself showing the new data. This
- *   means that in most cases one never has to write a callback function for the action methods.
+ *   means that in most cases one never has to write a callback function for the action methods.  
+ *   Callbacks are evaluated in the same context as the initiating action method, providing access 
+ *   to objects returned in the request.
  *
  *   The action methods on the class object or instance object can be invoked with the following
  *   parameters:
