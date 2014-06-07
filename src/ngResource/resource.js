@@ -522,23 +522,32 @@ angular.module('ngResource', ['ng']).
                              extend({}, extractParams(data, action.params || {}), params),
                              action.url);
 
-          var promise = $http(httpConfig).then(function(response) {
+          var promise = $http(httpConfig).then(function (response) {
             var data = response.data,
-                promise = value.$promise;
+              promise = value.$promise;
 
             if (data) {
               // Need to convert action.isArray to boolean in case it is undefined
               // jshint -W018
               if (angular.isArray(data) !== (!!action.isArray)) {
-                throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected ' +
-                  'response to contain an {0} but got an {1}',
-                  action.isArray?'array':'object', angular.isArray(data)?'array':'object');
+                throw $resourceMinErr('badcfg',
+                    'Error in resource configuration. Expected ' +
+                    'response to contain an {0} but got an {1}',
+                  action.isArray ? 'array' : 'object',
+                  angular.isArray(data) ? 'array' : 'object');
               }
               // jshint +W018
               if (action.isArray) {
                 value.length = 0;
-                forEach(data, function(item) {
-                  value.push(new Resource(item));
+                forEach(data, function (item) {
+                  if (typeof item === "object") {
+                    value.push(new Resource(item));
+                  } else {
+                    // Valid JSON values may be string literals, and these should not be converted
+                    // into objects. These items will not have access to the Resource prototype
+                    // methods, but unfortunately there
+                    value.push(item);
+                  }
                 });
               } else {
                 shallowClearAndCopy(data, value);

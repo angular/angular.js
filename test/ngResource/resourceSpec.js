@@ -1044,6 +1044,27 @@ describe("resource", function() {
         $httpBackend.flush();
         expect(user).toEqualData([ {id: 1, name: 'user1'} ]);
       });
+
+      it('should not convert string literals in array into Resource objects', function() {
+        $httpBackend.expect('GET', '/names.json').respond(["mary", "jane"]);
+        var strings = $resource('/names.json').query();
+        $httpBackend.flush();
+        expect(strings).toEqualData(["mary", "jane"]);
+      });
+
+      it('should not convert number literals in array into Resource objects', function() {
+        $httpBackend.expect('GET', '/names.json').respond([213, 456]);
+        var numbers = $resource('/names.json').query();
+        $httpBackend.flush();
+        expect(numbers).toEqualData([213, 456]);
+      });
+
+      it('should not convert boolean literals in array into Resource objects', function() {
+        $httpBackend.expect('GET', '/names.json').respond([true, false]);
+        var bools = $resource('/names.json').query();
+        $httpBackend.flush();
+        expect(bools).toEqualData([true, false]);
+      });
     });
 
     describe('get', function(){
