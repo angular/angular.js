@@ -43,6 +43,9 @@ function ensureSafeMemberName(name, fullExpression) {
     throw $parseMinErr('isecgetset',
         'Defining and looking up getters and setters in Angular expressions is disallowed! '
         +'Expression: {0}', fullExpression);
+  } else if (name === "__proto__") {
+    throw $parseMinErr('isecproto', 'Using __proto__ in Angular expressions is disallowed! '
+        +'Expression: {0}', fullExpression);
   }
   return name;
 }
@@ -713,6 +716,10 @@ Parser.prototype = {
           i = indexFn(self, locals),
           v, p;
 
+      if (i === "__proto__") {
+        throw $parseMinErr('isecproto', 'Using __proto__ in Angular expressions is disallowed! '
+            +'Expression: {0}', parser.text);
+      }
       if (!o) return undefined;
       v = ensureSafeObject(o[i], parser.text);
       if (v && v.then && parser.options.unwrapPromises) {

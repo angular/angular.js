@@ -1106,6 +1106,22 @@ describe('parser', function() {
           });
         });
 
+        
+        describe('__proto__', function() {
+          it('should NOT allow access to __proto__', function() {
+            expect(function() {
+              scope.$eval('{}.__proto__.foo = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecproto', 'Using __proto__ in Angular expressions is disallowed!'+
+                    ' Expression: {}.__proto__.foo = 1');
+            expect(function() {
+              scope.$eval('{}["__pro"+"to__"].foo = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecproto', 'Using __proto__ in Angular expressions is disallowed!'+
+                    ' Expression: {}["__pro"+"to__"].foo = 1');
+          });
+        });
+
 
         describe('constant', function() {
           it('should mark scalar value expressions as constant', inject(function($parse) {
