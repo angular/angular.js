@@ -743,6 +743,33 @@ describe('parser', function() {
           });
         });
 
+        describe('Object constructor', function() {
+          it('should NOT allow access to scope constructor', function() {
+            expect(function() {
+              scope.$eval('constructor.keys({})');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions '+
+                    'is disallowed! Expression: constructor.keys({})');
+          });
+
+          it('should NOT allow access to Object constructor in getter', function() {
+            expect(function() {
+              scope.$eval('{}["constructor"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
+                    'Expression: {}["constructor"]');
+          });
+
+          it('should NOT allow access to Object constructor that has been aliased', function() {
+            scope.foo = { "bar": Object };
+            expect(function() {
+              scope.$eval('foo["bar"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
+                    'Expression: foo["bar"]');
+
+          });
+        });
 
         describe('Window and $element/node', function() {
           it('should NOT allow access to the Window or DOM when indexing', inject(function($window, $document) {
