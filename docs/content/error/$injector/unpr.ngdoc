@@ -19,8 +19,8 @@ The above code will fail with `$injector:unpr` if `myService` is not defined.
 Making sure each dependency is defined will fix the problem, as noted below.
 
 ```
-angular.module('myApp', [])
-  .service('myService', function () { /* ... */ })
+angular.module('myApp', [ /* Add dependency here... */ ])
+  .service('myService', function () { /* ...or here. */ })
   .controller('MyController', ['myService', function (myService) {
     // Do something with myService
   }]);
