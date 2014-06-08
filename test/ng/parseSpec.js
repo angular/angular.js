@@ -918,6 +918,33 @@ describe('parser', function() {
           expect(count).toBe(1);
         });
 
+        describe('Object constructor', function() {
+          it('should NOT allow access to scope constructor', function() {
+            expect(function() {
+              scope.$eval('constructor.keys({})');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions '+
+                    'is disallowed! Expression: constructor.keys({})');
+          });
+
+          it('should NOT allow access to Object constructor in getter', function() {
+            expect(function() {
+              scope.$eval('{}["constructor"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
+                    'Expression: {}["constructor"]');
+          });
+
+          it('should NOT allow access to Object constructor that has been aliased', function() {
+            scope.foo = { "bar": Object };
+            expect(function() {
+              scope.$eval('foo["bar"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
+                    'Expression: foo["bar"]');
+
+          });
+        });
 
         it('should call the function once when it is part of the context on property lookup function', function() {
           var count = 0;
