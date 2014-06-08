@@ -1958,6 +1958,12 @@ if(window.jasmine || window.mocha) {
   (window.afterEach || window.teardown)(function() {
     var injector = currentSpec.$injector;
 
+    angular.forEach(currentSpec.$modules, function(module) {
+      if (module && module.$$hashKey) {
+        module.$$hashKey = undefined;
+      }
+    });
+
     currentSpec.$injector = null;
     currentSpec.$modules = null;
     currentSpec = null;
