@@ -840,6 +840,79 @@ describe('parser', function() {
             expect(function() { scope.$eval('array'); }).not.toThrow();
           });
         });
+
+        describe('getters and setters', function() {
+          it('should NOT allow invocation of __defineGetter__', function() {
+            expect(function() {
+              scope.$eval('{}.__defineGetter__("a", "".charAt)');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__defineGetter__("a", "".charAt)');
+
+            expect(function() {
+              scope.$eval('{}.__defineGetter__.call({}, "a", "".charAt)');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__defineGetter__.call({}, "a", "".charAt)');
+
+            expect(function() {
+              scope.$eval('{}["__defineGetter__"].call({}, "a", "".charAt)');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}["__defineGetter__"].call({}, "a", "".charAt)');
+          });
+
+          it('should NOT allow invocation of __defineSetter__', function() {
+            expect(function() {
+              scope.$eval('{}.__defineSetter__("a", "".charAt)');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__defineSetter__("a", "".charAt)');
+
+            expect(function() {
+              scope.$eval('{}.__defineSetter__.call({}, "a", "".charAt)');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__defineSetter__.call({}, "a", "".charAt)');
+          });
+
+          it('should NOT allow invocation of __lookupGetter__', function() {
+            expect(function() {
+              scope.$eval('{}.__lookupGetter__("a")');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__lookupGetter__("a")');
+
+            expect(function() {
+              scope.$eval('{}.__lookupGetter__.call({}, "a")');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__lookupGetter__.call({}, "a")');
+          });
+
+          it('should NOT allow invocation of __lookupSetter__', function() {
+            expect(function() {
+              scope.$eval('{}.__lookupSetter__("a")');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__lookupSetter__("a")');
+
+            expect(function() {
+              scope.$eval('{}.__lookupSetter__.call({}, "a")');
+            }).toThrowMinErr(
+                    '$parse', 'isecgetset', 'Defining and looking up getters and setters in '+
+                    'Angular expressions is disallowed! Expression: '+
+                    '{}.__lookupSetter__.call({}, "a")');
+          });
+        });
       });
 
       describe('overriding constructor', function() {
