@@ -808,6 +808,23 @@ describe('ngMock', function() {
             expect(example).toEqual('win');
           });
         });
+
+        describe('module cleanup', function() {
+          function testFn() {
+
+          }
+
+          it('should add hashKey to module function', function() {
+            module(testFn);
+            inject(function () {
+              expect(testFn.$$hashKey).toBeDefined();
+            });
+          });
+
+          it('should cleanup hashKey after previous test', function() {
+            expect(testFn.$$hashKey).toBeUndefined();
+          });
+        });
       });
 
       describe('in DSL', function() {
