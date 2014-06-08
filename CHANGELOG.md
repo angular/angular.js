@@ -80,9 +80,6 @@
 
 ## Features
 
-- **injector:** "strict-DI" mode which disables "automatic" function annotation
-  ([f5a04f59](https://github.com/angular/angular.js/commit/f5a04f59cf8e8dd6d1806059e3d7fe440aa1613e),
-   [#6719](https://github.com/angular/angular.js/issues/6719), [#6717](https://github.com/angular/angular.js/issues/6717), [#4504](https://github.com/angular/angular.js/issues/4504), [#6069](https://github.com/angular/angular.js/issues/6069), [#3611](https://github.com/angular/angular.js/issues/3611))
 - **ngMock:** add support of mocha tdd interface
   ([6d1c6772](https://github.com/angular/angular.js/commit/6d1c67727ab872c44addc783ef1406952142d89e),
    [#7489](https://github.com/angular/angular.js/issues/7489))
