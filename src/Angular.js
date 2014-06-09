@@ -13,6 +13,7 @@
     -angularModule,
     -nodeName_,
     -uid,
+    -REGEX_STRING_REGEXP,
 
     -lowercase,
     -uppercase,
@@ -101,6 +102,8 @@
  *
  * <div doc-module-components="ng"></div>
  */
+
+var REGEX_STRING_REGEXP = /^\/(.+)\/([a-z]*)$/;
 
 /**
  * @ngdoc function
