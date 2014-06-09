@@ -1128,6 +1128,9 @@ describe('input', function() {
     it('should invalid shorter than given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
+      changeInputValueTo('');
+      expect(scope.value).toBeUndefined();
+
       changeInputValueTo('aa');
       expect(scope.value).toBeUndefined();
 
@@ -1147,6 +1150,9 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
+
+      changeInputValueTo('');
+      expect(scope.value).toBe('');
     });
   });
 
