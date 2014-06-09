@@ -44,7 +44,7 @@ angularFiles = {
 
     'src/ng/directive/directives.js',
     'src/ng/directive/a.js',
-    'src/ng/directive/booleanAttrs.js',
+    'src/ng/directive/attrs.js',
     'src/ng/directive/form.js',
     'src/ng/directive/input.js',
     'src/ng/directive/ngBind.js',

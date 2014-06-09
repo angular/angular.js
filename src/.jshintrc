@@ -34,6 +34,7 @@
     "nodeName_": false,
     "uid": false,
 
+    "REGEX_STRING_REGEXP" : false,
     "lowercase": false,
     "uppercase": false,
     "manualLowercase": false,
@@ -117,6 +118,7 @@
 
     /* jqLite.js */
     "BOOLEAN_ATTR": false,
+    "ALIASED_ATTR": false,
     "jqNextId": false,
     "camelCase": false,
     "jqLitePatchJQueryRemove": false,
@@ -134,6 +136,7 @@
     "jqLiteController": false,
     "jqLiteInheritedData": false,
     "getBooleanAttrName": false,
+    "getAliasedAttrName": false,
     "createEventHandler": false,
     "JQLitePrototype": false,
     "addEventListenerFn": false,

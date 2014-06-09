@@ -234,7 +234,7 @@ module.exports = function(grunt) {
         'src/**/*.js',
         'test/**/*.js',
         '!test/ngScenario/DescribeSpec.js',
-        '!src/ng/directive/booleanAttrs.js', // legitimate xit here
+        '!src/ng/directive/attrs.js', // legitimate xit here
         '!src/ngScenario/**/*.js'
       ]
     },
