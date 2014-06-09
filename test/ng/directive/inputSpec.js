@@ -1134,6 +1134,34 @@ describe('input', function() {
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
     });
+
+
+    it('should invalidate model values shorter than given minlength', function() {
+      compileInput('<input type="text" ng-model="value" ng-minlength="5" />');
+
+      scope.$apply(function() {
+        scope.value = "1234";
+      });
+
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.value = "123456789";
+      });
+
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should not invalidate model-values which are not string-like or array-like', function() {
+      compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
+
+      scope.$apply(function() {
+        scope.value = 10;
+      });
+
+      expect(inputElm).toBeValid();
+    });
   });
 
 
@@ -1147,6 +1175,34 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
+    });
+
+
+    it('should invalidate model values longer than given maxlength', function() {
+      compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
+
+      scope.$apply(function() {
+        scope.value = "123456789";
+      });
+
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.value = "1234";
+      });
+
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should not invalidate model-values which are not string-like or array-like', function() {
+      compileInput('<input type="text" ng-model="value" ng-maxlength="3" />');
+
+      scope.$apply(function() {
+        scope.value = 1000;
+      });
+
+      expect(inputElm).toBeValid();
     });
   });
 
