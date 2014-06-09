@@ -246,6 +246,18 @@ describe('ngHref', function() {
   }));
 
 
+  it('should remote href value when interpolated value is empty', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-href="{{id}}"></div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('');
+
+    $rootScope.$apply(function() {
+      $rootScope.id = 1;
+    });
+    expect(element.attr('href')).toEqual('1');
+  }));
+
+
   it('should bind href even if no interpolation', inject(function($rootScope, $compile) {
     element = $compile('<a ng-href="http://server"></a>')($rootScope);
     $rootScope.$digest();
