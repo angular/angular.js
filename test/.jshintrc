@@ -65,6 +65,7 @@
     "isScope": false,
     "isFile": false,
     "isBlob": false,
+    "isPromise": false,
     "isBoolean": false,
     "trim": false,
     "isElement": false,

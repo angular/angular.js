@@ -46,6 +46,7 @@
     -isFile,
     -isBlob,
     -isBoolean,
+    -isPromise,
     -trim,
     -isElement,
     -makeMap,
@@ -577,6 +578,22 @@ function isBoolean(value) {
   return typeof value === 'boolean';
 }
 
+/**
+ * @ngdoc function
+ * @name angular.isPromise
+ * @module ng
+ * @function
+ *
+ * @description
+ * Determines if a reference is a promise.
+ *
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a promise.
+ */
+function isPromise(value) {
+  return isObject(value) && isFunction(value['then']) && isFunction(value['catch']) && isFunction(value['finally']);
+}
 
 var trim = (function() {
   // native trim is way faster: http://jsperf.com/angular-trim-test
