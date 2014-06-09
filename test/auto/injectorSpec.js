@@ -597,6 +597,27 @@ describe('injector', function() {
           expect(log.join('; ')).
             toBe('myDecoratedService:input,dependency1; myService:decInput; dec+origReturn');
         });
+
+        it('should not generate original instance when not dependant', function() {
+          injector = createInjector([function($provide) {
+              $provide.factory('myService', function() {
+                log.push('myService:original');
+
+                return 'original';
+              });
+
+              $provide.decorator('myService', function() {
+                log.push('myService:decorated');
+
+                return 'decorated';
+              });
+            }]);
+
+          var out = injector.get('myService');
+          log.push(out);
+          expect(log.join('; ')).
+            toBe('myService:decorated; decorated');
+        });
       });
     });
 
