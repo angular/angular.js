@@ -602,14 +602,6 @@ function $HttpProvider() {
       config.headers = headers;
       config.method = uppercase(config.method);
 
-      var xsrfValue = urlIsSameOrigin(config.url)
-          ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
-          : undefined;
-      if (xsrfValue) {
-        headers[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
-      }
-
-
       var serverRequest = function(config) {
         headers = config.headers;
         var reqData = transformData(config.data, headersGetter(headers), config.transformRequest);
@@ -883,6 +875,13 @@ function $HttpProvider() {
           // put the promise for the non-transformed response into cache as a placeholder
           cache.put(url, promise);
         }
+      }
+
+      var xsrfValue = urlIsSameOrigin(config.url)
+          ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
+          : undefined;
+      if (xsrfValue) {
+        reqHeaders[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
       }
 
       // if we won't have the response in cache, send the request to the backend
