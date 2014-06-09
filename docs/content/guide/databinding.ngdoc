@@ -9,7 +9,7 @@ When the model changes, the view reflects the change, and vice versa.
 
 ## Data Binding in Classical Template Systems
 
-<img class="right" src="img/One_Way_Data_Binding.png"/>
+<img class="right" src="img/One_Way_Data_Binding.png"/><br />
 Most templating systems bind data in only one direction: they merge template and model components
 together into a view. After the merge occurs, changes to the model
 or related sections of the view are NOT automatically reflected in the view. Worse, any changes
@@ -18,7 +18,7 @@ to write code that constantly syncs the view with the model and the model with t
 
 ## Data Binding in Angular Templates
 
-<img class="right" src="img/Two_Way_Data_Binding.png"/>
+<img class="right" src="img/Two_Way_Data_Binding.png"/><br />
 Angular templates work differently. First the template (which is the uncompiled HTML along with
 any additional markup or directives) is compiled on the browser. The compilation step produces a
 live view. Any changes to the view are immediately reflected in the model, and any changes in
