@@ -953,7 +953,6 @@ describe('parser', function() {
         }));
       });
 
-
       describe('one-time binding', function() {
         it('should only use the cache when it is not a one-time binding', inject(function($parse) {
           expect($parse('foo')).toBe($parse('foo'));

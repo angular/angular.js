@@ -975,32 +975,28 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   };
 
   // pattern validator
-  var pattern = attr.ngPattern,
-      patternValidator,
-      match;
-
-  if (pattern) {
-    var validateRegex = function(regexp, value) {
-      return validate(ctrl, 'pattern', ctrl.$isEmpty(value) || regexp.test(value), value);
-    };
-    match = pattern.match(/^\/(.*)\/([gim]*)$/);
-    if (match) {
-      pattern = new RegExp(match[1], match[2]);
-      patternValidator = function(value) {
-        return validateRegex(pattern, value);
-      };
-    } else {
-      patternValidator = function(value) {
-        var patternObj = scope.$eval(pattern);
-
-        if (!patternObj || !patternObj.test) {
-          throw minErr('ngPattern')('noregexp',
-            'Expected {0} to be a RegExp but was {1}. Element: {2}', pattern,
-            patternObj, startingTag(element));
+  if (attr.ngPattern) {
+    var regexp, patternExp = attr.ngPattern;
+    attr.$observe('pattern', function(regex) {
+      if(isString(regex)) {
+        var match = regex.match(REGEX_STRING_REGEXP);
+        if(match) {
+          regex = new RegExp(match[1], match[2]);
         }
-        return validateRegex(patternObj, value);
-      };
-    }
+      }
+
+      if (regex && !regex.test) {
+        throw minErr('ngPattern')('noregexp',
+          'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
+          regex, startingTag(element));
+      }
+
+      regexp = regex || undefined;
+    });
+
+    var patternValidator = function(value) {
+      return validate(ctrl, 'pattern', ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value), value);
+    };
 
     ctrl.$formatters.push(patternValidator);
     ctrl.$parsers.push(patternValidator);
