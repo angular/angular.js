@@ -1039,6 +1039,13 @@ describe('parser', function() {
       });
 
       describe('literal', function() {
+        it('should mark an empty expressions as literal', inject(function($parse) {
+          expect($parse('').literal).toBe(true);
+          expect($parse('   ').literal).toBe(true);
+          expect($parse('::').literal).toBe(true);
+          expect($parse('::    ').literal).toBe(true);
+        }));
+
         it('should mark scalar value expressions as literal', inject(function($parse) {
           expect($parse('0').literal).toBe(true);
           expect($parse('"hello"').literal).toBe(true);
@@ -1068,6 +1075,13 @@ describe('parser', function() {
       });
 
       describe('constant', function() {
+        it('should mark an empty expressions as constant', inject(function($parse) {
+          expect($parse('').constant).toBe(true);
+          expect($parse('   ').constant).toBe(true);
+          expect($parse('::').constant).toBe(true);
+          expect($parse('::    ').constant).toBe(true);
+        }));
+
         it('should mark scalar value expressions as constant', inject(function($parse) {
           expect($parse('12.3').constant).toBe(true);
           expect($parse('"string"').constant).toBe(true);
