@@ -1105,6 +1105,13 @@ describe('parser', function() {
           expect($parse('foo(1, 2, 3)').constant).toBe(false);
           expect($parse('"name" + id').constant).toBe(false);
         }));
+
+        it('should treat non-expressions as constant', inject(function($parse) {
+          expect($parse('').constant).toBe(true);
+          expect($parse('   ').constant).toBe(true);
+          expect($parse('::').constant).toBe(true);
+          expect($parse('::    ').constant).toBe(true);
+        }));
       });
 
       describe('null/undefined in expressions', function() {

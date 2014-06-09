@@ -381,6 +381,7 @@ Parser.prototype = {
     this.text = text;
     this.tokens = this.lexer.lex(text);
 
+    var origTokenLength = this.tokens.length;
     var value = this.statements();
 
     if (this.tokens.length !== 0) {
@@ -388,7 +389,7 @@ Parser.prototype = {
     }
 
     value.literal = !!value.literal;
-    value.constant = !!value.constant;
+    value.constant = origTokenLength === 0 || !!value.constant;
 
     return value;
   },
