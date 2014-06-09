@@ -1134,6 +1134,21 @@ describe('input', function() {
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
     });
+
+
+    it('should be updatable via binding', function(){
+      scope.boundLength = 3;
+      compileInput('<input type="text" ng-model="value" ng-minlength="{{boundLength}}" />');
+      
+      changeInputValueTo('aaaa');
+      expect(scope.value).toBe('aaaa');
+
+      scope.boundLength = 6;
+      scope.$digest();
+      changeInputValueTo('aabb'); // TODO: this shouldn't need to changed to invalidate, but is (?)
+
+      expect(scope.value).toBeUndefined();
+    });
   });
 
 
@@ -1147,6 +1162,20 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
+    });
+
+
+    it('should be updatable via binding', function(){
+      scope.boundLength = 6;
+      compileInput('<input type="text" ng-model="value" ng-maxlength="{{boundLength}}" />');
+      
+      changeInputValueTo('aaaa');
+      expect(scope.value).toBe('aaaa');
+
+      scope.boundLength = 3;
+      scope.$digest();
+      changeInputValueTo('aaab'); // TODO: this shouldn't need to changed to invalidate, but is (?)
+      expect(scope.value).toBeUndefined();
     });
   });
 
