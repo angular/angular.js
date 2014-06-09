@@ -151,10 +151,19 @@ function filterFilter() {
       }
     }
 
-    var search = function(obj, text){
+    var search = function(obj, text, processed){
       if (typeof text == 'string' && text.charAt(0) === '!') {
-        return !search(obj, text.substr(1));
+        return !search(obj, text.substr(1), processed);
       }
+
+      // Avoid stack overflows in case of circuler references in obj
+      processed = processed || [];
+      if (processed.indexOf(obj) !== -1) {
+          return false;
+      } else {
+          processed.push(obj);
+      }
+
       switch (typeof obj) {
         case "boolean":
         case "number":
@@ -166,7 +175,7 @@ function filterFilter() {
               return comparator(obj, text);
             default:
               for ( var objKey in obj) {
-                if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
+                if (objKey.charAt(0) !== '$' && search(obj[objKey], text, processed)) {
                   return true;
                 }
               }
@@ -175,7 +184,7 @@ function filterFilter() {
           return false;
         case "array":
           for ( var i = 0; i < obj.length; i++) {
-            if (search(obj[i], text)) {
+            if (search(obj[i], text, processed)) {
               return true;
             }
           }
