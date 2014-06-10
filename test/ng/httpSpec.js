@@ -280,7 +280,7 @@ describe('$http', function() {
       spyOn($rootScope, '$apply').andCallThrough();
     }]));
 
-    beforeEach(inject(['$httpBackend', '$http', '$cacheFactory', '$browser', 
+    beforeEach(inject(['$httpBackend', '$http', '$cacheFactory', '$browser',
           function($hb, $h, $cf, $br) {
       $httpBackend = $hb;
       $http = $h;
@@ -756,7 +756,7 @@ describe('$http', function() {
           };
         })($browser.cookies, self);
 
-        testCache.get = (function (cacheGet, self) { 
+        testCache.get = (function (cacheGet, self) {
           return function () {
             self.executionOrder.push('cache');
             return cacheGet.apply(this, arguments);
