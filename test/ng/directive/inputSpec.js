@@ -423,6 +423,15 @@ describe('input', function() {
     scope.$digest();
   }
 
+  var attrs;
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.directive('attrCapture', function() {
+      return function(scope, element, $attrs) {
+        attrs = $attrs;
+      };
+    });
+  }));
+
   beforeEach(inject(function($injector, _$sniffer_, _$browser_) {
     $sniffer = _$sniffer_;
     $browser = _$browser_;
@@ -1073,6 +1082,19 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
     });
 
+    it('should listen on ng-pattern when pattern is observed', function() {
+      var value, patternVal = /^\w+$/;
+      compileInput('<input type="text" ng-model="value" ng-pattern="pat" attr-capture />');
+      attrs.$observe('pattern', function(v) {
+        value = attrs.pattern;
+      });
+
+      scope.$apply(function() {
+        scope.pat = patternVal;
+      });
+
+      expect(value).toBe(patternVal);
+    });
 
     it('should validate in-lined pattern with modifiers', function() {
       compileInput('<input type="text" ng-model="value" ng-pattern="/^abc?$/i" />');
@@ -1104,7 +1126,9 @@ describe('input', function() {
       changeInputValueTo('x');
       expect(inputElm).toBeInvalid();
 
-      scope.regexp = /abc?/;
+      scope.$apply(function() {
+        scope.regexp = /abc?/;
+      });
 
       changeInputValueTo('ab');
       expect(inputElm).toBeValid();
@@ -1114,10 +1138,12 @@ describe('input', function() {
     });
 
 
-    it('should throw an error when scope pattern can\'t be found', function() {
+    it('should throw an error when scope pattern is invalid', function() {
       expect(function() {
         compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
-        scope.$apply();
+        scope.$apply(function() {
+          scope.fooRegexp = '/...';
+        });
       }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
   });
@@ -1134,6 +1160,20 @@ describe('input', function() {
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
     });
+
+    it('should listen on ng-minlength when minlength is observed', function() {
+      var value = 0;
+      compileInput('<input type="text" ng-model="value" ng-minlength="min" attr-capture />');
+      attrs.$observe('minlength', function(v) {
+        value = int(attrs.minlength);
+      });
+
+      scope.$apply(function() {
+        scope.min = 5;
+      });
+
+      expect(value).toBe(5);
+    });
   });
 
 
@@ -1147,6 +1187,20 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
+    });
+
+    it('should listen on ng-maxlength when maxlength is observed', function() {
+      var value = 0;
+      compileInput('<input type="text" ng-model="value" ng-maxlength="max" attr-capture />');
+      attrs.$observe('maxlength', function(v) {
+        value = int(attrs.maxlength);
+      });
+
+      scope.$apply(function() {
+        scope.max = 10;
+      });
+
+      expect(value).toBe(10);
     });
   });
 

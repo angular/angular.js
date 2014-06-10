@@ -73,8 +73,9 @@ This is a short list of libraries with specific support and documentation for wo
 * **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/)
 * **RESTful services:** [Restangular](https://github.com/mgonto/restangular)
 * **SQL and NoSQL backends:** [BreezeJS](http://www.breezejs.com/), [AngularFire](http://angularfire.com/)
-* **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/)
+* **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/), [ngTagsInput](https://github.com/mbenford/ngTagsInput)
 * **Advanced Routing:** [UI-Router](https://github.com/angular-ui/ui-router)
+* **Maps:** [UI-Map (Google Maps)](https://github.com/angular-ui/ui-map)
 
 ## Deployment
 
@@ -112,6 +113,7 @@ This is a short list of libraries with specific support and documentation for wo
 * **Free online:**
   [thinkster.io](http://thinkster.io),
   [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1)
+  [CodeSchool](https://www.codeschool.com/courses/shaping-up-with-angular-js)
 * **Paid online:**
   [Pluralsite (3 courses)](http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs),
   [Tuts+](https://tutsplus.com/course/easier-js-apps-with-angular/),
