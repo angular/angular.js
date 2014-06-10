@@ -79,6 +79,7 @@
     "encodeUriQuery": false,
     "angularInit": false,
     "bootstrap": false,
+    "getTestability": false,
     "snake_case": false,
     "bindJQuery": false,
     "assertArg": false,

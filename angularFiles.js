@@ -35,6 +35,7 @@ var angularFiles = {
     'src/ng/sce.js',
     'src/ng/sniffer.js',
     'src/ng/templateRequest.js',
+    'src/ng/testability.js',
     'src/ng/timeout.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',

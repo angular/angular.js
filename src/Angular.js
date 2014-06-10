@@ -74,6 +74,7 @@
   encodeUriQuery: true,
   angularInit: true,
   bootstrap: true,
+  getTestability: true,
   snake_case: true,
   bindJQuery: true,
   assertArg: true,
@@ -1457,6 +1458,18 @@ function bootstrap(element, modules, config) {
 function reloadWithDebugInfo() {
   window.name = 'NG_ENABLE_DEBUG_INFO!' + window.name;
   window.location.reload();
+}
+
+/*
+ * @name angular.getTestability
+ * @module ng
+ * @description
+ * Get the testability service for the instance of Angular on the given
+ * element.
+ * @param {DOMElement} element DOM element which is the root of angular application.
+ */
+function getTestability(rootElement) {
+  return angular.element(rootElement).injector().get('$$testability');
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
