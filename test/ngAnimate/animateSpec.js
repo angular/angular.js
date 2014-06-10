@@ -1702,6 +1702,32 @@ describe("ngAnimate", function() {
             });
           });
 
+          it('should apply a closing timeout to close all parallel class-based animations on the same element',
+            inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+            if (!$sniffer.transitions) return;
+
+            ss.addRule('.base-class', '-webkit-transition:2s linear all;' +
+                                              'transition:2s linear all;');
+
+            var element = $compile('<div class="base-class"></div>')($rootScope);
+            $rootElement.append(element);
+            jqLite($document[0].body).append($rootElement);
+
+            $animate.addClass(element, 'one');
+            $animate.addClass(element, 'two');
+
+            $animate.triggerReflow();
+
+            $timeout.flush(3000); //2s * 1.5
+
+            expect(element.hasClass('one-add')).toBeFalsy();
+            expect(element.hasClass('one-add-active')).toBeFalsy();
+            expect(element.hasClass('two-add')).toBeFalsy();
+            expect(element.hasClass('two-add-active')).toBeFalsy();
+            expect(element.hasClass('ng-animate')).toBeFalsy();
+          }));
+
           it("apply a closing timeout with respect to a staggering animation",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
