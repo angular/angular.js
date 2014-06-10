@@ -357,7 +357,7 @@ function $RootScopeProvider(){
         function deregisterWatch() {
           arrayRemove(array, watcher);
           lastDirtyWatch = null;
-        };
+        }
 
         destroy = scope.$on('$destroy', function() {
             deregisterWatch(); // remove watcher
