@@ -173,9 +173,9 @@ var /** holds major version number for IE or NaN for real browsers */
  * IE 11 changed the format of the UserAgent string.
  * See http://msdn.microsoft.com/en-us/library/ms537503.aspx
  */
-msie = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
+msie = toInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
 if (isNaN(msie)) {
-  msie = int((/trident\/.*; rv:(\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
+  msie = toInt((/trident\/.*; rv:(\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
 }
 
 
@@ -357,7 +357,7 @@ function extend(dst) {
   return dst;
 }
 
-function int(str) {
+function toInt(str) {
   return parseInt(str, 10);
 }
 

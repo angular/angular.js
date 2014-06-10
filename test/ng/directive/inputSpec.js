@@ -1165,7 +1165,7 @@ describe('input', function() {
       var value = 0;
       compileInput('<input type="text" ng-model="value" ng-minlength="min" attr-capture />');
       attrs.$observe('minlength', function(v) {
-        value = int(attrs.minlength);
+        value = toInt(attrs.minlength);
       });
 
       scope.$apply(function() {
@@ -1193,7 +1193,7 @@ describe('input', function() {
       var value = 0;
       compileInput('<input type="text" ng-model="value" ng-maxlength="max" attr-capture />');
       attrs.$observe('maxlength', function(v) {
-        value = int(attrs.maxlength);
+        value = toInt(attrs.maxlength);
       });
 
       scope.$apply(function() {
