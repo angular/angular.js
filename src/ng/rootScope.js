@@ -330,6 +330,7 @@ function $RootScopeProvider(){
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
+            destroy,
             watcher = {
               fn: listener,
               last: initWatchVal,
@@ -353,10 +354,17 @@ function $RootScopeProvider(){
         // the while loop reads in reverse order.
         array.unshift(watcher);
 
-        return function deregisterWatch() {
+        function deregisterWatch() {
           arrayRemove(array, watcher);
           lastDirtyWatch = null;
         };
+
+        destroy = scope.$on('$destroy', function() {
+            deregisterWatch(); // remove watcher
+            destroy(); // remove event
+        });
+
+        return deregisterWatch;
       },
 
       /**

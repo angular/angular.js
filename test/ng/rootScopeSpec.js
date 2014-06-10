@@ -908,12 +908,26 @@ describe('Scope', function() {
 
     it('should broadcast $destroy on rootScope', inject(function($rootScope) {
       var spy = spyOn(angular, 'noop');
+      // watchers are cleaned up on destroy
+      first.$on('$destroy', function() { log += 'a';});
+      middle.$on('$destroy', function() { log += 'b';});
+      last.$on('$destroy', function() { log += 'c';});
+
       $rootScope.$on('$destroy', angular.noop);
       $rootScope.$destroy();
       $rootScope.$digest();
-      expect(log).toEqual('123');
+      expect(log).toEqual('abc');
       expect(spy).toHaveBeenCalled();
       expect($rootScope.$$destroyed).toBe(true);
+      expect(first.$$destroyed).toBe(true);
+      expect(middle.$$destroyed).toBe(true);
+      expect(last.$$destroyed).toBe(true);
+      expect(first.$$watchers.length).toBe(0);
+      expect(middle.$$watchers.length).toBe(0);
+      expect(last.$$watchers.length).toBe(0);
+      expect(first.$$listeners.$destroy.length).toBe(2);
+      expect(middle.$$listeners.$destroy.length).toBe(2);
+      expect(last.$$listeners.$destroy.length).toBe(2);
     }));
 
 
