@@ -109,6 +109,9 @@ for this test run.
 Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
 access to the filter that we want to test.  See {@link angular.mock.inject angular.mock.inject()}.
 
+Notice that the suffix 'Filter' is appended to your filter name when injected.
+See the {@link Filters Filter Guide} - 'Using filters in controllers and services' section where this is outlined.
+
 You should now see the following output in the Karma tab:
 
 <pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)</pre>
