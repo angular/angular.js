@@ -3230,7 +3230,7 @@
       }
     },
     "protractor": {
-      "version": "1.1.1",
+      "version": "1.2.0-beta1",
       "dependencies": {
         "request": {
           "version": "2.36.0",
