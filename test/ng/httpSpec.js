@@ -747,27 +747,27 @@ describe('$http', function() {
 
       it('should check the cache before setting the XSRF cookie', inject(function() {
         var testCache = $cacheFactory('testCache'),
-            self = {executionOrder: []};
+            execData = {executionOrder: []};
 
-        $browser.cookies = (function (cookiesFn, self) {
+        $browser.cookies = (function (cookiesFn, execData) {
           return function () {
-            self.executionOrder.push('cookies');
+            execData.executionOrder.push('cookies');
             return cookiesFn.apply(this, arguments);
           };
-        })($browser.cookies, self);
+        })($browser.cookies, execData);
 
-        testCache.get = (function (cacheGet, self) {
+        testCache.get = (function (cacheGet, execData) {
           return function () {
-            self.executionOrder.push('cache');
+            execData.executionOrder.push('cache');
             return cacheGet.apply(this, arguments);
           };
-        })(testCache.get, self);
+        })(testCache.get, execData);
 
         $httpBackend.expect('GET', '/url', undefined).respond('');
         $http({url: '/url', method: 'GET', cache: testCache});
         $httpBackend.flush();
 
-        expect(self.executionOrder).toEqual(['cache', 'cookies']);
+        expect(execData.executionOrder).toEqual(['cache', 'cookies']);
 
       }));
     });
