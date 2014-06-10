@@ -264,6 +264,26 @@ It is good to run the end to end tests whenever you make changes to the HTML vie
 that the application as a whole is executing correctly.  It is very common to run End to End tests
 before pushing a new commit of changes to a remote repository.
 
+*Note:* If you are using Chromium you need to edit `test/protractor-conf.js` and change:
+
+```
+  capabilities: {
+    'browserName': 'chrome'
+  },
+
+  chromeOnly: true,
+```
+
+to
+
+
+```
+  capabilities: {
+    'browserName': 'chromium'
+  },
+
+  chromeOnly: false,
+```
 
 [git]: http://git-scm.com/
 [node]: http://nodejs.org/
