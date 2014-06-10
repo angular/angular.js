@@ -272,7 +272,7 @@ describe('$http', function() {
 
 
   describe('the instance', function() {
-    var $httpBackend, $http, $rootScope;
+    var $httpBackend, $http, $cacheFactory, $browser, $rootScope;
 
     beforeEach(inject(['$rootScope', function($rs) {
       $rootScope = $rs;
@@ -280,9 +280,12 @@ describe('$http', function() {
       spyOn($rootScope, '$apply').andCallThrough();
     }]));
 
-    beforeEach(inject(['$httpBackend', '$http', function($hb, $h) {
+    beforeEach(inject(['$httpBackend', '$http', '$cacheFactory', '$browser', 
+          function($hb, $h, $cf, $br) {
       $httpBackend = $hb;
       $http = $h;
+      $cacheFactory = $cf;
+      $browser = $br;
     }]));
 
     it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
@@ -740,6 +743,33 @@ describe('$http', function() {
         $http({url: '/url', method: 'DELETE', headers: headerConfig});
 
         $httpBackend.flush();
+      }));
+
+      it('should check the cache before setting the XSRF cookie', inject(function() {
+        var testCache = $cacheFactory('testCache'),
+            self = {executionOrder: []};
+
+        $browser.cookies = (function (cookiesFn, self) {
+          return function () {
+            self.executionOrder.push('cookies');
+            return cookiesFn.apply(this, arguments);
+          };
+        })($browser.cookies, self);
+
+        testCache.get = (function (cacheGet, self) { 
+          return function () {
+            self.executionOrder.push('cache');
+            return cacheGet.apply(this, arguments);
+          };
+        })(testCache.get, self);
+
+        
+        $httpBackend.expect('GET', '/url', undefined).respond('');
+        $http({url: '/url', method: 'GET', cache: testCache});
+        $httpBackend.flush();
+
+        expect(self.executionOrder).toEqual(['cache', 'cookies']);
+
       }));
     });
 

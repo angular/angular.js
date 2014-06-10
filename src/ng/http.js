@@ -877,15 +877,17 @@ function $HttpProvider() {
         }
       }
 
-      var xsrfValue = urlIsSameOrigin(config.url)
-          ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
-          : undefined;
-      if (xsrfValue) {
-        reqHeaders[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
-      }
 
-      // if we won't have the response in cache, send the request to the backend
+      // if we won't have the response in cache, set the xsrf headers and 
+      // send the request to the backend
       if (isUndefined(cachedResp)) {
+        var xsrfValue = urlIsSameOrigin(config.url)
+            ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
+            : undefined;
+        if (xsrfValue) {
+          reqHeaders[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
+        }
+
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
             config.withCredentials, config.responseType);
       }
