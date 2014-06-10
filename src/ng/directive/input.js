@@ -814,7 +814,7 @@ var inputType = {
         </file>
         <file name="protractor.js" type="protractor">
           it('should change state', function() {
-            var color = element(by.binding('color | json'));
+            var color = element(by.binding('color'));
 
             expect(color.getText()).toContain('blue');
 
@@ -1313,7 +1313,7 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
        </div>
       </file>
       <file name="protractor.js" type="protractor">
-        var user = element(by.binding('user'));
+        var user = element(by.exactBinding('user'));
         var userNameValid = element(by.binding('myForm.userName.$valid'));
         var lastNameValid = element(by.binding('myForm.lastName.$valid'));
         var lastNameError = element(by.binding('myForm.lastName.$error'));
@@ -2542,7 +2542,7 @@ var minlengthDirective = function() {
  *   </file>
  *   <file name="protractor.js" type="protractor">
  *     var listInput = element(by.model('names'));
- *     var names = element(by.binding('names'));
+ *     var names = element(by.exactBinding('names'));
  *     var valid = element(by.binding('myForm.namesInput.$valid'));
  *     var error = element(by.css('span.error'));
  *
@@ -2572,7 +2572,7 @@ var minlengthDirective = function() {
  *   <file name="protractor.js" type="protractor">
  *     it("should split the text by newlines", function() {
  *       var listInput = element(by.model('list'));
- *       var output = element(by.binding(' list | json '));
+ *       var output = element(by.binding('list | json'));
  *       listInput.sendKeys('abc\ndef\nghi');
  *       expect(output.getText()).toContain('[\n  "abc",\n  "def",\n  "ghi"\n]');
  *     });
