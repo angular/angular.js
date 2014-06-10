@@ -763,7 +763,6 @@ describe('$http', function() {
           };
         })(testCache.get, self);
 
-        
         $httpBackend.expect('GET', '/url', undefined).respond('');
         $http({url: '/url', method: 'GET', cache: testCache});
         $httpBackend.flush();

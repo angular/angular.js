@@ -878,7 +878,7 @@ function $HttpProvider() {
       }
 
 
-      // if we won't have the response in cache, set the xsrf headers and 
+      // if we won't have the response in cache, set the xsrf headers and
       // send the request to the backend
       if (isUndefined(cachedResp)) {
         var xsrfValue = urlIsSameOrigin(config.url)
