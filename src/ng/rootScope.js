@@ -360,7 +360,7 @@ function $RootScopeProvider(){
           arrayRemove(array, watcher);
           lastDirtyWatch = null;
         }
-        // event if we handle destroy on scope this is required to prevent watch change on destroy
+
         destroy = scope.$on('$destroy', function() {
             deregisterWatch(); // remove watcher
             destroy(); // remove event
