@@ -32,6 +32,8 @@ npm install
 To see the app running in a browser, open a *separate* terminal/command line tab or window, then
 run `npm start` to start the web server. Now, open a browser window for the app and navigate to
 <a href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a>
+(note that if you already ran 'npm start' before navigating to step 0, you will have to clear the browser
+history for the correct page to appear)
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
