@@ -1012,8 +1012,18 @@ describe('parser', function() {
 
           value.baz = 'baz';
           expect(fn()).toEqual({bar: 'bar'});
-
         }));
+
+        it('should not throw if the stable value is `null`', inject(function($parse, $rootScope) {
+          var fn = $parse('::foo');
+          $rootScope.$watch(fn);
+          $rootScope.foo = null;
+          $rootScope.$digest();
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(fn()).toEqual(null);
+        }));
+
       });
 
 
