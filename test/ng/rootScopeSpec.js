@@ -10,20 +10,6 @@ function getObjSize(obj) {
   return i;
 }
 
-function isArrayNullfiyd(obj) {
-  var nulled = true;
-  if (isArray(obj)) {
-    forEach(obj, function(item) {
-      if (item !== null) {
-        nulled = false;
-      }
-    });
-  } else {
-    nulled = false;
-  }
-  return nulled;
-}
-
 describe('Scope', function() {
 
   beforeEach(module(provideLog));
@@ -931,16 +917,59 @@ describe('Scope', function() {
 
 
     it('should broadcast $destroy on rootScope', inject(function($rootScope) {
-      var spy = spyOn(angular, 'noop');
+      var spy = spyOn(angular, 'noop'),
+          one, onei,
+          two, twoi,
+          three, threei,
+          case1 = '', case2 = '', case3 = '', case4 = '';
       // watchers are cleaned up on destroy
       first.$on('$destroy', function() { log += 'a';});
       middle.$on('$destroy', function() { log += 'b';});
       last.$on('$destroy', function() { log += 'c';});
 
+      one = middle.$new(true);
+      two = middle.$new(true);
+      three = middle.$new(true);
+
+      one.$on('$destroy', function() { case1 += '1';});
+      two.$on('$destroy', function() { case1 += '2';});
+      three.$on('$destroy', function() { case1 += '3';});
+
+      onei = one.$new();
+      twoi = one.$new(true);
+      threei = one.$new();
+
+
+      onei.$on('$destroy', function() { case4 += 'i1';});
+      twoi.$on('$destroy', function() { case4 += '2';});
+      threei.$on('$destroy', function() { case4 += '3';});
+
+      one = first.$new(true);
+      two = first.$new(true);
+      three = first.$new(true);
+
+      one.$on('$destroy', function() { case2 += '2';});
+      two.$on('$destroy', function() { case2 += '2';});
+      three.$on('$destroy', function() { case2 += '3';});
+
+      one = last.$new(true);
+      two = last.$new(true);
+      three = last.$new(true);
+
+      one.$on('$destroy', function() { case3 += '3';});
+      two.$on('$destroy', function() { case3 += '2';});
+      three.$on('$destroy', function() { case3 += '3';});
+
+
       $rootScope.$on('$destroy', angular.noop);
       $rootScope.$destroy();
       $rootScope.$digest();
       // watchers are removed on destroy so 123 it should not be executed on destroy
+      expect(case1).toEqual('123');
+      expect(case2).toEqual('223');
+      expect(case3).toEqual('323');
+      expect(case4).toEqual('i123');
+
       expect(log).toEqual('abc');
       expect(spy).toHaveBeenCalled();
       expect($rootScope.$$destroyed).toBe(true);
@@ -955,7 +984,6 @@ describe('Scope', function() {
       expect(getObjSize(last.$$listeners)).toBe(0);
       // destroy is nullfiyd
       expect(getObjSize($rootScope.$$listeners)).toBe(1);
-      expect(isArrayNullfiyd($rootScope.$$listeners.$destroy)).toBe(true);
     }));
 
 

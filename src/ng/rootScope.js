@@ -1035,16 +1035,7 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
-        var namedListeners = this.$$listeners[name], _listener;
-
-
-        if (name === "$destroy") { // patch only $destroy to nullify $destroy
-            _listener = listener;
-            listener = function() {
-                _listener.apply(this, Array.prototype.slice.call(arguments));
-                detachEvent(); // nullify
-            };
-        }
+        var namedListeners = this.$$listeners[name];
 
 
         if (!namedListeners) {
