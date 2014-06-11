@@ -83,6 +83,24 @@ function isSuccess(status) {
 }
 
 
+/**
+ * @ngdoc provider
+ * @name $httpProvider
+ *
+ * @description
+ * Use `$httpProvider` to change the default behavior of the `$http` service.
+ *
+ * @property {Object} defaults Default attributes for {@link ng.$http $http} service.
+ *
+ * @property {string} defaults.xsrfHeaderName Name of HTTP header to populate with the XSRF
+ *   token. Defaults value is `'X-XSRF-TOKEN'`
+ *
+ * @property {string} defaults.xsrfCookieName Name of cookie containing the XSRF token.
+ *   Defaults value is `'XSRF-TOKEN'`
+ *
+ * @property {Object} defaults.headers Set default headers for all $http requests. Refer to
+ *   {@link ng.$http#setting-http-headers $http} for documentation about setting default headers.
+ * */
 function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
