@@ -853,6 +853,8 @@ function $RootScopeProvider(){
         if (!doNotBroadcast) { // link is required so children can bubble
               this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
                   this.$$childTail = this.$root = null;
+        } else {
+            this.$root = null;
         }
         // don't reset these to null in case some async task tries to register a listener/watch/task
         this.$$listeners = {};
