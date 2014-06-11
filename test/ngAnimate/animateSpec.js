@@ -783,6 +783,46 @@ describe("ngAnimate", function() {
           expect(child.hasClass('animation-cancelled')).toBe(true);
         }));
 
+        it("should remove the .ng-animate class after the next animation is run which interrupted the last animation", function() {
+          var addClassDone, removeClassDone,
+              addClassDoneSpy = jasmine.createSpy(),
+              removeClassDoneSpy = jasmine.createSpy();
+
+          module(function($animateProvider) {
+            $animateProvider.register('.hide', function() {
+              return {
+                addClass : function(element, className, done) {
+                  addClassDone = done;
+                  return addClassDoneSpy;
+                },
+                removeClass : function(element, className, done) {
+                  removeClassDone = done;
+                  return removeClassDoneSpy;
+                }
+              };
+            });
+          });
+
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+            $animate.addClass(element, 'hide');
+
+            expect(element).toHaveClass('ng-animate');
+
+            $animate.triggerReflow();
+
+            $animate.removeClass(element, 'hide');
+            expect(addClassDoneSpy).toHaveBeenCalled();
+
+            $animate.triggerReflow();
+
+            expect(element).toHaveClass('ng-animate');
+
+            removeClassDone();
+            $animate.triggerCallbacks();
+
+            expect(element).not.toHaveClass('ng-animate');
+          });
+        });
 
         it("should skip a class-based animation if the same element already has an ongoing structural animation",
           inject(function($animate, $rootScope, $sniffer, $timeout) {
