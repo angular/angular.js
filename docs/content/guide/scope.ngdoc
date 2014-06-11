@@ -20,7 +20,7 @@ watch {@link guide/expression expressions} and propagate events.
 
   - Scopes can be nested to limit access to the properties of application components while providing
     access to shared model properties. Nested scopes are either "child scopes" or "isolate scopes".
-    A "child scope" (prototypically) inherits properties from its parent scope. An "isolate scope"
+    A "child scope" (prototypically) inherits properties from its parent scope. An "isolated scope"
     does not. See {@link
     guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive isolated
     scopes} for more information.
