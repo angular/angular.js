@@ -18,9 +18,9 @@
  *
  * <div class="alert alert-warning">
  * **Note:** Here is a list of values that ngIf will consider as a falsy value (case insensitive):<br />
- * "f" / "0" / "false" / "no" / "n" / "[]" 
+ * "f" / "0" / "false" / "no" / "n" / "[]"
  * </div>
- * 
+ *
  * Note that when an element is removed using `ngIf` its scope is destroyed and a new scope
  * is created when the element is restored.  The scope created within `ngIf` inherits from
  * its parent scope using
