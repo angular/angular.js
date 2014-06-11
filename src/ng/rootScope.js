@@ -1043,7 +1043,7 @@ function $RootScopeProvider(){
             listener = function() {
                 _listener.apply(this, Array.prototype.slice.call(arguments));
                 detachEvent(); // nullify
-            }
+            };
         }
 
 

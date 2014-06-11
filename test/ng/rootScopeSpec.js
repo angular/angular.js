@@ -1,27 +1,27 @@
 'use strict';
 
 function getObjSize(obj) {
-    var i = 0;
-    if (isObject(obj)) {
-        forEach(obj, function() {
-            ++i;
-        });
-    }
-    return i;
+  var i = 0;
+  if (isObject(obj)) {
+    forEach(obj, function() {
+      ++i;
+    });
+  }
+  return i;
 }
 
 function isArrayNullfiyd(obj) {
-    var nulled = true;
-    if (isArray(obj)) {
-        forEach(obj, function(item) {
-            if (item !== null) {
-                nulled = false;
-            }
-        });
-    } else {
+  var nulled = true;
+  if (isArray(obj)) {
+    forEach(obj, function(item) {
+      if (item !== null) {
         nulled = false;
-    }
-    return nulled;
+      }
+    });
+  } else {
+    nulled = false;
+  }
+  return nulled;
 }
 
 describe('Scope', function() {
