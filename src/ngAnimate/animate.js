@@ -958,10 +958,9 @@ angular.module('ngAnimate', ['ng'])
               //cancel all animations when a structural animation takes place
               for(var klass in runningAnimations) {
                 animationsToCancel.push(runningAnimations[klass]);
-                cleanup(element, klass);
               }
-              runningAnimations = {};
-              totalActiveAnimations = 0;
+              ngAnimateState = {};
+              cleanup(element, true);
             }
           } else if(lastAnimation.event == 'setClass') {
             animationsToCancel.push(lastAnimation);
@@ -983,6 +982,9 @@ angular.module('ngAnimate', ['ng'])
             });
           }
         }
+
+        runningAnimations     = ngAnimateState.active || {};
+        totalActiveAnimations = ngAnimateState.totalActive || 0;
 
         if(runner.isClassBased && !runner.isSetClassOperation && !skipAnimation) {
           skipAnimation = (animationEvent == 'addClass') == element.hasClass(className); //opposite of XOR
