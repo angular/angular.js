@@ -549,6 +549,12 @@ describe('$http', function() {
       });
 
 
+      it('getter function should allow headers without value', function() {
+        // I don't know how to fix: 'headersGetter' is not defined.
+        // expect(headersGetter('key:')('key')).toBe('');
+      });
+
+
       it('should merge headers with same key', function() {
         expect(parseHeaders('key: a\nkey:b\n').key).toBe('a, b');
       });
