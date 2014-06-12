@@ -63,7 +63,7 @@ function extractDateTimeSymbols(content, localeInfo) {
     var localeID = findLocaleId(propName, 'datetime');
     if (localeID) {
       var info = getInfoForLocale(localeInfo, localeID);
-      localeInfo[localeID].DATETIME_FORMATS =
+      info.DATETIME_FORMATS =
           converter.convertDatetimeData(goog.i18n[propName]);
     }
   }

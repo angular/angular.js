@@ -63,8 +63,8 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20b9",
-    "DECIMAL_SEP": ".",
+    "CURRENCY_SYM": "Rs",
+    "DECIMAL_SEP": "\u066b",
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
