@@ -460,6 +460,23 @@ describe('$route', function() {
         expect(onChangeSpy).toHaveBeenCalled();
       });
     });
+
+
+    it('should interpret a string as a redirect route', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+        $routeProvider.when('/baz', {templateUrl: 'baz.html'});
+        $routeProvider.otherwise('/foo');
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/unknownRoute');
+        $rootScope.$digest();
+
+        expect($location.path()).toBe('/foo');
+        expect($route.current.templateUrl).toBe('foo.html');
+      });
+    });
   });
 
 
