@@ -886,6 +886,22 @@ describe('angular', function() {
   });
 
 
+  describe('isWindow', function () {
+    it('should return true for the Window object', function() {
+      expect(isWindow(window)).toBe(true);
+    });
+
+    it('should return false for any object that is not a Window', function() {
+      expect(isWindow([])).toBe(false);
+      expect(isWindow('')).toBeFalsy();
+      expect(isWindow(23)).toBe(false);
+      expect(isWindow({})).toBe(false);
+      expect(isWindow(new Date())).toBe(false);
+      expect(isWindow(document)).toBe(false);
+    });
+  });
+
+
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
