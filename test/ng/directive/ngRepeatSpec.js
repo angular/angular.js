@@ -427,7 +427,7 @@ describe('ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toMatch(/^\[ngRepeat:iexp\] Expected expression in form of '_item_ in _collection_\[ track by _id_\]' but got 'i dont parse'\./);
+        toMatch(/^\[ngRepeat:iexp\] Expected expression in form of '_item_ in _collection_\[ index as _property_\]\[ track by _id_\]' but got 'i dont parse'\./);
   });
 
 
@@ -454,6 +454,29 @@ describe('ngRepeat', function() {
     element = $compile(
       '<ul>' +
         '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$index}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
+    scope.$digest();
+    expect(element.text()).toEqual('frodo:f:0|misko:m:1|shyam:s:2|');
+  });
+
+
+  it('should be possible to define the `$index` property when iterating over arrays',
+      function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items index as myIndex">{{item}}:{{myIndex}}|</li>' +
+      '</ul>')(scope);
+    scope.items = ['misko', 'shyam', 'frodo'];
+    scope.$digest();
+    expect(element.text()).toEqual('misko:0|shyam:1|frodo:2|');
+  });
+
+  it('should be possible to define the `$index` property when iterating over arrays',
+      function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, val) in items index as myIndex">{{key}}:{{val}}:{{myIndex}}|</li>' +
       '</ul>')(scope);
     scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
     scope.$digest();
@@ -615,6 +638,20 @@ describe('ngRepeat', function() {
     scope.$digest();
 
     expect(element.text()).toEqual('a|b|Xc|d|X');
+  });
+
+
+  it('should be possible to use `index as` in nested arrays', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items index as outerIndex">' +
+          '<div ng-repeat="item in items index as innerIndex">{{outerIndex}}:{{innerIndex}}|</div>X' +
+        '</li>' +
+      '</ul>')(scope);
+    scope.items = [0, 1, 2];
+    scope.$digest();
+
+    expect(element.text()).toEqual('0:0|0:1|0:2|X1:0|1:1|1:2|X2:0|2:1|2:2|X');
   });
 
 
