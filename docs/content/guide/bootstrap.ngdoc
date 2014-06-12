@@ -91,7 +91,7 @@ Here is an example of manually initializing Angular:
 <html>
 <body>
   Hello {{'World'}}!
-  <script src="http://code.angularjs.org/angular.js"></script>
+  <script src="http://code.angularjs.org/snapshot/angular.js"></script>
 
   <script>
     angular.module('myApp', [])
