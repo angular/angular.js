@@ -299,5 +299,5 @@ it('should clear messages after alert', function() {
 
 ## Related API
 
-* {@link ./ng Angular Service API}
+* {@link angular.Module Module API}
 * {@link angular.injector Injector API}
