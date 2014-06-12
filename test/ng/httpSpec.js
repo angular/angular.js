@@ -549,12 +549,6 @@ describe('$http', function() {
       });
 
 
-      it('getter function should allow headers without value', function() {
-        // I don't know how to fix: 'headersGetter' is not defined.
-        // expect(headersGetter('key:')('key')).toBe('');
-      });
-
-
       it('should merge headers with same key', function() {
         expect(parseHeaders('key: a\nkey:b\n').key).toBe('a, b');
       });
@@ -767,6 +761,16 @@ describe('$http', function() {
       it('get() should allow config param', function() {
         $httpBackend.expect('GET', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
         $http.get('/url', {headers: {'Custom': 'Header'}});
+      });
+
+
+      it('should handle empty response header', function() {
+        $httpBackend.expect('GET', '/url', undefined)
+            .respond(200, '', { 'Custom-Empty-Response-Header': '' });
+        $http.get('/url').success(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[2]('custom-empty-response-Header')).toBe('');
       });
 
 
