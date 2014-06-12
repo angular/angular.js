@@ -430,7 +430,7 @@ function isUndefined(value){return typeof value === 'undefined';}
  * @kind function
  *
  * @description
- * Determines if a reference is defined.
+ * Determines if a reference is defined. However the reference must be declared first.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
