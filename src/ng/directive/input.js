@@ -1008,7 +1008,10 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMinlength) {
     var minlength = int(attr.ngMinlength);
     var minLengthValidator = function(value) {
-      return validate(ctrl, 'minlength', ctrl.$isEmpty(value) || value.length >= minlength, value);
+      // this is the old expression. commit : https://github.com/angular/angular.js/commit/cdc4d485a6daa0c74e5d07d8def2a3ee68d93d13#diff-c244afd8def7f268b16ee91a0341c4b2R514
+      var oldExp = !ctrl.$isEmpty(value) && value.length < minlength;
+      // and now I just deny it.
+      return validate(ctrl, 'minlength', !oldExp, value);
     };
 
     ctrl.$parsers.push(minLengthValidator);
@@ -1019,7 +1022,10 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMaxlength) {
     var maxlength = int(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
-      return validate(ctrl, 'maxlength', ctrl.$isEmpty(value) || value.length <= maxlength, value);
+      // this is the old expression. commit : https://github.com/angular/angular.js/commit/cdc4d485a6daa0c74e5d07d8def2a3ee68d93d13#diff-c244afd8def7f268b16ee91a0341c4b2R514
+      var oldExp = !ctrl.$isEmpty(value) && value.length > maxlength;
+      // and now I just deny it.
+      return validate(ctrl, 'maxlength', !oldExp, value);
     };
 
     ctrl.$parsers.push(maxLengthValidator);
