@@ -3789,10 +3789,18 @@ describe('$compile', function() {
         });
 
         inject(function($compile, $rootScope) {
+          var message = 'Illegal use of ngTransclude directive in the template! No parent ' +
+                        'directive that requires a transclusion found. Element: <div class="bar" ' +
+                        'ng-transclude="">';
+          if (msie <= 8) {
+            // MSIE ヽ(｀Д´)ﾉ
+            message = 'Illegal use of ngTransclude directive in the template! No parent ' +
+                      'directive that requires a transclusion found. Element: <div class=bar ' +
+                      'ng-transclude>';
+          }
           expect(function() {
             $compile('<div trans-foo>content</div>')($rootScope);
-          }).toThrowMinErr('ngTransclude', 'orphan',
-              'Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: <div class="bar" ng-transclude="">');
+          }).toThrowMinErr('ngTransclude', 'orphan', message);
         });
       });
 
@@ -3824,12 +3832,17 @@ describe('$compile', function() {
               // This ng-transclude is invalid. It should throw an error.
               '<div class="bar" ng-transclude></div>' +
             '</div>');
-
+          var message = 'Illegal use of ngTransclude directive in the template! No parent directive that '
+                      + 'requires a transclusion found. Element: <div class="bar" ng-transclude="">';
+          if (msie <= 8) {
+            // MSIE ヽ(｀Д´)ﾉ
+            message = 'Illegal use of ngTransclude directive in the template! No parent directive that '
+                    + 'requires a transclusion found. Element: <div class=bar ng-transclude>';
+          }
           expect(function() {
             element = $compile('<div trans-foo>content</div>')($rootScope);
             $rootScope.$apply();
-          }).toThrowMinErr('ngTransclude', 'orphan',
-              'Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: <div class="bar" ng-transclude="">');
+          }).toThrowMinErr('ngTransclude', 'orphan', message);
         });
       });
 
@@ -4134,25 +4147,25 @@ describe('$compile', function() {
           }));
 
           $compileProvider.directive('transAsync', valueFn({
-            restrict: 'E',
+            restrict: 'A',
             templateUrl: 'transAsync',
             transclude: true
           }));
 
           $compileProvider.directive('iso', valueFn({
-            restrict: 'E',
+            restrict: 'A',
             transclude: true,
-            template: '<trans><span ng-transclude></span></trans>',
+            template: '<div trans><span ng-transclude></span></div>',
             scope: {}
           }));
           $compileProvider.directive('isoAsync1', valueFn({
-            restrict: 'E',
+            restrict: 'A',
             transclude: true,
-            template: '<trans-async><span ng-transclude></span></trans-async>',
+            template: '<div trans-async><span ng-transclude></span></div>',
             scope: {}
           }));
           $compileProvider.directive('isoAsync2', valueFn({
-            restrict: 'E',
+            restrict: 'A',
             transclude: true,
             templateUrl: 'isoAsync',
             scope: {}
@@ -4161,14 +4174,14 @@ describe('$compile', function() {
 
         beforeEach(inject(function($templateCache) {
           $templateCache.put('transAsync', '<div ng-transclude></div>');
-          $templateCache.put('isoAsync', '<trans-async><span ng-transclude></span></trans-async>');
+          $templateCache.put('isoAsync', '<div trans-async><span ng-transclude></span></div>');
         }));
 
 
         it('should pass the outer scope to the transclude on the isolated template sync-sync', inject(function($compile, $rootScope) {
 
           $rootScope.val = 'transcluded content';
-          element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+          element = $compile('<div iso><span ng-bind="val"></span></div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('transcluded content');
         }));
@@ -4176,7 +4189,7 @@ describe('$compile', function() {
         it('should pass the outer scope to the transclude on the isolated template async-sync', inject(function($compile, $rootScope) {
 
           $rootScope.val = 'transcluded content';
-          element = $compile('<iso-async1><span ng-bind="val"></span></iso-async1>')($rootScope);
+          element = $compile('<div iso-async1><span ng-bind="val"></span></div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('transcluded content');
         }));
@@ -4184,7 +4197,7 @@ describe('$compile', function() {
         it('should pass the outer scope to the transclude on the isolated template async-async', inject(function($compile, $rootScope) {
 
           $rootScope.val = 'transcluded content';
-          element = $compile('<iso-async2><span ng-bind="val"></span></iso-async2>')($rootScope);
+          element = $compile('<div iso-async2><span ng-bind="val"></span></div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('transcluded content');
         }));

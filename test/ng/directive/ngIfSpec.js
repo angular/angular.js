@@ -207,7 +207,7 @@ describe('ngIf and transcludes', function() {
         link: function(scope) {
           scope.val = 'value in iso scope';
         },
-        restrict: 'E',
+        restrict: 'A',
         transclude: true,
         template: '<div ng-if="true">val={{val}}-<div ng-transclude></div></div>',
         scope: {}
@@ -215,7 +215,7 @@ describe('ngIf and transcludes', function() {
     });
     inject(function($compile, $rootScope) {
       $rootScope.val = 'transcluded content';
-      var element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+      var element = $compile('<div iso><span ng-bind="val"></span></div>')($rootScope);
       $rootScope.$digest();
       expect(trim(element.text())).toEqual('val=value in iso scope-transcluded content');
       dealoc(element);
