@@ -4563,6 +4563,57 @@ describe('$compile', function() {
 
       expect(element.text()).toBe('-->|x|');
     }));
+
+
+    // See https://github.com/angular/angular.js/issues/7183
+    it("should pass transclusion through to template of a 'replace' directive", function() {
+      module(function() {
+        directive('transSync', function() {
+          return {
+            transclude: true,
+            link: function(scope, element, attr, ctrl, transclude) {
+
+              expect(transclude).toEqual(jasmine.any(Function));
+
+              transclude(function(child) { element.append(child); });
+            }
+          };
+        });
+
+        directive('trans', function($timeout) {
+          return {
+            transclude: true,
+            link: function(scope, element, attrs, ctrl, transclude) {
+
+              // We use timeout here to simulate how ng-if works
+              $timeout(function()  {
+                transclude(function(child) { element.append(child); });
+              });
+            }
+          };
+        });
+
+        directive('replaceWithTemplate', function() {
+          return {
+            templateUrl: "template.html",
+            replace: true
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope, $templateCache, $timeout) {
+
+        $templateCache.put('template.html', '<div trans-sync>Content To Be Transcluded</div>');
+
+        expect(function() {
+          element = $compile('<div><div trans><div replace-with-template></div></div></div>')($rootScope);
+          $timeout.flush();
+        }).not.toThrow();
+
+        expect(element.text()).toEqual('Content To Be Transcluded');
+      });
+
+    });
   });
 
 
