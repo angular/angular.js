@@ -1,5 +1,15 @@
 'use strict';
 
+function getObjSize(obj) {
+  var i = 0;
+  if (isObject(obj)) {
+    forEach(obj, function() {
+      ++i;
+    });
+  }
+  return i;
+}
+
 describe('Scope', function() {
 
   beforeEach(module(provideLog));
@@ -907,13 +917,73 @@ describe('Scope', function() {
 
 
     it('should broadcast $destroy on rootScope', inject(function($rootScope) {
-      var spy = spyOn(angular, 'noop');
+      var spy = spyOn(angular, 'noop'),
+          one, onei,
+          two, twoi,
+          three, threei,
+          case1 = '', case2 = '', case3 = '', case4 = '';
+      // watchers are cleaned up on destroy
+      first.$on('$destroy', function() { log += 'a';});
+      middle.$on('$destroy', function() { log += 'b';});
+      last.$on('$destroy', function() { log += 'c';});
+
+      one = middle.$new(true);
+      two = middle.$new(true);
+      three = middle.$new(true);
+
+      one.$on('$destroy', function() { case1 += '1';});
+      two.$on('$destroy', function() { case1 += '2';});
+      three.$on('$destroy', function() { case1 += '3';});
+
+      onei = one.$new();
+      twoi = one.$new(true);
+      threei = one.$new();
+
+
+      onei.$on('$destroy', function() { case4 += 'i1';});
+      twoi.$on('$destroy', function() { case4 += '2';});
+      threei.$on('$destroy', function() { case4 += '3';});
+
+      one = first.$new(true);
+      two = first.$new(true);
+      three = first.$new(true);
+
+      one.$on('$destroy', function() { case2 += '2';});
+      two.$on('$destroy', function() { case2 += '2';});
+      three.$on('$destroy', function() { case2 += '3';});
+
+      one = last.$new(true);
+      two = last.$new(true);
+      three = last.$new(true);
+
+      one.$on('$destroy', function() { case3 += '3';});
+      two.$on('$destroy', function() { case3 += '2';});
+      three.$on('$destroy', function() { case3 += '3';});
+
+
       $rootScope.$on('$destroy', angular.noop);
       $rootScope.$destroy();
       $rootScope.$digest();
-      expect(log).toEqual('123');
+      // watchers are removed on destroy so 123 it should not be executed on destroy
+      expect(case1).toEqual('123');
+      expect(case2).toEqual('223');
+      expect(case3).toEqual('323');
+      expect(case4).toEqual('i123');
+
+      expect(log).toEqual('abc');
       expect(spy).toHaveBeenCalled();
       expect($rootScope.$$destroyed).toBe(true);
+      expect(first.$$destroyed).toBe(true);
+      expect(middle.$$destroyed).toBe(true);
+      expect(last.$$destroyed).toBe(true);
+      expect(first.$$watchers.length).toBe(0);
+      expect(middle.$$watchers.length).toBe(0);
+      expect(last.$$watchers.length).toBe(0);
+      expect(getObjSize(first.$$listeners)).toBe(0);
+      expect(getObjSize(middle.$$listeners)).toBe(0);
+      expect(getObjSize(last.$$listeners)).toBe(0);
+      // destroy is nullfiyd
+      expect(getObjSize($rootScope.$$listeners)).toBe(1);
     }));
 
 
@@ -941,7 +1011,6 @@ describe('Scope', function() {
     it('should broadcast the $destroy event', inject(function($rootScope, log) {
       first.$on('$destroy', log.fn('first'));
       first.$new().$on('$destroy', log.fn('first-child'));
-
       first.$destroy();
       expect(log).toEqual('first; first-child');
     }));
@@ -1396,16 +1465,16 @@ describe('Scope', function() {
             spy = jasmine.createSpy();
 
         $rootScope.$on('event1', spy);
-        expect($rootScope.$$listenerCount).toEqual({event1: 1});
+        expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 1});
 
         child1.$on('event1', spy);
-        expect($rootScope.$$listenerCount).toEqual({event1: 2});
-        expect(child1.$$listenerCount).toEqual({event1: 1});
+        expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 2});
+        expect(child1.$$listenerCount).toEqual({$destroy : 2, event1: 1});
 
         child2.$on('event2', spy);
-        expect($rootScope.$$listenerCount).toEqual({event1: 2, event2: 1});
-        expect(child1.$$listenerCount).toEqual({event1: 1, event2: 1});
-        expect(child2.$$listenerCount).toEqual({event2: 1});
+        expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 2, event2: 1});
+        expect(child1.$$listenerCount).toEqual({$destroy : 2, event1: 1, event2: 1});
+        expect(child2.$$listenerCount).toEqual({$destroy : 1, event2: 1});
       }));
 
 
@@ -1444,22 +1513,22 @@ describe('Scope', function() {
               spy = jasmine.createSpy();
 
           $rootScope.$on('event1', spy);
-          expect($rootScope.$$listenerCount).toEqual({event1: 1});
+          expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 1});
 
           child1.$on('event1', spy);
-          expect($rootScope.$$listenerCount).toEqual({event1: 2});
-          expect(child1.$$listenerCount).toEqual({event1: 1});
+          expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 2});
+          expect(child1.$$listenerCount).toEqual({$destroy : 2, event1: 1});
 
           var deregisterEvent2Listener = child2.$on('event2', spy);
-          expect($rootScope.$$listenerCount).toEqual({event1: 2, event2: 1});
-          expect(child1.$$listenerCount).toEqual({event1: 1, event2: 1});
-          expect(child2.$$listenerCount).toEqual({event2: 1});
+          expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 2, event2: 1});
+          expect(child1.$$listenerCount).toEqual({$destroy : 2, event1: 1, event2: 1});
+          expect(child2.$$listenerCount).toEqual({$destroy : 1, event2: 1});
 
           deregisterEvent2Listener();
 
-          expect($rootScope.$$listenerCount).toEqual({event1: 2});
-          expect(child1.$$listenerCount).toEqual({event1: 1});
-          expect(child2.$$listenerCount).toEqual({});
+          expect($rootScope.$$listenerCount).toEqual({$destroy : 2, event1: 2});
+          expect(child1.$$listenerCount).toEqual({$destroy : 2, event1: 1});
+          expect(child2.$$listenerCount).toEqual({$destroy : 1});
         }));
       });
     });

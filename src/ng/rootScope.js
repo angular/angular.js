@@ -171,8 +171,7 @@ function $RootScopeProvider(){
        *
        */
       $new: function(isolate) {
-        var ChildScope,
-            child;
+        var child;
 
         if (isolate) {
           child = new Scope();
@@ -205,6 +204,9 @@ function $RootScopeProvider(){
         } else {
           this.$$childHead = this.$$childTail = child;
         }
+        child.$on('$destroy', function() {
+            child.$destroy(true);
+        });
         return child;
       },
 
@@ -330,6 +332,7 @@ function $RootScopeProvider(){
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
+            destroy,
             watcher = {
               fn: listener,
               last: initWatchVal,
@@ -353,10 +356,17 @@ function $RootScopeProvider(){
         // the while loop reads in reverse order.
         array.unshift(watcher);
 
-        return function deregisterWatch() {
+        function deregisterWatch() {
           arrayRemove(array, watcher);
           lastDirtyWatch = null;
-        };
+        }
+
+        destroy = scope.$on('$destroy', function() {
+            deregisterWatch(); // remove watcher
+            destroy(); // remove event
+        });
+
+        return deregisterWatch;
       },
 
       /**
@@ -803,17 +813,27 @@ function $RootScopeProvider(){
        *
        * Note that, in AngularJS, there is also a `$destroy` jQuery event, which can be used to
        * clean up DOM bindings before an element is removed from the DOM.
+       * @param {boolean} doNotBroadcast required to prevent loop
        */
-      $destroy: function() {
+      $destroy: function(doNotBroadcast) {
         // we can't destroy the root scope or a scope that has been already destroyed
         if (this.$$destroyed) return;
         var parent = this.$parent;
 
-        this.$broadcast('$destroy');
-        this.$$destroyed = true;
+        if (!doNotBroadcast) {
+            this.$broadcast('$destroy');
+            this.$$destroyed = true;
+        }
+
         if (this === $rootScope) return;
 
-        forEach(this.$$listenerCount, bind(null, decrementListenerCount, this));
+        forEach(this.$$listenerCount, function(count, name) {
+            // if we remove $destroy, broadcast will not work
+            // $destroy will be nullifyd by it self
+            if (name !== "$destroy") { // required for broadcasting
+                decrementListenerCount(this, count, name);
+            }
+        }, this);
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
         // not be retained by any of our references and should be eligible for garbage collection)
@@ -830,10 +850,12 @@ function $RootScopeProvider(){
         // - https://code.google.com/p/v8/issues/detail?id=2073#c26
         // - https://github.com/angular/angular.js/issues/6794#issuecomment-38648909
         // - https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
-
-        this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
-            this.$$childTail = this.$root = null;
-
+        if (!doNotBroadcast) { // link is required so children can bubble
+              this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
+                  this.$$childTail = this.$root = null;
+        } else {
+            this.$root = null;
+        }
         // don't reset these to null in case some async task tries to register a listener/watch/task
         this.$$listeners = {};
         this.$$watchers = this.$$asyncQueue = this.$$postDigestQueue = [];
@@ -841,6 +863,7 @@ function $RootScopeProvider(){
         // prevent NPEs since these methods have references to properties we nulled out
         this.$destroy = this.$digest = this.$apply = noop;
         this.$on = this.$watch = this.$watchGroup = function() { return noop; };
+        this.$$destroyed = true; // required to notify child that is destroyed
       },
 
       /**
@@ -1013,6 +1036,8 @@ function $RootScopeProvider(){
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
+
+
         if (!namedListeners) {
           this.$$listeners[name] = namedListeners = [];
         }
@@ -1027,10 +1052,13 @@ function $RootScopeProvider(){
         } while ((current = current.$parent));
 
         var self = this;
-        return function() {
+
+        function detachEvent() {
           namedListeners[indexOf(namedListeners, listener)] = null;
           decrementListenerCount(self, 1, name);
-        };
+        }
+
+        return detachEvent;
       },
 
 
