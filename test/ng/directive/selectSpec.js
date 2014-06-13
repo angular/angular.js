@@ -1352,5 +1352,15 @@ describe('select', function() {
       }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
     });
 
+    it('should become invalid if model length is set to zero in scope', function() {
+      scope.myselect = [];
+      compile('<select name="selection" ng-model="myselect" required multiple>' +
+                '<option selected>A</option><option>B</option></select>');
+      scope.$apply (function() {
+        scope.myselect.length = 0;
+      });
+      expect(element).toBeInvalid();
+    });
+
   });
 });
