@@ -51,6 +51,8 @@ describe('NgModelController', function() {
 
 
   it('should init the properties', function() {
+    expect(ctrl.$untouched).toBe(true);
+    expect(ctrl.$touched).toBe(false);
     expect(ctrl.$dirty).toBe(false);
     expect(ctrl.$pristine).toBe(true);
     expect(ctrl.$valid).toBe(true);
@@ -130,6 +132,28 @@ describe('NgModelController', function() {
       ctrl.$setPristine();
       expect(ctrl.$dirty).toBe(false);
       expect(ctrl.$pristine).toBe(true);
+    });
+  });
+
+  describe('setUntouched', function() {
+
+    it('should set control to its untouched state', function() {
+      ctrl.$setTouched();
+
+      ctrl.$setUntouched();
+      expect(ctrl.$touched).toBe(false);
+      expect(ctrl.$untouched).toBe(true);
+    });
+  });
+
+  describe('setTouched', function() {
+
+    it('should set control to its touched state', function() {
+      ctrl.$setUntouched();
+
+      ctrl.$setTouched();
+      expect(ctrl.$touched).toBe(true);
+      expect(ctrl.$untouched).toBe(false);
     });
   });
 
@@ -261,17 +285,167 @@ describe('NgModelController', function() {
       expect(ctrl.$render).toHaveBeenCalledOnce();
     });
   });
+
+  describe('$validators', function() {
+
+    it('should perform validations when $validate() is called', function() {
+      ctrl.$validators.uppercase = function(value) {
+        return (/^[A-Z]+$/).test(value);
+      };
+
+      ctrl.$modelValue = 'test';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(false);
+
+      ctrl.$modelValue = 'TEST';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(true);
+    });
+
+    it('should perform validations when $validate() is called', function() {
+      ctrl.$validators.uppercase = function(value) {
+        return (/^[A-Z]+$/).test(value);
+      };
+
+      ctrl.$modelValue = 'test';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(false);
+
+      ctrl.$modelValue = 'TEST';
+      ctrl.$validate();
+
+      expect(ctrl.$valid).toBe(true);
+    });
+
+    it('should always perform validations using the parsed model value', function() {
+      var captures;
+      ctrl.$validators.raw = function() {
+        captures = arguments;
+        return captures[0];
+      };
+
+      ctrl.$parsers.push(function(value) {
+        return value.toUpperCase();
+      });
+
+      ctrl.$setViewValue('my-value');
+
+      expect(captures).toEqual(['MY-VALUE', 'my-value']);
+    });
+
+    it('should always perform validations using the formatted view value', function() {
+      var captures;
+      ctrl.$validators.raw = function() {
+        captures = arguments;
+        return captures[0];
+      };
+
+      ctrl.$formatters.push(function(value) {
+        return value + '...';
+      });
+
+      scope.$apply(function() {
+        scope.value = 'matias';
+      });
+
+      expect(captures).toEqual(['matias', 'matias...']);
+    });
+
+    it('should only perform validations if the view value is different', function() {
+      var count = 0;
+      ctrl.$validators.countMe = function() {
+        count++;
+      };
+
+      ctrl.$setViewValue('my-value');
+      expect(count).toBe(1);
+
+      ctrl.$setViewValue('my-value');
+      expect(count).toBe(1);
+
+      ctrl.$setViewValue('your-value');
+      expect(count).toBe(2);
+    });
+
+    it('should perform validations twice each time the model value changes within a digest', function() {
+      var count = 0;
+      ctrl.$validators.number = function(value) {
+        count++;
+        return (/^\d+$/).test(value);
+      };
+
+      function val(v) {
+        scope.$apply(function() {
+          scope.value = v;
+        });
+      }
+
+      val('');
+      expect(count).toBe(1);
+
+      val(1);
+      expect(count).toBe(2);
+
+      val(1);
+      expect(count).toBe(2);
+
+      val('');
+      expect(count).toBe(3);
+    });
+
+    it('should only validate to true if all validations are true', function() {
+      var curry = function(v) {
+        return function() {
+          return v;
+        };
+      };
+
+      ctrl.$validators.a = curry(true);
+      ctrl.$validators.b = curry(true);
+      ctrl.$validators.c = curry(false);
+
+      ctrl.$validate();
+      expect(ctrl.$valid).toBe(false);
+
+      ctrl.$validators.c = curry(true);
+
+      ctrl.$validate();
+      expect(ctrl.$valid).toBe(true);
+    });
+
+    it('should register invalid validations on the $error object', function() {
+      var curry = function(v) {
+        return function() {
+          return v;
+        };
+      };
+
+      ctrl.$validators.unique = curry(false);
+      ctrl.$validators.tooLong = curry(false);
+      ctrl.$validators.notNumeric = curry(true);
+
+      ctrl.$validate();
+
+      expect(ctrl.$error.unique).toBe(true);
+      expect(ctrl.$error.tooLong).toBe(true);
+      expect(ctrl.$error.notNumeric).not.toBe(true);
+    });
+  });
 });
 
 describe('ngModel', function() {
 
-  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty)',
+  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
       inject(function($compile, $rootScope, $sniffer) {
     var element = $compile('<input type="email" ng-model="value" />')($rootScope);
 
     $rootScope.$digest();
     expect(element).toBeValid();
     expect(element).toBePristine();
+    expect(element).toBeUntouched();
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
@@ -297,6 +471,9 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
+    browserTrigger(element, 'blur');
+    expect(element).toBeTouched();
+
     dealoc(element);
   }));
 
@@ -307,6 +484,23 @@ describe('ngModel', function() {
 
     expect(element).toBeInvalid();
     expect(element).toHaveClass('ng-invalid-required');
+  }));
+
+  it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
+    var element = $compile('<form name="myForm">' +
+                             '<input name="myControl" ng-model="value" >' +
+                           '</form>')($rootScope);
+    var inputElm = element.find('input');
+    var control = $rootScope.myForm.myControl;
+
+    expect(control.$touched).toBe(false);
+    expect(control.$untouched).toBe(true);
+
+    browserTrigger(inputElm, 'blur');
+    expect(control.$touched).toBe(true);
+    expect(control.$untouched).toBe(false);
+
+    dealoc(element);
   }));
 
 
@@ -1137,12 +1331,59 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
     });
 
+    it('should perform validations when the ngPattern scope value changes', function() {
+      scope.regexp = /^[a-z]+$/;
+      compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
 
-    it('should throw an error when scope pattern is invalid', function() {
+      changeInputValueTo('abcdef');
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('123');
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.regexp = /^\d+$/;
+      });
+
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('abcdef');
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.regexp = '';
+      });
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should register "pattern" with the model validations when the pattern attribute is used', function() {
+      compileInput('<input type="text" name="input" ng-model="value" pattern="^\\d+$" />');
+
+      changeInputValueTo('abcd');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.pattern).toBe(true);
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeValid();
+      expect(scope.form.input.$error.pattern).not.toBe(true);
+    });
+
+    it('should not throw an error when scope pattern can\'t be found', function() {
       expect(function() {
         compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
         scope.$apply(function() {
-          scope.fooRegexp = '/...';
+          scope.foo = 'bar';
+        });
+      }).not.toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+    });
+
+    it('should throw an error when the scope pattern is not a regular expression', function() {
+      expect(function() {
+        compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
+        scope.$apply(function() {
+          scope.fooRegexp = {};
+          scope.foo = 'bar';
         });
       }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
@@ -1151,14 +1392,14 @@ describe('input', function() {
 
   describe('minlength', function() {
 
-    it('should invalid shorter than given minlength', function() {
+    it('should invalidate values that are shorter than the given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
-      expect(scope.value).toBeUndefined();
+      expect(inputElm).toBeInvalid();
 
       changeInputValueTo('aaa');
-      expect(scope.value).toBe('aaa');
+      expect(inputElm).toBeValid();
     });
 
     it('should listen on ng-minlength when minlength is observed', function() {
@@ -1174,19 +1415,37 @@ describe('input', function() {
 
       expect(value).toBe(5);
     });
+
+    it('should observe the standard minlength attribute and register it as a validator on the model', function() {
+      compileInput('<input type="text" name="input" ng-model="value" minlength="{{ min }}" />');
+      scope.$apply(function() {
+        scope.min = 10;
+      });
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.minlength).toBe(true);
+
+      scope.$apply(function() {
+        scope.min = 5;
+      });
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.input.$error.minlength).not.toBe(true);
+    });
   });
 
 
   describe('maxlength', function() {
 
-    it('should invalid shorter than given maxlength', function() {
+    it('should invalidate values that are longer than the given maxlength', function() {
       compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
-      expect(scope.value).toBeUndefined();
+      expect(inputElm).toBeInvalid();
 
       changeInputValueTo('aaa');
-      expect(scope.value).toBe('aaa');
+      expect(inputElm).toBeValid();
     });
 
     it('should listen on ng-maxlength when maxlength is observed', function() {
@@ -1201,6 +1460,24 @@ describe('input', function() {
       });
 
       expect(value).toBe(10);
+    });
+
+    it('should observe the standard maxlength attribute and register it as a validator on the model', function() {
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
+      scope.$apply(function() {
+        scope.max = 1;
+      });
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.maxlength).toBe(true);
+
+      scope.$apply(function() {
+        scope.max = 6;
+      });
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.input.$error.maxlength).not.toBe(true);
     });
   });
 
@@ -2415,7 +2692,7 @@ describe('input', function() {
       compileInput('<input type="text" ng-model="name" name="alias" required />');
 
       scope.$apply(function() {
-        scope.name = '';
+        scope.name = null;
       });
 
       expect(inputElm).toBeInvalid();
@@ -2685,6 +2962,22 @@ describe('NgModel animations', function() {
     var animations = findElementAnimations(input, $animate.queue);
     assertValidAnimation(animations[0], 'removeClass', 'ng-dirty');
     assertValidAnimation(animations[1], 'addClass', 'ng-pristine');
+  }));
+
+  it('should trigger an animation when untouched', inject(function($animate) {
+    model.$setUntouched();
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'setClass', 'ng-untouched');
+    expect(animations[0].args[2]).toBe('ng-touched');
+  }));
+
+  it('should trigger an animation when touched', inject(function($animate) {
+    model.$setTouched();
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'setClass', 'ng-touched', 'ng-untouched');
+    expect(animations[0].args[2]).toBe('ng-untouched');
   }));
 
   it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {

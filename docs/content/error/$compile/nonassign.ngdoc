@@ -16,7 +16,7 @@ myModule.directive('myDirective', function factory() {
   return {
     ...
     scope: {
-      'bind': '=localValue'
+      localValue: '=bind'
     }
     ...
   }

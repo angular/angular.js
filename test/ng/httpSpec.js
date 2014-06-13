@@ -741,6 +741,25 @@ describe('$http', function() {
 
         $httpBackend.flush();
       }));
+
+      it('should check the cache before checking the XSRF cookie', inject(function($browser, $cacheFactory) {
+        var testCache = $cacheFactory('testCache'),
+            executionOrder = [];
+
+        spyOn($browser, 'cookies').andCallFake(function() {
+          executionOrder.push('cookies');
+          return {'XSRF-TOKEN':'foo'};
+        });
+        spyOn(testCache, 'get').andCallFake(function() {
+          executionOrder.push('cache');
+        });
+
+        $httpBackend.expect('GET', '/url', undefined).respond('');
+        $http({url: '/url', method: 'GET', cache: testCache});
+        $httpBackend.flush();
+
+        expect(executionOrder).toEqual(['cache', 'cookies']);
+      }));
     });
 
 

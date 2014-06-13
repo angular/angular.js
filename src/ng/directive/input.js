@@ -5,7 +5,9 @@
     -VALID_CLASS,
     -INVALID_CLASS,
     -PRISTINE_CLASS,
-    -DIRTY_CLASS
+    -DIRTY_CLASS,
+    -UNTOUCHED_CLASS,
+    -TOUCHED_CLASS
 */
 
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
@@ -973,56 +975,6 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$render = function() {
     element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
   };
-
-  // pattern validator
-  if (attr.ngPattern) {
-    var regexp, patternExp = attr.ngPattern;
-    attr.$observe('pattern', function(regex) {
-      if(isString(regex)) {
-        var match = regex.match(REGEX_STRING_REGEXP);
-        if(match) {
-          regex = new RegExp(match[1], match[2]);
-        }
-      }
-
-      if (regex && !regex.test) {
-        throw minErr('ngPattern')('noregexp',
-          'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
-          regex, startingTag(element));
-      }
-
-      regexp = regex || undefined;
-    });
-
-    var patternValidator = function(value) {
-      return validate(ctrl, 'pattern', ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value), value);
-    };
-
-    ctrl.$formatters.push(patternValidator);
-    ctrl.$parsers.push(patternValidator);
-  }
-
-  // min length validator
-  if (attr.ngMinlength) {
-    var minlength = int(attr.ngMinlength);
-    var minLengthValidator = function(value) {
-      return validate(ctrl, 'minlength', ctrl.$isEmpty(value) || value.length >= minlength, value);
-    };
-
-    ctrl.$parsers.push(minLengthValidator);
-    ctrl.$formatters.push(minLengthValidator);
-  }
-
-  // max length validator
-  if (attr.ngMaxlength) {
-    var maxlength = int(attr.ngMaxlength);
-    var maxLengthValidator = function(value) {
-      return validate(ctrl, 'maxlength', ctrl.$isEmpty(value) || value.length <= maxlength, value);
-    };
-
-    ctrl.$parsers.push(maxLengthValidator);
-    ctrl.$formatters.push(maxLengthValidator);
-  }
 }
 
 function weekParser(isoWeek) {
@@ -1277,6 +1229,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *    patterns defined as scope expressions.
  * @param {string=} ngChange Angular expression to be executed when input changes due to user
  *    interaction with the input element.
+ * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
  */
 
 
@@ -1406,7 +1359,9 @@ var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sni
 var VALID_CLASS = 'ng-valid',
     INVALID_CLASS = 'ng-invalid',
     PRISTINE_CLASS = 'ng-pristine',
-    DIRTY_CLASS = 'ng-dirty';
+    DIRTY_CLASS = 'ng-dirty',
+    UNTOUCHED_CLASS = 'ng-untouched',
+    TOUCHED_CLASS = 'ng-touched';
 
 /**
  * @ngdoc type
@@ -1435,12 +1390,20 @@ var VALID_CLASS = 'ng-valid',
  * ngModel.$formatters.push(formatter);
  * ```
  *
+ * @property {Object.<string, function>} $validators A collection of validators that are applied
+ *      whenever the model value changes. The key value within the object refers to the name of the
+ *      validator while the function refers to the validation operation. The validation operation is
+ *      provided with the model value as an argument and must return a true or false value depending
+ *      on the response of that validation.
+ *
  * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
  *     view value has changed. It is called with no arguments, and its return value is ignored.
  *     This can be used in place of additional $watches against the model value.
  *
  * @property {Object} $error An object hash with all errors as keys.
  *
+ * @property {boolean} $untouched True if control has not lost focus yet.
+ * @property {boolean} $touched True if control has lost focus.
  * @property {boolean} $pristine True if user has not interacted with the control yet.
  * @property {boolean} $dirty True if user has already interacted with the control.
  * @property {boolean} $valid True if there is no error.
@@ -1551,9 +1514,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
+  this.$validators = {};
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
+  this.$untouched = true;
+  this.$touched = false;
   this.$pristine = true;
   this.$dirty = false;
   this.$valid = true;
@@ -1608,7 +1574,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
 
   // Setup initial state of the control
-  $element.addClass(PRISTINE_CLASS);
+  $element
+    .addClass(PRISTINE_CLASS)
+    .addClass(UNTOUCHED_CLASS);
   toggleValidCss(true);
 
   // convenience method for easy toggling of classes
@@ -1626,7 +1594,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * Change the validity state, and notifies the form when the control changes validity. (i.e. it
    * does not notify form if given validator is already marked as invalid).
    *
-   * This method should be called by validators - i.e. the parser or formatter functions.
+   * This method can be called within $parsers/$formatters. However, if possible, please use the
+   *        `ngModel.$validators` pipeline which is designed to handle validations with true/false values.
    *
    * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
    *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
@@ -1669,13 +1638,50 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * Sets the control to its pristine state.
    *
    * This method can be called to remove the 'ng-dirty' class and set the control to its pristine
-   * state (ng-pristine class).
+   * state (ng-pristine class). A model is considered to be pristine when the model has not been changed
+   * from when first compiled within then form.
    */
   this.$setPristine = function () {
     ctrl.$dirty = false;
     ctrl.$pristine = true;
     $animate.removeClass($element, DIRTY_CLASS);
     $animate.addClass($element, PRISTINE_CLASS);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setUntouched
+   *
+   * @description
+   * Sets the control to its untouched state.
+   *
+   * This method can be called to remove the 'ng-touched' class and set the control to its
+   * untouched state (ng-untouched class). Upon compilation, a model is set as untouched
+   * by default, however this function can be used to restore that state if the model has
+   * already been touched by the user.
+   */
+  this.$setUntouched = function() {
+    ctrl.$touched = false;
+    ctrl.$untouched = true;
+    $animate.setClass($element, UNTOUCHED_CLASS, TOUCHED_CLASS);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setTouched
+   *
+   * @description
+   * Sets the control to its touched state.
+   *
+   * This method can be called to remove the 'ng-untouched' class and set the control to its
+   * touched state (ng-touched class). A model is considered to be touched when the user has
+   * first interacted (focussed) on the model input element and then shifted focus away (blurred)
+   * from the input element.
+   */
+  this.$setTouched = function() {
+    ctrl.$touched = true;
+    ctrl.$untouched = false;
+    $animate.setClass($element, TOUCHED_CLASS, UNTOUCHED_CLASS);
   };
 
   /**
@@ -1745,6 +1751,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc method
+   * @name ngModel.NgModelController#$validate
+   *
+   * @description
+   * Runs each of the registered validations set on the $validators object.
+   */
+  this.$validate = function() {
+    this.$$runValidators(ctrl.$modelValue, ctrl.$viewValue);
+  };
+
+  this.$$runValidators = function(modelValue, viewValue) {
+    forEach(ctrl.$validators, function(fn, name) {
+      ctrl.$setValidity(name, fn(modelValue, viewValue));
+    });
+  };
+
+  /**
+   * @ngdoc method
    * @name ngModel.NgModelController#$commitViewValue
    *
    * @description
@@ -1755,12 +1778,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * usually handles calling this in response to input events.
    */
   this.$commitViewValue = function() {
-    var value = ctrl.$viewValue;
+    var viewValue = ctrl.$viewValue;
+
     $timeout.cancel(pendingDebounce);
-    if (ctrl.$$lastCommittedViewValue === value) {
+    if (ctrl.$$lastCommittedViewValue === viewValue) {
       return;
     }
-    ctrl.$$lastCommittedViewValue = value;
+    ctrl.$$lastCommittedViewValue = viewValue;
 
     // change to dirty
     if (ctrl.$pristine) {
@@ -1771,13 +1795,19 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       parentForm.$setDirty();
     }
 
+    var modelValue = viewValue;
     forEach(ctrl.$parsers, function(fn) {
-      value = fn(value);
+      modelValue = fn(modelValue);
     });
 
-    if (ctrl.$modelValue !== value) {
-      ctrl.$modelValue = value;
-      ngModelSet($scope, value);
+    if (ctrl.$modelValue !== modelValue &&
+        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
+
+      ctrl.$$runValidators(modelValue, viewValue);
+      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
+      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+
+      ngModelSet($scope, ctrl.$modelValue);
       forEach(ctrl.$viewChangeListeners, function(listener) {
         try {
           listener();
@@ -1851,26 +1881,31 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   $scope.$watch(function ngModelWatch() {
-    var value = ngModelGet($scope);
+    var modelValue = ngModelGet($scope);
 
     // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== value) {
+    if (ctrl.$modelValue !== modelValue &&
+        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
 
-      ctrl.$modelValue = value;
+      var viewValue = modelValue;
       while(idx--) {
-        value = formatters[idx](value);
+        viewValue = formatters[idx](viewValue);
       }
 
-      if (ctrl.$viewValue !== value) {
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = value;
+      ctrl.$$runValidators(modelValue, viewValue);
+      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
+      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+
+      if (ctrl.$viewValue !== viewValue) {
+        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
         ctrl.$render();
       }
     }
 
-    return value;
+    return modelValue;
   });
 }];
 
@@ -1891,8 +1926,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * - Binding the view into the model, which other directives such as `input`, `textarea` or `select`
  *   require.
  * - Providing validation behavior (i.e. required, number, email, url).
- * - Keeping the state of the control (valid/invalid, dirty/pristine, validation errors).
- * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`) including animations.
+ * - Keeping the state of the control (valid/invalid, dirty/pristine, touched/untouched, validation errors).
+ * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`, `ng-touched`, `ng-untouched`) including animations.
  * - Registering the control with its parent {@link ng.directive:form form}.
  *
  * Note: `ngModel` will try to bind to the property given by evaluating the expression on the
@@ -2013,6 +2048,12 @@ var ngModelDirective = function() {
             });
           });
         }
+
+        element.on('blur', function(ev) {
+          scope.$apply(function() {
+            modelCtrl.$setTouched();
+          });
+        });
       }
     }
   };
@@ -2094,22 +2135,80 @@ var requiredDirective = function() {
       if (!ctrl) return;
       attr.required = true; // force truthy in case we are on non input element
 
-      var validator = function(value) {
-        if (attr.required && ctrl.$isEmpty(value)) {
-          ctrl.$setValidity('required', false);
-          return;
-        } else {
-          ctrl.$setValidity('required', true);
-          return value;
-        }
+      ctrl.$validators.required = function(modelValue, viewValue) {
+        return !attr.required || !ctrl.$isEmpty(viewValue);
       };
 
-      ctrl.$formatters.push(validator);
-      ctrl.$parsers.unshift(validator);
-
       attr.$observe('required', function() {
-        validator(ctrl.$viewValue);
+        ctrl.$validate();
       });
+    }
+  };
+};
+
+
+var patternDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var regexp, patternExp = attr.ngPattern || attr.pattern;
+      attr.$observe('pattern', function(regex) {
+        if(isString(regex) && regex.length > 0) {
+          regex = new RegExp(regex);
+        }
+
+        if (regex && !regex.test) {
+          throw minErr('ngPattern')('noregexp',
+            'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
+            regex, startingTag(elm));
+        }
+
+        regexp = regex || undefined;
+        ctrl.$validate();
+      });
+
+      ctrl.$validators.pattern = function(value) {
+        return ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value);
+      };
+    }
+  };
+};
+
+
+var maxlengthDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var maxlength = 0;
+      attr.$observe('maxlength', function(value) {
+        maxlength = int(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.maxlength = function(value) {
+        return ctrl.$isEmpty(value) || value.length <= maxlength;
+      };
+    }
+  };
+};
+
+var minlengthDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var minlength = 0;
+      attr.$observe('minlength', function(value) {
+        minlength = int(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.minlength = function(value) {
+        return ctrl.$isEmpty(value) || value.length >= minlength;
+      };
     }
   };
 };

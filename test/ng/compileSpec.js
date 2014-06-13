@@ -1989,6 +1989,25 @@ describe('$compile', function() {
           })
         );
 
+        it('should not allow more than one isolate scope creation per element regardless of directive priority', function() {
+          module(function($compileProvider) {
+            $compileProvider.directive('highPriorityScope', function() {
+              return {
+                restrict: 'C',
+                priority: 1,
+                scope: true,
+                link: function() {}
+              };
+            });
+          });
+          inject(function($compile) {
+            expect(function(){
+              $compile('<div class="iscope-a; high-priority-scope"></div>');
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [highPriorityScope, iscopeA] asking for new/isolated scope on: ' +
+                    '<div class="iscope-a; high-priority-scope">');
+          });
+        });
+
 
         it('should create new scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
