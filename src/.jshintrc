@@ -34,7 +34,6 @@
     "nodeName_": false,
     "uid": false,
 
-    "REGEX_STRING_REGEXP" : false,
     "lowercase": false,
     "uppercase": false,
     "manualLowercase": false,

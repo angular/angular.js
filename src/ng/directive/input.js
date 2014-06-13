@@ -975,56 +975,6 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$render = function() {
     element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
   };
-
-  // pattern validator
-  if (attr.ngPattern) {
-    var regexp, patternExp = attr.ngPattern;
-    attr.$observe('pattern', function(regex) {
-      if(isString(regex)) {
-        var match = regex.match(REGEX_STRING_REGEXP);
-        if(match) {
-          regex = new RegExp(match[1], match[2]);
-        }
-      }
-
-      if (regex && !regex.test) {
-        throw minErr('ngPattern')('noregexp',
-          'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
-          regex, startingTag(element));
-      }
-
-      regexp = regex || undefined;
-    });
-
-    var patternValidator = function(value) {
-      return validate(ctrl, 'pattern', ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value), value);
-    };
-
-    ctrl.$formatters.push(patternValidator);
-    ctrl.$parsers.push(patternValidator);
-  }
-
-  // min length validator
-  if (attr.ngMinlength) {
-    var minlength = int(attr.ngMinlength);
-    var minLengthValidator = function(value) {
-      return validate(ctrl, 'minlength', ctrl.$isEmpty(value) || value.length >= minlength, value);
-    };
-
-    ctrl.$parsers.push(minLengthValidator);
-    ctrl.$formatters.push(minLengthValidator);
-  }
-
-  // max length validator
-  if (attr.ngMaxlength) {
-    var maxlength = int(attr.ngMaxlength);
-    var maxLengthValidator = function(value) {
-      return validate(ctrl, 'maxlength', ctrl.$isEmpty(value) || value.length <= maxlength, value);
-    };
-
-    ctrl.$parsers.push(maxLengthValidator);
-    ctrl.$formatters.push(maxLengthValidator);
-  }
 }
 
 function weekParser(isoWeek) {
@@ -1440,6 +1390,12 @@ var VALID_CLASS = 'ng-valid',
  * ngModel.$formatters.push(formatter);
  * ```
  *
+ * @property {Object.<string, function>} $validators A collection of validators that are applied
+ *      whenever the model value changes. The key value within the object refers to the name of the
+ *      validator while the function refers to the validation operation. The validation operation is
+ *      provided with the model value as an argument and must return a true or false value depending
+ *      on the response of that validation.
+ *
  * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
  *     view value has changed. It is called with no arguments, and its return value is ignored.
  *     This can be used in place of additional $watches against the model value.
@@ -1558,6 +1514,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
+  this.$validators = {};
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
@@ -1637,7 +1594,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * Change the validity state, and notifies the form when the control changes validity. (i.e. it
    * does not notify form if given validator is already marked as invalid).
    *
-   * This method should be called by validators - i.e. the parser or formatter functions.
+   * This method can be called within $parsers/$formatters. However, if possible, please use the
+   *        `ngModel.$validators` pipeline which is designed to handle validations with true/false values.
    *
    * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
    *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
@@ -1788,6 +1746,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc method
+   * @name ngModel.NgModelController#$validate
+   *
+   * @description
+   * Runs each of the registered validations set on the $validators object.
+   */
+  this.$validate = function() {
+    this.$$runValidators(ctrl.$modelValue, ctrl.$viewValue);
+  };
+
+  this.$$runValidators = function(modelValue, viewValue) {
+    forEach(ctrl.$validators, function(fn, name) {
+      ctrl.$setValidity(name, fn(modelValue, viewValue));
+    });
+  };
+
+  /**
+   * @ngdoc method
    * @name ngModel.NgModelController#$commitViewValue
    *
    * @description
@@ -1798,12 +1773,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * usually handles calling this in response to input events.
    */
   this.$commitViewValue = function() {
-    var value = ctrl.$viewValue;
+    var viewValue = ctrl.$viewValue;
+
     $timeout.cancel(pendingDebounce);
-    if (ctrl.$$lastCommittedViewValue === value) {
+    if (ctrl.$$lastCommittedViewValue === viewValue) {
       return;
     }
-    ctrl.$$lastCommittedViewValue = value;
+    ctrl.$$lastCommittedViewValue = viewValue;
 
     // change to dirty
     if (ctrl.$pristine) {
@@ -1814,13 +1790,19 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       parentForm.$setDirty();
     }
 
+    var modelValue = viewValue;
     forEach(ctrl.$parsers, function(fn) {
-      value = fn(value);
+      modelValue = fn(modelValue);
     });
 
-    if (ctrl.$modelValue !== value) {
-      ctrl.$modelValue = value;
-      ngModelSet($scope, value);
+    if (ctrl.$modelValue !== modelValue &&
+        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
+
+      ctrl.$$runValidators(modelValue, viewValue);
+      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
+      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+
+      ngModelSet($scope, ctrl.$modelValue);
       forEach(ctrl.$viewChangeListeners, function(listener) {
         try {
           listener();
@@ -1894,26 +1876,31 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   $scope.$watch(function ngModelWatch() {
-    var value = ngModelGet($scope);
+    var modelValue = ngModelGet($scope);
 
     // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== value) {
+    if (ctrl.$modelValue !== modelValue &&
+        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
 
-      ctrl.$modelValue = value;
+      var viewValue = modelValue;
       while(idx--) {
-        value = formatters[idx](value);
+        viewValue = formatters[idx](viewValue);
       }
 
-      if (ctrl.$viewValue !== value) {
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = value;
+      ctrl.$$runValidators(modelValue, viewValue);
+      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
+      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+
+      if (ctrl.$viewValue !== viewValue) {
+        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
         ctrl.$render();
       }
     }
 
-    return value;
+    return modelValue;
   });
 }];
 
@@ -2143,22 +2130,80 @@ var requiredDirective = function() {
       if (!ctrl) return;
       attr.required = true; // force truthy in case we are on non input element
 
-      var validator = function(value) {
-        if (attr.required && ctrl.$isEmpty(value)) {
-          ctrl.$setValidity('required', false);
-          return;
-        } else {
-          ctrl.$setValidity('required', true);
-          return value;
-        }
+      ctrl.$validators.required = function(modelValue, viewValue) {
+        return !attr.required || !ctrl.$isEmpty(viewValue);
       };
 
-      ctrl.$formatters.push(validator);
-      ctrl.$parsers.unshift(validator);
-
       attr.$observe('required', function() {
-        validator(ctrl.$viewValue);
+        ctrl.$validate();
       });
+    }
+  };
+};
+
+
+var patternDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var regexp, patternExp = attr.ngPattern || attr.pattern;
+      attr.$observe('pattern', function(regex) {
+        if(isString(regex) && regex.length > 0) {
+          regex = new RegExp(regex);
+        }
+
+        if (regex && !regex.test) {
+          throw minErr('ngPattern')('noregexp',
+            'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
+            regex, startingTag(elm));
+        }
+
+        regexp = regex || undefined;
+        ctrl.$validate();
+      });
+
+      ctrl.$validators.pattern = function(value) {
+        return ctrl.$isEmpty(value) || isUndefined(regexp) || regexp.test(value);
+      };
+    }
+  };
+};
+
+
+var maxlengthDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var maxlength = 0;
+      attr.$observe('maxlength', function(value) {
+        maxlength = int(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.maxlength = function(value) {
+        return ctrl.$isEmpty(value) || value.length <= maxlength;
+      };
+    }
+  };
+};
+
+var minlengthDirective = function() {
+  return {
+    require: '?ngModel',
+    link: function(scope, elm, attr, ctrl) {
+      if (!ctrl) return;
+
+      var minlength = 0;
+      attr.$observe('minlength', function(value) {
+        minlength = int(value) || 0;
+        ctrl.$validate();
+      });
+      ctrl.$validators.minlength = function(value) {
+        return ctrl.$isEmpty(value) || value.length >= minlength;
+      };
     }
   };
 };

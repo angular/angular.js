@@ -370,7 +370,7 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
         //special case ngPattern when a literal regular expression value
         //is used as the expression (this way we don't have to watch anything).
         if (ngAttr === "ngPattern" && attr.ngPattern.charAt(0) == "/") {
-          var match = attr.ngPattern.match(REGEX_STRING_REGEXP);
+          var match = attr.ngPattern.match(/^\/(.+)\/([a-z]*)$/);
           if (match) {
             attr.$set("ngPattern", new RegExp(match[1], match[2]));
             return;
