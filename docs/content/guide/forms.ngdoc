@@ -62,6 +62,8 @@ To allow styling of form as well as controls, `ngModel`  adds these CSS classes:
 - `ng-invalid`
 - `ng-pristine`
 - `ng-dirty`
+- `ng-touched`
+- `ng-untouched`
 
 The following example uses the CSS to display validity of each form control.
 In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
