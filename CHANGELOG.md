@@ -1,3 +1,187 @@
+<a name="1.3.0-beta.12"></a>
+# 1.3.0-beta.12 ephemeral-acceleration (2014-06-13)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - ensure transclude works at root of templateUrl
+  ([398053c5](https://github.com/angular/angular.js/commit/398053c56352487751d14ea41b3b892960397019),
+   [#7183](https://github.com/angular/angular.js/issues/7183), [#7772](https://github.com/angular/angular.js/issues/7772))
+  - always error if two directives add isolate-scope and new-scope
+  ([2cde927e](https://github.com/angular/angular.js/commit/2cde927e58c8d1588569d94a797e43cdfbcedaf9),
+   [#4402](https://github.com/angular/angular.js/issues/4402), [#4421](https://github.com/angular/angular.js/issues/4421))
+- **$injector:** report circularity in circular dependency error message
+  ([545d22b4](https://github.com/angular/angular.js/commit/545d22b47006c1efa420ba551d4850affdba8016),
+   [#7500](https://github.com/angular/angular.js/issues/7500))
+- **$parse:** Handle one-time to `null`
+  ([600a41a7](https://github.com/angular/angular.js/commit/600a41a7b65f2dd139664fca6331c40451db75be),
+   [#7743](https://github.com/angular/angular.js/issues/7743), [#7787](https://github.com/angular/angular.js/issues/7787))
+- **NgModel:**
+  - ensure pattern and ngPattern use the same validator
+  ([1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440))
+  - make ngMinlength and ngMaxlength as standalone directives
+  ([26d91b65](https://github.com/angular/angular.js/commit/26d91b653ac224d9d4166fea855346f5e4c4a7b4),
+   [#6750](https://github.com/angular/angular.js/issues/6750))
+  - make sure the ngMinlength and ngMaxlength validators use the $validators pipeline
+  ([5b8e7ecf](https://github.com/angular/angular.js/commit/5b8e7ecfeb722cfc7a5d92f05b57950a2aa6158b),
+   [#6304](https://github.com/angular/angular.js/issues/6304))
+  - make sure the pattern validator uses the $validators pipeline
+  ([e63d4253](https://github.com/angular/angular.js/commit/e63d4253d06ed7d344358e2c0b03311c548bc978))
+  - make sure the required validator uses the $validators pipeline
+  ([e53554a0](https://github.com/angular/angular.js/commit/e53554a0e238cba7a150fd7ccf61e5e4cc0c0426),
+   [#5164](https://github.com/angular/angular.js/issues/5164))
+- **jqLite:** data should store data only on Element and Document nodes
+  ([a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c))
+- **ngResource:** don't convert literal values into Resource objects when isArray is true
+  ([16dfcb61](https://github.com/angular/angular.js/commit/16dfcb61aed28cdef3bfbed540e2deea6d9e9632),
+   [#6314](https://github.com/angular/angular.js/issues/6314), [#7741](https://github.com/angular/angular.js/issues/7741))
+
+
+## Features
+
+- **NgModel:** introduce the $validators pipeline
+  ([a8c7cb81](https://github.com/angular/angular.js/commit/a8c7cb81c9e67b52d5c649bf3d8cec06c5976852))
+- **attrs:** trigger observers for specific ng-attributes
+  ([d9b90d7c](https://github.com/angular/angular.js/commit/d9b90d7c10a8e1bacbee0aeb7e86093cca9e8ed2),
+   [#7758](https://github.com/angular/angular.js/issues/7758))
+- **input:** add $touched and $untouched states
+  ([adcc5a00](https://github.com/angular/angular.js/commit/adcc5a00bf582d2b291c18e99093bb0854f7217c))
+- **ngInclude:** emit $includeContentError when HTTP request fails
+  ([e4419daf](https://github.com/angular/angular.js/commit/e4419daf705d6d2d116ced573f72c24b5c53be1f),
+   [#5803](https://github.com/angular/angular.js/issues/5803))
+
+
+## Performance Improvements
+
+- **$compile:** move ng-binding class stamping for interpolation into compile phase
+  ([35358fdd](https://github.com/angular/angular.js/commit/35358fddc10652ef78c72cba7b7c2d5a810631d5))
+- **$http:** move xsrf cookie check to after cache check in $http
+  ([dd1d189e](https://github.com/angular/angular.js/commit/dd1d189ee785a37fe1d9bddf3818152db6aa210a),
+   [#7717](https://github.com/angular/angular.js/issues/7717))
+- **Scope:** change Scope#id to be a simple number
+  ([8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d))
+- **forEach:** cache array length
+  ([55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5))
+- **isArray:** use native Array.isArray
+  ([751ebc17](https://github.com/angular/angular.js/commit/751ebc17f7fc7be26613db0a3cdee05fc401318b),
+   [#7735](https://github.com/angular/angular.js/issues/7735))
+- **isWindow** optimize internal isWindow call
+  ([b68ac4cb](https://github.com/angular/angular.js/commit/b68ac4cb4c172447ba0022fe6e7ce0ca4cb9407e))
+- **jqLite:**
+  - cache collection length for all methods that work on a single element
+  ([41d2eba5](https://github.com/angular/angular.js/commit/41d2eba5f8322903247280000bfc5e5e8a1c1a3e))
+  - improve performance of jqLite#text
+  ([92489886](https://github.com/angular/angular.js/commit/92489886dcce3bca00fe827aeb0817297b8a175c))
+  - optimize adding nodes to a jqLite collection
+  ([31faeaa7](https://github.com/angular/angular.js/commit/31faeaa7293716251ed437fa54432bb89d9d48de))
+  - optimize element dealocation
+  ([e35abc9d](https://github.com/angular/angular.js/commit/e35abc9d2fac0471cbe8089dc0e33a72b8029ada))
+  - don't use reflection to access expandoId
+  ([ea9a130a](https://github.com/angular/angular.js/commit/ea9a130a43d165f4f4389d01ac409dd3047efcb4))
+- **ngBind:** set the ng-binding class during compilation instead of linking
+  ([fd5f3896](https://github.com/angular/angular.js/commit/fd5f3896764107635310ae52df1d80a6e08fba31))
+- **shallowCopy:** use Object.keys to improve performance
+  ([04468db4](https://github.com/angular/angular.js/commit/04468db44185e3d7968abdb23d77bf623cb5021b))
+
+
+## Breaking Changes
+
+- **$compile:** due to [2cde927e](https://github.com/angular/angular.js/commit/2cde927e58c8d1588569d94a797e43cdfbcedaf9),
+
+
+Requesting isolate scope and any other scope on a single element is an error.
+Before this change, the compiler let two directives request a child scope
+and an isolate scope if the compiler applied them in the order of non-isolate
+scope directive followed by isolate scope directive.
+
+Now the compiler will error regardless of the order.
+
+If you find that your code is now throwing a `$compile:multidir` error,
+check that you do not have directives on the same element that are trying
+to request both an isolate and a non-isolate scope and fix your code.
+
+Closes #4402
+Closes #4421
+- **NgModel:** due to [1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440),
+
+
+If an expression is used on ng-pattern (such as `ng-pattern="exp"`) or on the
+pattern attribute (something like on `pattern="{{ exp }}"`) and the expression
+itself evaluates to a string then the validator will not parse the string as a
+literal regular expression object (a value like `/abc/i`).  Instead, the entire
+string will be created as the regular expression to test against. This means
+that any expression flags will not be placed on the RegExp object. To get around
+this limitation, use a regular expression object as the value for the expression.
+
+    //before
+    $scope.exp = '/abc/i';
+
+    //after
+    $scope.exp = /abc/i;
+- **Scope:** due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
+  Scope#$id is now of time number rather than string. Since the
+id is primarily being used for debugging purposes this change should not affect
+anyone.
+- **forEach:** due to [55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5),
+  forEach will iterate only over the initial number of items in
+the array. So if items are added to the array during the iteration, these won't
+be iterated over during the initial forEach call.
+
+This change also makes our forEach behave more like Array#forEach.
+- **jqLite:** due to [a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c),
+  previously it was possible to set jqLite data on Text/Comment
+nodes, but now that is allowed only on Element and Document nodes just like in
+jQuery. We don't expect that app code actually depends on this accidental feature.
+
+
+
+<a name="1.2.18"></a>
+# 1.2.18 ear-extendability (2014-06-13)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - ensure transclude works at root of templateUrl
+  ([fd420c40](https://github.com/angular/angular.js/commit/fd420c40613d02b3a3f7b14d00a98664518c28f0),
+   [#7183](https://github.com/angular/angular.js/issues/7183), [#7772](https://github.com/angular/angular.js/issues/7772))
+  - bound transclusion to correct scope
+  ([1382d4e8](https://github.com/angular/angular.js/commit/1382d4e88ec486b7749e45e6ccc864b3ec388cfe))
+  - don't pass transcludes to non-transclude templateUrl directives
+  ([b9ddef2a](https://github.com/angular/angular.js/commit/b9ddef2a495b44cb5fe678b8753de0b7a369244d))
+  - don't pass transclude to template of non-transclude directive
+  ([eafba9e2](https://github.com/angular/angular.js/commit/eafba9e2e5ddc668c534e930d83031d2e8dc32b9))
+  - fix nested isolated transclude directives
+  ([bb931097](https://github.com/angular/angular.js/commit/bb9310974b6765c2b87e74ee7b8485a6e9c24740),
+   [#1809](https://github.com/angular/angular.js/issues/1809), [#7499](https://github.com/angular/angular.js/issues/7499))
+  - pass transcludeFn down to nested transclude directives
+  ([8df5f325](https://github.com/angular/angular.js/commit/8df5f3259aa776f28bf3d869fb1c03e10a897c84),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+- **$injector:** report circularity in circular dependency error message
+  ([14e797c1](https://github.com/angular/angular.js/commit/14e797c1a10eabd15bf8e845b62213398bcc0f58),
+   [#7500](https://github.com/angular/angular.js/issues/7500))
+- **ngResource:** don't convert literal values into Resource objects when isArray is true
+  ([f0904cf1](https://github.com/angular/angular.js/commit/f0904cf12e4f01daa2d4fcbb20c762050125ca55),
+   [#6314](https://github.com/angular/angular.js/issues/6314), [#7741](https://github.com/angular/angular.js/issues/7741))
+
+
+## Performance Improvements
+
+- **$compile:** move ng-binding class stamping for interpolation into compile phase
+  ([81b7e5ab](https://github.com/angular/angular.js/commit/81b7e5ab0ee3fea410b16b09144359ceb99f5191))
+- **$http:** move xsrf cookie check to after cache check in $http
+  ([8b86d363](https://github.com/angular/angular.js/commit/8b86d363aa252c3264201b54b57c3e34f9632d45),
+   [#7717](https://github.com/angular/angular.js/issues/7717))
+- **isArray:** use native Array.isArray
+  ([6c14fb1e](https://github.com/angular/angular.js/commit/6c14fb1eb61dc0a0552fbcb2ca3ace11c9a2f6a5))
+- **jqLite:** cache collection length for all methods that work on a single element
+  ([6d418ef5](https://github.com/angular/angular.js/commit/6d418ef5e3a775577996caf0709f79f447f77025))
+- **ngBind:** set the ng-binding class during compilation instead of linking
+  ([1b189027](https://github.com/angular/angular.js/commit/1b1890274e5a75553ddf9915bb23da48800275f9))
+
+
+
 <a name="1.3.0-beta.11"></a>
 # 1.3.0-beta.11 transclusion-deforestation (2014-06-06)
 
