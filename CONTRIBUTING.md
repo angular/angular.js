@@ -271,6 +271,6 @@ You can find out more detailed information about contributing in the
 [ngDocs]: https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
 [plunker]: http://plnkr.co/edit
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
-[unit-testing]: http://docs.angularjs.org/guide/dev_guide.unit-testing
+[unit-testing]: https://docs.angularjs.org/guide/unit-testing
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)
