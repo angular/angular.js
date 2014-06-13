@@ -764,7 +764,7 @@ function $SceProvider() {
 
     /**
      * @ngdoc method
-     * @name $sce#parse
+     * @name $sce#parseAs
      *
      * @description
      * Converts Angular {@link guide/expression expression} into a function.  This is like {@link
