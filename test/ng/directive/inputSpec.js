@@ -293,12 +293,12 @@ describe('NgModelController', function() {
         return (/^[A-Z]+$/).test(value);
       };
 
-      ctrl.$modelValue = 'test';
+      ctrl.$$validateValue = 'test';
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(false);
 
-      ctrl.$modelValue = 'TEST';
+      ctrl.$$validateValue = 'TEST';
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(true);
@@ -309,12 +309,12 @@ describe('NgModelController', function() {
         return (/^[A-Z]+$/).test(value);
       };
 
-      ctrl.$modelValue = 'test';
+      ctrl.$$validateValue = 'test';
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(false);
 
-      ctrl.$modelValue = 'TEST';
+      ctrl.$$validateValue = 'TEST';
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(true);
@@ -844,6 +844,36 @@ describe('input', function() {
       expect(scope.name).toBeUndefined();
       browserTrigger(inputElm, 'blur');
       expect(scope.name).toEqual('a');
+    });
+
+    it('should allow validating before view value is committed', function() {
+      scope.value = 2;
+      compileInput(
+          '<input type="number" ng-model="value" name="alias" max="10" '+
+            'ng-model-options="{ updateOn: \'blur\', validateOn: \'default\' }"'+
+          '/>');
+      changeInputValueTo('20');
+      expect(scope.form.alias.$error.max).toBeTruthy();
+      expect(formElm).toBeDirty();
+      expect(scope.value).toEqual(2);
+      browserTrigger(inputElm, 'blur');
+      expect(scope.value).toBeUndefined();
+    });
+
+    it('should allow defining trigger for validation', function() {
+      scope.value = 2;
+      compileInput(
+          '<input type="number" ng-model="value" name="alias" max="10" '+
+            'ng-model-options="{ updateOn: \'\', validateOn: \'blur\' }"'+
+          '/>');
+      changeInputValueTo('20');
+      expect(scope.form.alias.$error.max).toBeFalsy();
+      browserTrigger(inputElm, 'blur');
+      expect(scope.form.alias.$error.max).toBeTruthy();
+      expect(formElm).toBeDirty();
+      expect(scope.value).toEqual(2);
+      browserTrigger(formElm, 'submit');
+      expect(scope.value).toBeUndefined();
     });
 
     it('should not dirty the input if nothing was changed before updateOn trigger', function() {

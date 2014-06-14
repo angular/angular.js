@@ -1757,13 +1757,43 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * Runs each of the registered validations set on the $validators object.
    */
   this.$validate = function() {
-    this.$$runValidators(ctrl.$modelValue, ctrl.$viewValue);
+    this.$$runValidators(ctrl.$$validateValue, ctrl.$viewValue);
   };
 
   this.$$runValidators = function(modelValue, viewValue) {
     forEach(ctrl.$validators, function(fn, name) {
       ctrl.$setValidity(name, fn(modelValue, viewValue));
     });
+  };
+
+  this.$$validateViewValue = function() {
+    var viewValue = ctrl.$viewValue;
+
+    // change to dirty
+    if (ctrl.$pristine) {
+      ctrl.$dirty = true;
+      ctrl.$pristine = false;
+      $animate.removeClass($element, PRISTINE_CLASS);
+      $animate.addClass($element, DIRTY_CLASS);
+      parentForm.$setDirty();
+    }
+
+    var modelValue = viewValue;
+    forEach(ctrl.$parsers, function(fn) {
+      modelValue = fn(modelValue);
+    });
+
+    if (ctrl.$modelValue !== modelValue &&
+        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
+
+      ctrl.$$runValidators(modelValue, viewValue);
+      ctrl.$$validateValue     = ctrl.$valid ? modelValue : undefined;
+      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+
+      return ctrl.$valid ? modelValue : undefined;
+    }
+
+    return ctrl.$modelValue;
   };
 
   /**
@@ -1786,27 +1816,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
     ctrl.$$lastCommittedViewValue = viewValue;
 
-    // change to dirty
-    if (ctrl.$pristine) {
-      ctrl.$dirty = true;
-      ctrl.$pristine = false;
-      $animate.removeClass($element, PRISTINE_CLASS);
-      $animate.addClass($element, DIRTY_CLASS);
-      parentForm.$setDirty();
-    }
-
-    var modelValue = viewValue;
-    forEach(ctrl.$parsers, function(fn) {
-      modelValue = fn(modelValue);
-    });
-
-    if (ctrl.$modelValue !== modelValue &&
-        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
-
-      ctrl.$$runValidators(modelValue, viewValue);
-      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
-      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
-
+    var modelValue = ctrl.$$validateViewValue();
+    if (ctrl.$modelValue !== modelValue) {
+      ctrl.$modelValue = modelValue;
       ngModelSet($scope, ctrl.$modelValue);
       forEach(ctrl.$viewChangeListeners, function(listener) {
         try {
@@ -1848,6 +1860,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$setViewValue = function(value, trigger) {
     ctrl.$viewValue = value;
+    if (ctrl.$options && ctrl.$options.validateOnDefault) {
+      ctrl.$$validateViewValue();
+    }
     if (!ctrl.$options || ctrl.$options.updateOnDefault) {
       ctrl.$$debounceViewValueCommit(trigger);
     }
@@ -1897,6 +1912,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
       ctrl.$$runValidators(modelValue, viewValue);
       ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
+      ctrl.$$validateValue     = ctrl.$modelValue;
       ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
 
       if (ctrl.$viewValue !== viewValue) {
@@ -2045,6 +2061,13 @@ var ngModelDirective = function() {
           element.on(modelCtrl.$options.updateOn, function(ev) {
             scope.$apply(function() {
               modelCtrl.$$debounceViewValueCommit(ev && ev.type);
+            });
+          });
+        }
+        if (modelCtrl.$options && modelCtrl.$options.validateOn) {
+          element.on(modelCtrl.$options.validateOn, function(ev) {
+            scope.$apply(function() {
+              modelCtrl.$$validateViewValue();
             });
           });
         }
@@ -2504,6 +2527,13 @@ var ngModelOptionsDirective = function() {
           that.$options.updateOnDefault = true;
           return ' ';
         }));
+
+        if (this.$options.validateOn !== undefined) {
+          this.$options.validateOn = trim(this.$options.validateOn.replace(DEFAULT_REGEXP, function() {
+            that.$options.validateOnDefault = true;
+            return ' ';
+          }));
+        }
       } else {
         this.$options.updateOnDefault = true;
       }
