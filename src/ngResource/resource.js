@@ -168,8 +168,7 @@ function shallowClearAndCopy(src, dst) {
  *   { 'get':    {method:'GET'},
  *     'save':   {method:'POST'},
  *     'query':  {method:'GET', isArray:true},
- *     'remove': {method:'DELETE'},
- *     'delete': {method:'DELETE'} };
+ *     'remove': {method:'DELETE'} };
  *   ```
  *
  *   Calling these methods invoke an {@link ng.$http} with the specified http method,
