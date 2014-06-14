@@ -294,27 +294,13 @@ describe('NgModelController', function() {
       };
 
       ctrl.$modelValue = 'test';
+      ctrl.$$invalidModelValue = undefined;
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(false);
 
       ctrl.$modelValue = 'TEST';
-      ctrl.$validate();
-
-      expect(ctrl.$valid).toBe(true);
-    });
-
-    it('should perform validations when $validate() is called', function() {
-      ctrl.$validators.uppercase = function(value) {
-        return (/^[A-Z]+$/).test(value);
-      };
-
-      ctrl.$modelValue = 'test';
-      ctrl.$validate();
-
-      expect(ctrl.$valid).toBe(false);
-
-      ctrl.$modelValue = 'TEST';
+      ctrl.$$invalidModelValue = undefined;
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(true);
@@ -403,6 +389,7 @@ describe('NgModelController', function() {
         };
       };
 
+      ctrl.$modelValue = undefined;
       ctrl.$validators.a = curry(true);
       ctrl.$validators.b = curry(true);
       ctrl.$validators.c = curry(false);
@@ -423,6 +410,7 @@ describe('NgModelController', function() {
         };
       };
 
+      ctrl.$modelValue = undefined;
       ctrl.$validators.unique = curry(false);
       ctrl.$validators.tooLong = curry(false);
       ctrl.$validators.notNumeric = curry(true);
@@ -1489,6 +1477,80 @@ describe('input', function() {
       expect(inputElm).toBeValid();
       expect(scope.form.input.$error.maxlength).not.toBe(true);
     });
+
+    it('should assign the correct model after an observed validator became valid', function() {
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
+
+      scope.$apply(function() {
+        scope.max = 1;
+      });
+      changeInputValueTo('12345');
+      expect(scope.value).toBeUndefined();
+
+      scope.$apply(function() {
+        scope.max = 6;
+      });
+      expect(scope.value).toBe('12345');
+    });
+
+    it('should assign the correct model after an observed validator became invalid', function() {
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
+
+      scope.$apply(function() {
+        scope.max = 6;
+      });
+      changeInputValueTo('12345');
+      expect(scope.value).toBe('12345');
+
+      scope.$apply(function() {
+        scope.max = 1;
+      });
+      expect(scope.value).toBeUndefined();
+    });
+
+    it('should leave the value as invalid if observed maxlength changed, but is still invalid', function() {
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
+      scope.$apply(function() {
+        scope.max = 1;
+      });
+
+      changeInputValueTo('12345');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.maxlength).toBe(true);
+      expect(scope.value).toBeUndefined();
+
+      scope.$apply(function() {
+        scope.max = 3;
+      });
+
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.input.$error.maxlength).toBe(true);
+      expect(scope.value).toBeUndefined();
+    });
+
+    it('should not notify if observed maxlength changed, but is still invalid', function() {
+      compileInput('<input type="text" name="input" ng-model="value" ng-change="ngChangeSpy()" ' +
+                   'maxlength="{{ max }}" />');
+
+      scope.$apply(function() {
+        scope.max = 1;
+      });
+      changeInputValueTo('12345');
+
+      scope.ngChangeSpy = jasmine.createSpy();
+      scope.$apply(function() {
+        scope.max = 3;
+      });
+
+      expect(scope.ngChangeSpy).not.toHaveBeenCalled();
+    });
+
+    it('should leave the model untouched when validating before model initialization', function() {
+      scope.value = '12345';
+      compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
+      expect(scope.value).toBe('12345');
+    });
+
   });
 
 
