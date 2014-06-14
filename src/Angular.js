@@ -879,18 +879,38 @@ function shallowCopy(src, dst) {
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  */
-function equals(o1, o2) {
+function equals(o1, o2, seen_list, comparisons) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2) {
     if (t1 == 'object') {
+      seen_list || (seen_list = []);
+      comparisons || (comparisons = []);
+      var i1 = seen_list.indexOf(o1);
+      var i2 = seen_list.indexOf(o2);
+      if (i1 != -1 && comparisons[i1].indexOf(o2) != -1) {
+          return true;
+      } else {
+        if (i1 == -1) {
+          seen_list.push(o1);
+          comparisons.push([o2]);
+        } else {
+          comparisons[i1].push(o2);
+        }
+        if (i2 == -1) {
+          seen_list.push(o2);
+          comparisons.push([o1]);
+        } else {
+          comparisons[i2].push(o1);
+        }
+      }
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
           for(key=0; key<length; key++) {
-            if (!equals(o1[key], o2[key])) return false;
+            if (!equals(o1[key], o2[key], seen_list, comparisons)) return false;
           }
           return true;
         }
@@ -903,7 +923,7 @@ function equals(o1, o2) {
         keySet = {};
         for(key in o1) {
           if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-          if (!equals(o1[key], o2[key])) return false;
+          if (!equals(o1[key], o2[key], seen_list, comparisons)) return false;
           keySet[key] = true;
         }
         for(key in o2) {
