@@ -654,9 +654,78 @@ describe('angular', function() {
       var log = [];
       var collection = [];
       collection[5] = 'SPARSE';
-      forEach(collection, function (item, index) { log.push(item + index); });
+      forEach(collection, function (item, index) {
+        log.push(item + index);
+      });
       expect(log.length).toBe(1);
       expect(log[0]).toBe('SPARSE5');
+    });
+
+
+    describe('ES spec api compliance', function() {
+
+      function testForEachSpec(expectedSize, collection) {
+        var that = {};
+
+        forEach(collection, function(value, key, collectionArg) {
+          expect(collectionArg).toBe(collection);
+          expect(collectionArg[key]).toBe(value);
+
+          expect(this).toBe(that);
+
+          expectedSize--;
+        }, that);
+
+        expect(expectedSize).toBe(0);
+      }
+
+
+      it('should follow the ES spec when called with array', function() {
+        testForEachSpec(2, [1,2]);
+      });
+
+
+      it('should follow the ES spec when called with arguments', function() {
+        testForEachSpec(2, (function(){ return arguments; }(1,2)));
+      });
+
+
+      it('should follow the ES spec when called with string', function() {
+        testForEachSpec(2, '12');
+      });
+
+
+      it('should follow the ES spec when called with jQuery/jqLite', function() {
+        testForEachSpec(2, jqLite("<span>a</span><span>b</span>"));
+      });
+
+
+      it('should follow the ES spec when called with childNodes NodeList', function() {
+        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].childNodes);
+      });
+
+
+      it('should follow the ES spec when called with getElementsByTagName HTMLCollection', function() {
+        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].getElementsByTagName("*"));
+      });
+
+
+      it('should follow the ES spec when called with querySelectorAll HTMLCollection', function() {
+        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].querySelectorAll("*"));
+      });
+
+
+      it('should follow the ES spec when called with JSON', function() {
+        testForEachSpec(2, {a: 1, b: 2});
+      });
+
+
+      it('should follow the ES spec when called with function', function() {
+        function f(){}
+        f.a = 1;
+        f.b = 2;
+        testForEachSpec(2, f);
+      });
     });
   });
 
