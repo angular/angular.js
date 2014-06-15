@@ -617,6 +617,51 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
+
+    function testForEachSpec(expectedSize, collection) {
+      var that = {};
+
+      forEach(collection, function(value, key, collectionArg) {
+        expect(collectionArg).toBe(collection);
+        expect(collectionArg[key]).toBe(value);
+
+        expect(this).toBe(that);
+
+        expectedSize--;
+      }, that);
+
+      expect(expectedSize).toBe(0);
+    }
+    it('should follow spec with array', function() {
+      testForEachSpec(2, [1,2]);
+    });
+    it('should follow spec with arguments', function() {
+      testForEachSpec(2, (function(){ return arguments; }(1,2)));
+    });
+    it('should follow spec with string', function() {
+      testForEachSpec(2, '12');
+    });
+    it('should follow spec with jQuery/jqLite', function() {
+      testForEachSpec(2, jqLite("<span>a</span><span>b</span>"));
+    });
+    it('should follow spec with childNodes NodeList', function() {
+      testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].childNodes);
+    });
+    it('should follow spec with getElementsByTagName HTMLCollection', function() {
+      testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].getElementsByTagName("*"));
+    });
+    it('should follow spec with querySelectorAll HTMLCollection', function() {
+      testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].querySelectorAll("*"));
+    });
+    it('should follow spec with JSON', function() {
+      testForEachSpec(2, {a: 1, b: 2});
+    });
+    it('should follow spec with function', function() {
+      function f(){}
+      f.a = 1;
+      f.b = 2;
+      testForEachSpec(2, f);
+    });
   });
 
 
