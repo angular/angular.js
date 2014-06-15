@@ -213,6 +213,7 @@ only when the control loses focus (blur event).
         <input type="text" ng-model="user.data" /><br />
       </form>
       <pre>username = "{{user.name}}"</pre>
+      <pre>userdata = "{{user.data}}"</pre>
     </div>
   </file>
   <file name="script.js">
