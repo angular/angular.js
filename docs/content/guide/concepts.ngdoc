@@ -276,7 +276,7 @@ The code snippet `angular.module('invoice2', ['finance2'])`  specifies that the 
 `finance2` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
 
 Now that Angular knows of all the parts of the application, it needs to create them.
-In the previous section we saw that controllers are created using a factory function.
+In the previous section we saw that controllers are created using a constructor function.
 For services there are multiple ways to define their factory
 (see the {@link services service guide}).
 In the example above, we are using a function that returns the `currencyConverter` function as the factory
