@@ -881,6 +881,12 @@ describe('jqLite', function() {
       expect(element.text('xyz') == element).toBeTruthy();
       expect(element.text()).toEqual('xyzxyz');
     });
+
+    it('should return text only for element or text nodes', function() {
+      expect(jqLite('<div>foo</div>').text()).toBe('foo');
+      expect(jqLite('<div>foo</div>').contents().eq(0).text()).toBe('foo');
+      expect(jqLite(document.createComment('foo')).text()).toBe('');
+    });
   });
 
 
@@ -963,6 +969,8 @@ describe('jqLite', function() {
         },
         detachEvent: noop
       };
+      window.window = window;
+
       var log;
       var jWindow = jqLite(window).on('hashchange', function() {
         log = 'works!';
