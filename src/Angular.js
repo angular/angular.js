@@ -766,7 +766,7 @@ function copy(source, destination, stackSource, stackDest) {
       } else if (isRegExp(source)) {
         destination = new RegExp(source.source);
       } else if (isObject(source)) {
-        destination = copy(source, {}, stackSource, stackDest);
+        destination = copy(source, Object.create(Object.getPrototypeOf(source)), stackSource, stackDest);
       }
     }
   } else {
