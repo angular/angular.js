@@ -1,3 +1,17 @@
+Reading git log since v1.3.0-beta.12
+Parsed 1 commits
+Generating changelog to stdout ( undefined )
+<a name="1.3.0-beta.13"></a>
+# 1.3.0-beta.13 idiosyncratic-numerification (2014-06-16)
+
+
+## Bug Fixes
+
+- **jqLite:** change expando property to a more unique name
+  ([20c3c9e2](https://github.com/angular/angular.js/commit/20c3c9e25f6417773333727549ed2ca2d3505b44))
+
+
+
 <a name="1.3.0-beta.12"></a>
 # 1.3.0-beta.12 ephemeral-acceleration (2014-06-13)
 
