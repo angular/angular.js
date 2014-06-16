@@ -761,6 +761,16 @@ describe('input', function() {
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
     });
+
+    it('should use string representation of the value', function(){
+      compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
+
+      scope.$apply(function() {
+        scope.value = 123;
+      });
+
+      expect(inputElm).toBeValid();
+    });
   });
 
 
@@ -774,6 +784,16 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
+    });
+
+    it('should use string representation of the value', function(){
+      compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
+
+      scope.$apply(function() {
+        scope.value = 123;
+      });
+
+      expect(inputElm).toBeValid();
     });
   });
 
