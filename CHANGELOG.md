@@ -1,6 +1,3 @@
-Reading git log since v1.3.0-beta.12
-Parsed 1 commits
-Generating changelog to stdout ( undefined )
 <a name="1.3.0-beta.13"></a>
 # 1.3.0-beta.13 idiosyncratic-numerification (2014-06-16)
 
