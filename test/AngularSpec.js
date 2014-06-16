@@ -160,6 +160,15 @@ describe('angular', function() {
       expect(aCopy).toBe(aCopy.self);
       expect(aCopy.selfs[2]).not.toBe(a.selfs[2]);
     });
+
+    it('should retain the source prototype on the destination', function () {
+      function A() {}
+      var a = new A();
+      var a_copy = copy(a);
+
+      expect(a instanceof A).toBe(true);
+      expect(a_copy instanceof A).toBe(true);
+    });
   });
 
   describe("extend", function() {
