@@ -5187,6 +5187,26 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
+    it('should override the attr on digest', function() {
+      var attrOnLink = '';
+      module(function($compileProvider) {
+        $compileProvider.directive('test', valueFn({
+          restrict: 'E',
+          link: function(s, e, attrs) {
+            attrOnLink += attrs.foo;
+          }
+        }));
+      });
+
+      inject(function($compile, $rootScope) {
+        $rootScope.value = 42;
+        element = $compile('<test ng-attr-foo="{{value}}" foo="Answer?"></test>')($rootScope);
+        expect(element.attr('foo')).toBe('Answer?');
+        expect(attrOnLink).toBe('42');
+        $rootScope.$digest();
+        expect(element.attr('foo')).toBe('42');
+      });
+    });
 
     it('should work with different prefixes', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";
