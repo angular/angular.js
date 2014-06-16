@@ -162,7 +162,7 @@ describe('angular', function() {
     });
 
     it('should retain the source prototype on the destination', function () {
-      function A() {};
+      function A() {}
       var a = new A();
       var a_copy = copy(a);
 
