@@ -2930,6 +2930,14 @@ describe('$compile', function() {
         expect(componentScope.attrAlias).toEqual(componentScope.attr);
       }));
 
+      it('should copy simple attribute value with spaces', inject(function() {
+        compile('<div><span my-component attr=" some text ">');
+
+        expect(componentScope.attr).toEqual(' some text ');
+        expect(componentScope.attrAlias).toEqual(' some text ');
+        expect(componentScope.attrAlias).toEqual(componentScope.attr);
+      }));
+
       it('should set up the interpolation before it reaches the link function', inject(function() {
         $rootScope.name = 'misko';
         compile('<div><span my-component attr="hello {{name}}">');
