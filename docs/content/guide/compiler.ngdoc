@@ -226,7 +226,7 @@ moved to the compile function for performance reasons.
 To understand, let's look at a real-world example with `ngRepeat`:
 
 ```html
-Hello {{user}}, you have these actions:
+Hello {{user.name}}, you have these actions:
 <ul>
   <li ng-repeat="action in user.actions">
     {{action.description}}
@@ -236,7 +236,7 @@ Hello {{user}}, you have these actions:
 
 When the above example is compiled, the compiler visits every node and looks for directives.
 
-`{{user}}` matches the {@link ng.$interpolate interpolation directive}
+`{{user.name}}` matches the {@link ng.$interpolate interpolation directive}
 and `ng-repeat` matches the {@link ng.directive:ngRepeat `ngRepeat` directive}.
 
 But {@link ng.directive:ngRepeat ngRepeat} has a dilemma.
