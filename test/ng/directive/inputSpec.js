@@ -486,6 +486,7 @@ describe('ngModel', function() {
     expect(element).toHaveClass('ng-invalid-required');
   }));
 
+
   it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
     var element = $compile('<form name="myForm">' +
                              '<input name="myControl" ng-model="value" >' +
@@ -2715,6 +2716,16 @@ describe('input', function() {
     it('should set $invalid when model undefined', function() {
       compileInput('<input type="text" ng-model="notDefined" required />');
       expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should set $valid even if model fails other validators', function() {
+      compileInput('<input type="email" ng-model="value" required />');
+      changeInputValueTo('bademail');
+
+      expect(inputElm).toHaveClass('ng-valid-required');
+      expect(inputElm.controller('ngModel').$error.required).toBe(false);
+      expect(inputElm).toBeInvalid(); // invalid because of the email validator
     });
 
 
