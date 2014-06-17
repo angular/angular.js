@@ -1128,22 +1128,20 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var urlValidator = function(value) {
-    return validate(ctrl, 'url', ctrl.$isEmpty(value) || URL_REGEXP.test(value), value);
+    return ctrl.$isEmpty(value) || URL_REGEXP.test(value);
   };
 
-  ctrl.$formatters.push(urlValidator);
-  ctrl.$parsers.push(urlValidator);
+  ctrl.$validators.url = urlValidator;
 }
 
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
+    return ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value);
   };
 
-  ctrl.$formatters.push(emailValidator);
-  ctrl.$parsers.push(emailValidator);
+  ctrl.$validators.email = emailValidator;
 }
 
 function radioInputType(scope, element, attr, ctrl) {
