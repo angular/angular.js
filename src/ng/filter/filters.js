@@ -139,17 +139,31 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
 
   if (!hasExponent) {
     var fractionLen = (numStr.split(DECIMAL_SEP)[1] || '').length;
+    var whole, fraction, raw;
 
     // determine fractionSize if it is not specified
     if (isUndefined(fractionSize)) {
       fractionSize = Math.min(Math.max(pattern.minFrac, fractionLen), pattern.maxFrac);
     }
-
-    var pow = Math.pow(10, fractionSize + 1);
-    number = Math.floor(number * pow + 5) / pow;
-    var fraction = ('' + number).split(DECIMAL_SEP);
-    var whole = fraction[0];
-    fraction = fraction[1] || '';
+    if (fractionLen > fractionSize) {
+      raw = ('0' + numStr.replace(/\./, '')).split('');
+      for (var j = raw.length + fractionSize - fractionLen, inc = raw[j]  >= '5'; inc; --j) {
+        if (raw[j - 1] === '9') {
+          raw[j - 1] = '0';
+        } else {
+          raw[j - 1] = String.fromCharCode(raw[j - 1].charCodeAt(0) + 1);
+          inc = false;
+        }
+      }
+      raw = raw.join('');
+      if (raw[0] === '0') raw = raw.substring(1);
+      whole = raw.substring(0, raw.length - fractionLen);
+      fraction = raw.substring(raw.length - fractionLen, raw.length - fractionLen + fractionSize);
+    } else {
+      raw = numStr.split(DECIMAL_SEP);
+      whole = raw[0];
+      fraction = raw[1] || '';
+    }
 
     var i, pos = 0,
         lgroup = pattern.lgSize,
