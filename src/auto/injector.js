@@ -712,8 +712,10 @@ function createInjector(modulesToLoad, strictDi) {
         if (isString(module)) {
           moduleFn = angularModule(module);
           runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
+          var isCore = module === 'ng';
+          if (isCore) runInvokeQueue(moduleFn._configBlocks);
           runInvokeQueue(moduleFn._invokeQueue);
-          runInvokeQueue(moduleFn._configBlocks);
+          if (!isCore) runInvokeQueue(moduleFn._configBlocks);
         } else if (isFunction(module)) {
             runBlocks.push(providerInjector.invoke(module));
         } else if (isArray(module)) {

@@ -84,4 +84,46 @@ describe('module loader', function() {
   it('should expose `$$minErr` on the `angular` object', function() {
     expect(window.angular.$$minErr).toEqual(jasmine.any(Function));
   });
+
+  describe('extending "ng" module', function() {
+    var rootElement, angular, run;
+    beforeEach(function() {
+      rootElement = jqLite('<div></div>');
+      jqLite(document.body).append(rootElement);
+      angular = window.angular;
+      publishExternalAPI(angular);
+      run = jasmine.createSpy('run block');
+    });
+
+    afterEach(function() {
+      expect(run).toHaveBeenCalledOnce();
+      rootElement.remove();
+      dealoc(rootElement);
+    });
+
+    it('should allow filters to be registered', function() {
+      run.andCallFake(function($filter) { expect($filter('noop')).toBe(noop); });
+      angularModule("ng").filter('noop', function() { return noop; }).run(['$filter', run]);
+      angular.bootstrap(rootElement, []);
+    });
+
+    it('should allow directives to be registered', function() {
+      var linkMe = jasmine.createSpy('linkMe');
+      run.andCallFake(function($compile, $rootScope) {
+        dealoc($compile('<div link-me></div>')($rootScope));
+        expect(linkMe).toHaveBeenCalledOnce();
+      });
+      angularModule("ng").directive('linkMe', valueFn(linkMe)).run(['$compile', '$rootScope', run]);
+      angular.bootstrap(rootElement, []);
+    });
+
+    it('should allow controllers to be registered', function() {
+      function Ctrl($scope) {}
+      run.andCallFake(function($controller, $rootScope) {
+        expect($controller('Ctrl', { $scope: $rootScope }) instanceof Ctrl).toBe(true);
+      });
+      angularModule("ng").controller('Ctrl', Ctrl).run(['$controller', '$rootScope', run]);
+      angular.bootstrap(rootElement, []);
+    });
+  });
 });
