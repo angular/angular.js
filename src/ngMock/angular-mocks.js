@@ -2176,6 +2176,7 @@ if(window.jasmine || window.mocha) {
         injector = currentSpec.$injector = angular.injector(modules, strictDi);
         currentSpec.$injectorStrict = strictDi;
       }
+      var blockFnReturns = [];
       for(var i = 0, ii = blockFns.length; i < ii; i++) {
         if (currentSpec.$injectorStrict) {
           // If the injector is strict / strictDi, and the spec wants to inject using automatic
@@ -2184,7 +2185,7 @@ if(window.jasmine || window.mocha) {
         }
         try {
           /* jshint -W040 *//* Jasmine explicitly provides a `this` object when calling functions */
-          injector.invoke(blockFns[i] || angular.noop, this);
+          blockFnReturns.push(injector.invoke(blockFns[i] || angular.noop, this));
           /* jshint +W040 */
         } catch (e) {
           if (e.stack && errorForStack) {
@@ -2194,6 +2195,11 @@ if(window.jasmine || window.mocha) {
         } finally {
           errorForStack = null;
         }
+      }
+      if (blockFnReturns.length == 1) {
+        return blockFnReturns[0];
+      } else {
+        return blockFnReturns;
       }
     }
   };
