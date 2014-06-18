@@ -39,7 +39,7 @@
  * @element ANY
  * @scope
  * @priority 600
- * @param {expression} ngIf If the {@link guide/expression expression} is falsy then
+ * @param {expression} ngIf If the {@link guide/expression expression} is false then
  *     the element is removed from the DOM tree. If it is truthy a copy of the compiled
  *     element is added to the DOM tree.
  *
