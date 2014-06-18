@@ -316,6 +316,10 @@ describe('SCE', function() {
         expect(adjustMatcher(/^a.*b$/).exec('a.b')).not.toBeNull();
         expect(adjustMatcher(/^a.*b$/).exec('-a.b-')).toBeNull();
       });
+
+      it('should should match * and **', function() {
+        expect(adjustMatcher('*://*.example.com/**').exec('http://www.example.com/path')).not.toBeNull();
+      });
     });
 
     describe('regex matcher', function() {
