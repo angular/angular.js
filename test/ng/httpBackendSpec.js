@@ -312,6 +312,15 @@ describe('$httpBackend', function() {
     expect(MockXhr.$$lastInstance.withCredentials).toBe(true);
   });
 
+  it('should set xhrFields on xhr object', function(){
+    var xhrFields = {
+      field1: 'test',
+      field2: 'test2'
+    };
+    $backend('GET', '/some.url', null, callback, {}, null, false, null, xhrFields);
+    expect(MockXhr.$$lastInstance.field1).toBe(xhrFields.field1);
+    expect(MockXhr.$$lastInstance.field2).toBe(xhrFields.field2);
+  });
 
   describe('responseType', function() {
 
@@ -540,5 +549,5 @@ describe('$httpBackend', function() {
       expect(callback.mostRecentCall.args[0]).toBe(503);
     });
   });
-});
 
+});

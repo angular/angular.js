@@ -1507,4 +1507,52 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
+
+  it('shoud pass xhrFields param to $httpBackend', function(){
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, t, w, r, xhrFields) {
+      expect(xhrFields.someField).toBe(1);
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http, $rootScope) {
+      $http({
+        method: 'GET',
+        url: 'some.html',
+        xhrFields : { someField: 1 }
+      });
+      $rootScope.$digest();
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
+
+  it('should use xhrFields from default', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, t, w, r, xhrFields) {
+      expect(xhrFields.someField).toBe(1);
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http, $rootScope) {
+      $http.defaults.xhrFields = {someField: 1};
+      $http({
+        method: 'GET',
+        url: 'some.html'
+      });
+      $rootScope.$digest();
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
 });
