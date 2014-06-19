@@ -1136,12 +1136,10 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
-  var emailValidator = function(value) {
-    return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
+  ctrl.$validators.email = function(modelValue, viewValue) {
+    var value = modelValue || viewValue;
+    return ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value);
   };
-
-  ctrl.$formatters.push(emailValidator);
-  ctrl.$parsers.push(emailValidator);
 }
 
 function radioInputType(scope, element, attr, ctrl) {
