@@ -104,6 +104,14 @@ function Browser(window, document, $log, $sniffer) {
   };
 
   /**
+   * remove a listener from pollFns
+   */
+  self.removePollFn = function(fn) {
+    var idx = pollFns.indexOf(fn);
+    return pollFns.splice(idx, 1);
+  };
+
+  /**
    * @param {number} interval How often should browser call poll functions (ms)
    * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
    *
@@ -232,6 +240,23 @@ function Browser(window, document, $log, $sniffer) {
 
     urlChangeListeners.push(callback);
     return callback;
+  };
+
+  /**
+    Remove angular's path listeners to the browser.
+    Make angular shutdown possible.
+  */
+  self.detachFromBrowser = function() {
+    if (urlChangeInit) {
+      // html5 history api - popstate event
+      if ($sniffer.history) jqLite(window).off('popstate', fireUrlChange);
+      // hashchange event
+      if ($sniffer.hashchange) jqLite(window).off('hashchange', fireUrlChange);
+      // polling
+      else self.removePollFn(fireUrlChange);
+    }
+    urlChangeListeners = [];
+    clearTimeout(pollTimeout);
   };
 
   //////////////////////////////////////////////////////////////
