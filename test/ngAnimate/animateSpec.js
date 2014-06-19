@@ -3866,6 +3866,112 @@ describe("ngAnimate", function() {
       expect(element.children().length).toBe(0);
     }));
 
+    describe('ngAnimateChildren', function() {
+      var spy;
+
+      beforeEach(module(function($animateProvider) {
+        spy = jasmine.createSpy();
+        $animateProvider.register('.parent', mockAnimate);
+        $animateProvider.register('.child', mockAnimate);
+        return function($animate) {
+          $animate.enabled(true);
+        };
+
+        function mockAnimate() {
+          return {
+            enter : spy,
+            leave : spy,
+            addClass : spy,
+            removeClass : spy
+          };
+        }
+      }));
+
+      it('should animate based on a boolean flag', inject(function($animate, $sniffer, $rootScope, $compile) {
+        var html = '<section class="parent" ng-if="on1" ng-animate-children="bool">' +
+                   '  <div class="child" ng-if="on2">...</div>' +
+                   '</section>';
+
+        var element = $compile(html)($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        var scope = $rootScope;
+
+        scope.bool = true;
+        scope.$digest();
+
+        scope.on1 = true;
+        scope.on2 = true;
+        scope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.callCount).toBe(2);
+
+        scope.bool = false;
+        scope.$digest();
+
+        scope.on1 = false;
+        scope.$digest();
+
+        scope.on2 = false;
+        scope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy.callCount).toBe(3);
+      }));
+
+      it('should default to true when no expression is provided',
+        inject(function($animate, $sniffer, $rootScope, $compile) {
+
+        var html = '<section class="parent" ng-if="on1" ng-animate-children>' +
+                   '  <div class="child" ng-if="on2">...</div>' +
+                   '</section>';
+
+        var element = $compile(html)($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.on1 = true;
+        $rootScope.$digest();
+
+        $rootScope.on2 = true;
+        $rootScope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.callCount).toBe(2);
+      }));
+
+      it('should not perform inherited animations if any parent restricts it',
+        inject(function($animate, $sniffer, $rootScope, $compile) {
+
+        var html = '<section ng-animate-children="false">' +
+                   '  <aside class="parent" ng-if="on" ng-animate-children="true">' +
+                   '    <div class="child" ng-if="on">...</div>' +
+                   '  </aside>' +
+                   '</section>';
+
+        var element = $compile(html)($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.$digest();
+
+        $rootScope.on = true;
+        $rootScope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.callCount).toBe(1);
+      }));
+    });
+
     describe('SVG', function() {
       it('should properly apply transitions on an SVG element',
         inject(function($animate, $rootScope, $compile, $rootElement, $sniffer) {

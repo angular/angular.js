@@ -58,8 +58,22 @@
  * <ANY class="slide" ng-include="..."></ANY>
  * ```
  *
- * Keep in mind that if an animation is running, any child elements cannot be animated until the parent element's
- * animation has completed.
+ * Keep in mind that, by default, if an animation is running, any child elements cannot be animated
+ * until the parent element's animation has completed. This blocking feature can be overridden by
+ * placing the `ng-animate-children` attribute on a parent container tag.
+ *
+ * ```html
+ * <div class="slide-animation" ng-if="on" ng-animate-children>
+ *   <div class="fade-animation" ng-if="on">
+ *     <div class="explode-animation" ng-if="on">
+ *        ...
+ *     </div>
+ *   </div>
+ * </div>
+ * ```
+ *
+ * When the `on` expression value changes and an animation is triggered then each of the elements within
+ * will all animate without the block being applied to child elements.
  *
  * <h2>CSS-defined Animations</h2>
  * The animate service will automatically apply two CSS classes to the animated element and these two CSS classes
@@ -249,6 +263,19 @@ angular.module('ngAnimate', ['ng'])
    * Please visit the {@link ngAnimate `ngAnimate`} module overview page learn more about how to use animations in your application.
    *
    */
+  .directive('ngAnimateChildren', function() {
+    var NG_ANIMATE_CHILDREN = '$$ngAnimateChildren';
+    return function(scope, element, attrs) {
+      var val = attrs.ngAnimateChildren;
+      if(angular.isString(val) && val.length === 0) { //empty attribute
+        element.data(NG_ANIMATE_CHILDREN, true);
+      } else {
+        scope.$watch(val, function(value) {
+          element.data(NG_ANIMATE_CHILDREN, !!value);
+        });
+      }
+    };
+  })
 
   //this private service is only used within CSS-enabled animations
   //IE8 + IE9 do not support rAF natively, but that is fine since they
@@ -277,6 +304,7 @@ angular.module('ngAnimate', ['ng'])
 
     var ELEMENT_NODE = 1;
     var NG_ANIMATE_STATE = '$$ngAnimateState';
+    var NG_ANIMATE_CHILDREN = '$$ngAnimateChildren';
     var NG_ANIMATE_CLASS_NAME = 'ng-animate';
     var rootAnimateState = {running: true};
 
@@ -325,6 +353,12 @@ angular.module('ngAnimate', ['ng'])
               : function(className) {
                 return classNameFilter.test(className);
               };
+
+      function blockElementAnimations(element) {
+        var data = element.data(NG_ANIMATE_STATE) || {};
+        data.running = true;
+        element.data(NG_ANIMATE_STATE, data);
+      }
 
       function lookup(name) {
         if (name) {
@@ -552,7 +586,7 @@ angular.module('ngAnimate', ['ng'])
           parentElement = prepareElement(parentElement);
           afterElement = prepareElement(afterElement);
 
-          this.enabled(false, element);
+          blockElementAnimations(element);
           $delegate.enter(element, parentElement, afterElement);
           $rootScope.$$postDigest(function() {
             element = stripCommentsFromElement(element);
@@ -590,7 +624,7 @@ angular.module('ngAnimate', ['ng'])
         leave : function(element, doneCallback) {
           element = angular.element(element);
           cancelChildAnimations(element);
-          this.enabled(false, element);
+          blockElementAnimations(element);
           $rootScope.$$postDigest(function() {
             performAnimation('leave', 'ng-leave', stripCommentsFromElement(element), null, null, function() {
               $delegate.leave(element);
@@ -634,7 +668,7 @@ angular.module('ngAnimate', ['ng'])
           afterElement = prepareElement(afterElement);
 
           cancelChildAnimations(element);
-          this.enabled(false, element);
+          blockElementAnimations(element);
           $delegate.move(element, parentElement, afterElement);
           $rootScope.$$postDigest(function() {
             element = stripCommentsFromElement(element);
@@ -808,9 +842,12 @@ angular.module('ngAnimate', ['ng'])
 
         //only allow animations if the currently running animation is not structural
         //or if there is no animation running at all
-        var skipAnimations = runner.isClassBased ?
-          ngAnimateState.disabled || (lastAnimation && !lastAnimation.isClassBased) :
-          false;
+        var skipAnimations;
+        if (runner.isClassBased) {
+          skipAnimations = ngAnimateState.running ||
+                           ngAnimateState.disabled ||
+                           (lastAnimation && !lastAnimation.isClassBased);
+        }
 
         //skip the animation if animations are disabled, a parent is already being animated,
         //the element is not currently attached to the document body or then completely close
@@ -1027,30 +1064,49 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function animationsDisabled(element, parentElement) {
-        if (rootAnimateState.disabled) return true;
-
-        if(isMatchingElement(element, $rootElement)) {
-          return rootAnimateState.disabled || rootAnimateState.running;
+        if (rootAnimateState.disabled) {
+          return true;
         }
 
+        if (isMatchingElement(element, $rootElement)) {
+          return rootAnimateState.running;
+        }
+
+        var allowChildAnimations, parentRunningAnimation, hasParent;
         do {
           //the element did not reach the root element which means that it
           //is not apart of the DOM. Therefore there is no reason to do
           //any animations on it
-          if(parentElement.length === 0) break;
+          if (parentElement.length === 0) break;
 
           var isRoot = isMatchingElement(parentElement, $rootElement);
-          var state = isRoot ? rootAnimateState : parentElement.data(NG_ANIMATE_STATE);
-          var result = state && (!!state.disabled || state.running || state.totalActive > 0);
-          if(isRoot || result) {
-            return result;
+          var state = isRoot ? rootAnimateState : (parentElement.data(NG_ANIMATE_STATE) || {});
+          if (state.disabled) {
+            return true;
           }
 
-          if(isRoot) return true;
+          //no matter what, for an animation to work it must reach the root element
+          //this implies that the element is attached to the DOM when the animation is run
+          if (isRoot) {
+            hasParent = true;
+          }
+
+          //once a flag is found that is strictly false then everything before
+          //it will be discarded and all child animations will be restricted
+          if (allowChildAnimations !== false) {
+            var animateChildrenFlag = parentElement.data(NG_ANIMATE_CHILDREN);
+            if(angular.isDefined(animateChildrenFlag)) {
+              allowChildAnimations = animateChildrenFlag;
+            }
+          }
+
+          parentRunningAnimation = parentRunningAnimation ||
+                                   state.running ||
+                                   (state.last && !state.last.isClassBased);
         }
         while(parentElement = parentElement.parent());
 
-        return true;
+        return !hasParent || (!allowChildAnimations && parentRunningAnimation);
       }
     }]);
 
