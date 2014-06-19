@@ -2884,6 +2884,148 @@ describe('input', function() {
       expect(scope.items[0].selected).toBe(false);
     });
   });
+
+  describe('ngName', function() {
+
+    it('should set name attribute and property on element', function() {
+      scope.controlNamespace = 'test';
+      scope.something = 'modelVal';
+      compileInput('<input type="text" ng-model="something" ng-name="controlNamespace + \'Control\'">');
+      expect(inputElm[0].name).toBe('testControl');
+      expect(inputElm[0].getAttribute('name')).toBe('testControl');
+    });
+
+    it('should set the $name property on the ngModelController', function() {
+      scope.controlName = 'test';
+      scope.something = 'modelVal';
+      compileInput('<input type="text" ng-model="something" ng-name="controlName">');
+
+      var ctrl = inputElm['data']('$ngModelController');
+      expect(ctrl.$name).toBe('test');
+    });
+
+    it('should set have set the controller $name prior to adding the control to the form controller', function() {
+      scope.controlNamespace = 'test';
+      scope.something = 'modelVal';
+      compileInput('<input type="text" ng-model="something" ng-name="controlNamespace + \'Control\'">');
+
+      expect(scope.form.testControl).toBeDefined();
+    });
+
+    it('should work inside ngRepeat', function() {
+      compileInput('<div ng-repeat="p in packages">' +
+          '<input type="checkbox" ng-model="p.isDelivered" ng-name="\'isDelivered\' + p.id">' +
+        '</div>');
+
+      scope.$apply(function() {
+        scope.packages = [
+          {
+            id: 0,
+            isDelivered: false
+          },
+          {
+            id: 1,
+            isDelivered: false
+          },
+          {
+            id: 2,
+            isDelivered: false
+          }
+        ];
+      });
+
+      inputElm = formElm.find('input');
+      var ctrls = [];
+      forEach(inputElm, function(val) {
+        ctrls.push(jqLite(val)['data']('$ngModelController'));
+      });
+
+      expect(inputElm[0].name).toBe('isDelivered0');
+      expect(inputElm[0].getAttribute('name')).toBe('isDelivered0');
+      expect(ctrls[0].$name).toBe('isDelivered0');
+      expect(scope.form.isDelivered0).toBeDefined();
+
+      expect(inputElm[1].name).toBe('isDelivered1');
+      expect(inputElm[1].getAttribute('name')).toBe('isDelivered1');
+      expect(ctrls[1].$name).toBe('isDelivered1');
+      expect(scope.form.isDelivered1).toBeDefined();
+
+      expect(inputElm[2].name).toBe('isDelivered2');
+      expect(inputElm[2].getAttribute('name')).toBe('isDelivered2');
+      expect(ctrls[2].$name).toBe('isDelivered2');
+      expect(scope.form.isDelivered2).toBeDefined();
+
+      scope.$apply(function() {
+        scope.packages = [
+          {
+            id: 0,
+            isDelivered: false
+          },
+          {
+            id: 2,
+            isDelivered: false
+          }
+        ];
+      });
+
+      inputElm = formElm.find('input');
+      ctrls = [];
+      forEach(inputElm, function(val) {
+        ctrls.push(jqLite(val)['data']('$ngModelController'));
+      });
+
+      expect(inputElm[0].name).toBe('isDelivered0');
+      expect(inputElm[0].getAttribute('name')).toBe('isDelivered0');
+      expect(ctrls[0].$name).toBe('isDelivered0');
+      expect(scope.form.isDelivered0).toBeDefined();
+
+      expect(inputElm[1].name).toBe('isDelivered2');
+      expect(inputElm[1].getAttribute('name')).toBe('isDelivered2');
+      expect(ctrls[1].$name).toBe('isDelivered2');
+      expect(scope.form.isDelivered2).toBeDefined();
+
+      expect(scope.form.isDelivered1).toBeUndefined();
+    });
+
+    it('should not affect the control or form when the evaluated result changes', function() {
+      compileInput('<div ng-repeat="p in packages">' +
+          '<input type="checkbox" ng-model="p.isDelivered" ng-name="\'isDelivered\' + p.id">' +
+        '</div>');
+
+      scope.$apply(function() {
+        scope.packages = [
+          {
+            id: 0,
+            isDelivered: false
+          },
+          {
+            id: 1,
+            isDelivered: false
+          }
+        ];
+      });
+
+      inputElm = formElm.find('input');
+      var ctrls = [];
+      forEach(inputElm, function(val) {
+        ctrls.push(jqLite(val)['data']('$ngModelController'));
+      });
+
+      expect(ctrls.length).toBe(2);
+      expect(ctrls[0].$name).toBe('isDelivered0');
+      expect(scope.form.isDelivered0).toBeDefined();
+
+      scope.$apply(function() {
+        scope.packages[0].id = 10;
+      });
+
+      expect(ctrls.length).toBe(2);
+      expect(ctrls[0].$name).toBe('isDelivered0');
+      expect(scope.form.isDelivered0).toBeDefined();
+      expect(scope.form.isDelivered10).toBeUndefined();
+    });
+
+  });
 });
 
 describe('NgModel animations', function() {
