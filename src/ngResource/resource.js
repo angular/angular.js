@@ -453,7 +453,7 @@ angular.module('ngResource', ['ng']).
 
           // then replace collapse `/.` if found in the last URL path segment before the query
           // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
-          url = url.replace(/\/\.(?=\w+($|\?))/, '.');
+          url = url.replace(/\/\.(\?=\w+($|\?))/, '.');
           // replace escaped `/\.` with `/.`
           config.url = url.replace(/\/\\\./, '/.');
 
