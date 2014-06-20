@@ -46,7 +46,7 @@
          element(by.model('amount')).sendKeys('-1234');
          expect(element(by.id('currency-default')).getText()).toBe('($1,234.00)');
          expect(element(by.binding('amount | currency:"USD$"')).getText()).toBe('(USD$1,234.00)');
-         expect(binding('amount | currency:"USD$":0')).toBe('(USD$1,234)');
+         expect(element(by,binding('amount | currency:"USD$":0')).getText()).toBe('(USD$1,234)');
        });
      </file>
    </example>
