@@ -56,7 +56,7 @@ function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
   return function(amount, currencySymbol, fractionSize){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    if (isUndefined(fractionSize) || isNaN(fractionSize) fractionSize = 2;
+    if (isUndefined(fractionSize) || isNaN(fractionSize)) fractionSize = 2;
     return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, fractionSize).
                 replace(/\u00A4/g, currencySymbol);
   };
