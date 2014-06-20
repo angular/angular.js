@@ -164,7 +164,7 @@ angular.module('ngMessages', [])
     *
     * @description
     * `ngMessages` is a directive that is designed to show and hide messages based on the state
-    * of a key/value object that is listens on. The directive itself compliments error message
+    * of a key/value object that it listens on. The directive itself compliments error message
     * reporting with the `ngModel` $error object (which stores a key/value state of validation errors).
     *
     * `ngMessages` manages the state of internal messages within its container element. The internal
