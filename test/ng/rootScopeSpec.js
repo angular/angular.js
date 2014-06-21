@@ -746,6 +746,14 @@ describe('Scope', function() {
           $rootScope.$digest();
           expect(log.empty()).toEqual([{newVal: {b: {}, c: 'B'}, oldVal: {a: [], b: {}, c: 'B'}}]);
         });
+
+        it('should not infinitely digest when current value is NaN', function() {
+          $rootScope.obj = {a: NaN};
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
+        });
+
       });
     });
 
