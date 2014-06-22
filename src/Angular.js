@@ -13,6 +13,7 @@
     -angularModule,
     -nodeName_,
     -uid,
+    -VALIDITY_STATE_PROPERTY,
 
     -lowercase,
     -uppercase,
@@ -101,6 +102,10 @@
  *
  * <div doc-module-components="ng"></div>
  */
+
+// The name of a form control's ValidityState property.
+// This is used so that it's possible for internal tests to create mock ValidityStates.
+var VALIDITY_STATE_PROPERTY = 'validity';
 
 /**
  * @ngdoc function
