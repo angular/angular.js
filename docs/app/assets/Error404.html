@@ -6,6 +6,6 @@
 
   <dl ng-repeat="(key, value) in results" ng-show="value.length" style="float: left; margin-right:20px">
     <dt>{{ key }}</dt>
-    <dd ng-repeat="item in value"><a ng-href="{{ item.path }}">{{ item.name }}</a></dd>
+    <dd ng-repeat="item in value"><a ng-href="{{ item.path }}" title="{{ item.name }}">{{ item.name }}</a></dd>
   </dl>
 </div>

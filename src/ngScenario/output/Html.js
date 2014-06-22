@@ -27,7 +27,7 @@ angular.scenario.output('html', function(context, runner, model) {
   runner.on('InteractivePause', function(spec) {
     var ui = lastStepUiMap[spec.id];
     ui.find('.test-title').
-      html('paused... <a href="javascript:resume()">resume</a> when ready.');
+      html('paused... <a href="javascript:resume()" title="resume">resume</a> when ready.');
   });
 
   runner.on('SpecBegin', function(spec) {
