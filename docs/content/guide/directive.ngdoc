@@ -636,8 +636,8 @@ To do this, we need to use the `transclude` option.
     </div>
   </file>
   <file name="my-dialog.html">
-    <div class="alert" ng-transclude>
-    </div>
+    <h1 class="alert" ng-transclude>
+    </h1>
   </file>
 </example>
 
