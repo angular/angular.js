@@ -792,7 +792,7 @@ function createInjector(modulesToLoad, strictDi) {
           : getService(key)
         );
       }
-      if (!fn.$inject) {
+      if (isArray(fn)) {
         // this means that we must be an array.
         fn = fn[length];
       }
