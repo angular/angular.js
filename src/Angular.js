@@ -67,7 +67,6 @@
     -toJsonReplacer,
     -toJson,
     -fromJson,
-    -toBoolean,
     -startingTag,
     -tryDecodeURIComponent,
     -parseKeyValue,
@@ -1032,18 +1031,6 @@ function fromJson(json) {
       : json;
 }
 
-
-function toBoolean(value) {
-  if (typeof value === 'function') {
-    value = true;
-  } else if (value && value.length !== 0) {
-    var v = lowercase("" + value);
-    value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == 'n' || v == '[]');
-  } else {
-    value = false;
-  }
-  return value;
-}
 
 /**
  * @returns {string} Returns the string representation of the element.
