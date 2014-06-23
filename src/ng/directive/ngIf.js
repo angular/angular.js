@@ -85,9 +85,9 @@ var ngIfDirective = ['$animate', function($animate) {
     $$tlb: true,
     link: function ($scope, $element, $attr, ctrl, $transclude) {
         var block, childScope, previousElements;
-        $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
+        $scope.$watch('!!(' + $attr.ngIf + ')', function ngIfWatchAction(value) {
 
-          if (toBoolean(value)) {
+          if (value) {
             if (!childScope) {
               $transclude(function (clone, newScope) {
                 childScope = newScope;
