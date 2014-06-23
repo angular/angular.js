@@ -58,10 +58,12 @@
        Search: <input ng-model="searchText">
        <table id="searchTextResults">
          <tr><th>Name</th><th>Phone</th></tr>
-         <tr ng-repeat="friend in friends | filter:searchText">
+         <tr ng-repeat="friend in filteredFriends = (friends | filter:searchText)">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
          </tr>
+         <!--row get visible when filtered result is empty-->
+         <tr ng-hide="filteredFriends.length"> No result found! </tr>
        </table>
        <hr>
        Any: <input ng-model="search.$"> <br>
