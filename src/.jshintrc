@@ -85,7 +85,6 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
-    "toBoolean": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
