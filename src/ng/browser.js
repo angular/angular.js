@@ -244,7 +244,7 @@ function Browser(window, document, $log, $sniffer) {
 
   /**
     Remove angular's path listeners to the browser.
-    Make angular shutdown possible.
+    First step to make angular shutdown possible.
   */
   self.detachFromBrowser = function() {
     if (urlChangeInit) {
