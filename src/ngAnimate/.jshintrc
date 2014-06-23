@@ -1,20 +1,6 @@
 {
-  "bitwise": true,
-  "immed": true,
-  "newcap": true,
-  "noarg": true,
-  "noempty": true,
-  "nonew": true,
-  "trailing": true,
+  "extends": "../../.jshintrc-base",
   "maxlen": false, /* ngAnimate docs contain wide tables */
-  "boss": true,
-  "eqnull": true,
-  "expr": true,
-  "globalstrict": true,
-  "laxbreak": true,
-  "loopfunc": true,
-  "sub": true,
-  "undef": true,
   "browser": true,
   "globals": {
     "angular": false
