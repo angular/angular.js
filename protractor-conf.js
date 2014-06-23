@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('./protractor-shared-conf').config;
 
 config.specs = [

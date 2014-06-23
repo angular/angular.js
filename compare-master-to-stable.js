@@ -1,5 +1,7 @@
 #!/usr/local/bin/node
 
+'use strict';
+
 var util = require('util');
 var cp = require('child_process');
 
@@ -143,7 +145,7 @@ then(allInSeries(function (branch) {
         return sha + (msg.toLowerCase().indexOf('fix') === -1 ? '   ' : ' * ') + msg;
       });
       branch.log = log.map(function (line) {
-        return line.substr(41)
+        return line.substr(41);
       });
       return branch;
     });

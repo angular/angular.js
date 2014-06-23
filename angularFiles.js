@@ -1,4 +1,6 @@
-angularFiles = {
+'use strict';
+
+var angularFiles = {
   'angularSrc': [
     'src/minErr.js',
     'src/Angular.js',

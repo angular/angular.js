@@ -1,20 +1,5 @@
 {
-  "bitwise": true,
-  "immed": true,
-  "newcap": true,
-  "noarg": true,
-  "noempty": true,
-  "nonew": true,
-  "trailing": true,
-  "maxlen": 200,
-  "boss": true,
-  "eqnull": true,
-  "expr": true,
-  "globalstrict": true,
-  "laxbreak": true,
-  "loopfunc": true,
-  "sub": true,
-  "undef": true,
+  "extends": "../.jshintrc-base",
   "browser": true,
   "globals": {
     /* auto/injector.js */
@@ -106,7 +91,7 @@
     "version": false,
     "publishExternalAPI": false,
 
-    /* minerr.js */
+    /* minErr.js */
     "minErr": false,
 
     /* loader.js */
