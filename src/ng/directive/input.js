@@ -1,13 +1,11 @@
 'use strict';
 
-/* global
-
-    -VALID_CLASS,
-    -INVALID_CLASS,
-    -PRISTINE_CLASS,
-    -DIRTY_CLASS,
-    -UNTOUCHED_CLASS,
-    -TOUCHED_CLASS
+/* global VALID_CLASS: true,
+  INVALID_CLASS: true,
+  PRISTINE_CLASS: true,
+  DIRTY_CLASS: true,
+  UNTOUCHED_CLASS: true,
+  TOUCHED_CLASS: true,
 */
 
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
