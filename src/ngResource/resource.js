@@ -155,12 +155,14 @@ function shallowClearAndCopy(src, dst) {
  *     with `http response` object. See {@link ng.$http $http interceptors}.
  *
  * @param {Object} options Hash with custom settings that should extend the
- *   default `$resourceProvider` behavior.  The only supported option is
+ *   default `$resourceProvider` behavior.
  *
  *   Where:
  *
  *   - **`stripTrailingSlashes`** – {boolean} – If true then the trailing
  *   slashes from any calculated URL will be stripped. (Defaults to true.)
+ *   - **`encodeSlashes`** - {boolean} - If true then slashes in URL parameters
+ *   will be encoded.  (Defaults to true.)
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -344,6 +346,9 @@ angular.module('ngResource', ['ng']).
       // Strip slashes by default
       stripTrailingSlashes: true,
 
+      // Encode slashes by default
+      encodeSlashes: true,
+
       // Default actions configuration
       actions: {
         'get': {method: 'GET'},
@@ -373,8 +378,8 @@ angular.module('ngResource', ['ng']).
        *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
        *                     / "*" / "+" / "," / ";" / "="
        */
-      function encodeUriSegment(val) {
-        return encodeUriQuery(val, true).
+      function encodeUriSegment(val, encodeSlashes) {
+        return encodeUriQuery(val, true, encodeSlashes).
           replace(/%26/gi, '&').
           replace(/%3D/gi, '=').
           replace(/%2B/gi, '+');
@@ -392,12 +397,13 @@ angular.module('ngResource', ['ng']).
        *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
        *                     / "*" / "+" / "," / ";" / "="
        */
-      function encodeUriQuery(val, pctEncodeSpaces) {
+      function encodeUriQuery(val, pctEncodeSpaces, encodeSlashes) {
         return encodeURIComponent(val).
           replace(/%40/gi, '@').
           replace(/%3A/gi, ':').
           replace(/%24/g, '$').
           replace(/%2C/gi, ',').
+          replace(/%2F/g, (encodeSlashes ? '%2F' : '/')).
           replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
       }
 
@@ -430,7 +436,7 @@ angular.module('ngResource', ['ng']).
           forEach(self.urlParams, function (_, urlParam) {
             val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
             if (angular.isDefined(val) && val !== null) {
-              encodedVal = encodeUriSegment(val);
+              encodedVal = encodeUriSegment(val, self.defaults.encodeSlashes);
               url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), function (match, p1) {
                 return encodedVal + p1;
               });

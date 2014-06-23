@@ -293,7 +293,7 @@ describe("resource", function() {
   });
 
   it('should support overriding provider default trailing-slash stripping configuration', function() {
-    // Set the new behavior for all new resources created by overriding the
+    // Set the new behav ior for all new resources created by overriding the
     // provider configuration
     resourceProvider.defaults.stripTrailingSlashes = false;
 
@@ -304,6 +304,44 @@ describe("resource", function() {
     R.get({a: 'foo'});
   });
 
+  it('should support implicitly encode slashes in urls', function () {
+    var R = $resource('http://localhost:8080/:path');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Foo%2Fbar').respond();
+    R.get({path: 'Foo/bar'});
+  });
+
+  it('should support explicitly encoding slashes in urls', function () {
+    var R = $resource('http://localhost:8080/:path', {}, {}, {encodeSlashes: true});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Foo%2Fbar').respond();
+    R.get({path: 'Foo/bar'});
+  });
+
+  it('should support explicitly preventing encoding slashes in urls', function () {
+    var R = $resource('http://localhost:8080/:path', {}, {}, {encodeSlashes: false});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Foo/bar').respond();
+    R.get({path: 'Foo/bar'});
+  });
+
+  it('should support provider-level configuration to prevent encoding slashes in urls', function () {
+    resourceProvider.defaults.encodeSlashes = false;
+
+    var R = $resource('http://localhost:8080/:path');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Foo/bar').respond();
+    R.get({path: 'Foo/bar'});
+  });
+
+  it('should support overriding provider default prevent encoding slashes configuration', function () {
+    resourceProvider.defaults.encodeSlashes = false;
+
+    var R = $resource('http://localhost:8080/:path', {}, {}, {encodeSlashes: true});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Foo%2Fbar').respond();
+    R.get({path: 'Foo/bar'});
+  });
 
   it('should allow relative paths in resource url', function () {
     var R = $resource(':relativePath');
