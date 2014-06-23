@@ -248,13 +248,13 @@ function isCssVisible(node) {
 
 function assertHidden(node) {
   if (isCssVisible(node)) {
-    throw new Error('Node should be hidden but was visible: ' + angular.module.ngMock.dump(node));
+    throw new Error('Node should be hidden but was visible: ' + angular.mock.dump(node));
   }
 }
 
 function assertVisible(node) {
   if (!isCssVisible(node)) {
-    throw new Error('Node should be visible but was hidden: ' + angular.module.ngMock.dump(node));
+    throw new Error('Node should be visible but was hidden: ' + angular.mock.dump(node));
   }
 }
 
