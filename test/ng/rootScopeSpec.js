@@ -114,6 +114,15 @@ describe('Scope', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
+    it('should not keep constant literals on the watch queue', inject(function($rootScope) {
+      $rootScope.$watch('[]', function() {});
+      $rootScope.$watch('{}', function() {});
+      expect($rootScope.$$watchers.length).toEqual(2);
+      $rootScope.$digest();
+
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
     it('should clean up stable watches on the watch queue', inject(function($rootScope, $parse) {
       $rootScope.$watch($parse('::foo'), function() {});
       expect($rootScope.$$watchers.length).toEqual(1);
