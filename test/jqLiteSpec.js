@@ -993,6 +993,16 @@ describe('jqLite', function() {
       expect(log).toEqual('click on: A;click on: B;');
     });
 
+    it('should not bind to comment or text nodes', function() {
+      var nodes = jqLite('<!-- some comment -->Some text');
+      var someEventHandler = jasmine.createSpy('someEventHandler');
+
+      nodes.on('someEvent', someEventHandler);
+      nodes.triggerHandler('someEvent');
+
+      expect(someEventHandler).not.toHaveBeenCalled();
+    });
+
     it('should bind to all events separated by space', function() {
       var elm = jqLite(a),
           callback = jasmine.createSpy('callback');

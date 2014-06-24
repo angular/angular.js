@@ -161,6 +161,12 @@ function jqLiteIsTextNode(html) {
   return !HTML_REGEXP.test(html);
 }
 
+function jqLiteAcceptsData(node) {
+  // The window object can accept data but has no nodeType
+  // Otherwise we are only interested in elements (1) and documents (9)
+  return !node.nodeType || node.nodeType === 1 || node.nodeType === 9;
+}
+
 function jqLiteBuildFragment(html, context) {
   var elem, tmp, tag, wrap,
       fragment = context.createDocumentFragment(),
@@ -319,7 +325,7 @@ function jqLiteData(element, key, value) {
 
   if (isSetter) {
     // set data only on Elements and Documents
-    if (element.nodeType === 1 || element.nodeType === 9) {
+    if (jqLiteAcceptsData(element)) {
       data[key] = value;
     }
   } else {
@@ -753,6 +759,11 @@ forEach({
 
   on: function onFn(element, type, fn, unsupported){
     if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+
+    // Do not add event handlers to non-elements because they will not be cleaned up.
+    if (!jqLiteAcceptsData(element)) {
+      return;
+    }
 
     var events = jqLiteExpandoStore(element, 'events'),
         handle = jqLiteExpandoStore(element, 'handle');
