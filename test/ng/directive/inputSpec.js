@@ -486,6 +486,16 @@ describe('ngModel', function() {
     expect(element).toHaveClass('ng-invalid-required');
   }));
 
+  it('should remove required on bad input', inject(function($compile, $rootScope, $sniffer) {
+    var element = $compile('<input type="email" ng-model="value" required />')($rootScope);
+    $rootScope.$digest();
+
+    element.val('bademail');
+    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+    expect(element).toBeInvalid();
+    expect(element).toHaveClass('ng-valid-required');
+  }));
+
   it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
     var element = $compile('<form name="myForm">' +
                              '<input name="myControl" ng-model="value" >' +
