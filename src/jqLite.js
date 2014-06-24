@@ -417,25 +417,22 @@ function jqLiteController(element, name) {
 }
 
 function jqLiteInheritedData(element, name, value) {
-  element = jqLite(element);
-
   // if element is the document object work with the html element instead
   // this makes $(document).scope() possible
-  if(element[0].nodeType == 9) {
-    element = element.find('html');
+  if(element.nodeType == 9) {
+    element = element.documentElement;
   }
   var names = isArray(name) ? name : [name];
 
-  while (element.length) {
-    var node = element[0];
+  while (element) {
     for (var i = 0, ii = names.length; i < ii; i++) {
-      if ((value = element.data(names[i])) !== undefined) return value;
+      if ((value = jqLite.data(element, names[i])) !== undefined) return value;
     }
 
     // If dealing with a document fragment node with a host element, and no parent, use the host
     // element as the parent. This enables directives within a Shadow DOM or polyfilled Shadow DOM
     // to lookup parent controllers.
-    element = jqLite(node.parentNode || (node.nodeType === 11 && node.host));
+    element = element.parentNode || (element.nodeType === 11 && element.host);
   }
 }
 
@@ -512,16 +509,23 @@ function getBooleanAttrName(element, name) {
 
 forEach({
   data: jqLiteData,
+  removeData: jqLiteRemoveData
+}, function(fn, name) {
+  JQLite[name] = fn;
+});
+
+forEach({
+  data: jqLiteData,
   inheritedData: jqLiteInheritedData,
 
   scope: function(element) {
     // Can't use jqLiteData here directly so we stay compatible with jQuery!
-    return jqLite(element).data('$scope') || jqLiteInheritedData(element.parentNode || element, ['$isolateScope', '$scope']);
+    return jqLite.data(element, '$scope') || jqLiteInheritedData(element.parentNode || element, ['$isolateScope', '$scope']);
   },
 
   isolateScope: function(element) {
     // Can't use jqLiteData here directly so we stay compatible with jQuery!
-    return jqLite(element).data('$isolateScope') || jqLite(element).data('$isolateScopeNoTemplate');
+    return jqLite.data(element, '$isolateScope') || jqLite.data(element, '$isolateScopeNoTemplate');
   },
 
   controller: jqLiteController,

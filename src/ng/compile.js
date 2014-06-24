@@ -947,7 +947,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (nodeLinkFn) {
             if (nodeLinkFn.scope) {
               childScope = scope.$new();
-              jqLite(node).data('$scope', childScope);
+              jqLite.data(node, '$scope', childScope);
             } else {
               childScope = scope;
             }
