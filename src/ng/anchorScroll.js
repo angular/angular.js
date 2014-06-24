@@ -92,8 +92,11 @@ function $AnchorScrollProvider() {
     // (no url change, no $location.hash() change), browser native does scroll
     if (autoScrollingEnabled) {
       $rootScope.$watch(function autoScrollWatch() {return $location.hash();},
-        function autoScrollWatchAction() {
-          $rootScope.$evalAsync(scroll);
+        function autoScrollWatchAction(newValue, oldValue) {
+          // Prevent unnecessary scroll event from being fired on watch creation.
+          if(newValue !== oldValue) {
+            $rootScope.$evalAsync(scroll);
+          }
         });
     }
 
