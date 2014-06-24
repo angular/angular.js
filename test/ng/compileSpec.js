@@ -4409,6 +4409,35 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(element.text()).toEqual('transcluded content');
         }));
+
+
+        it('should not leak memory with nested transclusion', function() {
+          var calcCacheSize = function() {
+            var count = 0;
+            for (var k in jqLite.cache) { ++count; }
+            return count;
+          };
+
+          inject(function($compile, $rootScope) {
+            var size;
+
+            expect(calcCacheSize()).toEqual(0);
+
+            element = jqLite('<div><ul><li ng-repeat="n in nums">{{n}} => <i ng-if="0 === n%2">Even</i><i ng-if="1 === n%2">Odd</i></li></ul></div>');
+            $compile(element)($rootScope.$new());
+
+            $rootScope.nums = [0,1,2];
+            $rootScope.$apply();
+            size = calcCacheSize();
+
+            $rootScope.nums = [3,4,5];
+            $rootScope.$apply();
+            expect(calcCacheSize()).toEqual(size);
+
+            element.remove();
+            expect(calcCacheSize()).toEqual(0);
+          });
+        });
       });
 
 
