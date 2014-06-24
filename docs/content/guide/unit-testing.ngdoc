@@ -49,7 +49,7 @@ Out of the four options in the list above, only the last one is testable. Let's 
 ### Using the `new` operator
 
 While there is nothing wrong with the `new` operator fundamentally, a problem arises when calling `new`
-on a constructor. This permanently binds the call site to the type. For example, lets say that we try to
+on a constructor. This permanently binds the call site to the type. For example, let's say that we try to
 instantiate an `XHR` that will retrieve data from the server.
 
 ```js
