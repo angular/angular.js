@@ -386,6 +386,23 @@ describe('jqLite', function() {
       selected.removeData('prop2');
     });
 
+
+    it('should not add to the cache if the node is a comment or text node', function() {
+      var calcCacheSize = function() {
+        var count = 0;
+        for (var k in jqLite.cache) { ++count; }
+        return count;
+      };
+
+      var nodes = jqLite('<!-- some comment --> and some text');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey', 'someValue');
+      expect(calcCacheSize()).toEqual(0);
+    });
+
+
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);

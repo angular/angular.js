@@ -314,30 +314,29 @@ function jqLiteExpandoStore(element, key, value) {
 }
 
 function jqLiteData(element, key, value) {
-  var data = jqLiteExpandoStore(element, 'data'),
-      isSetter = isDefined(value),
-      keyDefined = !isSetter && isDefined(key),
-      isSimpleGetter = keyDefined && !isObject(key);
+  if (jqLiteAcceptsData(element)) {
+    var data = jqLiteExpandoStore(element, 'data'),
+        isSetter = isDefined(value),
+        keyDefined = !isSetter && isDefined(key),
+        isSimpleGetter = keyDefined && !isObject(key);
 
-  if (!data && !isSimpleGetter) {
-    jqLiteExpandoStore(element, 'data', data = {});
-  }
-
-  if (isSetter) {
-    // set data only on Elements and Documents
-    if (jqLiteAcceptsData(element)) {
-      data[key] = value;
+    if (!data && !isSimpleGetter) {
+      jqLiteExpandoStore(element, 'data', data = {});
     }
-  } else {
-    if (keyDefined) {
-      if (isSimpleGetter) {
-        // don't create data in this case.
-        return data && data[key];
-      } else {
-        extend(data, key);
-      }
+
+    if (isSetter) {
+      data[key] = value;
     } else {
-      return data;
+      if (keyDefined) {
+        if (isSimpleGetter) {
+          // don't create data in this case.
+          return data && data[key];
+        } else {
+          extend(data, key);
+        }
+      } else {
+        return data;
+      }
     }
   }
 }
