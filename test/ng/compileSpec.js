@@ -3928,6 +3928,66 @@ describe('$compile', function() {
       });
 
 
+
+      it('should not leak if two "element" transclusions are on the same element', function() {
+        var calcCacheSize = function() {
+          var size = 0;
+          forEach(jqLite.cache, function(item, key) { size++; });
+          return size;
+        };
+
+        inject(function($compile, $rootScope) {
+          expect(calcCacheSize()).toEqual(0);
+
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
+          expect(calcCacheSize()).toEqual(1);
+
+          $rootScope.$apply('xs = [0,1]');
+          expect(calcCacheSize()).toEqual(2);
+
+          $rootScope.$apply('xs = [0]');
+          expect(calcCacheSize()).toEqual(1);
+
+          $rootScope.$apply('xs = []');
+          expect(calcCacheSize()).toEqual(1);
+
+          element.remove();
+          expect(calcCacheSize()).toEqual(0);
+        });
+      });
+
+
+      it('should not leak if two "element" transclusions are on the same element', function() {
+        var calcCacheSize = function() {
+          var size = 0;
+          forEach(jqLite.cache, function(item, key) { size++; });
+          return size;
+        };
+        inject(function($compile, $rootScope) {
+          expect(calcCacheSize()).toEqual(0);
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="val">{{x}}</div></div>')($rootScope);
+
+          $rootScope.$apply('xs = [0,1]');
+          // At this point we have a bunch of comment placeholders but no real transcluded elements
+          // So the cache only contains the root element's data
+          expect(calcCacheSize()).toEqual(1);
+
+          $rootScope.$apply('val = true');
+          // Now we have two concrete transcluded elements plus some comments so two more cache items
+          expect(calcCacheSize()).toEqual(3);
+
+          $rootScope.$apply('val = false');
+          // Once again we only have comments so no transcluded elements and the cache is back to just
+          // the root element
+          expect(calcCacheSize()).toEqual(1);
+
+          element.remove();
+          // Now we've even removed the root element along with its cache
+          expect(calcCacheSize()).toEqual(0);
+        });
+      });
+
+
       it('should remove transclusion scope, when the DOM is destroyed', function() {
         module(function() {
           directive('box', valueFn({
