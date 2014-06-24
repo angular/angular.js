@@ -2339,7 +2339,7 @@ describe('input', function() {
 
   describe('email', function() {
 
-    it('should validate e-mail', function() {
+    it('should validate e-mail, single', function() {
       compileInput('<input type="email" ng-model="email" name="alias" />');
 
       var widget = scope.form.alias;
@@ -2349,6 +2349,11 @@ describe('input', function() {
       expect(inputElm).toBeValid();
       expect(widget.$error.email).toBe(false);
 
+      changeInputValueTo('vojta@google.com,test@google.com');
+      expect(scope.email).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(widget.$error.email).toBeTruthy();
+      
       changeInputValueTo('invalid@');
       expect(scope.email).toBeUndefined();
       expect(inputElm).toBeInvalid();
@@ -2356,6 +2361,38 @@ describe('input', function() {
     });
 
 
+    it('should validate e-mail, multiple', function() {
+      compileInput('<input type="email" ng-model="email" name="alias" multiple />');
+
+      var widget = scope.form.alias;
+      changeInputValueTo('vojta@google.com');
+
+      expect(scope.email).toBe('vojta@google.com');
+      expect(inputElm).toBeValid();
+      expect(widget.$error.email).toBe(false);
+
+      changeInputValueTo('vojta@google.com,test@google.com');
+      expect(scope.email).toBe('vojta@google.com,test@google.com');
+      expect(inputElm).toBeValid();
+      expect(widget.$error.email).toBe(false);
+
+      changeInputValueTo('vojta@google.com,  test@google.com');
+      expect(scope.email).toBe('vojta@google.com,test@google.com');
+      expect(inputElm).toBeValid();
+      expect(widget.$error.email).toBe(false);
+      
+      changeInputValueTo('invalid@');
+      expect(scope.email).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(widget.$error.email).toBeTruthy();
+      
+      changeInputValueTo('valid@valid.com,invalid@');
+      expect(scope.email).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(widget.$error.email).toBeTruthy();
+    });
+
+    
     describe('EMAIL_REGEXP', function() {
       /* global EMAIL_REGEXP: false */
       it('should validate email', function() {

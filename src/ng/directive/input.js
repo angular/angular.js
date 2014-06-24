@@ -695,6 +695,7 @@ var inputType = {
    *    patterns defined as scope expressions.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {string=} multiple Allows for multiple addresses.
    *
    * @example
       <example name="email-input-directive">
@@ -1139,7 +1140,12 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
+    if (!ctrl.$isEmpty(value) && attr.multiple) {
+      var result = value.toString().split(',').every(function (part) { return EMAIL_REGEXP.test(trim(part)); });
+      return validate(ctrl, 'email', result, value);
+    } else {
+      return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
+    }
   };
 
   ctrl.$formatters.push(emailValidator);
