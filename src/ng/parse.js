@@ -1027,11 +1027,7 @@ function $ParseProvider() {
             cache[exp] = parsedExpression;
           }
 
-          if (parsedExpression.constant) {
-            parsedExpression.$$unwatch = true;
-          }
-
-          return oneTime ? oneTimeWrapper(parsedExpression) : parsedExpression;
+          return oneTime || parsedExpression.constant ? oneTimeWrapper(parsedExpression) : parsedExpression;
 
         case 'function':
           return exp;
@@ -1050,7 +1046,7 @@ function $ParseProvider() {
 
         function oneTimeParseFn(self, locals) {
           if (!stable) {
-            lastValue = expression(self, locals);
+            lastValue = expression.constant && lastValue ? lastValue : expression(self, locals);
             oneTimeParseFn.$$unwatch = isDefined(lastValue);
             if (oneTimeParseFn.$$unwatch && self && self.$$postDigestQueue) {
               self.$$postDigestQueue.push(function () {
