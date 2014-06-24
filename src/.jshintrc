@@ -86,6 +86,7 @@
     "angularInit": false,
     "bootstrap": false,
     "getTestability": false,
+    "shutdown": false,
     "snake_case": false,
     "bindJQuery": false,
     "assertArg": false,

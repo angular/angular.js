@@ -28,7 +28,11 @@ function Browser(window, document, $log, $sniffer) {
       history = window.history,
       setTimeout = window.setTimeout,
       clearTimeout = window.clearTimeout,
-      pendingDeferIds = {};
+      setInterval = window.setInterval,
+      clearInterval = window.clearInterval,
+      pendingDeferIds = {},
+      currentIntervalIds = {},
+      active = true;
 
   self.isMock = false;
 
@@ -77,6 +81,19 @@ function Browser(window, document, $log, $sniffer) {
     } else {
       outstandingRequestCallbacks.push(callback);
     }
+  };
+
+  self.shutdown = function() {
+    active = false;
+    forEach(currentIntervalIds, function(ignore, intervalId) {
+      delete currentIntervalIds[intervalId];
+      clearInterval(+intervalId);
+    });
+    forEach(pendingDeferIds, function(ignore, timeoutId) {
+      delete pendingDeferIds[timeoutId];
+      clearTimeout(+timeoutId);
+    });
+    jqLite(window).off('hashchange popstate', cacheStateAndFireUrlChange);
   };
 
   //////////////////////////////////////////////////////////////
@@ -271,16 +288,6 @@ function Browser(window, document, $log, $sniffer) {
   };
 
   /**
-   * @private
-   * Remove popstate and hashchange handler from window.
-   *
-   * NOTE: this api is intended for use only by $rootScope.
-   */
-  self.$$applicationDestroyed = function() {
-    jqLite(window).off('hashchange popstate', cacheStateAndFireUrlChange);
-  };
-
-  /**
    * Checks whether the url has changed outside of Angular.
    * Needs to be exported to be able to check for changes that have been done in sync,
    * as hashchange/popstate events fire in async.
@@ -321,12 +328,16 @@ function Browser(window, document, $log, $sniffer) {
    */
   self.defer = function(fn, delay) {
     var timeoutId;
-    outstandingRequestCount++;
-    timeoutId = setTimeout(function() {
-      delete pendingDeferIds[timeoutId];
-      completeOutstandingRequest(fn);
-    }, delay || 0);
-    pendingDeferIds[timeoutId] = true;
+    if (active) {
+      outstandingRequestCount++;
+      timeoutId = setTimeout(function() {
+        delete pendingDeferIds[timeoutId];
+        completeOutstandingRequest(fn);
+      }, delay || 0);
+      pendingDeferIds[timeoutId] = true;
+    } else {
+      timeoutId = 0;
+    }
     return timeoutId;
   };
 
@@ -351,11 +362,57 @@ function Browser(window, document, $log, $sniffer) {
     return false;
   };
 
+
+  /**
+   * @name $browser#interval
+   * @param {function()} fn A function, whose execution should be executed.
+   * @param {number=} interval Interval in milliseconds on how often to execute the function.
+   * @returns {*} IntervalId that can be used to cancel the task via `$browser.interval.cancel()`.
+   *
+   * @description
+   * Executes a fn asynchronously via `setInterval(fn, interval)`.
+   *
+   */
+  self.interval = function(fn, interval) {
+    var intervalId;
+    if (active) {
+      intervalId = setInterval(fn, interval);
+      currentIntervalIds[intervalId] = true;
+    } else {
+      intervalId = 0;
+    }
+    return intervalId;
+  };
+
+
+  /**
+   * @name $browser#interval.cancel
+   *
+   * @description
+   * Cancels an interval task identified with `intervalId`.
+   *
+   * @param {*} intervalId Token returned by the `$browser.interval` function.
+   * @returns {boolean} Returns `true` if the task was successfully canceled, and
+   *          `false` if the task was already canceled.
+   */
+  self.interval.cancel = function(intervalId) {
+    if (currentIntervalIds[intervalId]) {
+      delete currentIntervalIds[intervalId];
+      clearInterval(intervalId);
+      return true;
+    }
+    return false;
+  };
 }
 
-function $BrowserProvider() {
+function $BrowserProvider($shutdownProvider) {
+  var browser;
+
+  $shutdownProvider.register(function() { if (browser) { browser.shutdown(); } });
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function($window, $log, $sniffer, $document) {
-        return new Browser($window, $document, $log, $sniffer);
+        return browser = new Browser($window, $document, $log, $sniffer);
       }];
 }
+
+$BrowserProvider.$inject = ['$shutdownProvider'];

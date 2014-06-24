@@ -23,11 +23,16 @@ angular.mock = {};
  * The api of this service is the same as that of the real {@link ng.$browser $browser}, except
  * that there are several helper methods available which can be used in tests.
  */
-angular.mock.$BrowserProvider = function() {
+angular.mock.$BrowserProvider = function($shutdownProvider) {
+  var browser;
+
+  $shutdownProvider.register(function() { if (browser) { browser.shutdown(); } });
   this.$get = function() {
-    return new angular.mock.$Browser();
+    return browser = new angular.mock.$Browser();
   };
 };
+
+angular.mock.$BrowserProvider.$inject = ['$shutdownProvider'];
 
 angular.mock.$Browser = function() {
   var self = this;
@@ -58,7 +63,6 @@ angular.mock.$Browser = function() {
     return listener;
   };
 
-  self.$$applicationDestroyed = angular.noop;
   self.$$checkUrlChange = angular.noop;
 
   self.deferredFns = [];
@@ -135,6 +139,72 @@ angular.mock.$Browser = function() {
   self.baseHref = function() {
     return this.$$baseHref;
   };
+
+  self.interval = function(fn, interval) {
+    self.interval.repeatFns.push({
+      nextTime:(self.interval.now + interval),
+      delay: interval,
+      fn: fn,
+      id: self.interval.nextRepeatId
+    });
+    self.interval.repeatFns.sort(function(a,b) { return a.nextTime - b.nextTime;});
+
+    return self.interval.nextRepeatId++;
+  };
+
+  self.interval.cancel = function(id) {
+    var fnIndex;
+
+    angular.forEach(self.interval.repeatFns, function(fn, index) {
+      if (fn.id === id) fnIndex = index;
+    });
+
+    if (fnIndex !== undefined) {
+      self.interval.repeatFns.splice(fnIndex, 1);
+      return true;
+    }
+
+    return false;
+  };
+
+  self.interval.flush = function(delay) {
+    var nextTime;
+
+    if (angular.isDefined(delay)) {
+      // A delay was passed so compute the next time
+      nextTime = self.interval.now + delay;
+    } else {
+      if (self.interval.repeatFns.length) {
+        // No delay was passed so set the next time so that all the existing intervals run at least once.
+        nextTime = self.repeatFns[self.repeatFns.length - 1].nextTime;
+        delay = nextTime - self.interval.now;
+      } else {
+        // No delay passed, but there are no interval tasks so flush - indicates an error!
+        throw new Error('No interval tasks to be flushed');
+      }
+    }
+
+    while (self.interval.repeatFns.length && self.interval.repeatFns[0].nextTime <= nextTime) {
+      // Increment the time and call the next deferred function
+      self.interval.now = self.interval.repeatFns[0].nextTime;
+      var task = self.interval.repeatFns[0];
+      task.fn();
+      task.nextTime += task.delay;
+      self.interval.repeatFns.sort(function(a,b) { return a.nextTime - b.nextTime;});
+    }
+
+    // Ensure that the current time is correct
+    self.interval.now = nextTime;
+
+    return delay;
+  };
+
+  self.interval.repeatFns = [];
+  self.interval.nextRepeatId = 0;
+  self.interval.now = 0;
+
+  self.shutdown = angular.noop;
+
 };
 angular.mock.$Browser.prototype = {
 
@@ -2911,10 +2981,8 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
       }
       angular.element.cleanData(cleanUpNodes);
 
-      // Ensure `$destroy()` is available, before calling it
-      // (a mocked `$rootScope` might not implement it (or not even be an object at all))
-      var $rootScope = injector.get('$rootScope');
-      if ($rootScope && $rootScope.$destroy) $rootScope.$destroy();
+      var $shutdown = injector.get('$shutdown');
+      if ($shutdown) $shutdown();
     }
 
     // clean up jquery's fragment cache

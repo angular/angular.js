@@ -1075,10 +1075,10 @@ describe('Scope', function() {
     }));
 
 
-    it('should call $browser.$$applicationDestroyed when destroying rootScope', inject(function($rootScope, $browser) {
-      spyOn($browser, '$$applicationDestroyed');
+    it('should call shutdown when destroying rootScope', inject(function($rootScope, $browser) {
+      spyOn($browser, 'shutdown');
       $rootScope.$destroy();
-      expect($browser.$$applicationDestroyed).toHaveBeenCalledOnce();
+      expect($browser.shutdown).toHaveBeenCalledOnce();
     }));
 
 

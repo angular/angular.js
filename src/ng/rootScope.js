@@ -67,11 +67,13 @@
  * They also provide event emission/broadcast and subscription facility. See the
  * {@link guide/scope developer guide on scopes}.
  */
-function $RootScopeProvider() {
+$RootScopeProvider.$inject = ['$shutdownProvider'];
+function $RootScopeProvider($shutdownProvider) {
   var TTL = 10;
   var $rootScopeMinErr = minErr('$rootScope');
   var lastDirtyWatch = null;
   var applyAsyncId = null;
+  var $rootScope;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -94,8 +96,10 @@ function $RootScopeProvider() {
     return ChildScope;
   }
 
-  this.$get = ['$exceptionHandler', '$parse', '$browser',
-      function($exceptionHandler, $parse, $browser) {
+  $shutdownProvider.register(function() { if ($rootScope) { $rootScope.$destroy(); } });
+
+  this.$get = ['$exceptionHandler', '$parse', '$browser', '$shutdown',
+      function($exceptionHandler, $parse, $browser, $shutdown) {
 
     function destroyChildScope($event) {
         $event.currentScope.$$destroyed = true;
@@ -907,8 +911,7 @@ function $RootScopeProvider() {
         this.$$destroyed = true;
 
         if (this === $rootScope) {
-          //Remove handlers attached to window when $rootScope is removed
-          $browser.$$applicationDestroyed();
+          $shutdown();
         }
 
         incrementWatchersCount(this, -this.$$watchersCount);
@@ -1308,7 +1311,7 @@ function $RootScopeProvider() {
       }
     };
 
-    var $rootScope = new Scope();
+    $rootScope = new Scope();
 
     //The internal queues. Expose them on the $rootScope for debugging/testing purposes.
     var asyncQueue = $rootScope.$$asyncQueue = [];
@@ -1374,3 +1377,5 @@ function $RootScopeProvider() {
     }
   }];
 }
+
+

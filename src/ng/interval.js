@@ -135,8 +135,6 @@ function $IntervalProvider() {
     function interval(fn, delay, count, invokeApply) {
       var hasParams = arguments.length > 4,
           args = hasParams ? sliceArgs(arguments, 4) : [],
-          setInterval = $window.setInterval,
-          clearInterval = $window.clearInterval,
           iteration = 0,
           skipApply = (isDefined(invokeApply) && !invokeApply),
           deferred = (skipApply ? $$q : $q).defer(),
@@ -144,7 +142,7 @@ function $IntervalProvider() {
 
       count = isDefined(count) ? count : 0;
 
-      promise.$$intervalId = setInterval(function tick() {
+      promise.$$intervalId = $browser.interval(function tick() {
         if (skipApply) {
           $browser.defer(callback);
         } else {
@@ -154,7 +152,7 @@ function $IntervalProvider() {
 
         if (count > 0 && iteration >= count) {
           deferred.resolve(iteration);
-          clearInterval(promise.$$intervalId);
+          $browser.interval.cancel(promise.$$intervalId);
           delete intervals[promise.$$intervalId];
         }
 
@@ -191,7 +189,7 @@ function $IntervalProvider() {
         // Interval cancels should not report as unhandled promise.
         intervals[promise.$$intervalId].promise.catch(noop);
         intervals[promise.$$intervalId].reject('canceled');
-        $window.clearInterval(promise.$$intervalId);
+        $browser.interval.cancel(promise.$$intervalId);
         delete intervals[promise.$$intervalId];
         return true;
       }

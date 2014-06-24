@@ -1692,7 +1692,7 @@ function bootstrap(element, modules, config) {
 
     modules = modules || [];
     modules.unshift(['$provide', function($provide) {
-      $provide.value('$rootElement', element);
+      $provide.provider('$rootElement', rootElementProviderFactory(element));
     }]);
 
     if (config.debugInfoEnabled) {
@@ -1770,6 +1770,48 @@ function getTestability(rootElement) {
       'no injector found for element argument to getTestability');
   }
   return injector.get('$$testability');
+}
+
+function rootElementProviderFactory(rootElement) {
+  return ['$shutdownProvider', function($shutdownProvider) {
+    $shutdownProvider.register(function() {
+      if (rootElement.dealoc) {
+        rootElement.dealoc();
+      } else {
+        rootElement.find('*').removeData();
+        rootElement.removeData();
+      }
+    });
+    this.$get = function() {
+      return rootElement;
+    };
+  }];
+}
+
+function $ShutdownProvider() {
+  var fns = [];
+  this.$get = function() {
+    return function() {
+      while (fns.length) {
+        var fn = fns.shift();
+        fn();
+      }
+    };
+  };
+
+  this.register = function(fn) {
+    fns.push(fn);
+  };
+}
+
+function shutdown(element) {
+  var injector;
+
+  injector = angular.element(element).injector();
+  if (!injector) {
+    throw ngMinErr('shtdwn', 'Element not part of an app');
+  }
+  injector.get('$shutdown')();
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
