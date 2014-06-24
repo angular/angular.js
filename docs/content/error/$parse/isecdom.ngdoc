@@ -14,3 +14,6 @@ perform this check - it's up to the developer to not expose such sensitive and p
 directly on the scope chain.
 
 To resolve this error, avoid access to DOM nodes.
+
+A common mistake is to `return false` as the last statement of your function handler (with an
+`ng-click` for instance). Especially in **CoffeeScript** implicit returns.
