@@ -904,18 +904,35 @@ function $RootScopeProvider(){
        *    - `function(scope)`: execute the function with the current `scope` parameter.
        *
        */
-      $evalAsync: function(expr) {
+      $evalAsync: function(expr, skipApply) {
         // if we are outside of an $digest loop and this is the first time we are scheduling async
         // task also schedule async auto-flush
-        if (!$rootScope.$$phase && !$rootScope.$$asyncQueue.length) {
-          $browser.defer(function() {
-            if ($rootScope.$$asyncQueue.length) {
-              $rootScope.$digest();
-            }
-          });
+        if (!skipApply) {
+          if (!$rootScope.$$phase && !$rootScope.$$asyncQueue.length) {
+            $browser.defer(function() {
+              if ($rootScope.$$asyncQueue.length) {
+                $rootScope.$digest();
+              }
+            });
+          }
+          this.$$asyncQueue.push({scope: this, expression: expr});
+        } else {
+          var asyncQueue = ($rootScope.$$liteAsyncQueue || ($rootScope.$$liteAsyncQueue = []));
+          var asyncTask;
+          if (!asyncQueue.length) {
+            $browser.defer(function() {
+              while (asyncQueue.length) {
+                try {
+                  asyncTask = asyncQueue.shift();
+                  asyncTask.scope.$eval(asyncTask.expression);
+                } catch (e) {
+                  $exceptionHandler(e);
+                }
+              }
+            });
+          }
+          asyncQueue.push({scope: this, expression: expr});
         }
-
-        this.$$asyncQueue.push({scope: this, expression: expr});
       },
 
       $$postDigest : function(fn) {

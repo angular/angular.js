@@ -98,6 +98,21 @@ describe('$interval', function() {
   }));
 
 
+  it('should NOT call $rootScope.$digest if invokeApply is set to false',
+      inject(function($interval, $rootScope, $window, $browser) {
+    var digestSpy = spyOn($rootScope, '$digest').andCallThrough();
+    var resolveSpy = jasmine.createSpy('resolve');
+    var notifySpy = jasmine.createSpy('notify');
+    $interval(noop, 1000, 1, false).then(resolveSpy, null, notifySpy);
+
+    $window.flush(4000);
+    $browser.defer.flush();
+    expect(digestSpy).not.toHaveBeenCalled();
+    expect(resolveSpy).toHaveBeenCalledOnce();
+    expect(notifySpy).toHaveBeenCalledOnce();
+  }));
+
+
   it('should allow you to specify the delay time', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() { counter++; }, 123);
