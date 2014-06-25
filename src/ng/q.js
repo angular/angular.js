@@ -171,8 +171,8 @@
 function $QProvider() {
 
   this.$get = ['$rootScope', '$exceptionHandler', function($rootScope, $exceptionHandler) {
-    return qFactory(function(callback) {
-      $rootScope.$evalAsync(callback);
+    return qFactory(function(callback, skipApply) {
+      $rootScope.$evalAsync(callback, skipApply);
     }, $exceptionHandler);
   }];
 }
@@ -208,7 +208,7 @@ function qFactory(nextTick, exceptionHandler) {
         if (pending) {
           var callbacks = pending;
           pending = undefined;
-          value = ref(val);
+          value = ref(val, deferred.$$skipApply);
 
           if (callbacks.length) {
             nextTick(function() {
@@ -217,7 +217,7 @@ function qFactory(nextTick, exceptionHandler) {
                 callback = callbacks[i];
                 value.then(callback[0], callback[1], callback[2]);
               }
-            });
+            }, deferred.$$skipApply);
           }
         }
       },
@@ -239,7 +239,7 @@ function qFactory(nextTick, exceptionHandler) {
                 callback = callbacks[i];
                 callback[2](progress);
               }
-            });
+            }, deferred.$$skipApply);
           }
         }
       },
@@ -331,14 +331,14 @@ function qFactory(nextTick, exceptionHandler) {
   };
 
 
-  var ref = function(value) {
+  var ref = function(value, skipApply) {
     if (value && isFunction(value.then)) return value;
     return {
       then: function(callback) {
         var result = defer();
         nextTick(function() {
           result.resolve(callback(value));
-        });
+        }, skipApply);
         return result.promise;
       }
     };

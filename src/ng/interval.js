@@ -138,6 +138,7 @@ function $IntervalProvider() {
           iteration = 0,
           skipApply = (isDefined(invokeApply) && !invokeApply);
 
+      deferred.$$skipApply = skipApply;
       count = isDefined(count) ? count : 0;
 
       promise.then(null, null, fn);
