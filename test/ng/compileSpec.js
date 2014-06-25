@@ -3929,6 +3929,33 @@ describe('$compile', function() {
         });
       });
 
+      it('should not leak memory with nested transclusion', function() {
+        var calcCacheSize = function() {
+          var size = 0;
+          forEach(jqLite.cache, function(item, key) { size++; });
+          return size;
+        };
+
+        inject(function($compile, $rootScope) {
+          var size;
+
+          expect(calcCacheSize()).toEqual(0);
+
+          element = jqLite('<div><ul><li ng-repeat="n in nums">{{n}} => <i ng-if="0 === n%2">Even</i><i ng-if="1 === n%2">Odd</i></li></ul></div>');
+          $compile(element)($rootScope.$new());
+
+          $rootScope.nums = [0,1,2];
+          $rootScope.$apply();
+          size = calcCacheSize();
+
+          $rootScope.nums = [3,4,5];
+          $rootScope.$apply();
+          expect(calcCacheSize()).toEqual(size);
+
+          element.remove();
+          expect(calcCacheSize()).toEqual(0);
+        });
+      });
 
 
       it('should not leak if two "element" transclusions are on the same element', function() {
@@ -4012,7 +4039,7 @@ describe('$compile', function() {
           $rootScope.username = 'Misko';
           $rootScope.select = true;
           element = $compile(
-              '<div><div box name="username" show="select">user: {{username}}</div></div>')
+              '<div ng-if="1<2"><div box name="username" show="select">user: {{username}}</div></div>')
               ($rootScope);
           $rootScope.$apply();
           expect(element.text()).toEqual('Hello: Misko!user: Misko');
