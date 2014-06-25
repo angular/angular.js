@@ -29,6 +29,7 @@ function $HttpBackendProvider() {
 function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+    var status, internalTimeout;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -112,10 +113,12 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       xhr.send(post || null);
     }
 
-    if (timeout > 0) {
-      var timeoutId = $browserDefer(timeoutRequest, timeout);
-    } else if (isPromiseLike(timeout)) {
-      timeout.then(timeoutRequest);
+    internalTimeout = angular.isFunction(timeout) ? timeout() : timeout;
+
+    if (internalTimeout > 0) {
+      var timeoutId = $browserDefer(timeoutRequest, internalTimeout);
+    } else if (internalTimeout && internalTimeout.then) {
+      internalTimeout.then(timeoutRequest);
     }
 
 

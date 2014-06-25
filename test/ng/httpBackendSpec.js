@@ -181,6 +181,26 @@ describe('$httpBackend', function() {
     expect(callback).toHaveBeenCalledOnce();
   });
 
+  it('should abort request on timeout provided by function', function() {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(-1);
+    });
+
+    $backend('GET', '/url', null, callback, {}, function() { return 2000; });
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    expect(fakeTimeout.delays[0]).toBe(2000);
+
+    fakeTimeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
 
   it('should abort request on timeout promise resolution', inject(function($timeout) {
     callback.andCallFake(function(status, response) {
@@ -200,6 +220,57 @@ describe('$httpBackend', function() {
   }));
 
 
+  it('should abort request on timeout promise resolution provided by function',
+      inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(-1);
+    });
+
+    $backend('GET', '/url', null, callback, {}, function() { return $timeout(noop, 2000); });
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    $timeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  }));
+
+
+  it('should abort multiple request on timeout promise resolution provided by function',
+      inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(-1);
+    });
+
+    $backend('GET', '/url', null, callback, {}, function() { return $timeout(noop, 2000); });
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    $timeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+
+    $backend('GET', '/url', null, callback, {}, function() { return $timeout(noop, 2000); });
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    $timeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledTwice();
+  }));
+
+
   it('should not abort resolved request on timeout promise resolution', inject(function($timeout) {
     callback.andCallFake(function(status, response) {
       expect(status).toBe(200);
@@ -211,6 +282,26 @@ describe('$httpBackend', function() {
 
     xhr.status = 200;
     xhr.onload();
+    expect(callback).toHaveBeenCalledOnce();
+
+    $timeout.flush();
+    expect(xhr.abort).not.toHaveBeenCalled();
+  }));
+
+
+  it('should not abort resolved request on timeout promise resolution provided by function',
+      inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+    });
+
+    $backend('GET', '/url', null, callback, {}, function() { return $timeout(noop, 2000); });
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
     expect(callback).toHaveBeenCalledOnce();
 
     $timeout.flush();
@@ -235,6 +326,54 @@ describe('$httpBackend', function() {
 
     expect(fakeTimeout.delays.length).toBe(0);
     expect(xhr.abort).not.toHaveBeenCalled();
+  });
+
+
+  it('should cancel timeout provided by function on completion', function() {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+    });
+
+    $backend('GET', '/url', null, callback, {}, function() { return 2000; });
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    expect(fakeTimeout.delays[0]).toBe(2000);
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+
+    expect(fakeTimeout.delays.length).toBe(0);
+    expect(xhr.abort).not.toHaveBeenCalled();
+  });
+
+
+  it('should register onreadystatechange callback before sending', function() {
+    // send() in IE6, IE7 is sync when serving from cache
+    function SyncXhr() {
+      xhr = this;
+      this.open = this.setRequestHeader = noop;
+
+      this.send = function() {
+        this.status = 200;
+        this.responseText = 'response';
+        this.readyState = 4;
+        this.onreadystatechange();
+      };
+
+      this.getAllResponseHeaders = valueFn('');
+    }
+
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+      expect(response).toBe('response');
+    });
+
+    $backend = createHttpBackend($browser, function() { return new SyncXhr(); });
+    $backend('GET', '/url', null, callback);
+    expect(callback).toHaveBeenCalledOnce();
   });
 
 

@@ -423,6 +423,61 @@ describe("resource", function() {
   });
 
 
+  it("should not perform action due to timeout", inject(function($q) {
+    $httpBackend.when('GET').respond({value: 123});
+    var deferred = $q.defer();
+    var R = $resource('/Path', {param: null}, {get: {method: 'GET', timeout: deferred.promise}});
+    R.get({}, callback);
+    deferred.resolve();
+    expect(callback).not.toHaveBeenCalled();
+  }));
+
+
+  it("should not perform action due to timeout provided by function", inject(function($q) {
+    $httpBackend.when('GET').respond({value: 123});
+    var deferred = $q.defer();
+    var R = $resource('/Path', {param: null}, {get: {method: 'GET',
+        timeout: function() { return deferred.promise; }}});
+    R.get({}, callback);
+    deferred.resolve();
+    expect(callback).not.toHaveBeenCalled();
+  }));
+
+
+  it("should not perform first action due to timeout", inject(function($q) {
+    $httpBackend.when('GET').respond({value: 123});
+    var deferred = $q.defer();
+
+    var R = $resource('/Path', {param: null}, {get: {method: 'GET',
+        timeout: function() { return deferred.promise; }}});
+    R.get({}, callback);
+    deferred.resolve();
+    expect(callback).not.toHaveBeenCalled();
+
+    deferred = $q.defer();
+    R.get({}, callback);
+    $httpBackend.flush();
+    expect(callback).toHaveBeenCalled();
+  }));
+
+
+  it("should not perform both actions due to timeout", inject(function($q) {
+    $httpBackend.when('GET').respond({value: 123});
+    var deferred = $q.defer();
+
+    var R = $resource('/Path', {param: null}, {get: {method: 'GET',
+        timeout: function() { return deferred.promise; }}});
+    R.get({}, callback);
+    deferred.resolve();
+    expect(callback).not.toHaveBeenCalled();
+
+    deferred = $q.defer();
+    deferred.resolve();
+    R.get({}, callback);
+    expect(callback).not.toHaveBeenCalled();
+  }));
+
+
   it("should read resource", function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
     var cc = CreditCard.get({id: 123}, callback);
