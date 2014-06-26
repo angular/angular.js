@@ -698,6 +698,56 @@ describe('parser', function() {
             });
           });
 
+          describe('Function prototype functions', function () {
+            it('should NOT allow invocation to Function.call', function() {
+              scope.fn = Function.prototype.call;
+
+              expect(function() {
+                scope.$eval('$eval.call()')
+              }).toThrowMinErr(
+                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                      'Expression: $eval.call()');
+
+              expect(function() {
+                scope.$eval('fn()')
+              }).toThrowMinErr(
+                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                      'Expression: fn()');
+            });
+
+            it('should NOT allow invocation to Function.apply', function() {
+              scope.apply = Function.prototype.apply;
+
+              expect(function() {
+                scope.$eval('$eval.apply()')
+              }).toThrowMinErr(
+                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                      'Expression: $eval.apply()');
+
+              expect(function() {
+                scope.$eval('apply()')
+              }).toThrowMinErr(
+                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                      'Expression: apply()');
+            });
+
+            it('should NOT allow invocation to Function.bind', function() {
+              scope.bind = Function.prototype.bind;
+
+              expect(function() {
+                scope.$eval('$eval.bind()')
+              }).toThrowMinErr(
+                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                      'Expression: $eval.bind()');
+
+              expect(function() {
+                scope.$eval('bind()')
+              }).toThrowMinErr(
+                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                      'Expression: bind()');
+            });
+          });
+
           describe('Object constructor', function() {
 
             it('should NOT allow access to Object constructor that has been aliased', function() {
@@ -1053,7 +1103,7 @@ describe('parser', function() {
           }));
         });
 
-        
+
         describe('constant', function() {
           it('should mark scalar value expressions as constant', inject(function($parse) {
             expect($parse('12.3').constant).toBe(true);
