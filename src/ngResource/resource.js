@@ -503,33 +503,45 @@ angular.module('ngResource', ['ng']).
         forEach(actions, function (action, name) {
           var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
 
-          Resource[name] = function () {
-            if (arguments.length > 4) {
-              throw $resourceMinErr('badargs',
-                "Expected up to 4 arguments " +
-                "[params, data, success, error], " +
-                "got {0} arguments",
-                arguments.length);
-            }
+          Resource[name] = function (a1, a2, a3, a4) {
+            var params = {}, data, success, error;
 
-            var params, data, success, error;
+            /* jshint -W086 */ /* (purposefully fall through case statements) */
+            switch (arguments.length) {
+              case 4:
+                error = a4;
+                success = a3;
+              //fallthrough
+              case 3:
+              case 2:
+                if (isFunction(a2)) {
+                  if (isFunction(a1)) {
+                    success = a1;
+                    error = a2;
+                    break;
+                  }
 
-            // Find success and error callbacks
-            for (var i = 0; i < arguments.length; i++) {
-              if (isFunction(arguments[i])) {
-                if (success) error = arguments[i];
-                else success = arguments[i];
-                arguments[i] = undefined; // reset to avoid setting data or params to a function
-              }
+                  success = a2;
+                  error = a3;
+                  //fallthrough
+                } else {
+                  params = a1;
+                  data = a2;
+                  success = a3;
+                  break;
+                }
+              case 1:
+                if (isFunction(a1)) success = a1;
+                else if (hasBody) data = a1;
+                else params = a1;
+                break;
+              case 0: break;
+              default:
+                throw $resourceMinErr('badargs',
+                  "Expected up to 4 arguments [params, data, success, error], got {0} arguments",
+                  arguments.length);
             }
-
-            // Set data and params
-            if (arguments.length <= 2 && hasBody) {
-              data = arguments[0];
-            } else {
-              params = arguments[0];
-              data = arguments[1];
-            }
+            /* jshint +W086 */ /* (purposefully fall through case statements) */
 
             var isInstanceCall = this instanceof Resource;
             var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
