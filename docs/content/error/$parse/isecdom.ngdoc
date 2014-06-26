@@ -15,5 +15,7 @@ directly on the scope chain.
 
 To resolve this error, avoid access to DOM nodes.
 
+## CoffeeScript implicit returns
+
 A common mistake is to `return false` as the last statement of your function handler (with an
-`ng-click` for instance). Especially in **CoffeeScript** implicit returns.
+`ng-click` for instance). Especially in **CoffeeScript** because of the implicit returns.
