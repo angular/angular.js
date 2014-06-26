@@ -28,7 +28,7 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, progressCallback) {
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -106,6 +106,13 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
           if (responseType !== 'json') {
             throw e;
           }
+        }
+      }
+
+      if (typeof progressCallback === "function") {
+        xhr.onprogress = progressCallback;
+        if ("upload" in xhr) {
+          xhr.upload.onprogress = progressCallback;
         }
       }
 
