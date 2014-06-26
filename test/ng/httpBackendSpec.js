@@ -214,6 +214,25 @@ describe('$httpBackend', function() {
     expect(MockXhr.$$lastInstance.withCredentials).toBe(true);
   });
 
+  describe('upload and download events', function() {
+
+    it('should call progress callback on POST requests', function() {
+      $backend('POST', '/whatever', null, noop, {}, null, null, 'blob', callback);
+
+      MockXhr.$$lastInstance.onprogress();
+
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should call progress callback on GET requests', function() {
+      $backend('GET', '/whatever', null, noop, {}, null, null, 'blob', callback);
+
+      MockXhr.$$lastInstance.onprogress();
+
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
 
   describe('responseType', function() {
 
