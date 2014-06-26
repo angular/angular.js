@@ -2,8 +2,8 @@
 
 
 function $TimeoutProvider() {
-  this.$get = ['$rootScope', '$browser', '$q', '$exceptionHandler',
-       function($rootScope,   $browser,   $q,   $exceptionHandler) {
+  this.$get = ['$rootScope', '$browser', '$q', '$$q', '$exceptionHandler',
+       function($rootScope,   $browser,   $q,   $$q,   $exceptionHandler) {
     var deferreds = {};
 
 
@@ -33,9 +33,9 @@ function $TimeoutProvider() {
       *
       */
     function timeout(fn, delay, invokeApply) {
-      var deferred = $q.defer(),
+      var skipApply = (isDefined(invokeApply) && !invokeApply),
+          deferred = (skipApply ? $$q : $q).defer(),
           promise = deferred.promise,
-          skipApply = (isDefined(invokeApply) && !invokeApply),
           timeoutId;
 
       timeoutId = $browser.defer(function() {
