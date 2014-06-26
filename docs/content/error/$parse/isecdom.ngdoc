@@ -18,4 +18,12 @@ To resolve this error, avoid access to DOM nodes.
 ## CoffeeScript implicit returns
 
 A common mistake is to `return false` as the last statement of your function handler (with an
-`ng-click` for instance). Especially in **CoffeeScript** because of the implicit returns.
+`ng-click` for instance).
+
+Especially with **CoffeeScript** because of the implicit returns.
+
+   <a data-ng-click="do_something()">Do it</a>
+   
+   $scope.do_something = ->
+     something_else() # this could return false
+     # We need to add a return at the end
