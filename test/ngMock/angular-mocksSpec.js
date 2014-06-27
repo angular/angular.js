@@ -370,6 +370,20 @@ describe('ngMock', function() {
         expect(counterA).toEqual(4);
         expect(counterB).toEqual(1);
       }));
+
+      it('should work if invokeApply is set to false', inject(function($interval) {
+        var counter = 0;
+        $interval(function() { counter++; }, 100, 0, false);
+
+        $interval.flush(100);
+        expect(counter).toBe(1);
+
+        $interval.flush(100);
+        expect(counter).toBe(2);
+
+        $interval.flush(100);
+        expect(counter).toBe(3);
+      }));
     });
 
 

@@ -461,7 +461,11 @@ angular.mock.$IntervalProvider = function() {
       promise.$$intervalId = nextRepeatId;
 
       function tick() {
-        deferred.notify(iteration++);
+        if (!skipApply) {
+          deferred.notify(iteration++);
+        } else {
+          fn(iteration++);
+        }
 
         if (count > 0 && iteration >= count) {
           var fnIndex;

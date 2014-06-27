@@ -98,6 +98,24 @@ describe('$interval', function() {
   }));
 
 
+  it('should still call the interval fn if invokeApply is false',
+      inject(function($interval, $rootScope, $window) {
+    var spy = jasmine.createSpy('invokeApply = false');
+
+    $interval(spy, 100, 0, false);
+    expect(spy).not.toHaveBeenCalled();
+
+    $window.flush(100);
+    expect(spy).toHaveBeenCalled();
+
+    $window.flush(100);
+    expect(spy.callCount).toBe(2);
+
+    $window.flush(100);
+    expect(spy.callCount).toBe(3);
+  }));
+
+
   it('should allow you to specify the delay time', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() { counter++; }, 123);
