@@ -85,7 +85,6 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
-    "toBoolean": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
@@ -101,6 +100,7 @@
     "assertNotHasOwnProperty": false,
     "getter": false,
     "getBlockElements": false,
+    "VALIDITY_STATE_PROPERTY": true,
 
     /* AngularPublic.js */
     "version": false,

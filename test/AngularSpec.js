@@ -951,7 +951,7 @@ describe('angular', function() {
       var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
                          '<ngtest:foo ngtest:attr="bar"></ngtest:foo>' +
                        '</div>')[0];
-      expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
+      expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
     });
 
@@ -960,7 +960,7 @@ describe('angular', function() {
         var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
                            '<ngtest:foo ngtest:attr="bar"></ng-test>' +
                          '</div>')[0];
-        expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
+        expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
         expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
       });
     }

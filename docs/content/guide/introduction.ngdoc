@@ -22,7 +22,7 @@ The impedance mismatch between dynamic applications and static documents is ofte
     in charge and it calls into the library when it sees fit. E.g., `jQuery`.
   * **frameworks** - a particular implementation of a web application, where your code fills in
     the details. The framework is in charge and it calls into your code when it needs something
-    app specific. E.g., `knockout`, `ember`, etc.
+    app specific. E.g., `durandal`, `ember`, etc.
 
 
 Angular takes another approach. It attempts to minimize the impedance mismatch between document

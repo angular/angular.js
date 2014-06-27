@@ -486,6 +486,7 @@ describe('ngModel', function() {
     expect(element).toHaveClass('ng-invalid-required');
   }));
 
+
   it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
     var element = $compile('<form name="myForm">' +
                              '<input name="myControl" ng-model="value" >' +
@@ -607,10 +608,17 @@ describe('ngModel', function() {
 
 
 describe('input', function() {
-  var formElm, inputElm, scope, $compile, $sniffer, $browser, changeInputValueTo;
+  var formElm, inputElm, scope, $compile, $sniffer, $browser, changeInputValueTo, currentSpec;
 
-  function compileInput(inputHtml) {
+  function compileInput(inputHtml, mockValidity) {
     inputElm = jqLite(inputHtml);
+    if (isObject(mockValidity)) {
+      VALIDITY_STATE_PROPERTY = 'ngMockValidity';
+      inputElm.prop(VALIDITY_STATE_PROPERTY, mockValidity);
+      currentSpec.after(function() {
+        VALIDITY_STATE_PROPERTY = 'validity';
+      });
+    }
     formElm = jqLite('<form name="form"></form>');
     formElm.append(inputElm);
     $compile(formElm)(scope);
@@ -618,6 +626,8 @@ describe('input', function() {
   }
 
   var attrs;
+  beforeEach(function() { currentSpec = this; });
+  afterEach(function() { currentSpec = null; });
   beforeEach(module(function($compileProvider) {
     $compileProvider.directive('attrCapture', function() {
       return function(scope, element, $attrs) {
@@ -2237,6 +2247,33 @@ describe('input', function() {
     });
 
 
+    it('should invalidate number if suffering from bad input', function() {
+      compileInput('<input type="number" ng-model="age" />', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('10a');
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should validate number if transition from bad input to empty string', function() {
+      var validity = {
+        valid: false,
+        badInput: true
+      };
+      compileInput('<input type="number" ng-model="age" />', validity);
+      changeInputValueTo('10a');
+      validity.badInput = false;
+      validity.valid = true;
+      changeInputValueTo('');
+      expect(scope.age).toBeNull();
+      expect(inputElm).toBeValid();
+    });
+
+
     describe('min', function() {
 
       it('should validate', function() {
@@ -2715,6 +2752,16 @@ describe('input', function() {
     it('should set $invalid when model undefined', function() {
       compileInput('<input type="text" ng-model="notDefined" required />');
       expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should set $valid even if model fails other validators', function() {
+      compileInput('<input type="email" ng-model="value" required />');
+      changeInputValueTo('bademail');
+
+      expect(inputElm).toHaveClass('ng-valid-required');
+      expect(inputElm.controller('ngModel').$error.required).toBe(false);
+      expect(inputElm).toBeInvalid(); // invalid because of the email validator
     });
 
 

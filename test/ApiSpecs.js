@@ -22,6 +22,36 @@ describe('api', function() {
       expect(map.get('b')).toBe(1);
       expect(map.get('c')).toBe(undefined);
     });
+
+    it('should maintain hashKey for object keys', function() {
+      var map = new HashMap();
+      var key = {};
+      map.get(key);
+      expect(key.$$hashKey).toBeDefined();
+    });
+
+    it('should maintain hashKey for function keys', function() {
+      var map = new HashMap();
+      var key = function() {};
+      map.get(key);
+      expect(key.$$hashKey).toBeDefined();
+    });
+
+    it('should share hashKey between HashMap by default', function() {
+      var map1 = new HashMap(), map2 = new HashMap();
+      var key1 = {}, key2 = {};
+      map1.get(key1);
+      map2.get(key2);
+      expect(key1.$$hashKey).not.toEqual(key2.$$hashKey);
+    });
+
+    it('should maintain hashKey per HashMap if flag is passed', function() {
+      var map1 = new HashMap([], true), map2 = new HashMap([], true);
+      var key1 = {}, key2 = {};
+      map1.get(key1);
+      map2.get(key2);
+      expect(key1.$$hashKey).toEqual(key2.$$hashKey);
+    });
   });
 });
 

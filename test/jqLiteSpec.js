@@ -407,6 +407,22 @@ describe('jqLite', function() {
       expect(jqLite.data(node, "bar")).toBeUndefined();
     });
 
+    it('should not add to the cache if the node is a comment or text node', function() {
+      var calcCacheSize = function() {
+        var count = 0;
+        for (var k in jqLite.cache) { ++count; }
+        return count;
+      };
+
+      var nodes = jqLite('<!-- some comment --> and some text');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey', 'someValue');
+      expect(calcCacheSize()).toEqual(0);
+    });
+
+
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);
@@ -1012,6 +1028,16 @@ describe('jqLite', function() {
       expect(log).toEqual('click on: A;');
       browserTrigger(b, 'click');
       expect(log).toEqual('click on: A;click on: B;');
+    });
+
+    it('should not bind to comment or text nodes', function() {
+      var nodes = jqLite('<!-- some comment -->Some text');
+      var someEventHandler = jasmine.createSpy('someEventHandler');
+
+      nodes.on('someEvent', someEventHandler);
+      nodes.triggerHandler('someEvent');
+
+      expect(someEventHandler).not.toHaveBeenCalled();
     });
 
     it('should bind to all events separated by space', function() {
