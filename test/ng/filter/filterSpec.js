@@ -49,7 +49,7 @@ describe('Filter: filter', function() {
     expect(filter(items, function(i) {return i.done;}).length).toBe(1);
   });
 
-  it('should take object as perdicate', function() {
+  it('should take object as predicate', function() {
     var items = [{first: 'misko', last: 'hevery'},
                  {first: 'adam', last: 'abrons'}];
 
@@ -61,7 +61,7 @@ describe('Filter: filter', function() {
   });
 
 
-  it('should support predicat object with dots in the name', function() {
+  it('should support predicate object with dots in the name', function() {
     var items = [{'first.name': 'misko', 'last.name': 'hevery'},
                  {'first.name': 'adam', 'last.name': 'abrons'}];
 
@@ -79,6 +79,16 @@ describe('Filter: filter', function() {
     expect(filter(items, {person: {name: 'Jo'}})).toEqual([
       {person: {name: 'John'}}, {person: {name: 'Joan'}}
     ]);
+  });
+
+  it('should be able to use exact match to match empty strings', function() {
+    var items = [{person: {name: 'John'}},
+                 {person: {name: 'Rita'}},
+                 {person: {name: 'Billy'}},
+                 {person: {name: ''}},
+                 {person: {name: 'Joan'}}];
+    expect(filter(items, {person: {name: ''}}).length).toBe(5);
+    expect(filter(items, {person: {name: ''}}, true).length).toBe(1);
   });
 
 
