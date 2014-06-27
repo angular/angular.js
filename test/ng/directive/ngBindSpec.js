@@ -8,6 +8,18 @@ describe('ngBind*', function() {
     dealoc(element);
   });
 
+  function countWatchers(scope) {
+    var count = 0,
+      head = scope.$$nodeGroupsHead.$watchers,
+      tail = scope.$$nodeGroupsCurrentTail.$watchers;
+
+    while (tail && head !== tail) {
+      count++;
+      head = head.next;
+    }
+    if (tail) count++;
+    return count;
+  }
 
   describe('ngBind', function() {
 
@@ -49,10 +61,10 @@ describe('ngBind*', function() {
     it('should one-time bind if the expression starts with two colons', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind="::a"></div>')($rootScope);
       $rootScope.a = 'lucas';
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect(countWatchers($rootScope)).toEqual(1);
       $rootScope.$digest();
       expect(element.text()).toEqual('lucas');
-      expect($rootScope.$$watchers.length).toEqual(0);
+      expect(countWatchers($rootScope)).toEqual(0);
       $rootScope.a = undefined;
       $rootScope.$digest();
       expect(element.text()).toEqual('lucas');
@@ -99,16 +111,16 @@ describe('ngBind*', function() {
     it('should one-time bind the expressions that start with ::', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-template="{{::hello}} {{::name}}!"></div>')($rootScope);
       $rootScope.name = 'Misko';
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect(countWatchers($rootScope)).toEqual(1);
       $rootScope.$digest();
       expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual(' Misko!');
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect(countWatchers($rootScope)).toEqual(1);
       $rootScope.hello = 'Hello';
       $rootScope.name = 'Lucas';
       $rootScope.$digest();
       expect(element.text()).toEqual('Hello Misko!');
-      expect($rootScope.$$watchers.length).toEqual(0);
+      expect(countWatchers($rootScope)).toEqual(0);
     }));
 
 
@@ -136,10 +148,10 @@ describe('ngBind*', function() {
       it('should one-time bind if the expression starts with two colons', inject(function($rootScope, $compile) {
         element = $compile('<div ng-bind-html="::html"></div>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
-        expect($rootScope.$$watchers.length).toEqual(1);
+        expect(countWatchers($rootScope)).toEqual(1);
         $rootScope.$digest();
         expect(element.text()).toEqual('hello');
-        expect($rootScope.$$watchers.length).toEqual(0);
+        expect(countWatchers($rootScope)).toEqual(0);
         $rootScope.html = '<div onclick="">hello</div>';
         $rootScope.$digest();
         expect(element.text()).toEqual('hello');
