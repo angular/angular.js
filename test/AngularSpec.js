@@ -371,6 +371,16 @@ describe('angular', function() {
       expect(equals({}, [])).toBe(false);
       expect(equals([], {})).toBe(false);
     });
+
+    it('should handle circular references', function() {
+      var a = {a: null};
+      a.a = a;
+      var aCopy = copy(a, null);
+      expect(aCopy.a).toBe(aCopy);
+      expect(a).not.toBe(aCopy);
+      expect(equals(a, aCopy)).toBe(true);
+    });
+
   });
 
   describe('size', function() {
