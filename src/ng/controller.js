@@ -74,7 +74,7 @@ function $ControllerProvider() {
       instance = $injector.instantiate(expression, locals);
 
       if (identifier) {
-        if (!(locals && typeof locals.$scope == 'object')) {
+        if (!(locals && typeof locals.$scope === 'object')) {
           throw minErr('$controller')('noscp',
               "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.",
               constructor || expression.name, identifier);
