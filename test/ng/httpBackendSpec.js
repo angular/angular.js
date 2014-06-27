@@ -92,6 +92,25 @@ describe('$httpBackend', function() {
     expect(callback).toHaveBeenCalledOnce();
   });
 
+  it('should not touch xhr.statusText when request is aborted on IE9 or lower', function() {
+    callback.andCallFake(function(status, response, headers, statusText) {
+      expect(statusText).toBe((!msie || msie >= 10) ? 'OK' : '');
+    });
+
+    $backend('GET', '/url', null, callback, {}, 2000);
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    fakeTimeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.statusText = 'OK';
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
   it('should call completion function with empty string if not present', function() {
     callback.andCallFake(function(status, response, headers, statusText) {
       expect(statusText).toBe('');
