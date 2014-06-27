@@ -1690,6 +1690,20 @@ describe('jqLite', function() {
       data = pokeSpy.mostRecentCall.args[1];
       expect(data.hello).toBe("world");
     });
+
+    it('should mark event as prevented if preventDefault is called', function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          event;
+
+      element.on('click', pokeSpy);
+      element.triggerHandler('click');
+      event = pokeSpy.mostRecentCall.args[0];
+
+      expect(event.isDefaultPrevented()).toBe(false);
+      event.preventDefault();
+      expect(event.isDefaultPrevented()).toBe(true);
+    });
   });
 
 
