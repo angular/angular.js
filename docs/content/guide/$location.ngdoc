@@ -60,7 +60,7 @@ changes to $location are reflected into the browser address bar.
 
   <tr>
     <td class="head">aware of docroot/context from which the application is loaded</td>
-    <td>no - window.location.path returns "/docroot/actual/path"</td>
+    <td>no - window.location.pathname returns "/docroot/actual/path"</td>
     <td>yes - $location.path() returns "/actual/path"</td>
   </tr>
 
