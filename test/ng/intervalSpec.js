@@ -267,4 +267,25 @@ describe('$interval', function() {
       expect($interval.cancel()).toBe(false);
     }));
   });
+
+  describe('$window delegation', function() {
+    it('should use $window.setInterval instead of the global function', inject(function ($interval, $window) {
+      var setIntervalSpy = spyOn($window, 'setInterval');
+
+      $interval(noop, 1000);
+      expect(setIntervalSpy).toHaveBeenCalled();
+    }));
+
+    it('should use $window.clearInterval instead of the global function', inject(function ($interval, $window) {
+      var clearIntervalSpy = spyOn($window, 'clearInterval');
+
+      $interval(noop, 1000, 1);
+      $window.flush(1000);
+      expect(clearIntervalSpy).toHaveBeenCalled();
+
+      clearIntervalSpy.reset();
+      $interval.cancel($interval(noop, 1000));
+      expect(clearIntervalSpy).toHaveBeenCalled();
+    }));
+  });
 });
