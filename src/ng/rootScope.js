@@ -368,7 +368,7 @@ function $RootScopeProvider(){
        * A variant of {@link ng.$rootScope.Scope#$watch $watch()} where it watches an array of `watchExpressions`.
        * If any one expression in the collection changes the `listener` is executed.
        *
-       * - The items in the `watchCollection` array are observed via standard $watch operation and are examined on every
+       * - The items in the `watchExpressions` array are observed via standard $watch operation and are examined on every
        *   call to $digest() to see if any items changes.
        * - The `listener` is called whenever any expression in the `watchExpressions` array changes.
        *
