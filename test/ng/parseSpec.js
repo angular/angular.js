@@ -700,13 +700,13 @@ describe('parser', function() {
             scope.fn = Function.prototype.call;
 
             expect(function() {
-              scope.$eval('$eval.call()')
+              scope.$eval('$eval.call()');
             }).toThrowMinErr(
                     '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
                     'Expression: $eval.call()');
 
             expect(function() {
-              scope.$eval('fn()')
+              scope.$eval('fn()');
             }).toThrowMinErr(
               '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
                 'Expression: fn()');
@@ -716,13 +716,13 @@ describe('parser', function() {
             scope.apply = Function.prototype.apply;
 
             expect(function() {
-              scope.$eval('$eval.apply()')
+              scope.$eval('$eval.apply()');
             }).toThrowMinErr(
               '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
                 'Expression: $eval.apply()');
 
             expect(function() {
-              scope.$eval('apply()')
+              scope.$eval('apply()');
             }).toThrowMinErr(
               '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
                 'Expression: apply()');
@@ -732,13 +732,13 @@ describe('parser', function() {
             scope.bind = Function.prototype.bind;
 
             expect(function() {
-              scope.$eval('$eval.bind()')
+              scope.$eval('$eval.bind()');
             }).toThrowMinErr(
               '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
                 'Expression: $eval.bind()');
 
             expect(function() {
-              scope.$eval('bind()')
+              scope.$eval('bind()');
             }).toThrowMinErr(
               '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
                 'Expression: bind()');
@@ -836,98 +836,128 @@ describe('parser', function() {
 
         describe('Disallowed fields', function() {
           it('should NOT allow access or invocation of __defineGetter__', function() {
-            expect(function() { 
-              scope.$eval('{}.__defineGetter__'); }).toThrowMinErr('$parse', 'isecfld');
-            expect(function() { 
-              scope.$eval('{}.__defineGetter__("a", "".charAt)'); }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}.__defineGetter__');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}.__defineGetter__("a", "".charAt)');
+            }).toThrowMinErr('$parse', 'isecfld');
 
-            expect(function() { 
-              scope.$eval('{}["__defineGetter__"]'); }).toThrowMinErr('$parse', 'isecfld');
-            expect(function() { 
-              scope.$eval('{}["__defineGetter__"]("a", "".charAt)'); }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}["__defineGetter__"]');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}["__defineGetter__"]("a", "".charAt)');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             scope.a = "__define";
             scope.b = "Getter__";
-            expect(function() { 
-              scope.$eval('{}[a + b]'); }).toThrowMinErr('$parse', 'isecfld');
-            expect(function() { 
-              scope.$eval('{}[a + b]("a", "".charAt)'); }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}[a + b]');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}[a + b]("a", "".charAt)');
+            }).toThrowMinErr('$parse', 'isecfld');
           });
 
           it('should NOT allow access or invocation of __defineSetter__', function() {
             expect(function() {
-              scope.$eval('{}.__defineSetter__'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__defineSetter__');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}.__defineSetter__("a", "".charAt)'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__defineSetter__("a", "".charAt)');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             expect(function() {
-              scope.$eval('{}["__defineSetter__"]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__defineSetter__"]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}["__defineSetter__"]("a", "".charAt)'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__defineSetter__"]("a", "".charAt)');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             scope.a = "__define";
             scope.b = "Setter__";
             expect(function() {
-              scope.$eval('{}[a + b]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}[a + b]("a", "".charAt)'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]("a", "".charAt)');
+            }).toThrowMinErr('$parse', 'isecfld');
           });
 
           it('should NOT allow access or invocation of __lookupGetter__', function() {
             expect(function() {
-              scope.$eval('{}.__lookupGetter__'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__lookupGetter__');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}.__lookupGetter__("a")'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__lookupGetter__("a")');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             expect(function() {
-              scope.$eval('{}["__lookupGetter__"]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__lookupGetter__"]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}["__lookupGetter__"]("a")'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__lookupGetter__"]("a")');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             scope.a = "__lookup";
             scope.b = "Getter__";
             expect(function() {
-              scope.$eval('{}[a + b]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}[a + b]("a")'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]("a")');
+            }).toThrowMinErr('$parse', 'isecfld');
           });
 
           it('should NOT allow access or invocation of __lookupSetter__', function() {
             expect(function() {
-              scope.$eval('{}.__lookupSetter__'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__lookupSetter__');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}.__lookupSetter__("a")'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__lookupSetter__("a")');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             expect(function() {
-              scope.$eval('{}["__lookupSetter__"]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__lookupSetter__"]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}["__lookupSetter__"]("a")'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__lookupSetter__"]("a")');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             scope.a = "__lookup";
             scope.b = "Setter__";
             expect(function() {
-              scope.$eval('{}[a + b]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}[a + b]("a")'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]("a")');
+            }).toThrowMinErr('$parse', 'isecfld');
           });
 
           it('should NOT allow access to __proto__', function() {
             expect(function() {
-              scope.$eval('{}.__proto__'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__proto__');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}.__proto__.foo = 1'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}.__proto__.foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             expect(function() {
-              scope.$eval('{}["__proto__"]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__proto__"]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}["__proto__"].foo = 1'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}["__proto__"].foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
 
             scope.a = "__pro";
             scope.b = "to__";
             expect(function() {
-              scope.$eval('{}[a + b]'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b]');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
-              scope.$eval('{}[a + b].foo = 1'); }).toThrowMinErr('$parse', 'isecfld');
+              scope.$eval('{}[a + b].foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
           });
         });
 
@@ -939,9 +969,9 @@ describe('parser', function() {
                 'null,' +
                 '"alert(1)"' +
               ')()' +
-              '')
+              '');
           }).toThrow();
-        })
+        });
       });
 
       it('should call the function from the received instance and not from a new one', function() {
