@@ -246,29 +246,29 @@ describe('ngMock', function() {
 
       it('should assertEmpty', function(){
         try {
-          $log.error(Error('MyError'));
-          $log.warn(Error('MyWarn'));
-          $log.info(Error('MyInfo'));
-          $log.log(Error('MyLog'));
-          $log.debug(Error('MyDebug'));
+          $log.error(new Error('MyError'));
+          $log.warn(new Error('MyWarn'));
+          $log.info(new Error('MyInfo'));
+          $log.log(new Error('MyLog'));
+          $log.debug(new Error('MyDebug'));
           $log.assertEmpty();
         } catch (error) {
-          error = error.message || error;
-          expect(error).toMatch(/Error: MyError/m);
-          expect(error).toMatch(/Error: MyWarn/m);
-          expect(error).toMatch(/Error: MyInfo/m);
-          expect(error).toMatch(/Error: MyLog/m);
-          expect(error).toMatch(/Error: MyDebug/m);
+          var err = error.message || error;
+          expect(err).toMatch(/Error: MyError/m);
+          expect(err).toMatch(/Error: MyWarn/m);
+          expect(err).toMatch(/Error: MyInfo/m);
+          expect(err).toMatch(/Error: MyLog/m);
+          expect(err).toMatch(/Error: MyDebug/m);
         } finally {
           $log.reset();
         }
       });
 
       it('should reset state', function(){
-        $log.error(Error('MyError'));
-        $log.warn(Error('MyWarn'));
-        $log.info(Error('MyInfo'));
-        $log.log(Error('MyLog'));
+        $log.error(new Error('MyError'));
+        $log.warn(new Error('MyWarn'));
+        $log.info(new Error('MyInfo'));
+        $log.log(new Error('MyLog'));
         $log.reset();
         var passed = false;
         try {
@@ -345,7 +345,7 @@ describe('ngMock', function() {
 
     it('should allow you to specify a number of iterations', inject(function($interval) {
       var counter = 0;
-      $interval(function() {counter++}, 1000, 2);
+      $interval(function() { counter++; }, 1000, 2);
 
       $interval.flush(1000);
       expect(counter).toBe(1);
@@ -406,7 +406,8 @@ describe('ngMock', function() {
       $interval.flush(1000);
 
       expect(log).toEqual([
-          'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2']);
+        'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2'
+      ]);
 
     }));
 
@@ -530,7 +531,8 @@ describe('ngMock', function() {
       log = '';
     }));
 
-    function logFn(text){ return function() {
+    function logFn(text) {
+      return function() {
         log += text +';';
       };
     }
@@ -609,7 +611,7 @@ describe('ngMock', function() {
     it('should expose flush method that will flush the pending queue of tasks', inject(
         function($timeout) {
       var logger = [],
-          logFn = function(msg) { return function() { logger.push(msg) }};
+          logFn = function(msg) { return function() { logger.push(msg); }; };
 
       $timeout(logFn('t1'));
       $timeout(logFn('t2'), 200);
@@ -692,6 +694,7 @@ describe('ngMock', function() {
     }));
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer){
+      /* jshint -W001 */
       // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
       // things like hasOwnProperty even if it is explicitly defined on the actual object!
       if ($sniffer.msie<=8) return;
@@ -704,11 +707,11 @@ describe('ngMock', function() {
 
   describe('angular.mock.clearDataCache', function() {
     function keys(obj) {
-      var keys = [];
+      var keysArr = [];
       for(var key in obj) {
-        if (obj.hasOwnProperty(key)) keys.push(key);
+        if (obj.hasOwnProperty(key)) keysArr.push(key);
       }
-      return keys.sort();
+      return keysArr.sort();
     }
 
     function browserTrigger(element, eventType) {
@@ -740,11 +743,11 @@ describe('ngMock', function() {
       // crazy IE9 requires div to be connected to render DOM for click event to work
       // mousemove works even when not connected. This is a heisen-bug since stepping
       // through the code makes the test pass. Viva IE!!!
-      angular.element(document.body).append(div)
+      angular.element(document.body).append(div);
 
-      div.on('click', function() { log += 'click1;'});
-      div.on('click', function() { log += 'click2;'});
-      div.on('mousemove', function() { log += 'mousemove;'});
+      div.on('click', function() { log += 'click1;'; });
+      div.on('click', function() { log += 'click2;'; });
+      div.on('mousemove', function() { log += 'mousemove;'; });
 
       browserTrigger(div, 'click');
       browserTrigger(div, 'mousemove');
@@ -884,7 +887,7 @@ describe('ngMock', function() {
         }));
 
         afterEach(function() {
-          expect(log).toEqual('module;inject;')
+          expect(log).toEqual('module;inject;');
         });
       });
 
@@ -1440,6 +1443,7 @@ describe('ngMock', function() {
 
 
     describe('MockHttpExpectation', function() {
+      /* global MockHttpExpectation */
 
       it('should accept url as regexp', function() {
         var exp = new MockHttpExpectation('GET', /^\/x/);

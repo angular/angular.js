@@ -1,3 +1,5 @@
+'use strict';
+
 describe('jqLite', function() {
   var scope, a, b, c;
 
@@ -57,7 +59,7 @@ describe('jqLite', function() {
     it('should allow construction with html', function() {
       var nodes = jqLite('<div>1</div><span>2</span>');
       expect(nodes[0].parentNode).toBeDefined();
-      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/
       expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
@@ -68,7 +70,7 @@ describe('jqLite', function() {
     it('should allow construction of html with leading whitespace', function() {
       var nodes = jqLite('  \n\r   \r\n<div>1</div><span>2</span>');
       expect(nodes[0].parentNode).toBeDefined();
-      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/
       expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toBe(2);
       expect(nodes[0].innerHTML).toBe('1');
@@ -473,7 +475,7 @@ describe('jqLite', function() {
             span = div.find('span'),
             log = '';
 
-        span.on('click', function() { log+= 'click;'});
+        span.on('click', function() { log+= 'click;'; });
         browserTrigger(span);
         expect(log).toEqual('click;');
 
@@ -945,21 +947,21 @@ describe('jqLite', function() {
       if (jqLite.fn) return; // don't run in jQuery
       var eventFn;
       var window = {
-          document: {},
-          location: {},
-          alert: noop,
-          setInterval: noop,
-          length:10, // pretend you are an array
-          addEventListener: function(type, fn){
-            expect(type).toEqual('hashchange');
-            eventFn = fn;
-          },
-          removeEventListener: noop,
-          attachEvent: function(type, fn){
-            expect(type).toEqual('onhashchange');
-            eventFn = fn;
-          },
-          detachEvent: noop
+        document: {},
+        location: {},
+        alert: noop,
+        setInterval: noop,
+        length:10, // pretend you are an array
+        addEventListener: function(type, fn){
+          expect(type).toEqual('hashchange');
+          eventFn = fn;
+        },
+        removeEventListener: noop,
+        attachEvent: function(type, fn){
+          expect(type).toEqual('onhashchange');
+          eventFn = fn;
+        },
+        detachEvent: noop
       };
       var log;
       var jWindow = jqLite(window).on('hashchange', function() {
@@ -1046,16 +1048,17 @@ describe('jqLite', function() {
         if (window.jQuery) return;
         var browserMoveTrigger = function(from, to){
           var fireEvent = function(type, element, relatedTarget){
-            var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+            var evnt, msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
             if (msie < 9){
-              var evnt = document.createEventObject();
+              evnt = document.createEventObject();
               evnt.srcElement = element;
               evnt.relatedTarget = relatedTarget;
               element.fireEvent('on' + type, evnt);
               return;
-            };
-            var evnt = document.createEvent('MouseEvents'),
-            originalPreventDefault = evnt.preventDefault,
+            }
+            evnt = document.createEvent('MouseEvents');
+
+            var originalPreventDefault = evnt.preventDefault,
             appWindow = window,
             fakeProcessDefault = true,
             finalProcessDefault;
@@ -1657,25 +1660,25 @@ describe('jqLite', function() {
 
   describe('camelCase', function() {
 
-   it('should leave non-dashed strings alone', function() {
-     expect(camelCase('foo')).toBe('foo');
-     expect(camelCase('')).toBe('');
-     expect(camelCase('fooBar')).toBe('fooBar');
-   });
+    it('should leave non-dashed strings alone', function() {
+      expect(camelCase('foo')).toBe('foo');
+      expect(camelCase('')).toBe('');
+      expect(camelCase('fooBar')).toBe('fooBar');
+    });
 
 
-   it('should covert dash-separated strings to camelCase', function() {
-     expect(camelCase('foo-bar')).toBe('fooBar');
-     expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
-     expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
-   });
+    it('should covert dash-separated strings to camelCase', function() {
+      expect(camelCase('foo-bar')).toBe('fooBar');
+      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
+      expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
+    });
 
 
-   it('should covert browser specific css properties', function() {
-     expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
-     expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-     expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-   });
+    it('should covert browser specific css properties', function() {
+      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
+      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+    });
   });
 
 });

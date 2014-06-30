@@ -16,32 +16,33 @@ describe('HTML', function() {
   });
 
   describe('htmlParser', function() {
+    /* global htmlParser */
     if (angular.isUndefined(window.htmlParser)) return;
 
     var handler, start, text, comment;
     beforeEach(function() {
       handler = {
-          start: function(tag, attrs, unary){
-            start = {
-                tag: tag,
-                attrs: attrs,
-                unary: unary
-            };
-            // Since different browsers handle newlines differently we trim
-            // so that it is easier to write tests.
-            angular.forEach(attrs, function(value, key) {
-              attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '')
-            });
-          },
-          chars: function(text_){
-            text = text_;
-          },
-          end:function(tag) {
-            expect(tag).toEqual(start.tag);
-          },
-          comment:function(comment_) {
-            comment = comment_;
-          }
+        start: function(tag, attrs, unary){
+          start = {
+            tag: tag,
+            attrs: attrs,
+            unary: unary
+          };
+          // Since different browsers handle newlines differently we trim
+          // so that it is easier to write tests.
+          angular.forEach(attrs, function(value, key) {
+            attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '');
+          });
+        },
+        chars: function(text_){
+          text = text_;
+        },
+        end:function(tag) {
+          expect(tag).toEqual(start.tag);
+        },
+        comment:function(comment_) {
+          comment = comment_;
+        }
       };
     });
 
@@ -191,10 +192,11 @@ describe('HTML', function() {
   });
 
   it('should allow multiline strings', function() {
-    expectHTML('\na\n').toEqual('&#10;a\&#10;');
+    expectHTML('\na\n').toEqual('&#10;a&#10;');
   });
 
   describe('htmlSanitizerWriter', function() {
+    /* global htmlSanitizeWriter: false */
     if (angular.isUndefined(window.htmlSanitizeWriter)) return;
 
     var writer, html, uriValidator;
@@ -371,11 +373,13 @@ describe('HTML', function() {
     });
 
     it('should not be URI', function() {
+      /* jshint scripturl: true */
       expect('javascript:alert').not.toBeValidUrl();
     });
 
     describe('javascript URLs', function() {
       it('should ignore javascript:', function() {
+        /* jshint scripturl: true */
         expect('JavaScript:abc').not.toBeValidUrl();
         expect(' \n Java\n Script:abc').not.toBeValidUrl();
         expect('http://JavaScript/my.js').toBeValidUrl();
@@ -411,6 +415,7 @@ describe('HTML', function() {
   });
 
   describe('sanitizeText', function() {
+    /* global sanitizeText: false */
     it('should escape text', function() {
       expect(sanitizeText('a<div>&</div>c')).toEqual('a&lt;div&gt;&amp;&lt;/div&gt;c');
     });

@@ -1,3 +1,6 @@
+/* global createHttpBackend: false, createMockXhr: false, MockXhr: false */
+'use strict';
+
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
@@ -42,12 +45,14 @@ describe('$httpBackend', function() {
         // msie8 depends on modifying readyState for testing. This property is readonly,
         // so it requires a fake object. For other browsers, we do need to make use of
         // event listener registration/deregistration, so these stubs are needed.
-        if (msie <= 8) return {
-          attachEvent: noop,
-          detachEvent: noop,
-          addEventListener: noop,
-          removeEventListener: noop
-        };
+        if (msie <= 8) {
+          return {
+            attachEvent: noop,
+            detachEvent: noop,
+            addEventListener: noop,
+            removeEventListener: noop
+          };
+        }
         // Return a proper script element...
         return document.createElement(arguments[0]);
       }),
@@ -307,7 +312,7 @@ describe('$httpBackend', function() {
       expect(response).toBe('response');
     });
 
-    $backend = createHttpBackend($browser, function() { return new SyncXhr() });
+    $backend = createHttpBackend($browser, function() { return new SyncXhr(); });
     $backend('GET', '/url', null, callback);
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -518,6 +523,7 @@ describe('$httpBackend', function() {
     });
 
     it('should convert 0 to 404 if no content - relative url', function() {
+      /* global urlParsingNode: true */
       var originalUrlParsingNode = urlParsingNode;
 
       //temporarily overriding the DOM element to pretend that the test runs origin with file:// protocol

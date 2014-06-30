@@ -176,7 +176,7 @@ describe('Binder', function() {
       var errorLogs = $exceptionHandler.errors;
 
       $rootScope.error = {
-          'throw': function() {throw 'ErrorMsg1';}
+        'throw': function() {throw 'ErrorMsg1';}
       };
       $rootScope.$apply();
 

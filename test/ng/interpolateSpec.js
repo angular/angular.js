@@ -62,7 +62,7 @@ describe('$interpolate', function() {
 
 
   it('should ignore undefined return value', inject(function($interpolate, $rootScope) {
-    $rootScope.foo = function() {return undefined};
+    $rootScope.foo = function() {return undefined;};
     expect($interpolate("Hello {{'World' + foo()}}")($rootScope)).toEqual('Hello World');
   }));
 
@@ -70,7 +70,7 @@ describe('$interpolate', function() {
   describe('interpolating in a trusted context', function() {
     var sce;
     beforeEach(function() {
-      function log() {};
+      function log() {}
       var fakeLog = {log: log, warn: log, info: log, error: log};
       module(function($provide, $sceProvider) {
         $provide.value('$log', fakeLog);
@@ -106,8 +106,8 @@ describe('$interpolate', function() {
       var foo = sce.trustAsCss("foo");
       var bar = sce.trustAsCss("bar");
       expect(function() {
-        return $interpolate('{{foo}}{{bar}}', true, sce.CSS)(
-             {foo: foo, bar: bar}); }).toThrowMinErr(
+        return $interpolate('{{foo}}{{bar}}', true, sce.CSS)({foo: foo, bar: bar});
+      }).toThrowMinErr(
                 "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
                 "Strict Contextual Escaping disallows interpolations that concatenate multiple " +
                 "expressions when a trusted value is required.  See " +

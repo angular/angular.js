@@ -26,22 +26,24 @@ describe('ngSrc', function() {
     it('should error on src attributes for a different domain', inject(function($compile, $rootScope) {
       element = $compile('<iframe ng-src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "http://a.different.domain.example.com";
-      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+      expect(function() { $rootScope.$apply(); }).toThrowMinErr(
           "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "http://a.different.domain.example.com");
     }));
 
     it('should error on JS src attributes', inject(function($compile, $rootScope) {
+      /* jshint scripturl:true */
       element = $compile('<iframe ng-src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "javascript:alert(1);";
-      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+      expect(function() { $rootScope.$apply(); }).toThrowMinErr(
           "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "javascript:alert(1);");
     }));
 
     it('should error on non-resource_url src attributes', inject(function($compile, $rootScope, $sce) {
+      /* jshint scripturl:true */
       element = $compile('<iframe ng-src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
       expect($rootScope.$apply).toThrowMinErr(
@@ -51,6 +53,7 @@ describe('ngSrc', function() {
     }));
 
     it('should pass through $sce.trustAs() values in src attributes', inject(function($compile, $rootScope, $sce) {
+      /* jshint scripturl:true */
       element = $compile('<iframe ng-src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsResourceUrl("javascript:doTrustedStuff()");
       $rootScope.$apply();

@@ -118,7 +118,7 @@ describe('angular', function() {
 
     it('should throw an exception when source and destination are equivalent', function() {
       var src, dst;
-	    src = dst = {key: 'value'};
+      src = dst = {key: 'value'};
       expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
       src = dst = [2, 4];
       expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
@@ -223,7 +223,7 @@ describe('angular', function() {
 
     it('should omit properties from prototype chain', function() {
       var original, clone = {};
-      function Func() {};
+      function Func() {}
       Func.prototype.hello = "world";
 
       original = new Func();
@@ -349,6 +349,7 @@ describe('angular', function() {
     });
 
     it('should correctly test for keys that are present on Object.prototype', function() {
+      /* jshint -W001 */
       // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
       // things like hasOwnProperty even if it is explicitly defined on the actual object!
       if (msie<=8) return;
@@ -497,7 +498,7 @@ describe('angular', function() {
       expect(toKeyValue({key: [323,'value',true]})).toEqual('key=323&key=value&key');
       expect(toKeyValue({key: [323,'value',true, 1234]})).
       toEqual('key=323&key=value&key&key=1234');
-  });
+    });
   });
 
 
@@ -512,13 +513,14 @@ describe('angular', function() {
       var obj = new MyObj(),
           log = [];
 
-      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      forEach(obj, function(value, key) { log.push(key + ':' + value); });
 
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
     });
 
 
     it('should not break if obj is an array we override hasOwnProperty', function() {
+      /* jshint -W001 */
       var obj = [];
       obj[0] = 1;
       obj[1] = 2;
@@ -546,7 +548,7 @@ describe('angular', function() {
           log = [];
 
 
-      forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
     });
 
@@ -561,7 +563,7 @@ describe('angular', function() {
       var htmlCollection = document.getElementsByName('x'),
           log = [];
 
-      forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:a', '1:c']);
     });
 
@@ -576,7 +578,7 @@ describe('angular', function() {
         var htmlCollection = document.querySelectorAll('[name="x"]'),
           log = [];
 
-        forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+        forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML); });
         expect(log).toEqual(['0:a', '1:c']);
       });
     }
@@ -585,28 +587,28 @@ describe('angular', function() {
       var args,
           log = [];
 
-      (function(){ args = arguments}('a', 'b', 'c'));
+      (function(){ args = arguments; }('a', 'b', 'c'));
 
-      forEach(args, function(value, key) { log.push(key + ':' + value)});
+      forEach(args, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
     });
 
     it('should handle string values like arrays', function() {
       var log = [];
 
-      forEach('bar', function(value, key) { log.push(key + ':' + value)});
+      forEach('bar', function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:b', '1:a', '2:r']);
     });
 
 
     it('should handle objects with length property as objects', function() {
       var obj = {
-            'foo' : 'bar',
-            'length': 2
-          },
-          log = [];
+        'foo' : 'bar',
+        'length': 2
+      },
+      log = [];
 
-      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['foo:bar', 'length:2']);
     });
 
@@ -614,13 +616,13 @@ describe('angular', function() {
     it('should handle objects of custom types with length property as objects', function() {
       function CustomType() {
         this.length = 2;
-        this.foo = 'bar'
+        this.foo = 'bar';
       }
 
       var obj = new CustomType(),
           log = [];
 
-      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
   });
@@ -790,7 +792,9 @@ describe('angular', function() {
       expect(function() {
         angularInit(appElement, bootstrap);
       }).toThrowMatching(
-        /\[\$injector:modulerr] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./
+        new RegExp('\\[\\$injector:modulerr] Failed to instantiate module doesntexist due to:\\n' +
+                   '.*\\[\\$injector:nomod] Module \'doesntexist\' is not available! You either ' +
+                   'misspelled the module name or forgot to load it\\.')
       );
     });
 
@@ -818,7 +822,7 @@ describe('angular', function() {
       );
 
       dealoc(document);
-    })
+    });
   });
 
 
@@ -979,7 +983,9 @@ describe('angular', function() {
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
       }).toThrowMatching(
-          /\[\$injector:modulerr\] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod\] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./);
+          new RegExp('\\[\\$injector:modulerr\\] Failed to instantiate module doesntexist due to:\\n' +
+                     '.*\\[\\$injector:nomod\\] Module \'doesntexist\' is not available! You either ' +
+                     'misspelled the module name or forgot to load it\\.'));
 
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);

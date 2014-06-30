@@ -385,7 +385,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.end).not.toHaveBeenCalled();
     }));
   });
-}
+};
 
 swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
 swipeTests('mouse', /* restrictBrowers */ false, 'mousedown',  'mousemove', 'mouseup');

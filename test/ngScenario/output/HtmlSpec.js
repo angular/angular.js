@@ -109,7 +109,7 @@ describe('angular.scenario.output.html', function() {
     context.find('#describe-10 .tests > li .test-info .timer-result').
       each(function(index, timer) {
         expect(timer.innerHTML).toMatch(/ms$/);
-    });
+      });
   });
 
   it('should include line if provided', function() {
