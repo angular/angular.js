@@ -1135,8 +1135,6 @@ angular.module('ngAnimate', ['ng'])
           if(isRoot || result) {
             return result;
           }
-
-          if(isRoot) return true;
         }
         while(parentElement = parentElement.parent());
 
