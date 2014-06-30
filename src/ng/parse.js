@@ -74,7 +74,7 @@ function ensureSafeFunction(obj, fullExpression) {
       throw $parseMinErr('isecfn',
         'Referencing Function in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
-    } else if (obj === CALL || obj === APPLY || obj === BIND) {
+    } else if (obj === CALL || obj === APPLY || (BIND && obj === BIND)) {
       throw $parseMinErr('isecff',
         'Referencing call, apply or bind in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
