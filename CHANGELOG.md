@@ -1,3 +1,235 @@
+<a name="1.3.0-beta.14"></a>
+# 1.3.0-beta.14 harmonious-cacophonies (2014-06-30)
+
+
+This release contains security fixes for $parse that prevent arbitrary code execution via Angular
+expressions under some very specific conditions. The only applications affected by these
+vulnerabilities are those that match all of the following conditions:
+
+- application mixes server-side and client-side templating
+- the server-side templating contains XSS vulnerabilities
+- the vulnerabilities in the server-side templating are being guarded by server-side XSS filters or
+  on the client-side via [CSP](http://en.wikipedia.org/wiki/Content_Security_Policy)
+- the server-side XSS vulnerabilities can be used to augment the client-side template processed by
+  Angular
+
+Applications not meeting all of the conditions are not vulnerable.
+
+This fix is in both 1.3.0-beta.14 and 1.2.19 release.
+
+The Angular team would like to thank [Jann Horn](http://thejh.net) for reporting these
+vulnerabilities via [security@angularjs.org].
+
+
+
+## Bug Fixes
+
+- **$compile:** bind ng-attr-* even if unbound attribute follows ng-attr-*
+  ([8b0258d8](https://github.com/angular/angular.js/commit/8b0258d878cac20cd25c0958fd6e136a08b97df6),
+   [#7739](https://github.com/angular/angular.js/issues/7739))
+- **$http:**
+  - should not read statusText on IE<10 when request is aborted
+  ([31ae3e71](https://github.com/angular/angular.js/commit/31ae3e71647eadbbe1df40f9dedb55e1e0715f98))
+  - add the PATCH shortcut back
+  ([b28b5caa](https://github.com/angular/angular.js/commit/b28b5caab1529b3970f10f0a4de43c0c975e3886),
+   [#5894](https://github.com/angular/angular.js/issues/5894))
+- **$injector:** check if a fn is an array explicitly
+  ([b1a6baac](https://github.com/angular/angular.js/commit/b1a6baac2de84a1ecdc000085e8bbd016eb5c100),
+   [#7904](https://github.com/angular/angular.js/issues/7904), [#2653](https://github.com/angular/angular.js/issues/2653))
+- **$interval:** when canceling, use clearInterval from $window instead of global scope.
+  ([a4904c0f](https://github.com/angular/angular.js/commit/a4904c0f83838222b98a875c56779a7f1a4a650a))
+- **$parse:**
+  - prevent invocation of Function's bind, call and apply
+  ([77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5))
+  - forbid __proto__ properties in angular expressions
+  ([6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99))
+  - forbid __{define,lookup}{Getter,Setter}__ properties
+  ([48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6))
+  - forbid referencing Object in angular expressions
+  ([528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc))
+  - handle constants as one-time binding expressions
+  ([d9763f1b](https://github.com/angular/angular.js/commit/d9763f1bd355190b9d4e5723e4632cbc232f0543),
+   [#7970](https://github.com/angular/angular.js/issues/7970))
+- **$timeout/$interval:** if invokeApply is false, do not use evalAsync
+  ([19b6b343](https://github.com/angular/angular.js/commit/19b6b3433ae9f8523cbc72ae97dbcf0c06960148),
+   [#7999](https://github.com/angular/angular.js/issues/7999), [#7103](https://github.com/angular/angular.js/issues/7103))
+- **Angular:** nodeName should always be lowercase
+  ([dafb8a3c](https://github.com/angular/angular.js/commit/dafb8a3cd12e7c3247838f536c25eb796331658d),
+   [#3987](https://github.com/angular/angular.js/issues/3987))
+- **Angular.copy:** preserve prototype chain when copying objects
+  ([b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
+   [#5063](https://github.com/angular/angular.js/issues/5063), [#3767](https://github.com/angular/angular.js/issues/3767), [#4996](https://github.com/angular/angular.js/issues/4996))
+- **core:** drop the toBoolean function
+  ([bdfc9c02](https://github.com/angular/angular.js/commit/bdfc9c02d021e08babfbc966a007c71b4946d69d),
+   [#3969](https://github.com/angular/angular.js/issues/3969), [#4277](https://github.com/angular/angular.js/issues/4277), [#7960](https://github.com/angular/angular.js/issues/7960))
+- **injector:** allow multiple loading of function modules
+  ([2f0a4488](https://github.com/angular/angular.js/commit/2f0a4488731fdb0e8217325dbb52a576defd09bd),
+   [#7255](https://github.com/angular/angular.js/issues/7255))
+- **input:**
+  - improve html5 validation support
+  ([1f6a5a1a](https://github.com/angular/angular.js/commit/1f6a5a1a9255a2db19a1ea4c04cdbcdbb2850b6c),
+   [#7936](https://github.com/angular/angular.js/issues/7936), [#7937](https://github.com/angular/angular.js/issues/7937))
+  - escape forward slash in email regexp
+  ([b775e2bc](https://github.com/angular/angular.js/commit/b775e2bca1093e9df62a269b5bda968555ea0ded),
+   [#7938](https://github.com/angular/angular.js/issues/7938))
+- **jqLite:**
+  - never add to the cache for non-element/document nodes
+  ([91754a76](https://github.com/angular/angular.js/commit/91754a76e0ef9a7456a5b9819d1c5807c0a575bb),
+   [#7966](https://github.com/angular/angular.js/issues/7966))
+  - don't attach event handlers to comments or text nodes
+  ([462dbb20](https://github.com/angular/angular.js/commit/462dbb2016a218d84760b6da171f1b15c9e416c3),
+   [#7913](https://github.com/angular/angular.js/issues/7913), [#7942](https://github.com/angular/angular.js/issues/7942))
+  - convert NodeList to an Array to make PhantomJS 1.x happy
+  ([ceaea861](https://github.com/angular/angular.js/commit/ceaea861ebec957c99bbca6fd88ed33fbc15afbf),
+   [#7851](https://github.com/angular/angular.js/issues/7851))
+- **numberFilter:** correctly round fractions despite floating-point arithmetics issues in JS
+  ([189cd064](https://github.com/angular/angular.js/commit/189cd064feeb710fe54ee2ca83449b3eaf82b403),
+   [#7870](https://github.com/angular/angular.js/issues/7870), [#7878](https://github.com/angular/angular.js/issues/7878))
+- **testabilityPatch:** fix invocations of angular.mock.dump
+  ([e8e07502](https://github.com/angular/angular.js/commit/e8e07502776e48bf48b83a836f7422d164cbb1d7))
+
+
+## Features
+
+- **NgModel:**
+  - port the email input type to use the validators pipeline
+  ([67379242](https://github.com/angular/angular.js/commit/6737924210570e8369ab72415e3098c6df4d3f6b))
+  - port the URL input type to use the validators pipeline
+  ([3ee65730](https://github.com/angular/angular.js/commit/3ee65730639fc61d76e1055a6ca74e35eb48b838))
+- **jqLite:** support isDefaultPrevented for triggerHandler dummies
+  ([7e71acd1](https://github.com/angular/angular.js/commit/7e71acd1781ed44a7306d94338388c90f4420a24),
+   [#8008](https://github.com/angular/angular.js/issues/8008))
+
+
+## Performance Improvements
+
+- **forEach:** use native for loop instead of forEach for Arrays
+  ([36625de0](https://github.com/angular/angular.js/commit/36625de0d3ebc1fc091af474d942c6ce16b0a1c0))
+
+
+## Breaking Changes
+
+- **$parse:**
+  - due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
+
+You can no longer invoke .bind, .call or .apply on a function in angular expressions.
+This is to disallow changing the behaviour of existing functions
+in an unforseen fashion.
+  - due to [6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99),
+
+The (deprecated) __proto__ propery does not work inside angular expressions
+anymore.
+  - due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
+
+This prevents the use of __{define,lookup}{Getter,Setter}__ inside angular
+expressions. If you really need them for some reason, please wrap/bind them to make them
+less dangerous, then make them available through the scope object.
+  - due to [528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc),
+
+This prevents the use of `Object` inside angular expressions.
+If you need Object.keys, make it accessible in the scope.
+- **Angular.copy:** due to [b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
+
+
+This changes `angular.copy` so that it applies the prototype of the original
+object to the copied object.  Previously, `angular.copy` would copy properties
+of the original object's prototype chain directly onto the copied object.
+
+This means that if you iterate over only the copied object's `hasOwnProperty`
+properties, it will no longer contain the properties from the prototype.
+This is actually much more reasonable behaviour and it is unlikely that
+applications are actually relying on this.
+
+If this behaviour is relied upon, in an app, then one should simply iterate
+over all the properties on the object (and its inherited properties) and
+not filter them with `hasOwnProperty`.
+
+**Be aware that this change also uses a feature that is not compatible with
+IE8.**  If you need this to work on IE8 then you would need to provide a polyfill
+for `Object.create` and `Object.getPrototypeOf`.
+- **core:** due to [bdfc9c02](https://github.com/angular/angular.js/commit/bdfc9c02d021e08babfbc966a007c71b4946d69d),
+  values 'f', '0', 'false', 'no', 'n', '[]' are no longer
+treated as falsy. Only JavaScript falsy values are now treated as falsy by the
+expression parser; there are six of them: false, null, undefined, NaN, 0 and "".
+
+Closes #3969
+Closes #4277
+Closes #7960
+
+<a name="1.2.19"></a>
+# 1.2.19 precognitive-flashbacks (2014-06-30)
+
+
+
+## Bug Fixes
+
+- **$compile:** bind ng-attr-* even if unbound attribute follows ng-attr-*
+  ([ed59370d](https://github.com/angular/angular.js/commit/ed59370d805a88c9ac012a8e417faf2a9f902776))
+- **$http:** should not read statusText on IE<10 when request is aborted
+  ([0c80df21](https://github.com/angular/angular.js/commit/0c80df21b66f4b147b6b55c27ad794be5802b411))
+- **$injector:** check if a fn is an array explicitly
+  ([67c11b9a](https://github.com/angular/angular.js/commit/67c11b9a3914a24aaf72f36bbe038ba5efa7ddf3),
+   [#7904](https://github.com/angular/angular.js/issues/7904), [#2653](https://github.com/angular/angular.js/issues/2653))
+- **$interval:** when canceling, use clearInterval from $window instead of global scope.
+  ([f780ccfa](https://github.com/angular/angular.js/commit/f780ccfa1c9a8d4c6191b0756ff77dc5749cf8c5))
+- **$parse:**
+  - make the window check in ensureSafeObject IE8 friendly
+  ([ba62e975](https://github.com/angular/angular.js/commit/ba62e975f1a0cebf08dedbb1501f72b166af66db))
+  - prevent invocation of Function's bind, call and apply
+  ([07fa87a8](https://github.com/angular/angular.js/commit/07fa87a8a82b8be155d8c898bb79e5d9277adfb4))
+  - forbid __proto__ properties in angular expressions
+  ([cb713e60](https://github.com/angular/angular.js/commit/cb713e6045413a25b54ad3267476fa29efd70646))
+  - forbid __{define,lookup}{Getter,Setter}__ properties
+  ([89ca8597](https://github.com/angular/angular.js/commit/89ca8597341aa5585bcf728fa677022b7ec9c071))
+  - forbid referencing Object in angular expressions
+  ([bc6fb7cc](https://github.com/angular/angular.js/commit/bc6fb7cc94afddcb11b94f74d13812a6be1cdb64))
+- **injector:** allow multiple loading of function modules
+  ([d71f16e7](https://github.com/angular/angular.js/commit/d71f16e7459f1d3705ccf47a13227d4727be9670),
+   [#7255](https://github.com/angular/angular.js/issues/7255))
+- **input:**
+  - improve html5 validation support
+  ([ab2e83c8](https://github.com/angular/angular.js/commit/ab2e83c8c8fa60ca15b1a9539a6587dc363b20f1),
+   [#7937](https://github.com/angular/angular.js/issues/7937), [#7957](https://github.com/angular/angular.js/issues/7957))
+  - escape forward slash in email regexp
+  ([2a45cea0](https://github.com/angular/angular.js/commit/2a45cea0baaf615b799b54897bfe40d32381e7a2),
+   [#7938](https://github.com/angular/angular.js/issues/7938))
+- **jqLite:** change expando property to a more unique name
+  ([74e1cc68](https://github.com/angular/angular.js/commit/74e1cc683be315f6db05e22e185b3d27460d132a))
+- **numberFilter:** correctly round fractions despite floating-point arithmetics issues in JS
+  ([e5f454c8](https://github.com/angular/angular.js/commit/e5f454c8afc15336dc1faa52704a483cedfacd4a),
+   [#7870](https://github.com/angular/angular.js/issues/7870), [#7878](https://github.com/angular/angular.js/issues/7878))
+- **testabilityPatch:** fix invocations of angular.mock.dump
+  ([5e944a1c](https://github.com/angular/angular.js/commit/5e944a1cf1356bd069d3616f24323a0cb3ace87c))
+
+
+## Performance Improvements
+
+- **jqLite:** don't use reflection to access expandoId
+  ([a4faa5cd](https://github.com/angular/angular.js/commit/a4faa5cde722556bd41d75daf346c63a9b6962e9))
+
+
+## Breaking Changes
+
+- **$parse:**
+  - due to [07fa87a8](https://github.com/angular/angular.js/commit/07fa87a8a82b8be155d8c898bb79e5d9277adfb4),
+
+You can no longer invoke .bind, .call or .apply on a function in angular expressions.
+This is to disallow changing the behaviour of existing functions
+in an unforseen fashion.
+  - due to [cb713e60](https://github.com/angular/angular.js/commit/cb713e6045413a25b54ad3267476fa29efd70646),
+
+The (deprecated) __proto__ propery does not work inside angular expressions
+anymore.
+  - due to [89ca8597](https://github.com/angular/angular.js/commit/89ca8597341aa5585bcf728fa677022b7ec9c071),
+
+This prevents the use of __{define,lookup}{Getter,Setter}__ inside angular
+expressions. If you really need them for some reason, please wrap/bind them to make them
+less dangerous, then make them available through the scope object.
+  - due to [bc6fb7cc](https://github.com/angular/angular.js/commit/bc6fb7cc94afddcb11b94f74d13812a6be1cdb64),
+
+This prevents the use of `Object` inside angular expressions.
+If you need Object.keys, make it accessible in the scope.
+
 <a name="1.3.0-beta.13"></a>
 # 1.3.0-beta.13 idiosyncratic-numerification (2014-06-16)
 
