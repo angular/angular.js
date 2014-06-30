@@ -731,21 +731,25 @@ describe('parser', function() {
                       'Expression: apply()');
             });
 
-            it('should NOT allow invocation to Function.bind', function() {
-              scope.bind = Function.prototype.bind;
 
-              expect(function() {
-                scope.$eval('$eval.bind()');
-              }).toThrowMinErr(
-                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
-                      'Expression: $eval.bind()');
+            // IE8 doesn't have Function.prototype.bind
+            if (!msie || msie > 8) {
+              it('should NOT allow invocation to Function.bind', function () {
+                scope.bind = Function.prototype.bind;
 
-              expect(function() {
-                scope.$eval('bind()');
-              }).toThrowMinErr(
-                  '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
-                      'Expression: bind()');
-            });
+                expect(function () {
+                  scope.$eval('$eval.bind()');
+                }).toThrowMinErr(
+                    '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                        'Expression: $eval.bind()');
+
+                expect(function () {
+                  scope.$eval('bind()');
+                }).toThrowMinErr(
+                    '$parse', 'isecff', 'Referencing call, apply or bind in Angular expressions is disallowed! ' +
+                        'Expression: bind()');
+              });
+            }
           });
 
           describe('Object constructor', function() {
