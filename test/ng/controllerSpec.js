@@ -16,7 +16,7 @@ describe('$controller', function() {
   describe('provider', function() {
 
     it('should allow registration of controllers', function() {
-      var FooCtrl = function($scope) { $scope.foo = 'bar' },
+      var FooCtrl = function($scope) { $scope.foo = 'bar'; },
         scope = {},
         ctrl;
 
@@ -29,8 +29,8 @@ describe('$controller', function() {
 
 
     it('should allow registration of map of controllers', function() {
-      var FooCtrl = function($scope) { $scope.foo = 'foo' },
-          BarCtrl = function($scope) { $scope.bar = 'bar' },
+      var FooCtrl = function($scope) { $scope.foo = 'foo'; },
+          BarCtrl = function($scope) { $scope.bar = 'bar'; },
           scope = {},
           ctrl;
 
@@ -47,7 +47,7 @@ describe('$controller', function() {
 
 
     it('should allow registration of controllers annotated with arrays', function() {
-      var FooCtrl = function($scope) { $scope.foo = 'bar' },
+      var FooCtrl = function($scope) { $scope.foo = 'bar'; },
           scope = {},
           ctrl;
 

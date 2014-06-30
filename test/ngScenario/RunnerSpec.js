@@ -71,7 +71,7 @@ describe('angular.scenario.Runner', function() {
       $window.it('1', angular.noop);
       $window.describe('B', function() {
         $window.beforeEach(function() { before.push('B'); });
-          $window.afterEach(function() { after.push('B'); });
+        $window.afterEach(function() { after.push('B'); });
         $window.it('2', angular.noop);
         $window.describe('C', function() {
           $window.beforeEach(function() { before.push('C'); });

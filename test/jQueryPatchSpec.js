@@ -1,3 +1,4 @@
+/* global $: false */
 'use strict';
 
 if (window.jQuery) {

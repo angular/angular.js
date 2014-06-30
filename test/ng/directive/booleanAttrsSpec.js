@@ -10,7 +10,7 @@ describe('boolean attr directives', function() {
 
   it('should properly evaluate 0 as false', inject(function($rootScope, $compile) {
     // jQuery does not treat 0 as false, when setting attr()
-    element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope)
+    element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope);
     $rootScope.isDisabled = 0;
     $rootScope.$digest();
     expect(element.attr('disabled')).toBeFalsy();
@@ -21,7 +21,7 @@ describe('boolean attr directives', function() {
 
 
   it('should bind disabled', inject(function($rootScope, $compile) {
-    element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope)
+    element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope);
     $rootScope.isDisabled = false;
     $rootScope.$digest();
     expect(element.attr('disabled')).toBeFalsy();
@@ -32,7 +32,7 @@ describe('boolean attr directives', function() {
 
 
   it('should bind checked', inject(function($rootScope, $compile) {
-    element = $compile('<input type="checkbox" ng-checked="isChecked" />')($rootScope)
+    element = $compile('<input type="checkbox" ng-checked="isChecked" />')($rootScope);
     $rootScope.isChecked = false;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeFalsy();
@@ -43,8 +43,8 @@ describe('boolean attr directives', function() {
 
 
   it('should bind selected', inject(function($rootScope, $compile) {
-    element = $compile('<select><option value=""></option><option ng-selected="isSelected">Greetings!</option></select>')($rootScope)
-    jqLite(document.body).append(element)
+    element = $compile('<select><option value=""></option><option ng-selected="isSelected">Greetings!</option></select>')($rootScope);
+    jqLite(document.body).append(element);
     $rootScope.isSelected=false;
     $rootScope.$digest();
     expect(element.children()[1].selected).toBeFalsy();
@@ -55,7 +55,7 @@ describe('boolean attr directives', function() {
 
 
   it('should bind readonly', inject(function($rootScope, $compile) {
-    element = $compile('<input type="text" ng-readonly="isReadonly" />')($rootScope)
+    element = $compile('<input type="text" ng-readonly="isReadonly" />')($rootScope);
     $rootScope.isReadonly=false;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeFalsy();
@@ -66,7 +66,7 @@ describe('boolean attr directives', function() {
 
 
   it('should bind open', inject(function($rootScope, $compile) {
-    element = $compile('<details ng-open="isOpen"></details>')($rootScope)
+    element = $compile('<details ng-open="isOpen"></details>')($rootScope);
     $rootScope.isOpen=false;
     $rootScope.$digest();
     expect(element.attr('open')).toBeFalsy();
@@ -78,7 +78,7 @@ describe('boolean attr directives', function() {
 
   describe('multiple', function() {
     it('should NOT bind to multiple via ngMultiple', inject(function($rootScope, $compile) {
-      element = $compile('<select ng-multiple="isMultiple"></select>')($rootScope)
+      element = $compile('<select ng-multiple="isMultiple"></select>')($rootScope);
       $rootScope.isMultiple=false;
       $rootScope.$digest();
       expect(element.attr('multiple')).toBeFalsy();
@@ -92,7 +92,7 @@ describe('boolean attr directives', function() {
       if (msie < 9) return; //IE8 doesn't support biding to boolean attributes
 
       expect(function() {
-        $compile('<select multiple="{{isMultiple}}"></select>')
+        $compile('<select multiple="{{isMultiple}}"></select>');
       }).toThrowMinErr('$compile', 'selmulti', 'Binding to the \'multiple\' attribute is not supported. ' +
                  'Element: <select multiple="{{isMultiple}}">');
 
@@ -225,7 +225,7 @@ describe('ngHref', function() {
 
 
   it('should interpolate the expression and bind to href', inject(function($compile, $rootScope) {
-    element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope)
+    element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('some/');
 
@@ -247,7 +247,7 @@ describe('ngHref', function() {
 
 
   it('should bind href even if no interpolation', inject(function($rootScope, $compile) {
-    element = $compile('<a ng-href="http://server"></a>')($rootScope)
+    element = $compile('<a ng-href="http://server"></a>')($rootScope);
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('http://server');
   }));

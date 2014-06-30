@@ -240,8 +240,8 @@ describe('ngSwitch', function() {
 describe('ngSwitch animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -281,7 +281,8 @@ describe('ngSwitch animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('enter');
       expect(item.element.text()).toBe('one');
-  }));
+    })
+  );
 
 
   it('should fire off the leave animation',
@@ -314,7 +315,8 @@ describe('ngSwitch animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('enter');
       expect(item.element.text()).toBe('three');
-  }));
+    })
+  );
 
   it('should destroy the previous leave animation if a new one takes place', function() {
     module(function($provide) {

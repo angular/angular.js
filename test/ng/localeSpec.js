@@ -1,7 +1,7 @@
 'use strict';
 
 describe('$locale', function() {
-
+  /* global $LocaleProvider: false */
   var $locale = new $LocaleProvider().$get();
 
   it('should have locale id set to en-us', function() {

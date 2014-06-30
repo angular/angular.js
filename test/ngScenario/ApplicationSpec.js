@@ -5,7 +5,7 @@ describe('angular.scenario.Application', function() {
   var app, frames;
 
   function callLoadHandlers(app) {
-    var handler = app.getFrame_().triggerHandler('load')
+    var handler = app.getFrame_().triggerHandler('load');
   }
 
   beforeEach(function() {

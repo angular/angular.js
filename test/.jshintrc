@@ -16,6 +16,7 @@
   "sub": true,
   "undef": true,
   "browser": true,
+  "indent": 2,
   "globals": {
     /* auto/injector.js */
     "createInjector": false,
@@ -42,7 +43,6 @@
     "isArrayLike": false,
     "forEach": false,
     "sortedKeys": false,
-    "forEachSorted": false,
     "reverseParams": false,
     "nextUid": false,
     "setHashKey": false,
@@ -103,9 +103,6 @@
     "getBlockElements": false,
     "VALIDITY_STATE_PROPERTY": true,
 
-    /* filters.js */
-    "getFirstThursdayOfYear": false,
-
     /* AngularPublic.js */
     "version": false,
     "publishExternalAPI": false,
@@ -148,24 +145,6 @@
     "urlResolve": false,
     "urlIsSameOrigin": false,
 
-    /* ng/compile.js */
-    "directiveNormalize": false,
-
-    /* ng/parse.js */
-    "setter": false,
-
-    /* ng/directive/directives.js */
-    "ngDirective": false,
-
-    /* ng/directive/input.js */
-    "VALID_CLASS": false,
-    "INVALID_CLASS": false,
-    "PRISTINE_CLASS": false,
-    "DIRTY_CLASS": false,
-
-    /* ng/directive/form.js */
-    "nullFormCtrl": false,
-
     /* jasmine / karma */
     "it": false,
     "iit": false,
@@ -176,10 +155,30 @@
     "expect": false,
     "jasmine": false,
     "spyOn": false,
+    "waits": false,
+    "waitsFor": false,
+    "runs": false,
+    "dump": false,
+
+    /* e2e */
+    "browser": false,
+    "element": false,
+    "by": false,
 
     /* testabilityPatch / matchers */
     "inject": false,
     "module": false,
-    "dealoc": false
+    "dealoc": false,
+    "dealoc": false,
+    "_jQuery": false,
+    "_jqLiteMode": false,
+    "sortedHtml": false,
+    "childrenTagsOf": false,
+    "assertHidden": false,
+    "assertVisible": false,
+    "provideLog": false,
+    "spyOnlyCallsWithArgs": false,
+    "createMockStyleSheet": false,
+    "browserTrigger": false
   }
 }

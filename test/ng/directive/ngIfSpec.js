@@ -226,8 +226,8 @@ describe('ngIf and transcludes', function() {
 describe('ngIf animations', function () {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -272,7 +272,8 @@ describe('ngIf animations', function () {
       expect(item.element.text()).toBe('Hi');
 
       expect(element.children().length).toBe(1);
-  }));
+    })
+  );
 
   it('should fire off the leave animation',
     inject(function ($compile, $rootScope, $animate) {
@@ -297,7 +298,8 @@ describe('ngIf animations', function () {
       expect(item.element.text()).toBe('Hi');
 
       expect(element.children().length).toBe(0);
-  }));
+    })
+  );
 
   it('should destroy the previous leave animation if a new one takes place', function() {
     module(function($provide) {

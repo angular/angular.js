@@ -241,27 +241,27 @@ describe("angular.scenario.dsl", function() {
 
       it('should select option by exact name', function() {
         doc.append(
-            '<select ng-model="test">' +
-            '  <option value=A>twenty one</option>' +
-            '  <option value=B selected>two</option>' +
-            '  <option value=C>thirty one</option>' +
-            '  <option value=D>one</option>' +
-            '</select>'
-          );
-          $root.dsl.select('test').option('one');
-          expect(doc.find('[ng-model="test"]').val()).toEqual('D');
+          '<select ng-model="test">' +
+          '  <option value=A>twenty one</option>' +
+          '  <option value=B selected>two</option>' +
+          '  <option value=C>thirty one</option>' +
+          '  <option value=D>one</option>' +
+          '</select>'
+        );
+        $root.dsl.select('test').option('one');
+        expect(doc.find('[ng-model="test"]').val()).toEqual('D');
       });
 
       it('should select option by name if no exact match and name contains value', function() {
         doc.append(
-            '<select ng-model="test">' +
-            '  <option value=A>twenty one</option>' +
-            '  <option value=B selected>two</option>' +
-            '  <option value=C>thirty one</option>' +
-            '</select>'
-          );
-          $root.dsl.select('test').option('one');
-          expect(doc.find('[ng-model="test"]').val()).toEqual('A');
+          '<select ng-model="test">' +
+          '  <option value=A>twenty one</option>' +
+          '  <option value=B selected>two</option>' +
+          '  <option value=C>thirty one</option>' +
+          '</select>'
+        );
+        $root.dsl.select('test').option('one');
+        expect(doc.find('[ng-model="test"]').val()).toEqual('A');
       });
 
       it('should select multiple options', function() {
@@ -283,14 +283,14 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should fail to select an option that does not exist', function(){
-          doc.append(
-              '<select ng-model="test">' +
-              '  <option value=A>one</option>' +
-              '  <option value=B selected>two</option>' +
-              '</select>'
-            );
-            $root.dsl.select('test').option('three');
-            expect($root.futureError).toMatch(/not found/);
+        doc.append(
+          '<select ng-model="test">' +
+          '  <option value=A>one</option>' +
+          '  <option value=B selected>two</option>' +
+          '</select>'
+        );
+        $root.dsl.select('test').option('three');
+        expect($root.futureError).toMatch(/not found/);
       });
     });
 
