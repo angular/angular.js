@@ -64,6 +64,21 @@ describe('$controller', function() {
         $controllerProvider.register('hasOwnProperty', function($scope) {});
       }).toThrowMinErr('ng', 'badname', "hasOwnProperty is not a valid controller name");
     });
+
+
+    it('should instantiate a controller defined on window if allowGlobals is set',
+      inject(function($window) {
+        var scope = {};
+        var Foo = function() {};
+
+        $controllerProvider.allowGlobals();
+
+        $window.a = {Foo: Foo};
+
+        var foo = $controller('a.Foo', {$scope: scope});
+        expect(foo).toBeDefined();
+        expect(foo instanceof Foo).toBe(true);
+      }));
   });
 
 
@@ -97,15 +112,15 @@ describe('$controller', function() {
   });
 
 
-  it('should instantiate controller defined on window', inject(function($window) {
+  it('should not instantiate a controller defined on window', inject(function($window) {
     var scope = {};
     var Foo = function() {};
 
     $window.a = {Foo: Foo};
 
-    var foo = $controller('a.Foo', {$scope: scope});
-    expect(foo).toBeDefined();
-    expect(foo instanceof Foo).toBe(true);
+    expect(function () {
+      $controller('a.Foo', {$scope: scope});
+    }).toThrow();
   }));
 
 
