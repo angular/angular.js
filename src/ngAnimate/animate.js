@@ -876,7 +876,7 @@ angular.module('ngAnimate', ['ng'])
           fireDOMOperation();
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
-          closeAnimation();
+          closeAnimation(true);
           return;
         }
 
@@ -907,7 +907,7 @@ angular.module('ngAnimate', ['ng'])
           fireDOMOperation();
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
-          closeAnimation();
+          closeAnimation(true);
           return;
         }
 
@@ -1047,16 +1047,18 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
-        function closeAnimation() {
+        function closeAnimation(immediate) {
           if(!closeAnimation.hasBeenRun) {
             closeAnimation.hasBeenRun = true;
             var data = element.data(NG_ANIMATE_STATE);
             if(data) {
-              /* only structural animations wait for reflow before removing an
+              /* Only structural animations wait for reflow before removing an
                  animation, but class-based animations don't. An example of this
                  failing would be when a parent HTML tag has a ng-class attribute
-                 causing ALL directives below to skip animations during the digest */
-              if(runner && runner.isClassBased) {
+                 causing ALL directives below to skip animations during the digest.
+                 The 'immediate' flag is passed in when there definitely was no
+                 animation and we can skip the cost of the closure and the rAF.*/
+              if((runner && runner.isClassBased) || immediate) {
                 cleanup(element, className);
               } else {
                 $$asyncCallback(function() {
