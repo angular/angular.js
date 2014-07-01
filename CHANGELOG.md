@@ -28,6 +28,7 @@ vulnerabilities via [security@angularjs.org].
   ([8b0258d8](https://github.com/angular/angular.js/commit/8b0258d878cac20cd25c0958fd6e136a08b97df6),
    [#7739](https://github.com/angular/angular.js/issues/7739))
 - **$http:**
+  - don't remove content-type header if data is set by request transform ([5633ddd8](https://github.com/angular/angular.js/commit/c7c363cf8d4533f94c5534c83dd1c7135633ddd8))
   - should not read statusText on IE<10 when request is aborted
   ([31ae3e71](https://github.com/angular/angular.js/commit/31ae3e71647eadbbe1df40f9dedb55e1e0715f98))
   - add the PATCH shortcut back
@@ -165,7 +166,9 @@ Closes #7960
 
 - **$compile:** bind ng-attr-* even if unbound attribute follows ng-attr-*
   ([ed59370d](https://github.com/angular/angular.js/commit/ed59370d805a88c9ac012a8e417faf2a9f902776))
-- **$http:** should not read statusText on IE<10 when request is aborted
+- **$http:**
+  - don't remove content-type header if data is set by request transform ([ae76a35b](https://github.com/angular/angular.js/commit/8346787a19b883445dda6f38e545a5f1ae76a35b))
+  - should not read statusText on IE<10 when request is aborted
   ([0c80df21](https://github.com/angular/angular.js/commit/0c80df21b66f4b147b6b55c27ad794be5802b411))
 - **$injector:** check if a fn is an array explicitly
   ([67c11b9a](https://github.com/angular/angular.js/commit/67c11b9a3914a24aaf72f36bbe038ba5efa7ddf3),
