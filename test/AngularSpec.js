@@ -34,6 +34,99 @@ describe('angular', function() {
       expect(copy(new Foo()) instanceof Foo).toBe(true);
     });
 
+    it('should honour enumerable properties', function() {
+      var A, i, j, k;
+      i = 0;
+      j = 0;
+      k = 0;
+
+      A = (function() {
+        function A() {}
+
+        Object.defineProperty(A.prototype, 'test1', {
+          get: function() {
+            return this['_test1'];
+          },
+          set: function(v) {
+            Object.defineProperty(this, '_test1', {
+              writable: true,
+              enumerable: false
+            });
+            this['_test1'] = v;
+            return i++;
+          },
+          enumerable: true
+        });
+
+        Object.defineProperty(A.prototype, 'test2', {
+          get: function() {
+            return this['_test2'];
+          },
+          set: function(v) {
+            Object.defineProperty(this, '_test2', {
+              writable: true,
+              enumerable: true
+            });
+            this['_test2'] = v;
+            return j++;
+          },
+          enumerable: false
+        });
+
+        Object.defineProperty(A.prototype, 'test3', {
+          get: function() {
+            return this['_test3'];
+          },
+          set: function(v) {
+            Object.defineProperty(this, '_test3', {
+              writable: true,
+              enumerable: false
+            });
+            this['_test3'] = v;
+            return k++;
+          },
+          enumerable: false
+        });
+
+        return A;
+
+      })();
+
+      // [i,j,k] represents the number of times test1, test2 and
+      // test3 setters have been called
+
+      var a = new A();
+      expect([i,j,k]).toEqual([0,0,0]);
+      a.test1 = 1;
+      expect([i,j,k]).toEqual([1,0,0]);
+      a.test2 = 2;
+      expect([i,j,k]).toEqual([1,1,0]);
+      a.test3 = 3;
+      expect([i,j,k]).toEqual([1,1,1]);
+      expect(a.test1).toBe(1);
+      expect(a._test1).toBe(1);
+      expect(a.test2).toBe(2);
+      expect(a._test2).toBe(2);
+      expect(a.test3).toBe(3);
+      expect(a._test3).toBe(3);
+      var c = copy(a);
+
+      // we expect that the copy effectively called:
+      //
+      // c = Object.create(Object.getPrototypeOf(a))
+      // c.test1 = a.test1
+      // c._test2 = a._test2
+      // // nothing for test3
+
+      expect([i,j,k]).toEqual([2,1,1]);
+      expect(c.test1).toBe(1);
+      expect(c._test1).toBe(1);
+      expect(c.test2).toBe(2);
+      expect(c._test2).toBe(2);
+      expect(c.test3).toBeUndefined();
+      expect(c._test3).toBeUndefined();
+    });
+
     it("should copy Date", function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();
