@@ -446,6 +446,14 @@ LocationHashbangInHtml5Url.prototype =
         if (isString(search)) {
           this.$$search = parseKeyValue(search);
         } else if (isObject(search)) {
+          // remove object undefined or null properties
+          for (var property in search) {
+            if (search.hasOwnProperty(property)) {
+              if (isUndefined(search[property]) || search[property] === null) {
+                delete search[property];
+              }
+            }
+          }
           this.$$search = search;
         } else {
           throw $locationMinErr('isrcharg',
