@@ -12,6 +12,7 @@
  */
 function $ControllerProvider() {
   var controllers = {},
+      globals = false,
       CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
 
 
@@ -32,6 +33,15 @@ function $ControllerProvider() {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name $controllerProvider#allowGlobals
+   * @description If called, allows `$controller` to find controller constructors on `window`
+   */
+  this.allowGlobals = function() {
+    globals = true;
+  };
+
 
   this.$get = ['$injector', '$window', function($injector, $window) {
 
@@ -46,7 +56,8 @@ function $ControllerProvider() {
      *
      *    * check if a controller with given name is registered via `$controllerProvider`
      *    * check if evaluating the string on the current scope returns a constructor
-     *    * check `window[constructor]` on the global `window` object
+     *    * if $controllerProvider#allowGlobals, check `window[constructor]` on the global
+     *      `window` object (not recommended)
      *
      * @param {Object} locals Injection locals for Controller.
      * @return {Object} Instance of given controller.
@@ -66,7 +77,8 @@ function $ControllerProvider() {
         identifier = match[3];
         expression = controllers.hasOwnProperty(constructor)
             ? controllers[constructor]
-            : getter(locals.$scope, constructor, true) || getter($window, constructor, true);
+            : getter(locals.$scope, constructor, true) ||
+                (globals ? getter($window, constructor, true) : undefined);
 
         assertArgFn(expression, constructor, true);
       }
