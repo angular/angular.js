@@ -65,12 +65,50 @@ describe('Scope', function() {
     }));
 
     it('should create a non prototypically inherited child scope', inject(function($rootScope) {
-      var child = $rootScope.$new(true);
+      var child = $rootScope.$new({isolate: true});
       $rootScope.a = 123;
       expect(child.a).toBeUndefined();
       expect(child.$parent).toEqual($rootScope);
       expect(child.$new).toBe($rootScope.$new);
       expect(child.$root).toBe($rootScope);
+    }));
+
+    it('should create a child scope with partialDigest', inject(function($rootScope) {
+      var child = $rootScope.$new({isolate: false, partialDigest: true});
+      var spyRoot = jasmine.createSpy('spyRoot');
+      var spyChild = jasmine.createSpy('spyChild');
+      $rootScope.$watch(spyRoot);
+      child.$watch(spyChild);
+
+      child.$apply();
+      expect(spyRoot).not.toHaveBeenCalled();
+      expect(spyChild).toHaveBeenCalled();
+
+      spyRoot.reset();
+      spyChild.reset();
+
+      $rootScope.$apply();
+      expect(spyRoot).toHaveBeenCalled();
+      expect(spyChild).toHaveBeenCalled();
+    }));
+
+    it('should create an isolated child scope with partialDigest', inject(function($rootScope) {
+      var child = $rootScope.$new({isolate: true, partialDigest: true});
+      var spyRoot = jasmine.createSpy('spyRoot');
+      var spyChild = jasmine.createSpy('spyChild');
+      $rootScope.$watch(spyRoot);
+      child.$watch(spyChild);
+
+      child.$apply();
+      expect(spyRoot).not.toHaveBeenCalled();
+      expect(spyChild).toHaveBeenCalled();
+
+      spyRoot.reset();
+      spyChild.reset();
+
+      $rootScope.$apply();
+      expect(spyRoot).toHaveBeenCalled();
+      expect(spyChild).toHaveBeenCalled();
     }));
   });
 

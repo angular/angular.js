@@ -45,7 +45,7 @@ describe('ngSrc', function() {
     it('should error on non-resource_url src attributes', inject(function($compile, $rootScope, $sce) {
       element = $compile('<iframe ng-src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
-      expect($rootScope.$apply).toThrowMinErr(
+      expect(function() {$rootScope.$apply(); }).toThrowMinErr(
           "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "javascript:doTrustedStuff()");

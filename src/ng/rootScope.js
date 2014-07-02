@@ -134,6 +134,7 @@ function $RootScopeProvider(){
       this.$$listeners = {};
       this.$$listenerCount = {};
       this.$$isolateBindings = {};
+      this.$$digestTarget = true;
     }
 
     /**
@@ -162,19 +163,25 @@ function $RootScopeProvider(){
        * desired for the scope and its child scopes to be permanently detached from the parent and
        * thus stop participating in model change detection and listener notification by invoking.
        *
-       * @param {boolean} isolate If true, then the scope does not prototypically inherit from the
-       *         parent scope. The scope is isolated, as it can not see parent scope properties.
-       *         When creating widgets, it is useful for the widget to not accidentally read parent
-       *         state.
+       * @param {Object=} options An object that can contain two optional boolean flags:
+       *
+       * - `isolate` If true, then the scope does not prototypically inherit from the
+       *    parent scope. The scope is isolated, as it can not see parent scope properties.
+       *    When creating widgets, it is useful for the widget to not accidentally read parent
+       *    state.
+       * - `partialDigest` If true, then calling {@link ng.$rootScope.Scope#$apply $apply()} on the scope
+       *    will result in {@link ng.$rootScope.Scope#$digest $digest()} only happening on the scope itself
+       *    and all its descendants. Useful as a performance improvement for structurally isolated components.
+       *
        *
        * @returns {Object} The newly created child scope.
        *
        */
-      $new: function(isolate) {
+      $new: function(options) {
         var ChildScope,
             child;
 
-        if (isolate) {
+        if (options && options.isolate) {
           child = new Scope();
           child.$root = this.$root;
           // ensure that there is just one async queue per $rootScope and its children
@@ -205,6 +212,7 @@ function $RootScopeProvider(){
         } else {
           this.$$childHead = this.$$childTail = child;
         }
+        child.$$digestTarget = !!(options && options.partialDigest);
         return child;
       },
 
@@ -978,7 +986,9 @@ function $RootScopeProvider(){
         } finally {
           clearPhase();
           try {
-            $rootScope.$digest();
+            var scope = this;
+            while(!scope.$$digestTarget) scope = scope.$parent;
+            scope.$digest();
           } catch (e) {
             $exceptionHandler(e);
             throw e;
