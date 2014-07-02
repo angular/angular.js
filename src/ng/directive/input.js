@@ -1794,10 +1794,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     var viewValue = ctrl.$viewValue;
 
     $timeout.cancel(pendingDebounce);
-    if (!revalidate && ctrl.$$lastCommittedViewValue === viewValue) {
+    if (!revalidate && equals(ctrl.$$lastCommittedViewValue, viewValue)) {
       return;
     }
-    ctrl.$$lastCommittedViewValue = viewValue;
+    ctrl.$$lastCommittedViewValue = copy(viewValue);
 
     // change to dirty
     if (ctrl.$pristine) {

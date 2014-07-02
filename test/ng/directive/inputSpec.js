@@ -184,6 +184,29 @@ describe('NgModelController', function() {
     });
 
 
+    it('should trigger an update to the model if the $viewValue is an object whose properties change', function() {
+      var log = [];
+
+      ctrl.$parsers.push(function(value) {
+        log.push(value && value.getFullYear());
+        return value;
+      });
+
+      // assign a date object to the $viewValue
+      var date = new Date(2000, 1, 1);
+      ctrl.$setViewValue(date);
+      expect(ctrl.$modelValue).toEqual(date);
+      expect(log).toEqual([2000]);
+
+      // update the date value (not changing the object identity)
+      log = [];
+      date.setFullYear(2001);
+      ctrl.$setViewValue(date);
+      expect(ctrl.$modelValue).toEqual(date);
+      expect(log).toEqual([2001]);
+    });
+
+
     it('should fire viewChangeListeners when the value changes in the view (even if invalid)',
         function() {
       var spy = jasmine.createSpy('viewChangeListener');
