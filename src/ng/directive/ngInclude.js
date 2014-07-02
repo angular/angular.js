@@ -125,7 +125,7 @@
           return;
         }
         templateSelect.click();
-        templateSelect.element.all(by.css('option')).get(2).click();
+        templateSelect.all(by.css('option')).get(2).click();
         expect(includeElem.getText()).toMatch(/Content of template2.html/);
       });
 
@@ -135,7 +135,7 @@
           return;
         }
         templateSelect.click();
-        templateSelect.element.all(by.css('option')).get(0).click();
+        templateSelect.all(by.css('option')).get(0).click();
         expect(includeElem.isPresent()).toBe(false);
       });
     </file>
