@@ -2190,6 +2190,132 @@ describe('$compile', function() {
         });
       });
     });
+
+    describe('partialDigest', function() {
+      var childScope;
+      beforeEach(module(function() {
+        directive('isolatePartialDigest', valueFn({
+          scope: {value: '='},
+          partialDigest: true,
+          template: '{{value}}',
+          link: function(scope) {childScope = scope;}
+        }));
+
+        directive('isolateTransPartialDigest', valueFn({
+          scope: {value: '='},
+          partialDigest: true,
+          transclude: true,
+          template: '{{value}}<span ng-transclude></span>',
+          link: function(scope) {childScope = scope;}
+        }));
+
+      }));
+
+      afterEach(function() {
+        childScope = null;
+      });
+
+
+      it('should allow you to mark an isolated scope with partialDigest', inject(
+        function($rootScope, $compile) {
+          element = $compile('<div>{{value}}<div isolate-partial-digest value="value"></div></div>')($rootScope);
+
+          $rootScope.$apply('value=1');
+          expect(element.text()).toBe('11');
+
+          $rootScope.value = 2;
+          childScope.$apply();
+          expect(element.text()).toBe('11');
+
+          $rootScope.$apply('value=3');
+          expect(element.text()).toBe('33');
+
+          childScope.$apply('value=4');
+          expect(element.text()).toBe('34');
+
+          $rootScope.$apply();
+          expect(element.text()).toBe('44');
+        }));
+
+
+      it('should digest the correct scopes with an isolate scope and transclusion', inject(
+        function($rootScope, $compile) {
+          element = $compile('<div>{{value}}<div isolate-trans-partial-digest value="value">{{value}}</div></div>')($rootScope);
+
+          $rootScope.$apply('value=1');
+          expect(element.text()).toBe('111');
+
+          $rootScope.value = 2;
+          childScope.$apply();
+          expect(element.text()).toBe('111');
+
+          $rootScope.$apply('value=3');
+          expect(element.text()).toBe('333');
+
+          childScope.$apply('value=4');
+          expect(element.text()).toBe('343');
+
+          $rootScope.$apply();
+          expect(element.text()).toBe('444');
+        }));
+
+    });
+
+    describe('partialDigest as function', function() {
+      var childScope;
+      beforeEach(module(function() {
+        directive('isolatePartialDigest', valueFn({
+          scope: {value: '='},
+          partialDigest: function ($element, $attrs) {
+            expect(nodeName_($element[0])).toBe('div');
+            expect($attrs.partialDigest).toBeDefined();
+            return $attrs.partialDigest === "true";
+          },
+          template: '{{value}}',
+          link: function(scope) {childScope = scope;}
+        }));
+      }));
+
+      afterEach(function() {
+        childScope = null;
+      });
+
+
+      it('should allow you to mark an isolated scope with partialDigest', inject(
+        function($rootScope, $compile) {
+          element = $compile('<div>{{value}}<div isolate-partial-digest value="value" partial-digest="true">content</div></div>')($rootScope);
+
+          $rootScope.$apply('value=1');
+          expect(element.text()).toBe('11');
+
+          $rootScope.value = 2;
+          childScope.$apply();
+          expect(element.text()).toBe('11');
+
+          $rootScope.$apply('value=3');
+          expect(element.text()).toBe('33');
+
+          childScope.$apply('value=4');
+          expect(element.text()).toBe('34');
+
+          $rootScope.$apply();
+          expect(element.text()).toBe('44');
+        }));
+
+
+      it('should allow you to not mark an isolated scope with partialDigest', inject(
+        function($rootScope, $compile) {
+          element = $compile('<div>{{value}}<div isolate-partial-digest value="value" partial-digest="false">content</div></div>')($rootScope);
+
+          $rootScope.$apply('value=1');
+          expect(element.text()).toBe('11');
+
+          $rootScope.value = 2;
+          childScope.$apply();
+          expect(element.text()).toBe('22');
+        }));
+
+    });
   });
 
 

@@ -364,6 +364,13 @@
  *     parameter of directive controllers.
  *     `function([scope], cloneLinkingFn)`.
  *
+ * #### `partialDigest`
+ * This property is used only if `scope` is an object, implying the directive will have an isolated scope.
+ *
+ * You can specify `partialDigest` as a boolean or as a function which takes two
+ * arguments `tElement` and `tAttrs` (described in the `compile` function api above) and returns
+ * a boolean. See {@link api/ng.$rootScope.Scope#$new $new()} for more information about partialDigest.
+ *
  *
  * #### Pre-linking function
  *
@@ -1462,7 +1469,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (newIsolateScopeDirective) {
           var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
 
-          isolateScope = scope.$new(true);
+          isolateScope = scope.$new({isolate: true, partialDigest: isFunction(newIsolateScopeDirective.partialDigest)
+            ? newIsolateScopeDirective.partialDigest($compileNode, templateAttrs)
+            : newIsolateScopeDirective.partialDigest});
 
           if (templateDirective && (templateDirective === newIsolateScopeDirective ||
               templateDirective === newIsolateScopeDirective.$$originalDirective)) {
