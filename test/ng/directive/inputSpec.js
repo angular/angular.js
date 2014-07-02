@@ -2528,8 +2528,8 @@ describe('input', function() {
 
 
     it('should allow custom enumeration', function() {
-      compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
-          'ng-false-value="n">');
+      compileInput('<input type="checkbox" ng-model="name" ng-true-value="\'y\'" ' +
+          'ng-false-value="\'n\'">');
 
       scope.$apply(function() {
         scope.name = 'y';
@@ -2551,6 +2551,27 @@ describe('input', function() {
 
       browserTrigger(inputElm, 'click');
       expect(scope.name).toEqual('n');
+    });
+
+
+    it('should throw if ngTrueValue is present and not a constant expression', function() {
+      expect(function() {
+        compileInput('<input type="checkbox" ng-model="value" ng-true-value="yes" />');
+      }).toThrowMinErr('ngModel', 'constexpr', "Expected constant expression for `ngTrueValue`, but saw `yes`.");
+    });
+
+
+    it('should throw if ngFalseValue is present and not a constant expression', function() {
+      expect(function() {
+        compileInput('<input type="checkbox" ng-model="value" ng-false-value="no" />');
+      }).toThrowMinErr('ngModel', 'constexpr', "Expected constant expression for `ngFalseValue`, but saw `no`.");
+    });
+
+
+    it('should not throw if ngTrueValue or ngFalseValue are not present', function() {
+      expect(function() {
+        compileInput('<input type="checkbox" ng-model="value" />');
+      }).not.toThrow();
     });
 
 
