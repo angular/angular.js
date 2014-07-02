@@ -157,6 +157,12 @@ wrapMap.optgroup = wrapMap.option;
 wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
 wrapMap.th = wrapMap.td;
 
+// Firefox only supports cssFloat
+// https://developer.mozilla.org/en-US/docs/Web/CSS/float
+var cssMapping = {
+  'float': msie <= 8 ? 'styleFloat' : 'cssFloat'
+};
+
 function jqLiteIsTextNode(html) {
   return !HTML_REGEXP.test(html);
 }
@@ -540,6 +546,7 @@ forEach({
 
   css: function(element, name, value) {
     name = camelCase(name);
+    name = cssMapping[name] || name;
 
     if (isDefined(value)) {
       element.style[name] = value;

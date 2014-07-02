@@ -843,6 +843,18 @@ describe('jqLite', function() {
     });
 
 
+    it('should set and read float property', function() {
+      var selector = jqLite(a);
+
+      expect(selector.css('float', 'right')).toEqual(selector);
+      if(a.style.getPropertyValue) {
+        expect(a.style.getPropertyValue('float')).toEqual('right');
+      } else {
+        expect(a.style.getAttribute('float')).toEqual('right');
+      }
+    });
+
+
     it('should set a bunch of css properties specified via an object', function() {
       if (msie <= 8) {
         expect(jqLite(a).css('margin')).toBe('auto');
