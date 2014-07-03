@@ -218,17 +218,22 @@ DI is pervasive throughout Angular. You can use it when defining components or w
 and `config` blocks for a module.
 
 - Components such as services, directives, filters and animations are defined by an injectable factory
-method or constructor function.  These components can be injected with "service" components as
-dependencies.
+method or constructor function.  These components can be injected with "service" and "value"
+components as dependencies.
 
-- The `run` and `config` methods accept a function, which can also be injected with "service"
-components as dependencies. Note that only providers and constants can be injected into configuration
-blocks and only instances and constants can be injected into run blocks. 
-See [Modules](https://docs.angularjs.org/guide/module#module-loading-dependencies) for additional details.
+- The `run` method accepts a function, which can be injected with "service", "value" and "constant"
+components as dependencies. Note that you cannot inject "providers" into `run` blocks.
+
+- The `config` method accepts a function, which can be injected with "provider" and "constant"
+components as dependencies.  Note that you cannot inject "service" or "value" components into
+configuration
 
 - Controllers are defined by a constructor function, which can be injected with any of the "service"
-components as dependencies, but they can also be provided with special dependencies. See "DI in
-Controllers" below.
+and "value" components as dependencies, but they can also be provided with special dependencies. See
+{@link di#controllers Controllers} below for a list of these special dependencies.
+
+See {@link module#module-loading-dependencies Modules} for more details about injecting dependencies
+into `run` and `config` blocks.
 
 
 ### Factory Methods
