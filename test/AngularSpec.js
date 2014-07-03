@@ -34,6 +34,57 @@ describe('angular', function() {
       expect(copy(new Foo()) instanceof Foo).toBe(true);
     });
 
+    it("should copy own non-enumerable properties", function() {
+      var obj = {
+        a: "enumerable"
+      };
+      Object.defineProperty(obj, 'b', {
+        value: "nonEnumerable",
+        enumerable: false
+      });
+      expect(copy(obj).a).toEqual("enumerable");
+      expect(copy(obj).b).toEqual("nonEnumerable");
+    });
+
+    it("should preserve own property descriptors", function() {
+      var obj = {};
+      var aDescriptor = {
+        value : {foo: 'a'},
+        writable : true,
+        enumerable : true,
+        configurable : true
+      };
+      var bDescriptor = {
+        value : {foo: 'b'},
+        writable : false,
+        enumerable : false,
+        configurable : false
+      };
+      var cDescriptor = {
+        get : function() { return this._c; },
+        set : function(newValue) { this._c = newValue; },
+        enumerable : false,
+        configurable : false
+      };
+      Object.defineProperties(obj, {
+        a: aDescriptor,
+        b: bDescriptor,
+        c: cDescriptor
+      });
+      obj.c = {foo: 'b'};
+
+      var objCopy = copy(obj);
+      expect(Object.getOwnPropertyDescriptor(objCopy, "a")).toEqual(aDescriptor);
+      expect(Object.getOwnPropertyDescriptor(objCopy, "b")).toEqual(bDescriptor);
+      expect(Object.getOwnPropertyDescriptor(objCopy, "c")).toEqual(cDescriptor);
+      expect(objCopy.a).toEqual(obj.a);
+      expect(objCopy.a === obj.a).toBe(false);
+      expect(objCopy.b).toEqual(obj.b);
+      expect(objCopy.b === obj.b).toBe(false);
+      expect(objCopy.c).toEqual(obj.c);
+      expect(objCopy.c === obj.c).toBe(false);
+    });
+
     it("should copy Date", function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();

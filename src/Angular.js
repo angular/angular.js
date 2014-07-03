@@ -807,16 +807,18 @@ function copy(source, destination, stackSource, stackDest) {
       forEach(destination, function(value, key) {
         delete destination[key];
       });
-      for ( var key in source) {
-        if(source.hasOwnProperty(key)) {
-          result = copy(source[key], null, stackSource, stackDest);
-          if (isObject(source[key])) {
-            stackSource.push(source[key]);
-            stackDest.push(result);
+      forEach (Object.getOwnPropertyNames(source), function(key) {
+        var propertyDescriptor = Object.getOwnPropertyDescriptor(source, key);
+        if (propertyDescriptor.hasOwnProperty('value')) {
+          var sourceValue = propertyDescriptor.value;
+          propertyDescriptor.value = copy(sourceValue, null, stackSource, stackDest);
+          if (isObject(sourceValue)) {
+            stackSource.push(sourceValue);
+            stackDest.push(propertyDescriptor.value);
           }
-          destination[key] = result;
         }
-      }
+        Object.defineProperty(destination, key, propertyDescriptor);
+      });
       setHashKey(destination,h);
     }
 
