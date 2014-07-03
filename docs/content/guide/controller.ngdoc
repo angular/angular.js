@@ -37,14 +37,21 @@ The properties contain the **view model** (the model that will be presented by t
 `$scope` properties will be available to the template at the point in the DOM where the Controller
 is registered.
 
-The following example shows a very simple constructor function for a Controller, `GreetingController`,
+The following example demonstrates setting up
+`GreetingController`,
 which attaches a `greeting` property containing the string `'Hola!'` to the `$scope`:
 
+We attach the controller as a module on the application using the `.controller` method of your
+{@link module Angular Module}. This keeps it out of the global scope.
+
 ```js
-function GreetingController($scope) {
+var myApp = angular.module('myApp',[]);
+
+myApp.controller('GreetingController', ['$scope', function($scope) {
   $scope.greeting = 'Hola!';
-}
+}]);
 ```
+
 
 Once the Controller has been attached to the DOM, the `greeting` property can be data-bound to the
 template:
@@ -55,17 +62,7 @@ template:
 </div>
 ```
 
-**NOTE**: Although Angular allows you to create Controller functions in the global scope, this is
-not recommended.  In a real application you should use the `.controller` method of your
-{@link module Angular Module} for your application as follows:
 
-```js
-var myApp = angular.module('myApp',[]);
-
-myApp.controller('GreetingController', ['$scope', function($scope) {
-  $scope.greeting = 'Hola!';
-}]);
-```
 
 We have used an **inline injection annotation** to explicitly specify the dependency
 of the Controller on the `$scope` service provided by Angular. See the guide on
@@ -333,6 +330,3 @@ describe('state', function() {
     });
 });
 ```
-
-
-
