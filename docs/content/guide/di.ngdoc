@@ -222,7 +222,9 @@ method or constructor function.  These components can be injected with "service"
 dependencies.
 
 - The `run` and `config` methods accept a function, which can also be injected with "service"
-components as dependencies.
+components as dependencies. Note that only providers and constants can be injected into configuration
+blocks and only instances and constants can be injected into run blocks. 
+See [Modules](https://docs.angularjs.org/guide/module#module-loading-dependencies) for additional details.
 
 - Controllers are defined by a constructor function, which can be injected with any of the "service"
 components as dependencies, but they can also be provided with special dependencies. See "DI in
