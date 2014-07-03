@@ -11,7 +11,7 @@ from our server using one of Angular's built-in {@link guide/services services} 
 ng.$http $http}. We will use Angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
-* There are now a list of 20 phones, loaded from the server.
+* There is now a list of 20 phones, loaded from the server.
 
 <div doc-tutorial-reset="5"></div>
 
