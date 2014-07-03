@@ -3888,9 +3888,9 @@ describe("ngAnimate", function() {
       }));
 
       it('should animate based on a boolean flag', inject(function($animate, $sniffer, $rootScope, $compile) {
-        var html = '<section class="parent" ng-if="on1" ng-animate-children="bool">' +
-                   '  <div class="child" ng-if="on2">...</div>' +
-                   '</section>';
+        var html = '<div class="parent" ng-if="on1" ng-animate-children="bool">' +
+                   '  <p class="child" ng-if="on2">...</p>' +
+                   '</div>';
 
         var element = $compile(html)($rootScope);
         $rootElement.append(element);
@@ -3927,9 +3927,9 @@ describe("ngAnimate", function() {
       it('should default to true when no expression is provided',
         inject(function($animate, $sniffer, $rootScope, $compile) {
 
-        var html = '<section class="parent" ng-if="on1" ng-animate-children>' +
-                   '  <div class="child" ng-if="on2">...</div>' +
-                   '</section>';
+        var html = '<div class="parent" ng-if="on1" ng-animate-children>' +
+                   '  <p class="child" ng-if="on2">...</p>' +
+                   '</div>';
 
         var element = $compile(html)($rootScope);
         $rootElement.append(element);
@@ -3950,11 +3950,11 @@ describe("ngAnimate", function() {
       it('should not perform inherited animations if any parent restricts it',
         inject(function($animate, $sniffer, $rootScope, $compile) {
 
-        var html = '<section ng-animate-children="false">' +
-                   '  <aside class="parent" ng-if="on" ng-animate-children="true">' +
-                   '    <div class="child" ng-if="on">...</div>' +
-                   '  </aside>' +
-                   '</section>';
+        var html = '<div ng-animate-children="false">' +
+                   '  <div class="parent" ng-if="on" ng-animate-children="true">' +
+                   '    <p class="child" ng-if="on">...</p>' +
+                   '  </div>' +
+                   '</div>';
 
         var element = $compile(html)($rootScope);
         $rootElement.append(element);
