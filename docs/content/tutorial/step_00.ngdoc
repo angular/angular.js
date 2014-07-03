@@ -88,7 +88,7 @@ being the element on which the `ngApp` directive was defined.
 
           Nothing here {{'yet' + '!'}}
 
-  This line demonstrates the core feature of Angular's templating capabilities – a binding, denoted
+  This line demonstrates the core feature of Angular's templating capabilities (a binding), denoted
   by double-curlies `{{ }}` as well as a simple expression `'yet' + '!'` used in this binding.
 
   The binding tells Angular that it should evaluate an expression and insert the result into the
