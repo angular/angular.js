@@ -470,6 +470,13 @@ describe('angular', function() {
       expect(parseKeyValue('flag1&flag1=value&flag1=value2&flag1')).
       toEqual({flag1: [true,'value','value2',true]});
     });
+
+
+    it('should ignore properties higher in the prototype chain', function() {
+      expect(parseKeyValue('toString=123')).toEqual({
+        'toString': '123'
+      });
+    });
   });
 
   describe('toKeyValue', function() {
