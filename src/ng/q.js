@@ -8,6 +8,46 @@
  * @description
  * A promise/deferred implementation inspired by [Kris Kowal's Q](https://github.com/kriskowal/q).
  *
+ * $q can be used in two fashions --- One, which is more similar to Kris Kowal's Q or jQuery's Deferred
+ * implementations, the other resembles ES6 promises to some degree.
+ *
+ * # $q constructor
+ *
+ * The streamlined ES6 style promise is essentially just using $q as a constructor which takes a `resolver`
+ * function as the first argument). This is similar to the native Promise implementation from ES6 Harmony,
+ * see [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+ *
+ * While the constructor-style use is supported, not all of the supporting methods from Harmony promises are
+ * available yet.
+ *
+ * It can be used like so:
+ *
+ * ```js
+ * return $q(function(resolve, reject) {
+ *   // perform some asynchronous operation, resolve or reject the promise when appropriate.
+ *   setInterval(function() {
+ *     if (pollStatus > 0) {
+ *       resolve(polledValue);
+ *     } else if (pollStatus < 0) {
+ *       reject(polledValue);
+ *     } else {
+ *       pollStatus = pollAgain(function(value) {
+ *         polledValue = value;
+ *       });
+ *     }
+ *   }, 10000);
+ * }).
+ *   then(function(value) {
+ *     // handle success
+ *   }, function(reason) {
+ *     // handle failure
+ *   });
+ * ```
+ *
+ * Note, progress/notify callbacks are not currently supported via the ES6-style interface.
+ *
+ * However, the more traditional CommonJS style usage is still available, and documented below.
+ *
  * [The CommonJS Promise proposal](http://wiki.commonjs.org/wiki/Promises) describes a promise as an
  * interface for interacting with an object that represents the result of an action that is
  * performed asynchronously, and may or may not be finished at any given point in time.
@@ -53,7 +93,6 @@
  * traditional callback ([CPS](http://en.wikipedia.org/wiki/Continuation-passing_style)) approach.
  * For more on this please see the [Q documentation](https://github.com/kriskowal/q) especially the
  * section on serial or parallel joining of promises.
- *
  *
  * # The Deferred API
  *
@@ -163,6 +202,12 @@
  *      expect(resolvedValue).toEqual(123);
  *    }));
  *  ```
+ *
+ * @param {function(function, function)} resolver Function which is responsible for resolving or
+ *   rejecting the newly created promise. The first parameteter is a function which resolves the
+ *   promise, the second parameter is a function which rejects the promise.
+ *
+ * @returns {Promise} The newly created promise.
  */
 function $QProvider() {
 
@@ -519,10 +564,36 @@ function qFactory(nextTick, exceptionHandler) {
     return deferred.promise;
   }
 
-  return {
-    defer: defer,
-    reject: reject,
-    when: when,
-    all: all
+  var $Q = function Q(resolver) {
+    if (!isFunction(resolver)) {
+      // TODO(@caitp): minErr this
+      throw new TypeError('Expected resolverFn');
+    }
+
+    if (!(this instanceof Q)) {
+      // More useful when $Q is the Promise itself.
+      return new Q(resolver);
+    }
+
+    var deferred = defer();
+
+    function resolveFn(value) {
+      deferred.resolve(value);
+    }
+
+    function rejectFn(reason) {
+      deferred.reject(reason);
+    }
+
+    resolver(resolveFn, rejectFn);
+
+    return deferred.promise;
   };
+
+  $Q.defer = defer;
+  $Q.reject = reject;
+  $Q.when = when;
+  $Q.all = all;
+
+  return $Q;
 }
