@@ -211,6 +211,10 @@ code.highlighted {
   color:maroon;
 }
 
+ul + p {
+  margin-top: 10px;
+}
+
 .docs-version-jump {
   min-width:100%;
   max-width:100%;
