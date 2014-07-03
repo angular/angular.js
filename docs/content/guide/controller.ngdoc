@@ -37,12 +37,8 @@ The properties contain the **view model** (the model that will be presented by t
 `$scope` properties will be available to the template at the point in the DOM where the Controller
 is registered.
 
-The following example demonstrates setting up
-`GreetingController`,
-which attaches a `greeting` property containing the string `'Hola!'` to the `$scope`:
-
-We attach the controller as a module on the application using the `.controller` method of your
-{@link module Angular Module}. This keeps it out of the global scope.
+The following example demonstrates creating a `GreetingController`, which attaches a `greeting`
+property containing the string `'Hola!'` to the `$scope`:
 
 ```js
 var myApp = angular.module('myApp',[]);
@@ -52,21 +48,24 @@ myApp.controller('GreetingController', ['$scope', function($scope) {
 }]);
 ```
 
+We create an {@link module Angular Module}, `myApp`, for our application. Then we add the controller's
+constructor function to the module using the `.controller()` method. This keeps the controller's
+constructor function out of the global scope.
 
-Once the Controller has been attached to the DOM, the `greeting` property can be data-bound to the
-template:
+<div class="alert alert-info">
+We have used an **inline injection annotation** to explicitly specify the dependency
+of the Controller on the `$scope` service provided by Angular. See the guide on
+{@link guide/di Dependency Injection} for more information.
+</div>
+
+We attach our controller to the DOM using the `ng-controller` directive. The `greeting` property can
+now be data-bound to the template:
 
 ```js
 <div ng-controller="GreetingController">
   {{ greeting }}
 </div>
 ```
-
-
-
-We have used an **inline injection annotation** to explicitly specify the dependency
-of the Controller on the `$scope` service provided by Angular. See the guide on
-[Dependency Injection](http://docs.angularjs.org/guide/di) for more information.
 
 
 # Adding Behavior to a Scope Object
