@@ -115,8 +115,9 @@ function $HttpProvider() {
    *     - **`defaults.headers.post`**
    *     - **`defaults.headers.put`**
    *     - **`defaults.headers.patch`**
-   * */
+   **/
   var defaults = this.defaults = {
+    // transform incoming response data
     transformResponse: [function(data) {
       if (isString(data)) {
         // strip json vulnerability protection prefix
@@ -132,6 +133,7 @@ function $HttpProvider() {
       return isObject(d) && !isFile(d) && !isBlob(d) ? toJson(d) : d;
     }],
 
+    // default headers
     headers: {
       common: {
         'Accept': 'application/json, text/plain, */*'
