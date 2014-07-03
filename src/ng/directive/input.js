@@ -1781,13 +1781,24 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * Runs each of the registered validations set on the $validators object.
    */
   this.$validate = function() {
-    this.$$runValidators(ctrl.$modelValue, ctrl.$viewValue);
+    // ignore $validate before model initialized
+    if (ctrl.$modelValue !== ctrl.$modelValue) {
+      return;
+    }
+
+    var prev = ctrl.$modelValue;
+    ctrl.$$runValidators(ctrl.$$invalidModelValue || ctrl.$modelValue, ctrl.$viewValue);
+    if (prev !== ctrl.$modelValue) {
+      ctrl.$$writeModelToScope();
+    }
   };
 
   this.$$runValidators = function(modelValue, viewValue) {
     forEach(ctrl.$validators, function(fn, name) {
       ctrl.$setValidity(name, fn(modelValue, viewValue));
     });
+    ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
+    ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
   };
 
   /**
@@ -1826,20 +1837,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     if (ctrl.$modelValue !== modelValue &&
         (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
-
       ctrl.$$runValidators(modelValue, viewValue);
-      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
-      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
-
-      ngModelSet($scope, ctrl.$modelValue);
-      forEach(ctrl.$viewChangeListeners, function(listener) {
-        try {
-          listener();
-        } catch(e) {
-          $exceptionHandler(e);
-        }
-      });
+      ctrl.$$writeModelToScope();
     }
+  };
+
+  this.$$writeModelToScope = function() {
+    ngModelSet($scope, ctrl.$modelValue);
+    forEach(ctrl.$viewChangeListeners, function(listener) {
+      try {
+        listener();
+      } catch(e) {
+        $exceptionHandler(e);
+      }
+    });
   };
 
   /**
@@ -1920,8 +1931,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       }
 
       ctrl.$$runValidators(modelValue, viewValue);
-      ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
-      ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
 
       if (ctrl.$viewValue !== viewValue) {
         ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
