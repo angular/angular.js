@@ -2503,6 +2503,32 @@ describe('input', function() {
       expect(scope.name).toEqual('n');
     });
 
+    it('should allow custom enumeration with integers', function() {
+      compileInput('<input type="checkbox" ng-model="name" ng-true-value="1" ' +
+        'ng-false-value="0">');
+
+      scope.$apply(function() {
+        scope.name = 1;
+      });
+      expect(inputElm[0].checked).toBe(true);
+
+      scope.$apply(function() {
+        scope.name = 0;
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      scope.$apply(function() {
+        scope.name = 'something else';
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.name).toEqual(1);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.name).toEqual(0);
+    });
+
 
     it('should throw if ngTrueValue is present and not a constant expression', function() {
       expect(function() {
