@@ -386,6 +386,25 @@ describe('jqLite', function() {
       selected.removeData('prop2');
     });
 
+    it('should add and remove data on SVGs', function() {
+      var calcCacheSize = function() {
+        var count = 0;
+        for (var k in jqLite.cache) { ++count; }
+        return count;
+      };
+
+      var svg = jqLite('<svg><rect></rect></svg>');
+
+      svg.data('svg-level', 1);
+      expect(svg.data('svg-level')).toBe(1);
+
+      svg.children().data('rect-level', 2);
+      expect(svg.children().data('rect-level')).toBe(2);
+
+      svg.remove();
+      expect(calcCacheSize()).toEqual(0);
+    });
+
 
     it('should not add to the cache if the node is a comment or text node', function() {
       var calcCacheSize = function() {

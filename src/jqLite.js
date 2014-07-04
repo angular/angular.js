@@ -248,7 +248,7 @@ function jqLiteClone(element) {
 function jqLiteDealoc(element){
   jqLiteRemoveData(element);
   var childElement;
-  for ( var i = 0, children = element.children, l = (children && children.length) || 0; i < l; i++) {
+  for ( var i = 0, children = element.children || element.childNodes, ii = (children && children.length) || 0; i < ii; i++) {
     childElement = children[i];
     jqLiteDealoc(childElement);
   }
@@ -432,8 +432,8 @@ function jqLiteInheritedData(element, name, value) {
 }
 
 function jqLiteEmpty(element) {
-  for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-    jqLiteDealoc(childNodes[i]);
+  for (var i = 0, children = element.children || element.childNodes, ii = children.length; i < ii; i++) {
+    jqLiteDealoc(children[i]);
   }
   while (element.firstChild) {
     element.removeChild(element.firstChild);
@@ -632,8 +632,8 @@ forEach({
     if (isUndefined(value)) {
       return element.innerHTML;
     }
-    for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-      jqLiteDealoc(childNodes[i]);
+    for (var i = 0, children = element.children || element.childNodes, ii = children.length; i < ii; i++) {
+      jqLiteDealoc(children[i]);
     }
     element.innerHTML = value;
   },
@@ -853,7 +853,7 @@ forEach({
 
   children: function(element) {
     var children = [];
-    forEach(element.childNodes, function(element){
+    forEach(element.children || element.childNodes, function(element) {
       if (element.nodeType === 1)
         children.push(element);
     });
