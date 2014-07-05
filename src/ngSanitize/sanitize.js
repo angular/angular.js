@@ -276,6 +276,10 @@ function htmlParser( html, handler ) {
           html = html.substring( match[0].length );
           match[0].replace( START_TAG_REGEXP, parseStartTag );
           chars = false;
+        } else {
+          // no ending tag found
+          if (handler.chars) handler.chars( '<' );
+          html = html.substring(1);
         }
       }
 

@@ -20,6 +20,7 @@ describe('HTML', function() {
 
     var handler, start, text, comment;
     beforeEach(function() {
+      text = "";
       handler = {
           start: function(tag, attrs, unary){
             start = {
@@ -34,7 +35,7 @@ describe('HTML', function() {
             });
           },
           chars: function(text_){
-            text = text_;
+            text += text_;
           },
           end:function(tag) {
             expect(tag).toEqual(start.tag);
@@ -78,6 +79,11 @@ describe('HTML', function() {
       htmlParser('<tag attr="value">text</tag>', handler);
       expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
       expect(text).toEqual('text');
+    });
+
+    it('should parse non ending tags', function() {
+      htmlParser('<nonEndingTag href <nonEndingTag href', handler);
+      expect(text).toEqual('<nonEndingTag href <nonEndingTag href');
     });
 
     it('should parse newlines in tags', function() {
