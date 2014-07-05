@@ -21,6 +21,7 @@ describe('HTML', function() {
 
     var handler, start, text, comment;
     beforeEach(function() {
+      text = "";
       handler = {
         start: function(tag, attrs, unary){
           start = {
@@ -35,7 +36,7 @@ describe('HTML', function() {
           });
         },
         chars: function(text_){
-          text = text_;
+          text += text_;
         },
         end:function(tag) {
           expect(tag).toEqual(start.tag);
@@ -79,6 +80,16 @@ describe('HTML', function() {
       htmlParser('<tag attr="value">text</tag>', handler);
       expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
       expect(text).toEqual('text');
+    });
+
+    it('should parse unterminated tags as regular content', function() {
+      htmlParser('<a text1 text2 <a text1 text2', handler);
+      expect(text).toEqual('<a text1 text2 <a text1 text2');
+    });
+
+    it('should accept tag delimiters such as "<" inside real tags', function() {
+      htmlParser('<p> 10 < 100 </p>', handler);
+      expect(text).toEqual(' 10 < 100 ');
     });
 
     it('should parse newlines in tags', function() {
@@ -193,6 +204,12 @@ describe('HTML', function() {
 
   it('should allow multiline strings', function() {
     expectHTML('\na\n').toEqual('&#10;a&#10;');
+  });
+
+  it('should accept tag delimiters such as "<" inside real tags (with nesting)', function() {
+    //this is an integrated version of the 'should accept tag delimiters such as "<" inside real tags' test
+    expectHTML('<p> 10 < <span>100</span> </p>')
+    .toEqual('<p> 10 &lt; <span>100</span> </p>');
   });
 
   describe('htmlSanitizerWriter', function() {
