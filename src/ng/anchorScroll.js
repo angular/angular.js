@@ -17,24 +17,26 @@
  * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
  *
  * @example
-   <example>
+   <example module="anchorScrollExample">
      <file name="index.html">
-       <div id="scrollArea" ng-controller="ScrollCtrl">
+       <div id="scrollArea" ng-controller="ScrollController">
          <a ng-click="gotoBottom()">Go to bottom</a>
          <a id="bottom"></a> You're at the bottom!
        </div>
      </file>
      <file name="script.js">
-       function ScrollCtrl($scope, $location, $anchorScroll) {
-         $scope.gotoBottom = function (){
-           // set the location.hash to the id of
-           // the element you wish to scroll to.
-           $location.hash('bottom');
+       angular.module('anchorScrollExample', [])
+         .controller('ScrollController', ['$scope', '$location', '$anchorScroll',
+           function ($scope, $location, $anchorScroll) {
+             $scope.gotoBottom = function() {
+               // set the location.hash to the id of
+               // the element you wish to scroll to.
+               $location.hash('bottom');
 
-           // call $anchorScroll()
-           $anchorScroll();
-         };
-       }
+               // call $anchorScroll()
+               $anchorScroll();
+             };
+           }]);
      </file>
      <file name="style.css">
        #scrollArea {
