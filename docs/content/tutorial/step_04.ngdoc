@@ -162,15 +162,15 @@ __`test/e2e/scenarios.js`:__
       query.sendKeys('tablet'); //let's narrow the dataset to make the test assertions shorter
 
       expect(getNames()).toEqual([
-        "Motorola XOOM\u2122 with Wi-Fi",
-        "MOTOROLA XOOM\u2122"
+        "Motorola XOOM\u2122 with Wi-Fi\u000AThe Next, Next Generation tablet.",
+        "MOTOROLA XOOM\u2122\u000AThe Next, Next Generation tablet."
       ]);
 
       element(by.model('orderProp')).element(by.css('option[value="name"]')).click();
 
       expect(getNames()).toEqual([
-        "MOTOROLA XOOM\u2122",
-        "Motorola XOOM\u2122 with Wi-Fi"
+        "MOTOROLA XOOM\u2122\u000AThe Next, Next Generation tablet.",
+        "Motorola XOOM\u2122 with Wi-Fi\u000AThe Next, Next Generation tablet."
       ]);
     });...
 ```
