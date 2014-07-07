@@ -78,7 +78,7 @@ function setupModuleLoader(window) {
      *        {@link angular.Module#config Module#config()}.
      * @returns {module} new module with the {@link angular.Module} api.
      */
-    return function module(name, requires, configFn) {
+    function module(name, requires, configFn) {
       var assertNotHasOwnProperty = function(name, context) {
         if (name === 'hasOwnProperty') {
           throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
@@ -312,6 +312,22 @@ function setupModuleLoader(window) {
         }
       });
     };
+    ensure(module, "list", function(){
+      /**
+       * @ngdoc function
+       * @name angular.module.list
+       * @module ng
+       * @returns (Array.<string>) list of all loaded modules
+       */
+      return function list() {
+        var list = [];
+        for (var name in modules) {
+          list.push(name);
+        }
+        return list;
+      };
+    });
+    return module;
   });
 
 }
