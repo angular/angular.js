@@ -52,7 +52,7 @@ function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
   return function(amount, currencySymbol){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
@@ -179,6 +179,9 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
 
     if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
   } else {
+    if (isUndefined(fractionSize)) {
+      fractionSize = pattern.minFrac;
+    }
 
     if (fractionSize > 0 && number > -1 && number < 1) {
       formatedText = number.toFixed(fractionSize);
