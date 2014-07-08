@@ -578,7 +578,7 @@ function $SceDelegateProvider() {
  *
  * <example module="mySceApp" deps="angular-sanitize.js">
  * <file name="index.html">
- *   <div ng-controller="myAppController as myCtrl">
+ *   <div ng-controller="AppController as myCtrl">
  *     <i ng-bind-html="myCtrl.explicitlyTrustedHtml" id="explicitlyTrustedHtml"></i><br><br>
  *     <b>User comments</b><br>
  *     By default, HTML that isn't explicitly trusted (e.g. Alice's comment) is sanitized when
@@ -595,17 +595,17 @@ function $SceDelegateProvider() {
  * </file>
  *
  * <file name="script.js">
- *   var mySceApp = angular.module('mySceApp', ['ngSanitize']);
- *
- *   mySceApp.controller("myAppController", function myAppController($http, $templateCache, $sce) {
- *     var self = this;
- *     $http.get("test_data.json", {cache: $templateCache}).success(function(userComments) {
- *       self.userComments = userComments;
- *     });
- *     self.explicitlyTrustedHtml = $sce.trustAsHtml(
- *         '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
- *         'sanitization.&quot;">Hover over this text.</span>');
- *   });
+ *   angular.module('mySceApp', ['ngSanitize'])
+ *     .controller('AppController', ['$http', '$templateCache', '$sce',
+ *       function($http, $templateCache, $sce) {
+ *         var self = this;
+ *         $http.get("test_data.json", {cache: $templateCache}).success(function(userComments) {
+ *           self.userComments = userComments;
+ *         });
+ *         self.explicitlyTrustedHtml = $sce.trustAsHtml(
+ *             '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
+ *             'sanitization.&quot;">Hover over this text.</span>');
+ *       }]);
  * </file>
  *
  * <file name="test_data.json">
