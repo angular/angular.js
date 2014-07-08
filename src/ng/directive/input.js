@@ -1577,7 +1577,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * @description
    * Called when the view needs to be updated. It is expected that the user of the ng-model
-   * directive will implement this method.
+   * directive will implement this method. Note that in case `$modelValue` is an object,
+   * this method will be invoked only if a different instance is assigned to the model since
+   * `ngModel` does not perform a deep watch of objects.
    */
   this.$render = noop;
 
@@ -1879,8 +1881,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * Update the view value.
    *
    * This method should be called when the view value changes, typically from within a DOM event handler.
-   * For example {@link ng.directive:input input} and
-   * {@link ng.directive:select select} directives call it.
+   * For example {@link ng.directive:input input} and {@link ng.directive:select select}
+   * directives call it. In case the view value is an object, this method should be called with a
+   * copy of that object since `ngModel` does not perform a deep watch of objects. Properties of
+   * that copy should not be changed after `$setViewValue` in invoked.
    *
    * It will update the $viewValue, then pass this value through each of the functions in `$parsers`,
    * which includes any validators. The value that comes out of this `$parsers` pipeline, be applied to
