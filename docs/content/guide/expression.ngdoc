@@ -50,9 +50,9 @@ the method from your view. If you want to `eval()` an Angular expression yoursel
 
 You can try evaluating different expressions here:
 
-<example>
+<example module="expressionExample">
   <file name="index.html">
-    <div ng-controller="Cntl2" class="expressions">
+    <div ng-controller="ExampleController" class="expressions">
       Expression:
       <input type='text' ng-model="expr" size="80"/>
       <button ng-click="addExp(expr)">Evaluate</button>
@@ -66,17 +66,18 @@ You can try evaluating different expressions here:
   </file>
 
   <file name="script.js">
-    function Cntl2($scope) {
-      var exprs = $scope.exprs = [];
-      $scope.expr = '3*10|currency';
-      $scope.addExp = function(expr) {
-        exprs.push(expr);
-      };
+    angular.module('expressionExample', [])
+      .controller('ExampleController', ['$scope', function($scope) {
+        var exprs = $scope.exprs = [];
+        $scope.expr = '3*10|currency';
+        $scope.addExp = function(expr) {
+          exprs.push(expr);
+        };
 
-      $scope.removeExp = function(index) {
-        exprs.splice(index, 1);
-      };
-    }
+        $scope.removeExp = function(index) {
+          exprs.splice(index, 1);
+        };
+      }]);
   </file>
 
   <file name="protractor.js" type="protractor">
@@ -101,9 +102,9 @@ This restriction is intentional. It prevents accidental access to the global sta
 Instead use services like `$window` and `$location` in functions called from expressions. Such services
 provide mockable access to globals.
 
-<example>
+<example module="expressionExample">
   <file name="index.html">
-    <div class="example2" ng-controller="Cntl1">
+    <div class="example2" ng-controller="ExampleController">
       Name: <input ng-model="name" type="text"/>
       <button ng-click="greet()">Greet</button>
       <button ng-click="window.alert('Should not see me')">Won't greet</button>
@@ -111,13 +112,14 @@ provide mockable access to globals.
   </file>
 
   <file name="script.js">
-    function Cntl1($window, $scope){
-      $scope.name = 'World';
+    angular.module('expressionExample', [])
+      .controller('ExampleController', ['$window', '$scope', function($window, $scope) {
+        $scope.name = 'World';
 
-      $scope.greet = function() {
-        $window.alert('Hello ' + $scope.name);
-      };
-    }
+        $scope.greet = function() {
+          $window.alert('Hello ' + $scope.name);
+        };
+      }]);
   </file>
 
   <file name="protractor.js" type="protractor">
