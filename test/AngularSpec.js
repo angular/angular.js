@@ -634,6 +634,26 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
+
+
+    it('should pass object being iterated over as 3rd arg to callbacks', function() {
+      var obj = {foo: 'bar'},
+          arr = [1],
+          func = function () {};
+
+      forEach(obj, function (value, key, collection) {
+        expect(obj).toBe(collection);
+      });
+
+      forEach(arr, function (value, index, collection) {
+        expect(arr).toBe(collection);
+      });
+
+      func.foo = 'bar';
+      forEach(func, function (value, key, collection) {
+        expect(func).toBe(collection);
+      });
+    });
   });
 
 
