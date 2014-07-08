@@ -35,8 +35,8 @@ angular.module('ui.bootstrap.dropdown', [])
 
   this.open = function( dropdownScope ) {
     if ( !openScope ) {
-      $document.bind('click', closeDropdown);
-      $document.bind('keydown', escapeKeyBind);
+      $document.on('click', closeDropdown);
+      $document.on('keydown', escapeKeyBind);
     }
 
     if ( openScope && openScope !== dropdownScope ) {
@@ -49,8 +49,8 @@ angular.module('ui.bootstrap.dropdown', [])
   this.close = function( dropdownScope ) {
     if ( openScope === dropdownScope ) {
       openScope = null;
-      $document.unbind('click', closeDropdown);
-      $document.unbind('keydown', escapeKeyBind);
+      $document.off('click', closeDropdown);
+      $document.off('keydown', escapeKeyBind);
     }
   };
 
@@ -124,7 +124,7 @@ angular.module('ui.bootstrap.dropdown', [])
         return;
       }
 
-      element.bind('click', function(event) {
+      element.on('click', function(event) {
         event.preventDefault();
         event.stopPropagation();
 

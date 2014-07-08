@@ -1,3 +1,4 @@
+/* global FormController: false */
 'use strict';
 
 describe('form', function() {
@@ -148,11 +149,98 @@ describe('form', function() {
         '<input name="hasOwnProperty" ng-model="some" />'+
         '<input name="other" ng-model="someOther" />'+
       '</form>');
-      expect(function() {
-	    $compile(doc)(scope);
-      }).toThrowMinErr('ng', 'badname');
+    expect(function() {
+      $compile(doc)(scope);
+    }).toThrowMinErr('ng', 'badname');
   });
 
+  describe('triggering commit value on submit', function () {
+    it('should trigger update on form submit', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(form, 'submit');
+      expect(scope.name).toEqual('a');
+      dealoc(form);
+    });
+
+    it('should trigger update on form submit with nested forms', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<div class="ng-form" name="child">' +
+              '<input type="text" ng-model="name" />' +
+            '</div>' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(scope.name).toEqual(undefined);
+      browserTrigger(form, 'submit');
+      expect(scope.name).toEqual('a');
+      dealoc(form);
+    });
+
+    it('should trigger update before ng-submit is invoked', function() {
+      var form = $compile(
+          '<form name="test" ng-submit="submit()" ' +
+              'ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      scope.submit = jasmine.createSpy('submit').andCallFake(function() {
+        expect(scope.name).toEqual('a');
+      });
+      browserTrigger(form, 'submit');
+      expect(scope.submit).toHaveBeenCalled();
+      dealoc(form);
+    });
+  });
+
+  describe('rollback view value', function () {
+    it('should trigger rollback on form controls', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<input type="text" ng-model="name" />' +
+            '<button ng-click="test.$rollbackViewValue()" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(inputElm.val()).toBe('a');
+      browserTrigger(form.find('button'), 'click');
+      expect(inputElm.val()).toBe('');
+      dealoc(form);
+    });
+
+    it('should trigger rollback on form controls with nested forms', function() {
+      var form = $compile(
+          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+            '<div class="ng-form" name="child">' +
+              '<input type="text" ng-model="name" />' +
+            '</div>' +
+            '<button ng-click="test.$rollbackViewValue()" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      changeInputValue(inputElm, 'a');
+      expect(inputElm.val()).toBe('a');
+      browserTrigger(form.find('button'), 'click');
+      expect(inputElm.val()).toBe('');
+      dealoc(form);
+    });
+  });
 
   describe('preventing default submission', function() {
 
@@ -177,7 +265,7 @@ describe('form', function() {
 
       scope.submitMe = function() {
         submitted = true;
-      }
+      };
 
       if (msie!=8) addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
 
@@ -218,11 +306,11 @@ describe('form', function() {
         // $location change) that will cause some directive to destroy the dom (e.g. ngView+$route)
         doc.empty();
         destroyed = true;
-      }
+      };
 
       scope.submitMe = function() {
         submitted = true;
-      }
+      };
 
       var assertPreventDefaultListener = function(e) {
         reloadPrevented = e.defaultPrevented || (e.returnValue === false);
@@ -434,7 +522,7 @@ describe('form', function() {
       expect(parent.$error.myRule).toBe(false);
       expect(child.$error.myRule).toBe(false);
     });
-  })
+  });
 
 
   describe('validation', function() {

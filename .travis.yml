@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 0.10
+  - '0.10'
 
 branches:
   except:
@@ -17,6 +17,11 @@ env:
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
+
+install:
+  - npm config set registry http://23.251.144.68
+  # Run npm install twice, because it is flaky.
+  - npm install || npm install
 
 before_script:
   - mkdir -p $LOGS_DIR

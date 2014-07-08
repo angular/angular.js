@@ -33,7 +33,7 @@ __`app/index.html`:__
 <html ng-app="phonecatApp">
 <head>
   ...
-  <script src="../bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
   <script src="js/controllers.js"></script>
 </head>
 <body ng-controller="PhoneListCtrl">
@@ -148,7 +148,7 @@ tests in Angular so that developers are encouraged to write them.
 ### Testing non-Global Controllers
 
 In practice, you will not want to have your controller functions in the global namespace.  Instead,
-you can see that we have registered it via an anonymous constructor function on the `phoneCatApp`
+you can see that we have registered it via an anonymous constructor function on the `phonecatApp`
 module.
 
 In this case Angular provides a service, `$controller`, which will retrieve your controller by name.
@@ -223,11 +223,11 @@ To run the tests, and then watch the files for changes: `npm test`.
 
   Refresh your browser and verify that it says "Hello, World!".
 
-* Update the unit test for the controller in ./tests/unit/controllersSpec.js to reflect the previous change. For example by adding:
+* Update the unit test for the controller in ./test/unit/controllersSpec.js to reflect the previous change. For example by adding:
 
           expect(scope.name).toBe('World');
 
-* Create a repeater that constructs a simple table:
+* Create a repeater in `index.html` that constructs a simple table:
 
           <table>
             <tr><th>row number</th></tr>
@@ -241,7 +241,7 @@ To run the tests, and then watch the files for changes: `npm test`.
             <tr ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
           </table>
 
-* Make the unit test fail by changing the `toBe(3)` statement to `toBe(4)`.
+* Make the unit test fail by changing `expect(scope.phones.length).toBe(3)` to instead use `toBe(4)`.
 
 
 # Summary

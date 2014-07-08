@@ -1,3 +1,976 @@
+<a name="1.3.0-beta.14"></a>
+# 1.3.0-beta.14 harmonious-cacophonies (2014-06-30)
+
+
+This release contains security fixes for $parse that prevent arbitrary code execution via Angular
+expressions under some very specific conditions. The only applications affected by these
+vulnerabilities are those that match all of the following conditions:
+
+- application mixes server-side and client-side templating
+- the server-side templating contains XSS vulnerabilities
+- the vulnerabilities in the server-side templating are being guarded by server-side XSS filters or
+  on the client-side via [CSP](http://en.wikipedia.org/wiki/Content_Security_Policy)
+- the server-side XSS vulnerabilities can be used to augment the client-side template processed by
+  Angular
+
+Applications not meeting all of the conditions are not vulnerable.
+
+This fix is in both 1.3.0-beta.14 and 1.2.19 release.
+
+The Angular team would like to thank [Jann Horn](http://thejh.net) for reporting these
+vulnerabilities via [security@angularjs.org].
+
+
+
+## Bug Fixes
+
+- **$compile:** bind ng-attr-* even if unbound attribute follows ng-attr-*
+  ([8b0258d8](https://github.com/angular/angular.js/commit/8b0258d878cac20cd25c0958fd6e136a08b97df6),
+   [#7739](https://github.com/angular/angular.js/issues/7739))
+- **$http:**
+  - should not read statusText on IE<10 when request is aborted
+  ([31ae3e71](https://github.com/angular/angular.js/commit/31ae3e71647eadbbe1df40f9dedb55e1e0715f98))
+  - add the PATCH shortcut back
+  ([b28b5caa](https://github.com/angular/angular.js/commit/b28b5caab1529b3970f10f0a4de43c0c975e3886),
+   [#5894](https://github.com/angular/angular.js/issues/5894))
+- **$injector:** check if a fn is an array explicitly
+  ([b1a6baac](https://github.com/angular/angular.js/commit/b1a6baac2de84a1ecdc000085e8bbd016eb5c100),
+   [#7904](https://github.com/angular/angular.js/issues/7904), [#2653](https://github.com/angular/angular.js/issues/2653))
+- **$interval:** when canceling, use clearInterval from $window instead of global scope.
+  ([a4904c0f](https://github.com/angular/angular.js/commit/a4904c0f83838222b98a875c56779a7f1a4a650a))
+- **$parse:**
+  - prevent invocation of Function's bind, call and apply
+  ([77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5))
+  - forbid __proto__ properties in angular expressions
+  ([6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99))
+  - forbid __{define,lookup}{Getter,Setter}__ properties
+  ([48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6))
+  - forbid referencing Object in angular expressions
+  ([528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc))
+  - handle constants as one-time binding expressions
+  ([d9763f1b](https://github.com/angular/angular.js/commit/d9763f1bd355190b9d4e5723e4632cbc232f0543),
+   [#7970](https://github.com/angular/angular.js/issues/7970))
+- **$timeout/$interval:** if invokeApply is false, do not use evalAsync
+  ([19b6b343](https://github.com/angular/angular.js/commit/19b6b3433ae9f8523cbc72ae97dbcf0c06960148),
+   [#7999](https://github.com/angular/angular.js/issues/7999), [#7103](https://github.com/angular/angular.js/issues/7103))
+- **Angular:** nodeName should always be lowercase
+  ([dafb8a3c](https://github.com/angular/angular.js/commit/dafb8a3cd12e7c3247838f536c25eb796331658d),
+   [#3987](https://github.com/angular/angular.js/issues/3987))
+- **Angular.copy:** preserve prototype chain when copying objects
+  ([b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
+   [#5063](https://github.com/angular/angular.js/issues/5063), [#3767](https://github.com/angular/angular.js/issues/3767), [#4996](https://github.com/angular/angular.js/issues/4996))
+- **core:** drop the toBoolean function
+  ([bdfc9c02](https://github.com/angular/angular.js/commit/bdfc9c02d021e08babfbc966a007c71b4946d69d),
+   [#3969](https://github.com/angular/angular.js/issues/3969), [#4277](https://github.com/angular/angular.js/issues/4277), [#7960](https://github.com/angular/angular.js/issues/7960))
+- **injector:** allow multiple loading of function modules
+  ([2f0a4488](https://github.com/angular/angular.js/commit/2f0a4488731fdb0e8217325dbb52a576defd09bd),
+   [#7255](https://github.com/angular/angular.js/issues/7255))
+- **input:**
+  - improve html5 validation support
+  ([1f6a5a1a](https://github.com/angular/angular.js/commit/1f6a5a1a9255a2db19a1ea4c04cdbcdbb2850b6c),
+   [#7936](https://github.com/angular/angular.js/issues/7936), [#7937](https://github.com/angular/angular.js/issues/7937))
+  - escape forward slash in email regexp
+  ([b775e2bc](https://github.com/angular/angular.js/commit/b775e2bca1093e9df62a269b5bda968555ea0ded),
+   [#7938](https://github.com/angular/angular.js/issues/7938))
+- **jqLite:**
+  - never add to the cache for non-element/document nodes
+  ([91754a76](https://github.com/angular/angular.js/commit/91754a76e0ef9a7456a5b9819d1c5807c0a575bb),
+   [#7966](https://github.com/angular/angular.js/issues/7966))
+  - don't attach event handlers to comments or text nodes
+  ([462dbb20](https://github.com/angular/angular.js/commit/462dbb2016a218d84760b6da171f1b15c9e416c3),
+   [#7913](https://github.com/angular/angular.js/issues/7913), [#7942](https://github.com/angular/angular.js/issues/7942))
+  - convert NodeList to an Array to make PhantomJS 1.x happy
+  ([ceaea861](https://github.com/angular/angular.js/commit/ceaea861ebec957c99bbca6fd88ed33fbc15afbf),
+   [#7851](https://github.com/angular/angular.js/issues/7851))
+- **numberFilter:** correctly round fractions despite floating-point arithmetics issues in JS
+  ([189cd064](https://github.com/angular/angular.js/commit/189cd064feeb710fe54ee2ca83449b3eaf82b403),
+   [#7870](https://github.com/angular/angular.js/issues/7870), [#7878](https://github.com/angular/angular.js/issues/7878))
+- **testabilityPatch:** fix invocations of angular.mock.dump
+  ([e8e07502](https://github.com/angular/angular.js/commit/e8e07502776e48bf48b83a836f7422d164cbb1d7))
+
+
+## Features
+
+- **NgModel:**
+  - port the email input type to use the validators pipeline
+  ([67379242](https://github.com/angular/angular.js/commit/6737924210570e8369ab72415e3098c6df4d3f6b))
+  - port the URL input type to use the validators pipeline
+  ([3ee65730](https://github.com/angular/angular.js/commit/3ee65730639fc61d76e1055a6ca74e35eb48b838))
+- **jqLite:** support isDefaultPrevented for triggerHandler dummies
+  ([7e71acd1](https://github.com/angular/angular.js/commit/7e71acd1781ed44a7306d94338388c90f4420a24),
+   [#8008](https://github.com/angular/angular.js/issues/8008))
+
+
+## Performance Improvements
+
+- **forEach:** use native for loop instead of forEach for Arrays
+  ([36625de0](https://github.com/angular/angular.js/commit/36625de0d3ebc1fc091af474d942c6ce16b0a1c0))
+
+
+## Breaking Changes
+
+- **$parse:**
+  - due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
+
+You can no longer invoke .bind, .call or .apply on a function in angular expressions.
+This is to disallow changing the behaviour of existing functions
+in an unforseen fashion.
+  - due to [6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99),
+
+The (deprecated) __proto__ propery does not work inside angular expressions
+anymore.
+  - due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
+
+This prevents the use of __{define,lookup}{Getter,Setter}__ inside angular
+expressions. If you really need them for some reason, please wrap/bind them to make them
+less dangerous, then make them available through the scope object.
+  - due to [528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc),
+
+This prevents the use of `Object` inside angular expressions.
+If you need Object.keys, make it accessible in the scope.
+- **Angular.copy:** due to [b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
+
+
+This changes `angular.copy` so that it applies the prototype of the original
+object to the copied object.  Previously, `angular.copy` would copy properties
+of the original object's prototype chain directly onto the copied object.
+
+This means that if you iterate over only the copied object's `hasOwnProperty`
+properties, it will no longer contain the properties from the prototype.
+This is actually much more reasonable behaviour and it is unlikely that
+applications are actually relying on this.
+
+If this behaviour is relied upon, in an app, then one should simply iterate
+over all the properties on the object (and its inherited properties) and
+not filter them with `hasOwnProperty`.
+
+**Be aware that this change also uses a feature that is not compatible with
+IE8.**  If you need this to work on IE8 then you would need to provide a polyfill
+for `Object.create` and `Object.getPrototypeOf`.
+- **core:** due to [bdfc9c02](https://github.com/angular/angular.js/commit/bdfc9c02d021e08babfbc966a007c71b4946d69d),
+  values 'f', '0', 'false', 'no', 'n', '[]' are no longer
+treated as falsy. Only JavaScript falsy values are now treated as falsy by the
+expression parser; there are six of them: false, null, undefined, NaN, 0 and "".
+
+Closes #3969
+Closes #4277
+Closes #7960
+
+<a name="1.2.19"></a>
+# 1.2.19 precognitive-flashbacks (2014-06-30)
+
+
+
+## Bug Fixes
+
+- **$compile:** bind ng-attr-* even if unbound attribute follows ng-attr-*
+  ([ed59370d](https://github.com/angular/angular.js/commit/ed59370d805a88c9ac012a8e417faf2a9f902776))
+- **$http:** should not read statusText on IE<10 when request is aborted
+  ([0c80df21](https://github.com/angular/angular.js/commit/0c80df21b66f4b147b6b55c27ad794be5802b411))
+- **$injector:** check if a fn is an array explicitly
+  ([67c11b9a](https://github.com/angular/angular.js/commit/67c11b9a3914a24aaf72f36bbe038ba5efa7ddf3),
+   [#7904](https://github.com/angular/angular.js/issues/7904), [#2653](https://github.com/angular/angular.js/issues/2653))
+- **$interval:** when canceling, use clearInterval from $window instead of global scope.
+  ([f780ccfa](https://github.com/angular/angular.js/commit/f780ccfa1c9a8d4c6191b0756ff77dc5749cf8c5))
+- **$parse:**
+  - make the window check in ensureSafeObject IE8 friendly
+  ([ba62e975](https://github.com/angular/angular.js/commit/ba62e975f1a0cebf08dedbb1501f72b166af66db))
+  - prevent invocation of Function's bind, call and apply
+  ([07fa87a8](https://github.com/angular/angular.js/commit/07fa87a8a82b8be155d8c898bb79e5d9277adfb4))
+  - forbid __proto__ properties in angular expressions
+  ([cb713e60](https://github.com/angular/angular.js/commit/cb713e6045413a25b54ad3267476fa29efd70646))
+  - forbid __{define,lookup}{Getter,Setter}__ properties
+  ([89ca8597](https://github.com/angular/angular.js/commit/89ca8597341aa5585bcf728fa677022b7ec9c071))
+  - forbid referencing Object in angular expressions
+  ([bc6fb7cc](https://github.com/angular/angular.js/commit/bc6fb7cc94afddcb11b94f74d13812a6be1cdb64))
+- **injector:** allow multiple loading of function modules
+  ([d71f16e7](https://github.com/angular/angular.js/commit/d71f16e7459f1d3705ccf47a13227d4727be9670),
+   [#7255](https://github.com/angular/angular.js/issues/7255))
+- **input:**
+  - improve html5 validation support
+  ([ab2e83c8](https://github.com/angular/angular.js/commit/ab2e83c8c8fa60ca15b1a9539a6587dc363b20f1),
+   [#7937](https://github.com/angular/angular.js/issues/7937), [#7957](https://github.com/angular/angular.js/issues/7957))
+  - escape forward slash in email regexp
+  ([2a45cea0](https://github.com/angular/angular.js/commit/2a45cea0baaf615b799b54897bfe40d32381e7a2),
+   [#7938](https://github.com/angular/angular.js/issues/7938))
+- **jqLite:** change expando property to a more unique name
+  ([74e1cc68](https://github.com/angular/angular.js/commit/74e1cc683be315f6db05e22e185b3d27460d132a))
+- **numberFilter:** correctly round fractions despite floating-point arithmetics issues in JS
+  ([e5f454c8](https://github.com/angular/angular.js/commit/e5f454c8afc15336dc1faa52704a483cedfacd4a),
+   [#7870](https://github.com/angular/angular.js/issues/7870), [#7878](https://github.com/angular/angular.js/issues/7878))
+- **testabilityPatch:** fix invocations of angular.mock.dump
+  ([5e944a1c](https://github.com/angular/angular.js/commit/5e944a1cf1356bd069d3616f24323a0cb3ace87c))
+
+
+## Performance Improvements
+
+- **jqLite:** don't use reflection to access expandoId
+  ([a4faa5cd](https://github.com/angular/angular.js/commit/a4faa5cde722556bd41d75daf346c63a9b6962e9))
+
+
+## Breaking Changes
+
+- **$parse:**
+  - due to [07fa87a8](https://github.com/angular/angular.js/commit/07fa87a8a82b8be155d8c898bb79e5d9277adfb4),
+
+You can no longer invoke .bind, .call or .apply on a function in angular expressions.
+This is to disallow changing the behaviour of existing functions
+in an unforseen fashion.
+  - due to [cb713e60](https://github.com/angular/angular.js/commit/cb713e6045413a25b54ad3267476fa29efd70646),
+
+The (deprecated) __proto__ propery does not work inside angular expressions
+anymore.
+  - due to [89ca8597](https://github.com/angular/angular.js/commit/89ca8597341aa5585bcf728fa677022b7ec9c071),
+
+This prevents the use of __{define,lookup}{Getter,Setter}__ inside angular
+expressions. If you really need them for some reason, please wrap/bind them to make them
+less dangerous, then make them available through the scope object.
+  - due to [bc6fb7cc](https://github.com/angular/angular.js/commit/bc6fb7cc94afddcb11b94f74d13812a6be1cdb64),
+
+This prevents the use of `Object` inside angular expressions.
+If you need Object.keys, make it accessible in the scope.
+
+<a name="1.3.0-beta.13"></a>
+# 1.3.0-beta.13 idiosyncratic-numerification (2014-06-16)
+
+
+## Bug Fixes
+
+- **jqLite:** change expando property to a more unique name
+  ([20c3c9e2](https://github.com/angular/angular.js/commit/20c3c9e25f6417773333727549ed2ca2d3505b44))
+
+
+
+<a name="1.3.0-beta.12"></a>
+# 1.3.0-beta.12 ephemeral-acceleration (2014-06-13)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - ensure transclude works at root of templateUrl
+  ([398053c5](https://github.com/angular/angular.js/commit/398053c56352487751d14ea41b3b892960397019),
+   [#7183](https://github.com/angular/angular.js/issues/7183), [#7772](https://github.com/angular/angular.js/issues/7772))
+  - always error if two directives add isolate-scope and new-scope
+  ([2cde927e](https://github.com/angular/angular.js/commit/2cde927e58c8d1588569d94a797e43cdfbcedaf9),
+   [#4402](https://github.com/angular/angular.js/issues/4402), [#4421](https://github.com/angular/angular.js/issues/4421))
+- **$injector:** report circularity in circular dependency error message
+  ([545d22b4](https://github.com/angular/angular.js/commit/545d22b47006c1efa420ba551d4850affdba8016),
+   [#7500](https://github.com/angular/angular.js/issues/7500))
+- **$parse:** Handle one-time to `null`
+  ([600a41a7](https://github.com/angular/angular.js/commit/600a41a7b65f2dd139664fca6331c40451db75be),
+   [#7743](https://github.com/angular/angular.js/issues/7743), [#7787](https://github.com/angular/angular.js/issues/7787))
+- **NgModel:**
+  - ensure pattern and ngPattern use the same validator
+  ([1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440))
+  - make ngMinlength and ngMaxlength as standalone directives
+  ([26d91b65](https://github.com/angular/angular.js/commit/26d91b653ac224d9d4166fea855346f5e4c4a7b4),
+   [#6750](https://github.com/angular/angular.js/issues/6750))
+  - make sure the ngMinlength and ngMaxlength validators use the $validators pipeline
+  ([5b8e7ecf](https://github.com/angular/angular.js/commit/5b8e7ecfeb722cfc7a5d92f05b57950a2aa6158b),
+   [#6304](https://github.com/angular/angular.js/issues/6304))
+  - make sure the pattern validator uses the $validators pipeline
+  ([e63d4253](https://github.com/angular/angular.js/commit/e63d4253d06ed7d344358e2c0b03311c548bc978))
+  - make sure the required validator uses the $validators pipeline
+  ([e53554a0](https://github.com/angular/angular.js/commit/e53554a0e238cba7a150fd7ccf61e5e4cc0c0426),
+   [#5164](https://github.com/angular/angular.js/issues/5164))
+- **jqLite:** data should store data only on Element and Document nodes
+  ([a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c))
+- **ngResource:** don't convert literal values into Resource objects when isArray is true
+  ([16dfcb61](https://github.com/angular/angular.js/commit/16dfcb61aed28cdef3bfbed540e2deea6d9e9632),
+   [#6314](https://github.com/angular/angular.js/issues/6314), [#7741](https://github.com/angular/angular.js/issues/7741))
+
+
+## Features
+
+- **NgModel:** introduce the $validators pipeline
+  ([a8c7cb81](https://github.com/angular/angular.js/commit/a8c7cb81c9e67b52d5c649bf3d8cec06c5976852))
+- **attrs:** trigger observers for specific ng-attributes
+  ([d9b90d7c](https://github.com/angular/angular.js/commit/d9b90d7c10a8e1bacbee0aeb7e86093cca9e8ed2),
+   [#7758](https://github.com/angular/angular.js/issues/7758))
+- **input:** add $touched and $untouched states
+  ([adcc5a00](https://github.com/angular/angular.js/commit/adcc5a00bf582d2b291c18e99093bb0854f7217c))
+- **ngInclude:** emit $includeContentError when HTTP request fails
+  ([e4419daf](https://github.com/angular/angular.js/commit/e4419daf705d6d2d116ced573f72c24b5c53be1f),
+   [#5803](https://github.com/angular/angular.js/issues/5803))
+
+
+## Performance Improvements
+
+- **$compile:** move ng-binding class stamping for interpolation into compile phase
+  ([35358fdd](https://github.com/angular/angular.js/commit/35358fddc10652ef78c72cba7b7c2d5a810631d5))
+- **$http:** move xsrf cookie check to after cache check in $http
+  ([dd1d189e](https://github.com/angular/angular.js/commit/dd1d189ee785a37fe1d9bddf3818152db6aa210a),
+   [#7717](https://github.com/angular/angular.js/issues/7717))
+- **Scope:** change Scope#id to be a simple number
+  ([8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d))
+- **forEach:** cache array length
+  ([55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5))
+- **isArray:** use native Array.isArray
+  ([751ebc17](https://github.com/angular/angular.js/commit/751ebc17f7fc7be26613db0a3cdee05fc401318b),
+   [#7735](https://github.com/angular/angular.js/issues/7735))
+- **isWindow** optimize internal isWindow call
+  ([b68ac4cb](https://github.com/angular/angular.js/commit/b68ac4cb4c172447ba0022fe6e7ce0ca4cb9407e))
+- **jqLite:**
+  - cache collection length for all methods that work on a single element
+  ([41d2eba5](https://github.com/angular/angular.js/commit/41d2eba5f8322903247280000bfc5e5e8a1c1a3e))
+  - improve performance of jqLite#text
+  ([92489886](https://github.com/angular/angular.js/commit/92489886dcce3bca00fe827aeb0817297b8a175c))
+  - optimize adding nodes to a jqLite collection
+  ([31faeaa7](https://github.com/angular/angular.js/commit/31faeaa7293716251ed437fa54432bb89d9d48de))
+  - optimize element dealocation
+  ([e35abc9d](https://github.com/angular/angular.js/commit/e35abc9d2fac0471cbe8089dc0e33a72b8029ada))
+  - don't use reflection to access expandoId
+  ([ea9a130a](https://github.com/angular/angular.js/commit/ea9a130a43d165f4f4389d01ac409dd3047efcb4))
+- **ngBind:** set the ng-binding class during compilation instead of linking
+  ([fd5f3896](https://github.com/angular/angular.js/commit/fd5f3896764107635310ae52df1d80a6e08fba31))
+- **shallowCopy:** use Object.keys to improve performance
+  ([04468db4](https://github.com/angular/angular.js/commit/04468db44185e3d7968abdb23d77bf623cb5021b))
+
+
+## Breaking Changes
+
+- **$compile:** due to [2cde927e](https://github.com/angular/angular.js/commit/2cde927e58c8d1588569d94a797e43cdfbcedaf9),
+
+
+Requesting isolate scope and any other scope on a single element is an error.
+Before this change, the compiler let two directives request a child scope
+and an isolate scope if the compiler applied them in the order of non-isolate
+scope directive followed by isolate scope directive.
+
+Now the compiler will error regardless of the order.
+
+If you find that your code is now throwing a `$compile:multidir` error,
+check that you do not have directives on the same element that are trying
+to request both an isolate and a non-isolate scope and fix your code.
+
+Closes #4402
+Closes #4421
+- **NgModel:** due to [1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440),
+
+
+If an expression is used on ng-pattern (such as `ng-pattern="exp"`) or on the
+pattern attribute (something like on `pattern="{{ exp }}"`) and the expression
+itself evaluates to a string then the validator will not parse the string as a
+literal regular expression object (a value like `/abc/i`).  Instead, the entire
+string will be created as the regular expression to test against. This means
+that any expression flags will not be placed on the RegExp object. To get around
+this limitation, use a regular expression object as the value for the expression.
+
+    //before
+    $scope.exp = '/abc/i';
+
+    //after
+    $scope.exp = /abc/i;
+- **Scope:** due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
+  Scope#$id is now of time number rather than string. Since the
+id is primarily being used for debugging purposes this change should not affect
+anyone.
+- **forEach:** due to [55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5),
+  forEach will iterate only over the initial number of items in
+the array. So if items are added to the array during the iteration, these won't
+be iterated over during the initial forEach call.
+
+This change also makes our forEach behave more like Array#forEach.
+- **jqLite:** due to [a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c),
+  previously it was possible to set jqLite data on Text/Comment
+nodes, but now that is allowed only on Element and Document nodes just like in
+jQuery. We don't expect that app code actually depends on this accidental feature.
+
+
+
+<a name="1.2.18"></a>
+# 1.2.18 ear-extendability (2014-06-13)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - ensure transclude works at root of templateUrl
+  ([fd420c40](https://github.com/angular/angular.js/commit/fd420c40613d02b3a3f7b14d00a98664518c28f0),
+   [#7183](https://github.com/angular/angular.js/issues/7183), [#7772](https://github.com/angular/angular.js/issues/7772))
+  - bound transclusion to correct scope
+  ([1382d4e8](https://github.com/angular/angular.js/commit/1382d4e88ec486b7749e45e6ccc864b3ec388cfe))
+  - don't pass transcludes to non-transclude templateUrl directives
+  ([b9ddef2a](https://github.com/angular/angular.js/commit/b9ddef2a495b44cb5fe678b8753de0b7a369244d))
+  - don't pass transclude to template of non-transclude directive
+  ([eafba9e2](https://github.com/angular/angular.js/commit/eafba9e2e5ddc668c534e930d83031d2e8dc32b9))
+  - fix nested isolated transclude directives
+  ([bb931097](https://github.com/angular/angular.js/commit/bb9310974b6765c2b87e74ee7b8485a6e9c24740),
+   [#1809](https://github.com/angular/angular.js/issues/1809), [#7499](https://github.com/angular/angular.js/issues/7499))
+  - pass transcludeFn down to nested transclude directives
+  ([8df5f325](https://github.com/angular/angular.js/commit/8df5f3259aa776f28bf3d869fb1c03e10a897c84),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+- **$injector:** report circularity in circular dependency error message
+  ([14e797c1](https://github.com/angular/angular.js/commit/14e797c1a10eabd15bf8e845b62213398bcc0f58),
+   [#7500](https://github.com/angular/angular.js/issues/7500))
+- **ngResource:** don't convert literal values into Resource objects when isArray is true
+  ([f0904cf1](https://github.com/angular/angular.js/commit/f0904cf12e4f01daa2d4fcbb20c762050125ca55),
+   [#6314](https://github.com/angular/angular.js/issues/6314), [#7741](https://github.com/angular/angular.js/issues/7741))
+
+
+## Performance Improvements
+
+- **$compile:** move ng-binding class stamping for interpolation into compile phase
+  ([81b7e5ab](https://github.com/angular/angular.js/commit/81b7e5ab0ee3fea410b16b09144359ceb99f5191))
+- **$http:** move xsrf cookie check to after cache check in $http
+  ([8b86d363](https://github.com/angular/angular.js/commit/8b86d363aa252c3264201b54b57c3e34f9632d45),
+   [#7717](https://github.com/angular/angular.js/issues/7717))
+- **isArray:** use native Array.isArray
+  ([6c14fb1e](https://github.com/angular/angular.js/commit/6c14fb1eb61dc0a0552fbcb2ca3ace11c9a2f6a5))
+- **jqLite:** cache collection length for all methods that work on a single element
+  ([6d418ef5](https://github.com/angular/angular.js/commit/6d418ef5e3a775577996caf0709f79f447f77025))
+- **ngBind:** set the ng-binding class during compilation instead of linking
+  ([1b189027](https://github.com/angular/angular.js/commit/1b1890274e5a75553ddf9915bb23da48800275f9))
+
+
+
+<a name="1.3.0-beta.11"></a>
+# 1.3.0-beta.11 transclusion-deforestation (2014-06-06)
+
+
+## Bug Fixes
+
+- **$animate:** remove the need to add `display:block !important` for `ngShow`/`ngHide`
+  ([7c011e79](https://github.com/angular/angular.js/commit/7c011e79d8b3d805755181ace472883800234bf4),
+   [#3813](https://github.com/angular/angular.js/issues/3813))
+- **$compile:**
+  - bound transclusion to correct scope
+  ([56c60218](https://github.com/angular/angular.js/commit/56c60218d1e70e3a47e37193a4a48714eeda7d44))
+  - set the iteration state before linking
+  ([0c8a2cd2](https://github.com/angular/angular.js/commit/0c8a2cd2da3a4a9f5d2ee9c25ea8ed56d74a93ab))
+  - don't pass transcludes to non-transclude templateUrl directives
+  ([2ee29c5d](https://github.com/angular/angular.js/commit/2ee29c5da81ffacdc1cabb438f5d125d5e116cb9))
+  - don't pass transclude to template of non-transclude directive
+  ([19af0397](https://github.com/angular/angular.js/commit/19af0397456eb8fc06dea47145fdee0e38e62f81))
+  - fix nested isolated transclude directives
+  ([d414b787](https://github.com/angular/angular.js/commit/d414b787173643362c0c513a1929d8e715ca340e),
+   [#1809](https://github.com/angular/angular.js/issues/1809), [#7499](https://github.com/angular/angular.js/issues/7499))
+  - pass transcludeFn down to nested transclude directives
+  ([1fef5fe8](https://github.com/angular/angular.js/commit/1fef5fe8230e8dc53f2c9f3f510a35cf18eeab43),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+- **$parse:** fix parsing error with leading space and one time bind
+  ([24c844df](https://github.com/angular/angular.js/commit/24c844df3b6d80103b01e4847b2d55b082757feb),
+   [#7640](https://github.com/angular/angular.js/issues/7640))
+- **angular.copy:** support circular references in the value being copied
+  ([083f496d](https://github.com/angular/angular.js/commit/083f496d46415c01fec6dfa012da63235d0996e4),
+   [#7618](https://github.com/angular/angular.js/issues/7618))
+- **angular.toJson:** only strip properties beginning with `$$`, not `$`
+  ([c054288c](https://github.com/angular/angular.js/commit/c054288c9722875e3595e6e6162193e0fb67a251))
+- **ngAnimate:**
+  - `$animate` methods should accept native DOM elements
+  ([222d4737](https://github.com/angular/angular.js/commit/222d47370e585d9de9fa842310734ba1dd895fab))
+  - fix property name that is used to calculate cache key
+  ([9f5c4370](https://github.com/angular/angular.js/commit/9f5c4370489043ed953c102340ce203a822c8b42),
+   [#7566](https://github.com/angular/angular.js/issues/7566))
+- **ngClass:** support multiple classes in key
+  ([7eaaca8e](https://github.com/angular/angular.js/commit/7eaaca8ef2b3db76b7c87e98d264d4b16d90a392))
+- **ngIf:** ensure that the correct (transcluded) scope is used
+  ([d71df9f8](https://github.com/angular/angular.js/commit/d71df9f83cd3882295ca01b1bb8ad7fb024165b6))
+- **ngLocale:** fix i18n code-generation to support `get_vf_`, `decimals_`, and `get_wt_`
+  ([cbab51ca](https://github.com/angular/angular.js/commit/cbab51cac5d6460938e4dfe0035d624df2208d6c))
+- **ngRepeat:** ensure that the correct (transcluded) scope is used
+  ([b87e5fc0](https://github.com/angular/angular.js/commit/b87e5fc0920915991122ba5dac87b619847b3568))
+- **ngShow:** ensure that the display property is never set to `block`
+  ([1d90744f](https://github.com/angular/angular.js/commit/1d90744f4095ee202616a30f5d6f060fc8e74b20),
+   [#7707](https://github.com/angular/angular.js/issues/7707))
+
+
+## Features
+
+- **$resource:** allow props beginning with `$` to be used on resources
+  ([d3c50c84](https://github.com/angular/angular.js/commit/d3c50c845671f0f8bcc3f7842df9e2fb1d1b1c40))
+
+
+## Breaking Changes
+
+- **$resource:** due to [d3c50c84](https://github.com/angular/angular.js/commit/d3c50c845671f0f8bcc3f7842df9e2fb1d1b1c40),
+
+  If you expected `$resource` to strip these types of properties before,
+  you will have to manually do this yourself now.
+
+- **angular.toJson:** due to [c054288c](https://github.com/angular/angular.js/commit/c054288c9722875e3595e6e6162193e0fb67a251),
+
+  If you expected `toJson` to strip these types of properties before,
+  you will have to manually do this yourself now.
+
+
+
+<a name="1.2.17"></a>
+# 1.2.17 - quantum disentanglement (2014-06-06)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - remove the need to add `display:block!important` for `ngShow`/`ngHide`
+  ([55b2f0e8](https://github.com/angular/angular.js/commit/55b2f0e8620465559016b424967d90a86af597c0),
+   [#3813](https://github.com/angular/angular.js/issues/3813))
+  - retain inline styles for property-specific transitions
+  ([ad08638c](https://github.com/angular/angular.js/commit/ad08638c0ae61a22ce43d0b40e1220065b867672),
+   [#7503](https://github.com/angular/angular.js/issues/7503))
+  - ensure class-based animations always perform a DOM operation if skipped
+  ([34d07403](https://github.com/angular/angular.js/commit/34d0740350a50ff2c3a076eaad1e8122283448c3),
+   [#6957](https://github.com/angular/angular.js/issues/6957))
+- **$compile:**
+  - do not merge attrs that are the same for replace directives
+  ([b635903e](https://github.com/angular/angular.js/commit/b635903ec435ea355b0f3688c7372627d01e23e2),
+   [#7463](https://github.com/angular/angular.js/issues/7463))
+  - pass `transcludeFn` down to nested transclude directives
+  ([11385060](https://github.com/angular/angular.js/commit/113850602de2f8bc396df4ffd54bb0f1be565b17),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+  - set `$isolateScope` correctly for sync template directives
+  ([5319621a](https://github.com/angular/angular.js/commit/5319621afd0edf60aef177a0e98dbb7c282cc418),
+   [#6942](https://github.com/angular/angular.js/issues/6942))
+  - reference correct directive name in `ctreq` error
+  ([6bea0591](https://github.com/angular/angular.js/commit/6bea0591095c19f747c08ef24cc60b34d28b2824),
+   [#7062](https://github.com/angular/angular.js/issues/7062), [#7067](https://github.com/angular/angular.js/issues/7067))
+  - fix regression which affected old jQuery releases
+  ([a97a172e](https://github.com/angular/angular.js/commit/a97a172ee9f9bcff4d4d84854ded0c72fa0f7e9a))
+- **$httpBackend:** don't error when JSONP callback is called with no parameter
+  ([a7ccb753](https://github.com/angular/angular.js/commit/a7ccb7531c92fb976c6058aef2bb18316075efb2),
+   [#7031](https://github.com/angular/angular.js/issues/7031))
+- **$location:**
+  - don't clobber path during parsing of path
+  ([02058bfb](https://github.com/angular/angular.js/commit/02058bfbe27296c5441fc247e5a451da83c74134),
+   [#7199](https://github.com/angular/angular.js/issues/7199))
+  - fix and test html5Mode url-parsing algorithm for legacy browsers
+  ([24f7999b](https://github.com/angular/angular.js/commit/24f7999bc16e347208aa18c418da85489286674b))
+  - make legacy browsers behave like modern ones in html5Mode
+  ([e0203660](https://github.com/angular/angular.js/commit/e0203660d3af56c5a94e0a9b69c10fd5dabcf577),
+   [#6162](https://github.com/angular/angular.js/issues/6162), [#6421](https://github.com/angular/angular.js/issues/6421), [#6899](https://github.com/angular/angular.js/issues/6899), [#6832](https://github.com/angular/angular.js/issues/6832), [#6834](https://github.com/angular/angular.js/issues/6834))
+- **angular.copy:** support circular references in the value being copied
+  ([5c997209](https://github.com/angular/angular.js/commit/5c99720934edc35dd462b1ad02c4d0205683d917),
+   [#7618](https://github.com/angular/angular.js/issues/7618))
+- **grunt-utils:** ensure special inline CSS works when `angular` is not a global
+  ([d4231171](https://github.com/angular/angular.js/commit/d4231171582eb41d37bbb908eed23f074ab12f3f),
+   [#7176](https://github.com/angular/angular.js/issues/7176))
+- **input:**
+  - fix `ReferenceError` in event listener
+  ([2d7cb14a](https://github.com/angular/angular.js/commit/2d7cb14a167560edc1356dcec6f9e100ed7ac691))
+  - don't dirty model when input event is triggered due to a placeholder change
+  ([109e5d1d](https://github.com/angular/angular.js/commit/109e5d1d39015af8ade1dc2aff31a2355fbab0a6),
+   [#2614](https://github.com/angular/angular.js/issues/2614), [#5960](https://github.com/angular/angular.js/issues/5960))
+- **jqLite:** use jQuery only if `jQuery.fn.on` is present
+  ([fafcd628](https://github.com/angular/angular.js/commit/fafcd6285a6799c4e377ea33011ae3a01aac49a6))
+- **limitTo:** do not convert `Infinity` to `NaN`
+  ([fcdac65a](https://github.com/angular/angular.js/commit/fcdac65aedfdf48dd2e11d6e5850e03ec188f068),
+   [#6771](https://github.com/angular/angular.js/issues/6771), [#7118](https://github.com/angular/angular.js/issues/7118))
+- **ngAnimate:** `$animate` methods should accept native DOM elements
+  ([9227a5db](https://github.com/angular/angular.js/commit/9227a5db947a78e3dbe8b91d5dac5d67444c855c))
+- **ngClass:**
+  - support multiple classes in key
+  ([85ce5d0d](https://github.com/angular/angular.js/commit/85ce5d0db9fc4ee5636015fc042224785f9aa997))
+  - handle index changes when an item is unshifted
+  ([a4cc9e19](https://github.com/angular/angular.js/commit/a4cc9e194468573bae5232f63044459d0de6638f),
+   [#7256](https://github.com/angular/angular.js/issues/7256))
+- **ngLocale:** fix i18n code-generation to support `get_vf_`, `decimals_`, and `get_wt_`
+  ([96a31476](https://github.com/angular/angular.js/commit/96a314766c41bbb18bcddeddd25c8e566ab76acd))
+- **ngSanitize:** encode surrogate pair properly
+  ([3d0b49c0](https://github.com/angular/angular.js/commit/3d0b49c07f10c0a723c91629c63705647b690d81),
+   [#5088](https://github.com/angular/angular.js/issues/5088), [#6911](https://github.com/angular/angular.js/issues/6911))
+- **ngSwitch:** properly support case labels with different numbers of transclude fns
+  ([32aa4915](https://github.com/angular/angular.js/commit/32aa491588fe4982d4056e89a5d0dd19cf835e72))
+- **numberFilter:** fix rounding error edge case
+  ([0388eed7](https://github.com/angular/angular.js/commit/0388eed7e52fdbb832a5b4ef466420a128a43800),
+   [#7453](https://github.com/angular/angular.js/issues/7453), [#7478](https://github.com/angular/angular.js/issues/7478))
+
+
+## Features
+
+- **ngMock:** add support of mocha tdd interface
+  ([6d1c6772](https://github.com/angular/angular.js/commit/6d1c67727ab872c44addc783ef1406952142d89e),
+   [#7489](https://github.com/angular/angular.js/issues/7489))
+
+
+## Performance Improvements
+
+- **$interpolate:** optimize value stringification
+  ([9d4fa33e](https://github.com/angular/angular.js/commit/9d4fa33e35d73ab28a8a187e20dfbe1f77055825),
+   [#7501](https://github.com/angular/angular.js/issues/7501))
+- **scope:** 10x. Share the child scope class.
+  ([9ab9bf6b](https://github.com/angular/angular.js/commit/9ab9bf6b415aa216cfbfda040286e5ec99f56ee0))
+
+
+
+
+<a name="1.3.0-beta.10"></a>
+# 1.3.0-beta.10 excessive-clarification (2014-05-23)
+
+
+## Bug Fixes
+
+- **$animate:** retain inline styles for property-specific transitions
+  ([98b9d68e](https://github.com/angular/angular.js/commit/98b9d68ea3ecfb521e9279c9cbfe93f8ba7d626e),
+   [#7503](https://github.com/angular/angular.js/issues/7503))
+- **$compile:** do not merge attrs that are the same for replace directives
+  ([1ab6e908](https://github.com/angular/angular.js/commit/1ab6e908b15470d59b52eb0ead20c755c66ec3b8),
+   [#7463](https://github.com/angular/angular.js/issues/7463))
+- **$parse:** remove deprecated promise unwrapping
+  ([fa6e411d](https://github.com/angular/angular.js/commit/fa6e411da26824a5bae55f37ce7dbb859653276d))
+- **Scope:** $broadcast and $emit should set event.currentScope to null
+  ([82f45aee](https://github.com/angular/angular.js/commit/82f45aee5bd84d1cc53fb2e8f645d2263cdaacbc),
+   [#7445](https://github.com/angular/angular.js/issues/7445), [#7523](https://github.com/angular/angular.js/issues/7523))
+- **ngModel:** do not dirty the input on $commitViewValue if nothing was changed
+  ([facd904a](https://github.com/angular/angular.js/commit/facd904a613e716151a13ab7460b5e6206e0442b),
+   [#7457](https://github.com/angular/angular.js/issues/7457), [#7495](https://github.com/angular/angular.js/issues/7495))
+
+
+## Features
+
+- **$interpolate:** escaped interpolation expressions
+  ([e3f78c17](https://github.com/angular/angular.js/commit/e3f78c17d3b5d3a714402d7314094aabe7f6512a),
+   [#5601](https://github.com/angular/angular.js/issues/5601), [#7517](https://github.com/angular/angular.js/issues/7517))
+- **{{ bindings }}:** lazy one-time binding support
+  ([cee429f0](https://github.com/angular/angular.js/commit/cee429f0aaebf32ef1c9aedd8447a48f163dd0a4),
+   [#7486](https://github.com/angular/angular.js/issues/7486), [#5408](https://github.com/angular/angular.js/issues/5408))
+- **ngMock:** add support of mocha tdd interface
+  ([854bf5b7](https://github.com/angular/angular.js/commit/854bf5b74d0395f4d2e30382102d3f5d1614ea11),
+   [#7489](https://github.com/angular/angular.js/issues/7489))
+
+
+## Performance Improvements
+
+- **$interpolate:** optimize value stringification
+  ([e927193d](https://github.com/angular/angular.js/commit/e927193de06500f01a2f893934250911cf1905e6),
+   [#7501](https://github.com/angular/angular.js/issues/7501))
+
+
+## Breaking Changes
+
+- **$compile:** due to [eec6394a](https://github.com/angular/angular.js/commit/eec6394a342fb92fba5270eee11c83f1d895e9fb), The `replace` flag for defining directives that
+  replace the element that they are on will be removed in the next major angular version.
+  This feature has difficult semantics (e.g. how attributes are merged) and leads to more
+  problems compared to what it solves. Also, with Web Components it is normal to have
+  custom elements in the DOM.
+
+- **$parse:** due to [fa6e411d](https://github.com/angular/angular.js/commit/fa6e411da26824a5bae55f37ce7dbb859653276d),
+  promise unwrapping has been removed. It has been deprecated since 1.2.0-rc.3.
+  It can no longer be turned on.
+  Two methods have been removed:
+  * `$parseProvider.unwrapPromises`
+  * `$parseProvider.logPromiseWarnings`
+
+- **Scope:** due to [82f45aee](https://github.com/angular/angular.js/commit/82f45aee5bd84d1cc53fb2e8f645d2263cdaacbc),
+  [#7445](https://github.com/angular/angular.js/issues/7445),
+  [#7523](https://github.com/angular/angular.js/issues/7523)
+  `$broadcast` and `$emit` will now reset the `currentScope` property of the event to
+  null once the event finished propagating. If any code depends on asynchronously accessing their
+  `currentScope` property, it should be migrated to use `targetScope` instead. All of these cases
+  should be considered programming bugs.
+
+
+<a name="1.3.0-beta.9"></a>
+# 1.3.0-beta.9 release-naming (2014-05-16)
+
+
+## Bug Fixes
+
+- **$compile:** pass `transcludeFn` down to nested transclude directives
+  ([4f03dc5a](https://github.com/angular/angular.js/commit/4f03dc5a9650f3f22f78b438474322b4b8871dec),
+   [#7240](https://github.com/angular/angular.js/issues/7240), [#7387](https://github.com/angular/angular.js/issues/7387))
+- **jqLite:** use jQuery only if jQuery.fn.on present
+  ([e9bc51cb](https://github.com/angular/angular.js/commit/e9bc51cb0964ea682c1654919174dacebd09fcf6))
+- **ngClass:** handle index changes when an item is unshifted
+  ([5fbd618c](https://github.com/angular/angular.js/commit/5fbd618c2ff0dbaa4e19d0fd0e55921ce7d89478),
+   [#7256](https://github.com/angular/angular.js/issues/7256))
+- **ngMessages:** annotate ngMessages controller for minification
+  ([0282ca97](https://github.com/angular/angular.js/commit/0282ca971df7923c8f3dba0eb0df544e244e5b93))
+- **numberFilter:** fix rounding error edge case
+  ([81d427b5](https://github.com/angular/angular.js/commit/81d427b5f0d3502f65e8db5beaa5ad837c9ede17),
+   [#7453](https://github.com/angular/angular.js/issues/7453), [#7478](https://github.com/angular/angular.js/issues/7478))
+
+
+## Features
+
+- **ngTouch:** add optional `ngSwipeDisableMouse` attribute to `ngSwipe` directives to ignore mouse events.
+  ([5a568b4f](https://github.com/angular/angular.js/commit/5a568b4f960cc5381b3911e3a6423aff2ff7f7f9),
+   [#6627](https://github.com/angular/angular.js/issues/6627), [#6626](https://github.com/angular/angular.js/issues/6626))
+
+
+## Breaking Changes
+
+- **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
+  the jQuery `detach()` method does not trigger the `$destroy` event.
+  If you want to destroy Angular data attached to the element, use `remove()`.
+
+
+<a name="1.3.0-beta.8"></a>
+# 1.3.0-beta.8 accidental-haiku (2014-05-09)
+
+
+## Bug Fixes
+
+- **$compile:** set $isolateScope correctly for sync template directives
+  ([562c4e42](https://github.com/angular/angular.js/commit/562c4e424b0ed5f8d4bffba0cd18e66db2059043),
+   [#6942](https://github.com/angular/angular.js/issues/6942))
+- **$httpBackend:** Add missing expectHEAD() method
+  ([e1d61784](https://github.com/angular/angular.js/commit/e1d6178457045e721872022f71227b277cb88726),
+   [#7320](https://github.com/angular/angular.js/issues/7320))
+- **$interpolate:** don't ReferenceError when context is undefined
+  ([924ee6db](https://github.com/angular/angular.js/commit/924ee6db06a2518224caada86769efedd21c0710),
+   [#7230](https://github.com/angular/angular.js/issues/7230), [#7237](https://github.com/angular/angular.js/issues/7237))
+- **grunt-utils:** ensure special inline CSS works when `angular` is not a global
+  ([af72f40a](https://github.com/angular/angular.js/commit/af72f40a5512daa97c1f175a59b547c33cff1dc0),
+   [#7176](https://github.com/angular/angular.js/issues/7176))
+- **injector:** invoke config blocks for module after all providers
+  ([c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
+   [#7139](https://github.com/angular/angular.js/issues/7139), [#7147](https://github.com/angular/angular.js/issues/7147))
+- **ngModelOptions:**
+  - enable overriding the default with a debounce of zero
+  ([c56e32a7](https://github.com/angular/angular.js/commit/c56e32a7fa44e2edd2c70f663906720c7c9ad898),
+   [#7205](https://github.com/angular/angular.js/issues/7205))
+  - initialize ngModelOptions in prelink
+  ([fbf5ab8f](https://github.com/angular/angular.js/commit/fbf5ab8f17d28efeadb492c5a252f0778643f072),
+   [#7281](https://github.com/angular/angular.js/issues/7281), [#7292](https://github.com/angular/angular.js/issues/7292))
+- **ngSanitize:** encode surrogate pair properly
+  ([627b0354](https://github.com/angular/angular.js/commit/627b0354ec35bef5c6dbfab6469168c2fadcbee5),
+   [#5088](https://github.com/angular/angular.js/issues/5088), [#6911](https://github.com/angular/angular.js/issues/6911))
+- **ngSrc, ngSrcset:** only interpolate if all expressions are defined
+  ([8d180383](https://github.com/angular/angular.js/commit/8d180383014cbe38d58ff3eab083f51cfcfb8dde),
+   [#6984](https://github.com/angular/angular.js/issues/6984))
+- **ngSwitch:** properly support case labels with different numbers of transclude fns
+  ([ac37915e](https://github.com/angular/angular.js/commit/ac37915ef64c60ec8f8d4e49e4d61d7baeb96ba0),
+   [#7372](https://github.com/angular/angular.js/issues/7372), [#7373](https://github.com/angular/angular.js/issues/7373))
+
+
+## Features
+
+- **$compile:** allow SVG and MathML templates via special `type` property
+  ([f0e12ea7](https://github.com/angular/angular.js/commit/f0e12ea7fea853192e4eead00b40d6041c5f914a),
+   [#7265](https://github.com/angular/angular.js/issues/7265))
+- **$interpolate:** add optional allOrNothing param
+  ([c2362e3f](https://github.com/angular/angular.js/commit/c2362e3f45e732a9defdb0ea59ce4ec5236fcd3a))
+- **FormController:** commit `$viewValue` of all child controls when form is submitted
+  ([a0ae07bd](https://github.com/angular/angular.js/commit/a0ae07bd4ee8d98654df4eb261d16ca55884e374),
+   [#7017](https://github.com/angular/angular.js/issues/7017))
+- **NgMessages:** introduce the NgMessages module and directives
+  ([0f4016c8](https://github.com/angular/angular.js/commit/0f4016c84a47e01a0fb993867dfd0a64828c089c))
+
+
+## Breaking Changes
+
+- **$http:** due to [ad4336f9](https://github.com/angular/angular.js/commit/ad4336f9359a073e272930f8f9bcd36587a8648f),
+
+
+Previously, it was possible to register a response interceptor like so:
+
+```js
+// register the interceptor as a service
+$provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
+  return function(promise) {
+    return promise.then(function(response) {
+      // do something on success
+      return response;
+    }, function(response) {
+      // do something on error
+      if (canRecover(response)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(response);
+    });
+  }
+});
+
+$httpProvider.responseInterceptors.push('myHttpInterceptor');
+```
+
+Now, one must use the newer API introduced in v1.1.4 (4ae46814), like so:
+
+```js
+$provide.factory('myHttpInterceptor', function($q) {
+  return {
+    response: function(response) {
+      // do something on success
+      return response;
+    },
+    responseError: function(response) {
+      // do something on error
+      if (canRecover(response)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(response);
+    }
+  };
+});
+
+$httpProvider.interceptors.push('myHttpInterceptor');
+```
+
+More details on the new interceptors API (which has been around as of v1.1.4) can be found at
+https://docs.angularjs.org/api/ng/service/$http#interceptors
+
+
+- **injector:** due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
+
+Previously, config blocks would be able to control behaviour of provider registration, due to being
+invoked prior to provider registration. Now, provider registration always occurs prior to configuration
+for a given module, and therefore config blocks are not able to have any control over a providers
+registration.
+
+**Example**:
+
+Previously, the following:
+
+```js
+angular.module('foo', [])
+  .provider('$rootProvider', function() {
+    this.$get = function() { ... }
+  })
+  .config(function($rootProvider) {
+    $rootProvider.dependentMode = "B";
+  })
+  .provider('$dependentProvider', function($rootProvider) {
+     if ($rootProvider.dependentMode === "A") {
+       this.$get = function() {
+        // Special mode!
+       }
+     } else {
+       this.$get = function() {
+         // something else
+       }
+    }
+  });
+```
+
+would have "worked", meaning behaviour of the config block between the registration of "$rootProvider"
+and "$dependentProvider" would have actually accomplished something and changed the behaviour of the
+app. This is no longer possible within a single module.
+
+
+- **ngModelOptions:** due to [adfc322b](https://github.com/angular/angular.js/commit/adfc322b04a58158fb9697e5b99aab9ca63c80bb),
+
+
+This commit changes the API on `NgModelController`, both semantically and
+in terms of adding and renaming methods.
+
+* `$setViewValue(value)` -
+This method still changes the `$viewValue` but does not immediately commit this
+change through to the `$modelValue` as it did previously.
+Now the value is committed only when a trigger specified in an associated
+`ngModelOptions` directive occurs. If `ngModelOptions` also has a `debounce` delay
+specified for the trigger then the change will also be debounced before being
+committed.
+In most cases this should not have a significant impact on how `NgModelController`
+is used: If `updateOn` includes `default` then `$setViewValue` will trigger
+a (potentially debounced) commit immediately.
+* `$cancelUpdate()` - is renamed to `$rollbackViewValue()` and has the same meaning,
+which is to revert the current `$viewValue` back to the `$lastCommittedViewValue`,
+to cancel any pending debounced updates and to re-render the input.
+
+To migrate code that used `$cancelUpdate()` follow the example below:
+
+Before:
+
+```js
+$scope.resetWithCancel = function (e) {
+  if (e.keyCode == 27) {
+    $scope.myForm.myInput1.$cancelUpdate();
+    $scope.myValue = '';
+  }
+};
+```
+
+After:
+
+```js
+$scope.resetWithCancel = function (e) {
+  if (e.keyCode == 27) {
+    $scope.myForm.myInput1.$rollbackViewValue();
+    $scope.myValue = '';
+  }
+}
+```
+
+
+<a name="v1.3.0-beta.7"></a>
+# v1.3.0-beta.7 proper-attribution (2014-04-25)
+
+
+## Bug Fixes
+
+- **$location:** don't clobber path during parsing of path
+  ([498835a1](https://github.com/angular/angular.js/commit/498835a1c4d0dc6397df4dd667796b09565fedf4),
+   [#7199](https://github.com/angular/angular.js/issues/7199))
+
+
+## Performance Improvements
+
+- **scope:** ~10x speedup from sharing the child scope class.
+  ([8377e818](https://github.com/angular/angular.js/commit/8377e81827a840b9eb64f119de4bcbaba0ceb3be))
+
+
+<a name="v1.3.0-beta.6"></a>
+# v1.3.0-beta.6 expedient-caffeination (2014-04-21)
+
+
+## Bug Fixes
+
+- **$animate:** ensure class-based animations always perform a domOperation if skipped
+  ([708f2ba9](https://github.com/angular/angular.js/commit/708f2ba9843b665e417b93c7df907194565db991),
+   [#6957](https://github.com/angular/angular.js/issues/6957))
+- **$compile:**
+  - reference correct directive name in ctreq error
+  ([1192531e](https://github.com/angular/angular.js/commit/1192531e9b48cd90cbb601b0c0fdeb12340c1885),
+   [#7062](https://github.com/angular/angular.js/issues/7062), [#7067](https://github.com/angular/angular.js/issues/7067))
+  - fix regression which affected old jQuery releases
+  ([ef64169d](https://github.com/angular/angular.js/commit/ef64169db32ffdf5e0e3ae2154ac434c6a55378b))
+- **$location:**
+  - fix and test html5Mode url-parsing algorithm for legacy browsers
+  ([49e7c32b](https://github.com/angular/angular.js/commit/49e7c32bb45ce3984df6768ba7b2f6a723a4ebe7))
+  - make legacy browsers behave like modern ones in html5Mode
+  ([3f047704](https://github.com/angular/angular.js/commit/3f047704c70a957596371fec554d3e1fb066a29d),
+   [#6162](https://github.com/angular/angular.js/issues/6162), [#6421](https://github.com/angular/angular.js/issues/6421), [#6899](https://github.com/angular/angular.js/issues/6899), [#6832](https://github.com/angular/angular.js/issues/6832), [#6834](https://github.com/angular/angular.js/issues/6834))
+- **input:** don't dirty model when input event triggered due to placeholder change
+  ([ff428e72](https://github.com/angular/angular.js/commit/ff428e72837c85b9540ee9e5a3daa2c9477c90bb),
+   [#2614](https://github.com/angular/angular.js/issues/2614), [#5960](https://github.com/angular/angular.js/issues/5960))
+- **limitTo:** do not convert Infinity to NaN
+  ([5dee9e4a](https://github.com/angular/angular.js/commit/5dee9e4a33ab2a0be6d8a8099297be3028771e0b),
+   [#6771](https://github.com/angular/angular.js/issues/6771), [#7118](https://github.com/angular/angular.js/issues/7118))
+- **ngModelController:** introduce $cancelUpdate to cancel pending updates
+  ([940fcb40](https://github.com/angular/angular.js/commit/940fcb4090e96824a4abc50252aa36aaf239e937),
+   [#6994](https://github.com/angular/angular.js/issues/6994), [#7014](https://github.com/angular/angular.js/issues/7014))
+
+
+## Features
+
+- **$resource:** Make stripping of trailing slashes configurable.
+  ([3878be52](https://github.com/angular/angular.js/commit/3878be52f6d95fca4c386d4a5523f3c8fcb04270))
+- **Scope:** add `$watchGroup` method for observing a set of expressions
+  ([21f93163](https://github.com/angular/angular.js/commit/21f93163384f36fc4ae0934387339380e3dc3e9c))
+- **injector:** "strict-DI" mode which disables "automatic" function annotation
+  ([4b1695ec](https://github.com/angular/angular.js/commit/4b1695ec61aac8de7fcac1dfe8b4b420f9842c38),
+   [#6719](https://github.com/angular/angular.js/issues/6719), [#6717](https://github.com/angular/angular.js/issues/6717), [#4504](https://github.com/angular/angular.js/issues/4504), [#6069](https://github.com/angular/angular.js/issues/6069), [#3611](https://github.com/angular/angular.js/issues/3611))
+- **ngModelOptions:** custom triggers and debounce of ngModel updates
+  ([dbe381f2](https://github.com/angular/angular.js/commit/dbe381f29fc72490f8e3a5328d5c487b185fe652),
+   [#1285](https://github.com/angular/angular.js/issues/1285))
+
+
+## Performance Improvements
+
+- **$compile:** watch interpolated expressions individually
+  ([0ebfa0d1](https://github.com/angular/angular.js/commit/0ebfa0d112c8ba42242cb8353db91e93eb42b463))
+- **$interpolate:** speed up interpolation by recreating watchGroup approach
+  ([546cb429](https://github.com/angular/angular.js/commit/546cb429d9cea25a9bdadbb87dfd401366b0b908))
+
+
+## Breaking Changes
+
+- **$interpolate:** due to [88c2193c](https://github.com/angular/angular.js/commit/88c2193c71954b9e7e7e4bdf636a2b168d36300d),
+  the function returned by `$interpolate`
+  no longer has a `.parts` array set on it.
+
+  Instead it has two arrays:
+  * `.expressions`, an array of the expressions in the
+    interpolated text. The expressions are parsed with
+    `$parse`, with an extra layer converting them to strings
+    when computed
+  * `.separators`, an array of strings representing the
+    separations between interpolations in the text.
+    This array is **always** 1 item longer than the
+    `.expressions` array for easy merging with it
+
+
 <a name="1.3.0-beta.5"></a>
 # 1.3.0-beta.5 chimeric-glitterfication (2014-04-03)
 
@@ -638,26 +1611,30 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 ## Breaking Changes
 
 - **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
-       it is now necessary to separately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
+  it is now necessary to seperately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
 
-    To migrate your code, follow the example below:
+  To migrate your code, follow the example below:
 
-    Before:
+  Before:
 
-        // Will apply to POST, PUT and PATCH methods
-        $httpProvider.defaults.headers.post = {
-            "X-MY-CSRF-HEADER": "..."
-        };
+  ```
+  // Will apply to POST, PUT and PATCH methods
+  $httpProvider.defaults.headers.post = {
+    "X-MY-CSRF-HEADER": "..."
+  };
+  ```
 
-    After:
+  After:
 
-        // POST, PUT and PATCH default headers must be specified separately,
-        // as they do not share data.
-        $httpProvider.defaults.headers.post =
-            $httpProvider.defaults.headers.put =
-            $httpProviders.defaults.headers.patch = {
-                "X-MY-CSRF-HEADER": "..."
-            };
+  ```
+  // POST, PUT and PATCH default headers must be specified seperately,
+  // as they do not share data.
+  $httpProvider.defaults.headers.post =
+    $httpProvider.defaults.headers.put =
+    $httpProviders.defaults.headers.patch = {
+      "X-MY-CSRF-HEADER": "..."
+    };
+  ```
 
 <a name="1.2.8"></a>
 # 1.2.8 interdimensional-cartography (2014-01-10)
@@ -3972,7 +4949,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
   ([commit](https://github.com/angular/angular.js/commit/78656fe0dfc99c341ce02d71e7006e9c05b1fe3f))
 
 - fn signature change for change listener functions registered via `scope.$watch` - this means that
-  the scope object can be listed in the arguments list only if its needed and skipped otherwise.
+  the scope object can be listed in the arguments list only if it's needed and skipped otherwise.
   ([commit](https://github.com/angular/angular.js/commit/0196411dbe179afe24f4faa6d6503ff3f69472da))
 
   - before: `scope.$watch('someModel', function(scope, newVal, oldVal) {})`
@@ -4906,7 +5883,7 @@ with the `$route` service
 - docs app UI polishing with dual scrolling and other improvements
 
 ### Bug Fixes
-- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat`
+- `select` widget now behaves correctly when its `option` items are created via `ng:repeat`
   (issue #170)
 - fix for async xhr cache issue #152 by adding `$browser.defer` and `$defer` service
 

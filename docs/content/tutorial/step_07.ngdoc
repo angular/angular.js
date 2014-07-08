@@ -34,15 +34,15 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "private": true,
   "dependencies": {
     "angular": "1.2.x",
-    "angular-mocks": "~1.2.15",
+    "angular-mocks": "~1.2.x",
     "bootstrap": "~3.1.1",
-    "angular-route": "~1.2.15"
+    "angular-route": "~1.2.x"
   }
 }
 ```
 
-The new dependency `"angular-route": "~1.2.15"` tells bower to install a version of the
-angular-route component that is compatible with version 1.2.15.  We must tell bower to download
+The new dependency `"angular-route": "~1.2.x"` tells bower to install a version of the
+angular-route component that is compatible with version 1.2.x.  We must tell bower to download
 and install this dependency.
 
 If you have bower installed globally then you can run `bower install` but for this project we have
@@ -78,12 +78,17 @@ utilize the browser's history (back and forward navigation) and bookmarks.
 As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} (DI) is at the core of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
-When the application bootstraps, Angular creates an injector that will be used for all DI stuff in
-this app. The injector itself doesn't know anything about what `$http` or `$route` services do, in
-fact it doesn't even know about the existence of these services unless it is configured with proper
-module definitions. The sole responsibilities of the injector are to load specified module
-definition(s), register all service providers defined in these modules, and when asked, inject
-a specified function with dependencies (services) that it lazily instantiates via their providers.
+When the application bootstraps, Angular creates an injector that will be used to find and inject all
+of the services that are required by your app. The injector itself doesn't know anything about what
+`$http` or `$route` services do, in fact it doesn't even know about the existence of these services 
+unless it is configured with proper module definitions. 
+
+The injector only carries out the following steps : 
+
+ * load the module definition(s) that you specify in your app
+ * register all Providers defined in these module definitions
+ * when asked to do so, inject a specified function and any necessary dependencies (services) that 
+   it lazily instantiates via their Providers.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
@@ -97,9 +102,9 @@ service, the `$routeProvider` exposes APIs that allow you to define routes for y
 Angular modules solve the problem of removing global state from the application and provide a way
 of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try to
 solve the problem of script load ordering or lazy script fetching. These goals are totally independent and
-both module systems can live side by side and fulfil their goals.
+both module systems can live side by side and fulfill their goals.
 
-For deepen your understanding of DI on Angular, see
+To deepen your understanding of DI on Angular, see
 [Understanding Dependency Injection](https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection).
 
 ## Template
@@ -120,8 +125,8 @@ __`app/index.html`:__
 <html lang="en" ng-app="phonecatApp">
 <head>
 ...
-  <script src="../bower_components/angular/angular.js"></script>
-  <script src="../bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="js/app.js"></script>
   <script src="js/controllers.js"></script>
 </head>
@@ -147,8 +152,8 @@ __`app/partials/phone-list.html`:__
 
 ```html
 <div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span2">
+  <div class="row">
+    <div class="col-md-2">
       <!--Sidebar content-->
 
       Search: <input ng-model="query">
@@ -159,7 +164,7 @@ __`app/partials/phone-list.html`:__
       </select>
 
     </div>
-    <div class="span10">
+    <div class="col-md-10">
       <!--Body content-->
 
       <ul class="phones">
@@ -185,7 +190,7 @@ We also added a placeholder template for the phone details view:
 __`app/partials/phone-detail.html`:__
 
 ```html
-TBD: detail view for {{phoneId}}
+TBD: detail view for <span>{{phoneId}}</span>
 ```
 
 Note how we are using the `phoneId` expression which will be defined in the `PhoneDetailCtrl` controller.
@@ -247,7 +252,7 @@ Our application routes are defined as follows:
   controller.
 
 * `when('/phones/:phoneId')`: The phone details view will be shown when the URL hash fragment
-  matches '/phone/:phoneId', where `:phoneId` is a variable part of the URL. To construct the phone
+  matches '/phones/:phoneId', where `:phoneId` is a variable part of the URL. To construct the phone
   details view, Angular will use the `phone-detail.html` template and the `PhoneDetailCtrl`
   controller.
 
@@ -304,10 +309,17 @@ to various URLs and verify that the correct view was rendered.
 
 ```js
 ...
-  it('should redirect index.html to index.html#/phones', function() {
-    browser().navigateTo('app/index.html');
-    expect(browser().location().url()).toBe('/phones');
+   it('should redirect index.html to index.html#/phones', function() {
+    browser.get('app/index.html');
+    browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split('#')[1]).toBe('/phones');
+      });
   });
+
+  describe('Phone list view', function() {
+    beforeEach(function() {
+      browser.get('app/index.html#/phones');
+    });
 ...
 
   describe('Phone detail view', function() {

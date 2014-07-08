@@ -184,10 +184,6 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 pre {
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  display: block;
   white-space: pre-wrap;
   word-break: normal;
 }
@@ -213,6 +209,10 @@ code.highlighted {
   border-radius:5px;
   padding:2px 5px;
   color:maroon;
+}
+
+ul + p {
+  margin-top: 10px;
 }
 
 .docs-version-jump {
@@ -257,6 +257,9 @@ code.highlighted {
   z-index: 99;
   cursor: pointer;
   font-size: 16px;
+  -moz-appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
 }
 
 .picker:after {
@@ -574,6 +577,15 @@ h4 {
 ul.methods > li,
 ul.events > li {
   margin-bottom:40px;
+}
+
+@media only screen and (min-width: 769px) and (max-width: 991px) {
+  .main-body-grid {
+    margin-top: 160px;
+  }
+  .main-body-grid > .grid-left {
+    top: 160px;
+  }
 }
 
 @media only screen and (max-width : 768px) {

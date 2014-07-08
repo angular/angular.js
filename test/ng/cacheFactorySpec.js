@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$cacheFactory', function() {
 
   it('should be injected', inject(function($cacheFactory) {
@@ -176,7 +178,7 @@ describe('$cacheFactory', function() {
   describe('LRU cache', function() {
 
     it('should create cache with defined capacity', inject(function($cacheFactory) {
-      cache = $cacheFactory('cache1', {capacity: 5});
+      var cache = $cacheFactory('cache1', {capacity: 5});
       expect(cache.info().size).toBe(0);
 
       for (var i=0; i<5; i++) {
@@ -193,6 +195,7 @@ describe('$cacheFactory', function() {
 
 
     describe('eviction', function() {
+      var cache;
 
       beforeEach(inject(function($cacheFactory) {
         cache = $cacheFactory('cache1', {capacity: 2});

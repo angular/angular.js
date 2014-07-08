@@ -2,7 +2,7 @@
    is HTML and wrap each line in a <p> - thus breaking the HTML #}
 
 <div>
-  <a ng-href="http://plnkr.co/edit/ngdoc:{$ doc.example.id $}@{{docsVersion}}?p=preview" class="btn pull-right" target="_blank">
+  <a ng-click="openPlunkr('{$ doc.example.outputFolder $}')" class="btn pull-right">
     <i class="glyphicon glyphicon-edit">&nbsp;</i>
     Edit in Plunker</a>
   <div class="runnable-example"
@@ -15,7 +15,7 @@
       {$ attrName $}="{$ attrValue $}"{% endfor %}>
       {% code -%}
       {$ file.fileContents $}
-      {%- endcode %}  
+      {%- endcode %}
     </div>
   {% endfor %}
 

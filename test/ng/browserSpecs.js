@@ -18,7 +18,7 @@ function MockWindow() {
   };
 
   this.addEventListener = function(name, listener) {
-    if (isUndefined(events[name])) events[name] = [];
+    if (angular.isUndefined(events[name])) events[name] = [];
     events[name].push(listener);
   };
 
@@ -49,7 +49,7 @@ function MockWindow() {
 function MockDocument() {
   var self = this;
 
-  this[0] = window.document
+  this[0] = window.document;
   this.basePath = '/';
 
   this.find = function(name) {
@@ -62,15 +62,15 @@ function MockDocument() {
             throw new Error(name);
           }
         }
-      }
+      };
     } else {
       throw new Error(name);
     }
-  }
+  };
 }
 
 describe('browser', function() {
-
+  /* global Browser: false */
   var browser, fakeWindow, fakeDocument, logs, scripts, removedScripts, sniffer;
 
   beforeEach(function() {

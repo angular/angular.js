@@ -34,7 +34,7 @@ This process based on the idea of minimizing user pain
     * Check if there are comments that link to a dupe. If so verify that this is indeed a dupe, [close it][], and go to the last step.
 1. Bugs:
     * Label `Type: Bug`
-    * Reproducible? - Steps to reproduce the bug are clear. If they are not,
+    * Reproducible? - Steps to reproduce the bug are clear. If they are not, ask for a clarification. If there's no reply after a week, [close it][].
     * Reproducible on master? - <http://code.angularjs.org/snapshot/>
 
 1. Non bugs:

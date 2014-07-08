@@ -1,3 +1,5 @@
+'use strict';
+
 describe('jqLite', function() {
   var scope, a, b, c;
 
@@ -57,7 +59,7 @@ describe('jqLite', function() {
     it('should allow construction with html', function() {
       var nodes = jqLite('<div>1</div><span>2</span>');
       expect(nodes[0].parentNode).toBeDefined();
-      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/
       expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
@@ -68,7 +70,7 @@ describe('jqLite', function() {
     it('should allow construction of html with leading whitespace', function() {
       var nodes = jqLite('  \n\r   \r\n<div>1</div><span>2</span>');
       expect(nodes[0].parentNode).toBeDefined();
-      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/
       expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toBe(2);
       expect(nodes[0].innerHTML).toBe('1');
@@ -229,7 +231,7 @@ describe('jqLite', function() {
       dealoc(element);
     });
 
-    it('should retrieve scope attached to the html element if its requested on the document',
+    it('should retrieve scope attached to the html element if it\'s requested on the document',
         function() {
       var doc = jqLite(document),
           html = doc.find('html'),
@@ -299,7 +301,7 @@ describe('jqLite', function() {
     });
 
 
-    it('should retrieve injector attached to the html element if its requested on document',
+    it('should retrieve injector attached to the html element if it\'s requested on document',
         function() {
       var doc = jqLite(document),
           html = doc.find('html'),
@@ -383,6 +385,23 @@ describe('jqLite', function() {
 
       selected.removeData('prop2');
     });
+
+
+    it('should not add to the cache if the node is a comment or text node', function() {
+      var calcCacheSize = function() {
+        var count = 0;
+        for (var k in jqLite.cache) { ++count; }
+        return count;
+      };
+
+      var nodes = jqLite('<!-- some comment --> and some text');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey', 'someValue');
+      expect(calcCacheSize()).toEqual(0);
+    });
+
 
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
@@ -473,7 +492,7 @@ describe('jqLite', function() {
             span = div.find('span'),
             log = '';
 
-        span.on('click', function() { log+= 'click;'});
+        span.on('click', function() { log += 'click;'; });
         browserTrigger(span);
         expect(log).toEqual('click;');
 
@@ -879,6 +898,12 @@ describe('jqLite', function() {
       expect(element.text('xyz') == element).toBeTruthy();
       expect(element.text()).toEqual('xyzxyz');
     });
+
+    it('should return text only for element or text nodes', function() {
+      expect(jqLite('<div>foo</div>').text()).toBe('foo');
+      expect(jqLite('<div>foo</div>').contents().eq(0).text()).toBe('foo');
+      expect(jqLite(document.createComment('foo')).text()).toBe('');
+    });
   });
 
 
@@ -945,22 +970,24 @@ describe('jqLite', function() {
       if (jqLite.fn) return; // don't run in jQuery
       var eventFn;
       var window = {
-          document: {},
-          location: {},
-          alert: noop,
-          setInterval: noop,
-          length:10, // pretend you are an array
-          addEventListener: function(type, fn){
-            expect(type).toEqual('hashchange');
-            eventFn = fn;
-          },
-          removeEventListener: noop,
-          attachEvent: function(type, fn){
-            expect(type).toEqual('onhashchange');
-            eventFn = fn;
-          },
-          detachEvent: noop
+        document: {},
+        location: {},
+        alert: noop,
+        setInterval: noop,
+        length:10, // pretend you are an array
+        addEventListener: function(type, fn){
+          expect(type).toEqual('hashchange');
+          eventFn = fn;
+        },
+        removeEventListener: noop,
+        attachEvent: function(type, fn){
+          expect(type).toEqual('onhashchange');
+          eventFn = fn;
+        },
+        detachEvent: noop
       };
+      window.window = window;
+
       var log;
       var jWindow = jqLite(window).on('hashchange', function() {
         log = 'works!';
@@ -981,6 +1008,16 @@ describe('jqLite', function() {
       expect(log).toEqual('click on: A;');
       browserTrigger(b, 'click');
       expect(log).toEqual('click on: A;click on: B;');
+    });
+
+    it('should not bind to comment or text nodes', function() {
+      var nodes = jqLite('<!-- some comment -->Some text');
+      var someEventHandler = jasmine.createSpy('someEventHandler');
+
+      nodes.on('someEvent', someEventHandler);
+      nodes.triggerHandler('someEvent');
+
+      expect(someEventHandler).not.toHaveBeenCalled();
     });
 
     it('should bind to all events separated by space', function() {
@@ -1046,16 +1083,17 @@ describe('jqLite', function() {
         if (window.jQuery) return;
         var browserMoveTrigger = function(from, to){
           var fireEvent = function(type, element, relatedTarget){
-            var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+            var evnt, msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
             if (msie < 9){
-              var evnt = document.createEventObject();
+              evnt = document.createEventObject();
               evnt.srcElement = element;
               evnt.relatedTarget = relatedTarget;
               element.fireEvent('on' + type, evnt);
               return;
-            };
-            var evnt = document.createEvent('MouseEvents'),
-            originalPreventDefault = evnt.preventDefault,
+            }
+            evnt = document.createEvent('MouseEvents');
+
+            var originalPreventDefault = evnt.preventDefault,
             appWindow = window,
             fakeProcessDefault = true,
             finalProcessDefault;
@@ -1652,30 +1690,43 @@ describe('jqLite', function() {
       data = pokeSpy.mostRecentCall.args[1];
       expect(data.hello).toBe("world");
     });
+
+    it('should mark event as prevented if preventDefault is called', function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          event;
+
+      element.on('click', pokeSpy);
+      element.triggerHandler('click');
+      event = pokeSpy.mostRecentCall.args[0];
+
+      expect(event.isDefaultPrevented()).toBe(false);
+      event.preventDefault();
+      expect(event.isDefaultPrevented()).toBe(true);
+    });
   });
 
 
   describe('camelCase', function() {
-
-   it('should leave non-dashed strings alone', function() {
-     expect(camelCase('foo')).toBe('foo');
-     expect(camelCase('')).toBe('');
-     expect(camelCase('fooBar')).toBe('fooBar');
-   });
-
-
-   it('should covert dash-separated strings to camelCase', function() {
-     expect(camelCase('foo-bar')).toBe('fooBar');
-     expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
-     expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
-   });
+    it('should leave non-dashed strings alone', function() {
+      expect(camelCase('foo')).toBe('foo');
+      expect(camelCase('')).toBe('');
+      expect(camelCase('fooBar')).toBe('fooBar');
+    });
 
 
-   it('should covert browser specific css properties', function() {
-     expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
-     expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-     expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-   });
+    it('should covert dash-separated strings to camelCase', function() {
+      expect(camelCase('foo-bar')).toBe('fooBar');
+      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
+      expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
+    });
+
+
+    it('should covert browser specific css properties', function() {
+      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
+      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+    });
   });
 
 });

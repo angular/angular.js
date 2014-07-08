@@ -24,6 +24,16 @@ describe('angular', function() {
       expect(copy([], arr)).toBe(arr);
     });
 
+    it("should preserve prototype chaining", function() {
+      var GrandParentProto = {};
+      var ParentProto = Object.create(GrandParentProto);
+      var obj = Object.create(ParentProto);
+      expect(ParentProto.isPrototypeOf(copy(obj))).toBe(true);
+      expect(GrandParentProto.isPrototypeOf(copy(obj))).toBe(true);
+      var Foo = function() {};
+      expect(copy(new Foo()) instanceof Foo).toBe(true);
+    });
+
     it("should copy Date", function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();
@@ -118,7 +128,7 @@ describe('angular', function() {
 
     it('should throw an exception when source and destination are equivalent', function() {
       var src, dst;
-	    src = dst = {key: 'value'};
+      src = dst = {key: 'value'};
       expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
       src = dst = [2, 4];
       expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
@@ -146,10 +156,23 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+
+    it('should handle circular references when circularRefs is turned on', function () {
+      var a = {b: {a: null}, self: null, selfs: [null, null, [null]]};
+      a.b.a = a;
+      a.self = a;
+      a.selfs = [a, a.b, [a]];
+
+      var aCopy = copy(a, null);
+      expect(aCopy).toEqual(a);
+
+      expect(aCopy).not.toBe(a);
+      expect(aCopy).toBe(aCopy.self);
+      expect(aCopy.selfs[2]).not.toBe(a.selfs[2]);
+    });
   });
 
   describe("extend", function() {
-
     it('should not copy the private $$hashKey', function() {
       var src,dst;
       src = {};
@@ -209,7 +232,7 @@ describe('angular', function() {
 
     it('should omit properties from prototype chain', function() {
       var original, clone = {};
-      function Func() {};
+      function Func() {}
       Func.prototype.hello = "world";
 
       original = new Func();
@@ -218,6 +241,25 @@ describe('angular', function() {
       expect(shallowCopy(original, clone)).toBe(clone);
       expect(clone.hello).toBeUndefined();
       expect(clone.goodbye).toBe("world");
+    });
+
+    it('should handle arrays', function() {
+      var original = [{}, 1],
+          clone = [];
+
+      var aCopy = shallowCopy(original);
+      expect(aCopy).not.toBe(original);
+      expect(aCopy).toEqual(original);
+      expect(aCopy[0]).toBe(original[0]);
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone).toEqual(original);
+    });
+
+    it('should handle primitives', function() {
+      expect(shallowCopy('test')).toBe('test');
+      expect(shallowCopy(3)).toBe(3);
+      expect(shallowCopy(true)).toBe(true);
     });
   });
 
@@ -316,6 +358,7 @@ describe('angular', function() {
     });
 
     it('should correctly test for keys that are present on Object.prototype', function() {
+      /* jshint -W001 */
       // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
       // things like hasOwnProperty even if it is explicitly defined on the actual object!
       if (msie<=8) return;
@@ -457,7 +500,7 @@ describe('angular', function() {
       expect(toKeyValue({key: [323,'value',true]})).toEqual('key=323&key=value&key');
       expect(toKeyValue({key: [323,'value',true, 1234]})).
       toEqual('key=323&key=value&key&key=1234');
-  });
+    });
   });
 
 
@@ -472,13 +515,14 @@ describe('angular', function() {
       var obj = new MyObj(),
           log = [];
 
-      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      forEach(obj, function(value, key) { log.push(key + ':' + value); });
 
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
     });
 
 
     it('should not break if obj is an array we override hasOwnProperty', function() {
+      /* jshint -W001 */
       var obj = [];
       obj[0] = 1;
       obj[1] = 2;
@@ -506,7 +550,7 @@ describe('angular', function() {
           log = [];
 
 
-      forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
     });
 
@@ -521,7 +565,7 @@ describe('angular', function() {
       var htmlCollection = document.getElementsByName('x'),
           log = [];
 
-      forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:a', '1:c']);
     });
 
@@ -536,7 +580,7 @@ describe('angular', function() {
         var htmlCollection = document.querySelectorAll('[name="x"]'),
           log = [];
 
-        forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+        forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML); });
         expect(log).toEqual(['0:a', '1:c']);
       });
     }
@@ -545,28 +589,28 @@ describe('angular', function() {
       var args,
           log = [];
 
-      (function(){ args = arguments}('a', 'b', 'c'));
+      (function(){ args = arguments; }('a', 'b', 'c'));
 
-      forEach(args, function(value, key) { log.push(key + ':' + value)});
+      forEach(args, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
     });
 
     it('should handle string values like arrays', function() {
       var log = [];
 
-      forEach('bar', function(value, key) { log.push(key + ':' + value)});
+      forEach('bar', function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:b', '1:a', '2:r']);
     });
 
 
     it('should handle objects with length property as objects', function() {
       var obj = {
-            'foo' : 'bar',
-            'length': 2
-          },
-          log = [];
+          'foo' : 'bar',
+          'length': 2
+        },
+        log = [];
 
-      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['foo:bar', 'length:2']);
     });
 
@@ -574,13 +618,13 @@ describe('angular', function() {
     it('should handle objects of custom types with length property as objects', function() {
       function CustomType() {
         this.length = 2;
-        this.foo = 'bar'
+        this.foo = 'bar';
       }
 
       var obj = new CustomType(),
           log = [];
 
-      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
   });
@@ -748,9 +792,11 @@ describe('angular', function() {
       var appElement = jqLite('<div ng-app="doesntexist"></div>')[0];
 
       expect(function() {
-        angularInit(appElement, bootstrap);
+        angularInit(appElement, angular.bootstrap);
       }).toThrowMatching(
-        /\[\$injector:modulerr] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./
+        new RegExp('\\[\\$injector:modulerr] Failed to instantiate module doesntexist due to:\\n' +
+                   '.*\\[\\$injector:nomod] Module \'doesntexist\' is not available! You either ' +
+                   'misspelled the module name or forgot to load it\\.')
       );
     });
 
@@ -762,7 +808,7 @@ describe('angular', function() {
       expect(function () {
         angular.bootstrap(element);
       }).toThrowMatching(
-        /\[ng:btstrpd\] App Already Bootstrapped with this Element '<div class="?ng\-scope"?( ng\-[0-9]+="?[0-9]+"?)?>'/i
+        /\[ng:btstrpd\] App Already Bootstrapped with this Element '<div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?>'/i
       );
 
       dealoc(element);
@@ -789,7 +835,7 @@ describe('angular', function() {
       expect(bootstrapSpy.mostRecentCall.args[2].strictDi).toBe(true);
 
       var injector = appElement.injector();
-      function testFactory($rootScope) {};
+      function testFactory($rootScope) {}
       expect(function() {
         injector.instantiate(testFactory);
       }).toThrowMinErr('$injector', 'strictdi');
@@ -850,6 +896,22 @@ describe('angular', function() {
   });
 
 
+  describe('isWindow', function () {
+    it('should return true for the Window object', function() {
+      expect(isWindow(window)).toBe(true);
+    });
+
+    it('should return false for any object that is not a Window', function() {
+      expect(isWindow([])).toBe(false);
+      expect(isWindow('')).toBeFalsy();
+      expect(isWindow(23)).toBe(false);
+      expect(isWindow({})).toBe(false);
+      expect(isWindow(new Date())).toBe(false);
+      expect(isWindow(document)).toBe(false);
+    });
+  });
+
+
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
@@ -899,7 +961,7 @@ describe('angular', function() {
       var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
                          '<ngtest:foo ngtest:attr="bar"></ngtest:foo>' +
                        '</div>')[0];
-      expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
+      expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
     });
 
@@ -908,7 +970,7 @@ describe('angular', function() {
         var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
                            '<ngtest:foo ngtest:attr="bar"></ng-test>' +
                          '</div>')[0];
-        expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
+        expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
         expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
       });
     }
@@ -922,7 +984,7 @@ describe('angular', function() {
 
       while(count--) {
         var current = nextUid();
-        expect(current.match(/[\d\w]+/)).toBeTruthy();
+        expect(typeof current).toBe('number');
         expect(seen[current]).toBeFalsy();
         seen[current] = true;
       }
@@ -956,7 +1018,9 @@ describe('angular', function() {
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
       }).toThrowMatching(
-          /\[\$injector:modulerr\] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod\] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./);
+          new RegExp('\\[\\$injector:modulerr\\] Failed to instantiate module doesntexist due to:\\n' +
+                     '.*\\[\\$injector:nomod\\] Module \'doesntexist\' is not available! You either ' +
+                     'misspelled the module name or forgot to load it\\.'));
 
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
@@ -1093,8 +1157,13 @@ describe('angular', function() {
     });
 
 
-    it('should not serialize properties starting with $', function() {
-      expect(toJson({$few: 'v', $$some:'value'}, false)).toEqual('{}');
+    it('should not serialize properties starting with $$', function() {
+      expect(toJson({$$some:'value'}, false)).toEqual('{}');
+    });
+
+
+    it('should serialize properties starting with $', function() {
+      expect(toJson({$few: 'v'}, false)).toEqual('{"$few":"v"}');
     });
 
 

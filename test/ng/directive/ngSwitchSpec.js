@@ -212,13 +212,36 @@ describe('ngSwitch', function() {
     // element now contains only empty repeater. this element is dealocated by local afterEach.
     // afterwards a global afterEach will check for leaks in jq data cache object
   }));
+
+
+  it('should properly support case labels with different numbers of transclude fns', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-switch="mode">' +
+        '<p ng-switch-when="a">Block1</p>' +
+        '<p ng-switch-when="a">Block2</p>' +
+        '<a href ng-switch-when="b">a</a>' +
+      '</div>'
+    )($rootScope);
+
+    $rootScope.$apply('mode = "a"');
+    expect(element.children().length).toBe(2);
+
+    $rootScope.$apply('mode = "b"');
+    expect(element.children().length).toBe(1);
+
+    $rootScope.$apply('mode = "a"');
+    expect(element.children().length).toBe(2);
+
+    $rootScope.$apply('mode = "b"');
+    expect(element.children().length).toBe(1);
+  }));
 });
 
 describe('ngSwitch animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -258,7 +281,8 @@ describe('ngSwitch animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('enter');
       expect(item.element.text()).toBe('one');
-  }));
+    })
+  );
 
 
   it('should fire off the leave animation',
@@ -291,7 +315,8 @@ describe('ngSwitch animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('enter');
       expect(item.element.text()).toBe('three');
-  }));
+    })
+  );
 
   it('should destroy the previous leave animation if a new one takes place', function() {
     module(function($provide) {

@@ -15,7 +15,7 @@ module.exports = function(config, specificOptions) {
       testName: specificOptions.testName || 'AngularJS',
       startConnect: true,
       options: {
-        'selenium-version': '2.37.0'
+        'selenium-version': '2.41.0'
       }
     },
 
@@ -32,7 +32,8 @@ module.exports = function(config, specificOptions) {
     customLaunchers: {
       'SL_Chrome': {
         base: 'SauceLabs',
-        browserName: 'chrome'
+        browserName: 'chrome',
+        version: '34'
       },
       'SL_Firefox': {
         base: 'SauceLabs',
@@ -112,6 +113,7 @@ module.exports = function(config, specificOptions) {
 
     config.logLevel = config.LOG_DEBUG;
     config.transports = ['websocket', 'xhr-polling'];
+    config.captureTimeout = 0; // rely on SL timeout
 
     config.browserStack.build = buildLabel;
     config.browserStack.startTunnel = false;

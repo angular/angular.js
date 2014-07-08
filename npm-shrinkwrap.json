@@ -466,7 +466,7 @@
       "version": "0.0.2"
     },
     "dgeni": {
-      "version": "0.2.2",
+      "version": "0.3.0",
       "dependencies": {
         "rimraf": {
           "version": "2.2.6"
@@ -498,39 +498,17 @@
         },
         "di": {
           "version": "0.0.1"
-        },
-        "marked": {
-          "version": "0.2.10"
-        },
-        "glob": {
-          "version": "3.2.9",
-          "dependencies": {
-            "minimatch": {
-              "version": "0.2.14",
-              "dependencies": {
-                "lru-cache": {
-                  "version": "2.5.0"
-                },
-                "sigmund": {
-                  "version": "1.0.0"
-                }
-              }
-            },
-            "inherits": {
-              "version": "2.0.1"
-            }
-          }
         }
       }
     },
     "dgeni-packages": {
-      "version": "0.8.2",
+      "version": "0.9.1",
       "dependencies": {
         "lodash": {
           "version": "2.4.1"
         },
         "graceful-fs": {
-          "version": "2.0.2"
+          "version": "2.0.3"
         },
         "glob": {
           "version": "3.2.9",
@@ -552,7 +530,7 @@
           }
         },
         "nunjucks": {
-          "version": "1.0.1",
+          "version": "1.0.5",
           "dependencies": {
             "optimist": {
               "version": "0.6.1",
@@ -564,14 +542,83 @@
                   "version": "0.0.8"
                 }
               }
+            },
+            "chokidar": {
+              "version": "0.8.2",
+              "dependencies": {
+                "fsevents": {
+                  "version": "0.2.0",
+                  "dependencies": {
+                    "nan": {
+                      "version": "0.8.0"
+                    }
+                  }
+                },
+                "recursive-readdir": {
+                  "version": "0.0.2"
+                }
+              }
             }
           }
         },
         "catharsis": {
-          "version": "0.7.0"
+          "version": "0.7.1"
         },
         "esprima": {
-          "version": "1.0.4"
+          "version": "1.2.0"
+        },
+        "change-case": {
+          "version": "2.1.1",
+          "dependencies": {
+            "camel-case": {
+              "version": "0.1.0"
+            },
+            "constant-case": {
+              "version": "0.1.0"
+            },
+            "dot-case": {
+              "version": "0.1.0"
+            },
+            "is-lower-case": {
+              "version": "0.0.1"
+            },
+            "is-upper-case": {
+              "version": "0.0.1"
+            },
+            "lower-case": {
+              "version": "0.0.1"
+            },
+            "param-case": {
+              "version": "0.1.0"
+            },
+            "pascal-case": {
+              "version": "0.1.1"
+            },
+            "path-case": {
+              "version": "0.1.0"
+            },
+            "sentence-case": {
+              "version": "0.1.1"
+            },
+            "snake-case": {
+              "version": "0.1.1"
+            },
+            "swap-case": {
+              "version": "0.0.1"
+            },
+            "title-case": {
+              "version": "0.1.0"
+            },
+            "upper-case": {
+              "version": "0.0.1"
+            },
+            "upper-case-first": {
+              "version": "0.0.1"
+            }
+          }
+        },
+        "marked": {
+          "version": "0.2.10"
         }
       }
     },
@@ -865,7 +912,7 @@
     },
     "grunt-jasmine-node": {
       "version": "0.1.0",
-      "from": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
+      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs-checker": {
@@ -1969,7 +2016,7 @@
       }
     },
     "karma": {
-      "version": "0.12.0",
+      "version": "0.12.9",
       "dependencies": {
         "di": {
           "version": "0.0.1"
@@ -2025,7 +2072,20 @@
           }
         },
         "chokidar": {
-          "version": "0.8.1"
+          "version": "0.8.2",
+          "dependencies": {
+            "fsevents": {
+              "version": "0.2.0",
+              "dependencies": {
+                "nan": {
+                  "version": "0.8.0"
+                }
+              }
+            },
+            "recursive-readdir": {
+              "version": "0.0.2"
+            }
+          }
         },
         "glob": {
           "version": "3.2.9",
@@ -2065,7 +2125,7 @@
                   "version": "0.3.2"
                 },
                 "mkdirp": {
-                  "version": "0.3.5"
+                  "version": "0.4.0"
                 },
                 "ncp": {
                   "version": "0.4.2"
@@ -2101,7 +2161,7 @@
           "version": "1.2.11"
         },
         "log4js": {
-          "version": "0.6.12",
+          "version": "0.6.14",
           "dependencies": {
             "async": {
               "version": "0.1.15"
@@ -2110,17 +2170,26 @@
               "version": "1.1.4"
             },
             "readable-stream": {
-              "version": "1.0.26-2",
+              "version": "1.0.27-1",
               "dependencies": {
+                "core-util-is": {
+                  "version": "1.0.1"
+                },
+                "isarray": {
+                  "version": "0.0.1"
+                },
                 "string_decoder": {
                   "version": "0.10.25-1"
+                },
+                "inherits": {
+                  "version": "2.0.1"
                 }
               }
             }
           }
         },
         "useragent": {
-          "version": "2.0.7",
+          "version": "2.0.8",
           "dependencies": {
             "lru-cache": {
               "version": "2.2.4"
@@ -2128,7 +2197,7 @@
           }
         },
         "graceful-fs": {
-          "version": "2.0.2"
+          "version": "2.0.3"
         },
         "connect": {
           "version": "2.12.0",
@@ -2169,7 +2238,7 @@
               "version": "0.0.3"
             },
             "debug": {
-              "version": "0.7.4"
+              "version": "0.8.0"
             },
             "methods": {
               "version": "0.1.0"
@@ -2184,16 +2253,19 @@
               "version": "2.2.0",
               "dependencies": {
                 "readable-stream": {
-                  "version": "1.1.11",
+                  "version": "1.1.13-1",
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.1"
                     },
+                    "isarray": {
+                      "version": "0.0.1"
+                    },
                     "string_decoder": {
                       "version": "0.10.25-1"
                     },
-                    "debuglog": {
-                      "version": "0.0.2"
+                    "inherits": {
+                      "version": "2.0.1"
                     }
                   }
                 },
@@ -2618,22 +2690,112 @@
       }
     },
     "protractor": {
-      "version": "0.19.0",
+      "version": "1.0.0-rc2",
       "dependencies": {
+        "request": {
+          "version": "2.36.0",
+          "dependencies": {
+            "qs": {
+              "version": "0.6.6"
+            },
+            "json-stringify-safe": {
+              "version": "5.0.0"
+            },
+            "mime": {
+              "version": "1.2.11"
+            },
+            "forever-agent": {
+              "version": "0.5.2"
+            },
+            "node-uuid": {
+              "version": "1.4.1"
+            },
+            "tough-cookie": {
+              "version": "0.12.1",
+              "dependencies": {
+                "punycode": {
+                  "version": "1.2.4"
+                }
+              }
+            },
+            "form-data": {
+              "version": "0.1.4",
+              "dependencies": {
+                "combined-stream": {
+                  "version": "0.0.5",
+                  "dependencies": {
+                    "delayed-stream": {
+                      "version": "0.0.5"
+                    }
+                  }
+                },
+                "async": {
+                  "version": "0.9.0"
+                }
+              }
+            },
+            "tunnel-agent": {
+              "version": "0.4.0"
+            },
+            "http-signature": {
+              "version": "0.10.0",
+              "dependencies": {
+                "assert-plus": {
+                  "version": "0.1.2"
+                },
+                "asn1": {
+                  "version": "0.1.11"
+                },
+                "ctype": {
+                  "version": "0.5.2"
+                }
+              }
+            },
+            "oauth-sign": {
+              "version": "0.3.0"
+            },
+            "hawk": {
+              "version": "1.0.0",
+              "dependencies": {
+                "hoek": {
+                  "version": "0.9.1"
+                },
+                "boom": {
+                  "version": "0.4.2"
+                },
+                "cryptiles": {
+                  "version": "0.2.2"
+                },
+                "sntp": {
+                  "version": "0.2.4"
+                }
+              }
+            },
+            "aws-sign2": {
+              "version": "0.5.0"
+            }
+          }
+        },
         "selenium-webdriver": {
-          "version": "2.39.0"
+          "version": "2.42.1"
         },
         "minijasminenode": {
-          "version": "0.2.7"
+          "version": "1.1.1"
+        },
+        "jasminewd": {
+          "version": "1.0.3"
         },
         "saucelabs": {
           "version": "0.1.1"
         },
         "glob": {
-          "version": "3.2.9",
+          "version": "3.2.11",
           "dependencies": {
+            "inherits": {
+              "version": "2.0.1"
+            },
             "minimatch": {
-              "version": "0.2.14",
+              "version": "0.3.0",
               "dependencies": {
                 "lru-cache": {
                   "version": "2.5.0"
@@ -2642,9 +2804,6 @@
                   "version": "1.0.0"
                 }
               }
-            },
-            "inherits": {
-              "version": "2.0.1"
             }
           }
         },
@@ -2658,7 +2817,23 @@
               "version": "0.0.2"
             },
             "minimist": {
-              "version": "0.0.8"
+              "version": "0.0.10"
+            }
+          }
+        },
+        "lodash": {
+          "version": "2.4.1"
+        },
+        "source-map-support": {
+          "version": "0.2.6",
+          "dependencies": {
+            "source-map": {
+              "version": "0.1.32",
+              "dependencies": {
+                "amdefine": {
+                  "version": "0.1.0"
+                }
+              }
             }
           }
         }

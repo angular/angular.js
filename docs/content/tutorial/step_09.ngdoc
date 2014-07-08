@@ -39,7 +39,7 @@ __`app/js/app.js`:__
 
 ```js
 ...
-angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']).
+angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']);
 ...
 ```
 
@@ -108,6 +108,10 @@ for this test run.
 
 Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
 access to the filter that we want to test.  See {@link angular.mock.inject angular.mock.inject()}.
+
+Notice that the suffix 'Filter' is appended to your filter name when injected.
+See the {@link guide/filter#using-filters-in-controllers-services-and-directives Filter Guide}
+section where this is outlined.
 
 You should now see the following output in the Karma tab:
 

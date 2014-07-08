@@ -1,9 +1,9 @@
 module.exports = {
   name: 'step',
-  transformFn: function(doc, tag) {
+  transforms: function(doc, tag, value) {
     if ( doc.docType !== 'tutorial' ) {
       throw new Error('Invalid tag, step.  You should only use this tag on tutorial docs');
     }
-    return parseInt(tag.description,10);
+    return parseInt(value,10);
   }
 };
