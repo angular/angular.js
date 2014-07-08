@@ -533,9 +533,9 @@ function $HttpProvider() {
      *
      *
      * @example
-<example>
+<example module="httpExample">
 <file name="index.html">
-  <div ng-controller="FetchCtrl">
+  <div ng-controller="FetchController">
     <select ng-model="method">
       <option>GET</option>
       <option>JSONP</option>
@@ -557,30 +557,32 @@ function $HttpProvider() {
   </div>
 </file>
 <file name="script.js">
-  function FetchCtrl($scope, $http, $templateCache) {
-    $scope.method = 'GET';
-    $scope.url = 'http-hello.html';
+  angular.module('httpExample', [])
+    .controller('FetchController', ['$scope', '$http', '$templateCache',
+      function($scope, $http, $templateCache) {
+        $scope.method = 'GET';
+        $scope.url = 'http-hello.html';
 
-    $scope.fetch = function() {
-      $scope.code = null;
-      $scope.response = null;
+        $scope.fetch = function() {
+          $scope.code = null;
+          $scope.response = null;
 
-      $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
-        success(function(data, status) {
-          $scope.status = status;
-          $scope.data = data;
-        }).
-        error(function(data, status) {
-          $scope.data = data || "Request failed";
-          $scope.status = status;
-      });
-    };
+          $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
+            success(function(data, status) {
+              $scope.status = status;
+              $scope.data = data;
+            }).
+            error(function(data, status) {
+              $scope.data = data || "Request failed";
+              $scope.status = status;
+          });
+        };
 
-    $scope.updateModel = function(method, url) {
-      $scope.method = method;
-      $scope.url = url;
-    };
-  }
+        $scope.updateModel = function(method, url) {
+          $scope.method = method;
+          $scope.url = url;
+        };
+      }]);
 </file>
 <file name="http-hello.html">
   Hello, $http!
