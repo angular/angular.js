@@ -45,4 +45,10 @@ describe('Filter: orderBy', function() {
       return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
     }).toThrow();
   });
+
+  it('should sort strings in a case sensitive way', function() {
+    var array = [{name:"Bb"}, {name:"BB"}, {name:"bb"}, {name:'Aa'}, {name:'aa'}, {name:'AA'}];
+    expect(orderBy(array, 'name', true)).toEqualData([{name:"bb"}, {name:"Bb"}, {name:"BB"}, {name:'aa'}, {name:'Aa'}, {name:'AA'}]);
+    expect(orderBy(array, 'name', true)).toEqualData(orderBy(array, 'name', false).reverse());
+  });
 });

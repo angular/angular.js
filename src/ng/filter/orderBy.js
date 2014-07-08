@@ -154,8 +154,12 @@ function orderByFilter($parse){
       var t2 = typeof v2;
       if (t1 == t2) {
         if (t1 == "string") {
-           v1 = v1.toLowerCase();
-           v2 = v2.toLowerCase();
+           var v1Lower = v1.toLowerCase();
+           var v2Lower = v2.toLowerCase();
+           if (v1Lower !== v2Lower) {
+              v1 = v1Lower;
+              v2 = v2Lower;
+           }
         }
         if (v1 === v2) return 0;
         return v1 < v2 ? -1 : 1;
