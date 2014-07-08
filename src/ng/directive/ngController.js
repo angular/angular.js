@@ -54,7 +54,7 @@
  *
  * This example demonstrates the `controller as` syntax.
  *
- * <example name="ngControllerAs">
+ * <example name="ngControllerAs" module="controllerAsExample">
  *   <file name="index.html">
  *    <div id="ctrl-as-exmpl" ng-controller="SettingsController1 as settings">
  *      Name: <input type="text" ng-model="settings.name"/>
@@ -75,6 +75,9 @@
  *    </div>
  *   </file>
  *   <file name="app.js">
+ *    angular.module('controllerAsExample', [])
+ *      .controller('SettingsController1', SettingsController1);
+ *
  *    function SettingsController1() {
  *      this.name = "John Smith";
  *      this.contacts = [
@@ -134,7 +137,7 @@
  *
  * This example demonstrates the "attach to `$scope`" style of controller.
  *
- * <example name="ngController">
+ * <example name="ngController" module="controllerExample">
  *  <file name="index.html">
  *   <div id="ctrl-exmpl" ng-controller="SettingsController2">
  *     Name: <input type="text" ng-model="name"/>
@@ -155,6 +158,9 @@
  *   </div>
  *  </file>
  *  <file name="app.js">
+ *   angular.module('controllerExample', [])
+ *     .controller('SettingsController2', ['$scope', SettingsController2]);
+ *
  *   function SettingsController2($scope) {
  *     $scope.name = "John Smith";
  *     $scope.contacts = [
