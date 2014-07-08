@@ -622,23 +622,24 @@ The Angular's compiler currently does not support two-way binding for methods (s
 to the $location object (using {@link input[text] ngModel} directive on an input
 field), you will need to specify an extra model property (e.g. `locationPath`) with two {@link ng.$rootScope.Scope#$watch $watchers}
 which push $location updates in both directions. For example:
-<example>
+<example module="locationExample">
 <file name="index.html">
 <div ng-controller="LocationController">
   <input type="text" ng-model="locationPath" />
 </div>
 </file>
 <file name="script.js">
-function LocationController($scope, $location) {
-  $scope.$watch('locationPath', function(path) {
-    $location.path(path);
-  });
-  $scope.$watch(function() {
-    return $location.path();
-  }, function(path) {
-    $scope.locationPath = path;
-  });
-}
+angular.module('locationExample', [])
+  .controller('LocationController', ['$scope', '$location', function ($scope, $location) {
+    $scope.$watch('locationPath', function(path) {
+      $location.path(path);
+    });
+    $scope.$watch(function() {
+      return $location.path();
+    }, function(path) {
+      $scope.locationPath = path;
+    });
+  }]);
 </file>
 </example>
 
