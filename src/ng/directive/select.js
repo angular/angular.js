@@ -72,21 +72,22 @@ var ngOptionsMinErr = minErr('ngOptions');
  *     `value` variable (e.g. `value.propertyName`).
  *
  * @example
-    <example>
+    <example module="selectExample">
       <file name="index.html">
         <script>
-        function MyCntrl($scope) {
-          $scope.colors = [
-            {name:'black', shade:'dark'},
-            {name:'white', shade:'light'},
-            {name:'red', shade:'dark'},
-            {name:'blue', shade:'dark'},
-            {name:'yellow', shade:'light'}
-          ];
-          $scope.myColor = $scope.colors[2]; // red
-        }
+        angular.module('selectExample', [])
+          .controller('ExampleController', ['$scope', function($scope) {
+            $scope.colors = [
+              {name:'black', shade:'dark'},
+              {name:'white', shade:'light'},
+              {name:'red', shade:'dark'},
+              {name:'blue', shade:'dark'},
+              {name:'yellow', shade:'light'}
+            ];
+            $scope.myColor = $scope.colors[2]; // red
+          }]);
         </script>
-        <div ng-controller="MyCntrl">
+        <div ng-controller="ExampleController">
           <ul>
             <li ng-repeat="color in colors">
               Name: <input ng-model="color.name">
