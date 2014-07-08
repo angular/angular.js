@@ -12,7 +12,7 @@
     "grunt-contrib-connect": "~0.5.0",
     "grunt-contrib-compress": "~0.5.2",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-jshint": "~0.10.0",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-jasmine-node": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
     "grunt-jscs-checker": "~0.4.0",
