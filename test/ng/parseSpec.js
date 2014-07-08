@@ -1078,6 +1078,22 @@ describe('parser', function() {
           fn.assign(scope, 123);
           expect(scope).toEqual({a:123});
         }));
+
+        it('should expose working assignment function for expressions ending with brackets', inject(function($parse) {
+          var fn = $parse('a.b["c"]');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(scope.a.b.c).toEqual(123);
+        }));
+
+        it('should expose working assignment function for expressions with brackets in the middle', inject(function($parse) {
+          var fn = $parse('a["b"].c');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(scope.a.b.c).toEqual(123);
+        }));
       });
 
       describe('one-time binding', function() {
