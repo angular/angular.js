@@ -89,7 +89,7 @@ directive.dropdownToggle =
               element.parent().removeClass('open');
               close = null;
               openElement = null;
-            }
+            };
 
             $document.on('click', close);
           }
@@ -143,7 +143,7 @@ directive.syntax = function() {
       par.insertBefore(nav, node);
     }
   }
-}
+};
 
 directive.tabbable = function() {
   return {

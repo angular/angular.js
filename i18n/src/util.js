@@ -4,4 +4,4 @@ exports.findLocaleId = function findLocaleId(str, type) {
   } else if (type == 'datetime') {
     return (str.match(/^DateTimeSymbols_(.+)$/) || [])[1];
   }
-}
+};

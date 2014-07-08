@@ -98,7 +98,7 @@ directive.ngSetText = ['getEmbeddedTemplate', function(getEmbeddedTemplate) {
       setHtmlIe8SafeWay(element, escape(getEmbeddedTemplate(attr.ngSetText)));
     }
   }
-}]
+}];
 
 
 directive.ngHtmlWrap = ['reindentCode', 'templateMerge', function(reindentCode, templateMerge) {

@@ -17,7 +17,7 @@ function convertNumberData(dataObj, currencySymbols) {
     GROUP_SEP: dataObj.GROUP_SEP,
     PATTERNS: [parsePattern(dataObj.DECIMAL_PATTERN),
                parsePattern(dataObj.CURRENCY_PATTERN)]
-  }
+  };
 
   if (currencySymbols[dataObj.DEF_CURRENCY_CODE]) {
     numberFormats.CURRENCY_SYM = currencySymbols[dataObj.DEF_CURRENCY_CODE][1];
