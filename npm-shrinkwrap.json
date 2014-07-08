@@ -2690,7 +2690,7 @@
       }
     },
     "protractor": {
-      "version": "1.0.0-rc2",
+      "version": "1.0.0-rc4",
       "dependencies": {
         "request": {
           "version": "2.36.0",
