@@ -28,20 +28,21 @@
  * @returns {Array} Sorted copy of the source array.
  *
  * @example
-   <example>
+   <example module="orderByExample">
      <file name="index.html">
        <script>
-         function Ctrl($scope) {
-           $scope.friends =
-               [{name:'John', phone:'555-1212', age:10},
-                {name:'Mary', phone:'555-9876', age:19},
-                {name:'Mike', phone:'555-4321', age:21},
-                {name:'Adam', phone:'555-5678', age:35},
-                {name:'Julie', phone:'555-8765', age:29}]
-           $scope.predicate = '-age';
-         }
+         angular.module('orderByExample', [])
+           .controller('ExampleController', ['$scope', function($scope) {
+             $scope.friends =
+                 [{name:'John', phone:'555-1212', age:10},
+                  {name:'Mary', phone:'555-9876', age:19},
+                  {name:'Mike', phone:'555-4321', age:21},
+                  {name:'Adam', phone:'555-5678', age:35},
+                  {name:'Julie', phone:'555-8765', age:29}];
+             $scope.predicate = '-age';
+           }]);
        </script>
-       <div ng-controller="Ctrl">
+       <div ng-controller="ExampleController">
          <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
          <hr/>
          [ <a href="" ng-click="predicate=''">unsorted</a> ]
@@ -69,7 +70,7 @@
  * Example:
  *
  * @example
-  <example>
+  <example module="orderByExample">
     <file name="index.html">
       <div ng-controller="Ctrl">
         <table class="friend">
@@ -89,21 +90,21 @@
     </file>
 
     <file name="script.js">
-      function Ctrl($scope, $filter) {
-        var orderBy = $filter('orderBy');
-        $scope.friends = [
-          { name: 'John',    phone: '555-1212',    age: 10 },
-          { name: 'Mary',    phone: '555-9876',    age: 19 },
-          { name: 'Mike',    phone: '555-4321',    age: 21 },
-          { name: 'Adam',    phone: '555-5678',    age: 35 },
-          { name: 'Julie',   phone: '555-8765',    age: 29 }
-        ];
-
-        $scope.order = function(predicate, reverse) {
-          $scope.friends = orderBy($scope.friends, predicate, reverse);
-        };
-        $scope.order('-age',false);
-      }
+      angular.module('orderByExample', [])
+        .controller('ExampleController', ['$scope', '$filter', function($scope, $filter) {
+          var orderBy = $filter('orderBy');
+          $scope.friends = [
+            { name: 'John',    phone: '555-1212',    age: 10 },
+            { name: 'Mary',    phone: '555-9876',    age: 19 },
+            { name: 'Mike',    phone: '555-4321',    age: 21 },
+            { name: 'Adam',    phone: '555-5678',    age: 35 },
+            { name: 'Julie',   phone: '555-8765',    age: 29 }
+          ];
+          $scope.order = function(predicate, reverse) {
+            $scope.friends = orderBy($scope.friends, predicate, reverse);
+          };
+          $scope.order('-age',false);
+        }]);
     </file>
 </example>
  */
