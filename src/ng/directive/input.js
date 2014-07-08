@@ -2466,9 +2466,9 @@ var ngValueDirective = function() {
   form will update the model only when the control loses focus (blur event). If `escape` key is
   pressed while the input field is focused, the value is reset to the value in the current model.
 
-  <example name="ngModelOptions-directive-blur">
+  <example name="ngModelOptions-directive-blur" module="optionsExample">
     <file name="index.html">
-      <div ng-controller="Ctrl">
+      <div ng-controller="ExampleController">
         <form name="userForm">
           Name:
           <input type="text" name="userName"
@@ -2483,15 +2483,16 @@ var ngValueDirective = function() {
       </div>
     </file>
     <file name="app.js">
-      function Ctrl($scope) {
-        $scope.user = { name: 'say', data: '' };
+      angular.module('optionsExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.user = { name: 'say', data: '' };
 
-        $scope.cancel = function (e) {
-          if (e.keyCode == 27) {
-            $scope.userForm.userName.$rollbackViewValue();
-          }
-        };
-      }
+          $scope.cancel = function (e) {
+            if (e.keyCode == 27) {
+              $scope.userForm.userName.$rollbackViewValue();
+            }
+          };
+        }]);
     </file>
     <file name="protractor.js" type="protractor">
       var model = element(by.binding('user.name'));
@@ -2520,9 +2521,9 @@ var ngValueDirective = function() {
   This one shows how to debounce model changes. Model will be updated only 1 sec after last change.
   If the `Clear` button is pressed, any debounced action is canceled and the value becomes empty.
 
-  <example name="ngModelOptions-directive-debounce">
+  <example name="ngModelOptions-directive-debounce" module="optionsExample">
     <file name="index.html">
-      <div ng-controller="Ctrl">
+      <div ng-controller="ExampleController">
         <form name="userForm">
           Name:
           <input type="text" name="userName"
@@ -2534,9 +2535,10 @@ var ngValueDirective = function() {
       </div>
     </file>
     <file name="app.js">
-      function Ctrl($scope) {
-        $scope.user = { name: 'say' };
-      }
+      angular.module('optionsExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.user = { name: 'say' };
+        }]);
     </file>
   </example>
  */
