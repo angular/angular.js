@@ -1483,14 +1483,15 @@ var requiredDirective = function() {
  *   specified in form `/something/` then the value will be converted into a regular expression.
  *
  * @example
-    <example name="ngList-directive">
+    <example name="ngList-directive" module="listExample">
       <file name="index.html">
        <script>
-         function Ctrl($scope) {
-           $scope.names = ['igor', 'misko', 'vojta'];
-         }
+         angular.module('listExample', [])
+           .controller('ExampleController', ['$scope', function($scope) {
+             $scope.names = ['igor', 'misko', 'vojta'];
+           }]);
        </script>
-       <form name="myForm" ng-controller="Ctrl">
+       <form name="myForm" ng-controller="ExampleController">
          List: <input name="namesInput" ng-model="names" ng-list required>
          <span class="error" ng-show="myForm.namesInput.$error.required">
            Required!</span>
