@@ -1173,6 +1173,48 @@ describe('input', function() {
       expect(inputElm.val()).toBe('');
     }));
 
+    it('should not try to invoke a model if getterSetter is false', function() {
+      compileInput(
+        '<input type="text" ng-model="name" '+
+          'ng-model-options="{ getterSetter: false }" />');
+
+      var spy = scope.name = jasmine.createSpy('setterSpy');
+      changeInputValueTo('a');
+      expect(spy).not.toHaveBeenCalled();
+      expect(inputElm.val()).toBe('a');
+    });
+
+    it('should not try to invoke a model if getterSetter is not set', function() {
+      compileInput('<input type="text" ng-model="name" />');
+
+      var spy = scope.name = jasmine.createSpy('setterSpy');
+      changeInputValueTo('a');
+      expect(spy).not.toHaveBeenCalled();
+      expect(inputElm.val()).toBe('a');
+    });
+
+    it('should always try to invoke a model if getterSetter is true', function() {
+      compileInput(
+        '<input type="text" ng-model="name" '+
+          'ng-model-options="{ getterSetter: true }" />');
+
+      var spy = scope.name = jasmine.createSpy('setterSpy').andCallFake(function () {
+        return 'b';
+      });
+      scope.$apply();
+      expect(inputElm.val()).toBe('b');
+
+      changeInputValueTo('a');
+      expect(inputElm.val()).toBe('b');
+      expect(spy).toHaveBeenCalledWith('a');
+      expect(scope.name).toBe(spy);
+
+      scope.name = 'c';
+      changeInputValueTo('d');
+      expect(inputElm.val()).toBe('d');
+      expect(scope.name).toBe('d');
+    });
+
   });
 
   it('should allow complex reference binding', function() {
