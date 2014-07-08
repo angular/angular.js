@@ -618,27 +618,21 @@ then uses the information it obtains to compose hashbang URLs (such as
 
 ## Two-way binding to $location
 
-The Angular's compiler currently does not support two-way binding for methods (see [issue](https://github.com/angular/angular.js/issues/404)).  If you should require two-way binding
-to the $location object (using {@link input[text] ngModel} directive on an input
-field), you will need to specify an extra model property (e.g. `locationPath`) with two {@link ng.$rootScope.Scope#$watch $watchers}
-which push $location updates in both directions. For example:
+Because `$location` uses getters/setters, you can use `ng-model-options="{ getterSetter: true }"`
+to bind it to `ngModel`:
+
 <example module="locationExample">
 <file name="index.html">
 <div ng-controller="LocationController">
-  <input type="text" ng-model="locationPath" />
+  <input type="text" ng-model="locationPath" ng-model-options="{ getterSetter: true }" />
 </div>
 </file>
 <file name="script.js">
 angular.module('locationExample', [])
-  .controller('LocationController', ['$scope', '$location', function ($scope, $location) {
-    $scope.$watch('locationPath', function(path) {
-      $location.path(path);
-    });
-    $scope.$watch(function() {
-      return $location.path();
-    }, function(path) {
-      $scope.locationPath = path;
-    });
+  .controller('LocationController', ['$scope', '$location', function($scope, $location) {
+    $scope.locationPath = function (newLocation) {
+      return $location.path(newLocation);
+    };
   }]);
 </file>
 </example>
