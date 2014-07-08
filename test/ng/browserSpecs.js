@@ -250,7 +250,7 @@ describe('browser', function() {
         var i, longVal = '', cookieStr;
 
         for(i=0; i<4083; i++) {
-          longVal += '+';
+          longVal += 'x';
         }
 
         cookieStr = document.cookie;
@@ -322,6 +322,11 @@ describe('browser', function() {
         browser.cookies(' cookie name ', ' cookie value ');
         expect(browser.cookies()[' cookie name ']).toEqual(' cookie value ');
         expect(browser.cookies()['cookie name']).not.toBeDefined();
+      });
+
+      it('should unscape special characters in cookie values', function() {
+        document.cookie = 'cookie_name=cookie_value_%E2%82%AC';
+        expect(browser.cookies()['cookie_name']).toEqual('cookie_value_€');
       });
     });
 
