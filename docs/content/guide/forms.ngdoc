@@ -16,9 +16,9 @@ The key directive in understanding two-way data-binding is {@link ng.directive:n
 The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view, as well as view to the model.
 In addition it provides an {@link ngModel.NgModelController API} for other directives to augment its behavior.
 
-<example>
+<example module="formExample">
   <file name="index.html">
-    <div ng-controller="Controller">
+    <div ng-controller="ExampleController">
       <form novalidate class="simple-form">
         Name: <input type="text" ng-model="user.name" /><br />
         E-mail: <input type="email" ng-model="user.email" /><br />
@@ -32,19 +32,20 @@ In addition it provides an {@link ngModel.NgModelController API} for other direc
     </div>
 
     <script>
-      function Controller($scope) {
-        $scope.master = {};
+      angular.module('formExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.master = {};
 
-        $scope.update = function(user) {
-          $scope.master = angular.copy(user);
-        };
+          $scope.update = function(user) {
+            $scope.master = angular.copy(user);
+          };
 
-        $scope.reset = function() {
-          $scope.user = angular.copy($scope.master);
-        };
+          $scope.reset = function() {
+            $scope.user = angular.copy($scope.master);
+          };
 
-        $scope.reset();
-      }
+          $scope.reset();
+        }]);
     </script>
   </file>
 </example>
@@ -69,9 +70,9 @@ The following example uses the CSS to display validity of each form control.
 In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
 This ensures that the user is not distracted with an error until after interacting with the control, and failing to satisfy its validity.
 
-<example>
+<example module="formExample">
   <file name="index.html">
-    <div ng-controller="Controller">
+    <div ng-controller="ExampleController">
       <form novalidate class="css-form">
         Name:
           <input type="text" ng-model="user.name" required /><br />
@@ -94,19 +95,20 @@ This ensures that the user is not distracted with an error until after interacti
     </style>
 
     <script>
-      function Controller($scope) {
-        $scope.master = {};
+      angular.module('formExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.master = {};
 
-        $scope.update = function(user) {
-          $scope.master = angular.copy(user);
-        };
+          $scope.update = function(user) {
+            $scope.master = angular.copy(user);
+          };
 
-        $scope.reset = function() {
-          $scope.user = angular.copy($scope.master);
-        };
+          $scope.reset = function() {
+            $scope.user = angular.copy($scope.master);
+          };
 
-        $scope.reset();
-      }
+          $scope.reset();
+        }]);
     </script>
   </file>
 </example>
@@ -132,7 +134,7 @@ This allows us to extend the above example with these features:
 - SAVE button is enabled only if form has some changes and is valid
 - custom error messages for `user.email` and `user.agree`
 
-<example>
+<example module="formExample">
   <file name="index.html">
     <div ng-controller="Controller">
       <form name="form" class="css-form" novalidate>
@@ -161,23 +163,24 @@ This allows us to extend the above example with these features:
   </file>
 
   <file name="script.js">
-    function Controller($scope) {
-      $scope.master = {};
+    angular.module('formExample', [])
+      .controller('ExampleController', ['$scope', function($scope) {
+        $scope.master = {};
 
-      $scope.update = function(user) {
-        $scope.master = angular.copy(user);
-      };
+        $scope.update = function(user) {
+          $scope.master = angular.copy(user);
+        };
 
-      $scope.reset = function() {
-        $scope.user = angular.copy($scope.master);
-      };
+        $scope.reset = function() {
+          $scope.user = angular.copy($scope.master);
+        };
 
-      $scope.isUnchanged = function(user) {
-        return angular.equals(user, $scope.master);
-      };
+        $scope.isUnchanged = function(user) {
+          return angular.equals(user, $scope.master);
+        };
 
-      $scope.reset();
-    }
+        $scope.reset();
+      }]);
   </file>
 </example>
 
@@ -196,12 +199,12 @@ and validation, add "default" as one of the specified events.
 
 I.e. `ng-model-options="{ updateOn: 'default blur' }"`
 
-The following example shows how to override immediate updates. Changes on the inputs within the form will update the model 
+The following example shows how to override immediate updates. Changes on the inputs within the form will update the model
 only when the control loses focus (blur event).
 
-<example>
+<example module="customTriggerExample">
   <file name="index.html">
-    <div ng-controller="ControllerUpdateOn">
+    <div ng-controller="ExampleController">
       <form>
         Name:
         <input type="text" ng-model="user.name" ng-model-options="{ updateOn: 'blur' }" /><br />
@@ -212,9 +215,10 @@ only when the control loses focus (blur event).
     </div>
   </file>
   <file name="script.js">
-    function ControllerUpdateOn($scope) {
-      $scope.user = {};
-    }
+     angular.module('customTriggerExample', [])
+      .controller('ExampleController', ['$scope', function($scope) {
+        $scope.user = {};
+      }]);
   </file>
 </example>
 
@@ -240,9 +244,9 @@ overridden.
 
 This example shows how to debounce model changes. Model will be updated only 250 milliseconds after last change.
 
-<example>
+<example module="debounceExample">
   <file name="index.html">
-    <div ng-controller="ControllerUpdateOn">
+    <div ng-controller="ExampleController">
       <form>
         Name:
         <input type="text" ng-model="user.name" ng-model-options="{ debounce: 250 }" /><br />
@@ -251,9 +255,10 @@ This example shows how to debounce model changes. Model will be updated only 250
     </div>
   </file>
   <file name="script.js">
-    function ControllerUpdateOn($scope) {
-      $scope.user = {};
-    }
+    angular.module('debounceExample', [])
+      .controller('ExampleController', ['$scope', function($scope) {
+        $scope.user = {};
+      }]);
   </file>
 </example>
 
