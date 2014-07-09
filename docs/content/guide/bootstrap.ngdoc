@@ -90,7 +90,7 @@ Here is an example of manually initializing Angular:
 <!doctype html>
 <html>
 <body>
-  Hello {{'World'}}!
+  Hello {{greetMe}}!
   <script src="http://code.angularjs.org/snapshot/angular.js"></script>
 
   <script>
