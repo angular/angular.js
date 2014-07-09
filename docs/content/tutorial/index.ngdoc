@@ -265,6 +265,19 @@ that the application as a whole is executing correctly.  It is very common to ru
 before pushing a new commit of changes to a remote repository.
 
 
+<div class="alert alert-info">
+  Note: to run protractor with Chrome browser installed in nondefault location set chrome options in protractor 
+  configuration file `test/protractor-conf.js`. See <a href="https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-List-of-recognized-capabilities">ChromeDriver documenation</a> for other options.
+  <pre>
+  capabilities: {
+    'browserName': 'chrome',
+    'chromeOptions': {
+      'binary' : 'D:\\apps\\GoogleChromePortable\\GoogleChromePortable.exe'
+    }
+  },
+  </pre>
+</div>
+
 [git]: http://git-scm.com/
 [node]: http://nodejs.org/
 [angular-phonecat]: https://github.com/angular/angular-phonecat
