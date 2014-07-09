@@ -19,7 +19,7 @@ env:
     - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
 
 install:
-  - npm config set registry http://23.251.144.68
+  # - npm config set registry http://23.251.144.68
   # Disable the spinner, it looks bad on Travis
   - npm config set spin false
   # Log HTTP requests
