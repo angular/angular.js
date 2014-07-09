@@ -135,8 +135,8 @@ code, your variable names will get renamed unless you use one of the annotation 
 </div>
 
 <div class="alert alert-info">
-  If you use a tool like [ngmin](https://github.com/btford/ngmin#ngmin) in your workflow you can
-  use implicit dependency notation within your codebase and let **ngmin** automatically convert such
+  If you use a tool like [ng-annotate](https://github.com/olov/ng-annotate) in your workflow you can
+  use implicit dependency notation within your codebase and let **ng-annotate** automatically convert such
   injectable functions to the array notation prior to minifying.
 </div>
 
