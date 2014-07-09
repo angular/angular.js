@@ -41,16 +41,26 @@ mirrors the process of compiling source code in
 Before we can write a directive, we need to know how Angular's {@link guide/compiler HTML compiler}
 determines when to use a given directive.
 
-In the following example, we say that the `<input>` element **matches** the `ngModel` directive.
+Similar to the terminology used when an [element **matches** a selector]
+(https://developer.mozilla.org/en-US/docs/Web/API/Element.matches), we say an element **matches** a
+directive when the directive is part of its declaration.
+
+In the following example, we say that the `<input>` element **matches** the `ngModel` directive
 
 ```html
 <input ng-model="foo">
 ```
 
-The following also **matches** `ngModel`:
+The following `<input>` element also **matches** `ngModel`:
 
 ```html
 <input data-ng:model="foo">
+```
+
+And the following <person> element **matches** the `person` directive:
+
+```html
+<person>{{name}}</person>
 ```
 
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
