@@ -20,7 +20,12 @@ env:
 
 install:
   - npm config set registry http://23.251.144.68
-  - npm install
+  # Disable the spinner, it looks bad on Travis
+  - npm config set spin false
+  # Log HTTP requests
+  - npm config set loglevel http
+  # Run npm install twice, because it is flaky.
+  - npm install || npm install
 
 before_script:
   - mkdir -p $LOGS_DIR
