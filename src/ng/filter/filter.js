@@ -118,7 +118,8 @@ function filterFilter() {
     if (!isArray(array)) return array;
 
     var comparatorType = typeof(comparator),
-        predicates = [];
+        predicates = [],
+        evaluatedObjects = [];
 
     predicates.check = function(value) {
       for (var j = 0; j < predicates.length; j++) {
@@ -165,9 +166,16 @@ function filterFilter() {
             case "object":
               return comparator(obj, text);
             default:
-              for ( var objKey in obj) {
-                if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
-                  return true;
+              for (var objKey in obj) {
+                if (objKey.charAt(0) !== '$') {
+                  var value = obj[objKey];
+                  if (isObject(value) || isFunction(value)) {
+                    if (evaluatedObjects.indexOf(value) >= 0) continue;
+                    evaluatedObjects.push(value);
+                  }
+                  if (search(value, text)) {
+                    return true;
+                  }
                 }
               }
               break;

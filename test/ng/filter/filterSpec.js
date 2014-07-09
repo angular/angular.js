@@ -34,6 +34,18 @@ describe('Filter: filter', function() {
     expect(filter(items, 'misko').length).toBe(0);
   });
 
+  it('should not re-evaluate circular references', function() {
+    var originalItem   = {name: 'misko'};
+    var referencedItem = {originalItem: originalItem};
+    originalItem.referencedItem = referencedItem;
+
+    var items = [originalItem];
+    expect(function() { filter(items, 'not misko') })
+      .not.toThrow();
+
+    expect(filter(items, 'misko')).toEqual([originalItem]);
+  });
+
   it('should filter on specific property', function() {
     var items = [{ignore: 'a', name: 'a'}, {ignore: 'a', name: 'abc'}];
     expect(filter(items, {}).length).toBe(2);
