@@ -54,6 +54,8 @@ The following also **matches** `ngModel`:
 <input data-ng:model="foo">
 ```
 
+### Normalization
+
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
 directives. We typically refer to directives by their case-sensitive
 [camelCase](http://en.wikipedia.org/wiki/CamelCase) **normalized** name (e.g. `ngModel`).
@@ -99,6 +101,8 @@ If you want to use an HTML validating tool, you can instead use the `data`-prefi
 `data-ng-bind` for `ngBind`).
 The other forms shown above are accepted for legacy reasons but we advise you to avoid them.
 </div>
+
+### Directive types
 
 `$compile` can match directives based on element names, attributes, class names, as well as comments.
 
