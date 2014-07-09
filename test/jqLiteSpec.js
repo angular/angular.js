@@ -386,6 +386,26 @@ describe('jqLite', function() {
       selected.removeData('prop2');
     });
 
+    it('should provide the non-wrapped data calls', function() {
+      var node = document.createElement('div');
+
+      expect(jqLite.data(node, "foo")).toBeUndefined();
+
+      jqLite.data(node, "foo", "bar");
+
+      expect(jqLite.data(node, "foo")).toBe("bar");
+      expect(jqLite(node).data("foo")).toBe("bar");
+
+      expect(jqLite.data(node)).toBe(jqLite(node).data());
+
+      jqLite.removeData(node, "foo");
+      expect(jqLite.data(node, "foo")).toBeUndefined();
+
+      jqLite.data(node, "bar", "baz");
+      jqLite.removeData(node);
+      jqLite.removeData(node);
+      expect(jqLite.data(node, "bar")).toBeUndefined();
+    });
 
     it('should not add to the cache if the node is a comment or text node', function() {
       var calcCacheSize = function() {
