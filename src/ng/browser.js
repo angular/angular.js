@@ -280,7 +280,6 @@ function Browser(window, document, $log, $sniffer) {
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
   self.cookies = function(name, value) {
-    /* global encodeURIComponent: false, decodeURIComponent: false */
     var cookieLength, cookieArray, cookie, i, index;
 
     if (name) {
