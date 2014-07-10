@@ -243,12 +243,16 @@ function jqLiteClone(element) {
   return element.cloneNode(true);
 }
 
-function jqLiteDealoc(element){
-  jqLiteRemoveData(element);
-  var childElement;
-  for ( var i = 0, children = element.children, l = (children && children.length) || 0; i < l; i++) {
-    childElement = children[i];
-    jqLiteDealoc(childElement);
+function jqLiteDealoc(element, onlyDescendants){
+  if (!onlyDescendants) jqLiteRemoveData(element);
+
+  if (element.childNodes && element.childNodes.length) {
+    // we use querySelectorAll because documentFragments don't have getElementsByTagName
+    var descendants = element.getElementsByTagName ? element.getElementsByTagName('*') :
+                    element.querySelectorAll ? element.querySelectorAll('*') : [];
+    for (var i = 0, l = descendants.length; i < l; i++) {
+      jqLiteRemoveData(descendants[i]);
+    }
   }
 }
 
@@ -430,9 +434,7 @@ function jqLiteInheritedData(element, name, value) {
 }
 
 function jqLiteEmpty(element) {
-  for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-    jqLiteDealoc(childNodes[i]);
-  }
+  jqLiteDealoc(element, true);
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
@@ -630,9 +632,7 @@ forEach({
     if (isUndefined(value)) {
       return element.innerHTML;
     }
-    for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-      jqLiteDealoc(childNodes[i]);
-    }
+    jqLiteDealoc(element, true);
     element.innerHTML = value;
   },
 
