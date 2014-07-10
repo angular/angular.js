@@ -113,7 +113,7 @@ may have several child scopes.
 The application can have multiple scopes, because some {@link guide/directive directives} create
 new child scopes (refer to directive documentation to see which directives create new scopes).
 When new scopes are created, they are added as children of their parent scope. This creates a tree
-structure which parallels the DOM where they're attached
+structure which parallels the DOM where they're attached.
 
 When Angular evaluates `{{name}}`, it first looks at the scope associated with the given
 element for the `name` property. If no such property is found, it searches the parent scope
