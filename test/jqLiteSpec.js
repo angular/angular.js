@@ -1467,7 +1467,7 @@ describe('jqLite', function() {
 
         // This test is potentially flaky on CI cloud instances, so there is a generous
         // wait period...
-        waitsFor(function() { return tested; }, 2000);
+        waitsFor(function() { return tested; }, 'iframe to load', 5000);
       });
     }
   });
