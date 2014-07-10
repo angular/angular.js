@@ -478,7 +478,7 @@ describe('browser', function() {
     });
 
     afterEach(function() {
-      if (!jQuery) jqLite(fakeWindow).dealoc();
+      if (!jQuery) jqLiteDealoc(fakeWindow);
     });
 
     it('should return registered callback', function() {

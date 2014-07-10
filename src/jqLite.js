@@ -752,8 +752,6 @@ function createEventHandler(element, events) {
 forEach({
   removeData: jqLiteRemoveData,
 
-  dealoc: jqLiteDealoc,
-
   on: function onFn(element, type, fn, unsupported){
     if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
 
