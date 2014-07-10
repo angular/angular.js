@@ -136,7 +136,7 @@ This allows us to extend the above example with these features:
 
 <example module="formExample">
   <file name="index.html">
-    <div ng-controller="Controller">
+    <div ng-controller="ExampleController">
       <form name="form" class="css-form" novalidate>
         Name:
           <input type="text" ng-model="user.name" name="uName" required /><br />
