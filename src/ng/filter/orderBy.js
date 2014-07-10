@@ -72,7 +72,7 @@
  * @example
   <example module="orderByExample">
     <file name="index.html">
-      <div ng-controller="Ctrl">
+      <div ng-controller="ExampleController">
         <table class="friend">
           <tr>
             <th><a href="" ng-click="reverse=false;order('name', false)">Name</a>
