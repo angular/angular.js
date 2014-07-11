@@ -1,6 +1,6 @@
 'use strict';
 
-function createXhr(method) {
+function createXhr(method, xhrFields) {
     //if IE and the method is not RFC2616 compliant, or if XMLHttpRequest
     //is not available, try getting an ActiveXObject. Otherwise, use XMLHttpRequest
     //if it is available
@@ -8,7 +8,11 @@ function createXhr(method) {
       !window.XMLHttpRequest)) {
       return new window.ActiveXObject("Microsoft.XMLHTTP");
     } else if (window.XMLHttpRequest) {
-      return new window.XMLHttpRequest();
+      if(isObject(xhrFields)){
+        return new window.XMLHttpRequest(xhrFields);
+      } else {
+        return new window.XMLHttpRequest();
+      }
     }
 
     throw minErr('$httpBackend')('noxhr', "This browser does not support XMLHttpRequest.");
@@ -40,7 +44,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
   var ABORTED = -1;
 
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, xhrFields) {
     var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
@@ -59,7 +63,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       });
     } else {
 
-      var xhr = createXhr(method);
+      var xhr = createXhr(method, xhrFields);
 
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
