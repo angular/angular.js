@@ -512,7 +512,20 @@ forEach({
         if (val === '') val = 'auto';
       }
 
-      val = val || element.style[name];
+      var contains =  function (a, b){
+        // jshint bitwise: false
+        return a.contains ?
+          a != b && a.contains(b) :
+          !!(a.compareDocumentPosition(b) & 16);
+      };
+
+      var elementWindow = element.ownerDocument.defaultView || element.ownerDocument.parentWindow;
+      // if browser supports getComputedStyle and element attached to body
+      if (isDefined(elementWindow.getComputedStyle) && contains(element.ownerDocument, element)) {
+        val = val || elementWindow.getComputedStyle(element, null)[name];
+      } else {
+        val = val || element.style[name];
+      }
 
       if (msie <= 8) {
         // jquery weirdness :-/
