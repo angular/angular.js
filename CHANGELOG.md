@@ -1,3 +1,165 @@
+
+<a name="1.3.0-beta.15"></a>
+# 1.3.0-beta.15 unbelievable-advancement (2014-07-11)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure that parallel class-based animations are all eventually closed
+  ([f07af61f](https://github.com/angular/angular.js/commit/f07af61f050fcdcece15c13ee8c6a6d32f86d3a1),
+   [#7766](https://github.com/angular/angular.js/issues/7766))
+  - remove the ng-animate className after canceling animation
+  ([e18db78d](https://github.com/angular/angular.js/commit/e18db78d7793b1e94d9b19ac15b89d39f21a5729),
+   [#7784](https://github.com/angular/angular.js/issues/7784), [#7801](https://github.com/angular/angular.js/issues/7801), [#7894](https://github.com/angular/angular.js/issues/7894))
+- **$http:**
+  - don't remove content-type header if data is set by request transform
+  ([c7c363cf](https://github.com/angular/angular.js/commit/c7c363cf8d4533f94c5534c83dd1c7135633ddd8),
+   [#7910](https://github.com/angular/angular.js/issues/7910))
+  - add ability to remove default headers
+  ([172a4093](https://github.com/angular/angular.js/commit/172a40931be5fe47e7732e5ba173895a1d59c5cd),
+    [#5784](https://github.com/angular/angular.js/issues/5784))
+- **$location:** remove query args when passed in object
+  ([2c7d0857](https://github.com/angular/angular.js/commit/2c7d0857ccbdb3a0967acc20e4346a7e1a6be792),
+   [#6565](https://github.com/angular/angular.js/issues/6565))
+- **input:**
+  - escape forward slash in email regexp
+  ([a88c215f](https://github.com/angular/angular.js/commit/a88c215f17829c1cfdec36bc1ef40bae10c41dff),
+   [#8096](https://github.com/angular/angular.js/issues/8096))
+  - modify email validation regexp to match rfc1035
+  ([af6f943a](https://github.com/angular/angular.js/commit/af6f943a22f26cf2968f0ae3a1fab2fd09b52a2b),
+   [#6026](https://github.com/angular/angular.js/issues/6026))
+- **jqLite:**
+  - correctly dealoc svg elements in IE
+  ([012ab1f8](https://github.com/angular/angular.js/commit/012ab1f8745c8985d3f132c2dfa8fd84e7dc7041))
+  - remove exposed dealoc method
+  ([9c5b407f](https://github.com/angular/angular.js/commit/9c5b407fd1e296dd525c129743f2b2b47da4dc0d))
+- **ngModel:** test & update correct model when running $validate
+  ([f3cb2741](https://github.com/angular/angular.js/commit/f3cb2741161353f387d02725637ce4ba062a9bc0),
+   [#7836](https://github.com/angular/angular.js/issues/7836), [#7837](https://github.com/angular/angular.js/issues/7837))
+- **parseKeyValue:** ignore properties in prototype chain
+  ([cb42766a](https://github.com/angular/angular.js/commit/cb42766a14f8123aa288b6e20f879141970fb84d),
+   [#8070](https://github.com/angular/angular.js/issues/8070), [#8068](https://github.com/angular/angular.js/issues/8068))
+- **select:** auto-select new option that is marked as selected
+  ([b8ae73e1](https://github.com/angular/angular.js/commit/b8ae73e17c19d9aebf572a75c05a7d981dcac807),
+   [#6828](https://github.com/angular/angular.js/issues/6828))
+
+
+## Features
+
+- **$animate:** allow directives to cancel animation events
+  ([ca752790](https://github.com/angular/angular.js/commit/ca752790d95480b7ad1125a7ddb52b726b987a24),
+   [#7722](https://github.com/angular/angular.js/issues/7722))
+- **$controller:** disable using global controller constructors
+  ([3f2232b5](https://github.com/angular/angular.js/commit/3f2232b5a181512fac23775b1df4a6ebda67d018))
+- **FormController:** add `$rollbackViewValue` to rollback all controls
+  ([85b77314](https://github.com/angular/angular.js/commit/85b77314ed8e4b45d7365a24a47349ed94672aeb),
+   [#7595](https://github.com/angular/angular.js/issues/7595))
+- **input:** support constant expressions for ngTrueValue/ngFalseValue
+  ([c90cefe1](https://github.com/angular/angular.js/commit/c90cefe16142d973a123e945fc9058e8a874c357),
+   [#8041](https://github.com/angular/angular.js/issues/8041), [#5346](https://github.com/angular/angular.js/issues/5346), [#1199](https://github.com/angular/angular.js/issues/1199))
+- **ngAnimate:** conditionally allow child animations to run in parallel with parent animations
+  ([8252b8be](https://github.com/angular/angular.js/commit/8252b8be946367f1759065adf528adc908da00a2),
+   [#7946](https://github.com/angular/angular.js/issues/7946))
+- **ngModel:** bind to getters/setters
+  ([b9fcf017](https://github.com/angular/angular.js/commit/b9fcf017316d37e91959949f56692644ce09d54a),
+   [#768](https://github.com/angular/angular.js/issues/768))
+
+
+## Performance Improvements
+
+- **$compile:** no longer need nodeType filter when setting $scope data
+  ([b0ca5195](https://github.com/angular/angular.js/commit/b0ca5195e88a42611e933c49d7d2768b181b2d1b),
+   [#7887](https://github.com/angular/angular.js/issues/7887))
+
+
+## Breaking Changes
+
+- **$controller:** due to [3f2232b5](https://github.com/angular/angular.js/commit/3f2232b5a181512fac23775b1df4a6ebda67d018),
+
+`$controller` will no longer look for controllers on `window`.
+The old behavior of looking on `window` for controllers was originally intended
+for use in examples, demos, and toy apps. We found that allowing global controller
+functions encouraged poor practices, so we resolved to disable this behavior by
+default.
+
+To migrate, register your controllers with modules rather than exposing them
+as globals:
+
+Before:
+
+```javascript
+function MyController() {
+  // ...
+}
+```
+
+After:
+
+```javascript
+angular.module('myApp', []).controller('MyController', [function() {
+  // ...
+}]);
+```
+
+Although it's not recommended, you can re-enable the old behavior like this:
+
+```javascript
+angular.module('myModule').config(['$controllerProvider', function($controllerProvider) {
+  // this option might be handy for migrating old apps, but please don't use it
+  // in new ones!
+  $controllerProvider.allowGlobals();
+}]);
+```
+- **input:** due to [c90cefe1](https://github.com/angular/angular.js/commit/c90cefe16142d973a123e945fc9058e8a874c357),
+
+
+Previously, these attributes would always be treated as strings. However, they are now parsed as
+expressions, and will throw if an expression is non-constant.
+
+To convert non-constant strings into constant expressions, simply wrap them in an extra pair of quotes, like so:
+
+    <input type="checkbox" ng-model="..." ng-true-value="'truthyValue'">
+
+Closes #8041
+Closes #5346
+Closes #1199
+
+<a name="1.2.20"></a>
+# 1.2.20 accidental-beautification (2014-07-11)
+
+
+## Bug Fixes
+
+- **$http:**
+  - don't remove content-type header if data is set by request transform
+  ([7027844d](https://github.com/angular/angular.js/commit/7027844d42cd428cb799f38f9e9b303da013ac4f),
+   [#7910](https://github.com/angular/angular.js/issues/7910))
+  - add ability to remove default headers
+  ([172a4093](https://github.com/angular/angular.js/commit/172a40931be5fe47e7732e5ba173895a1d59c5cd),
+    [#5784](https://github.com/angular/angular.js/issues/5784))
+- **$location:** remove query args when passed in object
+  ([a26acb64](https://github.com/angular/angular.js/commit/a26acb64fe2ed3e05bf21ac1c058d6ac59b89870),
+   [#6565](https://github.com/angular/angular.js/issues/6565))
+- **input:**
+  - escape forward slash in email regexp
+  ([da0e3c99](https://github.com/angular/angular.js/commit/da0e3c99f51c196f58758841d4d8492a9fa09e20),
+   [#8096](https://github.com/angular/angular.js/issues/8096))
+  - modify email validation regexp to match rfc1035
+  ([816b8423](https://github.com/angular/angular.js/commit/816b84230cdd8273ba19e8dec3b6f2e800f76612),
+   [#6026](https://github.com/angular/angular.js/issues/6026))
+- **parseKeyValue:** ignore properties in prototype chain
+  ([873acf8f](https://github.com/angular/angular.js/commit/873acf8fab3eb41914920259e713e1916e3c4f38),
+   [#8070](https://github.com/angular/angular.js/issues/8070), [#8068](https://github.com/angular/angular.js/issues/8068))
+
+
+## Features
+
+- **ngAnimate:** conditionally allow child animations to run in parallel with parent animations
+  ([931789ec](https://github.com/angular/angular.js/commit/931789ec1476e1d06739e63cb423eb87172b5ebc),
+   [#7946](https://github.com/angular/angular.js/issues/7946))
+
+
 <a name="1.3.0-beta.14"></a>
 # 1.3.0-beta.14 harmonious-cacophonies (2014-06-30)
 
