@@ -540,6 +540,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 // lastElement.prop('selected') provided by jQuery has side-effects
                 if (existingOption.selected !== option.selected) {
                   lastElement.prop('selected', (existingOption.selected = option.selected));
+                  if (msie) {
+                    // See #7692
+                    // The selected item wouldn't visually update on IE without this.
+                    // Tested on Win7: IE9, IE10 and IE11. Future IEs should be tested as well
+                    lastElement.prop('selected', existingOption.selected);
+                  }
                 }
               } else {
                 // grow elements
