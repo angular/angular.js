@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * Parse headers into key value object
@@ -990,7 +990,12 @@ function $HttpProvider() {
 
             forEach(value, function(v) {
               if (isObject(v)) {
-                v = toJson(v);
+                if (isDefined(v.toJSON)){
+                  v = v.toJSON();
+                }
+                else {
+                  v = toJson(v);
+                }
               }
               parts.push(encodeUriQuery(key) + '=' +
                          encodeUriQuery(v));
