@@ -461,6 +461,11 @@ describe('$http', function() {
         $httpBackend.expect('GET', '/url').respond('');
         $http({url: '/url', params: {}, method: 'GET'});
       });
+
+      it('should not double quote dates', function() {
+        $httpBackend.expect('GET', '/url?date=2014-07-15T17:30:00.000Z').respond('');
+        $http({url: '/url', params: {date:new Date('2014-07-15T17:30:00.000Z')}, method: 'GET'});
+      });
     });
 
 
