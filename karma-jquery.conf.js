@@ -5,12 +5,7 @@ module.exports = function(config) {
   sharedConfig(config, {testName: 'AngularJS: jQuery', logFile: 'karma-jquery.log'});
 
   config.set({
-    files: angularFiles.mergeFilesFor('karmaJquery').concat({
-      pattern: "test/fixtures/**/*.html",
-      served: true,
-      watched: true,
-      included: false
-    }),
+    files: angularFiles.mergeFilesFor('karmaJquery'),
     exclude: angularFiles.mergeFilesFor('karmaJqueryExclude'),
 
     junitReporter: {
