@@ -38,11 +38,7 @@ initialization.
 
         <html ng-app>
 
-  3. If you require IE7 support add `id="ng-app"`
-
-        <html ng-app id="ng-app">
-
-  4. If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
+  3. If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
     to make IE happy. (This is here for historical reasons, and we no longer recommend use of
     `ng:`.)
 
