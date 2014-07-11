@@ -67,6 +67,8 @@ access to the `git` command line tool.  The main commands that you will need to 
 - `git clone ...` : clone a remote repository onto your local machine
 - `git checkout ...` : check out a particular branch or a tagged version of the code to hack on
 
+Note: During installation, make sure to select "Use Git from the Windows Command Prompt" for commands like "npm install" to wrok.
+
 ### Download angular-phonecat
 
 Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by running the following
