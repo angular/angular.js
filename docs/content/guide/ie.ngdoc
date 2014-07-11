@@ -84,7 +84,8 @@ To make your Angular application work on IE please make sure that:
      ```
   5. Use `ng-style` tags instead of `style="{{ someCss }}"`. The later works in Chrome and Firefox
      but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
-
+  6. Use jshint with option "es3: true". This will help you to avoid code style which is not ECMASCRIPT 3 and
+     which will break your app on IE 8 and lower.
 
 The **important** parts are:
 
