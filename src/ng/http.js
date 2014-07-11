@@ -985,7 +985,11 @@ function $HttpProvider() {
 
             forEach(value, function(v) {
               if (isObject(v)) {
-                v = toJson(v);
+                if (isDate(v)){
+                  v = v.toISOString();
+                } else if (isObject(v)) {
+                  v = toJson(v);
+                }
               }
               parts.push(encodeUriQuery(key) + '=' +
                          encodeUriQuery(v));
