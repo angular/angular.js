@@ -820,8 +820,7 @@ function $HttpProvider() {
 
      /**
       * @ngdoc method
-      * @name ng.$http#patch
-      * @methodOf ng.$http
+      * @name $http#patch
       *
       * @description
       * Shortcut method to perform `PATCH` request.
