@@ -16,7 +16,7 @@ Because HTML has Angular brackets and "ng" sounds like "Angular".
 AngularJS fits the definition of a framework the best, even though it's much more lightweight than
 a typical framework and that's why many confuse it with a library.
 
-AngularJS is 100% JavaScript, 100% client side and compatible with both desktop and mobile browsers.
+AngularJS is 100% JavaScript, 100% client-side and compatible with both desktop and mobile browsers.
 So it's definitely not a plugin or some other native browser extension.
 
 
@@ -114,7 +114,7 @@ make our schwag will be happy to do a custom run for you, based on our existing 
 they'll waive the setup costs, and you can order any quantity you need.
 
 **Stickers**
-For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
+For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at <tom@stickergiant.com>, and tell him you want to order some AngularJS
 stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping.
 
 As long as the design stays exactly the same, [StickerGiant](http://www.stickergiant.com) will give you a reorder discount.
