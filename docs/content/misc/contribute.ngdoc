@@ -62,13 +62,13 @@ minified AngularJS files:
 
 ```shell
 # Clone your Github repository:
-git clone git@github.com:<github username>/angular.js.git
+git clone "git@github.com:<github username>/angular.js.git"
 
 # Go to the AngularJS directory:
 cd angular.js
 
 # Add the main AngularJS repository as an upstream remote to your repository:
-git remote add upstream https://github.com/angular/angular.js.git
+git remote add upstream "https://github.com/angular/angular.js.git"
 
 # Install node.js dependencies:
 npm install
@@ -126,13 +126,13 @@ made available a local web server based on Node.js.
    ```
 
 2. To access the local server, enter the following URL into your web browser:
-   ```
+   ```text
    http://localhost:8000/
    ```
    By default, it serves the contents of the AngularJS project directory.
 
 3. To access the locally served docs, visit this URL:
-   ```
+   ```text
    http://localhost:8000/build/docs/
    ```
 
@@ -165,7 +165,7 @@ change. To execute tests in this mode run:
 2. To capture more browsers, open this URL in the desired browser (URL might be different if you have multiple instance
    of Karma running, read Karma's console output for the correct URL):
 
-   ```shell
+   ```text
    http://localhost:9876/
    ```
 
