@@ -1143,7 +1143,9 @@ describe('Scope', function() {
     it('should cause a $digest rerun', inject(function($rootScope) {
       $rootScope.log = '';
       $rootScope.value = 0;
-      $rootScope.$watch('value', 'log = log + ".";');
+      $rootScope.$watch('value', function () {
+        $rootScope.log = $rootScope.log + ".";
+      });
       $rootScope.$watch('init', function() {
         $rootScope.$evalAsync('value = 123; log = log + "=" ');
         expect($rootScope.value).toEqual(0);

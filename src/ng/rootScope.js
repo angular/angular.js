@@ -315,7 +315,7 @@ function $RootScopeProvider(){
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(scope)`: called with current `scope` as a parameter.
-       * @param {(function()|string)=} listener Callback called whenever the return value of
+       * @param {function()=} listener Callback called whenever the return value of
        *   the `watchExpression` changes.
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
@@ -340,10 +340,8 @@ function $RootScopeProvider(){
 
         lastDirtyWatch = null;
 
-        // in the case user pass string, we need to compile it, do we really need this ?
         if (!isFunction(listener)) {
-          var listenFn = compileToFn(listener || noop, 'listener');
-          watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
+          watcher.fn = noop;
         }
 
         if (!array) {
