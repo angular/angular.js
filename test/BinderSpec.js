@@ -442,7 +442,9 @@ describe('Binder', function() {
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
     element = $compile('<div ng-bind="name"></div>')($rootScope);
     $rootScope.name = '';
-    $rootScope.$watch('watched', 'name=123');
+    $rootScope.$watch('watched', function () {
+      $rootScope.name = 123;
+    });
     $rootScope.watched = 'change';
     $rootScope.$apply();
     expect($rootScope.name).toBe(123);
