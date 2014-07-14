@@ -337,6 +337,80 @@ We inject the $compile service and $rootScope before each jasmine test. The $com
 to render the aGreatEye directive. After rendering the directive we ensure that the directive has
 replaced the content and "lidless, wreathed in flame, 2 times" is present.
 
+### Testing Transclusion Directives
+
+Directives that use transclusion are treated specially by the compiler.  Before their compile
+function is called, the contents of the directive's element are removed from the element and
+provided via a transclusion function.  The directive's template is then appended to the directive's
+element, to which it can then insert the transcluded content into its template.
+
+
+Before compilation:
+```html
+<div translude-directive>
+  Some transcluded content
+</div>
+```
+
+After transclusion extraction:
+```html
+<div transclude-directive></div>
+```
+
+After compilation:
+```html
+<div transclude-directive>
+  Some Template
+  <span ng-transclude>Some transcluded content</span>
+</div>
+```
+
+If the directive is using 'element' transclusion, the compiler will actually remove the
+directive's entire element from the DOM and replace it with a comment node. The compiler then
+inserts the directive's template "after" this comment node, as a sibling.
+
+Before compilation
+```html
+<div element-transclude>
+  Some Content
+</div>
+```
+
+After transclusion extraction
+```html
+<!-- elementTransclude -->
+```
+
+After compilation:
+```html
+<!-- elementTransclude -->
+<div element-transclude>
+  Some Template
+  <span ng-transclude>Some transcluded content</span>
+</div>
+```
+
+It is important to be aware of this when writing tests for directives that use 'element'
+transclusion.  If you place the directive on the root element of the DOM fragment that you
+pass to {@link $compile}, then the DOM node returned from the linking function will be the
+comment node and you will lose the ability to access the template and transcluded content.
+
+```javascript
+var node = $compile('<div element-transclude></div>')($rootScope);
+expect(node[0].nodeType).toEqual(node.COMMENT_NODE);
+expect(node[1]).toBeUndefined();
+```
+
+To cope with this you simply ensure that your 'element' transclude directive is wrapped in an
+element, such as a `<div>`.
+
+```javascript
+var node = $compile('<div><div element-transclude></div></div>')($rootScope);
+var contents = node.contents();
+expect(contents[0].nodeType).toEqual(node.COMMENT_NODE);
+expect(contents[1].nodeType).toEqual(node.ELEMENT_NODE);
+```
+
 ### Testing Directives With External Templates
 
 If your directive uses `templateUrl`, consider using
