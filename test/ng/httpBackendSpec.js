@@ -231,6 +231,11 @@ describe('$httpBackend', function() {
     expect(MockXhr.$$lastInstance.withCredentials).toBe(true);
   });
 
+  it('should use custom createXhr', function() {
+    var createXhr = jasmine.createSpy('createXhr').andReturn(new MockXhr());
+    $backend('GET', '/whatever', null, callback, {}, null, null, null, createXhr);
+    expect(createXhr).toHaveBeenCalledOnceWith('GET');
+  });
 
   describe('responseType', function() {
 

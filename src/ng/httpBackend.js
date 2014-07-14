@@ -28,7 +28,7 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, customCreateXhr) {
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -46,7 +46,12 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       });
     } else {
 
-      var xhr = createXhr();
+      var xhr;
+      if (customCreateXhr && typeof customCreateXhr === 'function') {
+        xhr = customCreateXhr(method);
+      } else {
+        xhr = createXhr();
+      }
 
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
