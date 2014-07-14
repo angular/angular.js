@@ -413,14 +413,15 @@ describe('angular', function() {
 
 
   describe('csp', function() {
-    var originalSecurityPolicy;
+    var originalFunction;
 
     beforeEach(function() {
-      originalSecurityPolicy = document.securityPolicy;
+      originalFunction = window.Function;
     });
 
     afterEach(function() {
-      document.securityPolicy = originalSecurityPolicy;
+      window.Function = originalFunction;
+      delete csp.isActive_;
     });
 
 
@@ -430,9 +431,10 @@ describe('angular', function() {
 
 
     it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
-      document.securityPolicy = {isActive: true};
+      window.Function = function() { throw new Error('CSP test'); };
       expect(csp()).toBe(true);
     });
+
 
     it('should return the true when CSP is enabled manually via [ng-csp]', function() {
       spyOn(document, 'querySelector').andCallFake(function(selector) {
