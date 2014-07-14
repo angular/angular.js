@@ -977,11 +977,14 @@ function bind(self, fn) {
   }
 }
 
+function isPrivateObject(key) {
+  return typeof key === 'string' && key.charAt(0) === '$' && key.charAt(1) === '$';
+}
 
 function toJsonReplacer(key, value) {
   var val = value;
 
-  if (typeof key === 'string' && key.charAt(0) === '$' && key.charAt(1) === '$') {
+  if (isPrivateObject(key)) {
     val = undefined;
   } else if (isWindow(value)) {
     val = '$WINDOW';
