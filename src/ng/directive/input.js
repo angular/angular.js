@@ -2772,9 +2772,9 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  * @name ngValue
  *
  * @description
- * Binds the given expression to the value of `input[select]` or `input[radio]`, so
- * that when the element is selected, the `ngModel` of that element is set to the
- * bound value.
+ * Binds the given expression to the value of `option` or `input[radio]`, so
+ * that when the element is selected, the `ngModel` of that element is set to
+ * the bound value.
  *
  * `ngValue` is useful when dynamically generating lists of radio buttons using `ng-repeat`, as
  * shown below.
