@@ -31,7 +31,7 @@
    </example>
  */
 /*
- * A directive that allows creation of custom onclick handlers that are defined as angular
+ * A directive that allows creation of custom event handlers that are defined as angular
  * expressions and are compiled and executed within the current scope.
  *
  * Events that are handled via these handler are always configured not to propagate further.
@@ -47,9 +47,13 @@ forEach(
           var fn = $parse(attr[directiveName]);
           return function ngEventHandler(scope, element) {
             element.on(lowercase(name), function(event) {
-              scope.$apply(function() {
+              if (scope.$$phase) {
                 fn(scope, {$event:event});
-              });
+              } else {
+                scope.$apply(function() {
+                  fn(scope, {$event:event});
+                });
+              }
             });
           };
         }
