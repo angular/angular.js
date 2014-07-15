@@ -23,6 +23,10 @@ describe('Filter: orderBy', function() {
     expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['+b', '-a'])).toEqualData([{a:15, b:1}, {a:2, b:1}]);
   });
 
+  it('should sort strings via localeCompare', function() {
+    expect(orderBy([{a:'ö'},{a:'a'},{a:'z'}], 'a')).toEqualData([{a:'a'},{a:'ö'},{a:'z'}]);
+  });
+
   it('should use function', function() {
     expect(
       orderBy(
