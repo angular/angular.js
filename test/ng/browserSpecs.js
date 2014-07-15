@@ -340,6 +340,90 @@ describe('browser', function() {
       });
     });
 
+    describe('setCookieWithOptions', function() {
+
+      it('should encode cookies correctly ignoring options', function() {
+        browser.setCookieWithOptions('cookie1=', 'val;ue');
+        browser.setCookieWithOptions('cookie2=bar;baz', 'val=ue');
+
+        var rawCookies = document.cookie.split("; ");
+        expect(rawCookies.length).toEqual(2);
+        expect(rawCookies).toContain('cookie1%3D=val%3Bue');
+        expect(rawCookies).toContain('cookie2%3Dbar%3Bbaz=val%3Due');
+      });
+
+       it('should encode cookies correctly skipping encoding', function() {
+        browser.setCookieWithOptions('cookie1:', 'val$ue', {skipEncode:true});
+        browser.setCookieWithOptions('cookie2$bar:baz', 'val$ue', {skipEncode:true});
+
+        var rawCookies = document.cookie.split("; ");
+        expect(rawCookies.length).toEqual(2);
+        expect(rawCookies).toContain('cookie1:=val$ue');
+        expect(rawCookies).toContain('cookie2$bar:baz=val$ue');
+      });
+
+      it('should set expires options correctly with date', function() {
+        var future = new Date('Fri, 31 Dec 9999 23:59:59 GMT')
+        var options = {expires:future}
+        var cookieValue = browser.setCookieWithOptions('cookie1', 'value', options);
+
+        var expected = 'cookie1=value; expires=' + future.toUTCString() + '; path=/';
+        expect(cookieValue).toEqual(expected);
+
+        var rawCookies = document.cookie.split("; ");
+        expect(rawCookies.length).toEqual(1);
+        expect(rawCookies).toContain('cookie1=value');
+      });
+
+      it('should set expires options correctly with number', function() {
+        var daysAhead = 3
+        var options = {expires:daysAhead}
+        var cookieValue = browser.setCookieWithOptions('cookie1', 'value', options);
+        var ahead = new Date();
+        ahead.setTime(ahead.getTime() + daysAhead * 864e+5)
+        var sansMinutesSeconds = ahead.toUTCString().split(":")[0];
+        expect(cookieValue.indexOf("expires=" + sansMinutesSeconds)).not.toBe(-1);
+      });
+
+      it('should not set expires when none given', function() {
+        var cookieValue = browser.setCookieWithOptions('cookie1', 'value', {});
+        expect(cookieValue.indexOf("expires=")).toBe(-1);
+      });
+
+      it('should set path from options correctly', function() {
+        var options = {path:"/foo/bar"};
+        var cookieValue = browser.setCookieWithOptions('cookie1', 'value', options);
+        expect(cookieValue.indexOf("path=" + options.path)).not.toBe(-1);
+      });
+
+      it('should set secure from options correctly', function() {
+        var options = {secure:true};
+        var cookieValue = browser.setCookieWithOptions('cookie1', 'value', options);
+        expect(cookieValue.indexOf("; secure")).not.toBe(-1);
+        options.secure = false;
+        cookieValue = browser.setCookieWithOptions('cookie1', 'value', options);
+        expect(cookieValue.indexOf("; secure")).toBe(-1);
+      });
+
+    });
+
+    describe('cookieDecoded', function() {
+
+      it('should retrieve cookies correctly', function() {
+        document.cookie = "foo=bar=baz;path=/";
+        expect(browser.cookieDecoded('foo')).toEqual('bar=baz');
+      });
+
+      it('should decode cookies correctly', function() {
+        document.cookie = 'oatmeal%3ACookie=cha%3Anged;path=/';
+        expect(browser.cookieDecoded('oatmeal:Cookie')).toEqual('cha:nged');
+      });
+
+      it('should skip decoding when skipDecode is true', function() {
+        document.cookie = 'oatmeal%3ACookie=cha%3Anged;path=/';
+        expect(browser.cookieDecoded('oatmeal%3ACookie', true)).toEqual('cha%3Anged');
+      });
+    });
 
     it('should pick up external changes made to browser cookies', function() {
       browser.cookies('oatmealCookie', 'drool');

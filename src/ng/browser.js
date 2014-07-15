@@ -258,6 +258,7 @@ function Browser(window, document, $log, $sniffer) {
   var lastCookies = {};
   var lastCookieString = '';
   var cookiePath = self.baseHref();
+  var lastSkipEncodeCookieFlag = false;
 
   /**
    * @name $browser#cookies
@@ -281,52 +282,104 @@ function Browser(window, document, $log, $sniffer) {
    */
   self.cookies = function(name, value) {
     /* global escape: false, unescape: false */
-    var cookieLength, cookieArray, cookie, i, index;
-
     if (name) {
-      if (value === undefined) {
-        rawDocument.cookie = escape(name) + "=;path=" + cookiePath +
-                                ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      } else {
-        if (isString(value)) {
-          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) +
-                                ';path=' + cookiePath).length + 1;
-
-          // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
-          // - 300 cookies
-          // - 20 cookies per unique domain
-          // - 4096 bytes per cookie
-          if (cookieLength > 4096) {
-            $log.warn("Cookie '"+ name +
-              "' possibly not set or overflowed because it was too large ("+
-              cookieLength + " > 4096 bytes)!");
-          }
-        }
-      }
+      self.setCookieWithOptions(name, value);
     } else {
-      if (rawDocument.cookie !== lastCookieString) {
-        lastCookieString = rawDocument.cookie;
-        cookieArray = lastCookieString.split("; ");
-        lastCookies = {};
-
-        for (i = 0; i < cookieArray.length; i++) {
-          cookie = cookieArray[i];
-          index = cookie.indexOf('=');
-          if (index > 0) { //ignore nameless cookies
-            name = unescape(cookie.substring(0, index));
-            // the first value that is seen for a cookie is the most
-            // specific one.  values for the same cookie name that
-            // follow are for less specific paths.
-            if (lastCookies[name] === undefined) {
-              lastCookies[name] = unescape(cookie.substring(index + 1));
-            }
-          }
-        }
-      }
+      self.cookieDecoded(name, false);
       return lastCookies;
     }
   };
 
+  /**
+   * @name ng.$browser#setCookieWithOptions
+   * @methodOf ng.$browser
+   *
+   * @param {string=} name Cookie name
+   * @param {string=} value Cookie value
+   * @param {object=} options Cookie options
+   *  - expires: Date instance or days as number
+   *  - path: path of domain to store cookie
+   *  - domain: domain to store cookie under
+   *  - secure: Boolean
+   *  - skipEncode: If custom encoding is already done, provide as true
+   *
+   * @description Sets a cookie under the given name with value respecting options
+   * If name is defined and value undefined, the cookie deleted
+   */
+  self.setCookieWithOptions = function(name, value, options) {
+    var expires, expireDate, cookieValue;
+    if (name && value === undefined) {
+      rawDocument.cookie = escape(name) + "=;path=" + cookiePath +
+                  ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    if (!name || !isString(value))
+      return;
+    options = (options === undefined) ? {} : options;
+    options.path = (options.path === undefined) ? cookiePath : options.path;
+    lastSkipEncodeCookieFlag = (typeof options.skipEncode === 'boolean') ? options.skipEncode : false;
+    if (typeof options.expires === 'number') {
+      expireDate = new Date();
+      expireDate.setTime(expireDate.getTime() + options.expires * 864e+5);
+      expires = expireDate.toUTCString();
+    } else if (options.expires instanceof Date) {
+      expires = options.expires.toUTCString();
+    }
+    if (!options.skipEncode) {
+      name = escape(name);
+      value = escape(value);
+    }
+    cookieValue = (rawDocument.cookie = [
+      name, '=', value,
+      expires ? '; expires=' + expires : '',
+      options.path ? '; path=' + options.path : '',
+      options.domain ? '; domain=' + options.domain : '',
+      options.secure ? '; secure' : ''
+    ].join(''));
+    if (cookieValue.length > 4096) {
+      $log.warn("Cookie '"+ name +
+        "' possibly not set or overflowed because it was too large ("+
+        cookieValue.length + " > 4096 bytes)!");
+    }
+    return cookieValue;
+  };
+
+  /**
+   * @name ng.$browser#cookieDecoded
+   * @methodOf ng.$browser
+   *
+   * @param {string=} name Cookie name
+   * @param {boolean=} skipDecode True if decoding on name and value should be skipped
+   * @returns {string} cookie value for name, undefined if doesn't exist
+   */
+  self.cookieDecoded = function(name, skipDecode) {
+    var cookieName, cookieValue, cookieArray, cookie, i, index;
+    if (rawDocument.cookie !== lastCookieString || skipDecode !== lastSkipEncodeCookieFlag) {
+      lastSkipEncodeCookieFlag = (typeof skipDecode === 'boolean') ? skipDecode : false;
+      lastCookieString = rawDocument.cookie;
+      cookieArray = lastCookieString.split("; ");
+      lastCookies = {};
+
+      for (i = 0; i < cookieArray.length; i++) {
+        cookie = cookieArray[i];
+        index = cookie.indexOf('=');
+        if (index > 0) { //ignore nameless cookies
+          cookieName = cookie.substring(0, index);
+          if (!skipDecode)
+            cookieName = unescape(cookieName);
+          // the first value that is seen for a cookie is the most
+          // specific one.  values for the same cookie name that
+          // follow are for less specific paths.
+          if (lastCookies[cookieName] === undefined) {
+            cookieValue = cookie.substring(index + 1);
+            if (!skipDecode)
+              cookieValue = unescape(cookieValue);
+            lastCookies[cookieName] = cookieValue;
+          }
+        }
+      }
+    }
+    return lastCookies[name];
+  };
 
   /**
    * @name $browser#defer
