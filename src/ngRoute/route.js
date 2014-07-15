@@ -606,19 +606,20 @@ function $RouteProvider(){
      * @returns {string} interpolation of the redirect path with the parameters
      */
     function interpolate(string, params) {
-      var result = [];
-      angular.forEach((string||'').split(':'), function(segment, i) {
-        if (i === 0) {
-          result.push(segment);
+      return (string||'').replace(/(\/)?:(\w+)([?*])?/g, interpolateReplacer);
+
+      function interpolateReplacer(_, slash, key, option) {
+        var optional = option === '?';
+        var value = params[key];
+        delete params[key];
+
+        if (optional && value == null) {
+          return '';
         } else {
-          var segmentMatch = segment.match(/(\w+)(.*)/);
-          var key = segmentMatch[1];
-          result.push(params[key]);
-          result.push(segmentMatch[2] || '');
-          delete params[key];
+          slash = slash || '';
+          return slash + (value || '');
         }
-      });
-      return result.join('');
+      }
     }
   }];
 }
