@@ -813,6 +813,47 @@ describe('$route', function() {
     });
 
 
+    it('should interpolate optional route vars in the redirected path from original path', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo/:id/foo/:subid?/:extraId', {redirectTo: '/bar/:id/:subid?/23'});
+        $routeProvider.when('/bar/:id/:subid?/:subsubid', {templateUrl: 'bar.html'});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/foo/id1/foo/subid3/gah');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/bar/id1/subid3/23');
+        expect($location.search()).toEqual({extraId: 'gah'});
+        expect($route.current.params).toEqual({id:'id1', subid:'subid3', subsubid:'23', extraId:'gah'});
+        expect($route.current.templateUrl).toEqual('bar.html');
+
+        $location.path('/foo/id1/foo/gah');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/bar/id1/23');
+        expect($location.search()).toEqual({extraId: 'gah'});
+        expect($route.current.params).toEqual({id:'id1', subsubid:'23', extraId:'gah'});
+      });
+    });
+
+
+    it('should interpolate catch-all route vars in the redirected path from original path', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/baz/:id/:path*', {redirectTo: '/path/:path*/:id'});
+        $routeProvider.when('/path/:path*/:id', {templateUrl: 'foo.html'});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/baz/1/foovalue/barvalue');
+        $rootScope.$digest();
+        expect($location.path()).toEqual('/path/foovalue/barvalue/1');
+        expect($route.current.params).toEqual({id:'1', path:'foovalue/barvalue'});
+        expect($route.current.templateUrl).toEqual('foo.html');
+      });
+    });
+
+
     it('should interpolate route vars in the redirected path from original search', function() {
       module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
