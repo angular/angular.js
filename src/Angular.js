@@ -832,7 +832,6 @@ function shallowCopy(src, dst) {
   var i = 0;
   if (isArray(src)) {
     dst = dst || [];
-    
     var srcLen = src.length;
     for (; i < srcLen; i++) {
       dst[i] = src[i];
