@@ -1572,3 +1572,31 @@ function getBlockElements(nodes) {
 
   return jqLite(elements);
 }
+
+var INVISIBLE = 1;
+var CONFIGURABLE = 2;
+var WRITABLE = 4;
+
+function defineProperty(target, propertyName, flags, value) {
+  if (isObject(target) || isFunction(target)) {
+    if (Object.defineProperty) {
+      var desc = {
+        enumerable: !(flags & INVISIBLE),
+        configurable: !!(flags & CONFIGURABLE),
+        writable: !!(flags & WRITABLE)
+      };
+      if (arguments.length > 3) {
+        desc.value = value;
+      }
+      Object.defineProperty(target, propertyName, desc);
+    }
+  } else {
+    target[propertyName] = value;
+  }
+}
+
+function defineProperties(target, flags, propertyNameAndValues) {
+  forEach(propertyNameAndValues, function(value, propertyName) {
+    defineProperty(target, propertyName, flags, value);
+  });
+}

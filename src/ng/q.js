@@ -246,7 +246,7 @@ function qFactory(nextTick, exceptionHandler) {
    *
    * @returns {Deferred} Returns a new instance of deferred.
    */
-  var defer = function() {
+  var _defer = function(promise) {
     var pending = [],
         value, deferred;
 
@@ -293,91 +293,22 @@ function qFactory(nextTick, exceptionHandler) {
       },
 
 
-      promise: {
-        then: function(callback, errback, progressback) {
-          var result = defer();
-
-          var wrappedCallback = function(value) {
-            try {
-              result.resolve((isFunction(callback) ? callback : defaultCallback)(value));
-            } catch(e) {
-              result.reject(e);
-              exceptionHandler(e);
-            }
-          };
-
-          var wrappedErrback = function(reason) {
-            try {
-              result.resolve((isFunction(errback) ? errback : defaultErrback)(reason));
-            } catch(e) {
-              result.reject(e);
-              exceptionHandler(e);
-            }
-          };
-
-          var wrappedProgressback = function(progress) {
-            try {
-              result.notify((isFunction(progressback) ? progressback : defaultCallback)(progress));
-            } catch(e) {
-              exceptionHandler(e);
-            }
-          };
-
-          if (pending) {
-            pending.push([wrappedCallback, wrappedErrback, wrappedProgressback]);
-          } else {
-            value.then(wrappedCallback, wrappedErrback, wrappedProgressback);
-          }
-
-          return result.promise;
-        },
-
-        "catch": function(callback) {
-          return this.then(null, callback);
-        },
-
-        "finally": function(callback) {
-
-          function makePromise(value, resolved) {
-            var result = defer();
-            if (resolved) {
-              result.resolve(value);
-            } else {
-              result.reject(value);
-            }
-            return result.promise;
-          }
-
-          function handleCallback(value, isResolved) {
-            var callbackOutput = null;
-            try {
-              callbackOutput = (callback ||defaultCallback)();
-            } catch(e) {
-              return makePromise(e, false);
-            }
-            if (isPromiseLike(callbackOutput)) {
-              return callbackOutput.then(function() {
-                return makePromise(value, isResolved);
-              }, function(error) {
-                return makePromise(error, false);
-              });
-            } else {
-              return makePromise(value, isResolved);
-            }
-          }
-
-          return this.then(function(value) {
-            return handleCallback(value, true);
-          }, function(error) {
-            return handleCallback(error, false);
-          });
-        }
-      }
+      promise: promise
     };
 
     return deferred;
   };
 
+
+  var defer = function() {
+    var resolveFn;
+    var rejectFn;
+    var promise = new $Q(function(resolve, reject) {
+      resolveFn = resolve;
+      rejectFn = reject;
+    });
+    return _defer(new Promise)
+  };
 
   var ref = function(value) {
     if (isPromiseLike(value)) return value;
@@ -564,31 +495,156 @@ function qFactory(nextTick, exceptionHandler) {
     return deferred.promise;
   }
 
+  var $Deferred = function Deferred() {
+  };
+
+  extend($Deferred.prototype, {
+    resolve: function(value) {
+      if (this._pending) {
+        var callbacks = this._pending;
+      }
+    },
+
+    reject: function(value) {
+      
+    },
+
+    notify: function(value) {
+      
+    }
+  });
+
   var $Q = function Q(resolver) {
     if (!isFunction(resolver)) {
       // TODO(@caitp): minErr this
       throw new TypeError('Expected resolverFn');
     }
 
-    if (!(this instanceof Q)) {
+    if (!(this.constructor !== $Q)) {
       // More useful when $Q is the Promise itself.
-      return new Q(resolver);
+      return new $Q(resolver);
     }
 
-    var deferred = defer();
+    defineProperties(this, INVISIBLE|WRITABLE, {
+      _bitField: NO_STATE,
 
-    function resolveFn(value) {
-      deferred.resolve(value);
+      // From Bluebird: Typical promise has exactly one parallel handler,
+      // store the first ones directly on the Promise.
+      _fulfillmentHandler0: void 0,
+      _rejectionHandler0: void 0,
+      _promise0: void 0,
+      _receiver0: void 0,
+      _settledValue: void 0,
+    });
+
+    if (resolver !== internalResolver) {
+      resolveFromResolver(promise, resolver);
     }
-
-    function rejectFn(reason) {
-      deferred.reject(reason);
-    }
-
-    resolver(resolveFn, rejectFn);
-
-    return deferred.promise;
   };
+
+  defineProperties($Q.prototype, WRITABLE, {
+    toString: function Promise$toString() {
+      return '[object Promise]';
+    }
+  });
+
+  function resolveFromResolver(promise, resolver) {
+    promise._setTrace(void 0);
+    promise._pushContext();
+
+    function Promise$_resolver(val) {
+      if (promise._tryFollow(val)) {
+        return;
+      }
+      promise._fulfill(val);
+    }
+    function Promise$_rejecter(val) {
+      var trace = canAttach(val) ? val : new Error(val + '');
+      promise._attachExtraTrace(trace);
+      markAsOriginatingFromRejection(val);
+      promise._reject(val, trace === val ? void 0 : trace);
+    }
+
+    try {
+      resolver.call(null, Promise$_resolver, Promise$_rejecter);
+      this._popContext();
+    } catch (e) {
+      this._popContext();
+      promise._reject(e, canAttach(e) ? e : new Error(e + ''));
+    }
+  }
+
+  function _reject(promise, reason, carriedStackTrace) {
+    if (promise._isFollowingOrFulfilledOrRejected()) return;
+    _rejectUnchecked(promise, reason, carriedStackTrace);
+  }
+
+  function _rejectUnchecked(promise, reason, trace) {
+    if (!promise.isPending()) return;
+    if (reason === promise) {
+      
+    }
+
+    promise._cleanValues();
+    promise._setRejected();
+    promise._settledValue = reason;
+
+    if (_isFinal(promise)) {
+      nextTick(function() {
+        thrower(trace === void 0 ? reason : trace);
+      });
+      return;
+    }
+
+    var len = _length(promise);
+
+    if (trace !== void 0) _setCarriedStackTrace(promise, trace);
+
+    if (len > 0) {
+      nextTick(function() {
+        _rejectPromises(promise);
+      });
+    } else {
+      _ensurePossibleRejectionHandled(promise);
+    }
+  }
+
+  function _rejectPromises(promise) {
+    _settlePromises(promise);
+    _unsetCarriedStackTrace(promise);
+  }
+
+  function _settlePromises(promise) {
+    var len = _length(promise);
+    for (var i=0; i<len; ++i) {
+      _settlePromiseAt(promise, i);
+    }
+  }
+
+  function _settlePromiseAt(settledPromise, index) {
+    var isFulfilled = _isFulfilled(settledPromise);
+    var handler = isFulfilled ?
+                  _fulfillmentHandlerAt(settledPromise, index) :
+                  _rejectionHandlerAt(settledPromise, index);
+    var value = settledPromise._settledValue;
+    var receiver = _receiverAt(settledPromise, index);
+    var promise = _promiseAt(settledPromise, index);
+
+    if (isFunction(handler)) {
+      _settlePromiseFromHandler(handler, receiver, value, promise);
+    } else {
+      var done = false;
+      // optimization when .then listeners on a promise are just respective
+      // fate sealers on some other promise
+      if (receiver !== void 0) {
+        
+      }
+    }
+  }
+
+  defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
+    _resolveFromResolver: 
+  });
 
   $Q.defer = defer;
   $Q.reject = reject;
