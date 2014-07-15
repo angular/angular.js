@@ -143,6 +143,12 @@ describe('parser', function() {
       expect(map(tokens, function(t) { return t.text;})).toEqual(['a', '(', ')']);
     });
 
+    it('should tokenize ranges', function() {
+      expect(map(lex('[1..10]'), function(t) { return t.text;})).toEqual(['[', 1, '..', 10, ']']);
+      expect(map(lex('[1...10]'), function(t) { return t.text;})).toEqual(['[', 1, '...', 10, ']']);
+      expect(map(lex('[-1, 1..10, 12]'), function(t) { return t.text;})).toEqual(['[', '-', 1, ',', 1, '..', 10, ',', 12, ']']);
+    });
+
     it('should tokenize method invocation', function() {
       var tokens = lex("a.b.c (d) - e.f()");
       expect(map(tokens, function(t) { return t.text;})).
@@ -459,6 +465,18 @@ describe('parser', function() {
         expect(scope.$eval("[1, 2]")[1]).toEqual(2);
         expect(scope.$eval("[1, 2,]")[1]).toEqual(2);
         expect(scope.$eval("[1, 2,]").length).toEqual(2);
+      });
+
+      it('should evaluate array ranges', function() {
+        expect(scope.$eval("[0..9]")).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        expect(scope.$eval("[0...9]")).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+        expect(scope.$eval("[9..0]")).toEqual([9, 8, 7, 6, 5, 4, 3, 2, 1, 0]);
+        expect(scope.$eval("[9...0]")).toEqual([9, 8, 7, 6, 5, 4, 3, 2, 1]);
+        expect(scope.$eval("[20, 9...0, 10]")).toEqual([20, 9, 8, 7, 6, 5, 4, 3, 2, 1, 10]);
+        scope.start = 0;
+        scope.end = 10;
+        expect(scope.$eval("[start..end]")).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        expect(scope.$eval("[start...end]")).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
       });
 
       it('should evaluate array access', function() {
