@@ -257,7 +257,9 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   var lastCookies = {};
   var lastCookieString = '';
-  var cookiePath = self.baseHref();
+  var cookieOptions = self.cookieOptions = {
+    path: self.baseHref()
+  };
 
   /**
    * @name $browser#cookies
@@ -282,15 +284,28 @@ function Browser(window, document, $log, $sniffer) {
   self.cookies = function(name, value) {
     /* global escape: false, unescape: false */
     var cookieLength, cookieArray, cookie, i, index;
+    var expireDate = new Date('Thu, 01 Jan 1970 00:00:00 GMT');
+
+    function makeCookie(name, value, opt) {
+      if (opt.expires && !(opt.expires instanceof Date)) {
+        opt.expires = new Date(new Date().getTime() + opt.expires * 1000);
+      }
+
+      return [
+        escape(name) + '=' + escape(value),
+        opt.expires ? '; expires=' + opt.expires.toUTCString() : '',
+        opt.path    ? '; path=' + opt.path : '',
+        opt.domain  ? '; domain=' + opt.domain : '',
+        opt.secure  ? '; secure' : ''
+      ].join('');
+    }
 
     if (name) {
       if (value === undefined) {
-        rawDocument.cookie = escape(name) + "=;path=" + cookiePath +
-                                ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        rawDocument.cookie = makeCookie(name, '', { expires: expireDate });
       } else {
         if (isString(value)) {
-          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) +
-                                ';path=' + cookiePath).length + 1;
+          cookieLength = (rawDocument.cookie = makeCookie(name, value, cookieOptions)).length;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
