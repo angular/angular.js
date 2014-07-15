@@ -210,9 +210,10 @@ function isArrayLike(obj) {
  *
  * @description
  * Invokes the `iterator` function once for each item in `obj` collection, which can be either an
- * object or an array. The `iterator` function is invoked with `iterator(value, key)`, where `value`
- * is the value of an object property or an array element and `key` is the object property key or
- * array element index. Specifying a `context` for the function is optional.
+ * object or an array. The `iterator` function is invoked with `iterator(value, key, obj)`, where
+ * `value` is the value of an object property or an array element, `key` is the object property
+ * key or array element index, and `obj` is a reference to the collection being iterated over.
+ * Specifying a `context` for the function is optional.
  *
  * It is worth noting that `.forEach` does not iterate over inherited properties because it filters
  * using the `hasOwnProperty` method.
@@ -239,20 +240,22 @@ function forEach(obj, iterator, context) {
       for (key in obj) {
         // Need to check if hasOwnProperty exists,
         // as on IE8 the result of querySelectorAll is an object without a hasOwnProperty function
-        if (key != 'prototype' && key != 'length' && key != 'name' && (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
-          iterator.call(context, obj[key], key);
+        if (key !== 'prototype' && key !== 'length' && key !== 'name' &&
+            (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
+          iterator.call(context, obj[key], key, obj);
         }
       }
     } else if (isArray(obj) || isArrayLike(obj)) {
+      // for loop is actually faster than native Array.prototype.forEach()
       for (key = 0, length = obj.length; key < length; key++) {
-        iterator.call(context, obj[key], key);
+        iterator.call(context, obj[key], key, obj);
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
         obj.forEach(iterator, context);
     } else {
       for (key in obj) {
         if (obj.hasOwnProperty(key)) {
-          iterator.call(context, obj[key], key);
+          iterator.call(context, obj[key], key, obj);
         }
       }
     }
