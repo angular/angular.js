@@ -463,6 +463,7 @@ describe('$http', function() {
       });
 
       it('should not double quote dates', function() {
+        if (msie < 9) return;
         $httpBackend.expect('GET', '/url?date=2014-07-15T17:30:00.000Z').respond('');
         $http({url: '/url', params: {date:new Date('2014-07-15T17:30:00.000Z')}, method: 'GET'});
       });
