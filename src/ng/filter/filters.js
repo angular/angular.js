@@ -241,21 +241,30 @@ function timeZoneGetter(date, utc) {
   return paddedZone;
 }
 
+function makeDate(year, month, day, utc) {
+  if (utc) {
+    return new Date(Date.UTC(year, month, day));
+  } else {
+    return new Date(year, month, day);
+  }
+}
+
 function getFirstThursdayOfYear(year, utc) {
     // 0 = index of January
-    var firstDay = new Date(year, 0, 1),
+    var firstDay = makeDate(year, 0, 1, utc),
       dayOfWeekOnFirst = utc ? firstDay.getUTCDay() : firstDay.getDay();
     // 4 = index of Thursday (+1 to account for 1st = 5)
     // 11 = index of *next* Thursday (+1 account for 1st = 12)
-    return new Date(year, 0, ((dayOfWeekOnFirst <= 4) ? 5 : 12) - dayOfWeekOnFirst);
+    return makeDate(year, 0, ((dayOfWeekOnFirst <= 4) ? 5 : 12) - dayOfWeekOnFirst, utc);
 }
 
 function getThursdayThisWeek(datetime, utc) {
-    return new Date(utc ? datetime.getUTCFullYear() : datetime.getFullYear(),
+    return makeDate(utc ? datetime.getUTCFullYear() : datetime.getFullYear(),
       utc ? datetime.getUTCMonth() : datetime.getMonth(),
       // 4 = index of Thursday
       (utc ? datetime.getUTCDate() : datetime.getDate()) +
-        (4 - (utc ? datetime.getUTCDay() : datetime.getDay())));
+        (4 - (utc ? datetime.getUTCDay() : datetime.getDay())),
+      utc);
 }
 
 function weekGetter(size, utc) {
