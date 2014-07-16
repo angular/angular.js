@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# dummy 1
 set -e
 
 # normalize the working dir to the directory of the script
