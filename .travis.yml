@@ -24,8 +24,8 @@ install:
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  - time ./scripts/travis/fetch_bundle.sh
-  - time npm install
+  # Run npm install twice, because it is flaky.
+  - npm install || npm install
 
 before_script:
   - mkdir -p $LOGS_DIR
