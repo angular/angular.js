@@ -854,6 +854,19 @@ describe('jqLite', function() {
       }
     });
 
+    it('should get computed styles', function() {
+      if (window.getComputedStyle) { // browser should support of computed styles
+        a.id = 'elementA';
+        var jqA = jqLite(a);
+        jqLite(document).find('body').append(jqA);
+
+        var style = document.createElement('style');
+        style.appendChild(document.createTextNode('#elementA { width: 25px; }'));
+        jqLite(document).find('head').append(style);
+
+        expect(jqA.css('width')).toBe('25px');
+      }
+    });
 
     it('should set a bunch of css properties specified via an object', function() {
       if (msie <= 8) {
