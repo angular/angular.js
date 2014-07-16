@@ -1134,6 +1134,31 @@ describe('select', function() {
         browserTrigger(element, 'change');
         expect(scope.selected).toEqual(null);
       });
+
+
+      // Regression https://github.com/angular/angular.js/issues/7855
+      it('should update the model with ng-change', function() {
+        createSelect({
+          'ng-change':'change()',
+          'ng-model':'selected',
+          'ng-options':'value for value in values'
+        });
+
+        scope.$apply(function() {
+          scope.values = ['A', 'B'];
+          scope.selected = 'A';
+        });
+
+        scope.change = function() {
+          scope.selected = 'A';
+        };
+
+        element.find('option')[1].selected = true;
+
+        browserTrigger(element, 'change');
+        expect(element.find('option')[0].selected).toBeTruthy();
+        expect(scope.selected).toEqual('A');
+      });
     });
 
     describe('disabled blank', function() {
@@ -1222,6 +1247,7 @@ describe('select', function() {
         browserTrigger(element, 'change');
         expect(scope.selected).toEqual([scope.values[0]]);
       });
+
 
       it('should select from object', function() {
         createSelect({
