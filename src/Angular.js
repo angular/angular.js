@@ -747,7 +747,7 @@ function isLeafNode (node) {
  </div>
 
  <script>
-  angular.module('copyExample')
+  angular.module('copyExample', [])
     .controller('ExampleController', ['$scope', function($scope) {
       $scope.master= {};
 
