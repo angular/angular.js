@@ -1136,6 +1136,46 @@ describe('select', function() {
       });
     });
 
+    describe('disabled blank', function() {
+      it('should select disabled blank by default', function() {
+        var html = '<select ng-model="someModel" ng-options="c for c in choices">' +
+                     '<option value="" disabled>Choose One</option>' +
+                   '</select>';
+        scope.$apply(function() {
+          scope.choices = ['A', 'B', 'C'];
+        });
+
+        compile(html);
+
+        var options = element.find('option');
+        var optionToSelect = options.eq(0);
+        expect(optionToSelect.text()).toBe('Choose One');
+        expect(optionToSelect.prop('selected')).toBe(true);
+        expect(element[0].value).toBe('');
+
+        dealoc(element);
+      });
+
+
+      it('should select disabled blank by default when select is required', function() {
+        var html = '<select ng-model="someModel" ng-options="c for c in choices" required>' +
+                     '<option value="" disabled>Choose One</option>' +
+                   '</select>';
+        scope.$apply(function() {
+          scope.choices = ['A', 'B', 'C'];
+        });
+
+        compile(html);
+
+        var options = element.find('option');
+        var optionToSelect = options.eq(0);
+        expect(optionToSelect.text()).toBe('Choose One');
+        expect(optionToSelect.prop('selected')).toBe(true);
+        expect(element[0].value).toBe('');
+
+        dealoc(element);
+      });
+    });
 
     describe('select-many', function() {
 
