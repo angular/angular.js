@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * Parse headers into key value object
@@ -985,7 +985,12 @@ function $HttpProvider() {
 
             forEach(value, function(v) {
               if (isObject(v)) {
-                v = toJson(v);
+                if (v instanceof Date){
+                  v = v.toISOString(); //toISOString() only supported in IE8 and above
+                  }
+                  else if (isObject(v)) {
+                    v = toJson(v);
+                  }
               }
               parts.push(encodeUriQuery(key) + '=' +
                          encodeUriQuery(v));
