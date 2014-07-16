@@ -68,7 +68,9 @@
            $scope.cache = $cacheFactory('cacheId');
            $scope.put = function(key, value) {
              $scope.cache.put(key, value);
-             $scope.keys.push(key);
+             if($scope.keys.indexOf(key) === -1) {
+               $scope.keys.push(key);
+             }
            };
          }]);
      </file>
