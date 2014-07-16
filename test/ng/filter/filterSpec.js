@@ -81,7 +81,6 @@ describe('Filter: filter', function() {
     ]);
   });
 
-
   it('should match any properties for given "$" property', function() {
     var items = [{first: 'tom', last: 'hevery'},
                  {first: 'adam', last: 'hevery', alias: 'tom', done: false},
@@ -160,6 +159,15 @@ describe('Filter: filter', function() {
 
     });
 
+    it('should be able to use exact match to match empty strings', function() {
+      var items = [{person: {name: 'John'}},
+                   {person: {name: 'Rita'}},
+                   {person: {name: 'Billy'}},
+                   {person: {name: ''}},
+                   {person: {name: 'Joan'}}];
+      expect(filter(items, {person: {name: ''}}).length).toBe(5);
+      expect(filter(items, {person: {name: ''}}, true).length).toBe(1);
+    });
 
   });
 
