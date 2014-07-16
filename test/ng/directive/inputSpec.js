@@ -2671,27 +2671,69 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    describe('with a custom separator', function() {
+      it('should split on the custom separator', function() {
+        compileInput('<input type="text" ng-model="list" ng-list=":" />');
 
-    it('should allow custom separator', function() {
-      compileInput('<input type="text" ng-model="list" ng-list=":" />');
+        changeInputValueTo('a,a');
+        expect(scope.list).toEqual(['a,a']);
 
-      scope.$apply(function() {
-        scope.list = ['x', 'y', 'z'];
+        changeInputValueTo('a:b');
+        expect(scope.list).toEqual(['a', 'b']);
       });
-      expect(inputElm.val()).toBe('x:y:z');
 
-      changeInputValueTo('a,a');
-      expect(scope.list).toEqual(['a,a']);
 
-      changeInputValueTo('a:b');
-      expect(scope.list).toEqual(['a', 'b']);
+      it("should join the list back together with the custom separator", function() {
+        compileInput('<input type="text" ng-model="list" ng-list=" : " />');
+
+        scope.$apply(function() {
+          scope.list = ['x', 'y', 'z'];
+        });
+        expect(inputElm.val()).toBe('x : y : z');
+      });
     });
 
-    it('should ignore separator whitespace when splitting', function() {
-      compileInput('<input type="text" ng-model="list" ng-list="  |  " />');
+    describe('(with ngTrim undefined or true)', function() {
 
-      changeInputValueTo('a|b');
-      expect(scope.list).toEqual(['a', 'b']);
+      it('should ignore separator whitespace when splitting', function() {
+        compileInput('<input type="text" ng-model="list" ng-list="  |  " />');
+
+        changeInputValueTo('a|b');
+        expect(scope.list).toEqual(['a', 'b']);
+      });
+
+      it('should trim whitespace from each list item', function() {
+        compileInput('<input type="text" ng-model="list" ng-list="|" />');
+
+        changeInputValueTo('a | b');
+        expect(scope.list).toEqual(['a', 'b']);
+      });
+    });
+
+    describe('(with ngTrim set to false)', function() {
+
+      it('should use separator whitespace when splitting', function() {
+        compileInput('<input type="text" ng-model="list" ng-trim="false" ng-list="  |  " />');
+
+        changeInputValueTo('a|b');
+        expect(scope.list).toEqual(['a|b']);
+
+        changeInputValueTo('a  |  b');
+        expect(scope.list).toEqual(['a','b']);
+
+      });
+
+      it("should not trim whitespace from each list item", function() {
+        compileInput('<input type="text" ng-model="list" ng-trim="false" ng-list="|" />');
+        changeInputValueTo('a  |  b');
+        expect(scope.list).toEqual(['a  ','  b']);
+      });
+
+      it("should support splitting on newlines", function() {
+        compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list="&#10;"></textarea');
+        changeInputValueTo('a\nb');
+        expect(scope.list).toEqual(['a','b']);
+      });
     });
   });
 
