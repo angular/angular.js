@@ -99,7 +99,7 @@ The above is a suggestion. Tailor it to your needs.
     angular.module('xmpl.directive', []);
 
     angular.module('xmpl.filter', []);
-
+    
     angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
       run(function(greeter, user) {
         // This is effectively part of the main method initialization code
@@ -107,13 +107,11 @@ The above is a suggestion. Tailor it to your needs.
           salutation: 'Bonjour'
         });
         user.load('World');
+      }).
+      controller('XmplController', function($scope, greeter, user){
+        $scope.greeting = greeter.greet(user.name);
       });
 
-
-    // A Controller for your app
-    var XmplController = function($scope, greeter, user) {
-      $scope.greeting = greeter.greet(user.name);
-    };
   </file>
 </example>
 
