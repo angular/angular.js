@@ -3,6 +3,7 @@
 describe('$sniffer', function() {
 
   function sniffer($window, $document) {
+    /* global $SnifferProvider: false */
     $window.navigator = {};
     $document = jqLite($document || {});
     if (!$document[0].body) {
@@ -85,20 +86,11 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false if document.securityPolicy.isActive not available', function() {
+    it('should be false by default', function() {
       expect(sniffer({}).csp).toBe(false);
     });
-
-
-    it('should use document.securityPolicy.isActive if available', function() {
-      var createDocumentWithCSP = function(csp) {
-        return {securityPolicy: {isActive: csp}};
-      };
-
-      expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
-      expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
-    });
   });
+
 
   describe('vendorPrefix', function() {
 
@@ -341,5 +333,32 @@ describe('$sniffer', function() {
         expect($sniffer.history).toBe(false);
       });
     });
+  });
+
+  it('should provide the android version', function() {
+    module(function($provide) {
+      var win = {
+        navigator: {
+          userAgent: 'android 2'
+        }
+      };
+      $provide.value('$document', jqLite({}));
+      $provide.value('$window', win);
+    });
+    inject(function($sniffer) {
+      expect($sniffer.android).toBe(2);
+    });
+  });
+
+  it('should return the internal msie flag', inject(function($sniffer) {
+    expect(isNaN($sniffer.msie)).toBe(isNaN(msie));
+    if (msie) {
+      expect($sniffer.msie).toBe(msie);
+    }
+  }));
+
+  it('should return document.documentMode as msieDocumentMode', function() {
+    var someDocumentMode = 123;
+    expect(sniffer({}, {documentMode: someDocumentMode}).msieDocumentMode).toBe(someDocumentMode);
   });
 });

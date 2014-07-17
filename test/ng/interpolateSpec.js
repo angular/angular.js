@@ -2,9 +2,15 @@
 
 describe('$interpolate', function() {
 
-  it('should return a function when there are no bindings and textOnly is undefined',
+  it('should return the interpolation object when there are no bindings and textOnly is undefined',
       inject(function($interpolate) {
-    expect(typeof $interpolate('some text')).toBe('function');
+    var interpolateFn = $interpolate('some text');
+
+    expect(interpolateFn.exp).toBe('some text');
+    expect(interpolateFn.separators).toEqual(['some text']);
+    expect(interpolateFn.expressions).toEqual([]);
+
+    expect(interpolateFn({})).toBe('some text');
   }));
 
 
@@ -13,64 +19,112 @@ describe('$interpolate', function() {
     expect($interpolate('some text', true)).toBeUndefined();
   }));
 
+  it('should return undefined when there are bindings and strict is set to true',
+      inject(function($interpolate) {
+    expect($interpolate('test {{foo}}', false, null, true)({})).toBeUndefined();
+  }));
+
   it('should suppress falsy objects', inject(function($interpolate) {
-    expect($interpolate('{{undefined}}')()).toEqual('');
-    expect($interpolate('{{undefined+undefined}}')()).toEqual('');
-    expect($interpolate('{{null}}')()).toEqual('');
-    expect($interpolate('{{a.b}}')()).toEqual('');
+    expect($interpolate('{{undefined}}')({})).toEqual('');
+    expect($interpolate('{{null}}')({})).toEqual('');
+    expect($interpolate('{{a.b}}')({})).toEqual('');
   }));
 
   it('should jsonify objects', inject(function($interpolate) {
-    expect($interpolate('{{ {} }}')()).toEqual('{}');
-    expect($interpolate('{{ true }}')()).toEqual('true');
-    expect($interpolate('{{ false }}')()).toEqual('false');
-  }));
-
-  it('should rethrow exceptions', inject(function($interpolate, $rootScope) {
-    $rootScope.err = function () {
-      throw new Error('oops');
-    };
-    expect(function () {
-      $interpolate('{{err()}}')($rootScope);
-    }).toThrowMinErr("$interpolate", "interr", "Can't interpolate: {{err()}}\nError: oops");
-  }));
-
-  it('should stop interpolation when encountering an exception', inject(function($interpolate, $compile, $rootScope) {
-    $rootScope.err = function () {
-      throw new Error('oops');
-    };
-    var dom = jqLite('<div>{{1 + 1}}</div><div>{{err()}}</div><div>{{1 + 2}}</div>');
-    $compile(dom)($rootScope);
-    expect(function () {
-      $rootScope.$apply();
-    }).toThrowMinErr("$interpolate", "interr", "Can't interpolate: {{err()}}\nError: oops");
-    expect(dom[0].innerHTML).toEqual('2');
-    expect(dom[1].innerHTML).toEqual('{{err()}}');
-    expect(dom[2].innerHTML).toEqual('{{1 + 2}}');
+    expect($interpolate('{{ {} }}')({})).toEqual('{}');
+    expect($interpolate('{{ true }}')({})).toEqual('true');
+    expect($interpolate('{{ false }}')({})).toEqual('false');
   }));
 
 
   it('should return interpolation function', inject(function($interpolate, $rootScope) {
-    $rootScope.name = 'Misko';
-    expect($interpolate('Hello {{name}}!')($rootScope)).toEqual('Hello Misko!');
+    var interpolateFn = $interpolate('Hello {{name}}!');
+
+    expect(interpolateFn.exp).toBe('Hello {{name}}!');
+    expect(interpolateFn.separators).toEqual(['Hello ', '!']);
+    expect(interpolateFn.expressions).toEqual(['name']);
+
+    var scope = $rootScope.$new();
+    scope.name = 'Bubu';
+
+    expect(interpolateFn(scope)).toBe('Hello Bubu!');
   }));
 
 
   it('should ignore undefined model', inject(function($interpolate) {
-    expect($interpolate("Hello {{'World' + foo}}")()).toEqual('Hello World');
+    expect($interpolate("Hello {{'World'}}{{foo}}")({})).toBe('Hello World');
   }));
 
 
-  it('should ignore undefined return value', inject(function($interpolate, $rootScope) {
-    $rootScope.foo = function() {return undefined};
-    expect($interpolate("Hello {{'World' + foo()}}")($rootScope)).toEqual('Hello World');
+  it('should interpolate with undefined context', inject(function($interpolate) {
+    expect($interpolate("Hello, world!{{bloop}}")()).toBe("Hello, world!");
   }));
+
+
+  describe('interpolation escaping', function() {
+    var obj;
+    beforeEach(function() {
+      obj = {foo: 'Hello', bar: 'World'};
+    });
+
+
+    it('should support escaping interpolation signs', inject(function($interpolate) {
+      expect($interpolate('{{foo}} \\{\\{bar\\}\\}')(obj)).toBe('Hello {{bar}}');
+      expect($interpolate('\\{\\{foo\\}\\} {{bar}}')(obj)).toBe('{{foo}} World');
+    }));
+
+
+    it('should unescape multiple expressions', inject(function($interpolate) {
+      expect($interpolate('\\{\\{foo\\}\\}\\{\\{bar\\}\\} {{foo}}')(obj)).toBe('{{foo}}{{bar}} Hello');
+      expect($interpolate('{{foo}}\\{\\{foo\\}\\}\\{\\{bar\\}\\}')(obj)).toBe('Hello{{foo}}{{bar}}');
+      expect($interpolate('\\{\\{foo\\}\\}{{foo}}\\{\\{bar\\}\\}')(obj)).toBe('{{foo}}Hello{{bar}}');
+      expect($interpolate('{{foo}}\\{\\{foo\\}\\}{{bar}}\\{\\{bar\\}\\}{{foo}}')(obj)).toBe('Hello{{foo}}World{{bar}}Hello');
+    }));
+
+
+    it('should support escaping custom interpolation start/end symbols', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('[[');
+        $interpolateProvider.endSymbol(']]');
+      });
+      inject(function($interpolate) {
+        expect($interpolate('[[foo]] \\[\\[bar\\]\\]')(obj)).toBe('Hello [[bar]]');
+      });
+    });
+
+
+    it('should unescape incomplete escaped expressions', inject(function($interpolate) {
+      expect($interpolate('\\{\\{foo{{foo}}')(obj)).toBe('{{fooHello');
+      expect($interpolate('\\}\\}foo{{foo}}')(obj)).toBe('}}fooHello');
+      expect($interpolate('foo{{foo}}\\{\\{')(obj)).toBe('fooHello{{');
+      expect($interpolate('foo{{foo}}\\}\\}')(obj)).toBe('fooHello}}');
+    }));
+
+
+    it('should not unescape markers within expressions', inject(function($interpolate) {
+      expect($interpolate('{{"\\\\{\\\\{Hello, world!\\\\}\\\\}"}}')(obj)).toBe('\\{\\{Hello, world!\\}\\}');
+      expect($interpolate('{{"\\{\\{Hello, world!\\}\\}"}}')(obj)).toBe('{{Hello, world!}}');
+      expect(function() {
+        $interpolate('{{\\{\\{foo\\}\\}}}')(obj);
+      }).toThrowMinErr('$parse', 'lexerr',
+        'Lexer Error: Unexpected next character  at columns 0-0 [\\] in expression [\\{\\{foo\\}\\]');
+    }));
+
+
+    // This test demonstrates that the web-server is responsible for escaping every single instance
+    // of interpolation start/end markers in an expression which they do not wish to evaluate,
+    // because AngularJS will not protect them from being evaluated (due to the added complexity
+    // and maintenance burden of context-sensitive escaping)
+    it('should evaluate expressions between escaped start/end symbols', inject(function($interpolate) {
+      expect($interpolate('\\{\\{Hello, {{bar}}!\\}\\}')(obj)).toBe('{{Hello, World!}}');
+    }));
+  });
 
 
   describe('interpolating in a trusted context', function() {
     var sce;
     beforeEach(function() {
-      function log() {};
+      function log() {}
       var fakeLog = {log: log, warn: log, info: log, error: log};
       module(function($provide, $sceProvider) {
         $provide.value('$log', fakeLog);
@@ -79,24 +133,32 @@ describe('$interpolate', function() {
       inject(['$sce', function($sce) { sce = $sce; }]);
     });
 
-    it('should NOT interpolate non-trusted expressions', inject(function($interpolate) {
-      var foo = "foo";
-      expect($interpolate('{{foo}}', true, sce.CSS)({}, {foo: foo})).toEqual('');
+    it('should NOT interpolate non-trusted expressions', inject(function($interpolate, $rootScope) {
+      var scope = $rootScope.$new();
+      scope.foo = "foo";
+
+      expect(function() {
+        $interpolate('{{foo}}', true, sce.CSS)(scope);
+      }).toThrowMinErr('$interpolate', 'interr');
     }));
 
-    it('should NOT interpolate mistyped expressions', inject(function($interpolate) {
-      var foo = sce.trustAsCss("foo");
-      expect($interpolate('{{foo}}', true, sce.HTML)({}, {foo: foo})).toEqual('');
+    it('should NOT interpolate mistyped expressions', inject(function($interpolate, $rootScope) {
+      var scope = $rootScope.$new();
+      scope.foo = sce.trustAsCss("foo");
+
+      expect(function() {
+        $interpolate('{{foo}}', true, sce.HTML)(scope);
+      }).toThrowMinErr('$interpolate', 'interr');
     }));
 
     it('should interpolate trusted expressions in a regular context', inject(function($interpolate) {
       var foo = sce.trustAsCss("foo");
-      expect($interpolate('{{foo}}', true)({foo: foo})).toEqual('foo');
+      expect($interpolate('{{foo}}', true)({foo: foo})).toBe('foo');
     }));
 
     it('should interpolate trusted expressions in a specific trustedContext', inject(function($interpolate) {
       var foo = sce.trustAsCss("foo");
-      expect($interpolate('{{foo}}', true, sce.CSS)({foo: foo})).toEqual('foo');
+      expect($interpolate('{{foo}}', true, sce.CSS)({foo: foo})).toBe('foo');
     }));
 
     // The concatenation of trusted values does not necessarily result in a trusted value.  (For
@@ -106,8 +168,8 @@ describe('$interpolate', function() {
       var foo = sce.trustAsCss("foo");
       var bar = sce.trustAsCss("bar");
       expect(function() {
-        return $interpolate('{{foo}}{{bar}}', true, sce.CSS)(
-             {foo: foo, bar: bar}); }).toThrowMinErr(
+        return $interpolate('{{foo}}{{bar}}', true, sce.CSS)({foo: foo, bar: bar});
+      }).toThrowMinErr(
                 "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
                 "Strict Contextual Escaping disallows interpolations that concatenate multiple " +
                 "expressions when a trusted value is required.  See " +
@@ -123,77 +185,78 @@ describe('$interpolate', function() {
     }));
 
     it('should not get confused with same markers', inject(function($interpolate) {
-      expect($interpolate('---').parts).toEqual(['---']);
-      expect($interpolate('----')()).toEqual('');
-      expect($interpolate('--1--')()).toEqual('1');
+      expect($interpolate('---').separators).toEqual(['---']);
+      expect($interpolate('---').expressions).toEqual([]);
+      expect($interpolate('----')({})).toEqual('');
+      expect($interpolate('--1--')({})).toEqual('1');
     }));
   });
 
-
   describe('parseBindings', function() {
     it('should Parse Text With No Bindings', inject(function($interpolate) {
-      var parts = $interpolate("a").parts;
-      expect(parts.length).toEqual(1);
-      expect(parts[0]).toEqual("a");
+      expect($interpolate("a").separators).toEqual(['a']);
+      expect($interpolate("a").expressions).toEqual([]);
     }));
 
     it('should Parse Empty Text', inject(function($interpolate) {
-      var parts = $interpolate("").parts;
-      expect(parts.length).toEqual(1);
-      expect(parts[0]).toEqual("");
+      expect($interpolate("").separators).toEqual(['']);
+      expect($interpolate("").expressions).toEqual([]);
     }));
 
     it('should Parse Inner Binding', inject(function($interpolate) {
-      var parts = $interpolate("a{{b}}C").parts;
-      expect(parts.length).toEqual(3);
-      expect(parts[0]).toEqual("a");
-      expect(parts[1].exp).toEqual("b");
-      expect(parts[1]({b:123})).toEqual(123);
-      expect(parts[2]).toEqual("C");
+      var interpolateFn = $interpolate("a{{b}}C"),
+          separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['a', 'C']);
+      expect(expressions).toEqual(['b']);
+      expect(interpolateFn({b: 123})).toEqual('a123C');
     }));
 
     it('should Parse Ending Binding', inject(function($interpolate) {
-      var parts = $interpolate("a{{b}}").parts;
-      expect(parts.length).toEqual(2);
-      expect(parts[0]).toEqual("a");
-      expect(parts[1].exp).toEqual("b");
-      expect(parts[1]({b:123})).toEqual(123);
+      var interpolateFn = $interpolate("a{{b}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['a', '']);
+      expect(expressions).toEqual(['b']);
+      expect(interpolateFn({b: 123})).toEqual('a123');
     }));
 
     it('should Parse Begging Binding', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}c").parts;
-      expect(parts.length).toEqual(2);
-      expect(parts[0].exp).toEqual("b");
-      expect(parts[1]).toEqual("c");
+      var interpolateFn = $interpolate("{{b}}c"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', 'c']);
+      expect(expressions).toEqual(['b']);
+      expect(interpolateFn({b: 123})).toEqual('123c');
     }));
 
     it('should Parse Loan Binding', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}").parts;
-      expect(parts.length).toEqual(1);
-      expect(parts[0].exp).toEqual("b");
+      var interpolateFn = $interpolate("{{b}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', '']);
+      expect(expressions).toEqual(['b']);
+      expect(interpolateFn({b: 123})).toEqual('123');
     }));
 
     it('should Parse Two Bindings', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}{{c}}").parts;
-      expect(parts.length).toEqual(2);
-      expect(parts[0].exp).toEqual("b");
-      expect(parts[1].exp).toEqual("c");
+      var interpolateFn = $interpolate("{{b}}{{c}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', '', '']);
+      expect(expressions).toEqual(['b', 'c']);
+      expect(interpolateFn({b: 111, c: 222})).toEqual('111222');
     }));
 
     it('should Parse Two Bindings With Text In Middle', inject(function($interpolate) {
-      var parts = $interpolate("{{b}}x{{c}}").parts;
-      expect(parts.length).toEqual(3);
-      expect(parts[0].exp).toEqual("b");
-      expect(parts[1]).toEqual("x");
-      expect(parts[2].exp).toEqual("c");
+      var interpolateFn = $interpolate("{{b}}x{{c}}"),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['', 'x', '']);
+      expect(expressions).toEqual(['b', 'c']);
+      expect(interpolateFn({b: 111, c: 222})).toEqual('111x222');
     }));
 
     it('should Parse Multiline', inject(function($interpolate) {
-      var parts = $interpolate('"X\nY{{A\n+B}}C\nD"').parts;
-      expect(parts.length).toEqual(3);
-      expect(parts[0]).toEqual('"X\nY');
-      expect(parts[1].exp).toEqual('A\n+B');
-      expect(parts[2]).toEqual('C\nD"');
+      var interpolateFn = $interpolate('"X\nY{{A\n+B}}C\nD"'),
+        separators = interpolateFn.separators, expressions = interpolateFn.expressions;
+      expect(separators).toEqual(['"X\nY', 'C\nD"']);
+      expect(expressions).toEqual(['A\n+B']);
+      expect(interpolateFn({'A': 'aa', 'B': 'bb'})).toEqual('"X\nYaabbC\nD"');
     }));
   });
 
@@ -208,6 +271,12 @@ describe('$interpolate', function() {
             "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
             "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
       expect(function() {
+        $interpolate('{{var}}/constant', true, isTrustedContext);
+      }).toThrowMinErr(
+          "$interpolate", "noconcat", "Error while interpolating: {{var}}/constant\nStrict " +
+            "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
+            "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+      expect(function() {
           $interpolate('{{foo}}{{bar}}', true, isTrustedContext);
         }).toThrowMinErr(
             "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\nStrict " +
@@ -216,7 +285,7 @@ describe('$interpolate', function() {
     }));
 
     it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate) {
-      expect($interpolate('some/{{id}}')()).toEqual('some/');
+      expect($interpolate('some/{{id}}')({})).toEqual('some/');
       expect($interpolate('some/{{id}}')({id: 1})).toEqual('some/1');
       expect($interpolate('{{foo}}{{bar}}')({foo: 1, bar: 2})).toEqual('12');
     }));
@@ -248,9 +317,10 @@ describe('$interpolate', function() {
       });
 
       inject(function($interpolate) {
-        expect($interpolate('---').parts).toEqual(['---']);
-        expect($interpolate('----')()).toEqual('');
-        expect($interpolate('--1--')()).toEqual('1');
+        expect($interpolate('---').separators).toEqual(['---']);
+        expect($interpolate('---').expressions).toEqual([]);
+        expect($interpolate('----')({})).toEqual('');
+        expect($interpolate('--1--')({})).toEqual('1');
       });
     });
   });

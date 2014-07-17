@@ -1,0 +1,126 @@
+@ngdoc overview
+@name Filters
+@description
+
+A filter formats the value of an expression for display to the user. They can be used in view templates,
+controllers or services and it is easy to define your own filter.
+
+The underlying API is the {@link ng.$filterProvider `filterProvider`}.
+
+## Using filters in view templates
+
+Filters can be applied to expressions in view templates using the following syntax:
+
+        {{ expression | filter }}
+
+E.g. the markup `{{ 12 | currency }}` formats the number 12 as a currency using the {@link ng.filter:currency `currency`}
+filter. The resulting value is `$12.00`.
+
+Filters can be applied to the result of another filter. This is called "chaining" and uses
+the following syntax:
+
+        {{ expression | filter1 | filter2 | ... }}
+
+Filters may have arguments. The syntax for this is
+
+        {{ expression | filter:argument1:argument2:... }}
+
+E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal points using the
+{@link ng.filter:number `number`} filter. The resulting value is `1,234.00`.
+
+
+## Using filters in controllers, services, and directives
+
+You can also use filters in controllers, services, and directives. For this, inject a dependency
+with the name `<filterName>Filter` to your controller/service/directive. E.g. using the dependency
+`numberFilter` will inject the number filter. The injected argument is a function that takes the
+value to format as first argument and filter parameters starting with the second argument.
+
+The example below uses the filter called {@link ng.filter:filter `filter`}.
+This filter reduces arrays into sub arrays based on
+conditions. The filter can be applied in the view template with markup like
+`{{ctrl.array | filter:'a'}}`, which would do a fulltext search for "a".
+However, using a filter in a view template will reevaluate the filter on
+every digest, which can be costly if the array is big.
+
+The example below therefore calls the filter directly in the controller.
+By this, the controller is able to call the filter only when needed (e.g. when the data is loaded from the backend
+or the filter expression is changed).
+
+<example module="FilterInControllerModule">
+  <file name="index.html">
+    <div ng-controller="FilterController as ctrl">
+      <div>
+        All entries:
+        <span ng-repeat="entry in ctrl.array">{{entry.name}} </span>
+      </div>
+      <div>
+        Entries that contain an "a":
+        <span ng-repeat="entry in ctrl.filteredArray">{{entry.name}} </span>
+      </div>
+    </div>
+  </file>
+
+  <file name="script.js">
+    angular.module('FilterInControllerModule', []).
+      controller('FilterController', ['filterFilter', function(filterFilter) {
+        this.array = [
+          {name: 'Tobias'},
+          {name: 'Jeff'},
+          {name: 'Brian'},
+          {name: 'Igor'},
+          {name: 'James'},
+          {name: 'Brad'}
+        ];
+        this.filteredArray = filterFilter(this.array, 'a');
+      }]);
+  </file>
+</example>
+
+
+## Creating custom filters
+
+Writing your own filter is very easy: just register a new filter factory function with
+your module. Internally, this uses the {@link ng.$filterProvider `filterProvider`}.
+This factory function should return a new filter function which takes the input value
+as the first argument. Any filter arguments are passed in as additional arguments to the filter
+function.
+
+The following sample filter reverses a text string. In addition, it conditionally makes the
+text upper-case.
+
+<example module="myReverseModule">
+  <file name="index.html">
+    <div ng-controller="Controller">
+      <input ng-model="greeting" type="text"><br>
+      No filter: {{greeting}}<br>
+      Reverse: {{greeting|reverse}}<br>
+      Reverse + uppercase: {{greeting|reverse:true}}<br>
+    </div>
+  </file>
+
+  <file name="script.js">
+    angular.module('myReverseModule', [])
+      .filter('reverse', function() {
+        return function(input, uppercase) {
+          input = input || '';
+          var out = "";
+          for (var i = 0; i < input.length; i++) {
+            out = input.charAt(i) + out;
+          }
+          // conditional based on optional argument
+          if (uppercase) {
+            out = out.toUpperCase();
+          }
+          return out;
+        };
+      })
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.greeting = 'hello';
+      }]);
+  </file>
+</example>
+
+## Testing custom filters
+
+See the [phonecat tutorial](http://docs.angularjs.org/tutorial/step_09#test) for an example.

@@ -39,6 +39,7 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
+    /* jshint -W040 *//* The dsl binds `this` for us when calling chained functions */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
       if (angular.isFunction(result) || result instanceof angular.scenario.Future)
@@ -238,7 +239,8 @@ function callerFile(offset) {
  * To work around this we instead use our own handler that fires a real event.
  */
 (function(fn){
-  var parentTrigger = fn.trigger;
+  // We need a handle to the original trigger function for input tests.
+  var parentTrigger = fn._originalTrigger = fn.trigger;
   fn.trigger = function(type) {
     if (/(click|change|keydown|blur|input|mousedown|mouseup)/.test(type)) {
       var processDefaults = [];
@@ -270,15 +272,15 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
         if (actualExp == bindExp) return true;
-        if (actualExp.indexOf(bindExp) == 0) {
+        if (actualExp.indexOf(bindExp) === 0) {
           return actualExp.charAt(bindExp.length) == '|';
         }
       }
-    }
+    };
   } else if (bindExp) {
     match = function(actualExp) {
       return actualExp && bindExp.exec(actualExp);
-    }
+    };
   } else {
     match = function(actualExp) {
       return !!actualExp;
@@ -290,9 +292,9 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
   }
 
   function push(value) {
-    if (value == undefined) {
+    if (value === undefined) {
       value = '';
-    } else if (typeof value != 'string') {
+    } else if (typeof value !== 'string') {
       value = angular.toJson(value);
     }
     result.push('' + value);
@@ -300,27 +302,24 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
 
   selection.each(function() {
     var element = windowJquery(this),
-        binding;
-    if (binding = element.data('$binding')) {
-      if (typeof binding == 'string') {
-        if (match(binding)) {
-          push(element.scope().$eval(binding));
+        bindings;
+    if (bindings = element.data('$binding')) {
+      if (!angular.isArray(bindings)) {
+        bindings = [bindings];
+      }
+      for(var expressions = [], binding, j=0, jj=bindings.length;  j<jj; j++) {
+        binding = bindings[j];
+
+        if (binding.expressions) {
+          expressions = binding.expressions;
+        } else {
+          expressions = [binding];
         }
-      } else {
-        if (!angular.isArray(binding)) {
-          binding = [binding];
-        }
-        for(var fns, j=0, jj=binding.length;  j<jj; j++) {
-          fns = binding[j];
-          if (fns.parts) {
-            fns = fns.parts;
-          } else {
-            fns = [fns];
-          }
-          for (var scope, fn, i = 0, ii = fns.length; i < ii; i++) {
-            if(match((fn = fns[i]).exp)) {
-              push(fn(scope = scope || element.scope()));
-            }
+        for (var scope, expression, i = 0, ii = expressions.length; i < ii; i++) {
+          expression = expressions[i];
+          if(match(expression)) {
+            scope = scope || element.scope();
+            push(scope.$eval(expression));
           }
         }
       }

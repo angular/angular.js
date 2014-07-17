@@ -6,14 +6,17 @@
  *
  * Installation:
  * >> cd <angular-repo>
- * >> ln -s validate-commit-msg.js .git/hooks/commit-msg
+ * >> ln -s ../../validate-commit-msg.js .git/hooks/commit-msg
  */
+
+'use strict';
+
 var fs = require('fs');
 var util = require('util');
 
 
-var MAX_LENGTH = 70;
-var PATTERN = /^(?:fixup!\s*)?(\w*)(\(([\w\$\.\-\*/]*)\))?\: (.*)$/;
+var MAX_LENGTH = 100;
+var PATTERN = /^(?:fixup!\s*)?(\w*)(\(([\w\$\.\*/-]*)\))?\: (.*)$/;
 var IGNORED = /^WIP\:/;
 var TYPES = {
   feat: true,
@@ -21,6 +24,7 @@ var TYPES = {
   docs: true,
   style: true,
   refactor: true,
+  perf: true,
   test: true,
   chore: true,
   revert: true

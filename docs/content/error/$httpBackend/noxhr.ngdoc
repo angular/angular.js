@@ -1,0 +1,10 @@
+@ngdoc error
+@name $httpBackend:noxhr
+@fullName Unsupported XHR
+@description
+
+This error occurs in browsers that do not support XmlHttpRequest. AngularJS
+supports Safari, Chrome, Firefox, Opera, IE8 and higher, and mobile browsers
+(Android, Chrome Mobile, iOS Safari). To avoid this error, use an officially
+supported browser.
+

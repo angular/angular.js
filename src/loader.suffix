@@ -1,4 +1,5 @@
-)(window);
+setupModuleLoader(window);
+})(window);
 
 /**
  * Closure compiler type information

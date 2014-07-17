@@ -1,7 +1,7 @@
 'use strict';
 
 describe('urlUtils', function() {
-  describe('parse', function() {
+  describe('urlResolve', function() {
     it('should normalize a relative url', function () {
       expect(urlResolve("foo").href).toMatch(/^https?:\/\/[^/]+\/foo$/);
     });
@@ -13,6 +13,13 @@ describe('urlUtils', function() {
       expect(parsed.host).not.toBe("");
       expect(parsed.hostname).not.toBe("");
       expect(parsed.pathname).not.toBe("");
+    });
+
+
+    it('should return pathname as / if empty path provided', function () {
+      //IE counts / as empty, necessary to use / so that pathname is not context.html
+      var parsed = urlResolve('/');
+      expect(parsed.pathname).toBe('/');
     });
   });
 

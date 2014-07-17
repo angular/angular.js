@@ -4,8 +4,8 @@ ngRouteModule.provider('$routeParams', $RouteParamsProvider);
 
 
 /**
- * @ngdoc object
- * @name ngRoute.$routeParams
+ * @ngdoc service
+ * @name $routeParams
  * @requires $route
  *
  * @description
@@ -27,14 +27,14 @@ ngRouteModule.provider('$routeParams', $RouteParamsProvider);
  * Instead you can use `$route.current.params` to access the new route's parameters.
  *
  * @example
- * <pre>
+ * ```js
  *  // Given:
  *  // URL: http://server.com/index.html#/Chapter/1/Section/2?search=moby
  *  // Route: /Chapter/:chapterId/Section/:sectionId
  *  //
  *  // Then
- *  $routeParams ==> {chapterId:1, sectionId:2, search:'moby'}
- * </pre>
+ *  $routeParams ==> {chapterId:'1', sectionId:'2', search:'moby'}
+ * ```
  */
 function $RouteParamsProvider() {
   this.$get = function() { return {}; };

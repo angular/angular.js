@@ -1,0 +1,27 @@
+@ngdoc error
+@name $resource:badmember
+@fullName Syntax error in param value using @member lookup
+@description
+
+Occurs when there is a syntax error when attempting to extract a param
+value from the data object.
+
+Here's an example of valid syntax for `params` or `paramsDefault`:
+
+````javascript
+{
+  bar: '@foo.bar'
+}
+````
+
+The part following the `@`, `foo.bar` in this case, should be a simple
+dotted member lookup using only ASCII identifiers.  This error occurs
+when there is an error in that expression.  The following are all syntax
+errors
+
+ | Value   | Error          |
+ |---------|----------------|
+ | `@`     | Empty expression following `@`. |
+ | `@1.a`  | `1` is an invalid javascript identifier. |
+ | `@.a`   | Leading `.` is invalid. |
+ | `@a[1]` | Only dotted lookups are supported (no index operator) |

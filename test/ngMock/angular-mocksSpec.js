@@ -1,10 +1,7 @@
 'use strict';
 
-var msie = +((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
-
 describe('ngMock', function() {
   var noop = angular.noop;
-
 
   describe('TzDate', function() {
 
@@ -55,16 +52,19 @@ describe('ngMock', function() {
 
 
     it('should fake getHours method', function() {
-      //0 in -3h
-      var t0 = new angular.mock.TzDate(-3, 0);
+      // avoid going negative due to #5017, so use Jan 2, 1970 00:00 UTC
+      var jan2 = 24 * 60 * 60 * 1000;
+
+      //0:00 in -3h
+      var t0 = new angular.mock.TzDate(-3, jan2);
       expect(t0.getHours()).toBe(3);
 
-      //0 in +0h
-      var t1 = new angular.mock.TzDate(0, 0);
+      //0:00 in +0h
+      var t1 = new angular.mock.TzDate(0, jan2);
       expect(t1.getHours()).toBe(0);
 
-      //0 in +3h
-      var t2 = new angular.mock.TzDate(3, 0);
+      //0:00 in +3h
+      var t2 = new angular.mock.TzDate(3, jan2);
       expect(t2.getHours()).toMatch(21);
     });
 
@@ -246,29 +246,29 @@ describe('ngMock', function() {
 
       it('should assertEmpty', function(){
         try {
-          $log.error(Error('MyError'));
-          $log.warn(Error('MyWarn'));
-          $log.info(Error('MyInfo'));
-          $log.log(Error('MyLog'));
-          $log.debug(Error('MyDebug'));
+          $log.error(new Error('MyError'));
+          $log.warn(new Error('MyWarn'));
+          $log.info(new Error('MyInfo'));
+          $log.log(new Error('MyLog'));
+          $log.debug(new Error('MyDebug'));
           $log.assertEmpty();
         } catch (error) {
-          error = error.message || error;
-          expect(error).toMatch(/Error: MyError/m);
-          expect(error).toMatch(/Error: MyWarn/m);
-          expect(error).toMatch(/Error: MyInfo/m);
-          expect(error).toMatch(/Error: MyLog/m);
-          expect(error).toMatch(/Error: MyDebug/m);
+          var err = error.message || error;
+          expect(err).toMatch(/Error: MyError/m);
+          expect(err).toMatch(/Error: MyWarn/m);
+          expect(err).toMatch(/Error: MyInfo/m);
+          expect(err).toMatch(/Error: MyLog/m);
+          expect(err).toMatch(/Error: MyDebug/m);
         } finally {
           $log.reset();
         }
       });
 
       it('should reset state', function(){
-        $log.error(Error('MyError'));
-        $log.warn(Error('MyWarn'));
-        $log.info(Error('MyInfo'));
-        $log.log(Error('MyLog'));
+        $log.error(new Error('MyError'));
+        $log.warn(new Error('MyWarn'));
+        $log.info(new Error('MyInfo'));
+        $log.log(new Error('MyLog'));
         $log.reset();
         var passed = false;
         try {
@@ -345,7 +345,7 @@ describe('ngMock', function() {
 
     it('should allow you to specify a number of iterations', inject(function($interval) {
       var counter = 0;
-      $interval(function() {counter++}, 1000, 2);
+      $interval(function() {counter++;}, 1000, 2);
 
       $interval.flush(1000);
       expect(counter).toBe(1);
@@ -406,7 +406,8 @@ describe('ngMock', function() {
       $interval.flush(1000);
 
       expect(log).toEqual([
-          'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2']);
+        'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2'
+      ]);
 
     }));
 
@@ -512,6 +513,11 @@ describe('ngMock', function() {
 
       it('should not throw a runtime exception when given an undefined promise',
           inject(function($interval) {
+        var task1 = jasmine.createSpy('task1'),
+            promise1;
+
+        promise1 = $interval(task1, 1000, 1);
+
         expect($interval.cancel()).toBe(false);
       }));
     });
@@ -525,7 +531,8 @@ describe('ngMock', function() {
       log = '';
     }));
 
-    function logFn(text){ return function() {
+    function logFn(text){
+      return function() {
         log += text +';';
       };
     }
@@ -604,7 +611,7 @@ describe('ngMock', function() {
     it('should expose flush method that will flush the pending queue of tasks', inject(
         function($timeout) {
       var logger = [],
-          logFn = function(msg) { return function() { logger.push(msg) }};
+          logFn = function(msg) { return function() { logger.push(msg); }; };
 
       $timeout(logFn('t1'));
       $timeout(logFn('t2'), 200);
@@ -686,10 +693,11 @@ describe('ngMock', function() {
       expect(d($rootScope)).toMatch(/{"abc":"123"}/);
     }));
 
-    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope){
+    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer){
+      /* jshint -W001 */
       // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
       // things like hasOwnProperty even if it is explicitly defined on the actual object!
-      if (msie<=8) return;
+      if ($sniffer.msie<=8) return;
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -699,11 +707,11 @@ describe('ngMock', function() {
 
   describe('angular.mock.clearDataCache', function() {
     function keys(obj) {
-      var keys = [];
+      var keysArr = [];
       for(var key in obj) {
-        if (obj.hasOwnProperty(key)) keys.push(key);
+        if (obj.hasOwnProperty(key)) keysArr.push(key);
       }
-      return keys.sort();
+      return keysArr.sort();
     }
 
     function browserTrigger(element, eventType) {
@@ -735,11 +743,11 @@ describe('ngMock', function() {
       // crazy IE9 requires div to be connected to render DOM for click event to work
       // mousemove works even when not connected. This is a heisen-bug since stepping
       // through the code makes the test pass. Viva IE!!!
-      angular.element(document.body).append(div)
+      angular.element(document.body).append(div);
 
-      div.on('click', function() { log += 'click1;'});
-      div.on('click', function() { log += 'click2;'});
-      div.on('mousemove', function() { log += 'mousemove;'});
+      div.on('click', function() { log += 'click1;'; });
+      div.on('click', function() { log += 'click2;'; });
+      div.on('mousemove', function() { log += 'mousemove;'; });
 
       browserTrigger(div, 'click');
       browserTrigger(div, 'mousemove');
@@ -769,7 +777,7 @@ describe('ngMock', function() {
 
       describe('object literal format', function() {
         var mock = { log: 'module' };
-        
+
         beforeEach(function() {
           module({
               'service': mock,
@@ -785,7 +793,7 @@ describe('ngMock', function() {
             expect(service).toEqual(mock);
           });
         });
-        
+
         it('should support multiple key value pairs', function() {
           inject(function(service, other) {
             expect(other.some).toEqual('replacement');
@@ -798,6 +806,23 @@ describe('ngMock', function() {
             expect(service).toEqual(mock);
             expect($resource).toBeDefined();
             expect(example).toEqual('win');
+          });
+        });
+
+        describe('module cleanup', function() {
+          function testFn() {
+
+          }
+
+          it('should add hashKey to module function', function() {
+            module(testFn);
+            inject(function () {
+              expect(testFn.$$hashKey).toBeDefined();
+            });
+          });
+
+          it('should cleanup hashKey after previous test', function() {
+            expect(testFn.$$hashKey).toBeUndefined();
           });
         });
       });
@@ -862,9 +887,53 @@ describe('ngMock', function() {
         }));
 
         afterEach(function() {
-          expect(log).toEqual('module;inject;')
+          expect(log).toEqual('module;inject;');
         });
       });
+
+
+      describe('this', function() {
+
+        it('should set `this` to be the jasmine context', inject(function() {
+          expect(this instanceof jasmine.Spec).toBe(true);
+        }));
+
+        it('should set `this` to be the jasmine context when inlined in a test', function() {
+          var tested = false;
+
+          inject(function() {
+            expect(this instanceof jasmine.Spec).toBe(true);
+            tested = true;
+          });
+
+          expect(tested).toBe(true);
+        });
+      });
+
+
+      // We don't run the following tests on IE8.
+      // IE8 throws "Object does not support this property or method." error,
+      // when thrown from a function defined on window (which `inject` is).
+
+      it('should not change thrown Errors', inject(function($sniffer) {
+        if ($sniffer.msie <= 8) return;
+
+        expect(function() {
+          inject(function() {
+            throw new Error('test message');
+          });
+        }).toThrow('test message');
+      }));
+
+      it('should not change thrown strings', inject(function($sniffer) {
+        if ($sniffer.msie <= 8) return;
+
+        expect(function() {
+          inject(function() {
+            throw 'test message';
+          });
+        }).toThrow('test message');
+      }));
     });
   });
 
@@ -877,6 +946,14 @@ describe('ngMock', function() {
       hb = $httpBackend;
     }));
 
+    it('should provide "expect" methods for each HTTP verb', function() {
+      expect(typeof hb.expectGET).toBe("function");
+      expect(typeof hb.expectPOST).toBe("function");
+      expect(typeof hb.expectPUT).toBe("function");
+      expect(typeof hb.expectPATCH).toBe("function");
+      expect(typeof hb.expectDELETE).toBe("function");
+      expect(typeof hb.expectHEAD).toBe("function");
+    });
 
     it('should respond with first matched definition', function() {
       hb.when('GET', '/url1').respond(200, 'content', {});
@@ -891,6 +968,32 @@ describe('ngMock', function() {
       expect(callback).not.toHaveBeenCalled();
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should respond with a copy of the mock data', function() {
+      var mockObject = {a: 'b'};
+
+      hb.when('GET', '/url1').respond(200, mockObject, {});
+
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(200);
+        expect(response).toEqual({a: 'b'});
+        expect(response).not.toBe(mockObject);
+        response.a = 'c';
+      });
+
+      hb('GET', '/url1', null, callback);
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+
+      // Fire it again and verify that the returned mock data has not been
+      // modified.
+      callback.reset();
+      hb('GET', '/url1', null, callback);
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+      expect(mockObject).toEqual({a: 'b'});
     });
 
 
@@ -944,6 +1047,29 @@ describe('ngMock', function() {
     });
 
 
+    it('should match data object if specified', function() {
+      hb.when('GET', '/a/b', {a: 1, b: 2}).respond(201, 'content1');
+      hb.when('GET', '/a/b').respond(202, 'content2');
+
+      hb('GET', '/a/b', '{"a":1,"b":2}', function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('content1');
+      });
+
+      hb('GET', '/a/b', '{"b":2,"a":1}', function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('content1');
+      });
+
+      hb('GET', '/a/b', null, function(status, response) {
+        expect(status).toBe(202);
+        expect(response).toBe('content2');
+      });
+
+      hb.flush();
+    });
+
+
     it('should match only method', function() {
       hb.when('GET').respond(202, 'c');
       callback.andCallFake(function(status, response) {
@@ -970,29 +1096,29 @@ describe('ngMock', function() {
       hb.flush();
 
       expect(callback.callCount).toBe(2);
-      expect(callback.argsForCall[0]).toEqual([201, 'second', '']);
-      expect(callback.argsForCall[1]).toEqual([200, 'first', '']);
+      expect(callback.argsForCall[0]).toEqual([201, 'second', '', '']);
+      expect(callback.argsForCall[1]).toEqual([200, 'first', '', '']);
     });
 
 
     describe('respond()', function() {
       it('should take values', function() {
-        hb.expect('GET', '/url1').respond(200, 'first', {'header': 'val'});
+        hb.expect('GET', '/url1').respond(200, 'first', {'header': 'val'}, 'OK');
         hb('GET', '/url1', undefined, callback);
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
       });
 
       it('should take function', function() {
-        hb.expect('GET', '/some').respond(function(m, u, d, h) {
-          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}];
+        hb.expect('GET', '/some').respond(function (m, u, d, h) {
+          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
         });
 
         hb('GET', '/some', 'data', callback, {a: 'b'});
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
       });
 
       it('should default status code to 200', function() {
@@ -1021,8 +1147,8 @@ describe('ngMock', function() {
         hb.flush();
 
         expect(callback.callCount).toBe(2);
-        expect(callback.argsForCall[0]).toEqual([200, 'first', '']);
-        expect(callback.argsForCall[1]).toEqual([200, 'second', '']);
+        expect(callback.argsForCall[0]).toEqual([200, 'first', '', '']);
+        expect(callback.argsForCall[1]).toEqual([200, 'second', '', '']);
       });
     });
 
@@ -1072,6 +1198,32 @@ describe('ngMock', function() {
           hb('GET', '/match', 'different', noop, {});
         }).toThrow('Expected GET /match with different data\n' +
                    'EXPECTED: some-data\nGOT:      different');
+      });
+
+
+      it ('should not throw an exception when parsed body is equal to expected body object', function() {
+        hb.when('GET').respond(200, '', {});
+
+        hb.expect('GET', '/match', {a: 1, b: 2});
+        expect(function() {
+          hb('GET', '/match', '{"a":1,"b":2}', noop, {});
+        }).not.toThrow();
+
+        hb.expect('GET', '/match', {a: 1, b: 2});
+        expect(function() {
+          hb('GET', '/match', '{"b":2,"a":1}', noop, {});
+        }).not.toThrow();
+      });
+
+
+      it ('should throw exception when only parsed body differs from expected body object', function() {
+        hb.when('GET').respond(200, '', {});
+        hb.expect('GET', '/match', {a: 1, b: 2});
+
+        expect(function() {
+          hb('GET', '/match', '{"a":1,"b":3}', noop, {});
+        }).toThrow('Expected GET /match with different data\n' +
+                   'EXPECTED: {"a":1,"b":2}\nGOT:      {"a":1,"b":3}');
       });
 
 
@@ -1291,7 +1443,7 @@ describe('ngMock', function() {
             hb[shortcut]('/foo').respond('bar');
             hb(method, '/foo', undefined, callback);
             hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '');
+            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '', '');
           });
         });
       });
@@ -1299,6 +1451,7 @@ describe('ngMock', function() {
 
 
     describe('MockHttpExpectation', function() {
+      /* global MockHttpExpectation */
 
       it('should accept url as regexp', function() {
         var exp = new MockHttpExpectation('GET', /^\/x/);
@@ -1307,6 +1460,17 @@ describe('ngMock', function() {
         expect(exp.match('GET', '/xxx/x')).toBe(true);
         expect(exp.match('GET', 'x')).toBe(false);
         expect(exp.match('GET', 'a/x')).toBe(false);
+      });
+
+
+      it('should accept url as function', function() {
+        var urlValidator = function(url) {
+          return url !== '/not-accepted';
+        };
+        var exp = new MockHttpExpectation('POST', urlValidator);
+
+        expect(exp.match('POST', '/url')).toBe(true);
+        expect(exp.match('POST', '/not-accepted')).toBe(false);
       });
 
 

@@ -33,7 +33,7 @@ describe("convertDatetimeData", function() {
                   AMPMS: ['AM', 'PM'],
                   DATEFORMATS: ['a', 'b', 'c', 'd'],
                   TIMEFORMATS: ['e', 'f', 'g', 'h'] };
-                  
+
   it('should convert empty datetime obj', function() {
     var processedData = convert(dataObj);
     expect(processedData.MONTH).toEqual(['Enero', 'Pebrero']);

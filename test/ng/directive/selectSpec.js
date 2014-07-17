@@ -218,7 +218,7 @@ describe('select', function() {
 
         it('should not break if both the select and repeater models change at once', function() {
           scope.robots = ['c3p0', 'r2d2'];
-          scope.robot = 'c3p0'
+          scope.robot = 'c3p0';
           compile('<select ng-model="robot">' +
                     '<option value="">--select--</option>' +
                     '<option ng-repeat="r in robots">{{r}}</option>' +
@@ -708,6 +708,52 @@ describe('select', function() {
       expect(sortedHtml(options[0])).toEqual('<option value="regularProperty">visible</option>');
     });
 
+    it('should allow expressions over multiple lines', function() {
+      scope.isNotFoo = function(item) {
+        return item.name !== 'Foo';
+      };
+
+      createSelect({
+        'ng-options': 'key.id\n' +
+          'for key in object\n' +
+          '| filter:isNotFoo',
+        'ng-model': 'selected'
+      });
+
+      scope.$apply(function() {
+        scope.object = [{'id': 1, 'name': 'Foo'},
+                        {'id': 2, 'name': 'Bar'},
+                        {'id': 3, 'name': 'Baz'}];
+        scope.selected = scope.object[0];
+      });
+
+      var options = element.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[1])).toEqual('<option value="0">2</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="1">3</option>');
+    });
+
+    it('should not update selected property of an option element on digest with no change event',
+        function() {
+      createSingleSelect();
+
+      scope.$apply(function() {
+        scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
+        scope.selected = scope.values[0];
+      });
+
+      var options = element.find('option');
+      var optionToSelect = options.eq(1);
+
+      expect(optionToSelect.text()).toBe('B');
+
+      optionToSelect.prop('selected', true);
+      scope.$digest();
+
+      expect(optionToSelect.prop('selected')).toBe(true);
+      expect(scope.selected).toBe(scope.values[0]);
+    });
+
     describe('binding', function() {
 
       it('should bind to scope value', function() {
@@ -941,6 +987,20 @@ describe('select', function() {
         expect(element.find('option').eq(0).prop('selected')).toBeTruthy();
         expect(element.find('option').length).toEqual(2);
       });
+
+
+      it('should use exact same values as values in scope with one-time bindings', function() {
+        scope.values = [{name: 'A'}, {name: 'B'}];
+        scope.selected = scope.values[0];
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'value.name for value in ::values'
+        });
+
+        browserTrigger(element.find('option').eq(1));
+
+        expect(scope.selected).toBe(scope.values[1]);
+      });
     });
 
 
@@ -1160,7 +1220,7 @@ describe('select', function() {
 
       it('should deselect all options when model is emptied', function() {
         createMultiSelect();
-         scope.$apply(function() {
+        scope.$apply(function() {
           scope.values = [{name: 'A'}, {name: 'B'}];
           scope.selected = [scope.values[0]];
         });
@@ -1171,7 +1231,7 @@ describe('select', function() {
         });
 
         expect(element.find('option')[0].selected).toEqual(false);
-      })
+      });
     });
 
 
@@ -1210,6 +1270,30 @@ describe('select', function() {
 
         scope.$apply(function() {
           scope.required = false;
+        });
+        expect(element).toBeValid();
+      });
+
+
+      it('should treat an empty array as invalid when `multiple` attribute used', function() {
+        createSelect({
+          'ng-model': 'value',
+          'ng-options': 'item.name for item in values',
+          'ng-required': 'required',
+          'multiple': ''
+        }, true);
+
+        scope.$apply(function() {
+          scope.value = [];
+          scope.values = [{name: 'A', id: 1}, {name: 'B', id: 2}];
+          scope.required = true;
+        });
+        expect(element).toBeInvalid();
+
+        scope.$apply(function() {
+          // ngModelWatch does not set objectEquality flag
+          // array must be replaced in order to trigger $formatters
+          scope.value = [scope.values[0]];
         });
         expect(element).toBeValid();
       });
@@ -1255,7 +1339,7 @@ describe('select', function() {
     });
 
     it('should set value even if self closing HTML', function() {
-      scope.x = 'hello'
+      scope.x = 'hello';
       compile('<select ng-model="x"><option>hello</select>');
       expect(element).toEqualSelect(['hello']);
     });

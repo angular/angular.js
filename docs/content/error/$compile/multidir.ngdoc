@@ -1,0 +1,17 @@
+@ngdoc error
+@name $compile:multidir
+@fullName Multiple Directive Resource Contention
+@description
+
+This error occurs when multiple directives are applied to the same DOM element, and
+processing them would result in a collision or an unsupported configuration.
+
+
+To resolve this issue remove one of the directives which is causing the collision.
+
+Example scenarios of multiple incompatible directives applied to the same element include:
+
+* Multiple directives requesting `isolated scope`.
+* Multiple directives publishing a controller under the same name.
+* Multiple directives declared with the `transclusion` option.
+* Multiple directives attempting to define a `template` or `templateURL`.

@@ -1,3 +1,4 @@
+'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
 $provide.value("$locale", {
@@ -54,11 +55,11 @@ $provide.value("$locale", {
     ],
     "fullDate": "y\u5e74M\u6708d\u65e5EEEE",
     "longDate": "y\u5e74M\u6708d\u65e5",
-    "medium": "yyyy/MM/dd H:mm:ss",
-    "mediumDate": "yyyy/MM/dd",
+    "medium": "y/MM/dd H:mm:ss",
+    "mediumDate": "y/MM/dd",
     "mediumTime": "H:mm:ss",
-    "short": "yyyy/MM/dd H:mm",
-    "shortDate": "yyyy/MM/dd",
+    "short": "y/MM/dd H:mm",
+    "shortDate": "y/MM/dd",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
@@ -93,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "ja",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);
