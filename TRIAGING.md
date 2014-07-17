@@ -44,11 +44,11 @@ This process based on the idea of minimizing user pain
     * Label `needs: breaking change` - if needed
     * Label `needs: public api` - if the issue requires introduction of a new public API
 1. Label `browser: *` - if the issue **only** affects a certain browser
-1. Label `frequency: *` – How often does this issue come up? How many developers does this affect?
+1. Label `frequency: *` – How often does this issue come up? How many developers does this affect? Chose just one of the following:
     * low - obscure issue affecting a handful of developers
     * moderate - impacts a common usage pattern
     * high - impacts most or all Angular apps
-1. Label `severity: *` - How bad is the issue?
+1. Label `severity: *` - How bad is the issue? Chose just one of the following:
     * security issue
     * regression
     * memory leak
