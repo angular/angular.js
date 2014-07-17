@@ -48,7 +48,7 @@
     "canonical-path": "0.0.2",
     "winston": "~0.7.2",
     "dgeni": "^0.3.0",
-    "dgeni-packages": "^0.9.1",
+    "dgeni-packages": "^0.9.5",
     "gulp-jshint": "~1.4.2",
     "jshint-stylish": "~0.1.5",
     "node-html-encoder": "0.0.2",
