@@ -30,6 +30,7 @@ install:
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
+  - wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip
   - time ./scripts/travis/fetch_bundle.sh
   - rm -rf ./node_modules
   - time npm install
