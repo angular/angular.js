@@ -23,7 +23,7 @@ function cleanModule(module, name) {
   if (name === 'chokidar') {
     if (module.version === '0.8.1') {
       delete module.dependencies;
-    } else {
+    } else if ( module.version !== '0.8.2') {
       throw new Error("Unfamiliar chokidar version (v" + module.version +
           ") , please check status of https://github.com/paulmillr/chokidar/pull/106");
     }

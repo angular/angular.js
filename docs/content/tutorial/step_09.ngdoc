@@ -39,7 +39,7 @@ __`app/js/app.js`:__
 
 ```js
 ...
-angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']).
+angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']);
 ...
 ```
 
@@ -109,6 +109,10 @@ for this test run.
 Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
 access to the filter that we want to test.  See {@link angular.mock.inject angular.mock.inject()}.
 
+Notice that the suffix 'Filter' is appended to your filter name when injected.
+See the {@link guide/filter#using-filters-in-controllers-services-and-directives Filter Guide}
+section where this is outlined.
+
 You should now see the following output in the Karma tab:
 
 <pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)</pre>
@@ -116,7 +120,7 @@ You should now see the following output in the Karma tab:
 
 # Experiments
 
-* Let's experiment with some of the {@link ng.$filterProvider built-in Angular filters} and add the
+* Let's experiment with some of the {@link api/ng/filter built-in Angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`

@@ -1,3 +1,6 @@
+/* global createHttpBackend: false, createMockXhr: false, MockXhr: false */
+'use strict';
+
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
@@ -85,6 +88,25 @@ describe('$httpBackend', function() {
     xhr = MockXhr.$$lastInstance;
     xhr.statusText = 'OK';
     xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it('should not touch xhr.statusText when request is aborted on IE9 or lower', function() {
+    callback.andCallFake(function(status, response, headers, statusText) {
+      expect(statusText).toBe((!msie || msie >= 10) ? 'OK' : '');
+    });
+
+    $backend('GET', '/url', null, callback, {}, 2000);
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    fakeTimeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.statusText = 'OK';
     xhr.onreadystatechange();
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -279,7 +301,7 @@ describe('$httpBackend', function() {
       expect(response).toBe('response');
     });
 
-    $backend = createHttpBackend($browser, function() { return new SyncXhr() });
+    $backend = createHttpBackend($browser, function() { return new SyncXhr(); });
     $backend('GET', '/url', null, callback);
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -460,6 +482,7 @@ describe('$httpBackend', function() {
     });
 
     it('should convert 0 to 404 if no content - relative url', function() {
+      /* global urlParsingNode: true */
       var originalUrlParsingNode = urlParsingNode;
 
       //temporarily overriding the DOM element to pretend that the test runs origin with file:// protocol

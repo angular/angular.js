@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var bower = require('bower');
-var docGenerator = require('dgeni');
+var dgeni = require('dgeni');
 var merge = require('event-stream').merge;
 var path = require('canonical-path');
 
@@ -49,8 +49,8 @@ gulp.task('assets', ['bower'], function() {
 
 
 gulp.task('doc-gen', function() {
-  return docGenerator('docs.config.js')
-    .generateDocs()
+  var generateDocs = dgeni.generator('docs.config.js');
+  return generateDocs()
     .catch(function(error) {
       process.exit(1);
     });

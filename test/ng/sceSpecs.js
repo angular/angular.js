@@ -38,6 +38,7 @@ describe('SCE', function() {
 
       inject(function($window, $injector) {
         function constructSce() {
+          /* global $SceProvider: false */
           var sceProvider = new $SceProvider();
           sceProvider.enabled(enabled);
           return $injector.invoke(sceProvider.$get, sceProvider);
@@ -162,7 +163,7 @@ describe('SCE', function() {
         };
       }
       var wrappedValue = new TrustedValueHolder("originalValue");
-      expect(function() { return $sce.getTrusted($sce.HTML, wrappedValue) }).toThrowMinErr(
+      expect(function() { return $sce.getTrusted($sce.HTML, wrappedValue); }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
@@ -179,9 +180,9 @@ describe('SCE', function() {
     it('should override the default $sce.trustAs/valueOf/etc.', function() {
       module(function($provide) {
         $provide.value('$sceDelegate', {
-            trustAs: function(type, value) { return "wrapped:"   + value; },
-            getTrusted: function(type, value) { return "unwrapped:" + value; },
-            valueOf: function(value) { return "valueOf:" + value; }
+          trustAs: function(type, value) { return "wrapped:"   + value; },
+          getTrusted: function(type, value) { return "unwrapped:" + value; },
+          valueOf: function(value) { return "valueOf:" + value; }
         });
       });
 
@@ -196,7 +197,7 @@ describe('SCE', function() {
 
 
   describe('$sce.parseAs', function($sce) {
-   it('should parse constant literals as trusted', inject(function($sce) {
+    it('should parse constant literals as trusted', inject(function($sce) {
       expect($sce.parseAsJs('1')()).toBe(1);
       expect($sce.parseAsJs('1', $sce.ANY)()).toBe(1);
       expect($sce.parseAsJs('1', $sce.HTML)()).toBe(1);
@@ -208,6 +209,31 @@ describe('SCE', function() {
       expect($sce.parseAsJs('"string"')()).toBe("string");
     }));
 
+    it('should be possible to do one-time binding', function () {
+      module(provideLog);
+      inject(function($sce, $rootScope, log) {
+        $rootScope.$watch($sce.parseAsHtml('::foo'), function(value) {
+          log(value+'');
+        });
+
+        $rootScope.$digest();
+        expect(log).toEqual('undefined'); // initial listener call
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.HTML, 'trustedValue');
+        expect($rootScope.$$watchers.length).toBe(1);
+        $rootScope.$digest();
+
+        expect($rootScope.$$watchers.length).toBe(0);
+        expect(log).toEqual('trustedValue');
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.HTML, 'anotherTrustedValue');
+        $rootScope.$digest();
+        expect(log).toEqual(''); // watcher no longer active
+      });
+    });
+
     it('should NOT parse constant non-literals', inject(function($sce) {
       // Until there's a real world use case for this, we're disallowing
       // constant non-literals.  See $SceParseProvider.
@@ -218,7 +244,7 @@ describe('SCE', function() {
     it('should NOT return untrusted values from expression function', inject(function($sce) {
       var exprFn = $sce.parseAs($sce.HTML, 'foo');
       expect(function() {
-        return exprFn({}, {'foo': true})
+        return exprFn({}, {'foo': true});
       }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
@@ -226,7 +252,7 @@ describe('SCE', function() {
     it('should NOT return trusted values of the wrong type from expression function', inject(function($sce) {
       var exprFn = $sce.parseAs($sce.HTML, 'foo');
       expect(function() {
-        return exprFn({}, {'foo': $sce.trustAs($sce.JS, '123')})
+        return exprFn({}, {'foo': $sce.trustAs($sce.JS, '123')});
       }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
@@ -262,11 +288,11 @@ describe('SCE', function() {
           }
         });
         inject(testFn);
-      }
+      };
     }
 
     it('should default to "self" which allows relative urls', runTest({}, function($sce, $document) {
-        expect($sce.getTrustedResourceUrl('foo/bar')).toEqual('foo/bar');
+      expect($sce.getTrustedResourceUrl('foo/bar')).toEqual('foo/bar');
     }));
 
     it('should reject everything when whitelist is empty', runTest(
@@ -276,7 +302,8 @@ describe('SCE', function() {
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('#'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: #');
-    }));
+      }
+    ));
 
     it('should match against normalized urls', runTest(
       {
@@ -285,7 +312,8 @@ describe('SCE', function() {
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
-    }));
+      }
+    ));
 
     it('should not accept unknown matcher type', function() {
       expect(function() {
@@ -296,6 +324,7 @@ describe('SCE', function() {
     });
 
     describe('adjustMatcher', function() {
+      /* global adjustMatcher: false */
       it('should rewrite regex into regex and add ^ & $ on either end', function() {
         expect(adjustMatcher(/a.*b/).exec('a.b')).not.toBeNull();
         expect(adjustMatcher(/a.*b/).exec('-a.b-')).toBeNull();
@@ -318,7 +347,8 @@ describe('SCE', function() {
           // https doesn't match (mismatched protocol.)
           expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrowMinErr(
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
-      }));
+        }
+      ));
 
       it('should match entire regex', runTest(
         {
@@ -335,7 +365,8 @@ describe('SCE', function() {
           // Prefix not allowed even though original regex does not contain a leading ^.
           expect(function() { $sce.getTrustedResourceUrl('xhttp://example.com/foo'); }).toThrowMinErr(
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: xhttp://example.com/foo');
-      }));
+        }
+      ));
     });
 
     describe('string matchers', function() {
@@ -354,7 +385,8 @@ describe('SCE', function() {
           // You can match a suffix.
           expect(function() { $sce.getTrustedResourceUrl('xhttp://example.com/foo'); }).toThrowMinErr(
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: xhttp://example.com/foo');
-      }));
+        }
+      ));
 
       it('should support the * wildcard', runTest(
         {
@@ -382,7 +414,8 @@ describe('SCE', function() {
           // The * wildcard does not match ';'
           expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo;bar'); }).toThrowMinErr(
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo;bar');
-      }));
+        }
+      ));
 
       it('should support the ** wildcard', runTest(
         {
@@ -394,7 +427,8 @@ describe('SCE', function() {
           expect($sce.getTrustedResourceUrl('http://example.com/foo-bar')).toEqual('http://example.com/foo-bar');
           // The ** wildcard accepts the ':/.?&' characters.
           expect($sce.getTrustedResourceUrl('http://example.com/foo:1/2.3?4&5-6')).toEqual('http://example.com/foo:1/2.3?4&5-6');
-      }));
+        }
+      ));
 
       it('should not accept *** in the string', function() {
         expect(function() {
@@ -412,7 +446,8 @@ describe('SCE', function() {
           blackList: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('foo')).toEqual('foo');
-      }));
+        }
+      ));
 
       it('should support the special string "self" in blacklist', runTest(
         {
@@ -421,7 +456,8 @@ describe('SCE', function() {
         }, function($sce) {
           expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
-      }));
+        }
+      ));
     });
 
     it('should have blacklist override the whitelist', runTest(
@@ -431,7 +467,8 @@ describe('SCE', function() {
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
-    }));
+      }
+    ));
 
     it('should support multiple items in both lists', runTest(
       {
@@ -445,7 +482,8 @@ describe('SCE', function() {
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/3');
         expect(function() { $sce.getTrustedResourceUrl('open_redirect'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: open_redirect');
-    }));
+      }
+    ));
   });
 
   describe('sanitizing html', function() {

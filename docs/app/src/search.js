@@ -8,7 +8,7 @@ angular.module('search', [])
   }
 
   $scope.search = function(q) {
-    var MIN_SEARCH_LENGTH = 3;
+    var MIN_SEARCH_LENGTH = 2;
     if(q.length >= MIN_SEARCH_LENGTH) {
       var results = docsSearch(q);
       var totalAreas = 0;
@@ -35,7 +35,7 @@ angular.module('search', [])
       }
     }
     if(result) {
-      $location.path(result.url);
+      $location.path(result.path);
       $scope.hideResults();
     }
   };
@@ -131,7 +131,7 @@ angular.module('search', [])
   return function(scope, element, attrs) {
     var ESCAPE_KEY_KEYCODE = 27,
         FORWARD_SLASH_KEYCODE = 191;
-    angular.element($document[0].body).bind('keydown', function(event) {
+    angular.element($document[0].body).on('keydown', function(event) {
       var input = element[0];
       if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
         event.stopPropagation();
@@ -140,7 +140,7 @@ angular.module('search', [])
       }
     });
 
-    element.bind('keydown', function(event) {
+    element.on('keydown', function(event) {
       if(event.keyCode == ESCAPE_KEY_KEYCODE) {
         event.stopPropagation();
         event.preventDefault();

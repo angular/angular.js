@@ -12,6 +12,9 @@
  * Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag
  * too.
  *
+ * To disable the mouse click and drag functionality, add `ng-swipe-disable-mouse` to
+ * the `ng-swipe-left` or `ng-swipe-right` DOM Element.
+ *
  * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *
  * @element ANY
@@ -19,7 +22,7 @@
  * upon left swipe. (Event object is available as `$event`)
  *
  * @example
-    <example>
+    <example module="ngSwipeLeftExample" deps="angular-touch.js">
       <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
@@ -28,6 +31,9 @@
           <button ng-click="reply()">Reply</button>
           <button ng-click="delete()">Delete</button>
         </div>
+      </file>
+      <file name="script.js">
+        angular.module('ngSwipeLeftExample', ['ngTouch']);
       </file>
     </example>
  */
@@ -49,7 +55,7 @@
  * upon right swipe. (Event object is available as `$event`)
  *
  * @example
-    <example>
+    <example module="ngSwipeRightExample" deps="angular-touch.js">
       <file name="index.html">
         <div ng-show="!showActions" ng-swipe-left="showActions = true">
           Some list content, like an email in the inbox
@@ -58,6 +64,9 @@
           <button ng-click="reply()">Reply</button>
           <button ng-click="delete()">Delete</button>
         </div>
+      </file>
+      <file name="script.js">
+        angular.module('ngSwipeRightExample', ['ngTouch']);
       </file>
     </example>
  */
@@ -95,6 +104,10 @@ function makeSwipeDirective(directiveName, direction, eventName) {
             deltaY / deltaX < MAX_VERTICAL_RATIO;
       }
 
+      var pointerTypes = ['touch'];
+      if (!angular.isDefined(attr['ngSwipeDisableMouse'])) {
+        pointerTypes.push('mouse');
+      }
       $swipe.bind(element, {
         'start': function(coords, event) {
           startCoords = coords;
@@ -111,7 +124,7 @@ function makeSwipeDirective(directiveName, direction, eventName) {
             });
           }
         }
-      });
+      }, pointerTypes);
     };
   }]);
 }

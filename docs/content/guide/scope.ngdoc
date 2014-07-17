@@ -42,15 +42,16 @@ arrangement isolates the controller from the directive as well as from DOM. This
 point since it makes the controllers view agnostic, which greatly improves the testing story of
 the applications.
 
-<example>
+<example module="scopeExample">
   <file name="script.js">
-    function MyController($scope) {
-      $scope.username = 'World';
+    angular.module('scopeExample', [])
+      .controller('MyController', ['$scope', function($scope) {
+        $scope.username = 'World';
 
-      $scope.sayHello = function() {
-        $scope.greeting = 'Hello ' + $scope.username + '!';
-      };
-    }
+        $scope.sayHello = function() {
+          $scope.greeting = 'Hello ' + $scope.username + '!';
+        };
+      }]);
   </file>
   <file name="index.html">
     <div ng-controller="MyController">
@@ -122,13 +123,13 @@ inheritance, and child scopes prototypically inherit from their parents.
 This example illustrates scopes in application, and prototypical inheritance of properties. The example is followed by
 a diagram depicting the scope boundaries.
 
-<example>
+<example module="scopeExample">
   <file name="index.html">
   <div class="show-scope-demo">
-    <div ng-controller="GreetCtrl">
+    <div ng-controller="GreetController">
       Hello {{name}}!
     </div>
-    <div ng-controller="ListCtrl">
+    <div ng-controller="ListController">
       <ol>
         <li ng-repeat="name in names">{{name}} from {{department}}</li>
       </ol>
@@ -136,14 +137,14 @@ a diagram depicting the scope boundaries.
   </div>
   </file>
   <file name="script.js">
-    function GreetCtrl($scope, $rootScope) {
-      $scope.name = 'World';
-      $rootScope.department = 'Angular';
-    }
-
-    function ListCtrl($scope) {
-      $scope.names = ['Igor', 'Misko', 'Vojta'];
-    }
+    angular.module('scopeExample', [])
+      .controller('GreetController', ['$scope', '$rootScope', function($scope, $rootScope) {
+        $scope.name = 'World';
+        $rootScope.department = 'Angular';
+      }])
+      .controller('ListController', ['$scope', function($scope) {
+        $scope.names = ['Igor', 'Misko', 'Vojta'];
+      }]);
   </file>
   <file name="style.css">
     .show-scope-demo.ng-scope,
@@ -190,14 +191,15 @@ Scopes can propagate events in similar fashion to DOM events. The event can be {
 ng.$rootScope.Scope#$broadcast broadcasted} to the scope children or {@link
 ng.$rootScope.Scope#$emit emitted} to scope parents.
 
-<example>
+<example module="eventExample">
   <file name="script.js">
-    function EventController($scope) {
-      $scope.count = 0;
-      $scope.$on('MyEvent', function() {
-        $scope.count++;
-      });
-    }
+    angular.module('eventExample', [])
+      .controller('EventController', ['$scope', function($scope) {
+        $scope.count = 0;
+        $scope.$on('MyEvent', function() {
+          $scope.count++;
+        });
+      }]);
   </file>
   <file name="index.html">
     <div ng-controller="EventController">

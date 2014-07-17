@@ -86,7 +86,7 @@ Note that the names of arguments are significant, because the injector uses thes
 dependencies.
 
 
-<img  class="diagram" src="img/tutorial/xhr_service_final.png">
+<img  class="diagram" src="img/tutorial/tutorial_05.png">
 
 
 ### `$` Prefix Naming Convention
@@ -105,28 +105,30 @@ properties are considered private, and should not be accessed or modified.
 ### A Note on Minification
 
 Since Angular infers the controller's dependencies from the names of arguments to the controller's
-constructor function, if you were to [minify](http://goo.gl/SAnnsm) the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
-minified as well, and the dependency injector would not be able to identify services correctly.
+constructor function, if you were to [minify](http://goo.gl/SAnnsm) the JavaScript code for
+`PhoneListCtrl` controller, all of its function arguments would be minified as well, and the
+dependency injector would not be able to identify services correctly.
 
-There are two ways to overcome issues caused by minification:
+We can overcome this problem by annotating the function with the names of the dependencies, provided
+as strings, which will not get minified. There are two ways to provide these injection annotations:
 
-* You can create a `$inject` property on the controller function which holds an array of strings.
+* Create a `$inject` property on the controller function which holds an array of strings.
   Each string in the array is the name of the service to inject for the corresponding parameter.
-  In the case of our example we would write:
+  In our example we would write:
 
-```js
-    function PhoneListCtrl($scope, $http) {...}
-    PhoneListCtrl.$inject = ['$scope', '$http'];
-    phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
-```
+  ```js
+      function PhoneListCtrl($scope, $http) {...}
+      PhoneListCtrl.$inject = ['$scope', '$http'];
+      phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
+  ```
 
-* Use the inline bracket notation which wraps the function to be injected into an array of strings
-  (representing the dependency names) followed by the function to be injected:
+* Use an inline annotation where, instead of just providing the function, you provide an array.
+  This array contains a list of the service names, followed by the function itself.
 
-```js
-    function PhoneListCtrl($scope, $http) {...}
-    phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
-```
+  ```js
+      function PhoneListCtrl($scope, $http) {...}
+      phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
+  ```
 
 Both of these methods work with any function that can be injected by Angular, so it's up to your
 project's style guide to decide which one you use.
@@ -177,7 +179,7 @@ describe('PhoneCat controllers', function() {
 
     // The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
     // This allows us to inject a service but then attach it to a variable
-    // with the same name as the service.
+    // with the same name as the service in order to avoid a name conflict.
     beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
       $httpBackend = _$httpBackend_;
       $httpBackend.expectGET('phones/phones.json').
@@ -254,7 +256,7 @@ You should now see the following output in the Karma tab:
 
 # Experiments
 
-* At the bottom of `index.html`, add a `{{phones | json}}` binding to see the list of phones
+* At the bottom of `index.html`, add a `<pre>{{phones | json}}</pre>` binding to see the list of phones
   displayed in json format.
 
 * In the `PhoneListCtrl` controller, pre-process the http response by limiting the number of phones

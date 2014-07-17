@@ -18,7 +18,7 @@ how to implement them.
 ## What are Directives?
 
 At a high level, directives are markers on a DOM element (such as an attribute, element
-name, or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
+name, comment or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
 attach a specified behavior to that DOM element or even transform the DOM element and its children.
 
 Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngView`.
@@ -282,7 +282,7 @@ using `templateUrl` instead:
 Great! But what if we wanted to have our directive match the tag name `<my-customer>` instead?
 If we simply put a `<my-customer>` element into the HTML, it doesn't work.
 
-<div class="alert alert-waring">
+<div class="alert alert-warning">
 **Note:** When you create a directive, it is restricted to attribute only by default. In order to
 create directives that are triggered by element or class name, you need to use the `restrict` option.
 </div>
@@ -510,8 +510,8 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-See the {@link guide/directive#isolating-the-scope-of-a-directive
-"Isolating the Scope of a Directive"} section for more information about isolate scopes.
+See the {@link api/ng/service/$compile#directive-definition-object
+"Directive Definition Object - scope"} section for more information about isolate scopes.
 </div>
 
 <div class="alert alert-success">
@@ -537,7 +537,7 @@ where:
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
 to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
-end 2 end testing, where we want to ensure that all $timeouts have completed before completing the test.
+end-to-end testing, where we want to ensure that all $timeouts have completed before completing the test.
 We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
@@ -798,8 +798,8 @@ element?
           }
 
           function mouseup() {
-            $document.unbind('mousemove', mousemove);
-            $document.unbind('mouseup', mouseup);
+            $document.off('mousemove', mousemove);
+            $document.off('mouseup', mouseup);
           }
         };
       }]);
@@ -900,6 +900,11 @@ directive would look for the controller on just its own element).
 So where does this `myTabs` controller come from? Directives can specify controllers using
 the unsurprisingly named `controller` option. As you can see, the `myTabs` directive uses this
 option. Just like `ngController`, this option attaches a controller to the template of the directive.
+
+If it is necessary to reference the controller or any functions bound to the controller's scope in
+the template, you can use the option `controllerAs` to specify the name of the controller as an alias.
+The directive needs to define a scope for this configuration to be used. This is particularly useful
+in the case when the directive is used as a component.
 
 Looking back at `myPane`'s definition, notice the last argument in its `link` function: `tabsCtrl`.
 When a directive requires a controller, it receives that controller as the fourth argument of its

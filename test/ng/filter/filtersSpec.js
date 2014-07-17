@@ -19,6 +19,7 @@ describe('filters', function() {
   });
 
   describe('formatNumber', function() {
+    /* global formatNumber: false */
     var pattern;
 
     beforeEach(function() {
@@ -68,18 +69,18 @@ describe('filters', function() {
       expect(num).toBe('123.100');
       num = formatNumber(123.12, pattern, ',', '.');
       expect(num).toBe('123.12');
-      var num = formatNumber(123.1116, pattern, ',', '.');
+      num = formatNumber(123.1116, pattern, ',', '.');
       expect(num).toBe('123.112');
     });
 
 		it('should format the same with string as well as numeric fractionSize', function(){
 			var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
-			var num = formatNumber(123.1, pattern, ',', '.', 0);
+			num = formatNumber(123.1, pattern, ',', '.', 0);
       expect(num).toBe('123');
-			var num = formatNumber(123.1, pattern, ',', '.', "3");
+			num = formatNumber(123.1, pattern, ',', '.', "3");
       expect(num).toBe('123.100');
-			var num = formatNumber(123.1, pattern, ',', '.', 3);
+			num = formatNumber(123.1, pattern, ',', '.', 3);
       expect(num).toBe('123.100');
 		});
   });
@@ -121,6 +122,7 @@ describe('filters', function() {
 
 
     it('should do basic filter', function() {
+      /* jshint -W008 */
       expect(number(0, 0)).toEqual('0');
       expect(number(-999)).toEqual('-999');
       expect(number(123)).toEqual('123');
@@ -145,9 +147,18 @@ describe('filters', function() {
       expect(number(.99,      2)).toEqual("0.99");
       expect(number(.999,     3)).toEqual("0.999");
       expect(number(.9999,    3)).toEqual("1.000");
+      expect(number(1.9,      2)).toEqual("1.90");
+      expect(number(1.99,     2)).toEqual("1.99");
+      expect(number(1.999,    3)).toEqual("1.999");
+      expect(number(1.9999,   3)).toEqual("2.000");
       expect(number(1234.567, 0)).toEqual("1,235");
       expect(number(1234.567, 1)).toEqual("1,234.6");
       expect(number(1234.567, 2)).toEqual("1,234.57");
+      expect(number(1.255,    0)).toEqual("1");
+      expect(number(1.255,    1)).toEqual("1.3");
+      expect(number(1.255,    2)).toEqual("1.26");
+      expect(number(1.255,    3)).toEqual("1.255");
+      expect(number(0,        8)).toEqual("0.00000000");
     });
 
     it('should filter exponentially large numbers', function() {
@@ -273,19 +284,19 @@ describe('filters', function() {
       var westOfUTCPartial = new angular.mock.TzDate(+5.5, '2010-09-03T12:05:08.000Z');
 
       expect(date(utc, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T12:05:08+0000')
+                    toEqual('2010-09-03T12:05:08+0000');
 
       expect(date(eastOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T17:05:08+0500')
+                    toEqual('2010-09-03T17:05:08+0500');
 
       expect(date(westOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T07:05:08-0500')
+                    toEqual('2010-09-03T07:05:08-0500');
 
       expect(date(eastOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T17:35:08+0530')
+                    toEqual('2010-09-03T17:35:08+0530');
 
       expect(date(westOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T06:35:08-0530')
+                    toEqual('2010-09-03T06:35:08-0530');
     });
 
     it('should treat single quoted strings as string literals', function() {

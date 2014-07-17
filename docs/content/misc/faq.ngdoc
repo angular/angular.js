@@ -82,7 +82,7 @@ application is being bootstrapped. If jQuery is not present in your script path,
 to its own implementation of the subset of jQuery that we call {@link angular.element  jQLite}.
 
 Due to a change to use `on()`/`off()` rather than `bind()`/`unbind()`, Angular 1.2 only operates with
-jQuery 1.7.1 or above.
+jQuery 1.7.1 or above. However, Angular does not currently support jQuery 2.x or above.
 
 
 ### What is testability like in Angular?

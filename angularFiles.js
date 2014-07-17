@@ -1,4 +1,6 @@
-angularFiles = {
+'use strict';
+
+var angularFiles = {
   'angularSrc': [
     'src/minErr.js',
     'src/Angular.js',
@@ -44,7 +46,7 @@ angularFiles = {
 
     'src/ng/directive/directives.js',
     'src/ng/directive/a.js',
-    'src/ng/directive/booleanAttrs.js',
+    'src/ng/directive/attrs.js',
     'src/ng/directive/form.js',
     'src/ng/directive/input.js',
     'src/ng/directive/ngBind.js',
@@ -79,6 +81,9 @@ angularFiles = {
     ],
     'ngCookies': [
       'src/ngCookies/cookies.js'
+    ],
+    'ngMessages': [
+      'src/ngMessages/messages.js'
     ],
     'ngResource': [
       'src/ngResource/resource.js'
@@ -128,6 +133,7 @@ angularFiles = {
     'test/auto/*.js',
     'test/ng/**/*.js',
     'test/ngAnimate/*.js',
+    'test/ngMessages/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngRoute/**/*.js',
@@ -189,6 +195,7 @@ angularFiles = {
 
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],
+  angularFiles['angularModules']['ngMessages'],
   angularFiles['angularModules']['ngCookies'],
   angularFiles['angularModules']['ngResource'],
   angularFiles['angularModules']['ngRoute'],

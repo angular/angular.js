@@ -2,7 +2,7 @@
 
 describe('Filter: limitTo', function() {
   var items;
-  var str
+  var str;
   var limitTo;
 
   beforeEach(inject(function($filter) {
@@ -67,5 +67,19 @@ describe('Filter: limitTo', function() {
     expect(limitTo(str, '9')).toEqual(str);
     expect(limitTo(str, -9)).toEqual(str);
     expect(limitTo(str, '-9')).toEqual(str);
-  })
+  });
+
+  it('should return entire input array when limited by Infinity', function() {
+    expect(limitTo(items, Infinity)).toEqual(items);
+    expect(limitTo(items, 'Infinity')).toEqual(items);
+    expect(limitTo(items, -Infinity)).toEqual(items);
+    expect(limitTo(items, '-Infinity')).toEqual(items);
+  });
+
+  it('should return the entire string when limited by Infinity', function() {
+    expect(limitTo(str, Infinity)).toEqual(str);
+    expect(limitTo(str, 'Infinity')).toEqual(str);
+    expect(limitTo(str, -Infinity)).toEqual(str);
+    expect(limitTo(str, '-Infinity')).toEqual(str);
+  });
 });

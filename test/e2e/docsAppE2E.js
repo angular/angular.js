@@ -1,10 +1,12 @@
+'use strict';
+
 describe('docs.angularjs.org', function () {
   describe('App', function () {
     // it('should filter the module list when searching', function () {
     //   browser.get();
     //   browser.waitForAngular();
 
-    //   var search = element(by.input('q'));
+    //   var search = element(by.model('q'));
     //   search.clear();
     //   search.sendKeys('ngBind');
 
@@ -27,12 +29,12 @@ describe('docs.angularjs.org', function () {
     it('should show the functioning input directive example', function () {
       browser.get('index-debug.html#!/api/ng/directive/input');
 
-      //Wait for animation
-      browser.sleep(500);
+      // Ensure that the page is loaded before trying to switch frames.
+      browser.waitForAngular();
 
       browser.switchTo().frame('example-input-directive');
 
-      var nameInput = element(by.input('user.name'));
+      var nameInput = element(by.model('user.name'));
       nameInput.sendKeys('!!!');
 
       var code = element(by.css('tt'));

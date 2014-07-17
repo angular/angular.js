@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a.m.",
-      "p.m."
+      "AM",
+      "PM"
     ],
     "DAY": [
       "domingo",
@@ -31,27 +31,27 @@ $provide.value("$locale", {
       "diciembre"
     ],
     "SHORTDAY": [
-      "dom",
-      "lun",
-      "mar",
-      "mi\u00e9",
-      "jue",
-      "vie",
-      "s\u00e1b"
+      "dom.",
+      "lun.",
+      "mar.",
+      "mi\u00e9.",
+      "jue.",
+      "vie.",
+      "s\u00e1b."
     ],
     "SHORTMONTH": [
-      "ene",
-      "feb",
-      "mar",
-      "abr",
-      "may",
-      "jun",
-      "jul",
-      "ago",
-      "sep",
-      "oct",
-      "nov",
-      "dic"
+      "ene.",
+      "feb.",
+      "mar.",
+      "abr.",
+      "may.",
+      "jun.",
+      "jul.",
+      "ago.",
+      "sept.",
+      "oct.",
+      "nov.",
+      "dic."
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
@@ -94,6 +94,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "es-us",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

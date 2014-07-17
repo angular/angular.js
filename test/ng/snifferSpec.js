@@ -3,6 +3,7 @@
 describe('$sniffer', function() {
 
   function sniffer($window, $document) {
+    /* global $SnifferProvider: false */
     $window.navigator = {};
     $document = jqLite($document || {});
     if (!$document[0].body) {

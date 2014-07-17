@@ -32,7 +32,7 @@ __`app/index.html`:__
 
   <ul class="phones">
     <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
-      {{phone.name}}
+      <span>{{phone.name}}</span>
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
@@ -166,7 +166,7 @@ __`test/e2e/scenarios.js`:__
         "MOTOROLA XOOM\u2122"
       ]);
 
-      element(by.model('orderProp')).findElement(by.css('option[value="name"]')).click();
+      element(by.model('orderProp')).element(by.css('option[value="name"]')).click();
 
       expect(getNames()).toEqual([
         "MOTOROLA XOOM\u2122",

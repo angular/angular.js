@@ -58,6 +58,42 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('shyam;');
   });
 
+  it('should be possible to use one-time bindings on the collection', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in ::items">{{item.name}};</li>' +
+      '</ul>')(scope);
+
+    scope.$digest();
+
+    scope.items = [{name: 'misko'}, {name:'shyam'}];
+    scope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('misko;shyam;');
+    scope.items.push({name: 'adam'});
+    scope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('misko;shyam;');
+  });
+
+  it('should be possible to use one-time bindings on the content', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items">{{::item.name}};</li>' +
+      '</ul>')(scope);
+
+    scope.$digest();
+
+    scope.items = [{name: 'misko'}, {name:'shyam'}];
+    scope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('misko;shyam;');
+    scope.items.push({name: 'adam'});
+    scope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('misko;shyam;adam;');
+  });
+
 
   it('should iterate over an array-like object', function() {
     element = $compile(
@@ -79,6 +115,7 @@ describe('ngRepeat', function() {
   });
 
   it('should iterate over an array-like class', function() {
+    /* jshint -W009 */
     function Collection() {}
     Collection.prototype = new Array();
     Collection.prototype.length = 0;
@@ -395,10 +432,10 @@ describe('ngRepeat', function() {
 
 
   it("should throw error when left-hand-side of ngRepeat can't be parsed", function() {
-      element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
-      $compile(element)(scope);
+    element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
+    $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toMatch(/^\[ngRepeat:iidexp\] '_item_' in '_item_ in _collection_' should be an identifier or '\(_key_, _value_\)' expression, but got 'i dont parse'\./);
+      toMatch(/^\[ngRepeat:iidexp\] '_item_' in '_item_ in _collection_' should be an identifier or '\(_key_, _value_\)' expression, but got 'i dont parse'\./);
   });
 
 
@@ -818,7 +855,7 @@ describe('ngRepeat', function() {
       expect(children[1].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
       expect(children[2].nextSibling.nodeType).toBe(8);
       expect(children[2].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
-    }
+    };
 
     $rootScope.values = [1, 2, 3];
 
@@ -939,7 +976,7 @@ describe('ngRepeat', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toMatch(/^\[ngRepeat:dupes\] Duplicates in a repeater are not allowed\. Use 'track by' expression to specify unique keys\. Repeater: item in items, Duplicate key: object:003/);
+          toMatch(/^\[ngRepeat:dupes\] Duplicates in a repeater are not allowed\. Use 'track by' expression to specify unique keys\. Repeater: item in items, Duplicate key: object:3/);
 
       // recover
       scope.items = [a];
@@ -959,7 +996,7 @@ describe('ngRepeat', function() {
       scope.items = [d, d, d];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toMatch(/^\[ngRepeat:dupes\] Duplicates in a repeater are not allowed\. Use 'track by' expression to specify unique keys\. Repeater: item in items, Duplicate key: object:009/);
+          toMatch(/^\[ngRepeat:dupes\] Duplicates in a repeater are not allowed\. Use 'track by' expression to specify unique keys\. Repeater: item in items, Duplicate key: object:9/);
 
       // recover
       scope.items = [a];
@@ -1045,7 +1082,7 @@ describe('ngRepeat', function() {
       inject(function($compile, $rootScope) {
         element = $compile('<div><div ng-repeat="i in [1,2]" elm-trans>{{i}}</div></div>')($rootScope);
         $rootScope.$digest();
-        expect(element.text()).toBe('[[1]][[2]]')
+        expect(element.text()).toBe('[[1]][[2]]');
       });
     });
 
@@ -1138,13 +1175,48 @@ describe('ngRepeat and transcludes', function() {
       dealoc(element);
     });
   });
+
+
+  it('should use the correct transcluded scope', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('iso', valueFn({
+        restrict: 'E',
+        transclude: true,
+        template: '<div ng-repeat="a in [1]"><div ng-transclude></div></div>',
+        scope: {}
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      $rootScope.val = 'transcluded content';
+      var element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+      $rootScope.$digest();
+      expect(trim(element.text())).toEqual('transcluded content');
+      dealoc(element);
+    });
+  });
+
+
+  it('should set the state before linking', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('assertA', valueFn(function(scope) {
+        // This linking function asserts that a is set.
+        // If we only test this by asserting binding, it will work even if the value is set later.
+        expect(scope.a).toBeDefined();
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      var element = $compile('<div><span ng-repeat="a in [1]"><span assert-a></span></span></div>')($rootScope);
+      $rootScope.$digest();
+      dealoc(element);
+    });
+  });
 });
 
 describe('ngRepeat animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -1268,6 +1340,7 @@ describe('ngRepeat animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('move');
       expect(item.element.text()).toBe('3');
-  }));
+    })
+  );
 
 });

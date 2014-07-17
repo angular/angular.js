@@ -3,6 +3,8 @@
 // TODO(vojta): pre-commit hook for validating messages
 // TODO(vojta): report errors, currently Q silence everything which really sucks
 
+'use strict';
+
 var child = require('child_process');
 var fs = require('fs');
 var util = require('util');
@@ -164,7 +166,7 @@ var writeChangelog = function(stream, commits, version) {
         hash: commit.hash,
         closes: []
       });
-    };
+    }
   });
 
   stream.write(util.format(HEADER_TPL, version, version, currentDate()));
@@ -172,7 +174,7 @@ var writeChangelog = function(stream, commits, version) {
   printSection(stream, 'Features', sections.feat);
   printSection(stream, 'Performance Improvements', sections.perf);
   printSection(stream, 'Breaking Changes', sections.breaks, false);
-}
+};
 
 
 var getPreviousTag = function() {

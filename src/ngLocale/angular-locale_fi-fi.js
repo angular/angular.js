@@ -1,6 +1,24 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+function getDecimals(n) {
+  n = n + '';
+  var i = n.indexOf('.');
+  return (i == -1) ? 0 : n.length - i - 1;
+}
+
+function getVF(n, opt_precision) {
+  var v = opt_precision;
+
+  if (undefined === v) {
+    v = Math.min(getDecimals(n), 3);
+  }
+
+  var base = Math.pow(10, v);
+  var f = ((n * base) | 0) % base;
+  return {v: v, f: f};
+}
+
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
@@ -53,13 +71,13 @@ $provide.value("$locale", {
       "marraskuuta",
       "joulukuuta"
     ],
-    "fullDate": "cccc, d. MMMM y",
+    "fullDate": "cccc d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d.M.yyyy H.mm.ss",
-    "mediumDate": "d.M.yyyy",
+    "medium": "d.M.y H.mm.ss",
+    "mediumDate": "d.M.y",
     "mediumTime": "H.mm.ss",
-    "short": "d.M.yyyy H.mm",
-    "shortDate": "d.M.yyyy",
+    "short": "d.M.y H.mm",
+    "shortDate": "d.M.y",
     "shortTime": "H.mm"
   },
   "NUMBER_FORMATS": {
@@ -94,6 +112,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "fi-fi",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

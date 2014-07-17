@@ -218,7 +218,7 @@ describe('select', function() {
 
         it('should not break if both the select and repeater models change at once', function() {
           scope.robots = ['c3p0', 'r2d2'];
-          scope.robot = 'c3p0'
+          scope.robot = 'c3p0';
           compile('<select ng-model="robot">' +
                     '<option value="">--select--</option>' +
                     '<option ng-repeat="r in robots">{{r}}</option>' +
@@ -987,6 +987,20 @@ describe('select', function() {
         expect(element.find('option').eq(0).prop('selected')).toBeTruthy();
         expect(element.find('option').length).toEqual(2);
       });
+
+
+      it('should use exact same values as values in scope with one-time bindings', function() {
+        scope.values = [{name: 'A'}, {name: 'B'}];
+        scope.selected = scope.values[0];
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'value.name for value in ::values'
+        });
+
+        browserTrigger(element.find('option').eq(1));
+
+        expect(scope.selected).toBe(scope.values[1]);
+      });
     });
 
 
@@ -1206,7 +1220,7 @@ describe('select', function() {
 
       it('should deselect all options when model is emptied', function() {
         createMultiSelect();
-         scope.$apply(function() {
+        scope.$apply(function() {
           scope.values = [{name: 'A'}, {name: 'B'}];
           scope.selected = [scope.values[0]];
         });
@@ -1217,7 +1231,7 @@ describe('select', function() {
         });
 
         expect(element.find('option')[0].selected).toEqual(false);
-      })
+      });
     });
 
 
@@ -1325,7 +1339,7 @@ describe('select', function() {
     });
 
     it('should set value even if self closing HTML', function() {
-      scope.x = 'hello'
+      scope.x = 'hello';
       compile('<select ng-model="x"><option>hello</select>');
       expect(element).toEqualSelect(['hello']);
     });

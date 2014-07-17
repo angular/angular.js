@@ -145,5 +145,5 @@ describe('$cookieStore', function() {
     $browser.cookieHash['blankCookie'] = '';
     $browser.poll();
     expect($cookieStore.get("blankCookie")).toEqual('');
-  }))
+  }));
 });

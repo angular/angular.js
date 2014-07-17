@@ -1,3 +1,5 @@
+'use strict';
+
 var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
@@ -107,6 +109,12 @@ module.exports = function(grunt) {
       options: {
         jshintrc: true,
       },
+      node: {
+        files: { src: ['*.js', 'lib/**/*.js'] },
+      },
+      tests: {
+        files: { src: 'test/**/*.js' },
+      },
       ng: {
         files: { src: files['angularSrc'] },
       },
@@ -118,6 +126,9 @@ module.exports = function(grunt) {
       },
       ngLocale: {
         files: { src: 'src/ngLocale/**/*.js' },
+      },
+      ngMessages: {
+        files: { src: 'src/ngMessages/**/*.js' },
       },
       ngMock: {
         files: { src: 'src/ngMock/**/*.js' },
@@ -187,6 +198,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-resource.js',
         src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
+      messages: {
+        dest: 'build/angular-messages.js',
+        src: util.wrap(files['angularModules']['ngMessages'], 'module')
+      },
       animate: {
         dest: 'build/angular-animate.js',
         src: util.wrap(files['angularModules']['ngAnimate'], 'module')
@@ -211,6 +226,7 @@ module.exports = function(grunt) {
       animate: 'build/angular-animate.js',
       cookies: 'build/angular-cookies.js',
       loader: 'build/angular-loader.js',
+      messages: 'build/angular-messages.js',
       touch: 'build/angular-touch.js',
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
@@ -220,8 +236,11 @@ module.exports = function(grunt) {
 
     "ddescribe-iit": {
       files: [
+        'src/**/*.js',
         'test/**/*.js',
-        '!test/ngScenario/DescribeSpec.js'
+        '!test/ngScenario/DescribeSpec.js',
+        '!src/ng/directive/attrs.js', // legitimate xit here
+        '!src/ngScenario/**/*.js'
       ]
     },
 
@@ -246,7 +265,11 @@ module.exports = function(grunt) {
     compress: {
       build: {
         options: {archive: 'build/' + dist +'.zip', mode: 'zip'},
-        src: ['**'], cwd: 'build', expand: true, dot: true, dest: dist + '/'
+        src: ['**'],
+        cwd: 'build',
+        expand: true,
+        dot: true,
+        dest: dist + '/'
       }
     },
 

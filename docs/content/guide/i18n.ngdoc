@@ -114,7 +114,7 @@ You write the following binding using the currency filter:
 
 If your app is currently in the `en-US` locale, the browser will show `$1000.00`. If someone in the
 Japanese locale (`ja`) views your app, their browser will show a balance of `¥1000.00` instead.
-This is problematinc because $1000 is not the same as ¥1000.
+This is problematic because $1000 is not the same as ¥1000.
 
 In this case, you need to override the default currency symbol by providing the
 {@link ng.filter:currency} currency filter with a currency symbol as a parameter.
