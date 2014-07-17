@@ -241,13 +241,35 @@ describe('ngSwitch', function() {
     $rootScope.url = 'x';
     $rootScope.$apply();
     expect(getChildScope()).toBeUndefined();
-    expect(child1.$destroy).toHaveBeenCalledOnce();
+    expect(child1.$destroy).toHaveBeenCalled();
 
     $rootScope.url = 'a';
     $rootScope.$apply();
     var child2 = getChildScope();
     expect(child2).toBeDefined();
     expect(child2).not.toBe(child1);
+  }));
+
+
+  it("should use the correct transclusion scope if there is a transclude directive on the ng-swith-when/ng-switch-default element", inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-switch="foo">' +
+          '<pre ng-switch-when="item1" ng-repeat="bar in bars">' +
+              'foo = {{foo}}' +
+              'bar = {{bar}}' +
+              '$index = {{$index}}' +
+          '</pre>' +
+      '</div>'
+    )($rootScope);
+    $rootScope.$apply('foo="item1";bars=["one", "two"]');
+    expect(element.text()).toEqual(
+      'foo = item1' +
+      'bar = one' +
+      '$index = 0' +
+      'foo = item1' +
+      'bar = two' +
+      '$index = 1'
+    );
   }));
 
 
