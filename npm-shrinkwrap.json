@@ -502,7 +502,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.9.1",
+      "version": "0.9.5",
       "dependencies": {
         "lodash": {
           "version": "2.4.1"
@@ -511,10 +511,13 @@
           "version": "2.0.3"
         },
         "glob": {
-          "version": "3.2.9",
+          "version": "3.2.11",
           "dependencies": {
+            "inherits": {
+              "version": "2.0.1"
+            },
             "minimatch": {
-              "version": "0.2.14",
+              "version": "0.3.0",
               "dependencies": {
                 "lru-cache": {
                   "version": "2.5.0"
@@ -523,9 +526,6 @@
                   "version": "1.0.0"
                 }
               }
-            },
-            "inherits": {
-              "version": "2.0.1"
             }
           }
         },
@@ -539,7 +539,7 @@
                   "version": "0.0.2"
                 },
                 "minimist": {
-                  "version": "0.0.8"
+                  "version": "0.0.10"
                 }
               }
             },
@@ -565,7 +565,7 @@
           "version": "0.7.1"
         },
         "esprima": {
-          "version": "1.2.0"
+          "version": "1.2.2"
         },
         "change-case": {
           "version": "2.1.1",
