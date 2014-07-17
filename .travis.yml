@@ -31,6 +31,7 @@ install:
   # Log HTTP requests
   - npm config set loglevel http
   - time ./scripts/travis/fetch_bundle.sh
+  - rm -rf ./node_modules
   - time npm install
 
 before_script:
