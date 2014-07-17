@@ -166,9 +166,8 @@ var ngSwitchDirective = ['$animate', function($animate) {
         if ((selectedTranscludes = ngSwitchController.cases['!' + value] || ngSwitchController.cases['?'])) {
           scope.$eval(attr.change);
           forEach(selectedTranscludes, function(selectedTransclude) {
-            var selectedScope = scope.$new();
-            selectedScopes.push(selectedScope);
-            selectedTransclude.transclude(selectedScope, function(caseElement) {
+            selectedTransclude.transclude(function(caseElement, selectedScope) {
+              selectedScopes.push(selectedScope);
               var anchor = selectedTransclude.element;
 
               selectedElements.push(caseElement);
@@ -183,7 +182,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
 
 var ngSwitchWhenDirective = ngDirective({
   transclude: 'element',
-  priority: 800,
+  priority: 1200,
   require: '^ngSwitch',
   multiElement: true,
   link: function(scope, element, attrs, ctrl, $transclude) {
@@ -194,7 +193,7 @@ var ngSwitchWhenDirective = ngDirective({
 
 var ngSwitchDefaultDirective = ngDirective({
   transclude: 'element',
-  priority: 800,
+  priority: 1200,
   require: '^ngSwitch',
   multiElement: true,
   link: function(scope, element, attr, ctrl, $transclude) {
