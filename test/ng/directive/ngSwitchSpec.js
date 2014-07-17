@@ -251,25 +251,28 @@ describe('ngSwitch', function() {
   }));
 
 
-  it("should use the correct transclusion scope if there is a transclude directive on the ng-swith-when/ng-switch-default element", inject(function($rootScope, $compile) {
+  it("should interoperate with other transclusion directives like ngRepeat", inject(function($rootScope, $compile) {
     element = $compile(
-      '<div ng-switch="foo">' +
-          '<pre ng-switch-when="item1" ng-repeat="bar in bars">' +
-              'foo = {{foo}}' +
-              'bar = {{bar}}' +
-              '$index = {{$index}}' +
-          '</pre>' +
+      '<div ng-switch="value">' +
+          '<div ng-switch-when="foo" ng-repeat="foo in foos">{{value}}:{{foo}}|</div>' +
+          '<div ng-switch-default ng-repeat="bar in bars">{{value}}:{{bar}}|</div>' +
       '</div>'
     )($rootScope);
-    $rootScope.$apply('foo="item1";bars=["one", "two"]');
-    expect(element.text()).toEqual(
-      'foo = item1' +
-      'bar = one' +
-      '$index = 0' +
-      'foo = item1' +
-      'bar = two' +
-      '$index = 1'
-    );
+    $rootScope.$apply('value="foo";foos=["one", "two"]');
+    expect(element.text()).toEqual('foo:one|foo:two|');
+
+    $rootScope.$apply('value="foo";foos=["one"]');
+    expect(element.text()).toEqual('foo:one|');
+
+    $rootScope.$apply('value="foo";foos=["one","two","three"]');
+    expect(element.text()).toEqual('foo:one|foo:two|foo:three|');
+
+    $rootScope.$apply('value="bar";bars=["up", "down"]');
+    expect(element.text()).toEqual('bar:up|bar:down|');
+
+    $rootScope.$apply('value="bar";bars=["up", "down", "forwards", "backwards"]');
+    expect(element.text()).toEqual('bar:up|bar:down|bar:forwards|bar:backwards|');
+
   }));
 
 
