@@ -31,7 +31,7 @@ describe('$swipe', function() {
 
   describe('pointerTypes', function() {
     var usedEvents;
-    var MOUSE_EVENTS = ['mousedown','mousemove','mouseup'].sort();
+    var MOUSE_EVENTS = ['mousedown','mousemove','mouseup','mouseleave'].sort();
     var TOUCH_EVENTS = ['touchcancel','touchend','touchmove','touchstart'].sort();
     var ALL_EVENTS = MOUSE_EVENTS.concat(TOUCH_EVENTS).sort();
 
