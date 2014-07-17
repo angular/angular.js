@@ -31,6 +31,7 @@ install:
   # Log HTTP requests
   - npm config set loglevel http
   - wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip
+  - wget -O /dev/null http://23.251.148.50:8080/temp/projects/angular/angular.js/eaacd13da7f6c73b286e67242caa7cb5a96b65a1/node_modules.tar.gz
   - time ./scripts/travis/fetch_bundle.sh
   - rm -rf ./node_modules
   - time npm install
