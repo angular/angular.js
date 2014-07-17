@@ -323,6 +323,18 @@ describe('$location', function() {
         expect(url.search()).toEqual({'i j': '<>#'});
         expect(url.hash()).toBe('x <>#');
       });
+
+      it('should decode pluses as spaces in urls', function() {
+        url = new LocationHtml5Url('http://host.com/');
+        url.$$parse('http://host.com/?a+b=c+d');
+        expect(url.search()).toEqual({'a b':'c d'});
+      });
+
+      it('should retain pluses when setting search queries', function() {
+        url.search({'a+b':'c+d'});
+        expect(url.search()).toEqual({'a+b':'c+d'});
+      });
+
     });
   });
 
