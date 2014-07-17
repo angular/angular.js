@@ -25,4 +25,7 @@ config.multiCapabilities = [{
   'build': process.env.TRAVIS_BUILD_NUMBER
 }];
 
+config.allScriptsTimeout = 30000;
+config.getPageTimeout = 30000;
+
 exports.config = config;
