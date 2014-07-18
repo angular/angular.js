@@ -12,6 +12,12 @@ env:
     - JOB=e2e TEST_TARGET=jqlite
     - JOB=e2e TEST_TARGET=jquery
     - JOB=e2e TEST_TARGET=doce2e
+    - JOB=a
+    - JOB=b
+    - JOB=c
+    - JOB=d
+    - JOB=e
+    - JOB=f
   global:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
@@ -24,21 +30,24 @@ install:
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  # Run npm install twice, because it is flaky.
-  - npm install || npm install
+  - wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip
+  - wget -O /dev/null http://23.251.148.50:8080/temp/projects/angular/angular.js/eaacd13da7f6c73b286e67242caa7cb5a96b65a1/node_modules.tar.gz
+  - time ./scripts/travis/fetch_bundle.sh
+  - rm -rf ./node_modules
+  - time npm install
 
 before_script:
-  - mkdir -p $LOGS_DIR
-  - ./lib/sauce/sauce_connect_setup.sh
-  - npm install -g grunt-cli
-  - grunt package
-  - ./scripts/travis/wait_for_browser_provider.sh
+#  - mkdir -p $LOGS_DIR
+#  - ./lib/sauce/sauce_connect_setup.sh
+#  - npm install -g grunt-cli
+#  - grunt package
+#  - ./scripts/travis/wait_for_browser_provider.sh
 
 script:
-  - ./scripts/travis/build.sh
+#  - ./scripts/travis/build.sh
 
 after_script:
-  - ./scripts/travis/print_logs.sh
+#  - ./scripts/travis/print_logs.sh
 
 notifications:
   webhooks:
