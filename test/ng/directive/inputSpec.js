@@ -1546,6 +1546,30 @@ describe('input', function() {
       expect(scope.items[0].selected).toBe(false);
     });
   });
+
+
+  describe('password', function() {
+    // Under no circumstances should input[type=password] trim inputs
+    it('should not trim if ngTrim is unspecified', function() {
+      compileInput('<input type="password" ng-model="password">');
+      changeInputValueTo(' - - untrimmed - - ');
+      expect(scope.password.length).toBe(' - - untrimmed - - '.length);
+    });
+
+
+    it('should not trim if ngTrim !== false', function() {
+      compileInput('<input type="password" ng-model="password" ng-trim="true">');
+      changeInputValueTo(' - - untrimmed - - ');
+      expect(scope.password.length).toBe(' - - untrimmed - - '.length);
+    });
+
+
+    it('should not trim if ngTrim === false', function() {
+      compileInput('<input type="password" ng-model="password" ng-trim="false">');
+      changeInputValueTo(' - - untrimmed - - ');
+      expect(scope.password.length).toBe(' - - untrimmed - - '.length);
+    });
+  });
 });
 
 describe('NgModel animations', function() {

@@ -17,7 +17,9 @@ var inputType = {
    * @name input[text]
    *
    * @description
-   * Standard HTML text input with angular data binding.
+   * Standard HTML text input with angular data binding, inherited by most of the `input` elements.
+   *
+   * *NOTE* Not every feature offered is available for all input types.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -35,6 +37,8 @@ var inputType = {
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
+   *    This parameter is ignored for input[type=password] controls, which will never trim the
+   *    input.
    *
    * @example
       <example name="text-input-directive" module="textInputExample">
@@ -474,6 +478,7 @@ function addNativeHtml5Validators(ctrl, validatorName, badFlags, ignoreFlags, va
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop(VALIDITY_STATE_PROPERTY);
   var placeholder = element[0].placeholder, noevent = {};
+  var type = element[0].type.toLowerCase();
   ctrl.$$validityState = validity;
 
   // In composition mode, users are still inputing intermediate text buffer,
@@ -507,8 +512,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
     // By default we will trim the value
     // If the attribute ng-trim exists we will avoid trimming
-    // e.g. <input ng-model="foo" ng-trim="false">
-    if (toBoolean(attr.ngTrim || 'T')) {
+    // If input type is 'password', the value is never trimmed
+    if (type !== 'password' && (toBoolean(attr.ngTrim || 'T'))) {
       value = trim(value);
     }
 
@@ -783,6 +788,8 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * HTML input element control with angular data-binding. Input control follows HTML5 input types
  * and polyfills the HTML5 validation behavior for older browsers.
  *
+ * *NOTE* Not every feature offered is available for all input types.
+ *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
@@ -796,6 +803,9 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *    patterns defined as scope expressions.
  * @param {string=} ngChange Angular expression to be executed when input changes due to user
  *    interaction with the input element.
+ * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
+ *    This parameter is ignored for input[type=password] controls, which will never trim the
+ *    input.
  *
  * @example
     <example name="input-directive" module="inputExample">
