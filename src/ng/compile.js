@@ -2055,6 +2055,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               }
             }
             $rootElement.length -= removeCount - 1;
+
+            // If the replaced element is also the jQuery .context then replace it
+            // .context is a deprecated jQuery api, so we should set it only when jQuery set it
+            // http://api.jquery.com/context/
+            if ($rootElement.context === firstElementToRemove) {
+              $rootElement.context = newNode;
+            }
             break;
           }
         }
