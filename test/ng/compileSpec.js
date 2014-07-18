@@ -719,6 +719,31 @@ describe('$compile', function() {
           expect(child).toHaveClass('log'); // merged from replace directive template
         }));
 
+        it('should update references to replaced jQuery context', function() {
+          module(function($compileProvider) {
+            $compileProvider.directive('foo', function() {
+              return {
+                replace: true,
+                template: '<div></div>'
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            element = jqLite(document.createElement('span')).attr('foo', '');
+            expect(nodeName_(element)).toBe('span');
+
+            var preCompiledNode = element[0];
+
+            var linked = $compile(element)($rootScope);
+            expect(linked).toBe(element);
+            expect(nodeName_(element)).toBe('div');
+            if (element.context) {
+              expect(element.context).toBe(element[0]);
+            }
+          });
+        });
+
         it("should fail if replacing and template doesn't have a single root element", function() {
           module(function() {
             directive('noRootElem', function() {
