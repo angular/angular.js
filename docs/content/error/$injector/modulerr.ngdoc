@@ -4,7 +4,7 @@
 @description
 
 This error occurs when a module fails to load due to some exception. The error
-message above should provide additional context.
+message above should provide additional context as long as you're not running the minified version of Angular.
 
 In AngularJS `1.2.0` and later, `ngRoute` has been moved to its own module.
 If you are getting this error after upgrading to `1.2.x`, be sure that you've
