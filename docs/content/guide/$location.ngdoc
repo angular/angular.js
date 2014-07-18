@@ -358,118 +358,311 @@ Note that when you type hashbang url into first browser (or vice versa) it doesn
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
 = on page reload.
 
-In this examples we use `<base href="/base/index.html" />`
-<example>
+In these examples we use `<base href="/base/index.html" />`
+
+#### Browser in HTML5 mode
+<example module="html5-mode">
   <file name="index.html">
-    <div id="html5-mode" ng-controller="Html5Cntl">
-      <h3>Browser with History API</h3>
+    <div ng-controller="LocationController">
       <div ng-address-bar browser="html5"></div><br><br>
-      $location.protocol() = {{$location.protocol()}}<br>
-      $location.host() = {{$location.host()}}<br>
-      $location.port() = {{$location.port()}}<br>
-      $location.path() = {{$location.path()}}<br>
-      $location.search() = {{$location.search()}}<br>
-      $location.hash() = {{$location.hash()}}<br>
-      <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
-      <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
-      <a href="/other-base/another?search">external</a>
-    </div>
-
-    <div id="hashbang-mode" ng-controller="HashbangCntl">
-      <h3>Browser without History API</h3>
-      <div ng-address-bar browser="hashbang"></div><br><br>
-      $location.protocol() = {{$location.protocol()}}<br>
-      $location.host() = {{$location.host()}}<br>
-      $location.port() = {{$location.port()}}<br>
-      $location.path() = {{$location.path()}}<br>
-      $location.search() = {{$location.search()}}<br>
-      $location.hash() = {{$location.hash()}}<br>
-      <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
-      <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
-      <a href="/other-base/another?search">external</a>
+      <div>
+        $location.protocol() = <span ng-bind="$location.protocol()"></span> <br>
+        $location.host() = <span ng-bind="$location.host()"></span> <br>
+        $location.port() = <span ng-bind="$location.port()"></span> <br>
+        $location.path() = <span ng-bind="$location.path()"></span> <br>
+        $location.search() = <span ng-bind="$location.search()"></span> <br>
+        $location.hash() = <span ng-bind="$location.hash()"></span> <br>
+      </div>
+      <div id="navigation">
+        <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+        <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+        <a href="/other-base/another?search">external</a>
+      </div>
     </div>
   </file>
-
   <file name="script.js">
-    function FakeBrowser(initUrl, baseHref) {
-      this.onUrlChange = function(fn) {
-        this.urlChange = fn;
+    angular.module('fake-browser', [])
+
+   .factory('FakeBrowser', function() {
+     return function FakeBrowser(initUrl, baseHref) {
+       this.onUrlChange = function(fn) {
+         this.urlChange = fn;
+       };
+
+       this.url = function() {
+         return initUrl;
+       };
+
+       this.defer = function(fn, delay) {
+         setTimeout(function() { fn(); }, delay || 0);
+       };
+
+       this.baseHref = function() {
+         return baseHref;
+       };
+
+       this.notifyWhenOutstandingRequests = angular.noop;
+     };
+   });
+
+   angular.module('html5-mode', ['fake-browser'])
+
+   .factory('$browser', function(FakeBrowser) {
+     return new FakeBrowser('http://www.example.com/base/path?a=b#h', '/base/index.html');
+   })
+
+   .value('$sniffer', { history: true })
+
+   .controller("LocationController", function($scope, $location) {
+     $scope.$location = {};
+     angular.forEach("protocol host port path search hash".split(" "), function(method){        
+      $scope.$location[method] = function(){
+        var result = $location[method].call($location);
+        return angular.isObject(result) ? angular.toJson(result) : result;
       };
+     });
+   })    
 
-      this.url = function() {
-        return initUrl;
+   .directive('ngAddressBar', function($browser, $timeout) {
+      return {
+        template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
+        link: function(scope, element, attrs){
+          var input = element.children("input"), delay;
+          
+          input.on('keypress keyup keydown', function(event) {
+                  delay = (!delay ? $timeout(fireUrlChange, 250) : null);
+                  event.stopPropagation();
+                })
+               .val($browser.url());
+          
+          $browser.url = function(url) {
+            return url ? input.val(url) : input.val();
+          };         
+
+          function fireUrlChange() {
+            delay = null;
+            $browser.urlChange(input.val());
+          }
+        }
       };
+    })
 
-      this.defer = function(fn, delay) {
-        setTimeout(function() { fn(); }, delay || 0);
-      };
+   .config(function($locationProvider) {
+     $locationProvider.html5Mode(true).hashPrefix('!');
+   })
 
-      this.baseHref = function() {
-        return baseHref;
-      };
-
-      this.notifyWhenOutstandingRequests = angular.noop;
-    }
-
-    var browsers = {
-      html5: new FakeBrowser('http://www.example.com/base/path?a=b#h', '/base/index.html'),
-      hashbang: new FakeBrowser('http://www.example.com/base/index.html#!/path?a=b#h', '/base/index.html')
-    };
-
-    function Html5Cntl($scope, $location) {
-      $scope.$location = $location;
-    }
-
-    function HashbangCntl($scope, $location) {
-      $scope.$location = $location;
-    }
-
-    function initEnv(name) {
-      var root = angular.element(document.getElementById(name + '-mode'));
-      // We must kill a link to the injector for this element otherwise angular will
-      // complain that it has been bootstrapped already.
-      root.data('$injector', null);
-      angular.bootstrap(root, [function($compileProvider, $locationProvider, $provide){
-        $locationProvider.html5Mode(true).hashPrefix('!');
-
-        $provide.value('$browser', browsers[name]);
-        $provide.value('$sniffer', {history: name == 'html5'});
-
-        $compileProvider.directive('ngAddressBar', function() {
-          return function(scope, elm, attrs) {
-            var browser = browsers[attrs.browser],
-                input = angular.element('<input type="text" style="width: 400px">').val(browser.url()),
-                delay;
-
-            input.on('keypress keyup keydown', function() {
-              if (!delay) {
-                delay = setTimeout(fireUrlChange, 250);
-              }
-            });
-
-            browser.url = function(url) {
-              return input.val(url);
-            };
-
-            elm.append('Address: ').append(input);
-
-            function fireUrlChange() {
-              delay = null;
-              browser.urlChange(input.val());
-            }
-          };
-        });
-      }]);
-      root.on('click', function(e) {
-        e.stopPropagation();
-      });
-    }
-
-    initEnv('html5');
-    initEnv('hashbang');
+   .run(function($rootElement) {
+     $rootElement.on('click', function(e) {
+       e.stopPropagation();
+     });
+   });
+   
   </file>
+
+  <file name="protractor.js" type="protractor">
+
+    var addressBar = element(by.css("#addressBar")),
+         url = 'http://www.example.com/base/path?a=b#h';
+
+     
+    it("should show fake browser info on load", function(){
+      browser.ignoreSynchronization = true;
+      expect(addressBar.getAttribute('value')).toBe(url);
+
+      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
+      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port')).getText()).toBe('80');
+      expect(element(by.binding('$location.path')).getText()).toBe('/path');
+      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash')).getText()).toBe('h');
+
+      browser.ignoreSynchronization = false; 
+    });
+
+    it("should change $location accordingly", function(){
+      browser.ignoreSynchronization = true;
+      var navigation = element.all(by.css("#navigation a"));
+
+      navigation.get(0).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/first?a=b");
+
+      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
+      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port')).getText()).toBe('80');
+      expect(element(by.binding('$location.path')).getText()).toBe('/first');
+      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash')).getText()).toBe('');
+
+
+      navigation.get(1).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/sec/ond?flag#hash");
+
+      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
+      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port')).getText()).toBe('80');
+      expect(element(by.binding('$location.path')).getText()).toBe('/sec/ond');
+      expect(element(by.binding('$location.search')).getText()).toBe('{"flag":true}');
+      expect(element(by.binding('$location.hash')).getText()).toBe('hash');
+      browser.ignoreSynchronization = false;
+    });
+
+  </file>
+
 </example>
 
+####Browser in HTML5 Fallback mode (Hashbang mode)
+<example module="html5-mode">
+  <file name="index.html">
+    <div ng-controller="LocationController">
+      <div ng-address-bar browser="html5"></div><br><br>
+      <div>
+        $location.protocol() = <span ng-bind="$location.protocol()"></span> <br>
+        $location.host() = <span ng-bind="$location.host()"></span> <br>
+        $location.port() = <span ng-bind="$location.port()"></span> <br>
+        $location.path() = <span ng-bind="$location.path()"></span> <br>
+        $location.search() = <span ng-bind="$location.search()"></span> <br>
+        $location.hash() = <span ng-bind="$location.hash()"></span> <br>
+      </div>
+      <div id="navigation">
+        <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+        <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+        <a href="/other-base/another?search">external</a>
+      </div>
+    </div>
+  </file>
+  <file name="script.js">
+    angular.module('fake-browser', [])
+
+    .factory('FakeBrowser', function() {
+      return function FakeBrowser(initUrl, baseHref) {
+        this.onUrlChange = function(fn) {
+          this.urlChange = fn;
+        };
+
+        this.url = function() {
+          return initUrl;
+        };
+
+        this.defer = function(fn, delay) {
+          setTimeout(function() { fn(); }, delay || 0);
+        };
+
+        this.baseHref = function() {
+          return baseHref;
+        };
+
+        this.notifyWhenOutstandingRequests = angular.noop;
+      };
+    });
+
+    angular.module('html5-mode', ['fake-browser'])
+
+    .factory('$browser', function(FakeBrowser) {
+      return new FakeBrowser('http://www.example.com/base/index.html#!/path?a=b#h', '/base/index.html');
+    })
+
+    .value('$sniffer', { history: false })
+
+    .controller("LocationController", function($scope, $location) {
+      $scope.$location = {};
+      angular.forEach("protocol host port path search hash".split(" "), function(method){        
+        $scope.$location[method] = function(){
+          var result = $location[method].call($location);
+          return angular.isObject(result) ? angular.toJson(result) : result;
+        };
+      });
+    })
+
+    .directive('ngAddressBar', function($browser) {
+      return {
+        template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
+        link: function(scope, element, attrs){
+          var input = element.children("input"), delay;
+          
+          input.on('keypress keyup keydown', function(event) {
+                  delay = (!delay ? $timeout(fireUrlChange, 250) : null);
+                  event.stopPropagation();
+                })
+               .val($browser.url());
+          
+          $browser.url = function(url) {
+            return url ? input.val(url) : input.val();
+          };         
+
+          function fireUrlChange() {
+            delay = null;
+            $browser.urlChange(input.val());
+          }
+        }
+      };
+    })
+
+    .config(function($locationProvider) {
+      $locationProvider.html5Mode(true).hashPrefix('!');
+    })
+
+    .run(function($rootElement) {
+      $rootElement.on('click', function(e) {
+        e.stopPropagation();
+      });
+    });
+
+  </file>
+
+  <file name="protractor.js" type="protractor">
+    //browser.ignoreSynchronization = true;
+    
+    var addressBar = element(by.css("#addressBar")),
+         url = 'http://www.example.com/base/index.html#!/path?a=b#h';
+     
+    it("should show fake browser info on load", function(){
+      browser.ignoreSynchronization = true;
+      expect(addressBar.getAttribute('value')).toBe(url);
+
+      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
+      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port')).getText()).toBe('80');
+      expect(element(by.binding('$location.path')).getText()).toBe('/path');
+      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash')).getText()).toBe('h');
+
+      browser.ignoreSynchronization = false; 
+    });
+
+    it("should change $location accordingly", function(){
+      browser.ignoreSynchronization = true;
+      var navigation = element.all(by.css("#navigation a"));
+
+      navigation.get(0).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/index.html#!/first?a=b");
+
+      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
+      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port')).getText()).toBe('80');
+      expect(element(by.binding('$location.path')).getText()).toBe('/first');
+      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash')).getText()).toBe('');
+
+
+      navigation.get(1).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/index.html#!/sec/ond?flag#hash");
+
+      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
+      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port')).getText()).toBe('80');
+      expect(element(by.binding('$location.path')).getText()).toBe('/sec/ond');
+      expect(element(by.binding('$location.search')).getText()).toBe('{"flag":true}');
+      expect(element(by.binding('$location.hash')).getText()).toBe('hash');
+
+      browser.ignoreSynchronization = false;
+    });
+  </file>
+
+</example>
 
 # Caveats
 
