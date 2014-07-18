@@ -173,23 +173,12 @@
       </section>
       <section class="sup-header">
         <div class="container main-grid main-header-grid">
-          <div class="grid-left">
-            <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-              <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by (v.isStable?'Stable':'Unstable') for v in docs_versions"
-                      ng-model="docs_version"
-                      ng-change="jumpToDocsVersion(docs_version)"
-                      class="docs-version-jump">
-              </select>
-            </div>
-          </div>
-          <div class="grid-right">
-            <ul class="nav-breadcrumb">
-              <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
-                <span class="divider"> /</span>
-                <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
-              </li>
-            </ul>
-          </div>
+          <ul class="nav-breadcrumb">
+            <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
+              <span class="divider"> /</span>
+              <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
+            </li>
+          </ul>
         </div>
       </section>
     </header>
@@ -197,8 +186,26 @@
     <section role="main" class="container main-body">
       <div class="main-grid main-body-grid">
         <div class="grid-left">
+
           <a class="btn toc-toggle visible-xs" ng-click="toc=!toc">Show / Hide Table of Contents</a>
-          <div class="side-navigation" ng-show="toc==true">
+
+          <div ng-controller="DocsVersionsCtrl" class="version-panel" ng-class="{'hidden-xs':!toc}">
+            <h3></h3>
+            <div class="picker version-picker">
+              <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by getGroupName(v) for v in docs_versions"
+                      ng-model="docs_version"
+                      ng-change="jumpToDocsVersion(docs_version)"
+                      class="docs-version-jump">
+              </select>
+            </div>
+            <button class="btn btn-block"
+                    ng-show="docs_version != docs_stable_version"
+                    ng-click="jumpToDocsVersion(docs_stable_version)">
+              Stable: ({{docs_stable_version.version}})</button>
+          </div>
+
+          <div class="side-navigation" ng-class="{'hidden-xs':!toc}">
+            <h3></h3>
             <ul class="nav-list naked-list">
               <li ng-repeat="navGroup in currentArea.navGroups track by navGroup.name" class="nav-index-group">
                 <a href="{{ navGroup.href }}" ng-class="navClass(navGroup)" class="nav-index-group-heading">{{ navGroup.name }}</a>
