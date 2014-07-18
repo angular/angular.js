@@ -1514,6 +1514,23 @@ function assertNotHasOwnProperty(name, context) {
   }
 }
 
+
+/**
+ * Throw an error when an interpolation is detected in an attribute value that should be an
+ * expression.
+ *
+ * @param attrs $attrs object
+ * @param attrName attribute name
+ */
+function assertNoInterpolation(attrs, attrName) {
+  if (/\{\{/.test(attrs[attrName])) {
+    throw new Error('Unexpected interpolation found in attribute ' + attrName +
+        ' of element ' + startingTag(attrs.$$element));
+  }
+};
+
+
+
 /**
  * Return the value accessible from the object by path. Any undefined traversals are ignored
  * @param {Object} obj starting object

@@ -179,6 +179,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return {
     compile: function (tElement, tAttrs) {
+      assertNoInterpolation(tAttrs, 'ngBindHtml');
       tElement.addClass('ng-binding');
 
       return function (scope, element, attr) {
