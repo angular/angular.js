@@ -1,7 +1,7 @@
 'use strict';
 
 // Wrapper to abstract over using touch events or mouse events.
-var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, endEvent) {
+var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, endEvent, enterEvent, leaveEvent) {
   describe('ngSwipe with ' + description + ' events', function() {
     var element;
 
@@ -36,11 +36,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, {
-        keys : [],
-        x : 100,
-        y : 20
+        keys: [],
+        x: 100,
+        y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -53,12 +53,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       $rootScope.$digest();
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 20,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 90,
         y: 20
@@ -72,11 +72,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, {
-        keys : [],
-        x : 100,
-        y : 20
+        keys: [],
+        x: 100,
+        y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -89,11 +89,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       $rootScope.$digest();
 
       browserTrigger(element, startEvent, {
-        keys : [],
-        x : 100,
-        y : 20
+        keys: [],
+        x: 100,
+        y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -108,17 +108,17 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 90,
         y: 20
       });
-      browserTrigger(element, moveEvent,{
+      browserTrigger(element, moveEvent, {
         keys: [],
         x: 70,
         y: 200
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -134,12 +134,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 90,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 80,
         y: 20
@@ -148,25 +148,50 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
     }));
 
-    it('should not swipe if the swipe leaves the element', inject(function($rootScope, $compile, $rootElement) {
-      element = $compile('<div ng-swipe-right="swiped = true"></div>')($rootScope);
+    it('should swipe to the left if the swipe leaves the element', inject(function($rootScope, $compile, $rootElement, $window) {
+      element = $compile('<div ng-swipe-left="swiped = true"></div>')($rootScope);
+
       $rootElement.append(element);
       $rootScope.$digest();
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
+        keys: [],
+        x: 100,
+        y: 20
+      });
+      browserTrigger(element, leaveEvent, {});
+      browserTrigger(angular.element($window.document.body), endEvent, {
         keys: [],
         x: 20,
         y: 20
       });
-      browserTrigger(element, moveEvent,{
+
+      expect($rootScope.swiped).toBeDefined();
+    }));
+
+    it('should swipe to the right if the swipe leaves the element', inject(function($rootScope, $compile, $rootElement, $window) {
+      element = $compile('<div ng-swipe-right="swiped = true"></div>')($rootScope);
+
+      $rootElement.append(element);
+      $rootScope.$digest();
+
+      expect($rootScope.swiped).toBeUndefined();
+
+      browserTrigger(element, startEvent, {
         keys: [],
-        x: 40,
+        x: 20,
+        y: 20
+      });
+      browserTrigger(element, leaveEvent, {});
+      browserTrigger(angular.element($window.document.body), endEvent, {
+        keys: [],
+        x: 100,
         y: 20
       });
 
-      expect($rootScope.swiped).toBeUndefined();
+      expect($rootScope.swiped).toBeDefined();
     }));
 
     it('should not swipe if the swipe starts outside the element', inject(function($rootScope, $compile, $rootElement) {
@@ -176,12 +201,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, moveEvent,{
+      browserTrigger(element, moveEvent, {
         keys: [],
         x: 10,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 90,
         y: 20
@@ -201,12 +226,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
         eventFired = true;
       });
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 100,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -225,12 +250,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
         eventFired = true;
       });
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 20,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 100,
         y: 20
@@ -240,6 +265,5 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
   });
 };
 
-swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
-swipeTests('mouse', /* restrictBrowers */ false, 'mousedown',  'mousemove', 'mouseup');
-
+swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend', 'touchenter', 'touchleave');
+swipeTests('mouse', /* restrictBrowers */ false, 'mousedown', 'mousemove', 'mouseup', 'mouseenter', 'mouseout');
