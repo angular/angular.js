@@ -195,5 +195,5 @@ var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
         });
       };
     }
-  }
+  };
 }];
