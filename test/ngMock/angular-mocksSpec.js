@@ -1110,6 +1110,14 @@ describe('ngMock', function() {
         expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
       });
 
+      it('should default status code to 200', function() {
+        hb.expect('GET', '/url1').respond('first', {'header': 'val'}, 'OK');
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
+      });
+
       it('should take function', function() {
         hb.expect('GET', '/some').respond(function (m, u, d, h) {
           return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
@@ -1120,22 +1128,6 @@ describe('ngMock', function() {
 
         expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
       });
-
-      it('should default status code to 200', function() {
-        callback.andCallFake(function(status, response) {
-          expect(status).toBe(200);
-          expect(response).toBe('some-data');
-        });
-
-        hb.expect('GET', '/url1').respond('some-data');
-        hb.expect('GET', '/url2').respond('some-data', {'X-Header': 'true'});
-        hb('GET', '/url1', null, callback);
-        hb('GET', '/url2', null, callback);
-        hb.flush();
-        expect(callback).toHaveBeenCalled();
-        expect(callback.callCount).toBe(2);
-      });
-
 
       it('should default response headers to ""', function() {
         hb.expect('GET', '/url1').respond(200, 'first');
