@@ -579,6 +579,35 @@ describe('form', function() {
     });
   });
 
+  describe('$pending', function() {
+    beforeEach(function() {
+      doc = $compile('<form name="form"></form>')(scope);
+      scope.$digest();
+    });
+
+    it('should set valid and invalid to undefined when a validation error state is set as pending', inject(function($q, $rootScope) {
+      var defer, form = doc.data('$formController');
+
+      var ctrl = {};
+      form.$$setPending('matias', ctrl);
+
+      expect(form.$valid).toBeUndefined();
+      expect(form.$invalid).toBeUndefined();
+      expect(form.$pending.matias).toEqual([ctrl]);
+
+      form.$setValidity('matias', true, ctrl);
+
+      expect(form.$valid).toBe(true);
+      expect(form.$invalid).toBe(false);
+      expect(form.$pending).toBeUndefined();
+
+      form.$setValidity('matias', false, ctrl);
+
+      expect(form.$valid).toBe(false);
+      expect(form.$invalid).toBe(true);
+      expect(form.$pending).toBeUndefined();
+    }));
+  });
 
   describe('$setPristine', function() {
 
