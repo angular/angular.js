@@ -1,6 +1,6 @@
 'use strict';
 
-/* global 
+/* global
   -nullFormCtrl,
   -SUBMITTED_CLASS
 */
@@ -234,9 +234,7 @@ function FormController(element, attrs, $scope, $animate) {
    * saving or resetting it.
    */
   form.$setPristine = function () {
-    $animate.removeClass(element, DIRTY_CLASS);
-    $animate.addClass(element, PRISTINE_CLASS);
-    $animate.removeClass(element, SUBMITTED_CLASS);
+    $animate.setClass(element, PRISTINE_CLASS, DIRTY_CLASS + ' ' + SUBMITTED_CLASS);
     form.$dirty = false;
     form.$pristine = true;
     form.$submitted = false;
@@ -244,7 +242,7 @@ function FormController(element, attrs, $scope, $animate) {
       control.$setPristine();
     });
   };
-  
+
   /**
    * @ngdoc function
    * @name ng.directive:form.FormController#$setSubmitted
@@ -254,7 +252,7 @@ function FormController(element, attrs, $scope, $animate) {
    * Sets the form to its submitted state.
    */
   form.$setSubmitted = function () {
-    element.addClass(element, SUBMITTED_CLASS);
+    $animate.addClass(element, SUBMITTED_CLASS);
     form.$submitted = true;
     parentForm.$setSubmitted();
   };

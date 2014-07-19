@@ -404,7 +404,7 @@ describe('form', function() {
 
       child.$setDirty();
       expect(parent.$dirty).toBeTruthy();
-      
+
       child.$setSubmitted();
       expect(parent.$submitted).toBeTruthy();
     });
@@ -684,7 +684,7 @@ describe('form', function() {
       expect(nestedInputCtrl.$dirty).toBe(false);
     });
   });
-  
+
   describe('$setSubmitted', function() {
     beforeEach(function() {
       doc = $compile(
@@ -695,18 +695,18 @@ describe('form', function() {
 
       scope.$digest();
     });
-    
+
     it('should not init in submitted state', function() {
       expect(scope.form.$submitted).toBe(false);
     });
-    
+
     it('should be in submitted state when submitted', function() {
       browserTrigger(doc, 'submit');
       expect(scope.form.$submitted).toBe(true);
     });
 
     it('should revert submitted back to false when $setPristine is called on the form', function() {
-      scope.form.$submitted = true
+      scope.form.$submitted = true;
       scope.form.$setPristine();
       expect(scope.form.$submitted).toBe(false);
     });
@@ -716,9 +716,10 @@ describe('form', function() {
 describe('form animations', function() {
   beforeEach(module('ngAnimateMock'));
 
-  function assertValidAnimation(animation, event, className) {
+  function assertValidAnimation(animation, event, classNameAdded, classNameRemoved) {
     expect(animation.event).toBe(event);
-    expect(animation.args[1]).toBe(className);
+    expect(animation.args[1]).toBe(classNameAdded);
+    expect(animation.args[2]).toBe(classNameRemoved);
   }
 
   var doc, scope, form;
@@ -771,8 +772,7 @@ describe('form animations', function() {
 
     form.$setPristine();
 
-    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-dirty');
-    assertValidAnimation($animate.queue[1], 'addClass', 'ng-pristine');
+    assertValidAnimation($animate.queue[0], 'setClass', 'ng-pristine', 'ng-dirty ng-submitted');
   }));
 
   it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
