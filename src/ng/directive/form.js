@@ -76,9 +76,6 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
 
   parentForm.$addControl(form);
 
-  // Setup initial state of the control
-  element.addClass(PRISTINE_CLASS);
-
   /**
    * @ngdoc method
    * @name form.FormController#$rollbackViewValue
@@ -451,9 +448,12 @@ var formDirectiveFactory = function(isNgForm) {
       name: 'form',
       restrict: isNgForm ? 'EAC' : 'E',
       controller: FormController,
-      compile: function() {
+      compile: function ngFormCompile(formElement) {
+        // Setup initial state of the control
+        formElement.addClass(PRISTINE_CLASS).addClass(VALID_CLASS);
+
         return {
-          pre: function(scope, formElement, attr, controller) {
+          pre: function ngFormPreLink(scope, formElement, attr, controller) {
             if (!attr.action) {
               // we can't use jq events because if a form is destroyed during submission the default
               // action is not prevented. see #1238

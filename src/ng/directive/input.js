@@ -1756,11 +1756,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
       currentValidationRunId = 0;
 
-  // Setup initial state of the control
-  $element
-    .addClass(PRISTINE_CLASS)
-    .addClass(UNTOUCHED_CLASS);
-
   /**
    * @ngdoc method
    * @name ngModel.NgModelController#$setValidity
@@ -2380,42 +2375,47 @@ var ngModelDirective = function() {
     restrict: 'A',
     require: ['ngModel', '^?form', '^?ngModelOptions'],
     controller: NgModelController,
-    link: {
-      pre: function(scope, element, attr, ctrls) {
-        var modelCtrl = ctrls[0],
-            formCtrl = ctrls[1] || nullFormCtrl;
+    compile: function ngModelCompile(element) {
+      // Setup initial state of the control
+      element.addClass(PRISTINE_CLASS).addClass(UNTOUCHED_CLASS).addClass(VALID_CLASS);
 
-        modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
+      return {
+        pre: function ngModelPreLink(scope, element, attr, ctrls) {
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
 
-        // notify others, especially parent forms
-        formCtrl.$addControl(modelCtrl);
+          modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
 
-        attr.$observe('name', function(newValue) {
-          if (modelCtrl.$name !== newValue) {
-            formCtrl.$$renameControl(modelCtrl, newValue);
+          // notify others, especially parent forms
+          formCtrl.$addControl(modelCtrl);
+
+          attr.$observe('name', function(newValue) {
+            if (modelCtrl.$name !== newValue) {
+              formCtrl.$$renameControl(modelCtrl, newValue);
+            }
+          });
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        },
+        post: function ngModelPostLink(scope, element, attr, ctrls) {
+          var modelCtrl = ctrls[0];
+          if (modelCtrl.$options && modelCtrl.$options.updateOn) {
+            element.on(modelCtrl.$options.updateOn, function(ev) {
+              modelCtrl.$$debounceViewValueCommit(ev && ev.type);
+            });
           }
-        });
 
-        scope.$on('$destroy', function() {
-          formCtrl.$removeControl(modelCtrl);
-        });
-      },
-      post: function(scope, element, attr, ctrls) {
-        var modelCtrl = ctrls[0];
-        if (modelCtrl.$options && modelCtrl.$options.updateOn) {
-          element.on(modelCtrl.$options.updateOn, function(ev) {
-            modelCtrl.$$debounceViewValueCommit(ev && ev.type);
+          element.on('blur', function(ev) {
+            if (modelCtrl.$touched) return;
+
+            scope.$apply(function() {
+              modelCtrl.$setTouched();
+            });
           });
         }
-
-        element.on('blur', function(ev) {
-          if (modelCtrl.$touched) return;
-
-          scope.$apply(function() {
-            modelCtrl.$setTouched();
-          });
-        });
-      }
+      };
     }
   };
 };
@@ -2970,8 +2970,9 @@ function addSetValidityMethod(context) {
       parentForm = context.parentForm,
       $animate = context.$animate;
 
+  classCache[INVALID_CLASS] = !(classCache[VALID_CLASS] = $element.hasClass(VALID_CLASS));
+
   ctrl.$setValidity = setValidity;
-  toggleValidationCss('', true);
 
   function setValidity(validationErrorKey, state, options) {
     if (state === undefined) {
