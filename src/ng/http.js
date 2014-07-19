@@ -140,7 +140,9 @@ function $HttpProvider() {
     },
 
     xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN'
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+
+    useArrayParams: false
   };
 
   /**
@@ -508,6 +510,7 @@ function $HttpProvider() {
      *      for more information.
      *    - **responseType** - `{string}` - see
      *      [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
+     *    - **useArrayParams** - `{boolean}` - true if arrays should be sent as `param[]=val1&param[]=val2` instead of `param=val1&param=val2`.
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -619,7 +622,8 @@ function $HttpProvider() {
       var config = {
         method: 'get',
         transformRequest: defaults.transformRequest,
-        transformResponse: defaults.transformResponse
+        transformResponse: defaults.transformResponse,
+        useArrayParams: defaults.useArrayParams
       };
       var headers = mergeHeaders(requestConfig);
 
@@ -880,7 +884,7 @@ function $HttpProvider() {
           promise = deferred.promise,
           cache,
           cachedResp,
-          url = buildUrl(config.url, config.params);
+          url = buildUrl(config.url, config.params, config.useArrayParams);
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
@@ -976,12 +980,13 @@ function $HttpProvider() {
     }
 
 
-    function buildUrl(url, params) {
+    function buildUrl(url, params, useArrayParams) {
           if (!params) return url;
           var parts = [];
           forEachSorted(params, function(value, key) {
             if (value === null || isUndefined(value)) return;
-            if (!isArray(value)) value = [value];
+            var valueIsArray = isArray(value);
+            if (!valueIsArray) value = [value];
 
             forEach(value, function(v) {
               if (isObject(v)) {
@@ -991,7 +996,7 @@ function $HttpProvider() {
                   v = toJson(v);
                 }
               }
-              parts.push(encodeUriQuery(key) + '=' +
+              parts.push(encodeUriQuery(key) + (valueIsArray && useArrayParams ? '[]' : '') + '=' +
                          encodeUriQuery(v));
             });
           });
