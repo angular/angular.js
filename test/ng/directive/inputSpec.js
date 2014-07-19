@@ -8,6 +8,7 @@ describe('NgModelController', function() {
     var attrs = {name: 'testAlias', ngModel: 'value'};
 
     parentFormCtrl = {
+      $$setPending: jasmine.createSpy('$$setPending'),
       $setValidity: jasmine.createSpy('$setValidity'),
       $setDirty: jasmine.createSpy('$setDirty'),
       $$clearControlValidity: noop
@@ -377,7 +378,7 @@ describe('NgModelController', function() {
     });
   });
 
-  describe('$validators', function() {
+  describe('validations pipeline', function() {
 
     it('should perform validations when $validate() is called', function() {
       ctrl.$validators.uppercase = function(value) {
@@ -504,6 +505,251 @@ describe('NgModelController', function() {
       expect(ctrl.$error.tooLong).toBe(true);
       expect(ctrl.$error.notNumeric).not.toBe(true);
     });
+
+    it('should render a validator asynchronously when a promise is returned', inject(function($q) {
+      var defer;
+      ctrl.$asyncValidators.promiseValidator = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+
+      scope.$apply('value = ""');
+
+      expect(ctrl.$valid).toBeUndefined();
+      expect(ctrl.$invalid).toBeUndefined();
+      expect(ctrl.$pending.promiseValidator).toBe(true);
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$valid).toBe(true);
+      expect(ctrl.$invalid).toBe(false);
+      expect(ctrl.$pending).toBeUndefined();
+
+      scope.$apply('value = "123"');
+
+      defer.reject();
+      scope.$digest();
+
+      expect(ctrl.$valid).toBe(false);
+      expect(ctrl.$invalid).toBe(true);
+      expect(ctrl.$pending).toBeUndefined();
+    }));
+
+    it('should throw an error when a promise is not returned for an asynchronous validator', inject(function($q) {
+      ctrl.$asyncValidators.async = function(value) {
+        return true;
+      };
+
+      expect(function() {
+        scope.$apply('value = "123"');
+      }).toThrowMinErr("ngModel", "$asyncValidators",
+        "Expected asynchronous validator to return a promise but got 'true' instead.");
+    }));
+
+    it('should only run the async validators once all the sync validators have passed',
+      inject(function($q) {
+
+      var stages = {};
+
+      stages.sync = { status1 : false, status2: false, count : 0 };
+      ctrl.$validators.syncValidator1 = function(modelValue, viewValue) {
+        stages.sync.count++;
+        return stages.sync.status1;
+      };
+
+      ctrl.$validators.syncValidator2 = function(modelValue, viewValue) {
+        stages.sync.count++;
+        return stages.sync.status2;
+      };
+
+      stages.async = { defer : null, count : 0 };
+      ctrl.$asyncValidators.asyncValidator = function(modelValue, viewValue) {
+        stages.async.defer = $q.defer();
+        stages.async.count++;
+        return stages.async.defer.promise;
+      };
+
+      scope.$apply('value = "123"');
+
+      expect(ctrl.$valid).toBe(false);
+      expect(ctrl.$invalid).toBe(true);
+
+      expect(stages.sync.count).toBe(2);
+      expect(stages.async.count).toBe(0);
+
+      stages.sync.status1 = true;
+
+      scope.$apply('value = "456"');
+
+      expect(stages.sync.count).toBe(4);
+      expect(stages.async.count).toBe(0);
+
+      stages.sync.status2 = true;
+
+      scope.$apply('value = "789"');
+
+      expect(stages.sync.count).toBe(6);
+      expect(stages.async.count).toBe(1);
+
+      stages.async.defer.resolve();
+      scope.$apply();
+
+      expect(ctrl.$valid).toBe(true);
+      expect(ctrl.$invalid).toBe(false);
+    }));
+
+    it('should ignore expired async validation promises once delivered', inject(function($q) {
+      var defer, oldDefer, newDefer;
+      ctrl.$asyncValidators.async = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+
+      scope.$apply('value = ""');
+      oldDefer = defer;
+      scope.$apply('value = "123"');
+      newDefer = defer;
+
+      newDefer.reject();
+      scope.$digest();
+      oldDefer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$valid).toBe(false);
+      expect(ctrl.$invalid).toBe(true);
+      expect(ctrl.$pending).toBeUndefined();
+    }));
+
+    it('should clear and ignore all pending promises when the input values changes', inject(function($q) {
+      var isPending = false;
+      ctrl.$validators.sync = function(value) {
+        isPending = isObject(ctrl.$pending);
+        return true;
+      };
+
+      var defers = [];
+      ctrl.$asyncValidators.async = function(value) {
+        var defer = $q.defer();
+        defers.push(defer);
+        return defer.promise;
+      };
+
+      scope.$apply('value = "123"');
+      expect(isPending).toBe(false);
+      expect(ctrl.$valid).toBe(undefined);
+      expect(ctrl.$invalid).toBe(undefined);
+      expect(defers.length).toBe(1);
+      expect(isObject(ctrl.$pending)).toBe(true);
+
+      scope.$apply('value = "456"');
+      expect(isPending).toBe(false);
+      expect(ctrl.$valid).toBe(undefined);
+      expect(ctrl.$invalid).toBe(undefined);
+      expect(defers.length).toBe(2);
+      expect(isObject(ctrl.$pending)).toBe(true);
+
+      defers[1].resolve();
+      scope.$digest();
+      expect(ctrl.$valid).toBe(true);
+      expect(ctrl.$invalid).toBe(false);
+      expect(isObject(ctrl.$pending)).toBe(false);
+    }));
+
+    it('should clear and ignore all pending promises when a parser fails', inject(function($q) {
+      var failParser = false;
+      ctrl.$parsers.push(function(value) {
+        return failParser ? undefined : value;
+      });
+
+      var defer;
+      ctrl.$asyncValidators.async = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+
+      ctrl.$setViewValue('x..y..z');
+      expect(ctrl.$valid).toBe(undefined);
+      expect(ctrl.$invalid).toBe(undefined);
+
+      failParser = true;
+
+      ctrl.$setViewValue('1..2..3');
+      expect(ctrl.$valid).toBe(false);
+      expect(ctrl.$invalid).toBe(true);
+      expect(isObject(ctrl.$pending)).toBe(false);
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$valid).toBe(false);
+      expect(ctrl.$invalid).toBe(true);
+      expect(isObject(ctrl.$pending)).toBe(false);
+    }));
+
+    it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
+      inject(function($compile, $rootScope, $q) {
+
+      var element = $compile('<form name="myForm">' +
+                               '<input type="text" name="username" ng-model="username" minlength="10" required />' +
+                               '<input type="number" name="age" ng-model="age" min="10" required />' +
+                             '</form>')($rootScope);
+      var inputElm = element.find('input');
+
+      var formCtrl = $rootScope.myForm;
+      var usernameCtrl = formCtrl.username;
+      var ageCtrl = formCtrl.age;
+
+      var usernameDefer;
+      usernameCtrl.$asyncValidators.usernameAvailability = function() {
+        usernameDefer = $q.defer();
+        return usernameDefer.promise;
+      };
+
+      $rootScope.$digest();
+      expect(usernameCtrl.$invalid).toBe(true);
+      expect(formCtrl.$invalid).toBe(true);
+
+      usernameCtrl.$setViewValue('valid-username');
+      $rootScope.$digest();
+
+      expect(formCtrl.$pending.usernameAvailability).toBeTruthy();
+      expect(usernameCtrl.$invalid).toBe(undefined);
+      expect(formCtrl.$invalid).toBe(undefined);
+
+      usernameDefer.resolve();
+      $rootScope.$digest();
+      expect(usernameCtrl.$invalid).toBe(false);
+      expect(formCtrl.$invalid).toBe(true);
+
+      ageCtrl.$setViewValue(22);
+      $rootScope.$digest();
+
+      expect(usernameCtrl.$invalid).toBe(false);
+      expect(ageCtrl.$invalid).toBe(false);
+      expect(formCtrl.$invalid).toBe(false);
+
+      usernameCtrl.$setViewValue('valid');
+      $rootScope.$digest();
+
+      expect(usernameCtrl.$invalid).toBe(true);
+      expect(ageCtrl.$invalid).toBe(false);
+      expect(formCtrl.$invalid).toBe(true);
+
+      usernameCtrl.$setViewValue('another-valid-username');
+      $rootScope.$digest();
+
+      usernameDefer.resolve();
+      $rootScope.$digest();
+
+      expect(usernameCtrl.$invalid).toBe(false);
+      expect(formCtrl.$invalid).toBe(false);
+      expect(formCtrl.$pending).toBeFalsy();
+      expect(ageCtrl.$invalid).toBe(false);
+
+      dealoc(element);
+    }));
+
   });
 });
 
@@ -3294,9 +3540,10 @@ describe('NgModel animations', function() {
     return animations;
   }
 
-  function assertValidAnimation(animation, event, className) {
+  function assertValidAnimation(animation, event, classNameA, classNameB) {
     expect(animation.event).toBe(event);
-    expect(animation.args[1]).toBe(className);
+    expect(animation.args[1]).toBe(classNameA);
+    if(classNameB) expect(animation.args[2]).toBe(classNameB);
   }
 
   var doc, input, scope, model;
