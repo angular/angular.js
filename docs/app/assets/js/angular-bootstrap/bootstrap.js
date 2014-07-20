@@ -103,7 +103,7 @@ directive.syntax = function() {
     restrict: 'A',
     link: function(scope, element, attrs) {
       function makeLink(type, text, link, icon) {
-        return '<a href="' + link + '" class="btn syntax-' + type + '" target="_blank" rel="nofollow">' + 
+        return '<a href="' + link + '" class="btn syntax-' + type + '" target="_blank" rel="nofollow" title="' + text + '">' + 
                 '<span class="' + icon + '"></span> ' + text +
                '</a>';
       };

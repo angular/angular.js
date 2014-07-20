@@ -17,7 +17,7 @@
       </tr>
       {% for errorDoc in doc.errors -%}
       <tr>
-        <td><a href="{$ errorDoc.path $}">{$ errorDoc.name $}</td>
+        <td><a href="{$ errorDoc.path $}" title="{$ errorDoc.name $}">{$ errorDoc.name $}</a></td>
         <td>{$ errorDoc.fullName $}</td>
       </tr>
       {% endfor %}

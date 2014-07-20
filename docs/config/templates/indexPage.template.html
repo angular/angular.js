@@ -84,24 +84,24 @@
         <div class="container">
           <div class="row">
             <div class="col-md-9 header-branding">
-              <a class="brand navbar-brand" href="http://angularjs.org">
+              <a class="brand navbar-brand" href="http://angularjs.org" title="AngularJS Home Page">
                 <img class="logo" src="img/angularjs-for-header-only.svg">
               </a>
               <ul class="nav navbar-nav">
                 <li class="divider-vertical"></li>
-                <li><a href="http://angularjs.org"><i class="icon-home icon-white"></i> Home</a></li>
+                <li><a href="http://angularjs.org" title="AngularJS Home Page"><i class="icon-home icon-white"></i> Home</a></li>
                 <li class="divider-vertical"></li>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
                   </a>
                   <ul class="dropdown-menu">
-                    <li class="disabled"><a href="http://angularjs.org/">Why AngularJS?</a></li>
-                    <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
-                    <li><a href="tutorial">Tutorial</a></li>
-                    <li><a href="http://builtwith.angularjs.org/">Case Studies</a></li>
-                    <li><a href="https://github.com/angular/angular-seed">Seed App project template</a></li>
-                    <li><a href="misc/faq">FAQ</a></li>
+                    <li class="disabled"><a href="http://angularjs.org/" title="Whay AngularJS?">Why AngularJS?</a></li>
+                    <li><a href="http://www.youtube.com/user/angularjs" title="Watch videos">Watch</a></li>
+                    <li><a href="tutorial" title="Tutorial">Tutorial</a></li>
+                    <li><a href="http://builtwith.angularjs.org/" title="Cast Studies">Case Studies</a></li>
+                    <li><a href="https://github.com/angular/angular-seed" title="Seed App project template">Seed App project template</a></li>
+                    <li><a href="misc/faq" title="FAQ">FAQ</a></li>
                   </ul>
                 </li>
                 <li class="divider-vertical"></li>
@@ -110,12 +110,12 @@
                     <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
                   </a>
                   <ul class="dropdown-menu">
-                    <li><a href="tutorial">Tutorial</a></li>
-                    <li><a href="guide">Developer Guide</a></li>
-                    <li><a href="api">API Reference</a></li>
-                    <li><a href="error">Error Reference</a></li>
-                    <li><a href="misc/contribute">Contribute</a></li>
-                    <li><a href="http://code.angularjs.org/">Download</a></li>
+                    <li><a href="tutorial" title="Tutorial">Tutorial</a></li>
+                    <li><a href="guide" title="Developer Guide">Developer Guide</a></li>
+                    <li><a href="api" title="API Reference">API Reference</a></li>
+                    <li><a href="error" title="Error Reference">Error Reference</a></li>
+                    <li><a href="misc/contribute" title="Contribute">Contribute</a></li>
+                    <li><a href="http://code.angularjs.org/" title="Download">Download</a></li>
                   </ul>
                 </li>
                 <li class="divider-vertical"></li>
@@ -124,15 +124,15 @@
                     <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
                   </a>
                   <ul class="dropdown-menu">
-                    <li><a href="http://blog.angularjs.org">Blog</a></li>
-                    <li><a href="http://groups.google.com/group/angular">Mailing List</a></li>
-                    <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">Chat Room</a></li>
+                    <li><a href="http://blog.angularjs.org" title="Blog">Blog</a></li>
+                    <li><a href="http://groups.google.com/group/angular" title="Mailing List">Mailing List</a></li>
+                    <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4" title="Chat Room">Chat Room</a></li>
                     <li class="divider"></li>
-                    <li><a href="https://twitter.com/#!/angularjs">Twitter</a></li>
-                    <li><a href="https://plus.google.com/110323587230527980117">Google+</a></li>
+                    <li><a href="https://twitter.com/#!/angularjs" title="Twitter">Twitter</a></li>
+                    <li><a href="https://plus.google.com/110323587230527980117" title="Google+">Google+</a></li>
                     <li class="divider"></li>
-                    <li><a href="https://github.com/angular/angular.js">GitHub</a></li>
-                    <li><a href="https://github.com/angular/angular.js/issues">Issue Tracker</a></li>
+                    <li><a href="https://github.com/angular/angular.js" title="GitHub">GitHub</a></li>
+                    <li><a href="https://github.com/angular/angular.js/issues" title="Issue Tracker">Issue Tracker</a></li>
                   </ul>
                 </li>
                 <li class="divider-vertical"></li>
@@ -163,7 +163,7 @@
                 <h4 class="search-results-group-heading">{{ key }}</h4>
                 <div class="search-results">
                   <div ng-repeat="item in value" class="search-result">
-                    - <a ng-click="hideResults()" ng-href="{{ item.path }}">{{ item.name }}</a>
+                    - <a ng-click="hideResults()" ng-href="{{ item.path }}" title="{{ item.name }}">{{ item.name }}</a>
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@
             <ul class="nav-breadcrumb">
               <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
                 <span class="divider"> /</span>
-                <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
+                <a ng-href="{{crumb.url}}" title="{{crumb.name}}">{{crumb.name}}</a>
               </li>
             </ul>
           </div>
@@ -201,13 +201,13 @@
           <div class="side-navigation" ng-show="toc==true">
             <ul class="nav-list naked-list">
               <li ng-repeat="navGroup in currentArea.navGroups track by navGroup.name" class="nav-index-group">
-                <a href="{{ navGroup.href }}" ng-class="navClass(navGroup)" class="nav-index-group-heading">{{ navGroup.name }}</a>
+                <a href="{{ navGroup.href }}" ng-class="navClass(navGroup)" class="nav-index-group-heading" title="{{ navGroup.name }}">{{ navGroup.name }}</a>
                 <ul class="aside-nav">
                   <li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing">
-                    <a ng-if="navItem.extra.href" ng-class="navClass(navItem.extra)" href="{{navItem.extra.href}}">
+                    <a ng-if="navItem.extra.href" ng-class="navClass(navItem.extra)" href="{{navItem.extra.href}}" title="{{navItem.extra.text}}">
                       {{navItem.extra.text}}<i ng-if="navItem.extra.icon" class="icon-{{navItem.extra.icon}}"></i>
                     </a>
-                    <a tabindex="2" ng-class="linkClass(navItem)" href="{{navItem.href}}">{{navItem.name}}</a>
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="{{navItem.href}}" title="{{navItem.name}}">{{navItem.name}}</a>
                   </li>
                 </ul>
               </li>
@@ -232,15 +232,15 @@
           Super-powered by Google  ©2010-2014
           ( <a id="version"
                ng-href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{versionNumber}}"
-               ng-bind-template="v{{version}}">
+               ng-bind-template="v{{version}}" title="v{{version}}">
             </a>
           )
         </p>
         <p>
           Code licensed under the
-          <a href="https://github.com/angular/angular.js/blob/master/LICENSE" target="_blank">The
+          <a href="https://github.com/angular/angular.js/blob/master/LICENSE" target="_blank" title="The MIT License">The
             MIT License</a>. Documentation licensed under <a
-              href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.
+              href="http://creativecommons.org/licenses/by/3.0/" title="CC BY 3.0">CC BY 3.0</a>.
         </p>
       </div>
     </footer>
