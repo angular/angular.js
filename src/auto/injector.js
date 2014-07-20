@@ -191,7 +191,10 @@ function annotate(fn, strictDi, name) {
  *   {@link guide/di $inject Annotation} rules.
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this
- *                         object first, before the `$injector` is consulted.
+ *                         object first, before the `$injector` is consulted. If `locals` is
+ *                         a string, then it's treated as the service's name (might be useful
+ *                         for 3rd party libraries which use the smart-injector style for
+ *                         providing more debug information).
  * @returns {*} the value returned by the invoked `fn` function.
  */
 
