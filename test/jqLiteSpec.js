@@ -1091,7 +1091,10 @@ describe('jqLite', function() {
     });
 
     it('should have event.isDefaultPrevented method', function() {
-      jqLite(a).on('click', function(e) {
+      var element = jqLite(a),
+          clickSpy = jasmine.createSpy('clickSpy');
+
+      clickSpy.andCallFake(function(e) {
         expect(function() {
           expect(e.isDefaultPrevented()).toBe(false);
           e.preventDefault();
@@ -1099,7 +1102,10 @@ describe('jqLite', function() {
         }).not.toThrow();
       });
 
+      element.on('click', clickSpy);
+
       browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalled();
     });
 
     it('should stop triggering handlers when stopImmediatePropagation is called', function() {
