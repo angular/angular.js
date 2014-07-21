@@ -198,7 +198,7 @@ This should help give you an idea of what Angular does internally.
 
   // Step 3: link the compiled template with the scope.
   var element = linkFn(scope);
-  
+
   // Step 4: Append to DOM (optional)
   parent.appendChild(element);
 ```

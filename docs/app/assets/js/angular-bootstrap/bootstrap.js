@@ -11,7 +11,7 @@ directive.runnableExample = ['$templateCache', '$document', function($templateCa
          'ng-repeat="tab in tabs track by $index" ' +
          'href="" ' +
          'class="btn"' +
-         'ng-click="setTab($index)">' + 
+         'ng-click="setTab($index)">' +
     '    {{ tab }}' +
     '  </a>' +
     '</nav>';
@@ -103,7 +103,7 @@ directive.syntax = function() {
     restrict: 'A',
     link: function(scope, element, attrs) {
       function makeLink(type, text, link, icon) {
-        return '<a href="' + link + '" class="btn syntax-' + type + '" target="_blank" rel="nofollow">' + 
+        return '<a href="' + link + '" class="btn syntax-' + type + '" target="_blank" rel="nofollow">' +
                 '<span class="' + icon + '"></span> ' + text +
                '</a>';
       };
@@ -307,7 +307,7 @@ var popoverElement = function() {
       return this.titleElement.html(value);
     },
 
-    content : function(value) { 
+    content : function(value) {
       if(value && value.length > 0) {
         value = marked(value);
       }
