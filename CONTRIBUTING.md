@@ -120,7 +120,7 @@ Before you submit your pull request consider the following guidelines:
     ```
 
 * In GitHub, send a pull request to `angular:master`.
-* If we suggest changes then 
+* If we suggest changes then
   * Make the required updates.
   * Re-run the Angular test suite to ensure tests are still passing.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
@@ -238,7 +238,7 @@ reference GitHub issues that this commit **Closes**.
 
 A detailed explanation can be found in this [document][commit-message-format].
 
-## <a name="cla"></a> Signing the CLA 
+## <a name="cla"></a> Signing the CLA
 
 Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
 changes to be accepted, the CLA must be signed. It's a quick process, we promise!

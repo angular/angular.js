@@ -14,7 +14,7 @@ angular.module('myApp', [])
   }]);
 ```
 
-The above code will fail with `$injector:unpr` if `myService` is not defined. 
+The above code will fail with `$injector:unpr` if `myService` is not defined.
 
 Making sure each dependency is defined will fix the problem, as noted below.
 
