@@ -502,7 +502,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.9.5",
+      "version": "0.9.6",
       "dependencies": {
         "lodash": {
           "version": "2.4.1"
