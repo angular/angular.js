@@ -9,7 +9,7 @@ module.exports = function(config) {
 
   config = basePackage(config);
   config = examplesPackage(config);
-  
+
   config.append('processing.processors', [
     require('./processors/git-data'),
     require('./processors/error-docs'),

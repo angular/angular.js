@@ -143,8 +143,8 @@ jQuery. We don't expect that app code actually depends on this accidental featur
 - **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
   the jQuery `detach()` method does not trigger the `$destroy` event.
   If you want to destroy Angular data attached to the element, use `remove()`.
-  
-  
+
+
 - **$http:** due to [ad4336f9](https://github.com/angular/angular.js/commit/ad4336f9359a073e272930f8f9bcd36587a8648f),
 
 
