@@ -47,6 +47,7 @@
   isFile: true,
   isBlob: true,
   isBoolean: true,
+  isPromiseLike: true,
   trim: true,
   isElement: true,
   makeMap: true,
@@ -566,6 +567,11 @@ function isBlob(obj) {
 
 function isBoolean(value) {
   return typeof value === 'boolean';
+}
+
+
+function isPromiseLike(obj) {
+  return obj && isFunction(obj.then);
 }
 
 
