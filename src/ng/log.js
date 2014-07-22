@@ -73,15 +73,6 @@ function $LogProvider(){
     }
   };
 
-  this.debugLevel = function(flag) {
-    if (flag) {
-      level = flag;
-    return this;
-    } else {
-      return level;
-    }
-  };
-
   this.$get = ['$window', function($window){
     return {
       /**
