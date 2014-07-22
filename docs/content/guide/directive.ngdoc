@@ -352,7 +352,7 @@ element as a customer component.
 Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
 given scope.
 
-In its current implementation, we'd need to create a different controller each time In order to
+In its current implementation, we'd need to create a different controller each time in order to
 re-use such a directive:
 
 <example module="docsScopeProblemExample">
@@ -475,7 +475,6 @@ within our directive's template:
     angular.module('docsIsolationExample', [])
       .controller('Controller', ['$scope', function($scope) {
         $scope.naomi = { name: 'Naomi', address: '1600 Amphitheatre' };
-
         $scope.vojta = { name: 'Vojta', address: '3456 Somewhere Else' };
       }])
       .directive('myCustomer', function() {
@@ -537,7 +536,7 @@ where:
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
 to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
-end-to-end testing, where we want to ensure that all $timeouts have completed before completing the test.
+end-to-end testing, where we want to ensure that all `$timeout`s have completed before completing the test.
 We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
