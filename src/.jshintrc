@@ -50,6 +50,7 @@
     "isFile": false,
     "isBlob": false,
     "isBoolean": false,
+    "isPromiseLike": false,
     "trim": false,
     "isElement": false,
     "makeMap": false,
