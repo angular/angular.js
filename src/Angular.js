@@ -1581,6 +1581,7 @@ function defineProperty(target, propertyName, flags, value) {
   if (isObject(target) || isFunction(target)) {
     if (Object.defineProperty) {
       var desc = {
+        /*jshint bitwise: false */
         enumerable: !(flags & INVISIBLE),
         configurable: !!(flags & CONFIGURABLE),
         writable: !!(flags & WRITABLE)
@@ -1599,4 +1600,11 @@ function defineProperties(target, flags, propertyNameAndValues) {
   forEach(propertyNameAndValues, function(value, propertyName) {
     defineProperty(target, propertyName, flags, value);
   });
+}
+
+function createObject(prototype) {
+  if (Object.create) return Object.create(prototype);
+  function C() {}
+  C.prototype = prototype;
+  return new C();
 }

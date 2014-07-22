@@ -87,6 +87,12 @@
     "getter": false,
     "getBlockElements": false,
     "VALIDITY_STATE_PROPERTY": false,
+    "INVISIBLE": true,
+    "CONFIGURABLE": true,
+    "WRITABLE": true,
+    "defineProperty": false,
+    "defineProperties": false,
+    "createObject": false,
 
     /* filters.js */
     "getFirstThursdayOfYear": false,

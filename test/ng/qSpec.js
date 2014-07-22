@@ -31,7 +31,7 @@
   http://jsperf.com/throw-vs-return
 */
 
-describe('q', function() {
+ddescribe('q', function() {
   var q, defer, deferred, promise, log;
 
   // The following private functions are used to help with logging for testing invocation of the
@@ -298,7 +298,7 @@ describe('q', function() {
       });
 
 
-      it('should not break if a callbacks registers another callback', function() {
+      iit('should not break if a callbacks registers another callback', function() {
         var promise = createPromise();
         promise.then(function() {
           log.push('outer');
