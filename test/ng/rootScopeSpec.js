@@ -1072,6 +1072,44 @@ describe('Scope', function() {
       expect(child.parentModel).toBe('parent');
       expect(child.childModel).toBe('child');
     }));
+
+
+    it('should have no problems destroying itself within its watcher', inject(function($rootScope) {
+      first.$watch(function () {
+        first.$destroy();
+      });
+
+      $rootScope.$digest();
+      expect(log).toBe('123');
+      $rootScope.$digest();
+      expect(log).toBe('12323');
+    }));
+
+
+    it('should have no problems destroying its parent within its watcher', inject(function($rootScope) {
+      var firstSecond = first.$new();
+
+      firstSecond.$watch(function () {
+        first.$destroy();
+      });
+
+      $rootScope.$digest();
+      expect(log).toBe('123');
+    }));
+
+
+    it('should have no problems destroying its ancestor within its watcher', inject(function($rootScope) {
+      var firstSecond = first.$new(),
+          firstSecondSecond = firstSecond.$new();
+
+      firstSecondSecond.$watch(function () {
+        first.$destroy();
+      });
+
+      $rootScope.$digest();
+
+      expect(log).toBe('123');
+    }));
   });
 
 

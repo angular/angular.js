@@ -674,6 +674,7 @@ function $RootScopeProvider(){
             length,
             dirty, ttl = TTL,
             next, current, target = this,
+            currentParents,
             watchLog = [],
             logIdx, logMsg, asyncTask;
 
@@ -684,6 +685,7 @@ function $RootScopeProvider(){
         do { // "while dirty" loop
           dirty = false;
           current = target;
+          currentParents = [target];
 
           while(asyncQueue.length) {
             try {
@@ -745,8 +747,13 @@ function $RootScopeProvider(){
             if (!(next = (current.$$childHead ||
                 (current !== target && current.$$nextSibling)))) {
               while(current !== target && !(next = current.$$nextSibling)) {
-                current = current.$parent;
+                current = currentParents.pop();
               }
+              if (next) {
+                currentParents.push(next);
+              }
+            } else if (next === current.$$childHead) {
+              currentParents.push(current);
             }
           } while ((current = next));
 
