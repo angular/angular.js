@@ -23,4 +23,12 @@ describe('ngClick', function() {
     browserTrigger(element, 'click');
     expect($rootScope.event).toBeDefined();
   }));
+
+  it('should abort apply if abort argument is invoked', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-click="a = 1; $abortApply()">{{a}}</div>')($rootScope);
+    $rootScope.$digest();
+
+    browserTrigger(element, 'click');
+    expect(element.text()).toBe('');
+  }));
 });

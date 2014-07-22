@@ -60,8 +60,8 @@ forEach(
           var fn = $parse(attr[directiveName], /* interceptorFn */ null, /* expensiveChecks */ true);
           return function ngEventHandler(scope, element) {
             element.on(eventName, function(event) {
-              var callback = function() {
-                fn(scope, {$event:event});
+              var callback = function(scope, locals) {
+                fn(scope, {$event:event, $abortApply: locals && locals.$abortApply});
               };
               if (forceAsyncEvents[eventName] && $rootScope.$$phase) {
                 scope.$evalAsync(callback);

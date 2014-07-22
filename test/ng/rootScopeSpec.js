@@ -1333,6 +1333,12 @@ describe('Scope', function() {
       expect(log).toEqual('1');
     }));
 
+    it('should abort apply if abort argument is invoked', inject(function ($rootScope) {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      $rootScope.$watch(watchSpy);
+      $rootScope.$apply('$abortApply()');
+      expect(watchSpy).not.toHaveBeenCalled();
+    }));
 
     it('should catch exceptions', function() {
       module(function($exceptionHandlerProvider) {
