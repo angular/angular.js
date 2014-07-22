@@ -233,7 +233,7 @@ function isArrayLike(obj) {
  */
 
 function forEach(obj, iterator, context) {
-  var key, length;
+  var key, objLen;
   if (obj) {
     if (isFunction(obj)) {
       for (key in obj) {
@@ -244,7 +244,8 @@ function forEach(obj, iterator, context) {
         }
       }
     } else if (isArray(obj) || isArrayLike(obj)) {
-      for (key = 0, length = obj.length; key < length; key++) {
+      objLen = obj.length; key = 0;
+      for (; key < objLen; key++) {
         iterator.call(context, obj[key], key);
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
@@ -271,8 +272,8 @@ function sortedKeys(obj) {
 }
 
 function forEachSorted(obj, iterator, context) {
-  var keys = sortedKeys(obj);
-  for ( var i = 0; i < keys.length; i++) {
+  var keys = sortedKeys(obj), keysLen = keys.length, i = 0;
+  for (; i < keysLen; i++) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
   return keys;
@@ -607,8 +608,8 @@ function isElement(node) {
  * @returns {object} in the form of {key1:true, key2:true, ...}
  */
 function makeMap(str) {
-  var obj = {}, items = str.split(","), i;
-  for ( i = 0; i < items.length; i++ )
+  var obj = {}, items = str.split(","), itemsLen = items.length, i = 0;
+  for (; i < itemsLen; i++)
     obj[ items[i] ] = true;
   return obj;
 }
@@ -671,8 +672,8 @@ function includes(array, obj) {
 
 function indexOf(array, obj) {
   if (array.indexOf) return array.indexOf(obj);
-
-  for (var i = 0; i < array.length; i++) {
+  var arrayLen = array.length, i = 0;
+  for (; i < arrayLen; i++) {
     if (obj === array[i]) return i;
   }
   return -1;
@@ -793,7 +794,8 @@ function copy(source, destination, stackSource, stackDest) {
     var result;
     if (isArray(source)) {
       destination.length = 0;
-      for ( var i = 0; i < source.length; i++) {
+      var sourceLen = source.length, i = 0;
+      for (; i < sourceLen; i++) {
         result = copy(source[i], null, stackSource, stackDest);
         if (isObject(source[i])) {
           stackSource.push(source[i]);
@@ -830,16 +832,15 @@ function shallowCopy(src, dst) {
   var i = 0;
   if (isArray(src)) {
     dst = dst || [];
-
-    for (; i < src.length; i++) {
+    var srcLen = src.length;
+    for (; i < srcLen; i++) {
       dst[i] = src[i];
     }
   } else if (isObject(src)) {
     dst = dst || {};
 
-    var keys = Object.keys(src);
-
-    for (var l = keys.length; i < l; i++) {
+    var keys = Object.keys(src), l = keys.length;
+    for (; i < l; i++) {
       var key = keys[i];
 
       if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
@@ -885,13 +886,13 @@ function equals(o1, o2) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
-  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
+  var t1 = typeof o1, t2 = typeof o2, length, key = 0, keySet;
   if (t1 == t2) {
     if (t1 == 'object') {
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
-          for(key=0; key<length; key++) {
+          for(; key<length; key++) {
             if (!equals(o1[key], o2[key])) return false;
           }
           return true;
@@ -1175,9 +1176,9 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 var ngAttrPrefixes = ['ng-', 'data-ng-', 'ng:', 'x-ng-'];
 
 function getNgAttribute(element, ngAttr) {
-  var attr, i, ii = ngAttrPrefixes.length, j, jj;
+  var attr, i = 0, ii = ngAttrPrefixes.length, j, jj;
   element = jqLite(element);
-  for (i=0; i<ii; ++i) {
+  for (; i<ii; i++) {
     attr = ngAttrPrefixes[i] + ngAttr;
     if (isString(attr = element.attr(attr))) {
       return attr;
@@ -1470,7 +1471,8 @@ function bindJQuery() {
     // are passed through jQuery.cleanData. Monkey-patch this method to fire
     // the $destroy event on all removed nodes.
     jQuery.cleanData = function(elems) {
-      for (var i = 0, elem; (elem = elems[i]) != null; i++) {
+      var i = 0, elem;
+      for (; (elem = elems[i]) !== null; i++) {
         jQuery(elem).triggerHandler('$destroy');
       }
       originalCleanData(elems);
@@ -1524,12 +1526,13 @@ function assertNotHasOwnProperty(name, context) {
 //TODO(misko): this function needs to be removed
 function getter(obj, path, bindFnToScope) {
   if (!path) return obj;
-  var keys = path.split('.');
-  var key;
-  var lastInstance = obj;
-  var len = keys.length;
+  var keys = path.split('.'),
+      key,
+      lastInstance = obj,
+      len = keys.length,
+      i = 0;
 
-  for (var i = 0; i < len; i++) {
+  for (; i < len; i++) {
     key = keys[i];
     if (obj) {
       obj = (lastInstance = obj)[key];
