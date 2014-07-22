@@ -361,10 +361,10 @@ redirect to regular / hashbang url, as this conversion happens only during parsi
 In these examples we use `<base href="/base/index.html" />`
 
 #### Browser in HTML5 mode
-<example module="html5-mode">
+<example module="html5-mode" name="location-html5-mode">
   <file name="index.html">
     <div ng-controller="LocationController">
-      <div ng-address-bar browser="html5"></div><br><br>
+      <div ng-address-bar></div><br><br>
       <div>
         $location.protocol() = <span ng-bind="$location.protocol()"></span> <br>
         $location.host() = <span ng-bind="$location.host()"></span> <br>
@@ -380,64 +380,76 @@ In these examples we use `<base href="/base/index.html" />`
       </div>
     </div>
   </file>
-  <file name="script.js">
-    angular.module('fake-browser', [])
+  <file name="app.js">
+   angular.module('html5-mode', ['fake-browser', 'address-bar'])
 
-   .factory('FakeBrowser', function() {
-     return function FakeBrowser(initUrl, baseHref) {
-       this.onUrlChange = function(fn) {
-         this.urlChange = fn;
-       };
-
-       this.url = function() {
-         return initUrl;
-       };
-
-       this.defer = function(fn, delay) {
-         setTimeout(function() { fn(); }, delay || 0);
-       };
-
-       this.baseHref = function() {
-         return baseHref;
-       };
-
-       this.notifyWhenOutstandingRequests = angular.noop;
-     };
-   });
-
-   angular.module('html5-mode', ['fake-browser'])
-
-   .factory('$browser', function(FakeBrowser) {
-     return new FakeBrowser('http://www.example.com/base/path?a=b#h', '/base/index.html');
-   })
-
+   .constant('initUrl', 'http://www.example.com/base/path?a=b#h')
+   .constant('baseHref', '/base/index.html')
    .value('$sniffer', { history: true })
 
    .controller("LocationController", function($scope, $location) {
      $scope.$location = {};
-     angular.forEach("protocol host port path search hash".split(" "), function(method){        
+     angular.forEach("protocol host port path search hash".split(" "), function(method){
       $scope.$location[method] = function(){
         var result = $location[method].call($location);
         return angular.isObject(result) ? angular.toJson(result) : result;
       };
      });
-   })    
+   })
 
+   .config(function($locationProvider) {
+     $locationProvider.html5Mode(true).hashPrefix('!');
+   })
+
+   .run(function($rootElement) {
+     $rootElement.on('click', function(e) { e.stopPropagation(); });
+   });
+  </file>
+
+  <file name="fakeBrowser.js">
+    angular.module('fake-browser', [])
+
+    .config(function($provide) {
+     $provide.decorator('$browser', function($delegate, baseHref, initUrl) {
+
+      $delegate.onUrlChange = function(fn) {
+         this.urlChange = fn;
+       };
+
+      $delegate.url = function() {
+         return initUrl;
+      };
+
+      $delegate.defer = function(fn, delay) {
+         setTimeout(function() { fn(); }, delay || 0);
+       };
+
+      $delegate.baseHref = function() {
+         return baseHref;
+       };
+
+       return $delegate;
+     });
+    });
+    </file>
+
+  <file name="addressBar.js">
+   angular.module('address-bar', [])
    .directive('ngAddressBar', function($browser, $timeout) {
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
         link: function(scope, element, attrs){
           var input = element.children("input"), delay;
-          
+
           input.on('keypress keyup keydown', function(event) {
                   delay = (!delay ? $timeout(fireUrlChange, 250) : null);
                   event.stopPropagation();
                 })
                .val($browser.url());
-          
+
           $browser.url = function(url) {
             return url ? input.val(url) : input.val();
-          };         
+          };
 
           function fireUrlChange() {
             delay = null;
@@ -445,28 +457,16 @@ In these examples we use `<base href="/base/index.html" />`
           }
         }
       };
-    })
-
-   .config(function($locationProvider) {
-     $locationProvider.html5Mode(true).hashPrefix('!');
-   })
-
-   .run(function($rootElement) {
-     $rootElement.on('click', function(e) {
-       e.stopPropagation();
-     });
-   });
-   
+    });
   </file>
 
   <file name="protractor.js" type="protractor">
 
     var addressBar = element(by.css("#addressBar")),
-         url = 'http://www.example.com/base/path?a=b#h';
+        url = 'http://www.example.com/base/path?a=b#h';
 
-     
+
     it("should show fake browser info on load", function(){
-      browser.ignoreSynchronization = true;
       expect(addressBar.getAttribute('value')).toBe(url);
 
       expect(element(by.binding('$location.protocol')).getText()).toBe('http');
@@ -476,11 +476,9 @@ In these examples we use `<base href="/base/index.html" />`
       expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
       expect(element(by.binding('$location.hash')).getText()).toBe('h');
 
-      browser.ignoreSynchronization = false; 
     });
 
     it("should change $location accordingly", function(){
-      browser.ignoreSynchronization = true;
       var navigation = element.all(by.css("#navigation a"));
 
       navigation.get(0).click();
@@ -505,7 +503,6 @@ In these examples we use `<base href="/base/index.html" />`
       expect(element(by.binding('$location.path')).getText()).toBe('/sec/ond');
       expect(element(by.binding('$location.search')).getText()).toBe('{"flag":true}');
       expect(element(by.binding('$location.hash')).getText()).toBe('hash');
-      browser.ignoreSynchronization = false;
     });
 
   </file>
@@ -513,10 +510,10 @@ In these examples we use `<base href="/base/index.html" />`
 </example>
 
 ####Browser in HTML5 Fallback mode (Hashbang mode)
-<example module="html5-mode">
+<example module="hashbang-mode" name="location-hashbang-mode">
   <file name="index.html">
     <div ng-controller="LocationController">
-      <div ng-address-bar browser="html5"></div><br><br>
+      <div ng-address-bar></div><br><br>
       <div>
         $location.protocol() = <span ng-bind="$location.protocol()"></span> <br>
         $location.host() = <span ng-bind="$location.host()"></span> <br>
@@ -532,75 +529,25 @@ In these examples we use `<base href="/base/index.html" />`
       </div>
     </div>
   </file>
-  <file name="script.js">
-    angular.module('fake-browser', [])
+  <file name="app.js">
+    angular.module('hashbang-mode', ['fake-browser', 'address-bar'])
 
-    .factory('FakeBrowser', function() {
-      return function FakeBrowser(initUrl, baseHref) {
-        this.onUrlChange = function(fn) {
-          this.urlChange = fn;
-        };
-
-        this.url = function() {
-          return initUrl;
-        };
-
-        this.defer = function(fn, delay) {
-          setTimeout(function() { fn(); }, delay || 0);
-        };
-
-        this.baseHref = function() {
-          return baseHref;
-        };
-
-        this.notifyWhenOutstandingRequests = angular.noop;
-      };
-    });
-
-    angular.module('html5-mode', ['fake-browser'])
-
-    .factory('$browser', function(FakeBrowser) {
-      return new FakeBrowser('http://www.example.com/base/index.html#!/path?a=b#h', '/base/index.html');
-    })
-
+    .constant('initUrl', 'http://www.example.com/base/index.html#!/path?a=b#h')
+    .constant('baseHref', '/base/index.html')
     .value('$sniffer', { history: false })
+
+    .config(function($locationProvider) {
+      $locationProvider.html5Mode(true).hashPrefix('!');
+    })
 
     .controller("LocationController", function($scope, $location) {
       $scope.$location = {};
-      angular.forEach("protocol host port path search hash".split(" "), function(method){        
+      angular.forEach("protocol host port path search hash".split(" "), function(method){
         $scope.$location[method] = function(){
           var result = $location[method].call($location);
           return angular.isObject(result) ? angular.toJson(result) : result;
         };
       });
-    })
-
-    .directive('ngAddressBar', function($browser) {
-      return {
-        template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
-        link: function(scope, element, attrs){
-          var input = element.children("input"), delay;
-          
-          input.on('keypress keyup keydown', function(event) {
-                  delay = (!delay ? $timeout(fireUrlChange, 250) : null);
-                  event.stopPropagation();
-                })
-               .val($browser.url());
-          
-          $browser.url = function(url) {
-            return url ? input.val(url) : input.val();
-          };         
-
-          function fireUrlChange() {
-            delay = null;
-            $browser.urlChange(input.val());
-          }
-        }
-      };
-    })
-
-    .config(function($locationProvider) {
-      $locationProvider.html5Mode(true).hashPrefix('!');
     })
 
     .run(function($rootElement) {
@@ -611,14 +558,67 @@ In these examples we use `<base href="/base/index.html" />`
 
   </file>
 
+  <file name="fakeBrowser.js">
+    angular.module('fake-browser', [])
+
+    .config(function($provide) {
+     $provide.decorator('$browser', function($delegate, baseHref, initUrl) {
+
+      $delegate.onUrlChange = function(fn) {
+         this.urlChange = fn;
+       };
+
+      $delegate.url = function() {
+         return initUrl;
+      };
+
+      $delegate.defer = function(fn, delay) {
+         setTimeout(function() { fn(); }, delay || 0);
+       };
+
+      $delegate.baseHref = function() {
+         return baseHref;
+       };
+
+       return $delegate;
+     });
+    });
+  </file>
+
+
+  <file name="addressBar.js">
+   angular.module('address-bar', [])
+   .directive('ngAddressBar', function($browser, $timeout) {
+      return {
+        template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
+        link: function(scope, element, attrs){
+          var input = element.children("input"), delay;
+
+          input.on('keypress keyup keydown', function(event) {
+                  delay = (!delay ? $timeout(fireUrlChange, 250) : null);
+                  event.stopPropagation();
+                })
+               .val($browser.url());
+
+          $browser.url = function(url) {
+            return url ? input.val(url) : input.val();
+          };
+
+          function fireUrlChange() {
+            delay = null;
+            $browser.urlChange(input.val());
+          }
+        }
+      };
+    });
+  </file>
+
   <file name="protractor.js" type="protractor">
-    //browser.ignoreSynchronization = true;
-    
+
     var addressBar = element(by.css("#addressBar")),
          url = 'http://www.example.com/base/index.html#!/path?a=b#h';
-     
+
     it("should show fake browser info on load", function(){
-      browser.ignoreSynchronization = true;
       expect(addressBar.getAttribute('value')).toBe(url);
 
       expect(element(by.binding('$location.protocol')).getText()).toBe('http');
@@ -628,11 +628,9 @@ In these examples we use `<base href="/base/index.html" />`
       expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
       expect(element(by.binding('$location.hash')).getText()).toBe('h');
 
-      browser.ignoreSynchronization = false; 
     });
 
     it("should change $location accordingly", function(){
-      browser.ignoreSynchronization = true;
       var navigation = element.all(by.css("#navigation a"));
 
       navigation.get(0).click();
@@ -658,7 +656,6 @@ In these examples we use `<base href="/base/index.html" />`
       expect(element(by.binding('$location.search')).getText()).toBe('{"flag":true}');
       expect(element(by.binding('$location.hash')).getText()).toBe('hash');
 
-      browser.ignoreSynchronization = false;
     });
   </file>
 
