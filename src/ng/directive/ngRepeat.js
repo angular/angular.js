@@ -220,7 +220,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         }
 
         lhs = match[1];
-        rhs = match[2];
+        rhs = $parse(match[2]);
         trackByExp = match[3];
 
         if (trackByExp) {
@@ -256,8 +256,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         //   - index: position
         var lastBlockMap = {};
 
-        //watch props
-        $scope.$watchCollection(rhs, function ngRepeatAction(collection){
+        var ngRepeatAction = function(collection){
           var index, length,
               previousNode = $element[0],     // current position of the node
               nextNode,
@@ -379,7 +378,11 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             }
           }
           lastBlockMap = nextBlockMap;
-        });
+        };
+
+        ngRepeatAction(rhs($scope));
+        //watch props
+        $scope.$watchCollection(rhs, ngRepeatAction);
     }
   };
 
