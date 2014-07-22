@@ -1,9 +1,10 @@
 /* global $LogProvider: false */
 'use strict';
 
-function initService(debugEnabled) {
+function initService(debugEnabled, debugLevel) {
     return module(function($logProvider){
       $logProvider.debugEnabled(debugEnabled);
+      $logProvider.debugLevel(debugLevel);
     });
   }
 
@@ -119,7 +120,7 @@ describe('$log', function() {
 
   describe("$log.debug", function () {
 
-    beforeEach(initService(false));
+    beforeEach(initService(false, 'error'));
 
     it("should skip debugging output if disabled", inject(
       function(){

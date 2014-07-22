@@ -45,6 +45,7 @@
  */
 function $LogProvider(){
   var debug = true,
+      level = 'debug',
       self = this;
 
   /**
@@ -63,6 +64,24 @@ function $LogProvider(){
     }
   };
 
+  this.debugLevel = function(flag) {
+    if (isDefined(flag)) {
+      level = flag;
+    return this;
+    } else {
+      return level;
+    }
+  };
+
+  this.debugLevel = function(flag) {
+    if (flag) {
+      level = flag;
+    return this;
+    } else {
+      return level;
+    }
+  };
+
   this.$get = ['$window', function($window){
     return {
       /**
@@ -72,7 +91,15 @@ function $LogProvider(){
        * @description
        * Write a log message
        */
-      log: consoleLog('log'),
+      log: (function () {
+        var fn = consoleLog('log');
+
+        return function() {
+          if (level == 'debug' || level == 'error' || level == 'warn' || level == 'info' || level == 'log') {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
@@ -81,7 +108,15 @@ function $LogProvider(){
        * @description
        * Write an information message
        */
-      info: consoleLog('info'),
+      info: (function () {
+        var fn = consoleLog('info');
+
+        return function() {
+          if (level == 'debug' || level == 'error' || level == 'warn' || level == 'info') {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
@@ -90,7 +125,15 @@ function $LogProvider(){
        * @description
        * Write a warning message
        */
-      warn: consoleLog('warn'),
+      warn: (function () {
+        var fn = consoleLog('warn');
+
+        return function() {
+          if (level == 'debug' || level == 'error' || level == 'warn') {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
@@ -99,7 +142,15 @@ function $LogProvider(){
        * @description
        * Write an error message
        */
-      error: consoleLog('error'),
+      error: (function () {
+        var fn = consoleLog('error');
+
+        return function() {
+          if (level == 'debug' || level == 'error') {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
@@ -112,7 +163,9 @@ function $LogProvider(){
         var fn = consoleLog('debug');
 
         return function() {
-          if (debug) {
+          if (
+            // debug ||
+            level == 'debug') {
             fn.apply(self, arguments);
           }
         };
@@ -133,6 +186,7 @@ function $LogProvider(){
     }
 
     function consoleLog(type) {
+
       var console = $window.console || {},
           logFn = console[type] || console.log || noop,
           hasApply = false;
