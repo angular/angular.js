@@ -20,7 +20,7 @@
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
- * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
+ * Creating an alternative name for the property `$index` is possible with the `index as` syntax.
  * This may be useful when, for instance, nesting ngRepeats.
  *
  * # Special repeat start and end points
@@ -89,6 +89,15 @@
  *     and `expression` is the scope expression giving the collection to enumerate.
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
+ *
+ *   * `variable in expression index as property_name` - You can also provide an optional property name to be used
+ *     as the index. If no property name is specified the default property name `$index` is used.
+ *
+ *     For example: `item in items` is equivalent to `item in items index as $index`. This implies that the
+ *     property `$index` is used to specify the index.
+ *
+ *     For example: `item in items index as myIndex` can be used when there is a need to keep the index property
+ *     into a user defined property name. This is useful when dealing with nested ng-repeats.
  *
  *   * `variable in expression track by tracking_expression` – You can also provide an optional tracking function
  *     which can be used to associate the objects in the collection with the DOM elements. If no tracking function
@@ -209,19 +218,20 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     $$tlb: true,
     link: function($scope, $element, $attr, ctrl, $transclude){
         var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
-          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
+        var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+index\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
+          indexBy, trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
           lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
-          throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
+          throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ index as _property_][ track by _id_]' but got '{0}'.",
             expression);
         }
 
         lhs = match[1];
         rhs = match[2];
-        trackByExp = match[3];
+        indexBy = match[3] || '$index';
+        trackByExp = match[4];
 
         if (trackByExp) {
           trackByExpGetter = $parse(trackByExp);
@@ -276,7 +286,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           var updateScope = function(scope, index) {
             scope[valueIdentifier] = value;
             if (keyIdentifier) scope[keyIdentifier] = key;
-            scope.$index = index;
+            scope[indexBy] = index;
             scope.$first = (index === 0);
             scope.$last = (index === (arrayLength - 1));
             scope.$middle = !(scope.$first || scope.$last);
