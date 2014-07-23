@@ -68,7 +68,7 @@ var $Deferred = function Deferred(Q) {
 defineProperties($Deferred.prototype, WRITABLE, {
   resolve: function Deferred$resolve(value) {
     var promise = this.promise;
-    if (promise.$$tryFollow(value)) {
+    if (promise.isResolved() || promise.$$tryFollow(value)) {
       return;
     }
 
@@ -78,14 +78,24 @@ defineProperties($Deferred.prototype, WRITABLE, {
 
   reject: function Deferred$reject(reason) {
     var promise = this.promise;
+    if (promise.isResolved()) return;
     var trace = isError(reason) ? reason : new Error(reason + '');
     promise.$$attachExtraTrace(trace);
     promise.$$invoke(promise.$$reject, promise, reason);
   },
 
 
+  rejectGently: function Deferred$rejectGently(reason) {
+    var promise = this.promise;
+    if (promise.isResolved()) return;
+    var trace = isError(reason) ? reason : new Error(reason + '');
+    promise.$$attachExtraTrace(trace);
+    promise.$$invoke(promise.$$rejectGently, promise, reason);
+  },
+
+
   notify: function Deferred$notify(value) {
-    this.promise.$$invoke(this.promise.$$progress, this.promise, value);
+    this.promise.$$progress(value);
   },
 
 
@@ -161,6 +171,19 @@ function Promise$$cast(obj, originalPromise, Q) {
 }
 
 
+function Promise$$castToPromise(obj, originalPromise, Q) {
+  obj = Promise$$cast(obj, originalPromise, Q);
+  if (!(obj instanceof Q)) {
+    return {
+      then: function Promise$$castToPromiseThen(callback) {
+        return Q.resolved(callback(obj));
+      }
+    };
+  }
+  return obj;
+}
+
+
 function Promise$$doThenable(x, then, originalPromise, Q) {
   var resolver = Q.defer();
   var called = false;
@@ -207,9 +230,39 @@ function Promise$$doThenable(x, then, originalPromise, Q) {
   function Promise$_progressFromThenable(v) {
     if (called) return;
     var promise = resolver.promise;
-    if (typeof promise.$$progress === 'function') {
+    if (isFunction(promise.$$progress)) {
       promise.$$progress(v);
     }
+  }
+}
+
+
+function Promise$makePromise(value, resolved, Q) {
+  var result = new Q(internalPromiseResolver);
+  if (resolved) {
+    result.$$fulfillUnchecked(value);
+  } else {
+    result.$$rejectUnchecked(value);
+  }
+  return result;
+}
+
+
+function Promise$handleFinalCallback(callback, value, isResolved, Q) {
+  var callbackOutput = null;
+  try {
+    callbackOutput = (callback || noop)();
+  } catch (e) {
+    return Promise$makePromise(e, false, Q);
+  }
+  if (callbackOutput && isFunction(callbackOutput.then)) {
+    return callbackOutput.then(function() {
+      return Promise$makePromise(value, isResolved, Q);
+    }, function(error) {
+      return Promise$makePromise(error, false, Q);
+    });
+  } else {
+    return Promise$makePromise(value, isResolved, Q);
   }
 }
 
@@ -223,6 +276,27 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
     }
 
     return ret;
+  },
+
+
+  catch: function Promise$catch(handler) {
+    var ret = new $Q(internalPromiseResolver, this.$$nextTick);
+    var callbackIndex = this.$$addCallbacks(null, handler, null, ret, void 0);
+    if (this.isResolved()) {
+      this.$$invoke(this.$$queueSettleAt, this, callbackIndex);
+    }
+    return ret;
+  },
+
+
+  'finally': function Promise$finally(handler) {
+    var Q = this.constructor;
+
+    return this.then(function(value) {
+      return Promise$handleFinalCallback(handler, value, true, Q);
+    }, function(error) {
+      return Promise$handleFinalCallback(handler, error, false, Q);      
+    });
   },
 
 
@@ -304,6 +378,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
       this.$$attachExtraTrace(err);
       return this.$$rejectUnchecked(err);
     }
+
     this.$$setFulfilled();
     this.$$settledValue = value;
 
@@ -311,6 +386,11 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
     if (len > 0) {
       this.$$invoke(this.$$settlePromises, this, len);
     }
+  },
+
+
+  $$setTrace: function(trace) {
+    // TODO: improve error logging
   },
 
 
@@ -336,7 +416,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
     // ASSERT(this.isRejected())
     /*jshint bitwise: false */
     this.$$bitField = (this.$$bitField | IS_CARRYING_STACK_TRACE);
-    this.fullfilmentHandler0 = capturedTrace;
+    this.$$fulfillmentHandler0 = capturedTrace;
   },
 
 
@@ -347,12 +427,10 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
   },
 
 
-  $$proxyPromise: function Promise$$proxyPromise(promise) {
-    if (this.isResolved()) throw new Error('Cannot proxy for resolved promise');
-    if (this.$$isProxied()) throw new Error('Cannot proxy for proxied promise');
-    if (arguments.length !== 1) throw new Error('$$proxyPromise: arguments.length should be 1');
+  $$proxyPromise: function Promise$$proxyPromise(promise, slot) {
+    if (arguments.length === 1) slot = -1;
     promise.$$setProxied();
-    this.$$setProxyHandlers(promise, -1);
+    this.$$setProxyHandlers(promise, slot);
   },
 
 
@@ -365,6 +443,19 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
       this.$$fulfillUnchecked(promise.$$settledValue);
     } else {
       this.$$rejectUnchecked(promise.$$settledValue, promise.$$getCarriedStackTrace());
+    }
+
+    if (promise.$$isRejectionUnhandled()) promise.$$unsetRejectionIsUnhandled();
+  },
+
+
+  $$followResolve: function Promise$$followResolve(promise) {
+    this.$$setFollowing();
+
+    if (promise.isPending()) {
+      promise.proxyPromise(this, 0);
+    } else {
+      this.$$fulfillUnchecked(promise.$$settledValue);
     }
 
     if (promise.$$isRejectionUnhandled()) promise.$$unsetRejectionIsUnhandled();
@@ -388,7 +479,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
     this.$$setTrace(void 0);
 
     function Promise$$resolver(val) {
-      if (promise._tryFollow(val)) {
+      if (promise.$$tryFollow(val)) {
         return;
       }
       promise.$$fulfill(val);
@@ -408,13 +499,54 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
   },
 
 
+  $$progress: function Promise$$progress(progressValue) {
+    if (this.$$isFollowingOrFulfilledOrRejected() || !this.$$length()) return;
+    this.$$invoke(this.$$progressUnchecked, this, progressValue);
+  },
+
+
+  $$progressUnchecked: function Promise$$progressUnchecked(progressValue) {
+    if (!this.isPending()) return;
+    var len = this.$$length();
+    var progress = this.$$progress;
+    for (var i=0; i<len; ++i) {
+      var handler = this.$$progressHandlerAt(i);
+      var promise = this.$$promiseAt(i);
+      var receiver = this.$$receiverAt(i);
+      var ret;
+
+      if (isFunction(handler)) {
+        try {
+          ret = handler.call(receiver, progressValue);
+          if (promise instanceof $Q) {
+            promise.$$progress(ret);
+          }
+        } catch (e) {
+          // TODO(@caitp): improve error logging
+          if (this.$$unhandledException) {
+            
+          }
+        }
+      } else if (receiver instanceof $Q && receiver.$$isProxied()) {
+        receiver.$$progressUnchecked(progressValue);
+      }
+    }
+  },
+
+
   $$reject: function Promise$$reject(reason, carriedStackTrace) {
     if (this.$$isFollowingOrFulfilledOrRejected()) return;
     this.$$rejectUnchecked(reason, carriedStackTrace);
   },
 
 
-  $$rejectUnchecked: function Promise$$rejectUnchecked(reason, trace) {
+  $$rejectGently: function Promise$$rejectGently(reason, carriedStackTrace) {
+    if (this.$$isFollowingOrFulfilledOrRejected()) return;
+    this.$$rejectUnchecked(reason, carriedStackTrace, true);
+  },
+
+
+  $$rejectUnchecked: function Promise$$rejectUnchecked(reason, trace, gentle) {
     var promise = this;
     if (!promise.isPending()) return;
     if (reason === this) {
@@ -427,9 +559,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
     this.$$settledValue = reason;
 
     if (this.$$isFinal()) {
-      this.$$nextTick(function() {
-        thrower(trace === void 0 ? reason : trace);
-      });
+      this.$$invoke(thrower, void 0, trace === void 0 ? reason : trace);
       return;
     }
 
@@ -439,12 +569,9 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
 
     if (len > 0) {
       this.$$invoke(this.$$rejectPromises, this, void 0);
+    } else if (!gentle) {
+      this.$$ensurePossibleRejectionHandled();
     }
-
-    // TODO: improve error logging
-    // else {
-    //   this.$$ensurePossibleRejectionHandled();
-    // }
   },
 
 
@@ -526,6 +653,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
       trace = isError(error) ? error : new Error(error + '');
       promise.$$attachExtraTrace(trace);
       promise.$$rejectUnchecked(error, trace);
+      this.$$exceptionHandler(error);
     } else {
       var castValue = Promise$$cast(x, promise, this.constructor);
       if (castValue instanceof $Q) {
@@ -715,29 +843,62 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
   },
 
 
+  $$possiblyUnhandledRejection: function() {},
+
+  // TODO(@caitp): This is just a proxy for $exceptionHandler, but this should all be handled
+  // in $$possiblyUnhandledRejection instead...
+  $$exceptionHandler: function(e) {},
+
+  $$ensurePossibleRejectionHandled: function Promise$$ensurePossibleRejectionHandled() {
+    this.$$setRejectionIsUnhandled();
+    // TODO(@caitp): improve error logging in $q
+    // if (this.$$possiblyUnhandledRejection !== void 0) {
+    //   this.$$invoke(this.$$notifyUnhandledRejection, this, void 0);
+    // }
+  },
+
+
   $$notifyUnhandledRejectionIsHandled: function Promise$$notifyUnhandledRejectionIsHandled() {
-    if (typeof unhandledRejectionHandled === 'function') {
-      // TODO: improve error logging
-      // this.$$invoke(this.$$notifyUnhandledRejection, this, void 0);
-      // make jshint happy:
-      noop();
-    }
+    // TODO(@caitp): improve error logging in $q
+    // if (isFunction(this.$$unhandledRejectionHandled)) {
+    //   this.$$invoke(this.$$unhandledRejectionHandled, this, void 0);
+    // }
   },
 
 
   $$notifyUnhandledRejection: function Promise$$notifyUnhandledRejection() {
-    if (this.$$isRejectionUnhandled()) {
-      var reason = this.$$settledValue;
-      var trace = this.$$getCarriedStackTrace();
-
-      this.$$setUnhandledRejectionIsNotified();
-
-      if (trace !== void 0) {
-        this.$$unsetCarriedStackTrace();
-        reason = trace;
-      }
-    }
+    // TODO(@caitp): improve error logging in $q
+    // if (this.$$isRejectionUnhandled()) {
+    //   var reason = this.$$settledValue;
+    //   var trace = this.$$getCarriedStackTrace();
+    //
+    //   this.$$setUnhandledRejectionIsNotified();
+    //
+    //   if (trace !== void 0) {
+    //     this.$$unsetCarriedStackTrace();
+    //     reason = trace;
+    //   }
+    //
+    //   if (isFunction(this.$$possiblyUnhandledRejection)) {
+    //     this.$$possiblyUnhandledRejection(reason, this);
+    //   }
+    // }
   },
+
+
+  $$setUnhandledRejectionIsNotified: function Promise$$setUnhandledRejectionIsNotified() {
+    this.$$bitField = this.$$bitField | IS_UNHANDLED_REJECTION_NOTIFIED;
+  },
+
+
+  $$unsetUnhandledRejectionIsNotified: function Promise$$unsetUnhandledRejectionIsNotified() {
+    this.$$bitField = this.$$bitField & (~IS_UNHANDLED_REJECTION_NOTIFIED);
+  },
+
+
+  $$isUnhandledRejectionNotified: function Promise$$isUnhandledRejectionNotified() {
+    return (this.$$bitField & IS_UNHANDLED_REJECTION_NOTIFIED) > 0;
+  }
 });
 
 /**
@@ -1045,6 +1206,12 @@ function qFactory(nextTick, exceptionHandler) {
   });
 
 
+  defineProperties(Q.prototype, INVISIBLE|WRITABLE, {
+    $$possiblyUnhandledRejection: exceptionHandler || function(e) {},
+    $$exceptionHandler: exceptionHandler || function(e) {}
+  });
+
+
   defineProperties(Q, WRITABLE, {
     defer: function Q$defer() {
       return new $Deferred(Q, nextTick);
@@ -1155,10 +1322,50 @@ function qFactory(nextTick, exceptionHandler) {
      * @returns {Promise} Returns a promise of the passed value or promise
      */
     when: function Q$when(value, callback, errback, progressback) {
-      var castValue = Promise$$cast(value, void 0, Q);
-      var promise = castValue instanceof Q ? castValue : Q.resolved(value);
-      promise.then(callback, errback, progressback);
-      return promise;
+      var result = Q.defer();
+
+      function fulfillWhen(value) {
+        try {
+          if (isFunction(callback)) value = callback(value);
+          result.resolve(value);
+          return value;
+        } catch (e) {
+          return Q.reject(e);
+        }
+      }
+
+
+      function rejectWhen(reason) {
+        try {
+          var value = isFunction(errback) ? errback(reason) : Q.reject(reason);
+          return value;
+        } catch (e) {
+          return Q.reject(e);
+        }
+      }
+
+
+      function progressWhen(progress) {
+        try {
+          if (isFunction(progressback)) progress = progressback(progress);
+          result.notify(progress);
+          return progress;
+        } catch (e) {
+          // Exceptions thrown from progress callbacks are ignored
+        }
+      }
+
+
+      nextTick(function awaitValue() {
+        Promise$$castToPromise(value, void 0, Q).then(function(value) {
+          result.resolve(Promise$$castToPromise(value, result.promise, Q).
+            then(fulfillWhen, rejectWhen, progressWhen));        
+        }, function(reason) {
+          result.resolve(rejectWhen(reason));
+        }, progressWhen);
+      });
+
+      return result.promise;
     }
   });
 
