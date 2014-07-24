@@ -1893,7 +1893,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     var localValidationRunId = currentValidationRunId;
 
     // We can update the $$invalidModelValue immediately as we don't have to wait for validators!
-    ctrl.$$invalidModelValue = modelValue;
+    if (ctrl.$options && ctrl.$options.allowInvalid) {
+      ctrl.$modelValue = modelValue;
+      doneCallback();
+    } else {
+      ctrl.$$invalidModelValue = modelValue;
+    }
 
     // check parser error
     if (!processParseErrors(parseValid)) {
@@ -1972,9 +1977,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     function validationDone() {
       if (localValidationRunId === currentValidationRunId) {
         // set the validated model value
-        ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
-
-        doneCallback();
+        if (!ctrl.$options || !ctrl.$options.allowInvalid) {
+          ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
+          doneCallback();
+        }
       }
     }
   };
@@ -2751,6 +2757,8 @@ var ngValueDirective = function() {
  *     value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
  *     custom value for each event. For example:
  *     `ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
+ *   - `allowInvalid`: boolean value which indicates that the model can be set with values that did
+ *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
        `ngModel` as getters/setters.
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
