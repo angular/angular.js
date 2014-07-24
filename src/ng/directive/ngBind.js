@@ -178,6 +178,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  */
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return {
+    restrict: 'A',
     compile: function (tElement, tAttrs) {
       tElement.addClass('ng-binding');
 

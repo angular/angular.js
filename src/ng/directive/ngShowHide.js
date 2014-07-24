@@ -157,6 +157,7 @@
  */
 var ngShowDirective = ['$animate', function($animate) {
   return {
+    restrict: 'A',
     multiElement: true,
     link: function(scope, element, attr) {
       scope.$watch(attr.ngShow, function ngShowWatchAction(value){
@@ -311,6 +312,7 @@ var ngShowDirective = ['$animate', function($animate) {
  */
 var ngHideDirective = ['$animate', function($animate) {
   return {
+    restrict: 'A',
     multiElement: true,
     link: function(scope, element, attr) {
       scope.$watch(attr.ngHide, function ngHideWatchAction(value){
