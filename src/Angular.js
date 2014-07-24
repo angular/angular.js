@@ -1590,9 +1590,9 @@ function defineProperty(target, propertyName, flags, value) {
         desc.value = value;
       }
       Object.defineProperty(target, propertyName, desc);
+    } else {
+      target[propertyName] = value;
     }
-  } else {
-    target[propertyName] = value;
   }
 }
 

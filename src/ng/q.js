@@ -60,9 +60,7 @@ function isError(obj) {
 }
 
 var $Deferred = function Deferred(Q) {
-  defineProperties(this, INVISIBLE|WRITABLE, {
-    promise: new Q(internalPromiseResolver)
-  });
+  this.promise = new Q(internalPromiseResolver);
 };
 
 defineProperties($Deferred.prototype, WRITABLE, {
@@ -127,22 +125,20 @@ function $Q(resolver, nextTick) {
   }
 
   // Private properties
-  defineProperties(this, INVISIBLE|WRITABLE, {
-    $$bitField: NO_STATE,
+  this.$$bitField = NO_STATE;
 
-    // From Bluebird: Typical promise has exactly one parallel handler,
-    // store the first ones directly on the Promise.
-    $$fulfillmentHandler0: void 0,
-    $$rejectionHandler0: void 0,
+  // store nextTick in the prototype, so that types which use $rootScope.$evalAsync and types
+  // which use $browser.defer() are both instances of the same Promise type.
+  this.$$nextTick = nextTick;
 
-    // store nextTick in the prototype, so that types which use $rootScope.$evalAsync and types
-    // which use $browser.defer() are both instances of the same Promise type.
-    $$nextTick: nextTick,
+  // From Bluebird: Typical promise has exactly one parallel handler,
+  // store the first ones directly on the Promise.
+  this.$$fulfillmentHandler0 =
+  this.$$rejectionHandler0 =
 
-    $$promise0: void 0,
-    $$receiver0: void 0,
-    $$settledValue: void 0
-  });
+  this.$$promise0 =
+  this.$$receiver0 =
+  this.$$settledValue = void 0;
 
   if (resolver !== internalPromiseResolver) this.$$resolveFromResolver(resolver);
 }
