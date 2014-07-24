@@ -523,9 +523,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
           }
         } catch (e) {
           // TODO(@caitp): improve error logging
-          if (this.$$unhandledException) {
-            
-          }
+          this.$$exceptionHandler(e);
         }
       } else if (receiver instanceof $Q && receiver.$$isProxied()) {
         receiver.$$progressUnchecked(progressValue);
