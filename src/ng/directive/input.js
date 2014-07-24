@@ -2037,12 +2037,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ctrl.$modelValue = ngModelGet();
     }
     var prevModelValue = ctrl.$modelValue;
+    var allowInvalid = ctrl.$options && ctrl.$options.allowInvalid;
+    if (allowInvalid) {
+      ctrl.$modelValue = modelValue;
+      writeToModelIfNeeded();
+    }
     ctrl.$$runValidators(parserValid, modelValue, viewValue, function() {
-      ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
+      if (!allowInvalid) {
+        ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
+        writeToModelIfNeeded();
+      }
+    });
+
+    function writeToModelIfNeeded() {
       if (ctrl.$modelValue !== prevModelValue) {
         ctrl.$$writeModelToScope();
       }
-    });
+    }
   };
 
   this.$$writeModelToScope = function() {
@@ -2765,6 +2776,8 @@ var ngValueDirective = function() {
  *     value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
  *     custom value for each event. For example:
  *     `ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
+ *   - `allowInvalid`: boolean value which indicates that the model can be set with values that did
+ *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
        `ngModel` as getters/setters.
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for

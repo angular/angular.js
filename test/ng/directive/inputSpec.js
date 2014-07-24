@@ -1769,6 +1769,79 @@ describe('input', function() {
           'ng-model-options="{ getterSetter: true }" />');
     });
 
+    it('should assign invalid values to the scope if allowInvalid is true', function() {
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="1" ' +
+                   'ng-model-options="{allowInvalid: true}" />');
+      changeInputValueTo('12345');
+
+      expect(scope.value).toBe('12345');
+      expect(inputElm).toBeInvalid();
+    });
+
+    it('should not assign not parsable values to the scope if allowInvalid is true', function() {
+      compileInput('<input type="number" name="input" ng-model="value" ' +
+                   'ng-model-options="{allowInvalid: true}" />', {
+        valid: false,
+        badInput: true
+      });
+      changeInputValueTo('abcd');
+
+      expect(scope.value).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+    it('should update the scope before async validators execute if allowInvalid is true', inject(function($q) {
+      compileInput('<input type="text" name="input" ng-model="value" ' +
+                   'ng-model-options="{allowInvalid: true}" />');
+      var defer;
+      scope.form.input.$asyncValidators.promiseValidator = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+      changeInputValueTo('12345');
+
+      expect(scope.value).toBe('12345');
+      expect(scope.form.input.$pending.promiseValidator).toBe(true);
+      defer.reject();
+      scope.$digest();
+      expect(scope.value).toBe('12345');
+      expect(inputElm).toBeInvalid();
+    }));
+
+    it('should update the view before async validators execute if allowInvalid is true', inject(function($q) {
+      compileInput('<input type="text" name="input" ng-model="value" ' +
+                   'ng-model-options="{allowInvalid: true}" />');
+      var defer;
+      scope.form.input.$asyncValidators.promiseValidator = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+      scope.$apply('value = \'12345\'');
+
+      expect(inputElm.val()).toBe('12345');
+      expect(scope.form.input.$pending.promiseValidator).toBe(true);
+      defer.reject();
+      scope.$digest();
+      expect(inputElm.val()).toBe('12345');
+      expect(inputElm).toBeInvalid();
+    }));
+
+    it('should not call ng-change listeners twice if the model did not change with allowInvalid', function() {
+      compileInput('<input type="text" name="input" ng-model="value" ' +
+                   'ng-model-options="{allowInvalid: true}" ng-change="changed()" />');
+      scope.changed = jasmine.createSpy('changed');
+      scope.form.input.$parsers.push(function(value) {
+        return 'modelValue';
+      });
+
+      changeInputValueTo('input1');
+      expect(scope.value).toBe('modelValue');
+      expect(scope.changed).toHaveBeenCalledOnce();
+
+      changeInputValueTo('input2');
+      expect(scope.value).toBe('modelValue');
+      expect(scope.changed).toHaveBeenCalledOnce();
+    });
   });
 
   it('should allow complex reference binding', function() {
