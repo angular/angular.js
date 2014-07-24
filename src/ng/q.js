@@ -269,7 +269,8 @@ function Promise$handleFinalCallback(callback, value, isResolved, Q) {
 
 defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
   then: function Promise$then(didFulfill, didReject, didProgress) {
-    var ret = new $Q(internalPromiseResolver, this.$$nextTick);
+    var Q = this.constructor;
+    var ret = new Q(internalPromiseResolver);
     var callbackIndex = this.$$addCallbacks(didFulfill, didReject, didProgress, ret, void 0);
     if (this.isResolved()) {
       this.$$invoke(this.$$queueSettleAt, this, callbackIndex);
@@ -280,7 +281,8 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
 
 
   catch: function Promise$catch(handler) {
-    var ret = new $Q(internalPromiseResolver, this.$$nextTick);
+    var Q = this.constructor;
+    var ret = new Q(internalPromiseResolver);
     var callbackIndex = this.$$addCallbacks(null, handler, null, ret, void 0);
     if (this.isResolved()) {
       this.$$invoke(this.$$queueSettleAt, this, callbackIndex);
@@ -295,7 +297,7 @@ defineProperties($Q.prototype, INVISIBLE|WRITABLE, {
     return this.then(function(value) {
       return Promise$handleFinalCallback(handler, value, true, Q);
     }, function(error) {
-      return Promise$handleFinalCallback(handler, error, false, Q);      
+      return Promise$handleFinalCallback(handler, error, false, Q);
     });
   },
 
@@ -1357,7 +1359,7 @@ function qFactory(nextTick, exceptionHandler) {
       nextTick(function awaitValue() {
         Promise$$castToPromise(value, void 0, Q).then(function(value) {
           result.resolve(Promise$$castToPromise(value, result.promise, Q).
-            then(fulfillWhen, rejectWhen, progressWhen));        
+            then(fulfillWhen, rejectWhen, progressWhen));
         }, function(reason) {
           result.resolve(rejectWhen(reason));
         }, progressWhen);
