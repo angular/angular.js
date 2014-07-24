@@ -519,10 +519,74 @@ function qFactory(nextTick, exceptionHandler) {
     return deferred.promise;
   }
 
+  /**
+   * @ngdoc method
+   * @name $q#some
+   * @function
+   *
+   * @description
+   * Combines multiple promises into a single promise that is resolved when all of the input
+   * promises are resolved, and rejected if at least one of them is rejected.
+   *
+   * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
+   * @returns {Promise} Returns a single promise that will be resolved or rejected with a hash with fields
+   *   an array/hash of values, each value corresponding to the promise at the same index/key in the
+   *   `promises` array/hash.
+   *   If any of the promises is resolved with a rejection, this resulting promise will be rejected
+   *   with the same rejection value.
+   *   The difference between `$q#some` and `$q#all` is that `$q#some` will collect result from all
+   *   `promises`, that can be independent.
+   */
+  function some(promises) {
+    var deferred = defer(),
+        counter = 0,
+        wasRejected = false,
+        resolvedResults = isArray(promises) ? [] : {},
+        rejectedResults = isArray(promises) ? [] : {},
+        results = {resolved: resolvedResults,
+          rejected: rejectedResults
+        };
+
+    var checkIsAllProcessed = function() {
+      if (!(--counter)) {
+        if (wasRejected) {
+          deferred.reject(results);
+        } else {
+          deferred.resolve(results);
+        }
+      }
+    };
+
+    forEach(promises, function(promise, key) {
+      counter++;
+      ref(promise).then(function(value) {
+        if (resolvedResults.hasOwnProperty(key) || rejectedResults.hasOwnProperty(key)) {
+          return;
+        }
+        resolvedResults[key] = value;
+        checkIsAllProcessed();
+      }, function(reason) {
+        if (resolvedResults.hasOwnProperty(key) || rejectedResults.hasOwnProperty(key)) {
+          return;
+        }
+        wasRejected = true;
+        rejectedResults[key] = reason;
+        checkIsAllProcessed();
+      });
+    });
+
+    if (counter === 0) {
+      deferred.resolve(results);
+    }
+
+    return deferred.promise;
+  }
+
   return {
     defer: defer,
     reject: reject,
     when: when,
-    all: all
+    all: all,
+    some: some
   };
 }

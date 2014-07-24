@@ -1283,6 +1283,7 @@ describe('q', function() {
     });
   });
 
+
   describe('all (hash)', function() {
     it('should resolve all or nothing', function() {
       var result;
@@ -1349,6 +1350,78 @@ describe('q', function() {
       expect(logStr()).toBe('success({"first":"done","second":"done","third":"done"})->{"first":"done","second":"done","third":"done"}');
     });
   });
+
+
+  describe('some (hash)', function() {
+    it('should resolve all or nothing', function() {
+      var result;
+      q.some({}).then(function(r) { result = r; });
+      mockNextTick.flush();
+      expect(result).toEqual({resolved: {}, rejected: {}});
+    });
+
+
+    it('should take a hash of promises and return a promise for a hash of results', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.some({en: promise, fr: deferred1.promise, es: deferred2.promise}).then(success(), error());
+      expect(logStr()).toBe('');
+      syncResolve(deferred, 'hi');
+      expect(logStr()).toBe('');
+      syncResolve(deferred2, 'hola');
+      expect(logStr()).toBe('');
+      syncResolve(deferred1, 'salut');
+      expect(logStr()).toBe('success({"resolved":{"en":"hi","es":"hola","fr":"salut"},"rejected":{}})->{"resolved":{"en":"hi","es":"hola","fr":"salut"},"rejected":{}}');
+    });
+
+
+    it('should reject the derived promise if at least one of the promises in the hash is rejected, but should collect all succeded promises',
+        function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.some({en: promise, fr: deferred1.promise, es: deferred2.promise}).then(success(), error());
+      expect(logStr()).toBe('');
+      syncResolve(deferred2, 'hola');
+      expect(logStr()).toBe('');
+      syncReject(deferred1, 'oops');
+      expect(logStr()).toBe('');
+      syncResolve(deferred, 'go ahead');
+
+      expect(logStr()).toBe('error({"resolved":{"es":"hola","en":"go ahead"},"rejected":{"fr":"oops"}})->reject({"resolved":{"es":"hola","en":"go ahead"},"rejected":{"fr":"oops"}})');
+    });
+
+
+    it('should ignore multiple resolutions of an (evil) hash promise', function() {
+      var evilPromise = {
+        then: function(success, error) {
+          evilPromise.success = success;
+          evilPromise.error = error;
+        }
+      };
+
+      q.some({good: promise, evil: evilPromise}).then(success(), error());
+      expect(logStr()).toBe('');
+
+      evilPromise.success('first');
+      evilPromise.success('muhaha');
+      evilPromise.error('arghhh');
+      expect(logStr()).toBe('');
+
+      syncResolve(deferred, 'done');
+      expect(logStr()).toBe('success({"resolved":{"evil":"first","good":"done"},"rejected":{}})->{"resolved":{"evil":"first","good":"done"},"rejected":{}}');
+    });
+
+    it('should handle correctly situation when given the same promise several times', function() {
+      q.some({first: promise, second: promise, third: promise}).then(success(), error());
+      expect(logStr()).toBe('');
+
+      syncResolve(deferred, 'done');
+      expect(logStr()).toBe('success({"resolved":{"first":"done","second":"done","third":"done"},"rejected":{}})->{"resolved":{"first":"done","second":"done","third":"done"},"rejected":{}}');
+    });
+  });
+
 
   describe('exception logging', function() {
     var mockExceptionLogger = {
