@@ -315,13 +315,13 @@ function $RootScopeProvider(){
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(scope)`: called with current `scope` as a parameter.
-       * @param {function()=} listener Callback called whenever the return value of
-       *   the `watchExpression` changes.
-       *
-       *    - `string`: Evaluated as {@link guide/expression expression}
-       *    - `function(newValue, oldValue, scope)`: called with current and previous values as
-       *      parameters.
-       *
+       * @param {function(newValues, oldValues, scope)} listener Callback called whenever the return value of any
+       *    expression in `watchExpressions` changes
+       *    The `newValues` array contains the current values of the `watchExpressions`, with the indexes matching
+       *    those of `watchExpression`
+       *    and the `oldValues` array contains the previous values of the `watchExpressions`, with the indexes matching
+       *    those of `watchExpression`
+       *    The `scope` refers to the current scope.
        * @param {boolean=} objectEquality Compare for object equality using {@link angular.equals} instead of
        *     comparing for reference equality.
        * @param {function()=} deregisterNotifier Function to call when the deregistration function
