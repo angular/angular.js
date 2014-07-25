@@ -202,7 +202,7 @@ moved the controllers into their own module `phonecatControllers` (as shown belo
 
 We added `angular-route.js` to `index.html` and created a new `phonecatControllers` module in
 `controllers.js`. That's not all we need to do to be able to use their code, however. We also have
-to add the modules dependencies of our app. By listing these two modules as dependencies of
+to add the modules as dependencies of our app. By listing these two modules as dependencies of
 `phonecatApp`, we can use the directives and services they provide.
 
 
