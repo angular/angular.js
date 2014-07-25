@@ -108,6 +108,9 @@ var angularFiles = {
       'src/ngTouch/directive/ngClick.js',
       'src/ngTouch/directive/ngSwipe.js'
     ],
+    'ngAria': [
+      'src/ngAria/aria.js'
+    ]
   },
 
   'angularScenario': [
@@ -141,7 +144,8 @@ var angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngTouch/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/*.js'
   ],
 
   'karma': [
@@ -175,7 +179,8 @@ var angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/**/*.js',
-    'test/ngTouch/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/*.js'
   ],
 
   'karmaJquery': [
@@ -203,7 +208,8 @@ angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngRoute'],
   angularFiles['angularModules']['ngSanitize'],
   angularFiles['angularModules']['ngMock'],
-  angularFiles['angularModules']['ngTouch']
+  angularFiles['angularModules']['ngTouch'],
+  angularFiles['angularModules']['ngAria']
 );
 
 if (exports) {
