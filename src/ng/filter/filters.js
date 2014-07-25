@@ -50,10 +50,9 @@
  */
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
   return function(amount, currencySymbol){
-    if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    if (isUndefined(currencySymbol)) currencySymbol = $locale.NUMBER_FORMATS.CURRENCY_SYM;
+    return formatNumber(amount, $locale.NUMBER_FORMATS.PATTERNS[1], $locale.NUMBER_FORMATS.GROUP_SEP, $locale.NUMBER_FORMATS.DECIMAL_SEP, 2).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
@@ -111,9 +110,8 @@ function currencyFilter($locale) {
 
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
   return function(number, fractionSize) {
-    return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP, formats.DECIMAL_SEP,
+    return formatNumber(number, $locale.NUMBER_FORMATS.PATTERNS[0], $locale.NUMBER_FORMATS.GROUP_SEP, $locale.NUMBER_FORMATS.DECIMAL_SEP,
       fractionSize);
   };
 }
