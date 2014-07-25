@@ -153,6 +153,9 @@ module.exports = function(grunt) {
       },
       ngTouch: {
         files: { src: 'src/ngTouch/**/*.js' },
+      },
+      ngAria: {
+        files: {src: 'src/ngAria/**/*.js'},
       }
     },
 
@@ -220,6 +223,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-cookies.js',
         src: util.wrap(files['angularModules']['ngCookies'], 'module')
       },
+      aria: {
+        dest: 'build/angular-aria.js',
+        src: util.wrap(files['angularModules']['ngAria'], 'module')
+      },
       "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
         src:['src/ng/q.js','lib/promises-aplus/promises-aplus-test-adapter.js']
@@ -236,7 +243,8 @@ module.exports = function(grunt) {
       touch: 'build/angular-touch.js',
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
-      sanitize: 'build/angular-sanitize.js'
+      sanitize: 'build/angular-sanitize.js',
+      aria: 'build/angular-aria.js'
     },
 
 
