@@ -120,7 +120,7 @@ describe('$log', function() {
 
   describe("$log.debug", function () {
 
-    beforeEach(initService(false, 'error'));
+    beforeEach(initService(false));
 
     it("should skip debugging output if disabled", inject(
       function(){
@@ -179,4 +179,47 @@ describe('$log', function() {
       expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
     });
   });
+
+  describe('$logLevel', function() {
+
+    it('should log all levels if not defined', function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+
+      function($log) {
+        $log.log();
+        $log.info();
+        $log.warn();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;info;warn;error;debug;');
+
+    });
+
+    it('should log only errors and warns if warn level is defined', function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+        initService(true, 'warn');
+      },
+
+      function($log) {
+        $log.log();
+        $log.info();
+        $log.warn();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('warn;error;debug;');
+
+    });
+
+  });
+
+
 });

@@ -45,7 +45,7 @@
  */
 function $LogProvider(){
   var debug = true,
-      level = 'debug',
+      level = 'log',
       self = this;
 
   /**
@@ -86,7 +86,7 @@ function $LogProvider(){
         var fn = consoleLog('log');
 
         return function() {
-          if (level == 'debug' || level == 'error' || level == 'warn' || level == 'info' || level == 'log') {
+          if (level == 'log') {
             fn.apply(self, arguments);
           }
         };
@@ -103,7 +103,7 @@ function $LogProvider(){
         var fn = consoleLog('info');
 
         return function() {
-          if (level == 'debug' || level == 'error' || level == 'warn' || level == 'info') {
+          if (level == 'log' || level == 'info') {
             fn.apply(self, arguments);
           }
         };
@@ -120,7 +120,7 @@ function $LogProvider(){
         var fn = consoleLog('warn');
 
         return function() {
-          if (level == 'debug' || level == 'error' || level == 'warn') {
+          if (level == 'log' || level == 'info' || level == 'warn') {
             fn.apply(self, arguments);
           }
         };
@@ -137,7 +137,7 @@ function $LogProvider(){
         var fn = consoleLog('error');
 
         return function() {
-          if (level == 'debug' || level == 'error') {
+          if (level == 'log' || level == 'info' || level == 'warn' || level == 'error') {
             fn.apply(self, arguments);
           }
         };
@@ -154,9 +154,7 @@ function $LogProvider(){
         var fn = consoleLog('debug');
 
         return function() {
-          if (
-            // debug ||
-            level == 'debug') {
+          if (debug) {
             fn.apply(self, arguments);
           }
         };
