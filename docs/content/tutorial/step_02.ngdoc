@@ -65,6 +65,11 @@ __controller__ to the DOM at this point:
 bindings, which are referring to our application model, which is set up in our `PhoneListCtrl`
 controller.
 
+<div class="alert alert-info">
+Note: We have specified an {@link angular.Module Angular Module} to load using `ng-app="phonecatApp"`,
+where `phonecatApp` is the name of our module.  This module will contain the `PhoneListCtrl`.
+</div>
+
 <img class="diagram" src="img/tutorial/tutorial_02.png">
 
 ## Model and Controller
