@@ -514,3 +514,87 @@ describe('ngClass animations', function() {
     });
   });
 });
+
+describe('ngClassUpdate', function() {
+  var genClasses = function(X, Y) {
+    var classes = {TT: {}, TF: {}, FT: {}, FF: {}};
+    classes.TT[X] = classes.TT[Y] = classes.TF[X] = classes.FT[Y] = true;
+    classes.FF[X] = classes.FF[Y] = classes.FT[X] = classes.TF[Y] = false;
+    return classes;
+  };
+  var genExpected = function(X, Y) {
+    var expected = {e: []};
+    expected[X] = [X];
+    expected[Y] = [Y];
+    expected[X + Y] = [X, Y];
+    return expected
+  };
+
+  var element;
+
+  beforeEach(function() {
+    module('ngAnimate');
+    module('ngAnimateMock');
+  });
+
+  afterEach(function() {
+    dealoc(element);
+  });
+
+  it("should get called when the classes have been added, removed, or set", inject(function($rootScope, $compile, $animate) {
+    var classes = genClasses("A", "B"),
+        expected = genExpected("A", "B"),
+        classesOdd = genClasses("C", "D"),
+        expectedOdd = genExpected("C", "D"),
+        classesEven = genClasses("E", "F"),
+        expectedEven = genExpected("E", "F");
+
+    $rootScope.callback = jasmine.createSpy("callback");
+    $rootScope.callbackOdd = jasmine.createSpy("callbackOdd");
+    $rootScope.callbackEven = jasmine.createSpy("callbackEven");
+
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in [0,1]" class="existing" ng-class="classes" ng-class-odd="classesOdd" ng-class-even="classesEven" ' +
+      'ng-class-update="callback($addedClasses, $removedClasses)" ' +
+      'ng-class-update-odd="callbackOdd($addedClasses, $removedClasses)" ' +
+      'ng-class-update-even="callbackEven($addedClasses, $removedClasses)"></li>' +
+      '<ul>')($rootScope);
+
+    $rootScope.classes = classes.FF;
+    $rootScope.classesOdd = classesOdd.FF;
+    $rootScope.classesEven = classesEven.FF;
+    $rootScope.$digest();
+    $animate.triggerCallbacks();
+    expect($rootScope.callback).not.toHaveBeenCalled();
+    expect($rootScope.callbackOdd).not.toHaveBeenCalled();
+    expect($rootScope.callbackEven).not.toHaveBeenCalled();
+
+    $rootScope.classes = classes.TF;
+    $rootScope.classesOdd = classesOdd.TF;
+    $rootScope.classesEven = classesEven.TF;
+    $rootScope.$digest();
+    $animate.triggerCallbacks();
+    expect($rootScope.callback).toHaveBeenCalledWith(expected.A, expected.e);
+    expect($rootScope.callbackOdd).toHaveBeenCalledWith(expectedOdd.C, expectedOdd.e);
+    expect($rootScope.callbackEven).toHaveBeenCalledWith(expectedEven.E, expectedEven.e);
+
+    $rootScope.classes = classes.FT;
+    $rootScope.classesOdd = classesOdd.FT;
+    $rootScope.classesEven = classesEven.FT;
+    $rootScope.$digest();
+    $animate.triggerCallbacks();
+    expect($rootScope.callback).toHaveBeenCalledWith(expected.B, expected.A);
+    expect($rootScope.callbackOdd).toHaveBeenCalledWith(expectedOdd.D, expectedOdd.C);
+    expect($rootScope.callbackEven).toHaveBeenCalledWith(expectedEven.F, expectedEven.E);
+
+    $rootScope.classes = classes.FF;
+    $rootScope.classesOdd = classesOdd.FF;
+    $rootScope.classesEven = classesEven.FF;
+    $rootScope.$digest();
+    $animate.triggerCallbacks();
+    expect($rootScope.callback).toHaveBeenCalledWith(expected.e, expected.B);
+    expect($rootScope.callbackOdd).toHaveBeenCalledWith(expectedOdd.e, expectedOdd.D);
+    expect($rootScope.callbackEven).toHaveBeenCalledWith(expectedEven.e, expectedEven.F);
+
+  }));
+});
