@@ -1,12 +1,14 @@
 'use strict';
 
 function classDirective(name, selector) {
+  var ngClassUpdateName= 'ngClassUpdate' + name;
   name = 'ngClass' + name;
-  return ['$animate', function($animate) {
+  return ['$animate', '$parse', function($animate, $parse) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-        var oldVal;
+        var oldVal,
+            onUpdateFn = $parse(attr[ngClassUpdateName]);
 
         scope.$watch(attr[name], ngClassWatchAction, true);
 
@@ -30,12 +32,12 @@ function classDirective(name, selector) {
 
         function addClasses(classes) {
           var newClasses = digestClassCounts(classes, 1);
-          attr.$addClass(newClasses);
+          attr.$addClass(newClasses.join(' '));
         }
 
         function removeClasses(classes) {
           var newClasses = digestClassCounts(classes, -1);
-          attr.$removeClass(newClasses);
+          attr.$removeClass(newClasses.join(' '));
         }
 
         function digestClassCounts (classes, count) {
@@ -50,21 +52,30 @@ function classDirective(name, selector) {
             }
           });
           element.data('$classCounts', classCounts);
-          return classesToUpdate.join(' ');
+          return classesToUpdate;
         }
 
         function updateClasses (oldClasses, newClasses) {
-          var toAdd = arrayDifference(newClasses, oldClasses);
-          var toRemove = arrayDifference(oldClasses, newClasses);
-          toRemove = digestClassCounts(toRemove, -1);
-          toAdd = digestClassCounts(toAdd, 1);
+          var toAddArr = arrayDifference(newClasses, oldClasses);
+          var toRemoveArr = arrayDifference(oldClasses, newClasses);
+          toRemoveArr = digestClassCounts(toRemoveArr, -1);
+          toAddArr = digestClassCounts(toAddArr, 1);
+          var toAdd = toAddArr.join(' ');
+          var toRemove = toRemoveArr.join(' ');
 
           if (toAdd.length === 0) {
-            $animate.removeClass(element, toRemove);
+            $animate.removeClass(element, toRemove, done);
           } else if (toRemove.length === 0) {
-            $animate.addClass(element, toAdd);
+            $animate.addClass(element, toAdd, done);
           } else {
-            $animate.setClass(element, toAdd, toRemove);
+            $animate.setClass(element, toAdd, toRemove, done);
+          }
+
+          function done () {
+            onUpdateFn(scope, {
+              $addedClasses: toAddArr,
+              $removedClasses: toRemoveArr
+            });
           }
         }
 
