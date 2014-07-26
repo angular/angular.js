@@ -1217,6 +1217,18 @@ describe('$http', function() {
         expect(callback.mostRecentCall.args[0]).toBe('content');
       }));
 
+      it('should cache JSONP request when cache is provided', inject(function($rootScope) {
+        $httpBackend.expect('JSONP', '/url?cb=JSON_CALLBACK').respond('content');
+        $http({method: 'JSONP', url: '/url?cb=JSON_CALLBACK', cache: cache});
+        $httpBackend.flush();
+
+        $http({method: 'JSONP', url: '/url?cb=JSON_CALLBACK', cache: cache}).success(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toBe('content');
+      }));
+
       it('should cache request when cache is provided and no method specified', function () {
         doFirstCacheRequest();
 
