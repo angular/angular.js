@@ -272,7 +272,11 @@ function $InterpolateProvider() {
               break;
             }
             default: {
-              value = toJson(value);
+              if(isFunction(value.toString) && value.toString !== Object.prototype.toString && !isArray(value)) {
+                value = value.toString();
+              } else {
+                value = toJson(value);
+              }
             }
           }
 

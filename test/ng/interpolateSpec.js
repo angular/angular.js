@@ -36,6 +36,21 @@ describe('$interpolate', function() {
     expect($interpolate('{{ false }}')({})).toEqual('false');
   }));
 
+  it('should use custom toString when present', inject(function($interpolate, $rootScope) {
+    var scope = $rootScope.$new();
+    scope.a = {
+      toString: function() {
+        return 'foo';
+      }
+    };
+
+    expect($interpolate('{{ a }}')(scope)).toEqual('foo');
+  }));
+
+  it('should NOT use toString on array objects', inject(function($interpolate) {
+    expect($interpolate('{{a}}')({ a: [] })).toEqual('[]');
+  }));
+
 
   it('should return interpolation function', inject(function($interpolate, $rootScope) {
     var interpolateFn = $interpolate('Hello {{name}}!');
