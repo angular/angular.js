@@ -2201,7 +2201,9 @@ var ngModelDirective = function() {
  * The expression is evaluated immediately, unlike the JavaScript onchange event
  * which only triggers at the end of a change (usually, when the user leaves the
  * form element or presses the return key).
- * The expression is not evaluated when the value change is coming from the model.
+ * The expression is not evaluated when the value change is coming from the model
+ * or when the input does not match the pattern defined for the input in ngPattern.
+ * 
  *
  * Note, this directive requires `ngModel` to be present.
  *
