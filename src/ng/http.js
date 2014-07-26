@@ -886,7 +886,8 @@ function $HttpProvider() {
       promise.then(removePendingReq, removePendingReq);
 
 
-      if ((config.cache || defaults.cache) && config.cache !== false && config.method == 'GET') {
+      if ((config.cache || defaults.cache) && config.cache !== false &&
+          (config.method === 'GET' || config.method === 'JSONP')) {
         cache = isObject(config.cache) ? config.cache
               : isObject(defaults.cache) ? defaults.cache
               : defaultCache;
