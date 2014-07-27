@@ -1066,6 +1066,7 @@ describe('$route', function() {
 
           expect($routeParams).toEqual({barId: '2'});
           expect(routeChangeSpy).toHaveBeenCalledOnce();
+          expect($location.path()).toEqual('/bar/2');
         });
       });
 
@@ -1088,6 +1089,7 @@ describe('$route', function() {
 
           expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
           expect(routeChangeSpy).toHaveBeenCalledOnce();
+          expect($location.path()).toEqual('/bar/5/6/7/8');
         });
       });
 
@@ -1110,6 +1112,7 @@ describe('$route', function() {
 
           expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4'});
           expect(routeChangeSpy).toHaveBeenCalledOnce();
+          expect($location.path()).toEqual('/bar/5/6/3/4');
         });
       });
     });
