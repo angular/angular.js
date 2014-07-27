@@ -1079,14 +1079,14 @@ describe('$route', function() {
         inject(function($route, $routeParams, $location, $rootScope) {
           $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
 
-          $location.path('/bar/1/1/1/1');
+          $location.path('/bar/1/2/3/4');
           $rootScope.$digest();
           routeChangeSpy.reset();
 
-          $route.update({barId: '2', fooId: '2', spamId: '2', eggId: '2'});
+          $route.update({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
           $rootScope.$digest();
 
-          expect($routeParams).toEqual({barId: '2', fooId: '2', spamId: '2', eggId: '2'});
+          expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
           expect(routeChangeSpy).toHaveBeenCalledOnce();
         });
       });
@@ -1101,14 +1101,14 @@ describe('$route', function() {
         inject(function($route, $routeParams, $location, $rootScope) {
           $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
 
-          $location.path('/bar/1/1/1/1');
+          $location.path('/bar/1/2/3/4');
           $rootScope.$digest();
           routeChangeSpy.reset();
 
-          $route.update({barId: '2', fooId: '2'});
+          $route.update({barId: '5', fooId: '6'});
           $rootScope.$digest();
 
-          expect($routeParams).toEqual({barId: '2', fooId: '2', spamId: '1', eggId: '1'});
+          expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4'});
           expect(routeChangeSpy).toHaveBeenCalledOnce();
         });
       });
