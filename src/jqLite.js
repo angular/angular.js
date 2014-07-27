@@ -248,7 +248,7 @@ function jqLiteDealoc(element, onlyDescendants){
 
   if (element.childNodes && element.childNodes.length) {
     // we use querySelectorAll because documentFragments don't have getElementsByTagName
-    var descendants = element.getElementsByTagName ? element.getElementsByTagName('*') :
+    var descendants = element.getElementsByTagName ? sliceArgs(element.getElementsByTagName('*')) :
                     element.querySelectorAll ? element.querySelectorAll('*') : [];
     for (var i = 0, l = descendants.length; i < l; i++) {
       jqLiteRemoveData(descendants[i]);

@@ -535,6 +535,16 @@ describe('jqLite', function() {
         browserTrigger(span);
         expect(log).toEqual('click;');
       });
+
+      it('should work if the descendants of the element change while it\'s being removed', function() {
+        var div = jqLite('<div><p><span>text</span></p></div>');
+        div.find('p').on('$destroy', function() {
+          div.find('span').remove();
+        });
+        expect(function() {
+          div.remove();
+        }).not.toThrow();
+      });
     });
   });
 
