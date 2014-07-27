@@ -11,6 +11,9 @@
  *
  * @param {number} amount Input to filter.
  * @param {string=} symbol Currency symbol or identifier to be displayed.
+ * @param {(number|string)=} fractionSize Number of decimal places to round the number to.
+ * If this is not provided then the fraction size is computed from the current locale's number
+ * formatting pattern. In the case of the default locale, it will be 3.
  * @returns {string} Formatted number.
  *
  *
@@ -51,9 +54,10 @@
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
+  return function(amount, currencySymbol, fractionSize){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP,
+      fractionSize).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
@@ -107,7 +111,6 @@ function currencyFilter($locale) {
      </file>
    </example>
  */
-
 
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {

@@ -131,6 +131,18 @@ describe('filters', function() {
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
     });
+
+    it("should pass through the currency number format pattern from the current locale", inject(function($locale) {
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 1;
+      expect(currency(123.123, '$')).toBe('$123.1');
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 3;
+      expect(currency(123.123, '$')).toBe('$123.123');
+    }));
+
+    it('should handle overriding the default locale fractionSize', function() {
+      expect(currency(0.008, "$", 3)).toBe('$0.008');
+      expect(currency(0.008, "$", 0)).toBe('$0');
+    });
   });
 
 
