@@ -1061,7 +1061,7 @@ describe('$route', function() {
           $rootScope.$digest();
           routeChangeSpy.reset();
 
-          $route.update({barId: '2'});
+          $route.updateParams({barId: '2'});
           $rootScope.$digest();
 
           expect($routeParams).toEqual({barId: '2'});
@@ -1084,7 +1084,7 @@ describe('$route', function() {
           $rootScope.$digest();
           routeChangeSpy.reset();
 
-          $route.update({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
+          $route.updateParams({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
           $rootScope.$digest();
 
           expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
@@ -1107,7 +1107,7 @@ describe('$route', function() {
           $rootScope.$digest();
           routeChangeSpy.reset();
 
-          $route.update({barId: '5', fooId: '6'});
+          $route.updateParams({barId: '5', fooId: '6'});
           $rootScope.$digest();
 
           expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4'});

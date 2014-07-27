@@ -440,7 +440,7 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name $route#update
+           * @name $route#updateParams
            *
            * @description
            * Causes `$route` service to update the current URL, replacing
@@ -448,7 +448,7 @@ function $RouteProvider(){
            *
            * @param {Object} newParams mapping of URL parameter names to values
            */
-          update: function(newParams) {
+          updateParams: function(newParams) {
             newParams = defaults(newParams, this.current.params);
             $location.path(interpolate(this.current.$$route.originalPath, newParams));
           }
