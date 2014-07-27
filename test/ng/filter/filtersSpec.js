@@ -73,6 +73,27 @@ describe('filters', function() {
       expect(num).toBe('123.112');
     });
 
+    it("should use the `maxFrac` and `minFrac` from `pattern` if fractionSize is not specified", function() {
+
+      pattern.minFrac = 1;
+      expect(formatNumber(123.1, pattern, ',', '.')).toEqual('123.1');
+      pattern.minFrac = 3;
+      expect(formatNumber(123.1, pattern, ',', '.')).toEqual('123.100');
+
+      pattern.minFrac = 1;
+      pattern.maxFrac = 1;
+      expect(formatNumber(123.123, pattern, ',', '.')).toEqual('123.1');
+      pattern.maxFrac = 3;
+      expect(formatNumber(123.123, pattern, ',', '.')).toEqual('123.123');
+
+      pattern.minFrac = 2;
+      pattern.maxFrac = 2;
+      expect(formatNumber(1.07 + 1 - 2.07, pattern, ',', '.')).toBe('0.00');
+      expect(formatNumber(0.008, pattern, ',', '.')).toBe('0.01');
+      expect(formatNumber(0.003, pattern, ',', '.')).toBe('0.00');
+
+    });
+
     it('should format the same with string as well as numeric fractionSize', function(){
       var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
