@@ -2,9 +2,107 @@
 
 describe('filters', function() {
 
-  var filter;
-
-  beforeEach(inject(function($filter){
+  var filter, locale;
+  beforeEach(module( function ($provide) {
+    locale = {
+      "DATETIME_FORMATS": {
+        "AMPMS": [
+          "AM",
+          "PM"
+        ],
+        "DAY": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ],
+        "MONTH": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ],
+        "SHORTDAY": [
+          "Sun",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "SHORTMONTH": [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec"
+        ],
+        "fullDate": "EEEE, MMMM d, y",
+        "longDate": "MMMM d, y",
+        "medium": "MMM d, y h:mm:ss a",
+        "mediumDate": "MMM d, y",
+        "mediumTime": "h:mm:ss a",
+        "short": "M/d/yy h:mm a",
+        "shortDate": "M/d/yy",
+        "shortTime": "h:mm a"
+      },
+      "NUMBER_FORMATS": {
+        "CURRENCY_SYM": "$",
+        "DECIMAL_SEP": ".",
+        "GROUP_SEP": ",",
+        "PATTERNS": [
+          {
+            "gSize": 3,
+            "lgSize": 3,
+            "macFrac": 0,
+            "maxFrac": 3,
+            "minFrac": 0,
+            "minInt": 1,
+            "negPre": "-",
+            "negSuf": "",
+            "posPre": "",
+            "posSuf": ""
+          },
+          {
+            "gSize": 3,
+            "lgSize": 3,
+            "macFrac": 0,
+            "maxFrac": 2,
+            "minFrac": 2,
+            "minInt": 1,
+            "negPre": "(\u00a4",
+            "negSuf": ")",
+            "posPre": "\u00a4",
+            "posSuf": ""
+          }
+        ]
+      },
+      "id": "en-us",
+      "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+    };
+    var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+    $provide.value("$locale", locale);
+  }));
+  beforeEach(inject(function($filter) {
     filter = $filter;
   }));
 
@@ -23,7 +121,7 @@ describe('filters', function() {
     var pattern;
 
     beforeEach(function() {
-      pattern = { minInt: 1,
+      pattern = {
                   minFrac: 0,
                   maxFrac: 3,
                   posPre: '',
@@ -109,6 +207,18 @@ describe('filters', function() {
       expect(currency(1.07 + 1 - 2.07)).toBe('$0.00');
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
+    });
+
+    it('should apply locale number format min and max fractionSize', function() {
+      locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 3;
+      locale.NUMBER_FORMATS.PATTERNS[1].minFrac = 2;
+
+      expect(currency(0.0008)).toBe('$0.001');
+      expect(currency(0.00)).toBe('$0.00');
+
+      //reset values for other tests
+      locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 2;
+      locale.NUMBER_FORMATS.PATTERNS[1].minFrac = 2;
     });
   });
 
