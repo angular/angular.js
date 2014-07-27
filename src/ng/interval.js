@@ -34,7 +34,9 @@ function $IntervalProvider() {
       * </div>
       *
       * @param {function()} fn A function that should be called repeatedly.
-      * @param {number} delay Number of milliseconds between each function call.
+      * @param {number|function()} delay Number of milliseconds between each function call. If this
+      *   is a function, it will be called with the one argument - the iteration number - and must
+      *   return a number.
       * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
       *   indefinitely.
       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
@@ -137,13 +139,15 @@ function $IntervalProvider() {
           iteration = 0,
           skipApply = (isDefined(invokeApply) && !invokeApply),
           deferred = (skipApply ? $$q : $q).defer(),
-          promise = deferred.promise;
+          promise = deferred.promise,
+          isDelayFunction = angular.isFunction(delay),
+          delayNumber = Number(isDelayFunction ? delay(iteration) : delay);
 
       count = isDefined(count) ? count : 0;
 
       promise.then(null, null, fn);
 
-      promise.$$intervalId = setInterval(function tick() {
+      var tick = function() {
         deferred.notify(iteration++);
 
         if (count > 0 && iteration >= count) {
@@ -154,7 +158,17 @@ function $IntervalProvider() {
 
         if (!skipApply) $rootScope.$apply();
 
-      }, delay);
+        if (isDelayFunction) {
+          var newDelayNumber = Number(delay(iteration));
+          if (newDelayNumber !== delayNumber) {
+            delayNumber = newDelayNumber;
+            clearInterval(promise.$$intervalId);
+            promise.$$intervalId = setInterval(tick, newDelayNumber);
+          }
+        }
+      };
+
+      promise.$$intervalId = setInterval(tick, delayNumber);
 
       intervals[promise.$$intervalId] = deferred;
 
