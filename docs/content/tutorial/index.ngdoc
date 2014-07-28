@@ -195,6 +195,11 @@ You can now browse to the application at:
 http://localhost:8000/app/index.html
 ```
 
+<div class="alert alert-info">
+To serve the web app on a different ip address or port, edit the "start" script within package.json.
+You can `-a` to set the address and `-p` to set the port.
+</div>
+
 ### Running Unit Tests
 
 We use unit tests to ensure that the JavaScript code in our application is operating correctly.
