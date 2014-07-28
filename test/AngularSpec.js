@@ -668,16 +668,16 @@ describe('angular', function() {
         toEqual('asdf1234asdf');
 
       //don't encode unreserved'
-      expect(encodeUriSegment("-_.!~*'() -_.!~*'()")).
-        toEqual("-_.!~*'()%20-_.!~*'()");
+      expect(encodeUriSegment("-_.!~*'(); -_.!~*'();")).
+        toEqual("-_.!~*'();%20-_.!~*'();");
 
       //don't encode the rest of pchar'
       expect(encodeUriSegment(':@&=+$, :@&=+$,')).
         toEqual(':@&=+$,%20:@&=+$,');
 
-      //encode '/', ';' and ' ''
+      //encode '/' and ' ''
       expect(encodeUriSegment('/; /;')).
-        toEqual('%2F%3B%20%2F%3B');
+        toEqual('%2F;%20%2F;');
     });
   });
 
@@ -699,7 +699,7 @@ describe('angular', function() {
 
       //encode '&', ';', '=', '+', and '#'
       expect(encodeUriQuery('&;=+# &;=+#')).
-        toEqual('%26%3B%3D%2B%23+%26%3B%3D%2B%23');
+        toEqual('%26;%3D%2B%23+%26;%3D%2B%23');
 
       //encode ' ' as '+'
       expect(encodeUriQuery('  ')).
