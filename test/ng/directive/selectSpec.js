@@ -735,6 +735,8 @@ describe('select', function() {
 
     it('should not update selected property of an option element on digest with no change event',
         function() {
+      // ng-options="value.name for value in values"
+      // ng-model="selected"
       createSingleSelect();
 
       scope.$apply(function() {
@@ -743,6 +745,11 @@ describe('select', function() {
       });
 
       var options = element.find('option');
+
+      expect(scope.selected).toEqual({ name: 'A' });
+      expect(options.eq(0).prop('selected')).toBe(true);
+      expect(options.eq(1).prop('selected')).toBe(false);
+
       var optionToSelect = options.eq(1);
 
       expect(optionToSelect.text()).toBe('B');
