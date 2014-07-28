@@ -744,7 +744,21 @@ function $LocationProvider(){
       if (!changeCounter || oldUrl != $location.absUrl()) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
-          if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
+          /**
+           * $browser should detect if url was changed outside of Angular, in which
+           * case $location should automatically update to the new url.
+           *
+           * NOTE: Detecting outside changes to location happens automatically in $browser via
+           *       window events (or polling if events aren't supported), but those methods are
+           *       async. For this reason, $browser.url() will perform a comparison with each call
+           *       to the method as a getter.
+           * NOTE: Method does not exist on mock $browser
+           */
+          if ($browser.urlChangedOutsideAngular && $browser.urlChangedOutsideAngular()) {
+            $location.$$parse(oldUrl);
+            $browser.urlChangedOutsideAngular(false);
+          }
+          else if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
               defaultPrevented) {
             $location.$$parse(oldUrl);
           } else {

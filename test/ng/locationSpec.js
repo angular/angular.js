@@ -769,6 +769,29 @@ describe('$location', function() {
     });
 
 
+    it('should update location when location changed outside of Angular', function() {
+      module(function($windowProvider, $locationProvider, $browserProvider) {
+        $locationProvider.html5Mode(true);
+        $browserProvider.$get = function($document, $window, $log, $sniffer) {
+          var b = new Browser($window, $document, $log, $sniffer);
+          b.pollFns = [];
+          return b;
+        };
+      });
+
+      inject(function($rootScope, $browser, $location, $sniffer){
+        if ($sniffer.history) {
+          window.history.replaceState(null, '', '/hello');
+          // Verify that infinite digest reported in #6976 no longer occurs
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
+          expect($location.path()).toBe('/hello');
+        }
+      });
+    });
+
+
     it('should rewrite when hashbang url given', function() {
       initService(true, '!', true);
       inject(
