@@ -62,6 +62,48 @@ describe('$location', function() {
   });
 
 
+  it('should not infinitely digest when using a semicolon in initial path', function() {
+    module(function($windowProvider, $locationProvider, $browserProvider) {
+      $locationProvider.html5Mode(true);
+      $windowProvider.$get = function() {
+        var win = {};
+        angular.extend(win, window);
+        win.addEventListener = angular.noop;
+        win.removeEventListener = angular.noop;
+        win.history = {
+          replaceState: angular.noop,
+          pushState: angular.noop
+        };
+        win.location = {
+          href: 'http://localhost:9876/;jsessionid=foo',
+          replace: function(val) {
+            win.location.href = val;
+          }
+        };
+        return win;
+      };
+      $browserProvider.$get = function($document, $window) {
+        var sniffer = {history: true, hashchange: false};
+        var logs = {log:[], warn:[], info:[], error:[]};
+        var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
+                   warn: function() { logs.warn.push(slice.call(arguments)); },
+                   info: function() { logs.info.push(slice.call(arguments)); },
+                   error: function() { logs.error.push(slice.call(arguments)); }};
+
+        /* global Browser: false */
+        var b = new Browser($window, $document, fakeLog, sniffer);
+        b.pollFns = [];
+        return b;
+      };
+    });
+    var self = this;
+    inject(function($location, $browser, $rootScope) {
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+    });
+  });
+
   describe('NewUrl', function() {
     beforeEach(function() {
       url = new LocationHtml5Url('http://www.domain.com:9877/');
