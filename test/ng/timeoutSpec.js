@@ -49,19 +49,40 @@ describe('$timeout', function() {
 
 
   it('should NOT call $evalAsync or $digest if invokeApply is set to false',
-      inject(function($timeout, $rootScope) {
-    var evalAsyncSpy = spyOn($rootScope, '$evalAsync').andCallThrough();
-    var digestSpy = spyOn($rootScope, '$digest').andCallThrough();
-    var fulfilledSpy = jasmine.createSpy('fulfilled');
+    inject(function($timeout, $rootScope) {
+      var evalAsyncSpy = spyOn($rootScope, '$evalAsync').andCallThrough();
+      var digestSpy = spyOn($rootScope, '$digest').andCallThrough();
+      var fulfilledSpy = jasmine.createSpy('fulfilled');
 
-    $timeout(fulfilledSpy, 1000, false);
+      $timeout(fulfilledSpy, 1000, false);
 
-    $timeout.flush();
+      $timeout.flush();
 
-    expect(fulfilledSpy).toHaveBeenCalledOnce();
-    expect(evalAsyncSpy).not.toHaveBeenCalled();
-    expect(digestSpy).not.toHaveBeenCalled();
-  }));
+      expect(fulfilledSpy).toHaveBeenCalledOnce();
+      expect(evalAsyncSpy).not.toHaveBeenCalled();
+      expect(digestSpy).not.toHaveBeenCalled();
+    }));
+
+
+  it('should call $evalAsync or $digest on the scope that\'s passed as invokeApply',
+    inject(function($timeout, $rootScope) {
+      var scope = $rootScope.$new({partialDigest: true});
+
+      var rootScopeDigest = jasmine.createSpy('rootScopeDigest');
+      var childScopeDigest = jasmine.createSpy('childScopeDigest');
+      $rootScope.$watch(rootScopeDigest);
+      scope.$watch(childScopeDigest);
+
+      var fulfilledSpy = jasmine.createSpy('fulfilled');
+
+      $timeout(fulfilledSpy, 1000, scope);
+
+      $timeout.flush();
+
+      expect(fulfilledSpy).toHaveBeenCalledOnce();
+      expect(rootScopeDigest).not.toHaveBeenCalled();
+      expect(childScopeDigest).toHaveBeenCalled();
+    }));
 
 
   it('should allow you to specify the delay time', inject(function($timeout, $browser) {

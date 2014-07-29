@@ -26,14 +26,20 @@ function $TimeoutProvider() {
       *
       * @param {function()} fn A function, whose execution should be delayed.
       * @param {number=} [delay=0] Delay in milliseconds.
-      * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
-      *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
+      * @param {(boolean|Scope)=} [invokeApply=true] By default, {@link ng.$rootScope.Scope#$apply $apply}
+      * is called on the {@link ng.$rootScope $rootScope} when the timeout is reached.
+      * The default behavior can be changed by setting the parameter to one of:
+      *  - `true` (default) calls {@link ng.$rootScope.Scope#$apply $apply} on the {@link ng.$rootScope $rootScope}
+      *  - `false` skips dirty checking completely. Can be useful for performance.
+      *  - `Scope` calls {@link ng.$rootScope.Scope#$apply $apply} on the given {@link ng.$rootScope.Scope Scope}.
+      *  Useful if the scope was created as partially digestible {@link ng.$rootScope.Scope#$new partialDigest}.
       * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       *
       */
     function timeout(fn, delay, invokeApply) {
       var skipApply = (isDefined(invokeApply) && !invokeApply),
+          scope = isScope(invokeApply) ? invokeApply : $rootScope,
           deferred = (skipApply ? $$q : $q).defer(),
           promise = deferred.promise,
           timeoutId;
@@ -49,7 +55,7 @@ function $TimeoutProvider() {
           delete deferreds[promise.$$timeoutId];
         }
 
-        if (!skipApply) $rootScope.$apply();
+        if (!skipApply) scope.$apply();
       }, delay);
 
       promise.$$timeoutId = timeoutId;
