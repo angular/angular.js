@@ -235,6 +235,22 @@ describe('angular', function() {
       expect(clone.$$some).toBeUndefined();
       expect(clone.$$).toBeUndefined();
     });
+    
+    it('should omit properties with undefined values', function() {
+      var src,dst;
+      src = {key:undefined};
+      dst = {key:'Hello World'};
+      dst = extend(dst,src);
+      expect(dst.key).not.toBeUndefined();
+    }); 
+
+    it('should add properties with null values', function() {
+      var src,dst;
+      src = {key:null};
+      dst = {key:'Hello World'};
+      dst = extend(dst,src);
+      expect(dst.key).toBeNull();
+    }); 
 
     it('should copy "$"-prefixed properties from copy', function() {
       var original = {$some: true};
