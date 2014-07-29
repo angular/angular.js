@@ -2893,21 +2893,21 @@ describe('$compile', function() {
 
         inject(function($rootScope) {
           compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
-          expect(countWatches($rootScope)).toEqual(7); // 5 -> template watch group, 2 -> '='
+          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> '='
           $rootScope.$digest();
           expect(element.html()).toBe('1:;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(7);
+          expect(countWatches($rootScope)).toEqual(6);
 
           $rootScope.foo = 'foo';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:;3:foo;4:');
-          expect(countWatches($rootScope)).toEqual(5);
+          expect(countWatches($rootScope)).toEqual(4);
 
           $rootScope.foo = 'baz';
           $rootScope.bar = 'bar';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(3);
 
           $rootScope.bar = 'baz';
           $rootScope.$digest();
@@ -2927,21 +2927,21 @@ describe('$compile', function() {
 
         inject(function($rootScope) {
           compile('<div other-tpl-dir param1="{{::foo}}" param2="{{bar}}"></div>');
-          expect(countWatches($rootScope)).toEqual(7); // 5 -> template watch group, 2 -> {{ }}
+          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> {{ }}
           $rootScope.$digest();
           expect(element.html()).toBe('1:;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(5); // (- 2) -> bind-once in template
+          expect(countWatches($rootScope)).toEqual(4); // (- 2) -> bind-once in template
 
           $rootScope.foo = 'foo';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(3);
 
           $rootScope.foo = 'baz';
           $rootScope.bar = 'bar';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:bar;3:;4:');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(3);
 
           $rootScope.bar = 'baz';
           $rootScope.$digest();
@@ -2964,18 +2964,18 @@ describe('$compile', function() {
           compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
           $rootScope.$digest();
           expect(element.html()).toBe('1:;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(7); // 5 -> template watch group, 2 -> '='
+          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> '='
 
           $rootScope.foo = 'foo';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:;3:foo;4:');
-          expect(countWatches($rootScope)).toEqual(5);
+          expect(countWatches($rootScope)).toEqual(4);
 
           $rootScope.foo = 'baz';
           $rootScope.bar = 'bar';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(3);
 
           $rootScope.bar = 'baz';
           $rootScope.$digest();
@@ -2998,18 +2998,18 @@ describe('$compile', function() {
           compile('<div other-tpl-dir param1="{{::foo}}" param2="{{bar}}"></div>');
           $rootScope.$digest();
           expect(element.html()).toBe('1:;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(5); // (5 - 2) -> template watch group, 2 -> {{ }}
+          expect(countWatches($rootScope)).toEqual(4); // (4 - 2) -> template watch group, 2 -> {{ }}
 
           $rootScope.foo = 'foo';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(3);
 
           $rootScope.foo = 'baz';
           $rootScope.bar = 'bar';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:bar;3:;4:');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(3);
 
           $rootScope.bar = 'baz';
           $rootScope.$digest();
