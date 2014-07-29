@@ -83,7 +83,7 @@ expressing business logic.
 
 
 Angular frees you from the following pains:
-
+xcvxc
   * **Registering callbacks:** Registering callbacks clutters your code, making it hard to see the
     forest for the trees. Removing common boilerplate code such as callbacks is a good thing. It
     vastly reduces the amount of JavaScript coding _you_ have to do, and it makes it easier to see
