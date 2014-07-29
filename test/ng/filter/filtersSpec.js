@@ -110,6 +110,14 @@ describe('filters', function() {
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
     });
+
+    it('should round number when specified', function() {
+      expect(currency(1234.5678, '$', 0)).toEqual('$1,235');
+    });
+
+    it('should omit decimal for negative places', function() {
+      expect(currency(1234.5678, '$', -2)).toEqual('$1,200');
+    });
   });
 
 

@@ -7,10 +7,13 @@
  *
  * @description
  * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
- * symbol for current locale is used.
+ * symbol for current locale is used.  When no decimal places to round to is provided, the
+ * default value is 2.  Note that this can take negative values, which can be used to round to
+ * whole numbers.
  *
  * @param {number} amount Input to filter.
  * @param {string=} symbol Currency symbol or identifier to be displayed.
+ * @param {number} decimal Number of decimal places to round to.
  * @returns {string} Formatted number.
  *
  *
@@ -26,7 +29,7 @@
        <div ng-controller="ExampleController">
          <input type="number" ng-model="amount"> <br>
          default currency symbol ($): <span id="currency-default">{{amount | currency}}</span><br>
-         custom currency identifier (USD$): <span>{{amount | currency:"USD$"}}</span>
+         custom currency identifier (USD$) with custom rounded currency: <span>{{amount | currency:"USD$":0}}</span>
        </div>
      </file>
      <file name="protractor.js" type="protractor">
@@ -51,9 +54,10 @@
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
+  return function(amount, currencySymbol, decimal){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    if (isUndefined(decimal)) decimal = 2;
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, decimal).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
@@ -183,7 +187,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       fraction += '0';
     }
 
-    if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
+    if (fractionSize && fractionSize !== "0" && fractionSize > 0) formatedText += decimalSep + fraction.substr(0, fractionSize);
   } else {
 
     if (fractionSize > 0 && number > -1 && number < 1) {
