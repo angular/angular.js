@@ -1074,7 +1074,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     attrs[nName] = true; // presence means true
                   }
               }
-              addAttrInterpolateDirective(node, directives, value, nName);
+              addAttrInterpolateDirective(node, directives, value, nName, isNgAttr);
               addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName,
                             attrEndName);
             }
@@ -1929,7 +1929,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
 
-    function addAttrInterpolateDirective(node, directives, value, name) {
+    function addAttrInterpolateDirective(node, directives, value, name, allOrNothing) {
       var interpolateFn = $interpolate(value, true);
 
       // no interpolation found -> ignore
@@ -1958,7 +1958,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // we need to interpolate again, in case the attribute value has been updated
                 // (e.g. by another directive's compile function)
                 interpolateFn = $interpolate(attr[name], true, getTrustedContext(node, name),
-                    ALL_OR_NOTHING_ATTRS[name]);
+                    ALL_OR_NOTHING_ATTRS[name] || allOrNothing);
 
                 // if attribute was updated so that there is no interpolation going on we don't want to
                 // register any observers
