@@ -210,6 +210,11 @@ To run the tests, and then watch the files for changes: `npm test`.
 * To rerun the tests, just change any of the source or test .js files. Karma will notice the change
   and will rerun the tests for you. Now isn't that sweet?
 
+<div class="alert alert-info">
+Make sure you don't minimize the browser that Karma opened. On some OS, memory assigned to a minimized
+browser is limited, which results in your karma tests running extremely slow.
+</div>
+
 # Experiments
 
 * Add another binding to `index.html`. For example:
