@@ -59,7 +59,7 @@ tag as the template.
 by the value of the expressions.
 
 We have added a new directive, called `ng-controller`, which attaches a `PhoneListCtrl`
-__controller__ to the DOM at this point:
+__controller__ to the &lt;body&gt; tag.  At this point:
 
 * The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}` denote
 bindings, which are referring to our application model, which is set up in our `PhoneListCtrl`
