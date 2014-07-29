@@ -669,9 +669,9 @@ function $LocationProvider(){
           var prefix = '#' + hashPrefix;
           if (href[0] == '/') {
             // Account for base href already present in appBase
-            if ($browser.baseHref() != '' && href.indexOf($browser.baseHref()) === 0) {
-              href = href.substr($browser.baseHref().length);
-              if (href == '' || href[0] != '/') {
+            if (baseHref && href.indexOf(baseHref) === 0) {
+              href = href.substr(baseHref.length);
+              if (!href || href[0] != '/') {
                 href = '/' + href;
               }
             }
