@@ -99,11 +99,11 @@ describe('ngBind*', function() {
     it('should one-time bind the expressions that start with ::', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-template="{{::hello}} {{::name}}!"></div>')($rootScope);
       $rootScope.name = 'Misko';
-      expect($rootScope.$$watchers.length).toEqual(3);
+      expect($rootScope.$$watchers.length).toEqual(2);
       $rootScope.$digest();
       expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual(' Misko!');
-      expect($rootScope.$$watchers.length).toEqual(2);
+      expect($rootScope.$$watchers.length).toEqual(1);
       $rootScope.hello = 'Hello';
       $rootScope.name = 'Lucas';
       $rootScope.$digest();
