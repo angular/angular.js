@@ -326,7 +326,7 @@ function setHashKey(obj, h) {
  *
  * @description
  * Extends the destination object `dst` by copying all of the properties from the `src` object(s)
- * to `dst`. You can specify multiple `src` objects.
+ * to `dst`. You can specify multiple `src` objects. Properties that are `undefined` are not copied.
  *
  * @param {Object} dst Destination object.
  * @param {...Object} src Source object(s).
@@ -337,7 +337,9 @@ function extend(dst) {
   forEach(arguments, function(obj) {
     if (obj !== dst) {
       forEach(obj, function(value, key) {
-        dst[key] = value;
+        if (isDefined(value)) {
+          dst[key] = value;
+        }
       });
     }
   });
