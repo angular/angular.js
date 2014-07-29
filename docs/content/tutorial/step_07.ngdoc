@@ -80,14 +80,14 @@ AngularJS, so it's important for you to understand a thing or two about how it w
 
 When the application bootstraps, Angular creates an injector that will be used to find and inject all
 of the services that are required by your app. The injector itself doesn't know anything about what
-`$http` or `$route` services do, in fact it doesn't even know about the existence of these services 
-unless it is configured with proper module definitions. 
+`$http` or `$route` services do, in fact it doesn't even know about the existence of these services
+unless it is configured with proper module definitions.
 
-The injector only carries out the following steps : 
+The injector only carries out the following steps :
 
  * load the module definition(s) that you specify in your app
  * register all Providers defined in these module definitions
- * when asked to do so, inject a specified function and any necessary dependencies (services) that 
+ * when asked to do so, inject a specified function and any necessary dependencies (services) that
    it lazily instantiates via their Providers.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs
@@ -202,7 +202,7 @@ moved the controllers into their own module `phonecatControllers` (as shown belo
 
 We added `angular-route.js` to `index.html` and created a new `phonecatControllers` module in
 `controllers.js`. That's not all we need to do to be able to use their code, however. We also have
-to add the modules dependencies of our app. By listing these two modules as dependencies of
+to add the modules as dependencies of our app. By listing these two modules as dependencies of
 `phonecatApp`, we can use the directives and services they provide.
 
 

@@ -374,6 +374,58 @@ describe('ngRepeat', function() {
     });
   });
 
+  describe('alias as', function() {
+    it('should assigned the filtered to the target scope property if an alias is provided', function() {
+      element = $compile(
+        '<div ng-repeat="item in items | filter:x as results track by $index">{{item.name}}/</div>')(scope);
+
+      scope.items = [
+        { name : 'red' },
+        { name : 'blue' },
+        { name : 'green' },
+        { name : 'black' },
+        { name : 'orange' },
+        { name : 'blonde' }
+      ];
+
+      expect(scope.results).toBeUndefined();
+      scope.$digest();
+
+      scope.x = 'bl';
+      scope.$digest();
+
+      expect(scope.results).toEqual([
+        { name : 'blue' },
+        { name : 'black' },
+        { name : 'blonde' }
+      ]);
+
+      scope.items = [];
+      scope.$digest();
+
+      expect(scope.results).toEqual([]);
+    });
+
+    it('should render a message when the repeat list is empty', function() {
+      element = $compile(
+        '<div>' +
+        '  <div ng-repeat="item in items | filter:x as results">{{item}}</div>' +
+        '  <div ng-if="results.length == 0">' +
+        '    No results found...' +
+        '  </div>' +
+        '</div>')(scope);
+
+      scope.items = [1,2,3,4,5,6];
+      scope.$digest();
+      expect(trim(element.text())).toEqual('123456');
+
+      scope.x = '0';
+      scope.$digest();
+
+      expect(trim(element.text())).toEqual('No results found...');
+    });
+  });
+
 
   it('should allow expressions over multiple lines', function() {
     element = $compile(

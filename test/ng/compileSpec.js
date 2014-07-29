@@ -255,14 +255,6 @@ describe('$compile', function() {
       }));
 
 
-      it('should allow directives in comments', inject(
-        function($compile, $rootScope, log) {
-          element = $compile('<div>0<!-- directive: log angular -->1</div>')($rootScope);
-          expect(log).toEqual('angular');
-        }
-      ));
-
-
       it('should receive scope, element, and attributes', function() {
         var injector;
         module(function() {
@@ -437,20 +429,21 @@ describe('$compile', function() {
 
       describe('restrict', function() {
 
-        it('should allow restriction of attributes', function() {
-          module(function() {
-            forEach({div:'E', attr:'A', clazz:'C', all:'EAC'}, function(restrict, name) {
-              directive(name, function(log) {
+        it('should allow restriction of availability', function () {
+          module(function () {
+            forEach({div: 'E', attr: 'A', clazz: 'C', comment: 'M', all: 'EACM'},
+                function (restrict, name) {
+              directive(name, function (log) {
                 return {
                   restrict: restrict,
-                  compile: valueFn(function(scope, element, attr) {
+                  compile: valueFn(function (scope, element, attr) {
                     log(name);
                   })
                 };
               });
             });
           });
-          inject(function($rootScope, $compile, log) {
+          inject(function ($rootScope, $compile, log) {
             dealoc($compile('<span div class="div"></span>')($rootScope));
             expect(log).toEqual('');
             log.reset();
@@ -459,7 +452,7 @@ describe('$compile', function() {
             expect(log).toEqual('div');
             log.reset();
 
-            dealoc($compile('<attr class=""attr"></attr>')($rootScope));
+            dealoc($compile('<attr class="attr"></attr>')($rootScope));
             expect(log).toEqual('');
             log.reset();
 
@@ -475,8 +468,38 @@ describe('$compile', function() {
             expect(log).toEqual('clazz');
             log.reset();
 
-            dealoc($compile('<all class="all" all></all>')($rootScope));
-            expect(log).toEqual('all; all; all');
+            dealoc($compile('<!-- directive: comment -->')($rootScope));
+            expect(log).toEqual('comment');
+            log.reset();
+
+            dealoc($compile('<all class="all" all><!-- directive: all --></all>')($rootScope));
+            expect(log).toEqual('all; all; all; all');
+          });
+        });
+
+
+        it('should use EA rule as the default', function () {
+          module(function () {
+            directive('defaultDir', function (log) {
+              return {
+                compile: function () {
+                  log('defaultDir');
+                }
+              };
+            });
+          });
+          inject(function ($rootScope, $compile, log) {
+            dealoc($compile('<span default-dir ></span>')($rootScope));
+            expect(log).toEqual('defaultDir');
+            log.reset();
+
+            dealoc($compile('<default-dir></default-dir>')($rootScope));
+            expect(log).toEqual('defaultDir');
+            log.reset();
+
+            dealoc($compile('<span class="default-dir"></span>')($rootScope));
+            expect(log).toEqual('');
+            log.reset();
           });
         });
       });

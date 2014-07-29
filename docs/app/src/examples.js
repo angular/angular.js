@@ -2,7 +2,12 @@ angular.module('examples', [])
 
 .factory('formPostData', ['$document', function($document) {
   return function(url, fields) {
-    var form = angular.element('<form style="display: none;" method="post" action="' + url + '" target="_blank"></form>');
+    /**
+     * Form previously posted to target="_blank", but pop-up blockers were causing this to not work.
+     * If a user chose to bypass pop-up blocker one time and click the link, they would arrive at
+     * a new default plnkr, not a plnkr with the desired template.
+     */
+    var form = angular.element('<form style="display: none;" method="post" action="' + url + '"></form>');
     angular.forEach(fields, function(value, name) {
       var input = angular.element('<input type="hidden" name="' +  name + '">');
       input.attr('value', value);
