@@ -1441,10 +1441,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 require, directiveName);
           }
           return value;
-        } else if (isArray(require)) {
-          value = [];
-          forEach(require, function(require) {
-            value.push(getControllers(directiveName, require, $element, elementControllers));
+        } else if (isArray(require) || isObject(require)) {
+          value = isArray(require) ? [] : {};
+          forEach(require, function(require, key) {
+            value[key] = getControllers(directiveName, require, $element, elementControllers);
           });
         }
         return value;
