@@ -196,7 +196,8 @@ to ensure that Karma and its necessary plugins are installed. You can do this by
 To run the tests, and then watch the files for changes: `npm test`.
 
 * Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
-   the background. Karma will use this browser for test execution.
+   the background. Karma will use this browser for test execution. Make sure you don't minimize the browser that Karma opened.
+   On some OS, memory assigned to a minimized browser is limited, which results in your karma test running extremely slow,
 * You should see the following or similar output in the terminal:
 
   <pre>
