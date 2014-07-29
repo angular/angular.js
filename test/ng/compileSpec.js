@@ -5579,6 +5579,17 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
+    it('should remove attribute if any bindings are undefined', inject(function($compile, $rootScope) {
+      element = $compile('<span ng-attr-test="{{name}}{{emphasis}}"></span>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('test')).toBeUndefined();
+      $rootScope.name = 'caitp';
+      $rootScope.$digest();
+      expect(element.attr('test')).toBeUndefined();
+      $rootScope.emphasis = '!!!';
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('caitp!!!');
+    }));
 
     describe('in directive', function() {
       beforeEach(module(function() {
