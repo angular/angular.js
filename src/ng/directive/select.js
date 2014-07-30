@@ -549,6 +549,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 }
                 // lastElement.prop('selected') provided by jQuery has side-effects
                 if (existingOption.selected !== option.selected) {
+                  // IE 10/11 bug: selecting non-first option will show wrong option selected.
+                  // https://github.com/angular/angular.js/issues/2828
+                  selectElement.prop('selectedIndex');
                   lastElement.prop('selected', (existingOption.selected = option.selected));
                   if (msie) {
                     // See #7692
