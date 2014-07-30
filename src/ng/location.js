@@ -650,6 +650,9 @@ function $LocationProvider(){
       }
 
       var absHref = elm.prop('href');
+      
+      // Ignore when url is started with javascript: or mailto:
+	  if (absHref.toString().indexOf('javascript:') === 0 || absHref.toString().indexOf('mailto:') === 0) return;
 
       if (isObject(absHref) && absHref.toString() === '[object SVGAnimatedString]') {
         // SVGAnimatedString.animVal should be identical to SVGAnimatedString.baseVal, unless during
