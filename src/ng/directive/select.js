@@ -263,7 +263,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           if (selectCtrl.hasOption(viewValue)) {
             if (unknownOption.parent()) unknownOption.remove();
             selectElement.val(viewValue);
-            if (viewValue === '') emptyOption.prop('selected', true); // to make IE9 happy
+            if (msie && msie <= 9) {
+              forceRepaint(selectElement);
+            }
           } else {
             if (isUndefined(viewValue) && emptyOption) {
               selectElement.val('');
@@ -311,6 +313,18 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           });
         });
       }
+
+      function forceRepaint(selectElement) {
+        var option = document.createElement('option');
+        viewValue = selectElement.val();
+        selectElement[0].add(option, null);
+        selectElement[0].remove(selectElement[0].options.length - 1);
+        for(var i = 0, children = selectElement.children(), ii = children.length; i < ii; i++) {
+          if (children[i]) {
+            children.eq(i).prop('selected', children[i].value === viewValue)
+          }
+        }
+      };
 
       function setupAsOptions(scope, selectElement, ctrl) {
         var match;
@@ -413,6 +427,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               }
             }
             ctrl.$setViewValue(value);
+            if (msie && msie <= 9 && !multiple) {
+              forceRepaint(selectElement);
+            }
           });
         });
 
@@ -597,6 +614,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           // remove any excessive OPTGROUPs from select
           while(optionGroupsCache.length > groupIndex) {
             optionGroupsCache.pop()[0].element.remove();
+          }
+          if (msie && msie <= 9 && !multiple) {
+            // the add an option then remove technique doesn't work too well for active
+            // elements and optgroups
+            if (optionGroup.length == 1 && selectElement[0] !== document.activeElement) {
+              forceRepaint(selectElement);
+            }
           }
         }
       }
