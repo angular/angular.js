@@ -143,6 +143,10 @@ describe('filters', function() {
       expect(currency(0.008, "$", 3)).toBe('$0.008');
       expect(currency(0.008, "$", 0)).toBe('$0');
     });
+
+    it('should omit decimal point for negative fractionSize', function() {
+      expect(currency(1234.5678, '$', -2)).toEqual('$1,200');
+    });
   });
 
 

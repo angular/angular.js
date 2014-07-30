@@ -186,7 +186,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       fraction += '0';
     }
 
-    if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
+    if (fractionSize && fractionSize !== "0" && fractionSize > 0) formatedText += decimalSep + fraction.substr(0, fractionSize);
   } else {
 
     if (fractionSize > 0 && number > -1 && number < 1) {
