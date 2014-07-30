@@ -1028,6 +1028,32 @@ describe('$location', function() {
     });
 
 
+    it('should not rewrite links with `javascript:` URI', function() {
+      configureService(' jAvAsCrIpT:throw new Error("Boom!")', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite links with `mailto:` URI', function() {
+      configureService(' mAiLtO:foo@bar.com', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
     it('should rewrite full url links to same domain and base path', function() {
       configureService('http://host.com/base/new', true);
       inject(
