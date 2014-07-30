@@ -247,143 +247,122 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Deferred} Returns a new instance of deferred.
    */
   var defer = function() {
-    var pending = [],
-        value, deferred;
+    return new Deferred();
+  };
 
-    deferred = {
+  function Promise () {
+    this.$$pending = [];
+  }
 
-      resolve: function(val) {
-        if (pending) {
-          var callbacks = pending;
-          pending = undefined;
-          value = ref(val);
+  Promise.prototype = {
+    then: function(callback, errback, progressback) {
+      var result = new Deferred();
 
-          if (callbacks.length) {
-            nextTick(function() {
-              var callback;
-              for (var i = 0, ii = callbacks.length; i < ii; i++) {
-                callback = callbacks[i];
-                value.then(callback[0], callback[1], callback[2]);
-              }
-            });
-          }
+      var wrappedCallback = function(value) {
+        try {
+          result.resolve((isFunction(callback) ? callback : defaultCallback)(value));
+        } catch(e) {
+          result.reject(e);
+          exceptionHandler(e);
         }
-      },
+      };
 
-
-      reject: function(reason) {
-        deferred.resolve(createInternalRejectedPromise(reason));
-      },
-
-
-      notify: function(progress) {
-        if (pending) {
-          var callbacks = pending;
-
-          if (pending.length) {
-            nextTick(function() {
-              var callback;
-              for (var i = 0, ii = callbacks.length; i < ii; i++) {
-                callback = callbacks[i];
-                callback[2](progress);
-              }
-            });
-          }
+      var wrappedErrback = function(reason) {
+        try {
+          result.resolve((isFunction(errback) ? errback : defaultErrback)(reason));
+        } catch(e) {
+          result.reject(e);
+          exceptionHandler(e);
         }
-      },
+      };
 
+      var wrappedProgressback = function(progress) {
+        try {
+          result.notify((isFunction(progressback) ? progressback : defaultCallback)(progress));
+        } catch(e) {
+          exceptionHandler(e);
+        }
+      };
 
-      promise: {
-        then: function(callback, errback, progressback) {
-          var result = defer();
+      if (this.$$pending) {
+        this.$$pending.push([wrappedCallback, wrappedErrback, wrappedProgressback]);
+      } else {
+        this.$$value.then(wrappedCallback, wrappedErrback, wrappedProgressback);
+      }
 
-          var wrappedCallback = function(value) {
-            try {
-              result.resolve((isFunction(callback) ? callback : defaultCallback)(value));
-            } catch(e) {
-              result.reject(e);
-              exceptionHandler(e);
+      return result.promise;
+    },
+
+    "catch": function(callback) {
+      return this.then(null, callback);
+    },
+    "finally": function(callback) {
+      return this.then(function(value) {
+        return handleCallback(value, true, callback);
+      }, function(error) {
+        return handleCallback(error, false, callback);
+      });
+    }
+  };
+
+  //Faster, more basic than angular.bind http://jsperf.com/angular-bind-vs-custom-vs-native
+  function simpleBind(context, fn) {
+    return function(value) {
+      fn.call(context, value);
+    };
+  }
+
+  function Deferred () {
+    this.promise = new Promise();
+    //Necessary to support unbound execution :/
+    this.resolve = simpleBind(this, this.resolve);
+    this.reject = simpleBind(this, this.reject);
+    this.notify = simpleBind(this, this.notify);
+  }
+
+  Deferred.prototype = {
+    resolve: function(val) {
+      if (this.promise.$$pending) {
+        var callbacks = this.promise.$$pending;
+        this.promise.$$pending = undefined;
+        this.promise.$$value = ref(val);
+
+        if (callbacks.length) {
+          nextTick(simpleBind(this, function() {
+            var callback;
+            for (var i = 0, ii = callbacks.length; i < ii; i++) {
+              callback = callbacks[i];
+              this.promise.$$value.then(callback[0], callback[1], callback[2]);
             }
-          };
+          }));
+        }
+      }
+    },
+    reject: function(reason) {
+      this.resolve(createInternalRejectedPromise(reason));
+    },
+    notify: function(progress) {
+      if (this.promise.$$pending) {
+        var callbacks = this.promise.$$pending;
 
-          var wrappedErrback = function(reason) {
-            try {
-              result.resolve((isFunction(errback) ? errback : defaultErrback)(reason));
-            } catch(e) {
-              result.reject(e);
-              exceptionHandler(e);
+        if (this.promise.$$pending.length) {
+          nextTick(function() {
+            var callback;
+            for (var i = 0, ii = callbacks.length; i < ii; i++) {
+              callback = callbacks[i];
+              callback[2](progress);
             }
-          };
-
-          var wrappedProgressback = function(progress) {
-            try {
-              result.notify((isFunction(progressback) ? progressback : defaultCallback)(progress));
-            } catch(e) {
-              exceptionHandler(e);
-            }
-          };
-
-          if (pending) {
-            pending.push([wrappedCallback, wrappedErrback, wrappedProgressback]);
-          } else {
-            value.then(wrappedCallback, wrappedErrback, wrappedProgressback);
-          }
-
-          return result.promise;
-        },
-
-        "catch": function(callback) {
-          return this.then(null, callback);
-        },
-
-        "finally": function(callback) {
-
-          function makePromise(value, resolved) {
-            var result = defer();
-            if (resolved) {
-              result.resolve(value);
-            } else {
-              result.reject(value);
-            }
-            return result.promise;
-          }
-
-          function handleCallback(value, isResolved) {
-            var callbackOutput = null;
-            try {
-              callbackOutput = (callback ||defaultCallback)();
-            } catch(e) {
-              return makePromise(e, false);
-            }
-            if (isPromiseLike(callbackOutput)) {
-              return callbackOutput.then(function() {
-                return makePromise(value, isResolved);
-              }, function(error) {
-                return makePromise(error, false);
-              });
-            } else {
-              return makePromise(value, isResolved);
-            }
-          }
-
-          return this.then(function(value) {
-            return handleCallback(value, true);
-          }, function(error) {
-            return handleCallback(error, false);
           });
         }
       }
-    };
-
-    return deferred;
+    }
   };
-
 
   var ref = function(value) {
     if (isPromiseLike(value)) return value;
     return {
       then: function(callback) {
-        var result = defer();
+        var result = new Deferred();
         nextTick(function() {
           result.resolve(callback(value));
         });
@@ -430,15 +409,43 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Promise} Returns a promise that was already resolved as rejected with the `reason`.
    */
   var reject = function(reason) {
-    var result = defer();
+    var result = new Deferred();
     result.reject(reason);
     return result.promise;
+  };
+
+  var makePromise = function makePromise(value, resolved) {
+    var result = new Deferred();
+    if (resolved) {
+      result.resolve(value);
+    } else {
+      result.reject(value);
+    }
+    return result.promise;
+  };
+
+  var handleCallback = function handleCallback(value, isResolved, callback) {
+    var callbackOutput = null;
+    try {
+      callbackOutput = (callback ||defaultCallback)();
+    } catch(e) {
+      return makePromise(e, false);
+    }
+    if (isPromiseLike(callbackOutput)) {
+      return callbackOutput.then(function() {
+        return makePromise(value, isResolved);
+      }, function(error) {
+        return makePromise(error, false);
+      });
+    } else {
+      return makePromise(value, isResolved);
+    }
   };
 
   var createInternalRejectedPromise = function(reason) {
     return {
       then: function(callback, errback) {
-        var result = defer();
+        var result = new Deferred();
         nextTick(function() {
           try {
             result.resolve((isFunction(errback) ? errback : defaultErrback)(reason));
@@ -467,7 +474,7 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Promise} Returns a promise of the passed value or promise
    */
   var when = function(value, callback, errback, progressback) {
-    var result = defer(),
+    var result = new Deferred(),
         done;
 
     var wrappedCallback = function(value) {
@@ -541,7 +548,7 @@ function qFactory(nextTick, exceptionHandler) {
    *   with the same rejection value.
    */
   function all(promises) {
-    var deferred = defer(),
+    var deferred = new Deferred(),
         counter = 0,
         results = isArray(promises) ? [] : {};
 
@@ -575,7 +582,7 @@ function qFactory(nextTick, exceptionHandler) {
       return new Q(resolver);
     }
 
-    var deferred = defer();
+    var deferred = new Deferred();
 
     function resolveFn(value) {
       deferred.resolve(value);
