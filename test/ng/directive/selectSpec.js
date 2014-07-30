@@ -1148,6 +1148,28 @@ describe('select', function() {
         browserTrigger(element, 'change');
         expect(scope.selected).toEqual(null);
       });
+
+      it('should clear model if ng-options change to not include selected value (#6379)', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item for item in values'
+        });
+
+        scope.$apply(function() {
+          scope.values = ['A','B'];
+          scope.selected = scope.values[0];
+        });
+
+        expect(element.val()).toEqual('0');
+
+        expect(scope.selected).toEqual(scope.values[0]);
+
+        scope.$apply(function() {
+          scope.values = ['C','D'];
+        });
+        expect(element.val()).toEqual('?');
+        expect(scope.selected).toBeUndefined();
+      });
     });
 
 

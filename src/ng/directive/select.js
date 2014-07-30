@@ -598,6 +598,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           while(optionGroupsCache.length > groupIndex) {
             optionGroupsCache.pop()[0].element.remove();
           }
+
+          if(!multiple && !selectedSet && modelValue !== null) {
+            // no value selected, clear model
+            ctrl.$setViewValue(undefined);
+          }
         }
       }
     }
