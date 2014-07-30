@@ -73,6 +73,27 @@ describe('filters', function() {
       expect(num).toBe('123.112');
     });
 
+    it("should use the `maxFrac` and `minFrac` from `pattern` if fractionSize is not specified", function() {
+
+      pattern.minFrac = 1;
+      expect(formatNumber(123.1, pattern, ',', '.')).toEqual('123.1');
+      pattern.minFrac = 3;
+      expect(formatNumber(123.1, pattern, ',', '.')).toEqual('123.100');
+
+      pattern.minFrac = 1;
+      pattern.maxFrac = 1;
+      expect(formatNumber(123.123, pattern, ',', '.')).toEqual('123.1');
+      pattern.maxFrac = 3;
+      expect(formatNumber(123.123, pattern, ',', '.')).toEqual('123.123');
+
+      pattern.minFrac = 2;
+      pattern.maxFrac = 2;
+      expect(formatNumber(1.07 + 1 - 2.07, pattern, ',', '.')).toBe('0.00');
+      expect(formatNumber(0.008, pattern, ',', '.')).toBe('0.01');
+      expect(formatNumber(0.003, pattern, ',', '.')).toBe('0.00');
+
+    });
+
     it('should format the same with string as well as numeric fractionSize', function(){
       var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
@@ -109,6 +130,22 @@ describe('filters', function() {
       expect(currency(1.07 + 1 - 2.07)).toBe('$0.00');
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
+    });
+
+    it("should pass through the currency number format pattern from the current locale", inject(function($locale) {
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 1;
+      expect(currency(123.123, '$')).toBe('$123.1');
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 3;
+      expect(currency(123.123, '$')).toBe('$123.123');
+    }));
+
+    it('should handle overriding the default locale fractionSize', function() {
+      expect(currency(0.008, "$", 3)).toBe('$0.008');
+      expect(currency(0.008, "$", 0)).toBe('$0');
+    });
+
+    it('should omit decimal point for negative fractionSize', function() {
+      expect(currency(1234.5678, '$', -2)).toEqual('$1,200');
     });
   });
 
