@@ -322,15 +322,13 @@ function $RootScopeProvider(){
        *    - `scope` refers to the current scope
        * @param {boolean=} objectEquality Compare for object equality using {@link angular.equals} instead of
        *     comparing for reference equality.
-       * @param {function()=} deregisterNotifier Function to call when the deregistration function
-       *     get called.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $watch: function(watchExp, listener, objectEquality, deregisterNotifier) {
+      $watch: function(watchExp, listener, objectEquality) {
         var get = compileToFn(watchExp, 'watch');
 
         if (get.$$watchDelegate) {
-          return get.$$watchDelegate(this, listener, objectEquality, deregisterNotifier, get);
+          return get.$$watchDelegate(this, listener, objectEquality, get);
         }
         var scope = this,
             array = scope.$$watchers,
@@ -358,9 +356,6 @@ function $RootScopeProvider(){
         return function deregisterWatch() {
           arrayRemove(array, watcher);
           lastDirtyWatch = null;
-          if (isFunction(deregisterNotifier)) {
-            deregisterNotifier();
-          }
         };
       },
 
