@@ -25,3 +25,33 @@ angular.module('myApp', [])
     // Do something with myService
   }]);
 ```
+
+An unknown provider error can also be caused by accidentally redefining a
+module using the `angular.module` API, as shown in the following example.
+
+```
+angular.module('myModule', [])
+  .service('myCoolService', function () { /* ... */ });
+
+angular.module('myModule', [])
+  // myModule has already been created! This is not what you want!
+  .directive('myDirective', ['myCoolService', function (myCoolService) {
+    // This directive definition throws unknown provider, because myCoolService
+    // has been destroyed.
+  }]);
+```
+
+To fix this problem, make sure you only define each module with the
+`angular.module(name, [requires])` syntax once across your entire project.
+Retrieve it for subsequent use with `angular.module(name)`. The fixed example
+is shown below.
+
+```
+angular.module('myModule', [])
+  .service('myCoolService', function () { /* ... */ });
+
+angular.module('myModule')
+  .directive('myDirective', ['myCoolService', function (myCoolService) {
+    // This directive definition does not throw unknown provider.
+  }]);
+```
