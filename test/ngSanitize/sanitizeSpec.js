@@ -228,6 +228,16 @@ describe('HTML', function() {
     .toEqual('<p> 10 &lt; <span>100</span> </p>');
   });
 
+  it('should accept non-string arguments', function() {
+    expectHTML(null).toBe('');
+    expectHTML(undefined).toBe('');
+    expectHTML(42).toBe('42');
+    expectHTML({}).toBe('[object Object]');
+    expectHTML([1, 2, 3]).toBe('1,2,3');
+    expectHTML(true).toBe('true');
+    expectHTML(false).toBe('false');
+  });
+
   describe('htmlSanitizerWriter', function() {
     /* global htmlSanitizeWriter: false */
     if (angular.isUndefined(window.htmlSanitizeWriter)) return;

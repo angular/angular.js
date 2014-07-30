@@ -232,6 +232,13 @@ function makeMap(str) {
  * @param {object} handler
  */
 function htmlParser( html, handler ) {
+  if (typeof html !== 'string') {
+    if (html === null || typeof html === 'undefined') {
+      html = '';
+    } else {
+      html = '' + html;
+    }
+  }
   var index, chars, match, stack = [], last = html, text;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
