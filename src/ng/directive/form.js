@@ -6,8 +6,11 @@ var nullFormCtrl = {
   $removeControl: noop,
   $setValidity: noop,
   $setDirty: noop,
+  $setSubmitted: noop,
   $setPristine: noop
 };
+
+var SUBMITTED_CLASS = 'ng-submitted';
 
 /**
  * @ngdoc type
@@ -56,6 +59,7 @@ function FormController(element, attrs, $scope, $animate) {
 
   // init state
   form.$name = attrs.name || attrs.ngForm;
+  form.$submitted = false;
   form.$dirty = false;
   form.$pristine = true;
   form.$valid = true;
@@ -211,6 +215,20 @@ function FormController(element, attrs, $scope, $animate) {
     form.$dirty = true;
     form.$pristine = false;
     parentForm.$setDirty();
+  };
+
+
+  /**
+   * @ngdoc method
+   * @name form.FormController#$setSubmitted
+   *
+   * @description
+   * Sets the form to a submitted state.
+   *
+   */
+  form.$setSubmitted = function() {
+    $animate.addClass(element, SUBMITTED_CLASS);
+    form.$submitted = true;
   };
 
   /**
@@ -422,6 +440,7 @@ var formDirectiveFactory = function(isNgForm) {
               // on a button in the form. Looks like an IE9 specific bug.
               var handleFormSubmission = function(event) {
                 scope.$apply(function() {
+                  controller.$setSubmitted();
                   controller.$commitViewValue();
                 });
 
