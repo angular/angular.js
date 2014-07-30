@@ -407,13 +407,35 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               }
             }
             ctrl.$setViewValue(value);
+            render();
           });
         });
 
         ctrl.$render = render;
 
-        // TODO(vojta): can't we optimize this ?
-        scope.$watch(render);
+        scope.$watchCollection(valuesFn, render);
+        if ( multiple ) {
+          scope.$watchCollection(getSelectedSet, render);
+        }
+
+        function getSelectedSet() {
+          var selectedSet = false;
+          if (multiple) {
+            var modelValue = ctrl.$modelValue;
+            if (trackFn && isArray(modelValue)) {
+              selectedSet = new HashMap([]);
+              var locals = {};
+              for (var trackIndex = 0; trackIndex < modelValue.length; trackIndex++) {
+                locals[valueName] = modelValue[trackIndex];
+                selectedSet.put(trackFn(scope, locals), modelValue[trackIndex]);
+              }
+            } else {
+              selectedSet = new HashMap(modelValue);
+            }
+          }
+          return selectedSet;
+        }
+
 
         function render() {
               // Temporary location for the option groups before we render them
@@ -431,22 +453,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               groupIndex, index,
               locals = {},
               selected,
-              selectedSet = false, // nothing is selected yet
+              selectedSet = getSelectedSet(),
               lastElement,
               element,
               label;
 
-          if (multiple) {
-            if (trackFn && isArray(modelValue)) {
-              selectedSet = new HashMap([]);
-              for (var trackIndex = 0; trackIndex < modelValue.length; trackIndex++) {
-                locals[valueName] = modelValue[trackIndex];
-                selectedSet.put(trackFn(scope, locals), modelValue[trackIndex]);
-              }
-            } else {
-              selectedSet = new HashMap(modelValue);
-            }
-          }
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
