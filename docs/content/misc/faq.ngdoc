@@ -51,7 +51,7 @@ Yes. See instructions in {@link downloading}.
 ### What browsers does Angular work with?
 
 We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera,
-IE8, IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
+IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
 Explorer Compatibility} for more details in supporting legacy IE browsers.
 
 
