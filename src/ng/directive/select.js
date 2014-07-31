@@ -405,7 +405,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         scope.$watchCollection(valuesFn, render);
         if ( multiple ) {
-          scope.$watchCollection(getSelectedSet, render);
+          scope.$watchCollection(function() { return ctrl.$modelValue; }, render);
         }
 
         function getSelectedSet() {
