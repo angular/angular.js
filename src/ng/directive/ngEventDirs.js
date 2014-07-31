@@ -308,6 +308,13 @@ forEach(
  * server and reloading the current page), but only if the form does not contain `action`,
  * `data-action`, or `x-action` attributes.
  *
+ * <div class="alert alert-warning">
+ * **Warning:** Be careful not to cause "double-submission" by using both the `ngClick` and
+ * `ngSubmit` handlers together. See the
+ * {@link form#submitting-a-form-and-preventing-the-default-action `form` directive documentation}
+ * for a detailed discussion of when `ngSubmit` may be triggered.
+ * </div>
+ *
  * @element form
  * @priority 0
  * @param {expression} ngSubmit {@link guide/expression Expression} to eval.
