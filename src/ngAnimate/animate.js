@@ -221,7 +221,7 @@
  *
  * ### CSS Staggering Animations
  * A Staggering animation is a collection of animations that are issued with a slight delay in between each successive operation resulting in a
- * curtain-like effect. The ngAnimate module, as of 1.2.0, supports staggering animations and the stagger effect can be
+ * curtain-like effect. The ngAnimate module (versions >=1.2) supports staggering animations and the stagger effect can be
  * performed by creating a **ng-EVENT-stagger** CSS class and attaching that class to the base CSS class used for
  * the animation. The style property expected within the stagger class can either be a **transition-delay** or an
  * **animation-delay** property (or both if your animation contains both transitions and keyframe animations).
