@@ -61,6 +61,11 @@ function isError(obj) {
 
 var $Deferred = function Deferred(Q) {
   this.promise = new Q(internalPromiseResolver);
+
+  // Hacks because $timeout depends on unbound execution of functions
+  this.resolve = bind1(this, this.resolve);
+  this.reject = bind1(this, this.reject);
+  this.notify = bind1(this, this.notify);
 };
 
 defineProperties($Deferred.prototype, WRITABLE, {

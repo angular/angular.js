@@ -68,6 +68,7 @@
     "concat": false,
     "sliceArgs": false,
     "bind": false,
+    "bind1": false,
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,

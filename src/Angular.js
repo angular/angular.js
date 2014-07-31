@@ -64,6 +64,7 @@
   concat: true,
   sliceArgs: true,
   bind: true,
+  bind1: true,
   toJsonReplacer: true,
   toJson: true,
   fromJson: true,
@@ -995,6 +996,18 @@ function bind(self, fn) {
     // in IE, native methods are not functions so they cannot be bound (note: they don't need to be)
     return fn;
   }
+}
+
+
+function bind1(self, fn) {
+  // For performance reasons, no sanity-checks are performed here. This method is not publicly
+  // exposed, and so failures here should cause test failures in core if issues are present.
+  //
+  // Due to not currying arguments, and not testing for error conditions, this should perform
+  // somewhat better than angular.bind() for the cases where it is needed.
+  return function(value) {
+    return fn.call(self, value);
+  };
 }
 
 

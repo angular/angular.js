@@ -875,14 +875,13 @@ describe('q', function() {
       });
 
 
-      // By putting work in the prototype chain of an object, we can't support unbound execution.
-      // it('should support non-bound execution', function() {
-      //   var resolver = deferred.resolve;
-      //   promise.then(success(), error());
-      //   resolver('detached');
-      //   mockNextTick.flush();
-      //   expect(logStr()).toBe('success(detached)->detached');
-      // });
+      it('should support non-bound execution', function() {
+        var resolver = deferred.resolve;
+        promise.then(success(), error());
+        resolver('detached');
+        mockNextTick.flush();
+        expect(logStr()).toBe('success(detached)->detached');
+      });
 
 
       it('should not break if a callbacks registers another callback', function() {
@@ -995,14 +994,13 @@ describe('q', function() {
       });
 
 
-      // By putting work in the prototype chain, we can't support unbound execution.
-      // it('should support non-bound execution', function() {
-      //   var rejector = deferred.reject;
-      //   promise.then(success(), error());
-      //   rejector('detached');
-      //   mockNextTick.flush();
-      //   expect(logStr()).toBe('error(detached)->reject(detached)');
-      // });
+      it('should support non-bound execution', function() {
+        var rejector = deferred.reject;
+        promise.then(success(), error());
+        rejector('detached');
+        mockNextTick.flush();
+        expect(logStr()).toBe('error(detached)->reject(detached)');
+      });
     });
 
 
@@ -1088,14 +1086,13 @@ describe('q', function() {
       });
 
 
-      // By putting work in the prototype chain of an object, we can't support unbound execution.
-      // it('should support non-bound execution', function() {
-      //   var notify = deferred.notify;
-      //   promise.then(success(), error(), progress());
-      //   notify('detached');
-      //   mockNextTick.flush();
-      //   expect(logStr()).toBe('progress(detached)->detached');
-      // });
+      it('should support non-bound execution', function() {
+        var notify = deferred.notify;
+        promise.then(success(), error(), progress());
+        notify('detached');
+        mockNextTick.flush();
+        expect(logStr()).toBe('progress(detached)->detached');
+      });
 
 
       it("should not save and re-emit progress notifications between ticks", function () {
