@@ -197,7 +197,7 @@ describe('q', function() {
 
 
   describe('$Q', function() {
-    var resolve, reject, resolve2, reject2;
+    var resolve = null, reject = null, resolve2 = null, reject2 = null;
     var createPromise = function() {
       return q(function(resolveFn, rejectFn) {
         if (resolve === null) {
@@ -276,8 +276,9 @@ describe('q', function() {
         promise.then(success(), error());
 
         resolve(createPromise());
-        mockNextTick.flush();
-        expect(logStr()).toBe('');
+
+        // Don't schedule a task to run, the new promise hasn't been fulfilled yet.
+        expect(mockNextTick.queue.length).toBe(0);
 
         resolve2('foo');
         mockNextTick.flush();
@@ -853,8 +854,8 @@ describe('q', function() {
         promise.then(success(), error());
 
         deferred.resolve(deferred2.promise);
-        mockNextTick.flush();
-        expect(logStr()).toBe('');
+        // Queue should be empty, new promise is not resolved yet.
+        expect(mockNextTick.queue.length).toBe(0);
 
         deferred2.resolve('foo');
         mockNextTick.flush();
@@ -1565,6 +1566,7 @@ describe('q', function() {
       var rejectedPromise = q.reject('rejected');
       expect(rejectedPromise['finally']).not.toBeUndefined();
       expect(rejectedPromise['catch']).not.toBeUndefined();
+      mockNextTick.flush();
     });
   });
 
@@ -1775,10 +1777,12 @@ describe('q', function() {
         mockNextTick.flush();
         expect(logStr()).toBe('');
         evilPromise.error('failed');
+        mockNextTick.flush();
         expect(logStr()).toBe('error(failed)->reject(failed)');
 
         evilPromise.error('muhaha');
         evilPromise.success('take this');
+        expect(mockNextTick.queue.length).toBe(0);
         expect(logStr()).toBe('error(failed)->reject(failed)');
       });
 
@@ -1797,6 +1801,7 @@ describe('q', function() {
         mockNextTick.flush();
         expect(logStr()).toBe('');
         evilPromise.progress('notification');
+        mockNextTick.flush();
         evilPromise.success('ok');
         mockNextTick.flush();
         expect(logStr()).toBe('progress(notification)->notification; success(ok)->ok');
@@ -1975,7 +1980,8 @@ describe('q', function() {
         promise.then(success1).then(success(2), error(2));
         syncResolve(deferred, 'done');
         expect(logStr()).toBe('success1(done)->throw(oops); error2(oops)->reject(oops)');
-        expect(mockExceptionLogger.log).toEqual(['oops']);
+        // $exceptionHandler is not handling these anymore
+        // expect(mockExceptionLogger.log).toEqual(['oops']);
       });
 
 
@@ -1992,7 +1998,8 @@ describe('q', function() {
         promise.then(null, error1).then(success(2), error(2));
         syncReject(deferred, 'nope');
         expect(logStr()).toBe('error1(nope)->throw(oops); error2(oops)->reject(oops)');
-        expect(mockExceptionLogger.log).toEqual(['oops']);
+        // $exceptionHandler is not handling these anymore
+        // expect(mockExceptionLogger.log).toEqual(['oops']);
       });
 
 
@@ -2009,7 +2016,8 @@ describe('q', function() {
           promise.then(success(), error(), progress(1, 'failed', true)).then(null, error(1), progress(2));
           syncNotify(deferred, '10%');
           expect(logStr()).toBe('progress1(10%)->throw(failed)');
-          expect(mockExceptionLogger.log).toEqual(['failed']);
+          // $exceptionHandler is not handling these anymore
+          // expect(mockExceptionLogger.log).toEqual(['failed']);
           log = [];
           syncResolve(deferred, 'ok');
           expect(logStr()).toBe('success(ok)->ok');
@@ -2025,7 +2033,8 @@ describe('q', function() {
         q.when('hi', success1, error()).then(success(), error(2));
         mockNextTick.flush();
         expect(logStr()).toBe('success1(hi)->throw(oops); error2(oops)->reject(oops)');
-        expect(mockExceptionLogger.log).toEqual(['oops']);
+        // $exceptionHandler is not handling these anymore
+        // expect(mockExceptionLogger.log).toEqual(['oops']);
       });
 
 
@@ -2039,10 +2048,14 @@ describe('q', function() {
 
       it('should log exceptions thrown in a errback and reject the derived promise', function() {
         var error1 = error(1, 'oops', true);
-        q.when(q.reject('sorry'), success(), error1).then(success(), error(2));
+        var wp = q.when(q.reject('sorry'), success(), error1);
+        wp.name = "q.when()";
+        var wpt = wp.then(success(), error(2));
+        wpt.name = "q.when().then(...)";
         mockNextTick.flush();
         expect(logStr()).toBe('error1(sorry)->throw(oops); error2(oops)->reject(oops)');
-        expect(mockExceptionLogger.log).toEqual(['oops']);
+        // $exceptionHandler is not handling these anymore
+        // expect(mockExceptionLogger.log).toEqual(['oops']);
       });
 
 
@@ -2094,11 +2107,11 @@ describe('q', function() {
 
 
     it('should still reject the promise, when exception is thrown in error handler, even if exceptionHandler rethrows', function() {
-      deferred.promise.then(null, function() { throw 'reject again'; }).then(null, errorSpy);
-      deferred.reject('reject');
-      mockNextTick.flush();
-      expect(exceptionExceptionSpy).toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalled();
+     deferred.promise.then(null, function() { throw 'reject again'; }).then(null, errorSpy);
+     deferred.reject('reject');
+     mockNextTick.flush();
+     expect(exceptionExceptionSpy).toHaveBeenCalled();
+     expect(errorSpy).toHaveBeenCalled();
     });
   });
 });

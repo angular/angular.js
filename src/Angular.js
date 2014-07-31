@@ -64,6 +64,7 @@
   concat: true,
   sliceArgs: true,
   bind: true,
+  bind1: true,
   toJsonReplacer: true,
   toJson: true,
   fromJson: true,
@@ -998,6 +999,18 @@ function bind(self, fn) {
 }
 
 
+function bind1(self, fn) {
+  // For performance reasons, no sanity-checks are performed here. This method is not publicly
+  // exposed, and so failures here should cause test failures in core if issues are present.
+  //
+  // Due to not currying arguments, and not testing for error conditions, this should perform
+  // somewhat better than angular.bind() for the cases where it is needed.
+  return function(value) {
+    return fn.call(self, value);
+  };
+}
+
+
 function toJsonReplacer(key, value) {
   var val = value;
 
@@ -1573,4 +1586,40 @@ function getBlockElements(nodes) {
   } while (element !== endNode);
 
   return jqLite(elements);
+}
+
+var INVISIBLE = 1;
+var CONFIGURABLE = 2;
+var WRITABLE = 4;
+
+function defineProperty(target, propertyName, flags, value) {
+  if (isObject(target) || isFunction(target)) {
+    if (Object.defineProperty) {
+      var desc = {
+        /*jshint bitwise: false */
+        enumerable: !(flags & INVISIBLE),
+        configurable: !!(flags & CONFIGURABLE),
+        writable: !!(flags & WRITABLE)
+      };
+      if (arguments.length > 3) {
+        desc.value = value;
+      }
+      Object.defineProperty(target, propertyName, desc);
+    } else {
+      target[propertyName] = value;
+    }
+  }
+}
+
+function defineProperties(target, flags, propertyNameAndValues) {
+  forEach(propertyNameAndValues, function(value, propertyName) {
+    defineProperty(target, propertyName, flags, value);
+  });
+}
+
+function createObject(prototype) {
+  if (Object.create) return Object.create(prototype);
+  function C() {}
+  C.prototype = prototype;
+  return new C();
 }

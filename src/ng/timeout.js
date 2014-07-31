@@ -73,7 +73,7 @@ function $TimeoutProvider() {
       */
     timeout.cancel = function(promise) {
       if (promise && promise.$$timeoutId in deferreds) {
-        deferreds[promise.$$timeoutId].reject('canceled');
+        deferreds[promise.$$timeoutId].rejectGently('canceled');
         delete deferreds[promise.$$timeoutId];
         return $browser.defer.cancel(promise.$$timeoutId);
       }

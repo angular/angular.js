@@ -961,7 +961,7 @@ function $HttpProvider() {
         // normalize internal statuses to 0
         status = Math.max(status, 0);
 
-        (isSuccess(status) ? deferred.resolve : deferred.reject)({
+        deferred[(isSuccess(status) ? 'resolve' : 'reject')]({
           data: response,
           status: status,
           headers: headersGetter(headers),

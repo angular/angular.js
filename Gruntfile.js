@@ -216,7 +216,11 @@ module.exports = function(grunt) {
       },
       "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
-        src:['src/ng/q.js','lib/promises-aplus/promises-aplus-test-adapter.js']
+        src: [
+          'lib/promises-aplus/promises-aplus-test-adapter-prefix.js',
+          'src/ng/q.js',
+          'lib/promises-aplus/promises-aplus-test-adapter.js'
+        ]
       }
     },
 

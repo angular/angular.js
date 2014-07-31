@@ -68,6 +68,7 @@
     "concat": false,
     "sliceArgs": false,
     "bind": false,
+    "bind1": false,
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
@@ -87,6 +88,12 @@
     "getter": false,
     "getBlockElements": false,
     "VALIDITY_STATE_PROPERTY": false,
+    "INVISIBLE": true,
+    "CONFIGURABLE": true,
+    "WRITABLE": true,
+    "defineProperty": false,
+    "defineProperties": false,
+    "createObject": false,
 
     /* filters.js */
     "getFirstThursdayOfYear": false,
