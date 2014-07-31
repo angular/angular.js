@@ -657,6 +657,28 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name  $compileProvider#enableBindingInfo
+   * @kind function
+   *
+   * @description
+   * Call this method to enable adding binding information to DOM elements at runtime.
+   * If enabled, the compiler will add the following to DOM elements that have been bound to the scope
+   * * `ng-binding` CSS class
+   * * `$binding` data object containing the value of the binding (or an array if there are multiple
+   *   bindings)
+   */
+  var addBindingInfo = noop;
+  this.enableBindingInfo = function() {
+    addBindingInfo = function(element, binding, appendBinding) {
+      if ( appendBinding ) {
+        binding = (element.data('$binding') || []).concat([binding]);
+      }
+      element.addClass('ng-binding').data('$binding', binding);
+    };
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
             '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
@@ -846,7 +868,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
-
+    compile.addBindingInfo = addBindingInfo;
     return compile;
 
     //================================
@@ -1879,17 +1901,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         directives.push({
           priority: 0,
           compile: function textInterpolateCompileFn(templateNode) {
-            // when transcluding a template that has bindings in the root
-            // then we don't have a parent and should do this in the linkFn
-            var parent = templateNode.parent(), hasCompileParent = parent.length;
-            if (hasCompileParent) safeAddClass(templateNode.parent(), 'ng-binding');
-
             return function textInterpolateLinkFn(scope, node) {
-              var parent = node.parent(),
-                  bindings = parent.data('$binding') || [];
-              bindings.push(interpolateFn);
-              parent.data('$binding', bindings);
-              if (!hasCompileParent) safeAddClass(parent, 'ng-binding');
+              var parent = node.parent();
+              addBindingInfo(parent, interpolateFn, true);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;
               });
