@@ -297,42 +297,20 @@ function qFactory(nextTick, exceptionHandler) {
       return this.then(null, callback);
     },
     "finally": function(callback) {
-      function makePromise(value, resolved) {
-        var result = new Deferred();
-        if (resolved) {
-          result.resolve(value);
-        } else {
-          result.reject(value);
-        }
-        return result.promise;
-      }
-
-      function handleCallback(value, isResolved) {
-        var callbackOutput = null;
-        try {
-          callbackOutput = (callback ||defaultCallback)();
-        } catch(e) {
-          return makePromise(e, false);
-        }
-        if (isPromiseLike(callbackOutput)) {
-          return callbackOutput.then(function() {
-            return makePromise(value, isResolved);
-          }, function(error) {
-            return makePromise(error, false);
-          });
-        } else {
-          return makePromise(value, isResolved);
-        }
-      }
-
       return this.then(function(value) {
-        return handleCallback(value, true);
+        return handleCallback(value, true, callback);
       }, function(error) {
-        return handleCallback(error, false);
+        return handleCallback(error, false, callback);
       });
     }
   };
 
+  //Faster, more basic than angular.bind http://jsperf.com/angular-bind-vs-custom-vs-native
+  function simpleBind(context, fn) {
+    return function() {
+      fn.apply(context, arguments);
+    };
+  }
 
   function Deferred () {
     this.promise = new Promise();
@@ -434,6 +412,34 @@ function qFactory(nextTick, exceptionHandler) {
     var result = new Deferred();
     result.reject(reason);
     return result.promise;
+  };
+
+  var makePromise = function makePromise(value, resolved) {
+    var result = new Deferred();
+    if (resolved) {
+      result.resolve(value);
+    } else {
+      result.reject(value);
+    }
+    return result.promise;
+  };
+
+  var handleCallback = function handleCallback(value, isResolved, callback) {
+    var callbackOutput = null;
+    try {
+      callbackOutput = (callback ||defaultCallback)();
+    } catch(e) {
+      return makePromise(e, false);
+    }
+    if (isPromiseLike(callbackOutput)) {
+      return callbackOutput.then(function() {
+        return makePromise(value, isResolved);
+      }, function(error) {
+        return makePromise(error, false);
+      });
+    } else {
+      return makePromise(value, isResolved);
+    }
   };
 
   var createInternalRejectedPromise = function(reason) {
