@@ -266,6 +266,12 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
       var valueIdentifier = match[3] || match[1];
       var keyIdentifier = match[2];
 
+      if (aliasAs && (!/^[$a-zA-Z_][$a-zA-Z0-9_]*$/.test(aliasAs) ||
+          /^null|undefined|this|\$index|\$first|\$middle|\$last|\$even|\$odd|\$parent$/.test(aliasAs))) {
+        throw ngRepeatMinErr('badident', "alias '{0}' is invalid --- must be a valid JS identifier which is not a reserved name.",
+          aliasAs);
+      }
+
       var trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn;
       var hashFnLocals = {$id: hashKey};
 
