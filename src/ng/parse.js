@@ -723,14 +723,17 @@ Parser.prototype = {
     this.consume(')');
 
     var parser = this;
+    var args = []; // we can safely reuse the array
 
     return function(scope, locals) {
-      var args = [];
       var context = contextGetter ? contextGetter(scope, locals) : scope;
 
-      for (var i = 0; i < argsFn.length; i++) {
-        args.push(argsFn[i](scope, locals));
+
+      var i = argsFn.length;
+      while (i--) {
+        args[i] = argsFn[i](scope, locals);
       }
+
       var fnPtr = fn(scope, locals, context) || noop;
 
       ensureSafeObject(context, parser.text);
