@@ -681,6 +681,53 @@ describe('form', function() {
       expect(nestedInputCtrl.$dirty).toBe(false);
     });
   });
+
+  describe('$updateControlsDirtyAfterState', function() {
+
+    it('should update controls dirty state when a control becomes dirty or when the form is set pristine', function() {
+
+      doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named1" name="name1">' +
+            '<input ng-model="named2" name="name2">' +
+            '<input ng-model="named3" name="name3">' +
+          '</form>')(scope);
+
+      scope.$digest();
+
+      var form = doc,
+          formCtrl = scope.testForm,
+          input1 = form.find('input').eq(0),
+          input1Ctrl = input1.controller('ngModel'),
+          input2 = form.find('input').eq(1),
+          input2Ctrl = input2.controller('ngModel'),
+          input3 = form.find('input').eq(2),
+          input3Ctrl = input3.controller('ngModel');
+
+      input1Ctrl.$setViewValue('first');
+      scope.$apply();
+      expect(input1Ctrl.$dirtyAfter).toBe(false);
+      expect(input2Ctrl.$dirtyAfter).toBe(false);
+      expect(input3Ctrl.$dirtyAfter).toBe(false);
+
+      input2Ctrl.$setViewValue('second');
+      scope.$apply();
+      expect(input1Ctrl.$dirtyAfter).toBe(true);
+      expect(input2Ctrl.$dirtyAfter).toBe(false);
+      expect(input3Ctrl.$dirtyAfter).toBe(false);
+
+      input3Ctrl.$setViewValue('third');
+      scope.$apply();
+      expect(input1Ctrl.$dirtyAfter).toBe(true);
+      expect(input2Ctrl.$dirtyAfter).toBe(true);
+      expect(input3Ctrl.$dirtyAfter).toBe(false);
+
+      formCtrl.$setPristine();
+      expect(input1Ctrl.$dirtyAfter).toBe(false);
+      expect(input2Ctrl.$dirtyAfter).toBe(false);
+      expect(input3Ctrl.$dirtyAfter).toBe(false);
+    });
+  });
 });
 
 describe('form animations', function() {

@@ -6,7 +6,8 @@ var nullFormCtrl = {
   $removeControl: noop,
   $setValidity: noop,
   $setDirty: noop,
-  $setPristine: noop
+  $setPristine: noop,
+  $updateControlsDirtyAfterState: noop
 };
 
 /**
@@ -210,6 +211,7 @@ function FormController(element, attrs, $scope, $animate) {
     $animate.addClass(element, DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
+    form.$updateControlsDirtyAfterState();
     parentForm.$setDirty();
   };
 
@@ -235,9 +237,28 @@ function FormController(element, attrs, $scope, $animate) {
     forEach(controls, function(control) {
       control.$setPristine();
     });
+    form.$updateControlsDirtyAfterState();
+  };
+
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$updateControlsDirtyAfterState
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Update the form controls dirtyAfter state.
+   *
+   * This method is called when an input dirty state changes
+   * or when the form is set to its pristine state.
+   */
+  form.$updateControlsDirtyAfterState = function() {
+    var dirtyAfter = false;
+    for (var i = controls.length - 1; i >= 0; i--) {
+        controls[i].$dirtyAfter = dirtyAfter;
+        dirtyAfter = dirtyAfter || controls[i].$dirty;
+    }
   };
 }
-
 
 /**
  * @ngdoc directive
