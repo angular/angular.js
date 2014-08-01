@@ -723,16 +723,18 @@ Parser.prototype = {
     this.consume(')');
 
     var expressionText = this.text;
-    var args = []; // we can safely reuse the array
+    // we can safely reuse the array across invocations
+    var args = argsFn.length ? [] : null;
 
     return function(scope, locals) {
       var context = contextGetter ? contextGetter(scope, locals) : scope;
       var fn = fnGetter(scope, locals, context) || noop;
 
-
-      var i = argsFn.length;
-      while (i--) {
-        args[i] = argsFn[i](scope, locals);
+      if (args) {
+        var i = argsFn.length;
+        while (i--) {
+          args[i] = argsFn[i](scope, locals);
+        }
       }
 
       ensureSafeObject(context, expressionText);
