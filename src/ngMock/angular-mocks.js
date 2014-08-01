@@ -1548,7 +1548,7 @@ function MockHttpExpectation(method, url, data, headers) {
   };
 
   this.matchUrl = function(u) {
-    if (!url) return true;
+    if (!url) return false;
     if (angular.isFunction(url.test)) return url.test(u);
     if (angular.isFunction(url)) return url(u);
     return url == u;
