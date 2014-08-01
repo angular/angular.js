@@ -416,6 +416,52 @@ describe('ngRepeat', function() {
 
       expect(trim(element.text())).toEqual('No results found...');
     });
+
+
+    it('should throw if alias identifier is not a simple identifier', inject(function($exceptionHandler) {
+      scope.x = 'bl';
+      scope.items = [
+        { name : 'red' },
+        { name : 'blue' },
+        { name : 'green' },
+        { name : 'black' },
+        { name : 'orange' },
+        { name : 'blonde' }
+      ];
+
+      forEach([
+        'null',
+        'this',
+        'undefined',
+        '$parent',
+        '$index',
+        '$first',
+        '$middle',
+        '$last',
+        '$even',
+        '$odd',
+        'obj[key]',
+        'obj["key"]',
+        'obj[\'key\']',
+        'obj.property',
+        'foo=6'
+      ], function(expr) {
+        var expression = ('item in items | filter:x as ' + expr + ' track by $index').replace(/"/g, '&quot;');
+        element = $compile(
+          '<div>' +
+          '  <div ng-repeat="' + expression + '">{{item}}</div>' +
+          '</div>')(scope);
+
+        var expected = new RegExp('^\\[ngRepeat:badident\\] alias \'' + escape(expr) + '\' is invalid --- must be a valid JS identifier which is not a reserved name');
+        expect($exceptionHandler.errors.shift()[0].message).
+          toMatch(expected);
+        dealoc(element);
+      });
+
+      function escape(text) {
+        return text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      }
+    }));
   });
 
 
