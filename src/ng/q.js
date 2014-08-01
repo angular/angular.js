@@ -337,9 +337,9 @@ function qFactory(nextTick, exceptionHandler) {
   function Deferred () {
     this.promise = new Promise();
     //Necessary to support unbound execution :/
-    this.resolve = this.resolve.bind(this);
-    this.reject = this.reject.bind(this);
-    this.notify = this.notify.bind(this);
+    this.resolve = simpleBind(this, this.resolve);
+    this.reject = simpleBind(this, this.reject);
+    this.notify = simpleBind(this, this.notify);
   }
 
   Deferred.prototype = {
@@ -350,13 +350,13 @@ function qFactory(nextTick, exceptionHandler) {
         this.promise.$$value = ref(val);
 
         if (callbacks.length) {
-          nextTick(function() {
+          nextTick(simpleBind(this, function() {
             var callback;
             for (var i = 0, ii = callbacks.length; i < ii; i++) {
               callback = callbacks[i];
               this.promise.$$value.then(callback[0], callback[1], callback[2]);
             }
-          }.bind(this));
+          }));
         }
       }
     },
