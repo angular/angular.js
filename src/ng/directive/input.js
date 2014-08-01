@@ -2182,6 +2182,8 @@ var ngModelDirective = function() {
         }
 
         element.on('blur', function(ev) {
+          if (modelCtrl.$touched) return;
+
           scope.$apply(function() {
             modelCtrl.$setTouched();
           });
