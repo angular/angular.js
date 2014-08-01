@@ -111,7 +111,7 @@
  * The directive definition object provides instructions to the {@link ng.$compile
  * compiler}. The attributes are:
  *
- * ### `multiElement`
+ * #### `multiElement`
  * When this property is set to true, the HTML compiler will collect DOM nodes between
  * nodes with the attributes `directive-name-start` and `directive-name-end`, and group them
  * together as the directive elements. It is recomended that this feature be used on directives
