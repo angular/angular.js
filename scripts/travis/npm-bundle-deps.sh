@@ -6,4 +6,4 @@ set -e
 cd $(dirname $0);
 
 cd ../..
-curl "http://23.251.148.50:8000/tar/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT" | tar xz
+curl "http://23.251.148.50:8000/tar/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT" | tar xz || true
