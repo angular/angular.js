@@ -1189,12 +1189,13 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * @returns {requestHandler} Returns an object with `respond` method that controls how a matched
    *   request is handled.
    *
-   *  - respond –
-   *      `{function([status,] data[, headers, statusText])
-   *      | function(function(method, url, data, headers)}`
-   *    – The respond method takes a set of static data to be returned or a function that can
-   *    return an array containing response status (number), response data (string), response
-   *    headers (Object), and the text for the status (string).
+   *  - respond(...)
+   *      `{([httpStatusCode,] responseData [, responseHeaders, httpStatusText])
+   *      | (function(requestMethod, requestedResourcePath, requestJsonOrStringData, requestHeaders)}`
+   *    – The respond method takes up to four parameters or a function returning a corresponding array 
+   *    of up to four values: [httpStatusCode, responseData, responseHeaders, httpStatusText]. 
+   *    Note that httpStatusCode is a number; responseData is an object or string;
+   *    responseHeaders is an object; and httpStatusText is a string.
    */
   $httpBackend.when = function(method, url, data, headers) {
     var definition = new MockHttpExpectation(method, url, data, headers),
