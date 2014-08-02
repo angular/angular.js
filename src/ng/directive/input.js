@@ -2182,7 +2182,7 @@ var ngModelDirective = function() {
         }
 
         element.on('blur', function(ev) {
-          scope.$apply(function() {
+          scope.$evalAsync(function() {
             modelCtrl.$setTouched();
           });
         });
