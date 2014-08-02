@@ -234,7 +234,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
               currentScope = newScope;
               currentElement = clone;
 
-              currentScope.$emit('$includeContentLoaded');
+              currentScope.$emit('$includeContentLoaded', src);
               scope.$eval(onloadExp);
             }).error(function() {
               if (thisChangeId === changeCounter) {
