@@ -570,10 +570,10 @@ Parser.prototype = {
           args[i + 1] = argsFn[i](self, locals);
         }
 
-        return fn.apply(self, args);
+        return fn.apply(undefined, args);
       }
 
-      return fn.call(self, input);
+      return fn(input);
     });
   },
 
