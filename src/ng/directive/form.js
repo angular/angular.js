@@ -241,9 +241,8 @@ function FormController(element, attrs, $scope, $animate) {
   };
 
   /**
-   * @ngdoc function
-   * @name ng.directive:form.FormController#$setSubmitted
-   * @methodOf ng.directive:form.FormController
+   * @ngdoc method
+   * @name form.FormController#setSubmitted
    *
    * @description
    * Sets the form to its submitted state.
