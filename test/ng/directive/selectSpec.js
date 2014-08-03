@@ -1006,34 +1006,34 @@ describe('select', function() {
           scope.values = [{id: 10, name: 'A'}, {id: 20, name: 'B'}];
         });
         expect(element.val()).toEqual('?');
-        expect(element.find('option').eq(0).attr('selected')).toEqual('selected');
+        expect(element.find('option').attr('selected')).toEqual('selected');
 
         scope.$apply(function() {
           scope.selected = 10;
         });
         // Here the ? option should disappear and the first real option should have selected attribute
         expect(element.val()).toEqual('0');
-        expect(element.find('option').eq(0).attr('selected')).toEqual('selected');
+        expect(element.find('option').attr('selected')).toEqual('selected');
 
         // Here the selected value is changed but we don't change the selected attribute
         scope.$apply(function() {
           scope.selected = 20;
         });
         expect(element.val()).toEqual('1');
-        expect(element.find('option').eq(0).attr('selected')).toEqual('selected');
+        expect(element.find('option').attr('selected')).toEqual('selected');
 
         scope.$apply(function() {
           scope.values.push({id: 30, name: 'C'});
         });
         expect(element.val()).toEqual('1');
-        expect(element.find('option').eq(0).attr('selected')).toEqual('selected');
+        expect(element.find('option').attr('selected')).toEqual('selected');
 
         // Here the ? option should reappear and have selected attribute
         scope.$apply(function() {
           scope.selected = undefined;
         });
         expect(element.val()).toEqual('?');
-        expect(element.find('option').eq(0).attr('selected')).toEqual('selected');
+        expect(element.find('option').attr('selected')).toEqual('selected');
       });
     });
 
