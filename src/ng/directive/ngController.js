@@ -23,10 +23,12 @@
  *
  * @element ANY
  * @scope
- * @param {expression} ngController Name of a globally accessible constructor function or an
- *     {@link guide/expression expression} that on the current scope evaluates to a
- *     constructor function. The controller instance can be published into a scope property
- *     by specifying `as propertyName`.
+ * @param {expression} ngController Name of a constructor function registered with the current
+ *     {@link ng.$controllerProvider $controllerProvider} or an {@link guide/expression expression} that on the
+ *     current scope evaluates to a constructor function. If the current `$controllerProvider` is configured to
+ *     use globals (via {@link ng.$controllerProvider#allowGlobals $controllerProvider.allowGlobals()}), this may
+ *     also be the name of a globally accessible constructor function (not recommended). The controller instance can
+ *     be published into a scope property by specifying `as propertyName`.
  *
  * @example
  * Here is a simple form for editing user contact information. Adding, removing, clearing, and
