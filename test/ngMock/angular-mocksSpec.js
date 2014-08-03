@@ -1010,6 +1010,14 @@ describe('ngMock', function() {
     });
 
 
+    it('should not allow undefined URL', function(){
+      hb.when('GET').respond(200, '');
+      expect(function() {
+        hb('GET', '/xxx');
+      }).toThrow('Unexpected request: GET /xxx\nNo more request expected');
+    });
+
+
     it('should match headers if specified', function() {
       hb.when('GET', '/url', null, {'X': 'val1'}).respond(201, 'content1');
       hb.when('GET', '/url', null, {'X': 'val2'}).respond(202, 'content2');
@@ -1076,7 +1084,7 @@ describe('ngMock', function() {
 
 
     it('should match only method', function() {
-      hb.when('GET').respond(202, 'c');
+      hb.when('GET', '*').respond(202, 'c');
       callback.andCallFake(function(status, response) {
         expect(status).toBe(202);
         expect(response).toBe('c');
@@ -1184,6 +1192,19 @@ describe('ngMock', function() {
       });
 
 
+      it('should allow * as any url', function(){
+        hb.expect('GET', '*').respond(200, '');
+        expect(function() {
+          hb('GET', '/url');
+        }).not.toThrow();
+
+        hb.expect('GET', '/url1').respond(200, '');
+        expect(function() {
+          hb('GET', '/url2');
+        }).toThrow('Unexpected request: GET /url2\nExpected GET /url1');
+      });
+
+
       it ('should throw exception when only headers differs from expectation', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
@@ -1207,7 +1228,7 @@ describe('ngMock', function() {
 
 
       it ('should not throw an exception when parsed body is equal to expected body object', function() {
-        hb.when('GET').respond(200, '', {});
+        hb.when('GET', '*').respond(200, '', {});
 
         hb.expect('GET', '/match', {a: 1, b: 2});
         expect(function() {
@@ -1251,7 +1272,7 @@ describe('ngMock', function() {
 
     describe('flush()', function() {
       it('flush() should flush requests fired during callbacks', function() {
-        hb.when('GET').respond(200, '');
+        hb.when('GET', '*').respond(200, '');
         hb('GET', '/some', null, function() {
           hb('GET', '/other', null, callback);
         });
@@ -1262,7 +1283,7 @@ describe('ngMock', function() {
 
 
       it('should flush given number of pending requests', function() {
-        hb.when('GET').respond(200, '');
+        hb.when('GET', '*').respond(200, '');
         hb('GET', '/some', null, callback);
         hb('GET', '/some', null, callback);
         hb('GET', '/some', null, callback);
@@ -1274,7 +1295,7 @@ describe('ngMock', function() {
 
 
       it('should throw exception when flushing more requests than pending', function() {
-        hb.when('GET').respond(200, '');
+        hb.when('GET', '*').respond(200, '');
         hb('GET', '/url', null, callback);
 
         expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
@@ -1285,7 +1306,7 @@ describe('ngMock', function() {
       it('should throw exception when no request to flush', function() {
         expect(function() {hb.flush();}).toThrow('No pending request to flush !');
 
-        hb.when('GET').respond(200, '');
+        hb.when('GET', '*').respond(200, '');
         hb('GET', '/some', null, callback);
         hb.flush();
 
@@ -1387,7 +1408,7 @@ describe('ngMock', function() {
     describe('verifyRequests', function() {
 
       it('should throw exception if not all requests were flushed', function() {
-        hb.when('GET').respond(200);
+        hb.when('GET', '*').respond(200);
         hb('GET', '/some', null, noop, {});
 
         expect(function() {
