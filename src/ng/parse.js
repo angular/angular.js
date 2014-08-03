@@ -992,7 +992,7 @@ function $ParseProvider() {
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     $parseOptions.csp = $sniffer.csp;
 
-    return function(exp, interceptorFn) {
+    return function $parse(exp, interceptorFn) {
       var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
@@ -1012,10 +1012,10 @@ function $ParseProvider() {
             parsedExpression = parser.parse(exp);
 
             if (parsedExpression.constant) {
-              parsedExpression.$$watchDelegate = constantWatch;
+              parsedExpression.$$watchDelegate = constantWatchDelegate;
             } else if (oneTime) {
               parsedExpression.$$watchDelegate = parsedExpression.literal ?
-                oneTimeLiteralWatch : oneTimeWatch;
+                oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
             }
 
             cache[cacheKey] = parsedExpression;
@@ -1030,7 +1030,7 @@ function $ParseProvider() {
       }
     };
 
-    function oneTimeWatch(scope, listener, objectEquality, parsedExpression) {
+    function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
@@ -1049,7 +1049,7 @@ function $ParseProvider() {
       }, objectEquality);
     }
 
-    function oneTimeLiteralWatch(scope, listener, objectEquality, parsedExpression) {
+    function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
@@ -1073,7 +1073,7 @@ function $ParseProvider() {
       }
     }
 
-    function constantWatch(scope, listener, objectEquality, parsedExpression) {
+    function constantWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch;
       return unwatch = scope.$watch(function constantWatch(scope) {
         return parsedExpression(scope);
