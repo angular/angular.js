@@ -1124,6 +1124,10 @@ describe('q', function() {
         expect(typeof promise['finally']).toBe('function');
       });
 
+      it('should have a progress method', function () {
+        expect(typeof promise.progress).toBe('function');
+      });
+
 
       describe('then', function() {
         it('should allow registration of a success callback without an errback or progressback ' +
@@ -1522,6 +1526,15 @@ describe('q', function() {
           syncReject(deferred, 'foo');
           expect(logStr()).toBe('error1(foo)->reject(foo); error2(foo)->reject(foo)');
         });
+      });
+
+      describe('progress', function () {
+        it('should be a shorthand for defining promise progress handlers', function() {
+          promise.progress(progress(1)).then(null, null, progress(2));
+          deferred.notify('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('progress1(foo)->foo; progress2(foo)->foo');
+        })
       });
     });
   });
