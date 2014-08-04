@@ -2038,7 +2038,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       jqLite(newNode).data(jqLite(firstElementToRemove).data());
 
       // Remove data of the replaced element. We cannot just call .remove()
-      // on the element it since that would deallocate scope and event handlers that are still needed
+      // on the element it since that would deallocate scope that is needed
       // for the new node. Instead, remove the data "manually".
       if (!jQuery) {
         delete jqLite.cache[firstElementToRemove[jqLite.expando]];
