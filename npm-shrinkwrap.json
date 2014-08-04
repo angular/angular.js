@@ -2664,7 +2664,7 @@
       "version": "0.0.2"
     },
     "promises-aplus-tests": {
-      "version": "1.3.2",
+      "version": "2.0.4",
       "dependencies": {
         "mocha": {
           "version": "1.11.0",
