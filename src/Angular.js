@@ -1433,7 +1433,24 @@ function bootstrap(element, modules, config) {
 
   var NG_DEFER_BOOTSTRAP = /^NG_DEFER_BOOTSTRAP!/;
 
+  // Inject mock modules if it is in sessionStorage. After that, finish bootstrap
   if (window && !NG_DEFER_BOOTSTRAP.test(window.name)) {
+    if(typeof(Storage) !== 'undefined' && sessionStorage.angularInjectedModules) {
+      var mockModules = JSON.parse(sessionStorage.angularInjectedModules);
+      var moduleNames = [];
+      for (var i = 0 ; i < mockModules.length; ++i) {
+        moduleNames.push(mockModules[i].name);
+        try {
+          eval(mockModules[i].script); // jshint ignore:line
+        } catch(err) {
+          throw new Error('Error while running mock module script ' +
+                  mockModules[i].name + ': ' + err.message);
+        }
+      }
+      forEach(moduleNames, function(module) {
+        modules.push(module);
+      });
+    }
     return doBootstrap();
   }
 
