@@ -394,7 +394,7 @@ describe("resource", function() {
   it('should handle multiple params with same name', function() {
     var R = $resource('/:id/:id');
 
-    $httpBackend.when('GET', '*').respond('{}');
+    $httpBackend.when('GET', null).respond('{}');
     $httpBackend.expect('GET', '/1/1');
 
     R.get({id:1});
