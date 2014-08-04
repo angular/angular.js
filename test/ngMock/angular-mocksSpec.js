@@ -1011,10 +1011,9 @@ describe('ngMock', function() {
 
 
     it('should not allow undefined URL', function(){
-      hb.when('GET').respond(200, '');
       expect(function() {
-        hb('GET', '/xxx');
-      }).toThrow('Unexpected request: GET /xxx\nNo more request expected');
+        hb.when('GET').respond(200, '');
+      }).toThrow('No URL defined!');
     });
 
 
@@ -1206,7 +1205,7 @@ describe('ngMock', function() {
 
 
       it ('should throw exception when only headers differs from expectation', function() {
-        hb.when('GET').respond(200, '', {});
+        hb.when('GET', null).respond(200, '', {});
         hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
 
         expect(function() {
@@ -1217,7 +1216,7 @@ describe('ngMock', function() {
 
 
       it ('should throw exception when only data differs from expectation', function() {
-        hb.when('GET').respond(200, '', {});
+        hb.when('GET', null).respond(200, '', {});
         hb.expect('GET', '/match', 'some-data');
 
         expect(function() {
@@ -1243,7 +1242,7 @@ describe('ngMock', function() {
 
 
       it ('should throw exception when only parsed body differs from expected body object', function() {
-        hb.when('GET').respond(200, '', {});
+        hb.when('GET', null).respond(200, '', {});
         hb.expect('GET', '/match', {a: 1, b: 2});
 
         expect(function() {

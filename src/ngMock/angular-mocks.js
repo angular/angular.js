@@ -1539,6 +1539,8 @@ function MockHttpExpectation(method, url, data, headers) {
   this.data = data;
   this.headers = headers;
 
+  if (url === undefined) throw new Error('No URL defined!');
+
   this.match = function(m, u, d, h) {
     if (method != m) return false;
     if (!this.matchUrl(u)) return false;
@@ -1548,7 +1550,6 @@ function MockHttpExpectation(method, url, data, headers) {
   };
 
   this.matchUrl = function(u) {
-    if (url === undefined) return false;
     if (url === null) return true;
     if (angular.isFunction(url.test)) return url.test(u);
     if (angular.isFunction(url)) return url(u);
