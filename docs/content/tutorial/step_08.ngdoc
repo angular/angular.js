@@ -136,7 +136,7 @@ __`test/unit/controllersSpec.js`:__
       $httpBackend = _$httpBackend_;
       $httpBackend.expectGET('phones/xyz.json').respond({
         name:'phone xyz',
-        images: ["img/phones/xyz.jpg"]
+        images: ['image/url1.png', 'image/url2.png']
       });
 
       $routeParams.phoneId = 'xyz';
@@ -151,7 +151,7 @@ __`test/unit/controllersSpec.js`:__
 
       expect(scope.phone).toEqual({
         name:'phone xyz',
-        images: ["img/phones/xyz.jpg"]
+        images: ['image/url1.png', 'image/url2.png']
       });
     });
   });
