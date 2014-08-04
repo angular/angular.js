@@ -134,7 +134,10 @@ __`test/unit/controllersSpec.js`:__
 
     beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
       $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/xyz.json').respond({name:'phone xyz'});
+      $httpBackend.expectGET('phones/xyz.json').respond({
+        name:'phone xyz',
+        images: ["img/phones/xyz.jpg"]
+      });
 
       $routeParams.phoneId = 'xyz';
       scope = $rootScope.$new();
@@ -146,7 +149,10 @@ __`test/unit/controllersSpec.js`:__
       expect(scope.phone).toBeUndefined();
       $httpBackend.flush();
 
-      expect(scope.phone).toEqual({name:'phone xyz'});
+      expect(scope.phone).toEqual({
+        name:'phone xyz',
+        images: ["img/phones/xyz.jpg"]
+      });
     });
   });
 ...
