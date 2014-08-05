@@ -877,9 +877,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
           : $compileNodes;
 
-        forEach(transcludeControllers, function(instance, name) {
-          $linkNode.data('$' + name + 'Controller', instance);
-        });
+        if (transcludeControllers) {
+          var names = Object.keys(transcludeControllers);
+          var i = names.length;
+          var name;
+
+          while (i--) {
+            name = names[i];
+            $linkNode.data('$' + name + 'Controller', transcludeControllers[name]);
+          }
+        }
 
         $linkNode.data('$scope', scope);
 
