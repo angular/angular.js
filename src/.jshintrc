@@ -88,6 +88,8 @@
     "getBlockElements": false,
     "VALIDITY_STATE_PROPERTY": false,
 
+    "skipDestroyOnNextJQueryCleanData": true,
+
     /* filters.js */
     "getFirstThursdayOfYear": false,
 

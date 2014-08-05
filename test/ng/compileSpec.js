@@ -4118,26 +4118,57 @@ describe('$compile', function() {
       });
 
       if (jQuery) {
-        it('should clean up after a replaced element', inject(function ($compile) {
-          var privateData, firstRepeatedElem;
+        describe('cleaning up after a replaced element', function () {
+          var $compile, xs;
+          beforeEach(inject(function (_$compile_) {
+            $compile = _$compile_;
+            xs = [0, 1];
+          }));
 
-          element = $compile('<div><div ng-repeat="x in xs">{{x}}</div></div>')($rootScope);
+          function testCleanup() {
+            var privateData, firstRepeatedElem;
 
-          $rootScope.$apply('xs = [0,1]');
-          firstRepeatedElem = element.children('.ng-scope').eq(0);
+            element = $compile('<div><div ng-repeat="x in xs">{{x}}</div></div>')($rootScope);
 
-          expect(firstRepeatedElem.data('$scope')).toBeDefined();
-          privateData = jQuery._data(firstRepeatedElem[0]);
-          expect(privateData.events).toBeDefined();
-          expect(privateData.events.$destroy).toBeDefined();
-          expect(privateData.events.$destroy[0]).toBeDefined();
+            $rootScope.$apply('xs = [' + xs + ']');
+            firstRepeatedElem = element.children('.ng-scope').eq(0);
 
-          $rootScope.$apply('xs = null');
+            expect(firstRepeatedElem.data('$scope')).toBeDefined();
+            privateData = jQuery._data(firstRepeatedElem[0]);
+            expect(privateData.events).toBeDefined();
+            expect(privateData.events.$destroy).toBeDefined();
+            expect(privateData.events.$destroy[0]).toBeDefined();
 
-          expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
-          privateData = jQuery._data(firstRepeatedElem[0]);
-          expect(privateData && privateData.events).not.toBeDefined();
-        }));
+            $rootScope.$apply('xs = null');
+
+            expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
+            privateData = jQuery._data(firstRepeatedElem[0]);
+            expect(privateData && privateData.events).not.toBeDefined();
+          }
+
+          it('should work without external libraries (except jQuery)', testCleanup);
+
+          it('should work with another library patching jQuery.cleanData after Angular', function () {
+            var cleanedCount = 0;
+            var currentCleanData = jQuery.cleanData;
+            jQuery.cleanData = function (elems) {
+              cleanedCount += elems.length;
+              // Don't return the output and expicitly pass only the first parameter
+              // so that we're sure we're not relying on either of them. jQuery UI patch
+              // behaves in this way.
+              currentCleanData(elems);
+            };
+
+            testCleanup();
+
+            // The initial ng-repeat div is dumped after parsing hence we expect cleanData
+            // count to be one larger than size of the iterated array.
+            expect(cleanedCount).toBe(xs.length + 1);
+
+            // Restore the previous jQuery.cleanData.
+            jQuery.cleanData = currentCleanData;
+          });
+        });
       }
 
 

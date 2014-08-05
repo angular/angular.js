@@ -112,6 +112,11 @@ function dealoc(obj) {
 
   function cleanup(element) {
     element.off().removeData();
+    if (window.jQuery) {
+      // jQuery 2.x doesn't expose the cache storage; ensure all element data
+      // is removed during its cleanup.
+      jQuery.cleanData([element]);
+    }
     // Note:  We aren't using element.contents() here.  Under jQuery, element.contents() can fail
     // for IFRAME elements.  jQuery explicitly uses (element.contentDocument ||
     // element.contentWindow.document) and both properties are null for IFRAMES that aren't attached
