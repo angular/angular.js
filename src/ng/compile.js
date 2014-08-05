@@ -1589,13 +1589,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         // PRELINKING
         for(i = 0, ii = preLinkFns.length; i < ii; i++) {
-          try {
-            linkFn = preLinkFns[i];
-            linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers), transcludeFn);
-          } catch (e) {
-            $exceptionHandler(e, startingTag($element));
-          }
+          linkFn = preLinkFns[i];
+          invokeLinkFn(linkFn,
+              linkFn.isolateScope ? isolateScope : scope,
+              $element,
+              attrs,
+              linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers),
+              transcludeFn
+          );
         }
 
         // RECURSION
@@ -1609,13 +1610,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         // POSTLINKING
         for(i = postLinkFns.length - 1; i >= 0; i--) {
-          try {
-            linkFn = postLinkFns[i];
-            linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers), transcludeFn);
-          } catch (e) {
-            $exceptionHandler(e, startingTag($element));
-          }
+          linkFn = postLinkFns[i];
+          invokeLinkFn(linkFn,
+              linkFn.isolateScope ? isolateScope : scope,
+              $element,
+              attrs,
+              linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers),
+              transcludeFn
+          );
         }
 
         // This is the function that is injected as `$transclude`.
@@ -2075,6 +2077,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function cloneAndAnnotateFn(fn, annotation) {
       return extend(function() { return fn.apply(null, arguments); }, fn, annotation);
+    }
+
+
+    function invokeLinkFn(linkFn, scope, $element, attrs, controllers, transcludeFn) {
+      try {
+        linkFn(scope, $element, attrs, controllers, transcludeFn);
+      } catch(e) {
+        $exceptionHandler(e, startingTag($element));
+      }
     }
   }];
 }
