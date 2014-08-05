@@ -37,10 +37,10 @@ Let's start with input fields for quantity and cost whose values are multiplied 
       <div ng-app ng-init="qty=1;cost=2">
         <b>Invoice:</b>
         <div>
-          Quantity: <input type="number" ng-model="qty">
+          Quantity: <input type="number" min="0" ng-model="qty">
         </div>
         <div>
-          Costs: <input type="number" ng-model="cost">
+          Costs: <input type="number" min="0" ng-model="cost">
         </div>
         <div>
           <b>Total:</b> {{qty * cost | currency}}
@@ -128,10 +128,10 @@ different currencies and also pay the invoice.
       <div ng-app="invoice1" ng-controller="InvoiceController as invoice">
         <b>Invoice:</b>
         <div>
-          Quantity: <input type="number" ng-model="invoice.qty" required >
+          Quantity: <input type="number" min="0" ng-model="invoice.qty" required >
         </div>
         <div>
-          Costs: <input type="number" ng-model="invoice.cost" required >
+          Costs: <input type="number" min="0" ng-model="invoice.cost" required >
           <select ng-model="invoice.inCurr">
             <option ng-repeat="c in invoice.currencies">{{c}}</option>
           </select>
@@ -228,10 +228,10 @@ Let's refactor our example and move the currency conversion into a service in an
       <div ng-app="invoice2" ng-controller="InvoiceController as invoice">
         <b>Invoice:</b>
         <div>
-          Quantity: <input type="number" ng-model="invoice.qty" required >
+          Quantity: <input type="number" min="0" ng-model="invoice.qty" required >
         </div>
         <div>
-          Costs: <input type="number" ng-model="invoice.cost" required >
+          Costs: <input type="number" min="0" ng-model="invoice.cost" required >
           <select ng-model="invoice.inCurr">
             <option ng-repeat="c in invoice.currencies">{{c}}</option>
           </select>
@@ -356,10 +356,10 @@ The following example shows how this is done with Angular:
       <div ng-app="invoice3" ng-controller="InvoiceController as invoice">
         <b>Invoice:</b>
         <div>
-          Quantity: <input type="number" ng-model="invoice.qty" required >
+          Quantity: <input type="number" min="0" ng-model="invoice.qty" required >
         </div>
         <div>
-          Costs: <input type="number" ng-model="invoice.cost" required >
+          Costs: <input type="number" min="0" ng-model="invoice.cost" required >
           <select ng-model="invoice.inCurr">
             <option ng-repeat="c in invoice.currencies">{{c}}</option>
           </select>
