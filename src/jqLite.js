@@ -101,17 +101,17 @@ JQLite.expando = 'ng339';
 
 var jqCache = JQLite.cache = {},
     jqId = 1,
-    addEventListenerFn = (window.document.addEventListener
-      ? function(element, type, fn) {element.addEventListener(type, fn, false);}
-      : function(element, type, fn) {element.attachEvent('on' + type, fn);}),
-    removeEventListenerFn = (window.document.removeEventListener
-      ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
-      : function(element, type, fn) {element.detachEvent('on' + type, fn); });
+    addEventListenerFn = function(element, type, fn) {
+      element.addEventListener(type, fn, false)
+    },
+    removeEventListenerFn = function(element, type, fn) {
+      element.removeEventListener(type, fn, false);
+    };
 
 /*
  * !!! This is an undocumented "private" function !!!
  */
-var jqData = JQLite._data = function(node) {
+JQLite._data = function(node) {
   //jQuery always returns an object on cache miss
   return this.cache[node[this.expando]] || {};
 };
@@ -168,7 +168,7 @@ function jqLiteAcceptsData(node) {
 }
 
 function jqLiteBuildFragment(html, context) {
-  var elem, tmp, tag, wrap,
+  var tmp, tag, wrap,
       fragment = context.createDocumentFragment(),
       nodes = [], i;
 
@@ -318,7 +318,7 @@ function jqLiteExpandoStore(element, key, value) {
     }
     expandoStore[key] = value;
   } else {
-    return expandoStore && expandoStore[key];
+    return key ? expandoStore && expandoStore[key] : expandoStore;
   }
 }
 
@@ -449,23 +449,11 @@ function jqLiteEmpty(element) {
 //////////////////////////////////////////
 var JQLitePrototype = JQLite.prototype = {
   ready: function(fn) {
-    var fired = false;
-
-    function trigger() {
-      if (fired) return;
-      fired = true;
-      fn();
-    }
-
     // check if document already is loaded
     if (document.readyState === 'complete'){
-      setTimeout(trigger);
+      setTimeout(fn);
     } else {
-      this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
-      // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-      // jshint -W064
-      JQLite(window).on('load', trigger); // fallback to window.onload for others
-      // jshint +W064
+      this.on('DOMContentLoaded', fn);
     }
   },
   toString: function() {
@@ -555,22 +543,7 @@ forEach({
     if (isDefined(value)) {
       element.style[name] = value;
     } else {
-      var val;
-
-      if (msie <= 8) {
-        // this is some IE specific weirdness that jQuery 1.6.4 does not sure why
-        val = element.currentStyle && element.currentStyle[name];
-        if (val === '') val = 'auto';
-      }
-
-      val = val || element.style[name];
-
-      if (msie <= 8) {
-        // jquery weirdness :-/
-        val = (val === '') ? undefined : val;
-      }
-
-      return  val;
+      return element.style[name];
     }
   },
 
@@ -701,54 +674,11 @@ forEach({
 
 function createEventHandler(element, events) {
   var eventHandler = function (event, type) {
-    if (!event.preventDefault) {
-      event.preventDefault = function() {
-        event.returnValue = false; //ie
-      };
-    }
-
-    if (!event.stopPropagation) {
-      event.stopPropagation = function() {
-        event.cancelBubble = true; //ie
-      };
-    }
-
-    if (!event.target) {
-      event.target = event.srcElement || document;
-    }
-
-    if (isUndefined(event.defaultPrevented)) {
-      var prevent = event.preventDefault;
-      event.preventDefault = function() {
-        event.defaultPrevented = true;
-        prevent.call(event);
-      };
-      event.defaultPrevented = false;
-    }
-
-    event.isDefaultPrevented = function() {
-      return event.defaultPrevented || event.returnValue === false;
-    };
-
     // Copy event handlers in case event handlers array is modified during execution.
     var eventHandlersCopy = shallowCopy(events[type || event.type] || []);
 
     for (var i = 0, ii = eventHandlersCopy.length; i < ii; i++) {
       eventHandlersCopy[i].call(element, event);
-    }
-
-    // Remove monkey-patched methods (IE),
-    // as they would cause memory leaks in IE8.
-    if (msie <= 8) {
-      // IE7/8 does not allow to delete property on native object
-      event.preventDefault = null;
-      event.stopPropagation = null;
-      event.isDefaultPrevented = null;
-    } else {
-      // It shouldn't affect normal browsers (native methods are defined on prototype).
-      delete event.preventDefault;
-      delete event.stopPropagation;
-      delete event.isDefaultPrevented;
     }
   };
   eventHandler.elem = element;
@@ -771,8 +701,9 @@ forEach({
       return;
     }
 
-    var events = jqLiteExpandoStore(element, 'events'),
-        handle = jqLiteExpandoStore(element, 'handle');
+    var expandoStore = jqLiteExpandoStore(element);
+    var events = expandoStore && expandoStore.events;
+    var handle = expandoStore && expandoStore.handle;
 
     if (!events) jqLiteExpandoStore(element, 'events', events = {});
     if (!handle) jqLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
@@ -912,16 +843,7 @@ forEach({
   },
 
   next: function(element) {
-    if (element.nextElementSibling) {
-      return element.nextElementSibling;
-    }
-
-    // IE8 doesn't have nextElementSibling
-    var elm = element.nextSibling;
-    while (elm != null && elm.nodeType !== 1) {
-      elm = elm.nextSibling;
-    }
-    return elm;
+    return element.nextElementSibling;
   },
 
   find: function(element, selector) {
