@@ -706,6 +706,11 @@ describe('ngMock', function() {
 
 
   describe('angular.mock.clearDataCache', function() {
+    if (window.jQuery) {
+      // jQuery 2.x doesn't expose the cache storage.
+      return;
+    }
+
     function keys(obj) {
       var keysArr = [];
       for(var key in obj) {
@@ -806,6 +811,23 @@ describe('ngMock', function() {
             expect(service).toEqual(mock);
             expect($resource).toBeDefined();
             expect(example).toEqual('win');
+          });
+        });
+
+        describe('module cleanup', function() {
+          function testFn() {
+
+          }
+
+          it('should add hashKey to module function', function() {
+            module(testFn);
+            inject(function () {
+              expect(testFn.$$hashKey).toBeDefined();
+            });
+          });
+
+          it('should cleanup hashKey after previous test', function() {
+            expect(testFn.$$hashKey).toBeUndefined();
           });
         });
       });
@@ -1132,6 +1154,44 @@ describe('ngMock', function() {
         expect(callback.callCount).toBe(2);
         expect(callback.argsForCall[0]).toEqual([200, 'first', '', '']);
         expect(callback.argsForCall[1]).toEqual([200, 'second', '', '']);
+      });
+
+      it('should be able to override response of expect definition', function() {
+        var definition = hb.expect('GET', '/url1');
+        definition.respond('first');
+        definition.respond('second');
+
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+      });
+
+      it('should be able to override response of when definition', function() {
+        var definition = hb.when('GET', '/url1');
+        definition.respond('first');
+        definition.respond('second');
+
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+      });
+
+      it('should be able to override response of expect definition with chaining', function() {
+        var definition = hb.expect('GET', '/url1').respond('first');
+        definition.respond('second');
+
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+      });
+
+      it('should be able to override response of when definition with chaining', function() {
+        var definition = hb.when('GET', '/url1').respond('first');
+        definition.respond('second');
+
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
       });
     });
 
@@ -1535,6 +1595,25 @@ describe('ngMockE2E', function() {
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
             'GET', '/passThrough/23', null, callback, {}, null, true);
       });
+
+      it('should be able to override a respond definition with passThrough', function() {
+        var definition = hb.when('GET', /\/passThrough\/.*/).respond('override me');
+        definition.passThrough();
+        hb('GET', '/passThrough/23', null, callback, {}, null, true);
+
+        expect(realHttpBackend).toHaveBeenCalledOnceWith(
+            'GET', '/passThrough/23', null, callback, {}, null, true);
+      });
+
+      it('should be able to override a respond definition with passThrough', inject(function($browser) {
+        var definition = hb.when('GET', /\/passThrough\/.*/).passThrough();
+        definition.respond('passThrough override');
+        hb('GET', '/passThrough/23', null, callback, {}, null, true);
+        $browser.defer.flush();
+
+        expect(realHttpBackend).not.toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledOnceWith(200, 'passThrough override', '', '');
+      }));
     });
 
 

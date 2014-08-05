@@ -1,22 +1,6 @@
 {
-  "bitwise": true,
-  "immed": true,
-  "newcap": true,
-  "noarg": true,
-  "noempty": true,
-  "nonew": true,
-  "trailing": true,
-  "maxlen": 200,
-  "boss": true,
-  "eqnull": true,
-  "expr": true,
-  "globalstrict": true,
-  "laxbreak": true,
-  "loopfunc": true,
-  "sub": true,
-  "undef": true,
+  "extends": "../.jshintrc-base",
   "browser": true,
-  "indent": 2,
   "globals": {
     /* auto/injector.js */
     "createInjector": false,
@@ -39,7 +23,6 @@
     "uppercase": false,
     "manualLowercase": false,
     "manualUppercase": false,
-    "nodeName_": false,
     "isArrayLike": false,
     "forEach": false,
     "sortedKeys": false,
@@ -85,7 +68,6 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
-    "toBoolean": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
@@ -101,6 +83,7 @@
     "assertNotHasOwnProperty": false,
     "getter": false,
     "getBlockElements": false,
+    "VALIDITY_STATE_PROPERTY": true,
 
     /* AngularPublic.js */
     "version": false,

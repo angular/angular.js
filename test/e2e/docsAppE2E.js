@@ -6,7 +6,7 @@ describe('docs.angularjs.org', function () {
     //   browser.get();
     //   browser.waitForAngular();
 
-    //   var search = element(by.input('q'));
+    //   var search = element(by.model('q'));
     //   search.clear();
     //   search.sendKeys('ngBind');
 
@@ -34,7 +34,7 @@ describe('docs.angularjs.org', function () {
 
       browser.switchTo().frame('example-input-directive');
 
-      var nameInput = element(by.input('user.name'));
+      var nameInput = element(by.model('user.name'));
       nameInput.sendKeys('!!!');
 
       var code = element(by.css('tt'));

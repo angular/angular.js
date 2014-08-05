@@ -1,3 +1,5 @@
+'use strict';
+
 var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
@@ -107,6 +109,9 @@ module.exports = function(grunt) {
       options: {
         jshintrc: true,
       },
+      node: {
+        files: { src: ['*.js', 'lib/**/*.js'] },
+      },
       tests: {
         files: { src: 'test/**/*.js' },
       },
@@ -156,7 +161,7 @@ module.exports = function(grunt) {
       scenario: {
         dest: 'build/angular-scenario.js',
         src: [
-          'bower_components/jquery/jquery.js',
+          'bower_components/jquery/dist/jquery.js',
           util.wrap([files['angularSrc'], files['angularScenario']], 'ngScenario/angular')
         ],
         styles: {
@@ -260,7 +265,11 @@ module.exports = function(grunt) {
     compress: {
       build: {
         options: {archive: 'build/' + dist +'.zip', mode: 'zip'},
-        src: ['**'], cwd: 'build', expand: true, dot: true, dest: dist + '/'
+        src: ['**'],
+        cwd: 'build',
+        expand: true,
+        dot: true,
+        dest: dist + '/'
       }
     },
 

@@ -59,11 +59,16 @@ tag as the template.
 by the value of the expressions.
 
 We have added a new directive, called `ng-controller`, which attaches a `PhoneListCtrl`
-__controller__ to the DOM at this point:
+__controller__ to the &lt;body&gt; tag.  At this point:
 
 * The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}` denote
 bindings, which are referring to our application model, which is set up in our `PhoneListCtrl`
 controller.
+
+<div class="alert alert-info">
+Note: We have specified an {@link angular.Module Angular Module} to load using `ng-app="phonecatApp"`,
+where `phonecatApp` is the name of our module.  This module will contain the `PhoneListCtrl`.
+</div>
 
 <img class="diagram" src="img/tutorial/tutorial_02.png">
 
@@ -204,6 +209,11 @@ To run the tests, and then watch the files for changes: `npm test`.
   Yay! The test passed! Or not...
 * To rerun the tests, just change any of the source or test .js files. Karma will notice the change
   and will rerun the tests for you. Now isn't that sweet?
+
+<div class="alert alert-info">
+Make sure you don't minimize the browser that Karma opened. On some OS, memory assigned to a minimized
+browser is limited, which results in your karma tests running extremely slow.
+</div>
 
 # Experiments
 

@@ -130,14 +130,6 @@ describe('jqLite', function() {
   });
 
   describe('_data', function() {
-    it('should provide access to the data present on the element', function() {
-      var element = jqLite('<i>foo</i>');
-      var data = ['value'];
-      element.data('val', data);
-      expect(angular.element._data(element[0]).data.val).toBe(data);
-      dealoc(element);
-    });
-
     it('should provide access to the events present on the element', function() {
       var element = jqLite('<i>foo</i>');
       expect(angular.element._data(element[0]).events).toBeUndefined();
@@ -386,6 +378,57 @@ describe('jqLite', function() {
       selected.removeData('prop2');
     });
 
+
+    it('should add and remove data on SVGs', function() {
+      var svg = jqLite('<svg><rect></rect></svg>');
+
+      svg.data('svg-level', 1);
+      expect(svg.data('svg-level')).toBe(1);
+
+      svg.children().data('rect-level', 2);
+      expect(svg.children().data('rect-level')).toBe(2);
+
+      svg.remove();
+    });
+
+
+    it('should not add to the cache if the node is a comment or text node', function() {
+      var calcCacheSize = function() {
+        var count = 0;
+        for (var k in jqLite.cache) { ++count; }
+        return count;
+      };
+
+      var nodes = jqLite('<!-- some comment --> and some text');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey');
+      expect(calcCacheSize()).toEqual(0);
+      nodes.data('someKey', 'someValue');
+      expect(calcCacheSize()).toEqual(0);
+    });
+
+
+    it('should provide the non-wrapped data calls', function() {
+      var node = document.createElement('div');
+
+      expect(jqLite.data(node, "foo")).toBeUndefined();
+
+      jqLite.data(node, "foo", "bar");
+
+      expect(jqLite.data(node, "foo")).toBe("bar");
+      expect(jqLite(node).data("foo")).toBe("bar");
+
+      expect(jqLite.data(node)).toBe(jqLite(node).data());
+
+      jqLite.removeData(node, "foo");
+      expect(jqLite.data(node, "foo")).toBeUndefined();
+
+      jqLite.data(node, "bar", "baz");
+      jqLite.removeData(node);
+      jqLite.removeData(node);
+      expect(jqLite.data(node, "bar")).toBeUndefined();
+    });
+
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);
@@ -483,6 +526,16 @@ describe('jqLite', function() {
 
         browserTrigger(span);
         expect(log).toEqual('click;');
+      });
+
+      it('should work if the descendants of the element change while it\'s being removed', function() {
+        var div = jqLite('<div><p><span>text</span></p></div>');
+        div.find('p').on('$destroy', function() {
+          div.find('span').remove();
+        });
+        expect(function() {
+          div.remove();
+        }).not.toThrow();
       });
     });
   });
@@ -993,6 +1046,16 @@ describe('jqLite', function() {
       expect(log).toEqual('click on: A;click on: B;');
     });
 
+    it('should not bind to comment or text nodes', function() {
+      var nodes = jqLite('<!-- some comment -->Some text');
+      var someEventHandler = jasmine.createSpy('someEventHandler');
+
+      nodes.on('someEvent', someEventHandler);
+      nodes.triggerHandler('someEvent');
+
+      expect(someEventHandler).not.toHaveBeenCalled();
+    });
+
     it('should bind to all events separated by space', function() {
       var elm = jqLite(a),
           callback = jasmine.createSpy('callback');
@@ -1405,32 +1468,37 @@ describe('jqLite', function() {
       expect(contents[1].data).toEqual('before-');
     });
 
-    // IE8 does not like this test, although the functionality may still work there.
-    if (!msie || msie > 8) {
-      it('should select all types iframe contents', function() {
-        var iframe_ = document.createElement('iframe'), tested,
-            iframe = jqLite(iframe_);
-        function test() {
-          var contents = iframe.contents();
-          expect(contents[0]).toBeTruthy();
-          expect(contents.length).toBe(1);
-          expect(contents.prop('nodeType')).toBe(9);
-          expect(contents[0].body).toBeTruthy();
-          expect(jqLite(contents[0].body).contents().length).toBe(3);
-          iframe.remove();
-          tested = true;
-        }
-        iframe_.onload = iframe_.onreadystatechange = function() {
-          if (iframe_.contentDocument) test();
-        };
-        iframe_.src = "/base/test/fixtures/iframe.html";
-        jqLite(document).find('body').append(iframe);
+    it('should select all types iframe contents', function() {
+      // IE8 does not like this test, although the functionality may still work there.
+      if (msie < 9) return;
+      var iframe_ = document.createElement('iframe');
+      var tested = false;
+      var iframe = jqLite(iframe_);
+      function test() {
+        var doc = iframe_.contentDocument || iframe_.contentWindow.document;
+        doc.body.innerHTML = '\n<span>Text</span>\n';
 
-        // This test is potentially flaky on CI cloud instances, so there is a generous
-        // wait period...
-        waitsFor(function() { return tested; }, 2000);
-      });
-    }
+        var contents = iframe.contents();
+        expect(contents[0]).toBeTruthy();
+        expect(contents.length).toBe(1);
+        expect(contents.prop('nodeType')).toBe(9);
+        expect(contents[0].body).toBeTruthy();
+        expect(jqLite(contents[0].body).contents().length).toBe(3);
+        iframe.remove();
+        doc = null;
+        tested = true;
+      }
+      iframe_.onload = iframe_.onreadystatechange = function() {
+        if (iframe_.contentDocument) test();
+      };
+      /* jshint scripturl:true */
+      iframe_.src = 'javascript:false';
+      jqLite(document).find('body').append(iframe);
+
+      // This test is potentially flaky on CI cloud instances, so there is a generous
+      // wait period...
+      waitsFor(function() { return tested; }, 'iframe to load', 5000);
+    });
   });
 
 
@@ -1662,6 +1730,40 @@ describe('jqLite', function() {
       element.triggerHandler('click', [{hello: "world"}]);
       data = pokeSpy.mostRecentCall.args[1];
       expect(data.hello).toBe("world");
+    });
+
+    it('should mark event as prevented if preventDefault is called', function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          event;
+
+      element.on('click', pokeSpy);
+      element.triggerHandler('click');
+      event = pokeSpy.mostRecentCall.args[0];
+
+      expect(event.isDefaultPrevented()).toBe(false);
+      event.preventDefault();
+      expect(event.isDefaultPrevented()).toBe(true);
+    });
+
+
+    it('should support handlers that deregister themselves', function() {
+      var element = jqLite('<a>poke</a>'),
+          clickSpy = jasmine.createSpy('click'),
+          clickOnceSpy = jasmine.createSpy('clickOnce').andCallFake(function() {
+            element.off('click', clickOnceSpy);
+          });
+
+      element.on('click', clickOnceSpy);
+      element.on('click', clickSpy);
+
+      element.triggerHandler('click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy).toHaveBeenCalledOnce();
+
+      element.triggerHandler('click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy.callCount).toBe(2);
     });
   });
 

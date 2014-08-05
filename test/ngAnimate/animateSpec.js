@@ -590,6 +590,99 @@ describe("ngAnimate", function() {
         }));
 
 
+        it("should trigger a cancellation when the return function is called upon any animation", function() {
+          var captures = {};
+
+          module(function($animateProvider) {
+            $animateProvider.register('.track-me', function() {
+              return {
+                enter       : track('enter'),
+                leave       : track('leave'),
+                move        : track('move'),
+                addClass    : track('addClass'),
+                removeClass : track('removeClass'),
+                setClass    : track('setClass')
+              };
+
+              function track(type) {
+                return function(element, add, remove, done) {
+                  done = done || remove || add;
+                  return function(cancelled) {
+                    captures[type]=cancelled;
+                  };
+                };
+              }
+            });
+          });
+          inject(function($animate, $sniffer, $rootScope, $timeout) {
+
+            var fn;
+            $animate.enabled(true);
+            $rootScope.$digest();
+            element[0].removeChild(child[0]);
+            child.addClass('track-me');
+
+            //enter
+            fn = $animate.enter(child, element);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+
+            expect(captures.enter).toBeUndefined();
+            fn();
+            expect(captures.enter).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //move
+            element.append(after);
+            fn = $animate.move(child, element, after);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+
+            expect(captures.move).toBeUndefined();
+            fn();
+            expect(captures.move).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //addClass
+            fn = $animate.addClass(child, 'ng-hide');
+            $animate.triggerReflow();
+
+            expect(captures.addClass).toBeUndefined();
+            fn();
+            expect(captures.addClass).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //removeClass
+            fn = $animate.removeClass(child, 'ng-hide');
+            $animate.triggerReflow();
+
+            expect(captures.removeClass).toBeUndefined();
+            fn();
+            expect(captures.removeClass).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //setClass
+            child.addClass('red');
+            fn = $animate.setClass(child, 'blue', 'red');
+            $animate.triggerReflow();
+
+            expect(captures.setClass).toBeUndefined();
+            fn();
+            expect(captures.setClass).toBeTruthy();
+            $animate.triggerCallbacks();
+
+            //leave
+            fn = $animate.leave(child);
+            $rootScope.$digest();
+
+            expect(captures.leave).toBeUndefined();
+            fn();
+            expect(captures.leave).toBeTruthy();
+            $animate.triggerCallbacks();
+          });
+        });
+
+
         it("should not run if animations are disabled",
           inject(function($animate, $rootScope, $timeout, $sniffer) {
 
@@ -690,6 +783,46 @@ describe("ngAnimate", function() {
           expect(child.hasClass('animation-cancelled')).toBe(true);
         }));
 
+        it("should remove the .ng-animate class after the next animation is run which interrupted the last animation", function() {
+          var addClassDone, removeClassDone,
+              addClassDoneSpy = jasmine.createSpy(),
+              removeClassDoneSpy = jasmine.createSpy();
+
+          module(function($animateProvider) {
+            $animateProvider.register('.hide', function() {
+              return {
+                addClass : function(element, className, done) {
+                  addClassDone = done;
+                  return addClassDoneSpy;
+                },
+                removeClass : function(element, className, done) {
+                  removeClassDone = done;
+                  return removeClassDoneSpy;
+                }
+              };
+            });
+          });
+
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+            $animate.addClass(element, 'hide');
+
+            expect(element).toHaveClass('ng-animate');
+
+            $animate.triggerReflow();
+
+            $animate.removeClass(element, 'hide');
+            expect(addClassDoneSpy).toHaveBeenCalled();
+
+            $animate.triggerReflow();
+
+            expect(element).toHaveClass('ng-animate');
+
+            removeClassDone();
+            $animate.triggerCallbacks();
+
+            expect(element).not.toHaveClass('ng-animate');
+          });
+        });
 
         it("should skip a class-based animation if the same element already has an ongoing structural animation",
           inject(function($animate, $rootScope, $sniffer, $timeout) {
@@ -1568,6 +1701,32 @@ describe("ngAnimate", function() {
               expect(cancellations).toBe(1);
             });
           });
+
+          it('should apply a closing timeout to close all parallel class-based animations on the same element',
+            inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+            if (!$sniffer.transitions) return;
+
+            ss.addRule('.base-class', '-webkit-transition:2s linear all;' +
+                                              'transition:2s linear all;');
+
+            var element = $compile('<div class="base-class"></div>')($rootScope);
+            $rootElement.append(element);
+            jqLite($document[0].body).append($rootElement);
+
+            $animate.addClass(element, 'one');
+            $animate.addClass(element, 'two');
+
+            $animate.triggerReflow();
+
+            $timeout.flush(3000); //2s * 1.5
+
+            expect(element.hasClass('one-add')).toBeFalsy();
+            expect(element.hasClass('one-add-active')).toBeFalsy();
+            expect(element.hasClass('two-add')).toBeFalsy();
+            expect(element.hasClass('two-add-active')).toBeFalsy();
+            expect(element.hasClass('ng-animate')).toBeFalsy();
+          }));
 
           it("apply a closing timeout with respect to a staggering animation",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
@@ -3985,6 +4144,112 @@ describe("ngAnimate", function() {
 
       expect(element.children().length).toBe(0);
     }));
+
+    describe('ngAnimateChildren', function() {
+      var spy;
+
+      beforeEach(module(function($animateProvider) {
+        spy = jasmine.createSpy();
+        $animateProvider.register('.parent', mockAnimate);
+        $animateProvider.register('.child', mockAnimate);
+        return function($animate) {
+          $animate.enabled(true);
+        };
+
+        function mockAnimate() {
+          return {
+            enter : spy,
+            leave : spy,
+            addClass : spy,
+            removeClass : spy
+          };
+        }
+      }));
+
+      it('should animate based on a boolean flag', inject(function($animate, $sniffer, $rootScope, $compile) {
+        var html = '<section class="parent" ng-if="on1" ng-animate-children="bool">' +
+                   '  <div class="child" ng-if="on2">...</div>' +
+                   '</section>';
+
+        var element = $compile(html)($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        var scope = $rootScope;
+
+        scope.bool = true;
+        scope.$digest();
+
+        scope.on1 = true;
+        scope.on2 = true;
+        scope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.callCount).toBe(2);
+
+        scope.bool = false;
+        scope.$digest();
+
+        scope.on1 = false;
+        scope.$digest();
+
+        scope.on2 = false;
+        scope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy.callCount).toBe(3);
+      }));
+
+      it('should default to true when no expression is provided',
+        inject(function($animate, $sniffer, $rootScope, $compile) {
+
+        var html = '<section class="parent" ng-if="on1" ng-animate-children>' +
+                   '  <div class="child" ng-if="on2">...</div>' +
+                   '</section>';
+
+        var element = $compile(html)($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.on1 = true;
+        $rootScope.$digest();
+
+        $rootScope.on2 = true;
+        $rootScope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.callCount).toBe(2);
+      }));
+
+      it('should not perform inherited animations if any parent restricts it',
+        inject(function($animate, $sniffer, $rootScope, $compile) {
+
+        var html = '<section ng-animate-children="false">' +
+                   '  <aside class="parent" ng-if="on" ng-animate-children="true">' +
+                   '    <div class="child" ng-if="on">...</div>' +
+                   '  </aside>' +
+                   '</section>';
+
+        var element = $compile(html)($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.$digest();
+
+        $rootScope.on = true;
+        $rootScope.$digest();
+
+        $animate.triggerReflow();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.callCount).toBe(1);
+      }));
+    });
 
     describe('SVG', function() {
       it('should properly apply transitions on an SVG element',

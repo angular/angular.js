@@ -31,7 +31,7 @@ npm install
 
 To see the app running in a browser, open a *separate* terminal/command line tab or window, then
 run `npm start` to start the web server. Now, open a browser window for the app and navigate to
-<a href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a>
+<a href="http://localhost:8000/app/" target="_blank">`http://localhost:8000/app/`</a>
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
@@ -88,8 +88,10 @@ being the element on which the `ngApp` directive was defined.
 
           Nothing here {{'yet' + '!'}}
 
-  This line demonstrates the core feature of Angular's templating capabilities – a binding, denoted
-  by double-curlies `{{ }}` as well as a simple expression `'yet' + '!'` used in this binding.
+  This line demonstrates two core features of Angular's templating capabilities:
+
+    * a binding, denoted by double-curlies `{{ }}`
+    * a simple expression `'yet' + '!'` used in this binding.
 
   The binding tells Angular that it should evaluate an expression and insert the result into the
   DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a

@@ -1,18 +1,27 @@
 @ngdoc error
 @name $parse:isecfld
-@fullName Referencing 'constructor' Field in Expression
+@fullName Referencing Disallowed Field in Expression
 @description
 
-Occurs when an expression attempts to access an objects constructor field.
+Occurs when an expression attempts to access one of the following fields:
 
-AngularJS bans constructor access from within expressions since constructor
-access is a known way to execute arbitrary Javascript code.
+* __proto__
+* __defineGetter__
+* __defineSetter__
+* __lookupGetter__
+* __lookupSetter__
 
-To resolve this error, avoid constructor access.  As a last resort, alias
-the constructor and access it through the alias instead.
+AngularJS bans access to these fields from within expressions since
+access is a known way to mess with native objects or
+to execute arbitrary Javascript code.
 
-Example expression that would result in this error:
+To resolve this error, avoid using these fields in expressions. As a last resort,
+alias their value and access them through the alias instead.
+
+Example expressions that would result in this error:
 
 ```
-<div>{{user.constructor.name}}</div>
+<div>{{user.__proto__.hasOwnProperty = $emit}}</div>
+
+<div>{{user.__defineGetter__('name', noop)}}</div>
 ```

@@ -99,7 +99,7 @@ describe('ngBind*', function() {
     it('should one-time bind the expressions that start with ::', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-template="{{::hello}} {{::name}}!"></div>')($rootScope);
       $rootScope.name = 'Misko';
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect($rootScope.$$watchers.length).toEqual(2);
       $rootScope.$digest();
       expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual(' Misko!');
@@ -121,6 +121,14 @@ describe('ngBind*', function() {
 
 
   describe('ngBindHtml', function() {
+
+    it('should add ng-binding class to the element in compile phase', inject(function($compile) {
+      var element = jqLite('<div ng-bind-html="myHtml"></div>');
+      $compile(element);
+      expect(element.hasClass('ng-binding')).toBe(true);
+    }));
+
+
     describe('SCE disabled', function() {
       beforeEach(function() {
         module(function($sceProvider) { $sceProvider.enabled(false); });

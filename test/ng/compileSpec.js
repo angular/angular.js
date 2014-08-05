@@ -1,5 +1,13 @@
 'use strict';
 
+
+function calcCacheSize() {
+  var size = 0;
+  for(var key in jqLite.cache) { size++; }
+  return size;
+}
+
+
 describe('$compile', function() {
   var element, directive, $compile, $rootScope;
 
@@ -158,12 +166,6 @@ describe('$compile', function() {
     });
 
     it('should not leak memory when there are top level empty text nodes', function() {
-      var calcCacheSize = function() {
-        var size = 0;
-        forEach(jqLite.cache, function(item, key) { size++; });
-        return size;
-      };
-
       // We compile the contents of element (i.e. not element itself)
       // Then delete these contents and check the cache has been reset to zero
 
@@ -251,14 +253,6 @@ describe('$compile', function() {
         $rootScope.$digest();
         expect(element.text()).toEqual('1');
       }));
-
-
-      it('should allow directives in comments', inject(
-        function($compile, $rootScope, log) {
-          element = $compile('<div>0<!-- directive: log angular -->1</div>')($rootScope);
-          expect(log).toEqual('angular');
-        }
-      ));
 
 
       it('should receive scope, element, and attributes', function() {
@@ -435,20 +429,21 @@ describe('$compile', function() {
 
       describe('restrict', function() {
 
-        it('should allow restriction of attributes', function() {
-          module(function() {
-            forEach({div:'E', attr:'A', clazz:'C', all:'EAC'}, function(restrict, name) {
-              directive(name, function(log) {
+        it('should allow restriction of availability', function () {
+          module(function () {
+            forEach({div: 'E', attr: 'A', clazz: 'C', comment: 'M', all: 'EACM'},
+                function (restrict, name) {
+              directive(name, function (log) {
                 return {
                   restrict: restrict,
-                  compile: valueFn(function(scope, element, attr) {
+                  compile: valueFn(function (scope, element, attr) {
                     log(name);
                   })
                 };
               });
             });
           });
-          inject(function($rootScope, $compile, log) {
+          inject(function ($rootScope, $compile, log) {
             dealoc($compile('<span div class="div"></span>')($rootScope));
             expect(log).toEqual('');
             log.reset();
@@ -457,7 +452,7 @@ describe('$compile', function() {
             expect(log).toEqual('div');
             log.reset();
 
-            dealoc($compile('<attr class=""attr"></attr>')($rootScope));
+            dealoc($compile('<attr class="attr"></attr>')($rootScope));
             expect(log).toEqual('');
             log.reset();
 
@@ -473,8 +468,38 @@ describe('$compile', function() {
             expect(log).toEqual('clazz');
             log.reset();
 
-            dealoc($compile('<all class="all" all></all>')($rootScope));
-            expect(log).toEqual('all; all; all');
+            dealoc($compile('<!-- directive: comment -->')($rootScope));
+            expect(log).toEqual('comment');
+            log.reset();
+
+            dealoc($compile('<all class="all" all><!-- directive: all --></all>')($rootScope));
+            expect(log).toEqual('all; all; all; all');
+          });
+        });
+
+
+        it('should use EA rule as the default', function () {
+          module(function () {
+            directive('defaultDir', function (log) {
+              return {
+                compile: function () {
+                  log('defaultDir');
+                }
+              };
+            });
+          });
+          inject(function ($rootScope, $compile, log) {
+            dealoc($compile('<span default-dir ></span>')($rootScope));
+            expect(log).toEqual('defaultDir');
+            log.reset();
+
+            dealoc($compile('<default-dir></default-dir>')($rootScope));
+            expect(log).toEqual('defaultDir');
+            log.reset();
+
+            dealoc($compile('<span class="default-dir"></span>')($rootScope));
+            expect(log).toEqual('');
+            log.reset();
           });
         });
       });
@@ -2216,20 +2241,20 @@ describe('$compile', function() {
     );
 
     it('should one-time bind if the expression starts with a space and two colons', inject(
-            function($rootScope, $compile) {
-              $rootScope.name = 'angular';
-              element = $compile('<div name="attr: {{::name}}">text: {{ ::name }}</div>')($rootScope);
-              expect($rootScope.$$watchers.length).toBe(2);
-              $rootScope.$digest();
-              expect(element.text()).toEqual('text: angular');
-              expect(element.attr('name')).toEqual('attr: angular');
-              expect($rootScope.$$watchers.length).toBe(0);
-              $rootScope.name = 'not-angular';
-              $rootScope.$digest();
-              expect(element.text()).toEqual('text: angular');
-              expect(element.attr('name')).toEqual('attr: angular');
-            })
-        );
+        function($rootScope, $compile) {
+          $rootScope.name = 'angular';
+          element = $compile('<div name="attr: {{::name}}">text: {{ ::name }}</div>')($rootScope);
+          expect($rootScope.$$watchers.length).toBe(2);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('text: angular');
+          expect(element.attr('name')).toEqual('attr: angular');
+          expect($rootScope.$$watchers.length).toBe(0);
+          $rootScope.name = 'not-angular';
+          $rootScope.$digest();
+          expect(element.text()).toEqual('text: angular');
+          expect(element.attr('name')).toEqual('attr: angular');
+        })
+    );
 
 
     it('should process attribute interpolation in pre-linking phase at priority 100', function() {
@@ -2844,15 +2869,7 @@ describe('$compile', function() {
     });
 
 
-    it('should be possible to one-time bind a parameter on a component with a template', function() {
-      module(function() {
-        directive('otherTplDir', function() {
-          return {
-            scope: {param: '@', anotherParam: '=' },
-            template: 'value: {{param}}, another value {{anotherParam}}'
-          };
-        });
-      });
+    describe('bind-once', function () {
 
       function countWatches(scope) {
         var result = 0;
@@ -2864,60 +2881,142 @@ describe('$compile', function() {
         return result;
       }
 
-      inject(function($rootScope) {
-        compile('<div other-tpl-dir param="{{::foo}}" another-param="::bar"></div>');
-        expect(countWatches($rootScope)).toEqual(3);
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: , another value ');
-        expect(countWatches($rootScope)).toEqual(3);
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '=', param2: '='},
+              template: '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}'
+            };
+          });
+        });
 
-        $rootScope.foo = 'from-parent';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value ');
-        expect(countWatches($rootScope)).toEqual(2);
+        inject(function($rootScope) {
+          compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
+          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> '='
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(6);
 
-        $rootScope.foo = 'not-from-parent';
-        $rootScope.bar = 'some value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
-        expect(countWatches($rootScope)).toEqual(1);
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:foo;4:');
+          expect(countWatches($rootScope)).toEqual(4);
 
-        $rootScope.bar = 'some new value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
-      });
-    });
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
+          expect(countWatches($rootScope)).toEqual(3);
 
-
-    it('should be possible to one-time bind a parameter on a component with a templateUrl', function() {
-      module(function() {
-        directive('otherTplDir', function() {
-          return {
-            scope: {param: '@', anotherParam: '=' },
-            templateUrl: 'other.html'
-          };
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:foo;4:bar');
         });
       });
 
-      inject(function($rootScope, $templateCache) {
-        $templateCache.put('other.html', 'value: {{param}}, another value {{anotherParam}}');
-        compile('<div other-tpl-dir param="{{::foo}}" another-param="::bar"></div>');
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: , another value ');
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '@', param2: '@'},
+              template: '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}'
+            };
+          });
+        });
 
-        $rootScope.foo = 'from-parent';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value ');
+        inject(function($rootScope) {
+          compile('<div other-tpl-dir param1="{{::foo}}" param2="{{bar}}"></div>');
+          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> {{ }}
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(4); // (- 2) -> bind-once in template
 
-        $rootScope.foo = 'not-from-parent';
-        $rootScope.bar = 'some value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(3);
 
-        $rootScope.bar = 'some new value';
-        $rootScope.$digest();
-        expect(element.html()).toBe('value: from-parent, another value some value');
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:;4:');
+          expect(countWatches($rootScope)).toEqual(3);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:;4:');
+        });
       });
+
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '=', param2: '='},
+              templateUrl: 'other.html'
+            };
+          });
+        });
+
+        inject(function($rootScope, $templateCache) {
+          $templateCache.put('other.html', '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}');
+          compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> '='
+
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:foo;4:');
+          expect(countWatches($rootScope)).toEqual(4);
+
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
+          expect(countWatches($rootScope)).toEqual(3);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:foo;4:bar');
+        });
+      });
+
+      it('should be possible to one-time bind a parameter on a component with a template', function() {
+        module(function() {
+          directive('otherTplDir', function() {
+            return {
+              scope: {param1: '@', param2: '@'},
+              templateUrl: 'other.html'
+            };
+          });
+        });
+
+        inject(function($rootScope, $templateCache) {
+          $templateCache.put('other.html', '1:{{param1}};2:{{param2}};3:{{::param1}};4:{{::param2}}');
+          compile('<div other-tpl-dir param1="{{::foo}}" param2="{{bar}}"></div>');
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(4); // (4 - 2) -> template watch group, 2 -> {{ }}
+
+          $rootScope.foo = 'foo';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:;3:;4:');
+          expect(countWatches($rootScope)).toEqual(3);
+
+          $rootScope.foo = 'baz';
+          $rootScope.bar = 'bar';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:bar;3:;4:');
+          expect(countWatches($rootScope)).toEqual(3);
+
+          $rootScope.bar = 'baz';
+          $rootScope.$digest();
+          expect(element.html()).toBe('1:foo;2:baz;3:;4:');
+        });
+      });
+
     });
 
 
@@ -3928,6 +4027,98 @@ describe('$compile', function() {
       });
 
 
+
+      it('should not leak if two "element" transclusions are on the same element', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
+        var calcCacheSize = function() {
+          var size = 0;
+          forEach(jqLite.cache, function(item, key) { size++; });
+          return size;
+        };
+
+        inject(function($compile, $rootScope) {
+          expect(calcCacheSize()).toEqual(0);
+
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
+          expect(calcCacheSize()).toEqual(1);
+
+          $rootScope.$apply('xs = [0,1]');
+          expect(calcCacheSize()).toEqual(2);
+
+          $rootScope.$apply('xs = [0]');
+          expect(calcCacheSize()).toEqual(1);
+
+          $rootScope.$apply('xs = []');
+          expect(calcCacheSize()).toEqual(1);
+
+          element.remove();
+          expect(calcCacheSize()).toEqual(0);
+        });
+      });
+
+
+      it('should not leak if two "element" transclusions are on the same element', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+        var calcCacheSize = function() {
+          var size = 0;
+          forEach(jqLite.cache, function(item, key) { size++; });
+          return size;
+        };
+        inject(function($compile, $rootScope) {
+          expect(calcCacheSize()).toEqual(0);
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="val">{{x}}</div></div>')($rootScope);
+
+          $rootScope.$apply('xs = [0,1]');
+          // At this point we have a bunch of comment placeholders but no real transcluded elements
+          // So the cache only contains the root element's data
+          expect(calcCacheSize()).toEqual(1);
+
+          $rootScope.$apply('val = true');
+          // Now we have two concrete transcluded elements plus some comments so two more cache items
+          expect(calcCacheSize()).toEqual(3);
+
+          $rootScope.$apply('val = false');
+          // Once again we only have comments so no transcluded elements and the cache is back to just
+          // the root element
+          expect(calcCacheSize()).toEqual(1);
+
+          element.remove();
+          // Now we've even removed the root element along with its cache
+          expect(calcCacheSize()).toEqual(0);
+        });
+      });
+
+      if (jQuery) {
+        it('should clean up after a replaced element', inject(function ($compile) {
+          var privateData, firstRepeatedElem;
+
+          element = $compile('<div><div ng-repeat="x in xs">{{x}}</div></div>')($rootScope);
+
+          $rootScope.$apply('xs = [0,1]');
+          firstRepeatedElem = element.children('.ng-scope').eq(0);
+
+          expect(firstRepeatedElem.data('$scope')).toBeDefined();
+          privateData = jQuery._data(firstRepeatedElem[0]);
+          expect(privateData.events).toBeDefined();
+          expect(privateData.events.$destroy).toBeDefined();
+          expect(privateData.events.$destroy[0]).toBeDefined();
+
+          $rootScope.$apply('xs = null');
+
+          expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
+          privateData = jQuery._data(firstRepeatedElem[0]);
+          expect(privateData && privateData.events).not.toBeDefined();
+        }));
+      }
+
+
       it('should remove transclusion scope, when the DOM is destroyed', function() {
         module(function() {
           directive('box', valueFn({
@@ -4409,6 +4600,35 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(element.text()).toEqual('transcluded content');
         }));
+
+
+        it('should not leak memory with nested transclusion', function() {
+          var calcCacheSize = function() {
+            var count = 0;
+            for (var k in jqLite.cache) { ++count; }
+            return count;
+          };
+
+          inject(function($compile, $rootScope) {
+            var size;
+
+            expect(calcCacheSize()).toEqual(0);
+
+            element = jqLite('<div><ul><li ng-repeat="n in nums">{{n}} => <i ng-if="0 === n%2">Even</i><i ng-if="1 === n%2">Odd</i></li></ul></div>');
+            $compile(element)($rootScope.$new());
+
+            $rootScope.nums = [0,1,2];
+            $rootScope.$apply();
+            size = calcCacheSize();
+
+            $rootScope.nums = [3,4,5];
+            $rootScope.$apply();
+            expect(calcCacheSize()).toEqual(size);
+
+            element.remove();
+            expect(calcCacheSize()).toEqual(0);
+          });
+        });
       });
 
 
@@ -4625,7 +4845,7 @@ describe('$compile', function() {
         inject(function($compile, $rootScope) {
           var element = jqLite('<div>before<div transclude></div>after</div>').contents();
           expect(element.length).toEqual(3);
-          expect(nodeName_(element[1])).toBe('DIV');
+          expect(nodeName_(element[1])).toBe('div');
           $compile(element)($rootScope);
           expect(nodeName_(element[1])).toBe('#comment');
           expect(nodeName_(comment)).toBe('#comment');
@@ -5187,6 +5407,83 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
+    it('should bind after digest but not before when after overridden attribute', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span test="123" ng-attr-test="{{name}}"></span>')($rootScope);
+      expect(element.attr('test')).toBe('123');
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+    }));
+
+    it('should bind after digest but not before when before overridden attribute', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span ng-attr-test="{{name}}" test="123"></span>')($rootScope);
+      expect(element.attr('test')).toBe('123');
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+    }));
+
+
+    describe('in directive', function() {
+      beforeEach(module(function() {
+        directive('syncTest', function(log) {
+          return {
+            link: {
+              pre: function(s, e, attr) { log(attr.test); },
+              post: function(s, e, attr) { log(attr.test); }
+            }
+          };
+        });
+        directive('asyncTest', function(log) {
+          return {
+            templateUrl: 'async.html',
+            link: {
+              pre: function(s, e, attr) { log(attr.test); },
+              post: function(s, e, attr) { log(attr.test); }
+            }
+          };
+        });
+      }));
+
+      beforeEach(inject(function($templateCache) {
+        $templateCache.put('async.html', '<h1>Test</h1>');
+      }));
+
+      it('should provide post-digest value in synchronous directive link functions when after overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div sync-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+
+      it('should provide post-digest value in synchronous directive link functions when before overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div sync-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+
+
+      it('should provide post-digest value in asynchronous directive link functions when after overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div async-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        $rootScope.$digest();
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+
+      it('should provide post-digest value in asynchronous directive link functions when before overridden attribute',
+          inject(function(log, $rootScope, $compile) {
+        $rootScope.test = "TEST";
+        element = $compile('<div async-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+        expect(element.attr('test')).toBe('123');
+        $rootScope.$digest();
+        expect(log.toArray()).toEqual(['TEST', 'TEST']);
+      }));
+    });
 
     it('should work with different prefixes', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";
@@ -5245,6 +5542,40 @@ describe('$compile', function() {
         expect(element.attr('dash-test4')).toBe('JamieMason');
       }));
 
+      it('should keep attributes ending with -start single-element directives', function() {
+        module(function($compileProvider) {
+          $compileProvider.directive('dashStarter', function(log) {
+            return {
+              link: function(scope, element, attrs) {
+                log(attrs.onDashStart);
+              }
+            };
+          });
+        });
+        inject(function($compile, $rootScope, log) {
+          $compile('<span data-dash-starter data-on-dash-start="starter"></span>')($rootScope);
+          $rootScope.$digest();
+          expect(log).toEqual('starter');
+        });
+      });
+
+
+      it('should keep attributes ending with -end single-element directives', function() {
+        module(function($compileProvider) {
+          $compileProvider.directive('dashEnder', function(log) {
+            return {
+              link: function(scope, element, attrs) {
+                log(attrs.onDashEnd);
+              }
+            };
+          });
+        });
+        inject(function($compile, $rootScope, log) {
+          $compile('<span data-dash-ender data-on-dash-end="ender"></span>')($rootScope);
+          $rootScope.$digest();
+          expect(log).toEqual('ender');
+        });
+      });
     });
 
   });
@@ -5303,22 +5634,32 @@ describe('$compile', function() {
     }));
 
 
+    it('should group on nested groups', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive("ngMultiBind", valueFn({
+          multiElement: true,
+          link: function(scope, element, attr) {
+            element.text(scope.$eval(attr.ngMultiBind));
+          }
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        $rootScope.show = false;
+        element = $compile(
+            '<div></div>' +
+                '<div ng-repeat-start="i in [1,2]">{{i}}A</div>' +
+                '<span ng-multi-bind-start="\'.\'"></span>' +
+                '<span ng-multi-bind-end></span>' +
+                '<div ng-repeat-end>{{i}}B;</div>' +
+            '<div></div>')($rootScope);
+        $rootScope.$digest();
+        element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
+        expect(element.text()).toEqual('1A..1B;2A..2B;');
+      });
+    });
+
+
     it('should group on nested groups of same directive', inject(function($compile, $rootScope) {
-      $rootScope.show = false;
-      element = $compile(
-          '<div></div>' +
-              '<div ng-repeat-start="i in [1,2]">{{i}}A</div>' +
-              '<span ng-bind-start="\'.\'"></span>' +
-              '<span ng-bind-end></span>' +
-              '<div ng-repeat-end>{{i}}B;</div>' +
-          '<div></div>')($rootScope);
-      $rootScope.$digest();
-      element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
-      expect(element.text()).toEqual('1A..1B;2A..2B;');
-    }));
-
-
-    it('should group on nested groups', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
           '<div></div>' +
@@ -5333,10 +5674,181 @@ describe('$compile', function() {
     }));
 
 
+    it('should set up and destroy the transclusion scopes correctly',
+          inject(function($compile, $rootScope) {
+      element = $compile(
+        '<div>' +
+          '<div ng-if-start="val0"><span ng-if="val1"></span></div>' +
+          '<div ng-if-end><span ng-if="val2"></span></div>' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$apply('val0 = true; val1 = true; val2 = true');
+
+      // At this point we should have something like:
+      //
+      // <div class="ng-scope">
+      //
+      //   <!-- ngIf: val0 -->
+      //
+      //   <div ng-if-start="val0" class="ng-scope">
+      //     <!-- ngIf: val1 -->
+      //     <span ng-if="val1" class="ng-scope"></span>
+      //     <!-- end ngIf: val1 -->
+      //   </div>
+      //
+      //   <div ng-if-end="" class="ng-scope">
+      //     <!-- ngIf: val2 -->
+      //     <span ng-if="val2" class="ng-scope"></span>
+      //     <!-- end ngIf: val2 -->
+      //   </div>
+      //
+      //   <!-- end ngIf: val0 -->
+      // </div>
+      var ngIfStartScope = element.find('div').eq(0).scope();
+      var ngIfEndScope = element.find('div').eq(1).scope();
+
+      expect(ngIfStartScope.$id).toEqual(ngIfEndScope.$id);
+
+      var ngIf1Scope = element.find('span').eq(0).scope();
+      var ngIf2Scope = element.find('span').eq(1).scope();
+
+      expect(ngIf1Scope.$id).not.toEqual(ngIf2Scope.$id);
+      expect(ngIf1Scope.$parent.$id).toEqual(ngIf2Scope.$parent.$id);
+
+      $rootScope.$apply('val1 = false');
+
+      // Now we should have something like:
+      //
+      // <div class="ng-scope">
+      //   <!-- ngIf: val0 -->
+      //   <div ng-if-start="val0" class="ng-scope">
+      //     <!-- ngIf: val1 -->
+      //   </div>
+      //   <div ng-if-end="" class="ng-scope">
+      //     <!-- ngIf: val2 -->
+      //     <span ng-if="val2" class="ng-scope"></span>
+      //     <!-- end ngIf: val2 -->
+      //   </div>
+      //   <!-- end ngIf: val0 -->
+      // </div>
+
+      expect(ngIfStartScope.$$destroyed).not.toEqual(true);
+      expect(ngIf1Scope.$$destroyed).toEqual(true);
+      expect(ngIf2Scope.$$destroyed).not.toEqual(true);
+
+      $rootScope.$apply('val0 = false');
+
+      // Now we should have something like:
+      //
+      // <div class="ng-scope">
+      //   <!-- ngIf: val0 -->
+      // </div>
+
+      expect(ngIfStartScope.$$destroyed).toEqual(true);
+      expect(ngIf1Scope.$$destroyed).toEqual(true);
+      expect(ngIf2Scope.$$destroyed).toEqual(true);
+    }));
+
+
+    it('should set up and destroy the transclusion scopes correctly',
+          inject(function($compile, $rootScope) {
+      element = $compile(
+        '<div>' +
+          '<div ng-repeat-start="val in val0" ng-if="val1"></div>' +
+          '<div ng-repeat-end ng-if="val2"></div>' +
+        '</div>'
+      )($rootScope);
+
+      // To begin with there is (almost) nothing:
+      // <div class="ng-scope">
+      //   <!-- ngRepeat: val in val0 -->
+      // </div>
+
+      expect(element.scope().$id).toEqual($rootScope.$id);
+
+      // Now we create all the elements
+      $rootScope.$apply('val0 = [1]; val1 = true; val2 = true');
+
+      // At this point we have:
+      //
+      // <div class="ng-scope">
+      //
+      //   <!-- ngRepeat: val in val0 -->
+      //   <!-- ngIf: val1 -->
+      //   <div ng-repeat-start="val in val0" class="ng-scope">
+      //   </div>
+      //   <!-- end ngIf: val1 -->
+      //
+      //   <!-- ngIf: val2 -->
+      //   <div ng-repeat-end="" class="ng-scope">
+      //   </div>
+      //   <!-- end ngIf: val2 -->
+      //   <!-- end ngRepeat: val in val0 -->
+      // </div>
+      var ngIf1Scope = element.find('div').eq(0).scope();
+      var ngIf2Scope = element.find('div').eq(1).scope();
+      var ngRepeatScope = ngIf1Scope.$parent;
+
+      expect(ngIf1Scope.$id).not.toEqual(ngIf2Scope.$id);
+      expect(ngIf1Scope.$parent.$id).toEqual(ngRepeatScope.$id);
+      expect(ngIf2Scope.$parent.$id).toEqual(ngRepeatScope.$id);
+
+      // What is happening here??
+      // We seem to have a repeater scope which doesn't actually match to any element
+      expect(ngRepeatScope.$parent.$id).toEqual($rootScope.$id);
+
+
+      // Now remove the first ngIf element from the first item in the repeater
+      $rootScope.$apply('val1 = false');
+
+      // At this point we should have:
+      //
+      // <div class="ng-scope">
+      //   <!-- ngRepeat: val in val0 -->
+      //
+      //   <!-- ngIf: val1 -->
+      //
+      //   <!-- ngIf: val2 -->
+      //   <div ng-repeat-end="" ng-if="val2" class="ng-scope"></div>
+      //   <!-- end ngIf: val2 -->
+      //
+      //   <!-- end ngRepeat: val in val0 -->
+      // </div>
+      //
+      expect(ngRepeatScope.$$destroyed).toEqual(false);
+      expect(ngIf1Scope.$$destroyed).toEqual(true);
+      expect(ngIf2Scope.$$destroyed).toEqual(false);
+
+      // Now remove the second ngIf element from the first item in the repeater
+      $rootScope.$apply('val2 = false');
+
+      // We are mostly back to where we started
+      //
+      // <div class="ng-scope">
+      //   <!-- ngRepeat: val in val0 -->
+      //   <!-- ngIf: val1 -->
+      //   <!-- ngIf: val2 -->
+      //   <!-- end ngRepeat: val in val0 -->
+      // </div>
+
+      expect(ngRepeatScope.$$destroyed).toEqual(false);
+      expect(ngIf1Scope.$$destroyed).toEqual(true);
+      expect(ngIf2Scope.$$destroyed).toEqual(true);
+
+      // Finally remove the repeat items
+      $rootScope.$apply('val0 = []');
+
+      // Somehow this ngRepeat scope knows how to destroy itself...
+      expect(ngRepeatScope.$$destroyed).toEqual(true);
+      expect(ngIf1Scope.$$destroyed).toEqual(true);
+      expect(ngIf2Scope.$$destroyed).toEqual(true);
+    }));
+
     it('should throw error if unterminated', function () {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {
+            multiElement: true
           };
         });
       });
@@ -5354,12 +5866,16 @@ describe('$compile', function() {
     it('should correctly collect ranges on multiple directives on a single element', function () {
       module(function($compileProvider) {
         $compileProvider.directive('emptyDirective', function() {
-          return function (scope, element) {
-            element.data('x', 'abc');
+          return {
+            multiElement: true,
+            link: function (scope, element) {
+              element.data('x', 'abc');
+            }
           };
         });
         $compileProvider.directive('rangeDirective', function() {
           return {
+            multiElement: true,
             link: function (scope) {
               scope.x = 'X';
               scope.y = 'Y';
@@ -5387,6 +5903,7 @@ describe('$compile', function() {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {
+            multiElement: true
           };
         });
       });

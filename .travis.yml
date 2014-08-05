@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 0.10
+  - '0.10'
 
 branches:
   except:
@@ -19,9 +19,13 @@ env:
     - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
 
 install:
-  - npm config set registry http://23.251.144.68
-  # Run npm install twice, because it is flaky.
-  - npm install || npm install
+  # - npm config set registry http://23.251.144.68
+  # Disable the spinner, it looks bad on Travis
+  - npm config set spin false
+  # Log HTTP requests
+  - npm config set loglevel http
+  - time ./scripts/travis/npm-bundle-deps.sh
+  - time npm install
 
 before_script:
   - mkdir -p $LOGS_DIR

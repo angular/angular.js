@@ -219,13 +219,13 @@ describe('$route', function() {
       expect($route.current).toBeUndefined();
     }));
 
-    it('matches literal .', inject(function($route, $location, $rootScope) {
+    it('matches literal *', inject(function($route, $location, $rootScope) {
       $location.path('/$testX23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
     }));
 
-    it('matches literal *', inject(function($route, $location, $rootScope) {
+    it('matches literal .', inject(function($route, $location, $rootScope) {
       $location.path('/$test.23/foooo(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
@@ -238,7 +238,7 @@ describe('$route', function() {
     }));
 
     it('matches a URL with special chars', inject(function($route, $location, $rootScope) {
-      $location.path('/$test.23/foo*(bar)/222');
+      $location.path('/$test.23/foo*(bar)/~!@#$%^&*()_+=-`');
       $rootScope.$digest();
       expect($route.current).toBeDefined();
     }));

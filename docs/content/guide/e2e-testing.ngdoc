@@ -27,7 +27,7 @@ Protractor is a [Node.js](http://nodejs.org) program, and runs end to end tests 
 written in JavaScript and run with node. Protractor uses [WebDriver](https://code.google.com/p/selenium/wiki/GettingStarted)
 to control browsers and simulate user actions.
 
-For more information on Protractor, view [getting started](https://github.com/angular/protractor/blob/master/docs/getting-started.md)
+For more information on Protractor, view [getting started](https://github.com/angular/protractor/blob/master/docs/overview.md)
 or the [api docs](https://github.com/angular/protractor/blob/master/docs/api.md).
 
 Protractor uses [Jasmine](http://jasmine.github.io/1.3/introduction.html) for its test syntax.

@@ -73,16 +73,16 @@ describe('filters', function() {
       expect(num).toBe('123.112');
     });
 
-		it('should format the same with string as well as numeric fractionSize', function(){
-			var num = formatNumber(123.1, pattern, ',', '.', "0");
+    it('should format the same with string as well as numeric fractionSize', function(){
+      var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
-			num = formatNumber(123.1, pattern, ',', '.', 0);
+      num = formatNumber(123.1, pattern, ',', '.', 0);
       expect(num).toBe('123');
-			num = formatNumber(123.1, pattern, ',', '.', "3");
+      num = formatNumber(123.1, pattern, ',', '.', "3");
       expect(num).toBe('123.100');
-			num = formatNumber(123.1, pattern, ',', '.', 3);
+      num = formatNumber(123.1, pattern, ',', '.', 3);
       expect(num).toBe('123.100');
-		});
+    });
   });
 
   describe('currency', function() {
@@ -147,6 +147,10 @@ describe('filters', function() {
       expect(number(.99,      2)).toEqual("0.99");
       expect(number(.999,     3)).toEqual("0.999");
       expect(number(.9999,    3)).toEqual("1.000");
+      expect(number(1.9,      2)).toEqual("1.90");
+      expect(number(1.99,     2)).toEqual("1.99");
+      expect(number(1.999,    3)).toEqual("1.999");
+      expect(number(1.9999,   3)).toEqual("2.000");
       expect(number(1234.567, 0)).toEqual("1,235");
       expect(number(1234.567, 1)).toEqual("1,234.6");
       expect(number(1234.567, 2)).toEqual("1,234.57");
@@ -154,6 +158,7 @@ describe('filters', function() {
       expect(number(1.255,    1)).toEqual("1.3");
       expect(number(1.255,    2)).toEqual("1.26");
       expect(number(1.255,    3)).toEqual("1.255");
+      expect(number(0,        8)).toEqual("0.00000000");
     });
 
     it('should filter exponentially large numbers', function() {

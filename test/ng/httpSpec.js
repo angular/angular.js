@@ -341,6 +341,12 @@ describe('$http', function() {
         $httpBackend.expect('GET', '/url').respond('');
         $http({url: '/url', params: {}, method: 'GET'});
       });
+
+      it('should not double quote dates', function() {
+        if (msie < 9) return;
+        $httpBackend.expect('GET', '/url?date=2014-07-15T17:30:00.000Z').respond('');
+        $http({url: '/url', params: {date:new Date('2014-07-15T17:30:00.000Z')}, method: 'GET'});
+      });
     });
 
 
@@ -652,6 +658,18 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should delete default headers if custom header function returns null', function () {
+
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return !('Accept' in headers);
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'Accept': function() { return null; }
+        }});
+        $httpBackend.flush();
+      });
+
       it('should override default headers with custom in a case insensitive manner', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['accept'] == 'Rewritten' &&
@@ -693,6 +711,22 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should NOT delete Content-Type header if request data/body is set by request transform', function() {
+        $httpBackend.expect('POST', '/url', {'one' : 'two'}, function(headers) {
+          return headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({
+          url: '/url',
+          method: 'POST',
+          transformRequest : function(data) {
+            data = {'one' : 'two'};
+            return data;
+          }
+        });
+
+        $httpBackend.flush();
+      });
 
       it('should set the XSRF cookie into a XSRF header', inject(function($browser) {
         function checkXSRF(secret, header) {
@@ -830,6 +864,15 @@ describe('$http', function() {
         $http.put('/url', 'some-data', {headers: {'Custom': 'Header'}});
       });
 
+      it('should have patch()', function(){
+        $httpBackend.expect('PATCH', '/url', 'some-data').respond('');
+        $http.patch('/url', 'some-data');
+      });
+
+      it('patch() should allow config param', function() {
+        $httpBackend.expect('PATCH', '/url', 'some-data', checkHeader('Custom', 'Header')).respond('');
+        $http.patch('/url', 'some-data', {headers: {'Custom': 'Header'}});
+      });
 
       it('should have jsonp()', function() {
         $httpBackend.expect('JSONP', '/url').respond('');
@@ -1057,6 +1100,18 @@ describe('$http', function() {
         doFirstCacheRequest();
 
         $http({method: 'get', url: '/url', cache: cache}).success(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toBe('content');
+      }));
+
+      it('should cache JSONP request when cache is provided', inject(function($rootScope) {
+        $httpBackend.expect('JSONP', '/url?cb=JSON_CALLBACK').respond('content');
+        $http({method: 'JSONP', url: '/url?cb=JSON_CALLBACK', cache: cache});
+        $httpBackend.flush();
+
+        $http({method: 'JSONP', url: '/url?cb=JSON_CALLBACK', cache: cache}).success(callback);
         $rootScope.$digest();
 
         expect(callback).toHaveBeenCalledOnce();

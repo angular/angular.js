@@ -114,8 +114,17 @@ describe('Scope', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
-    it('should clean up stable watches on the watch queue', inject(function($rootScope, $parse) {
-      $rootScope.$watch($parse('::foo'), function() {});
+    it('should not keep constant literals on the watch queue', inject(function($rootScope) {
+      $rootScope.$watch('[]', function() {});
+      $rootScope.$watch('{}', function() {});
+      expect($rootScope.$$watchers.length).toEqual(2);
+      $rootScope.$digest();
+
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
+    it('should clean up stable watches on the watch queue', inject(function($rootScope) {
+      $rootScope.$watch('::foo', function() {});
       expect($rootScope.$$watchers.length).toEqual(1);
 
       $rootScope.$digest();
@@ -126,7 +135,7 @@ describe('Scope', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
-    it('should claen up stable watches from $watchCollection', inject(function($rootScope, $parse) {
+    it('should clean up stable watches from $watchCollection', inject(function($rootScope) {
       $rootScope.$watchCollection('::foo', function() {});
       expect($rootScope.$$watchers.length).toEqual(1);
 
@@ -138,16 +147,16 @@ describe('Scope', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
-    it('should clean up stable watches from $watchGroup', inject(function($rootScope, $parse) {
+    it('should clean up stable watches from $watchGroup', inject(function($rootScope) {
       $rootScope.$watchGroup(['::foo', '::bar'], function() {});
-      expect($rootScope.$$watchers.length).toEqual(3);
+      expect($rootScope.$$watchers.length).toEqual(2);
 
       $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(3);
+      expect($rootScope.$$watchers.length).toEqual(2);
 
       $rootScope.foo = 'foo';
       $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(2);
+      expect($rootScope.$$watchers.length).toEqual(1);
 
       $rootScope.bar = 'bar';
       $rootScope.$digest();
@@ -737,6 +746,14 @@ describe('Scope', function() {
           $rootScope.$digest();
           expect(log.empty()).toEqual([{newVal: {b: {}, c: 'B'}, oldVal: {a: [], b: {}, c: 'B'}}]);
         });
+
+        it('should not infinitely digest when current value is NaN', function() {
+          $rootScope.obj = {a: NaN};
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
+        });
+
       });
     });
 
@@ -885,6 +902,7 @@ describe('Scope', function() {
       scope.$digest();
       expect(log).toEqual('');
     });
+
   });
 
   describe('$destroy', function() {
@@ -1134,7 +1152,9 @@ describe('Scope', function() {
     it('should cause a $digest rerun', inject(function($rootScope) {
       $rootScope.log = '';
       $rootScope.value = 0;
-      $rootScope.$watch('value', 'log = log + ".";');
+      $rootScope.$watch('value', function () {
+        $rootScope.log = $rootScope.log + ".";
+      });
       $rootScope.$watch('init', function() {
         $rootScope.$evalAsync('value = 123; log = log + "=" ');
         expect($rootScope.value).toEqual(0);

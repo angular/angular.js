@@ -24,6 +24,16 @@ describe('angular', function() {
       expect(copy([], arr)).toBe(arr);
     });
 
+    it("should preserve prototype chaining", function() {
+      var GrandParentProto = {};
+      var ParentProto = Object.create(GrandParentProto);
+      var obj = Object.create(ParentProto);
+      expect(ParentProto.isPrototypeOf(copy(obj))).toBe(true);
+      expect(GrandParentProto.isPrototypeOf(copy(obj))).toBe(true);
+      var Foo = function() {};
+      expect(copy(new Foo()) instanceof Foo).toBe(true);
+    });
+
     it("should copy Date", function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();
@@ -43,6 +53,20 @@ describe('angular', function() {
       expect(copy(re) instanceof RegExp).toBeTruthy();
       expect(copy(re).source).toEqual(".*");
       expect(copy(re) === re).toBeFalsy();
+    });
+
+    it("should copy RegExp with flags", function() {
+      var re = new RegExp('.*', 'gim');
+      expect(copy(re).global).toBe(true);
+      expect(copy(re).ignoreCase).toBe(true);
+      expect(copy(re).multiline).toBe(true);
+    });
+
+    it("should copy RegExp with lastIndex", function() {
+      var re = /a+b+/g;
+      var str = 'ab aabb';
+      expect(re.exec(str)[0]).toEqual('ab');
+      expect(copy(re).exec(str)[0]).toEqual('aabb');
     });
 
     it("should deeply copy literal RegExp", function() {
@@ -403,14 +427,15 @@ describe('angular', function() {
 
 
   describe('csp', function() {
-    var originalSecurityPolicy;
+    var originalFunction;
 
     beforeEach(function() {
-      originalSecurityPolicy = document.securityPolicy;
+      originalFunction = window.Function;
     });
 
     afterEach(function() {
-      document.securityPolicy = originalSecurityPolicy;
+      window.Function = originalFunction;
+      delete csp.isActive_;
     });
 
 
@@ -420,9 +445,10 @@ describe('angular', function() {
 
 
     it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
-      document.securityPolicy = {isActive: true};
+      window.Function = function() { throw new Error('CSP test'); };
       expect(csp()).toBe(true);
     });
+
 
     it('should return the true when CSP is enabled manually via [ng-csp]', function() {
       spyOn(document, 'querySelector').andCallFake(function(selector) {
@@ -469,6 +495,13 @@ describe('angular', function() {
       toEqual({flag1: [true,true], key: 'value'});
       expect(parseKeyValue('flag1&flag1=value&flag1=value2&flag1')).
       toEqual({flag1: [true,'value','value2',true]});
+    });
+
+
+    it('should ignore properties higher in the prototype chain', function() {
+      expect(parseKeyValue('toString=123')).toEqual({
+        'toString': '123'
+      });
     });
   });
 
@@ -635,16 +668,16 @@ describe('angular', function() {
         toEqual('asdf1234asdf');
 
       //don't encode unreserved'
-      expect(encodeUriSegment("-_.!~*'() -_.!~*'()")).
-        toEqual("-_.!~*'()%20-_.!~*'()");
+      expect(encodeUriSegment("-_.!~*'(); -_.!~*'();")).
+        toEqual("-_.!~*'();%20-_.!~*'();");
 
       //don't encode the rest of pchar'
       expect(encodeUriSegment(':@&=+$, :@&=+$,')).
         toEqual(':@&=+$,%20:@&=+$,');
 
-      //encode '/', ';' and ' ''
+      //encode '/' and ' ''
       expect(encodeUriSegment('/; /;')).
-        toEqual('%2F%3B%20%2F%3B');
+        toEqual('%2F;%20%2F;');
     });
   });
 
@@ -666,7 +699,7 @@ describe('angular', function() {
 
       //encode '&', ';', '=', '+', and '#'
       expect(encodeUriQuery('&;=+# &;=+#')).
-        toEqual('%26%3B%3D%2B%23+%26%3B%3D%2B%23');
+        toEqual('%26;%3D%2B%23+%26;%3D%2B%23');
 
       //encode ' ' as '+'
       expect(encodeUriQuery('  ')).
@@ -693,15 +726,13 @@ describe('angular', function() {
 
     beforeEach(function() {
       element = {
-        getElementById: function (id) {
-          return element.getElementById[id] || [];
+        hasAttribute: function (name) {
+          return !!element[name];
         },
 
-
-        querySelectorAll: function(arg) {
-          return element.querySelectorAll[arg] || [];
+        querySelector: function(arg) {
+          return element.querySelector[arg] || null;
         },
-
 
         getAttribute: function(name) {
           return element[name];
@@ -719,23 +750,7 @@ describe('angular', function() {
 
     it('should look for ngApp directive as attr', function() {
       var appElement = jqLite('<div ng-app="ABC"></div>')[0];
-      element.querySelectorAll['[ng-app]'] = [appElement];
-      angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
-    });
-
-
-    it('should look for ngApp directive in id', function() {
-      var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
-      jqLite(document.body).append(appElement);
-      angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
-    });
-
-
-    it('should look for ngApp directive in className', function() {
-      var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
-      element.querySelectorAll['.ng\\:app'] = [appElement];
+      element.querySelector['[ng-app]'] = appElement;
       angularInit(element, bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
     });
@@ -743,36 +758,22 @@ describe('angular', function() {
 
     it('should look for ngApp directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
-      element.querySelectorAll['[ng\\:app]'] = [ appElement ];
+      element.querySelector['[x-ng-app]'] = appElement;
       angularInit(element, bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
-    });
-
-
-    it('should bootstrap using class name', function() {
-      var appElement = jqLite('<div class="ng-app: ABC;"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
     });
 
 
     it('should bootstrap anonymously', function() {
       var appElement = jqLite('<div x-ng-app></div>')[0];
-      element.querySelectorAll['[x-ng-app]'] = [ appElement ];
+      element.querySelector['[x-ng-app]'] = appElement;
       angularInit(element, bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
     });
 
 
-    it('should bootstrap anonymously using class only', function() {
-      var appElement = jqLite('<div class="ng-app"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
-      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
-    });
-
-
     it('should bootstrap if the annotation is on the root element', function() {
-      var appElement = jqLite('<div class="ng-app"></div>')[0];
+      var appElement = jqLite('<div ng-app=""></div>')[0];
       angularInit(appElement, bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
     });
@@ -819,7 +820,7 @@ describe('angular', function() {
 
     it('should bootstrap in strict mode when ng-strict-di attribute is specified', function() {
       bootstrapSpy = spyOn(angular, 'bootstrap').andCallThrough();
-      var appElement = jqLite('<div class="ng-app" ng-strict-di></div>');
+      var appElement = jqLite('<div ng-app="" ng-strict-di></div>');
       angularInit(jqLite('<div></div>').append(appElement[0])[0], bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnce();
       expect(bootstrapSpy.mostRecentCall.args[2].strictDi).toBe(true);
@@ -951,7 +952,7 @@ describe('angular', function() {
       var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
                          '<ngtest:foo ngtest:attr="bar"></ngtest:foo>' +
                        '</div>')[0];
-      expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
+      expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
     });
 
@@ -960,7 +961,7 @@ describe('angular', function() {
         var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
                            '<ngtest:foo ngtest:attr="bar"></ng-test>' +
                          '</div>')[0];
-        expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
+        expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
         expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
       });
     }

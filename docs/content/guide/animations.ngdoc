@@ -33,22 +33,13 @@ Below is a quick example of animations being enabled for `ngShow` and `ngHide`:
       background:white;
     }
 
-    .sample-show-hide.ng-hide-add, .sample-show-hide.ng-hide-remove {
+    .sample-show-hide {
       -webkit-transition:all linear 0.5s;
-      -moz-transition:all linear 0.5s;
-      -o-transition:all linear 0.5s;
       transition:all linear 0.5s;
-      display:block!important;
     }
 
-    .sample-show-hide.ng-hide-add.ng-hide-add-active,
-    .sample-show-hide.ng-hide-remove {
+    .sample-show-hide.ng-hide {
       opacity:0;
-    }
-
-    .sample-show-hide.ng-hide-add,
-    .sample-show-hide.ng-hide-remove.ng-hide-remove-active {
-      opacity:1;
     }
   </file>
 </example>

@@ -16,7 +16,7 @@ Because HTML has Angular brackets and "ng" sounds like "Angular".
 AngularJS fits the definition of a framework the best, even though it's much more lightweight than
 a typical framework and that's why many confuse it with a library.
 
-AngularJS is 100% JavaScript, 100% client side and compatible with both desktop and mobile browsers.
+AngularJS is 100% JavaScript, 100% client-side and compatible with both desktop and mobile browsers.
 So it's definitely not a plugin or some other native browser extension.
 
 
@@ -51,7 +51,7 @@ Yes. See instructions in {@link downloading}.
 ### What browsers does Angular work with?
 
 We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera,
-IE8, IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
+IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
 Explorer Compatibility} for more details in supporting legacy IE browsers.
 
 
@@ -75,14 +75,15 @@ The size of the file is < 36KB compressed and minified.
 Yes, you can use widgets from the [Closure Library](https://developers.google.com/closure/library/)
 in Angular.
 
+
 ### Does Angular use the jQuery library?
 
 Yes, Angular can use [jQuery](http://jquery.com/) if it's present in your app when the
 application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
 to its own implementation of the subset of jQuery that we call {@link angular.element  jQLite}.
 
-Due to a change to use `on()`/`off()` rather than `bind()`/`unbind()`, Angular 1.2 only operates with
-jQuery 1.7.1 or above. However, Angular does not currently support jQuery 2.x or above.
+Angular 1.3 only supports jQuery 2.1 or above. jQuery 1.7 and newer might work correctly with Angular
+but we don't guarantee that.
 
 
 ### What is testability like in Angular?
@@ -114,7 +115,7 @@ make our schwag will be happy to do a custom run for you, based on our existing 
 they'll waive the setup costs, and you can order any quantity you need.
 
 **Stickers**
-For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
+For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at <tom@stickergiant.com>, and tell him you want to order some AngularJS
 stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping.
 
 As long as the design stays exactly the same, [StickerGiant](http://www.stickergiant.com) will give you a reorder discount.

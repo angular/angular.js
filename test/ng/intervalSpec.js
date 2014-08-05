@@ -98,6 +98,23 @@ describe('$interval', function() {
   }));
 
 
+  it('should NOT call $evalAsync or $digest if invokeApply is set to false',
+      inject(function($interval, $rootScope, $window, $timeout) {
+    var evalAsyncSpy = spyOn($rootScope, '$evalAsync').andCallThrough();
+    var digestSpy = spyOn($rootScope, '$digest').andCallThrough();
+    var notifySpy = jasmine.createSpy('notify');
+
+    $interval(notifySpy, 1000, 1, false);
+
+    $window.flush(2000);
+    $timeout.flush(); // flush $browser.defer() timeout
+
+    expect(notifySpy).toHaveBeenCalledOnce();
+    expect(evalAsyncSpy).not.toHaveBeenCalled();
+    expect(digestSpy).not.toHaveBeenCalled();
+  }));
+
+
   it('should allow you to specify the delay time', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() { counter++; }, 123);
@@ -267,6 +284,27 @@ describe('$interval', function() {
     it('should not throw a runtime exception when given an undefined promise',
         inject(function($interval) {
       expect($interval.cancel()).toBe(false);
+    }));
+  });
+
+  describe('$window delegation', function() {
+    it('should use $window.setInterval instead of the global function', inject(function ($interval, $window) {
+      var setIntervalSpy = spyOn($window, 'setInterval');
+
+      $interval(noop, 1000);
+      expect(setIntervalSpy).toHaveBeenCalled();
+    }));
+
+    it('should use $window.clearInterval instead of the global function', inject(function ($interval, $window) {
+      var clearIntervalSpy = spyOn($window, 'clearInterval');
+
+      $interval(noop, 1000, 1);
+      $window.flush(1000);
+      expect(clearIntervalSpy).toHaveBeenCalled();
+
+      clearIntervalSpy.reset();
+      $interval.cancel($interval(noop, 1000));
+      expect(clearIntervalSpy).toHaveBeenCalled();
     }));
   });
 });

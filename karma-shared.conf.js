@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(config, specificOptions) {
   config.set({
     frameworks: ['jasmine'],
@@ -7,7 +9,7 @@ module.exports = function(config, specificOptions) {
     browsers: ['Chrome'],
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
-    browserNoActivityTimeout: 20000,
+    browserNoActivityTimeout: 30000,
 
 
     // SauceLabs config for local development.
@@ -121,6 +123,7 @@ module.exports = function(config, specificOptions) {
     config.sauceLabs.build = buildLabel;
     config.sauceLabs.startConnect = false;
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+    config.sauceLabs.recordScreenshots = true;
 
     // TODO(vojta): remove once SauceLabs supports websockets.
     // This speeds up the capturing a bit, as browsers don't even try to use websocket.
@@ -158,7 +161,7 @@ module.exports = function(config, specificOptions) {
 
       // ignore web-server's 404s
       if (log.categoryName === 'web-server' && log.level.levelStr === config.LOG_WARN &&
-          IGNORED_404.some(function(ignoredLog) {return msg.indexOf(ignoredLog) !== -1})) {
+          IGNORED_404.some(function(ignoredLog) {return msg.indexOf(ignoredLog) !== -1;})) {
         return;
       }
 

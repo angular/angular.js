@@ -1,4 +1,6 @@
-angularFiles = {
+'use strict';
+
+var angularFiles = {
   'angularSrc': [
     'src/minErr.js',
     'src/Angular.js',
@@ -141,7 +143,7 @@ angularFiles = {
   ],
 
   'karma': [
-    'bower_components/jquery/jquery.js',
+    'bower_components/jquery/dist/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -175,7 +177,7 @@ angularFiles = {
   ],
 
   'karmaJquery': [
-    'bower_components/jquery/jquery.js',
+    'bower_components/jquery/dist/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
