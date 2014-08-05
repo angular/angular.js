@@ -122,6 +122,7 @@ function jqNextId() { return ++jqId; }
 
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+var MOUSE_EVENT_MAP= { mouseleave : "mouseout", mouseenter : "mouseover"};
 var jqLiteMinErr = minErr('jqLite');
 
 /**
@@ -788,9 +789,8 @@ forEach({
           // Refer to jQuery's implementation of mouseenter & mouseleave
           // Read about mouseenter and mouseleave:
           // http://www.quirksmode.org/js/events_mouse.html#link8
-          var eventmap = { mouseleave : "mouseout", mouseenter : "mouseover"};
 
-          onFn(element, eventmap[type], function(event) {
+          onFn(element, MOUSE_EVENT_MAP[type], function(event) {
             var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
