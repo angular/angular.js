@@ -157,29 +157,6 @@ wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.the
 wrapMap.th = wrapMap.td;
 
 
-var elementContains = document.head.contains ||
-      document.head.compareDocumentPosition
-        ? function( a, b ) {
-          // jshint bitwise: false
-          var adown = a.nodeType === 9 ? a.documentElement : a,
-              bup = b && b.parentNode;
-          return a === bup || !!( bup && bup.nodeType === 1 && (
-              adown.contains ?
-                  adown.contains( bup ) :
-                  a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
-              ));
-          }
-        : function( a, b ) {
-            if ( b ) {
-              while ( (b = b.parentNode) ) {
-                if ( b === a ) {
-                  return true;
-                }
-              }
-            }
-            return false;
-          };
-
 function jqLiteIsTextNode(html) {
   return !HTML_REGEXP.test(html);
 }
@@ -817,7 +794,7 @@ forEach({
             var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
-            if ( !related || (related !== target && !elementContains(target, related)) ){
+            if ( !related || (related !== target && !target.contains(related)) ){
               handle(event, type);
             }
           });
