@@ -684,8 +684,17 @@ function createInjector(modulesToLoad, strictDi) {
         orig$get = origProvider.$get;
 
     origProvider.$get = function() {
-      var origInstance = instanceInjector.invoke(orig$get, origProvider);
-      return instanceInjector.invoke(decorFn, null, {$delegate: origInstance});
+      var origInstance = instanceInjector.invoke(orig$get, origProvider),
+          locals = {$delegate: origInstance};
+          
+      forEach(instanceInjector.annotate(decorFn), function(dep) {
+        if (dep.endsWith(providerSuffix)) return;
+        
+        var depProvider = providerInjector.get(dep + providerSuffix);
+        locals[dep] = instanceInjector.invoke(depProvider.$get, depProvider);
+      });
+          
+      return instanceInjector.invoke(decorFn, null, locals);
     };
   }
 
