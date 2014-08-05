@@ -262,16 +262,21 @@ function jqLiteDealoc(element, onlyDescendants){
 function jqLiteOff(element, type, fn, unsupported) {
   if (isDefined(unsupported)) throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
 
-  var events = jqLiteExpandoStore(element, 'events'),
-      handle = jqLiteExpandoStore(element, 'handle');
+  var events = jqLiteExpandoStore(element, 'events');
+  var handle = jqLiteExpandoStore(element, 'handle');
+  var i;
+  var types;
 
   if (!handle) return; //no listeners registered
 
   if (isUndefined(type)) {
-    forEach(events, function(eventHandler, type) {
-      removeEventListenerFn(element, type, eventHandler);
+    types = Object.keys(events);
+    i = types.length;
+    while (i--) {
+      type = types[i];
+      removeEventListenerFn(element, type, events[type]);
       delete events[type];
-    });
+    }
   } else {
     forEach(type.split(' '), function(type) {
       if (isUndefined(fn)) {
