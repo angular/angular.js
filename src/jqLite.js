@@ -776,9 +776,9 @@ forEach({
       var eventFns = events[type];
 
       if (!eventFns) {
-        if (type == 'mouseenter' || type == 'mouseleave') {
-          events[type] = [];
+        events[type] = [];
 
+        if (type == 'mouseenter' || type == 'mouseleave') {
           // Refer to jQuery's implementation of mouseenter & mouseleave
           // Read about mouseenter and mouseleave:
           // http://www.quirksmode.org/js/events_mouse.html#link8
@@ -794,7 +794,6 @@ forEach({
 
         } else {
           addEventListenerFn(element, type, handle);
-          events[type] = [];
         }
         eventFns = events[type];
       }
