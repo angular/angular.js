@@ -274,7 +274,9 @@ function jqLiteOff(element, type, fn, unsupported) {
     i = types.length;
     while (i--) {
       type = types[i];
-      removeEventListenerFn(element, type, events[type]);
+      if (type !== '$destroy') {
+        removeEventListenerFn(element, type, events[type]);
+      }
       delete events[type];
     }
   } else {
@@ -749,7 +751,9 @@ forEach({
           });
 
         } else {
-          addEventListenerFn(element, type, handle);
+          if (type !== '$destroy') {
+            addEventListenerFn(element, type, handle);
+          }
         }
         eventFns = events[type];
       }
