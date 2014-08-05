@@ -740,9 +740,9 @@ function createEventHandler(element, events) {
     // Copy event handlers in case event handlers array is modified during execution.
     var eventHandlersCopy = shallowCopy(events[type || event.type] || []);
 
-    forEach(eventHandlersCopy, function(fn) {
-      fn.call(element, event);
-    });
+    for (var i = 0, ii = eventHandlersCopy.length; i < ii; i++) {
+      eventHandlersCopy[i].call(element, event);
+    }
 
     // Remove monkey-patched methods (IE),
     // as they would cause memory leaks in IE8.
