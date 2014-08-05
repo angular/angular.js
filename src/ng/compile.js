@@ -2043,11 +2043,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       if (!jQuery) {
         delete jqLite.cache[firstElementToRemove[jqLite.expando]];
       } else {
-        // jQuery 2.x doesn't expose the data storage. Use jQuery.cleanData to clean up after the replaced
-        // element. Note that we need to use the original method here and not the one monkey-patched by Angular
-        // since the patched method emits the $destroy event causing the scope to be trashed and we do need
-        // the very same scope to work with the new element.
-        jQuery.cleanData.$$original([firstElementToRemove]);
+        // jQuery 2.x doesn't expose the data storage. Use jQuery.cleanData to clean up after
+        // the replaced element. The cleanData version monkey-patched by Angular would cause
+        // the scope to be trashed and we do need the very same scope to work with the new
+        // element. However, we cannot just cache the non-patched version and use it here as
+        // that would break if another library patches the method after Angular does (one
+        // example is jQuery UI). Instead, set a flag indicating scope destroying should be
+        // skipped this one time.
+        skipDestroyOnNextJQueryCleanData = true;
+        jQuery.cleanData([firstElementToRemove]);
       }
 
       for (var k = 1, kk = elementsToRemove.length; k < kk; k++) {
