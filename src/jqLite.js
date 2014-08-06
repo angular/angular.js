@@ -948,13 +948,8 @@ forEach({
   clone: jqLiteClone,
 
   triggerHandler: function(element, eventName, eventData) {
-    // Copy event handlers in case event handlers array is modified during execution.
-    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName],
-        eventFnsCopy = shallowCopy(eventFns || []);
 
-    eventData = eventData || [];
-
-    var event = [{
+    var event = {
       preventDefault: function() {
         this.defaultPrevented = true;
       },
@@ -962,10 +957,21 @@ forEach({
         return this.defaultPrevented === true;
       },
       stopPropagation: noop
-    }];
+    };
+
+    if ( eventName.type ) {
+      extend(event, eventName);
+      eventName = event.type;
+    }
+
+    var handlerArgs = [event].concat(eventData || []);
+
+    // Copy event handlers in case event handlers array is modified during execution.
+    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName],
+        eventFnsCopy = shallowCopy(eventFns || []);
 
     forEach(eventFnsCopy, function(fn) {
-      fn.apply(element, event.concat(eventData));
+      fn.apply(element, handlerArgs);
     });
   }
 }, function(fn, name){

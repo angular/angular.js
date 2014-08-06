@@ -1765,6 +1765,22 @@ describe('jqLite', function() {
       expect(clickOnceSpy).toHaveBeenCalledOnce();
       expect(clickSpy.callCount).toBe(2);
     });
+
+    it("should accept a custom event instead of eventName", function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          customEvent = {
+            type: 'click',
+            someProp: 'someValue'
+          },
+          actualEvent;
+
+      element.on('click', pokeSpy);
+      element.triggerHandler(customEvent);
+      actualEvent = pokeSpy.mostRecentCall.args[0];
+      expect(actualEvent.preventDefault).toBeDefined();
+      expect(actualEvent.someProp).toEqual('someValue');
+    });
   });
 
 
