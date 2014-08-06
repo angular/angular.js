@@ -3,17 +3,19 @@ angular.module('tableSteps', []).
     $window.benchmarkSteps.push({
       name: 'table',
       fn: function () {
-        $rootScope.ii = new Array(100);
-        $rootScope.jj = new Array(20);
-        $rootScope.$digest();
+        $rootScope.$apply(function() {
+          $rootScope.ii = new Array(100);
+          $rootScope.jj = new Array(20);
+        });
       }
     });
     $window.benchmarkSteps.push({
       name: 'cleanup',
       fn: function() {
-        $rootScope.ii = [];
-        $rootScope.jj = [];
-        $rootScope.$digest();
+        $rootScope.$apply(function() {
+          $rootScope.ii = [];
+          $rootScope.jj = [];
+        });
       }
     });
   }]).

@@ -17,10 +17,11 @@ See the example benchmark inside `benchmarks/table/`.
    runner template. This is where the markup for the Angular app being tested should live.
  1. Create any scripts, html files, or other dependent files in the same folder.
  1. Run `./build.js` to generate the combined benchmark runner
- 1. From the root ofr the project, angular.js/, run `grunt webserver`
- 1. Launch Browser (See [Launching Canary](#launching-canary) for instructions on testing in Chrome
-   Canary)
- 1. Browse to `localhost:8000/benchmark/build/<benchmark-name>`
+ 1. From the "benchmark" directory, run `grunt webserver`
+ 1. Launch Browser (Chrome Canary provides most accurate memory data, See
+    [Launching Canary](#launching-canary) for instructions on testing in Chrome
+    Canary)
+ 1. Browse to `localhost:8000/build/<benchmark-name>`
 
 The benchpress library adds an array to the window object called "benchmarkSteps," which is where
 a benchmark should push benchmark configuration objects. The object should contain a `name`, which
@@ -31,11 +32,7 @@ evaluated and timed.
 window.benchmarkSteps.push({
   name: 'Something Expensive',
   fn: function() {
-    var timesUp = false;
-    setTimeout(function(){ timesUp = true}, 1000);
-    while(!timesUp) {
-      //wait
-    }
+    someExpensiveOperation();
   }
 })
 ```
@@ -74,7 +71,7 @@ After opening the benchmark in the browser as described in
  1. How many test cycles to run
 
 The number of samples tells benchpress "analyze the most recent n samples for reporting." If the
-number of samples is 20, and benchpress runs a loop of 100 tests, the last 20 samples are the only
+number of samples is 20, and a user runs a loop 99 times, the last 20 samples are the only
 ones that are calculated in the reports. This value is controlled by a text input at the top of the
 screen, which is set to 20 by default.
 
