@@ -54,11 +54,19 @@ To make your Angular application work on IE please make sure that:
          ...
        </html>
      ```
+  3. replace `$http.delete` with
+    ```javascript
+      $http({
+          method: 'DELETE',
+          url: 'my/url'
+      })
+    ```
+    Using keywords such as delete in IE8 and below causes parse errors.
 
-  3. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
+  4. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
      `<div ng-view>` instead), or
 
-  4. if you **do use** custom element tags, then you must take these steps to make IE 8 and below happy:
+  5. if you **do use** custom element tags, then you must take these steps to make IE 8 and below happy:
 
      ```html
        <!doctype html>
@@ -82,7 +90,7 @@ To make your Angular application work on IE please make sure that:
          </body>
        </html>
      ```
-  5. Use `ng-style` tags instead of `style="{{ someCss }}"`. The later works in Chrome and Firefox
+  6. Use `ng-style` tags instead of `style="{{ someCss }}"`. The later works in Chrome and Firefox
      but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
 
 
