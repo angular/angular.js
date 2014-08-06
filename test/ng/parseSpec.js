@@ -265,6 +265,7 @@ describe('parser', function() {
         var returnString = scope.returnString = function(){ return 'asd'; };
         var returnInt = scope.returnInt = function(){ return 123; };
         var identity = scope.identity = function(x){ return x; };
+        var foo;
 
         // Simple.
         expect(scope.$eval('0?0:2')).toEqual(0?0:2);
@@ -315,6 +316,9 @@ describe('parser', function() {
         expect(scope.$eval('1?2:1&&1')).toEqual(1?2:1&&1);
         expect(scope.$eval('1?1:0||0')).toEqual(1?1:0||0);
         expect(scope.$eval('1?2:0||1')).toEqual(1?2:0||1);
+
+        // Precedence with respect to assignmets
+        expect(scope.$eval('1?foo=true:foo=false')).toEqual(1?foo=true:foo=false);
 
         // Function calls.
         expect(scope.$eval('returnTrue() ? returnString() : returnInt()')).toEqual(returnTrue() ? returnString() : returnInt());

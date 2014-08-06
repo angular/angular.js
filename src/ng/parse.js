@@ -589,9 +589,9 @@ Parser.prototype = {
     var middle;
     var token;
     if ((token = this.expect('?'))) {
-      middle = this.ternary();
+      middle = this.filterChain();
       if ((token = this.expect(':'))) {
-        return this.ternaryFn(left, middle, this.ternary());
+        return this.ternaryFn(left, middle, this.filterChain());
       } else {
         this.throwError('expected :', token);
       }
