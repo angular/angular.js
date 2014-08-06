@@ -70,6 +70,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  *   * `trackexpr`: Used when working with an array of objects. The result of this expression will be
  *      used to identify the objects in the array. The `trackexpr` will most likely refer to the
  *     `value` variable (e.g. `value.propertyName`).
+ * 
+ * Requires ngModel.
  *
  * @example
     <example module="selectExample">
