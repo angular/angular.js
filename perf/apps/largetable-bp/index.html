@@ -1,0 +1,184 @@
+<html ng-app="largetableBenchmark">
+<head>
+   <title>Largetable Benchmark</title>
+    <script src="underscore.js"></script>
+    <script src="bp.js"></script>
+    <script src="../../../build/angular.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <style>
+      .bpLink { background: lightblue; padding: 1em; margin-bottom: 1.5em; }
+      .row.average { font-weight: bold; background: #eee; border-bottom: 1px solid #CCC; padding: 12px 0; margin-bottom: 12px; }
+      .row.headings { font-size: 18px; font-weight: bold; }
+      .average .title { font-size: 28px; }
+      .scrollable { max-height:250px !important; overflow-y: auto; }
+    </style>
+</head>
+
+<body ng-controller="DataController">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div id="benchmarkContainer">
+          <div class="bpLink">
+            Benchmark Versions:
+            <span class="versionContent"></span>
+          </div>
+          <hr>
+          <form role="form" class="form-vertical">
+            <div class="form-group">
+              <label for="sampleRange">
+                Select number of samples to collect and average:
+                <span id="sampleRangeValue"></span>
+              </label>
+              <input id="sampleRange" type="text" value="20">
+            </div>
+          </form>
+          <div class="btn-group">
+            <button class="loopBtn btn btn-default">Loop</button>
+            <button class="onceBtn btn btn-default">Once</button>
+            <button class="twentyFiveBtn btn btn-default">Loop 25x</button>
+          </div>
+          <hr>
+
+          <div class="table table-striped results-table">
+            <div class="thead">
+              <div class="row headings">
+                <div class="th col-md-2 col-md-offset-2">
+                  test time (ms)
+                </div>
+                <div class="th col-md-2">
+                  gc time (ms)
+                </div>
+                <div class="th col-md-2">
+                  garbage (KB)
+                </div>
+                <div class="th col-md-2">
+                  retained memory (KB)
+                </div>
+              </div>
+            </div>
+            <div class="tbody info"></div>
+          </div>
+
+          <script type="template" id="infoTemplate">
+            <div class="row average">
+              <div class="td col-md-2 title"><%= name %></div>
+              <div class="td col-md-2">
+                mean: <%= testTime.avg.mean.toFixed(2) %>ms
+                &plusmn; <%= Math.round(testTime.avg.coefficientOfVariation * 100) %>%
+                <br>
+                (stddev <%= testTime.avg.stdDev.toFixed(2) %>)
+                <br>
+                (min <%= testTime.min.toFixed(2) %> /
+                 max <%= testTime.max.toFixed(2) %>)
+              </div>
+              <div class="td col-md-2">
+                mean: <%= gcTime.avg.mean.toFixed(2) %>ms
+                <br>
+                (combined: <%= (testTime.avg.mean + gcTime.avg.mean).toFixed(2) %>ms)
+              </div>
+              <div class="td col-md-2">
+                mean: <%= (garbageCount.avg.mean / 1e3).toFixed(2) %>KB
+              </div>
+              <div class="td col-md-2">
+                mean: <%= (retainedCount.avg.mean / 1e3).toFixed(2) %>KB
+              </div>
+            </div>
+            <div class="row scrollable">
+              <div class="td col-md-2 col-md-offset-2">
+                <div class="sampleContainer">
+                  <% _.each(testTime.history, function(time) { %>
+                    <%= time.toFixed(2) %>
+                    <br>
+                  <% }); %>
+                </div>
+              </div>
+              <div class="td col-md-2">
+                <div class="sampleContainer">
+                  <% _.each(gcTime.history, function(time) { %>
+                    <%= time.toFixed(2) %>
+                    <br>
+                  <% }); %>
+                </div>
+              </div>
+              <div class="td col-md-2">
+                <div class="sampleContainer">
+                  <% _.each(garbageCount.history, function(count) { %>
+                    <%= (count / 1e3).toFixed(2) %>
+                    <br>
+                  <% }); %>
+                </div>
+              </div>
+              <div class="td col-md-2">
+                <div class="sampleContainer">
+                  <% _.each(retainedCount.history, function(count) { %>
+                    <%= (count / 1e3).toFixed(2) %>
+                    <br>
+                  <% }); %>
+                </div>
+              </div>
+            </div>
+          </script>
+        </div>
+      </div>
+    </div>
+    <p>
+    Large table rendered with AngularJS
+    </p>
+
+    <div>none: <input type=radio ng-model="benchmarkType" value="none"></div>
+    <div>baseline binding: <input type=radio ng-model="benchmarkType" value="baselineBinding"></div>
+    <div>baseline interpolation: <input type=radio ng-model="benchmarkType" value="baselineInterpolation"></div>
+    <div>ngBind: <input type=radio ng-model="benchmarkType" value="ngBind"></div>
+    <div>interpolation: <input type=radio ng-model="benchmarkType" value="interpolation"></div>
+    <div>ngBind + fnInvocation: <input type=radio ng-model="benchmarkType" value="ngBindFn"></div>
+    <div>interpolation + fnInvocation: <input type=radio ng-model="benchmarkType" value="interpolationFn"></div>
+    <div>ngBind + filter: <input type=radio ng-model="benchmarkType" value="ngBindFilter"></div>
+    <div>ngBind + filter: <input type=radio ng-model="benchmarkType" value="interpolationFilter"></div>
+
+    <ng-switch on="benchmarkType">
+      <baseline-binding-table ng-switch-when="baselineBinding">
+      </baseline-binding-table>
+      <baseline-interpolation-table ng-switch-when="baselineInterpolation">
+      </baseline-interpolation-table>
+      <div ng-switch-when="ngBind">
+        <h2>baseline binding</h2>
+        <div ng-repeat="row in data">
+          <span ng-repeat="column in row"><span ng-bind="column.i"></span>:<span ng-bind="column.j"></span>|</span>
+        </div>
+      </div>
+      <div ng-switch-when="interpolation">
+        <h2>baseline interpolation</h2>
+        <div ng-repeat="row in data">
+          <span ng-repeat="column in row">{{column.i}}:{{column.j}}|</span>
+        </div>
+      </div>
+      <div ng-switch-when="ngBindFn">
+        <h2>bindings with functions</h2>
+        <div ng-repeat="row in data">
+          <span ng-repeat="column in row"><span ng-bind="column.iFn()"></span>:<span ng-bind="column.jFn()"></span>|</span>
+        </div>
+      </div>
+      <div ng-switch-when="interpolationFn">
+        <h2>interpolation with functions</h2>
+        <div ng-repeat="row in data">
+          <span ng-repeat="column in row">{{column.iFn()}}:{{column.jFn()}}|</span>
+        </div>
+      </div>
+      <div ng-switch-when="ngBindFilter">
+        <h2>bindings with filter</h2>
+        <div ng-repeat="row in data">
+          <span ng-repeat="column in row"><span ng-bind="column.i | noop"></span>:<span ng-bind="column.j | noop"></span>|</span>
+        </div>
+      </div>
+      <div ng-switch-when="interpolationFilter">
+        <h2>interpolation with filter</h2>
+        <div ng-repeat="row in data">
+          <span ng-repeat="column in row">{{column.i | noop}}:{{column.j | noop}}|</span>
+        </div>
+      </div>
+    </ng-switch>
+  </div>
+</body>
+</html>
