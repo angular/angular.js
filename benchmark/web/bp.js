@@ -263,23 +263,6 @@ bp.Document.addButton = function(reference, handler) {
   }
 }
 
-bp.Document.addLinks = function() {
-  // Add links to everything
-  var linkDiv = bp.Document.container().querySelector('.versionContent');
-  var linkHtml = '';
-
-  [
-    // Add new benchmark suites here
-    ['tree.html', 'TreeComponent']
-  ].forEach((function (link) {
-    linkHtml += '<a href="'+ link[0] +'">'+ link[1] +'</a>';
-  }));
-
-  if (linkDiv) {
-    linkDiv.innerHTML = linkHtml;
-  }
-};
-
 bp.Document.addInfo = function() {
   bp.Document.infoDiv = bp.Document.container().querySelector('div.info');
   if (bp.Document.infoDiv) {
@@ -289,7 +272,6 @@ bp.Document.addInfo = function() {
 
 bp.Document.onDOMContentLoaded = function() {
   if (!bp.Document.container()) return;
-  bp.Document.addLinks();
   bp.Document.addButton('loopBtn', bp.Runner.loopBenchmark);
   bp.Document.addButton('onceBtn', bp.Runner.onceBenchmark);
   bp.Document.addButton('twentyFiveBtn', bp.Runner.twentyFiveBenchmark);

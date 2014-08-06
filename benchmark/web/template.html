@@ -1,12 +1,12 @@
 <html>
 <head>
    <title>Big Table Benchmark</title>
-    <script src="underscore.js"></script>
-    <script src="bp.js"></script>
-    <script src="../../build/angular.js"></script>
-    <script src="table.js"></script>
+    <script src="../../web/underscore.js"></script>
+    <script src="../../web/bp.js"></script>
+    <script src="../../../build/angular.js"></script>
+    %%SCRIPTS%%
 
-    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="../../web/bootstrap.min.css">
     <style>
       .bpLink { background: lightblue; padding: 1em; margin-bottom: 1.5em; }
       .row.average { font-weight: bold; background: #eee; border-bottom: 1px solid #CCC; padding: 12px 0; margin-bottom: 12px; }
@@ -21,11 +21,6 @@
     <div class="row">
       <div class="col-lg-12">
         <div id="benchmarkContainer">
-          <div class="bpLink">
-            Benchmark Versions:
-            <span class="versionContent"></span>
-          </div>
-          <hr>
           <form role="form" class="form-vertical">
             <div class="form-group">
               <label for="sampleRange">
@@ -124,18 +119,8 @@
         </div>
       </div>
     </div>
-    <p>
-    Render a table
-    </p>
-    <div ng-app="tableSteps">
-      <table>
-        <tbody>
-          <tr ng-repeat="i in ii track by $index">
-            <td ng-repeat="j in jj track by $index" cell></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    %%PLACEHOLDER%%
   </div>
 </body>
 </html>
+

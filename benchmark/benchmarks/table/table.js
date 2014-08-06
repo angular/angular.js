@@ -8,10 +8,18 @@ angular.module('tableSteps', []).
         $rootScope.$digest();
       }
     });
+    $window.benchmarkSteps.push({
+      name: 'cleanup',
+      fn: function() {
+        $rootScope.ii = [];
+        $rootScope.jj = [];
+        $rootScope.$digest();
+      }
+    });
   }]).
   directive('cell', function () {
     return {
       restrict: 'A',
       templateUrl: 'cell-tmpl.html'
-    }
+    };
   });
