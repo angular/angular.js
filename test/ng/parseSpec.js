@@ -321,6 +321,10 @@ describe('parser', function() {
         expect(scope.$eval('returnFalse() ? returnString() : returnInt()')).toEqual(returnFalse() ? returnString() : returnInt());
         expect(scope.$eval('returnTrue() ? returnString() : returnInt()')).toEqual(returnTrue() ? returnString() : returnInt());
         expect(scope.$eval('identity(returnFalse() ? returnString() : returnInt())')).toEqual(identity(returnFalse() ? returnString() : returnInt()));
+
+        // Assignment
+        expect(scope.$eval('false ? x=1 : x=2')).toEqual(2);
+        expect(scope.x).toEqual(2);
       });
 
       it('should parse string', function() {
