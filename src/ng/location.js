@@ -641,6 +641,13 @@ function $LocationProvider(){
         if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) return;
       }
 
+      var href = elm.attr('href') || elm.attr('xlink:href');
+
+      if (href && href.indexOf('#' + hashPrefix + '/') !== 0 && href[0] === '#') {
+        // Don't rewrite hash-fragment links in the same document.
+        return;
+      }
+
       var absHref = elm.prop('href');
 
       if (isObject(absHref) && absHref.toString() === '[object SVGAnimatedString]') {

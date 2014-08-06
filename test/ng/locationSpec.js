@@ -1164,6 +1164,32 @@ describe('$location', function() {
     });
 
 
+    it('should not rewrite when clicking on relative hash fragments', function() {
+      configureService('#foo', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when clicking on relative hash fragments in old browser', function() {
+      configureService('#foo', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
     // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
     if (!msie || msie >= 9) {
 
