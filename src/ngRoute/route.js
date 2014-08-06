@@ -489,7 +489,8 @@ function $RouteProvider(){
         $rootScope.$broadcast('$routeUpdate', last);
       } else if (next || last) {
         forceReload = false;
-        $rootScope.$broadcast('$routeChangeStart', next, last);
+        if($rootScope.$broadcast('$routeChangeStart', next, last).defaultPrevented)
+          return $location.path(last.$$route.originalPath || next.$$route.originalPath);
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
