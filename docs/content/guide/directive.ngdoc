@@ -917,7 +917,7 @@ corresponding paramater being sent to the `link` function will also be an array.
     angular.module('docsTabsExample', [])
       .directive('myPane', function() {
         return {
-          require: ['^myTabs', '^ngModel],
+          require: ['^myTabs', '^ngModel'],
           restrict: 'E',
           transclude: true,
           scope: {
