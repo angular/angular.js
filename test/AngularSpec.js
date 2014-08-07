@@ -637,6 +637,16 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
+
+
+    it('should not invoke the iterator for indexed properties which are not present in the collection', function() {
+      var log = [];
+      var collection = [];
+      collection[5] = 'SPARSE';
+      forEach(collection, function (item, index) { log.push(item + index); });
+      expect(log.length).toBe(1);
+      expect(log[0]).toBe('SPARSE5');
+    });
   });
 
 
