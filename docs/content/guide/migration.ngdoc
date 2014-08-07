@@ -382,14 +382,16 @@ See [80739409](https://github.com/angular/angular.js/commit/807394095b991357225a
 
 ## ngBindHtmlUnsafe has been removed and replaced by ngBindHtml
 
-`ngBindHtml` which has been moved from `ngSanitize` module to the core `ng` module.
-
 `ngBindHtml` provides `ngBindHtmlUnsafe` like
 behavior (evaluate an expression and innerHTML the result into the DOM) when bound to the result
 of `$sce.trustAsHtml(string)`. When bound to a plain string, the string is sanitized via
 `$sanitize` before being innerHTML'd. If the `$sanitize` service isn't available (`ngSanitize`
 module is not loaded) and the bound expression evaluates to a value that is not trusted an
 exception is thrown.
+
+When using this directive you can either include `ngSanitize` in your module's dependencis (See the
+example at the {@link ngBindHtml} reference) or use the {@link $sce} service to set the value as
+trusted.
 
 See [dae69473](https://github.com/angular/angular.js/commit/dae694739b9581bea5dbc53522ec00d87b26ae55).
 
