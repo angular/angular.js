@@ -320,7 +320,7 @@ function jqLiteRemoveData(element, name) {
 
 function jqLiteExpandoStore(element, key, value) {
   var expandoId = element.ng339,
-      expandoStore = jqCache[expandoId || -1];
+      expandoStore = expandoId && jqCache[expandoId];
 
   if (isDefined(value)) {
     if (!expandoStore) {
