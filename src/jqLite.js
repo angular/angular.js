@@ -947,7 +947,7 @@ forEach({
 
   clone: jqLiteClone,
 
-  triggerHandler: function(element, event, eventData) {
+  triggerHandler: function(element, event, extraParameters) {
 
     var dummyEvent, eventFnsCopy, handlerArgs;
     var eventName = event.type || event;
@@ -971,7 +971,7 @@ forEach({
 
       // Copy event handlers in case event handlers array is modified during execution.
       eventFnsCopy = shallowCopy(eventFns);
-      handlerArgs = eventData ? [dummyEvent].concat(eventData) : [dummyEvent];
+      handlerArgs = extraParameters ? [dummyEvent].concat(extraParameters) : [dummyEvent];
 
       forEach(eventFnsCopy, function(fn) {
         fn.apply(element, handlerArgs);
