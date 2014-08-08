@@ -904,7 +904,7 @@ function getterFn(path, options, fullExp) {
       };
     }
   } else {
-    var code = 'var p;\n';
+    var code = '';
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
       code += 'if(s == null) return undefined;\n' +
