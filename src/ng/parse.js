@@ -1054,7 +1054,7 @@ function $ParseProvider() {
       }, objectEquality, deregisterNotifier);
     }
 
-    function oneTimeLiteralWatch(scope, listener, objectEquality, parsedExpression) {
+    function oneTimeLiteralWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
       var unwatch;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
