@@ -1092,19 +1092,17 @@ function $ParseProvider() {
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {
-      if (isFunction(interceptorFn)) {
-        var fn = function interceptedExpression(scope, locals) {
-          var value = parsedExpression(scope, locals);
-          var result = interceptorFn(value, scope, locals);
-          // we only return the interceptor's result if the
-          // initial value is defined (for bind-once)
-          return isDefined(value) ? result : value;
-        };
-        fn.$$watchDelegate = parsedExpression.$$watchDelegate;
-        return fn;
-      } else {
-        return parsedExpression;
-      }
+      if (!interceptorFn) return parsedExpression;
+
+      var fn = function interceptedExpression(scope, locals) {
+        var value = parsedExpression(scope, locals);
+        var result = interceptorFn(value, scope, locals);
+        // we only return the interceptor's result if the
+        // initial value is defined (for bind-once)
+        return isDefined(value) ? result : value;
+      };
+      fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+      return fn;
     }
   }];
 }
