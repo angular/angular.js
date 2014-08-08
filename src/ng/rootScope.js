@@ -393,9 +393,9 @@ function $RootScopeProvider(){
         var oldValues = new Array(watchExpressions.length);
         var newValues = new Array(watchExpressions.length);
         var deregisterFns = [];
+        var changeCount = 0;
         var self = this;
-        var changeReactionScheduled = false;
-        var firstRun = true;
+        var masterUnwatch;
 
         if (watchExpressions.length === 1) {
           // Special case size of one
@@ -407,31 +407,29 @@ function $RootScopeProvider(){
         }
 
         forEach(watchExpressions, function (expr, i) {
-          var unwatchFn = self.$watch(expr, function watchGroupSubAction(value, oldValue) {
+          var unwatch = self.$watch(expr, function watchGroupSubAction(value, oldValue) {
             newValues[i] = value;
             oldValues[i] = oldValue;
-            if (!changeReactionScheduled) {
-              changeReactionScheduled = true;
-              self.$evalAsync(watchGroupAction);
+            changeCount++;
+          }, false, function watchGroupDeregNotifier() {
+            arrayRemove(deregisterFns, unwatch);
+            if (!deregisterFns.length) {
+              masterUnwatch();
             }
           });
-          deregisterFns.push(unwatchFn);
+
+          deregisterFns.push(unwatch);
+        }, this);
+
+        masterUnwatch = self.$watch(function watchGroupChangeWatch() {
+          return changeCount;
+        }, function watchGroupChangeAction(value, oldValue) {
+          listener(newValues, (value === oldValue) ? newValues : oldValues, self);
         });
-
-        function watchGroupAction() {
-          changeReactionScheduled = false;
-
-          if (firstRun) {
-            firstRun = false;
-            listener(newValues, newValues, self);
-          } else {
-            listener(newValues, oldValues, self);
-          }
-        }
 
         return function deregisterWatchGroup() {
           while (deregisterFns.length) {
-            deregisterFns.shift()();
+            deregisterFns[0]();
           }
         };
       },

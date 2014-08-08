@@ -149,14 +149,14 @@ describe('Scope', function() {
 
     it('should clean up stable watches from $watchGroup', inject(function($rootScope) {
       $rootScope.$watchGroup(['::foo', '::bar'], function() {});
-      expect($rootScope.$$watchers.length).toEqual(2);
+      expect($rootScope.$$watchers.length).toEqual(3);
 
       $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(2);
+      expect($rootScope.$$watchers.length).toEqual(3);
 
       $rootScope.foo = 'foo';
       $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect($rootScope.$$watchers.length).toEqual(2);
 
       $rootScope.bar = 'bar';
       $rootScope.$digest();
