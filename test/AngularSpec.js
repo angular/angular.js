@@ -244,19 +244,6 @@ describe('angular', function() {
       expect(clone.$some).toBe(original.$some);
     });
 
-    it('should omit properties from prototype chain', function() {
-      var original, clone = {};
-      function Func() {}
-      Func.prototype.hello = "world";
-
-      original = new Func();
-      original.goodbye = "world";
-
-      expect(shallowCopy(original, clone)).toBe(clone);
-      expect(clone.hello).toBeUndefined();
-      expect(clone.goodbye).toBe("world");
-    });
-
     it('should handle arrays', function() {
       var original = [{}, 1],
           clone = [];
