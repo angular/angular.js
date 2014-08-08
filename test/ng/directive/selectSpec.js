@@ -877,6 +877,15 @@ describe('select', function() {
         expect(element.val()).toEqual('4');
       });
 
+      it('should throw an error when trying to combine track by with a complex select expression', function() {
+        expect(function() {
+          createSelect({
+            'ng-model': 'selected',
+            'ng-options': 'item.id as item.name for item in values track by item.id'
+          });
+        }).toThrowMinErr('ngOptions','trackSelect', "Do not use 'track by' when your select ('item.id') is different from your value ('item')");
+      });
+
 
       it('should bind to scope value through experession', function() {
         createSelect({
