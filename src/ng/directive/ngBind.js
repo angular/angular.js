@@ -180,21 +180,18 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
 var ngBindHtmlDirective = ['$sce', '$parse', '$compile', function($sce, $parse, $compile) {
   return {
     restrict: 'A',
-    compile: function (tElement, tAttrs) {
+    link: function ngBindLink(scope, element, attr) {
+      $compile.addBindingInfo(element, attr.ngBindHtml);
+      var ngBindHtmlGetter = $parse(attr.ngBindHtml);
+      var ngBindHtmlWatch = $parse(attr.ngBindHtml, function getStringValue(value) {
+        return value ? value.toString() : '';
+      });
 
-      return function (scope, element, attr) {
-        $compile.addBindingInfo(element, attr.ngBindHtml);
-        var parsed = $parse(attr.ngBindHtml);
-        var changeDetector = $parse(attr.ngBindHtml, function getStringValue(value) {
-          return (value || '').toString();
-        });
-
-        scope.$watch(changeDetector, function ngBindHtmlWatchAction() {
-          // we re-evaluate the expr because we want a TrustedValueHolderType
-          // for $sce, not a string
-          element.html($sce.getTrustedHtml(parsed(scope)) || '');
-        });
-      };
+      scope.$watch(ngBindHtmlWatch, function ngBindHtmlWatchAction() {
+        // we re-evaluate the expr because we want a TrustedValueHolderType
+        // for $sce, not a string
+        element.html($sce.getTrustedHtml(ngBindHtmlGetter(scope)) || '');
+      });
     }
   };
 }];
