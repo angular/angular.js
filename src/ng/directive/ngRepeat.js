@@ -320,30 +320,30 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
           // locate existing items
           length = nextBlockOrder.length = collectionKeys.length;
-          for(index = 0; index < length; index++) {
-           key = (collection === collectionKeys) ? index : collectionKeys[index];
-           value = collection[key];
-           trackById = trackByIdFn(key, value, index);
-           assertNotHasOwnProperty(trackById, '`track by` id');
-           if(lastBlockMap.hasOwnProperty(trackById)) {
-             block = lastBlockMap[trackById];
-             delete lastBlockMap[trackById];
-             nextBlockMap[trackById] = block;
-             nextBlockOrder[index] = block;
-           } else if (nextBlockMap.hasOwnProperty(trackById)) {
-             // restore lastBlockMap
-             forEach(nextBlockOrder, function(block) {
-               if (block && block.scope) lastBlockMap[block.id] = block;
-             });
-             // This is a duplicate and we need to throw an error
-             throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
-                                                                                                                                                    expression,       trackById);
-           } else {
-             // new never before seen block
-             nextBlockOrder[index] = { id: trackById };
-             nextBlockMap[trackById] = false;
-           }
-         }
+          for (index = 0; index < length; index++) {
+            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            value = collection[key];
+            trackById = trackByIdFn(key, value, index);
+            assertNotHasOwnProperty(trackById, '`track by` id');
+            if (lastBlockMap.hasOwnProperty(trackById)) {
+              block = lastBlockMap[trackById];
+              delete lastBlockMap[trackById];
+              nextBlockMap[trackById] = block;
+              nextBlockOrder[index] = block;
+            } else if (nextBlockMap.hasOwnProperty(trackById)) {
+              // restore lastBlockMap
+              forEach(nextBlockOrder, function(block) {
+                if (block && block.scope) lastBlockMap[block.id] = block;
+              });
+              // This is a duplicate and we need to throw an error
+              throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
+                                                                                                                                                     expression,       trackById);
+            } else {
+              // new never before seen block
+              nextBlockOrder[index] = { id: trackById, scope: undefined, clone: undefined };
+              nextBlockMap[trackById] = false;
+            }
+          }
 
           // remove existing items
           for (var blockKey in lastBlockMap) {
