@@ -52,9 +52,10 @@
    </example>
  */
 var ngBindDirective = ngDirective({
-  compile: function(templateElement) {
+  compile: function ngBindCompile(templateElement) {
     templateElement.addClass('ng-binding');
-    return function (scope, element, attr) {
+
+    return function ngBindLink(scope, element, attr) {
       element.data('$binding', attr.ngBind);
       scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
         // We are purposefully using == here rather than === because we want to
