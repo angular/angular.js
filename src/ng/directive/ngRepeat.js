@@ -380,7 +380,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               updateScope(block.scope, index);
             } else {
               // new item which we don't know about
-              $transclude(function(clone, scope) {
+              $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
                 clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
                 $animate.enter(clone, null, jqLite(previousNode));
