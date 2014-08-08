@@ -947,32 +947,37 @@ forEach({
 
   clone: jqLiteClone,
 
-  triggerHandler: function(element, eventName, eventData) {
+  triggerHandler: function(element, event, eventData) {
 
-    var event = {
-      preventDefault: function() {
-        this.defaultPrevented = true;
-      },
-      isDefaultPrevented: function() {
-        return this.defaultPrevented === true;
-      },
-      stopPropagation: noop
-    };
+    var dummyEvent, eventFnsCopy, handlerArgs;
+    var eventName = event.type || event;
+    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName];
 
-    if ( eventName.type ) {
-      extend(event, eventName);
-      eventName = event.type;
+    if (eventFns) {
+
+      // Create a dummy event to pass to the handlers
+      dummyEvent = {
+        preventDefault: function() { this.defaultPrevented = true; },
+        isDefaultPrevented: function() { return this.defaultPrevented === true; },
+        stopPropagation: noop,
+        type: eventName,
+        target: element
+      };
+
+      // If a custom event was provided then extend our dummy event with it
+      if (event.type) {
+        dummyEvent = extend(dummyEvent, event);
+      }
+
+      // Copy event handlers in case event handlers array is modified during execution.
+      eventFnsCopy = shallowCopy(eventFns);
+      handlerArgs = eventData ? [dummyEvent].concat(eventData) : [dummyEvent];
+
+      forEach(eventFnsCopy, function(fn) {
+        fn.apply(element, handlerArgs);
+      });
+
     }
-
-    var handlerArgs = [event].concat(eventData || []);
-
-    // Copy event handlers in case event handlers array is modified during execution.
-    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName],
-        eventFnsCopy = shallowCopy(eventFns || []);
-
-    forEach(eventFnsCopy, function(fn) {
-      fn.apply(element, handlerArgs);
-    });
   }
 }, function(fn, name){
   /**
