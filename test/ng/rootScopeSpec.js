@@ -526,6 +526,34 @@ describe('Scope', function() {
         expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
                              'watch2', 'watch3']);
       }));
+
+      describe('deregisterNotifier', function () {
+        it('should call the deregisterNotifier when the watch is deregistered', inject(
+          function($rootScope) {
+            var notifier = jasmine.createSpy('deregisterNotifier');
+            var listenerRemove = $rootScope.$watch('noop', noop, false, notifier);
+
+            expect(notifier).not.toHaveBeenCalled();
+
+            listenerRemove();
+            expect(notifier).toHaveBeenCalledOnce();
+          }));
+
+
+        it('should call the deregisterNotifier when a one-time expression is stable', inject(
+          function($rootScope) {
+            var notifier = jasmine.createSpy('deregisterNotifier');
+            $rootScope.$watch('::foo', noop, false, notifier);
+
+            expect(notifier).not.toHaveBeenCalledOnce();
+            $rootScope.$digest();
+            expect(notifier).not.toHaveBeenCalledOnce();
+
+            $rootScope.foo = 'foo';
+            $rootScope.$digest();
+            expect(notifier).toHaveBeenCalledOnce();
+          }));
+      });
     });
 
 

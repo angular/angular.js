@@ -1035,7 +1035,7 @@ function $ParseProvider() {
       }
     };
 
-    function oneTimeWatch(scope, listener, objectEquality, parsedExpression) {
+    function oneTimeWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
       var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
@@ -1051,7 +1051,7 @@ function $ParseProvider() {
             }
           });
         }
-      }, objectEquality);
+      }, objectEquality, deregisterNotifier);
     }
 
     function oneTimeLiteralWatch(scope, listener, objectEquality, parsedExpression) {
@@ -1078,7 +1078,7 @@ function $ParseProvider() {
       }
     }
 
-    function constantWatch(scope, listener, objectEquality, parsedExpression) {
+    function constantWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
       var unwatch;
       return unwatch = scope.$watch(function constantWatch(scope) {
         return parsedExpression(scope);
@@ -1087,7 +1087,7 @@ function $ParseProvider() {
           listener.apply(this, arguments);
         }
         unwatch();
-      }, objectEquality);
+      }, objectEquality, deregisterNotifier);
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {
