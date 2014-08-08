@@ -825,10 +825,12 @@ function copy(source, destination, stackSource, stackDest) {
  */
 function shallowCopy(src, dst) {
   var i = 0;
+  var l;
+
   if (isArray(src)) {
     dst = dst || [];
 
-    for (; i < src.length; i++) {
+    for (l = src.length; i < l; i++) {
       dst[i] = src[i];
     }
   } else if (isObject(src)) {
@@ -836,7 +838,7 @@ function shallowCopy(src, dst) {
 
     var keys = Object.keys(src);
 
-    for (var l = keys.length; i < l; i++) {
+    for (l = keys.length; i < l; i++) {
       var key = keys[i];
 
       if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
