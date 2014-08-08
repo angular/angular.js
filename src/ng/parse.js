@@ -995,11 +995,12 @@ function $ParseProvider() {
     $parseOptions.csp = $sniffer.csp;
 
     return function(exp, interceptorFn) {
-      var parsedExpression, oneTime,
-          cacheKey = (exp = trim(exp));
+      var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
         case 'string':
+          cacheKey = exp = exp.trim();
+
           if (cache.hasOwnProperty(cacheKey)) {
             parsedExpression = cache[cacheKey];
           } else {
