@@ -152,7 +152,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
         previousElements.length = 0;
 
         for (i = 0, ii = selectedScopes.length; i < ii; ++i) {
-          var selected = getBlockElements(selectedElements[i].clone);
+          var selected = getBlockNodes(selectedElements[i].clone);
           selectedScopes[i].$destroy();
           previousElements[i] = selected;
           $animate.leave(selected, function() {
