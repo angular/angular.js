@@ -165,7 +165,8 @@ function jqLiteIsTextNode(html) {
 function jqLiteAcceptsData(node) {
   // The window object can accept data but has no nodeType
   // Otherwise we are only interested in elements (1) and documents (9)
-  return !node.nodeType || node.nodeType === 1 || node.nodeType === 9;
+  var nodeType = node.nodeType;
+  return nodeType === 1 || !nodeType || nodeType === 9;
 }
 
 function jqLiteBuildFragment(html, context) {
