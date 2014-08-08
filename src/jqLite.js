@@ -734,7 +734,8 @@ forEach({
     if (!events) jqLiteExpandoStore(element, 'events', events = {});
     if (!handle) jqLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
 
-    var types = type.split(' ');
+    // http://jsperf.com/string-indexof-vs-split
+    var types = type.indexOf(' ') ? type.split(' ') : [type];
     var i = types.length;
 
     while (i--) {
