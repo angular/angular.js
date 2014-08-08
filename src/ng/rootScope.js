@@ -324,7 +324,7 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener, objectEquality) {
-        var get = compileToFn(watchExp, 'watch');
+        var get = $parse(watchExp);
 
         if (get.$$watchDelegate) {
           return get.$$watchDelegate(this, listener, objectEquality, get);
@@ -1195,11 +1195,6 @@ function $RootScopeProvider(){
       $rootScope.$$phase = null;
     }
 
-    function compileToFn(exp, name) {
-      var fn = $parse(exp);
-      assertArgFn(fn, name);
-      return fn;
-    }
 
     function decrementListenerCount(current, count, name) {
       do {
