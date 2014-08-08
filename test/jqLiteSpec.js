@@ -1718,9 +1718,11 @@ describe('jqLite', function() {
       element.triggerHandler('click');
       event = pokeSpy.mostRecentCall.args[0];
       expect(event.preventDefault).toBeDefined();
+      expect(event.target).toEqual(element[0]);
+      expect(event.type).toEqual('click');
     });
 
-    it('should pass data as an additional argument', function() {
+    it('should pass extra parameters as an additional argument', function() {
       var element = jqLite('<a>poke</a>'),
           pokeSpy = jasmine.createSpy('poke'),
           data;
@@ -1764,6 +1766,24 @@ describe('jqLite', function() {
       element.triggerHandler('click');
       expect(clickOnceSpy).toHaveBeenCalledOnce();
       expect(clickSpy.callCount).toBe(2);
+    });
+
+    it("should accept a custom event instead of eventName", function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          customEvent = {
+            type: 'click',
+            someProp: 'someValue'
+          },
+          actualEvent;
+
+      element.on('click', pokeSpy);
+      element.triggerHandler(customEvent);
+      actualEvent = pokeSpy.mostRecentCall.args[0];
+      expect(actualEvent.preventDefault).toBeDefined();
+      expect(actualEvent.someProp).toEqual('someValue');
+      expect(actualEvent.target).toEqual(element[0]);
+      expect(actualEvent.type).toEqual('click');
     });
   });
 
