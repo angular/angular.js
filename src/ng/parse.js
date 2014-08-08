@@ -912,12 +912,12 @@ function getterFn(path, options, fullExp) {
                       // we simply dereference 's' on any .dot notation
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
-                      : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '.' + key + ';\n';
+                      : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key + ';\n';
     });
     code += 'return s;';
 
     /* jshint -W054 */
-    var evaledFnGetter = new Function('s', 'k', code); // s=scope, k=locals
+    var evaledFnGetter = new Function('s', 'l', code); // s=scope, l=locals
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
     fn = evaledFnGetter;
