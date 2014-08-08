@@ -171,8 +171,7 @@ function $RootScopeProvider(){
        *
        */
       $new: function(isolate) {
-        var ChildScope,
-            child;
+        var child;
 
         if (isolate) {
           child = new Scope();
