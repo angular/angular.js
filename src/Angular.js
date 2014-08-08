@@ -821,11 +821,13 @@ function copy(source, destination, stackSource, stackDest) {
 }
 
 /**
- * Creates a shallow copy of an object, an array or a primitive
+ * Creates a shallow copy of an object, an array or a primitive.
+ *
+ * Assumes that there no proto properties for objects
  */
 function shallowCopy(src, dst) {
   var i = 0;
-  var l;
+  var l, key;
 
   if (isArray(src)) {
     dst = dst || [];
@@ -836,11 +838,7 @@ function shallowCopy(src, dst) {
   } else if (isObject(src)) {
     dst = dst || {};
 
-    var keys = Object.keys(src);
-
-    for (l = keys.length; i < l; i++) {
-      var key = keys[i];
-
+    for (key in src) {
       if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
         dst[key] = src[key];
       }
