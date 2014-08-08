@@ -182,18 +182,18 @@ function $RootScopeProvider(){
         } else {
           // Only create a child scope class if somebody asks for one,
           // but cache it to allow the VM to optimize lookups.
-          if (!this.$$childScopeClass) {
-            this.$$childScopeClass = function() {
+          if (!this.$$ChildScope) {
+            this.$$ChildScope = function ChildScope() {
               this.$$watchers = this.$$nextSibling =
                   this.$$childHead = this.$$childTail = null;
               this.$$listeners = {};
               this.$$listenerCount = {};
               this.$id = nextUid();
-              this.$$childScopeClass = null;
+              this.$$ChildScope = null;
             };
-            this.$$childScopeClass.prototype = this;
+            this.$$ChildScope.prototype = this;
           }
-          child = new this.$$childScopeClass();
+          child = new this.$$ChildScope();
         }
         child['this'] = child;
         child.$parent = this;
