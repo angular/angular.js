@@ -663,9 +663,20 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
              $controller,   $rootScope,   $document,   $sce,   $animate,   $$sanitizeUri) {
 
-    var Attributes = function(element, attr) {
+    var Attributes = function(element, attributesToCopy) {
+      if (attributesToCopy) {
+        var keys = Object.keys(attributesToCopy);
+        var i, l, key;
+
+        for (i = 0, l = keys.length; i < l; i++) {
+          key = keys[i];
+          this[key] = attributesToCopy[key];
+        }
+      } else {
+        this.$attr = {};
+      }
+
       this.$$element = element;
-      this.$attr = attr || {};
     };
 
     Attributes.prototype = {
@@ -1459,12 +1470,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
-        var attrs, $element, i, ii, linkFn, controller, isolateScope, elementControllers = {}, transcludeFn;
+        var i, ii, linkFn, controller, isolateScope, elementControllers = {}, transcludeFn;
 
-        attrs = (compileNode === linkNode)
-          ? templateAttrs
-          : shallowCopy(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
-        $element = attrs.$$element;
+        var $element = jqLite(linkNode);
+        var attrs = (compileNode === linkNode)
+              ? templateAttrs
+              : new Attributes($element, templateAttrs);
 
         if (newIsolateScopeDirective) {
           var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
