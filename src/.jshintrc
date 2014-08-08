@@ -85,7 +85,7 @@
     "assertArgFn": false,
     "assertNotHasOwnProperty": false,
     "getter": false,
-    "getBlockElements": false,
+    "getBlockNodes": false,
     "VALIDITY_STATE_PROPERTY": false,
 
     "skipDestroyOnNextJQueryCleanData": true,
