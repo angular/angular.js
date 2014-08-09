@@ -276,6 +276,16 @@ Lexer.prototype = {
       this.index++;
     }
 
+    //check if the identifier ends with . and if so move back one char
+    if (lastDot && ident[ident.length - 1] === '.') {
+      this.index--;
+      ident = ident.slice(0, -1);
+      lastDot = ident.lastIndexOf('.');
+      if (lastDot === -1) {
+        lastDot = undefined;
+      }
+    }
+
     //check if this is not a method invocation and if it is back out to last dot
     if (lastDot) {
       peekIndex = this.index;
