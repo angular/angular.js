@@ -71,6 +71,13 @@ describe('parser', function() {
       expect(tokens[i].string).toEqual('d"e');
     });
 
+    it('should tokenize identifiers with spaces after dots', function () {
+      var tokens = lex('foo. bar');
+      expect(tokens[0].text).toEqual('foo');
+      expect(tokens[1].text).toEqual('.');
+      expect(tokens[2].text).toEqual('bar');
+    });
+
     it('should tokenize undefined', function() {
       var tokens = lex("undefined");
       var i = 0;
@@ -347,6 +354,28 @@ describe('parser', function() {
         expect(scope.$eval("a", scope)).toEqual(123);
         expect(scope.$eval("b.c", scope)).toEqual(456);
         expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
+      });
+
+      it('should handle white-spaces around dots in paths', function () {
+        scope.a = {b: 4};
+        expect(scope.$eval("a . b", scope)).toEqual(4);
+        expect(scope.$eval("a. b", scope)).toEqual(4);
+        expect(scope.$eval("a .b", scope)).toEqual(4);
+        expect(scope.$eval("a    . \nb", scope)).toEqual(4);
+      });
+
+      it('should throw syntax error exception for identifiers ending with a dot', function () {
+        scope.a = {b: 4};
+
+        expect(function() {
+          scope.$eval("a.", scope);
+        }).toThrowMinErr('$parse', 'syntax',
+          "Token 'null' is an unexpected token at column 2 of the expression [a.] starting at [.].");
+
+        expect(function() {
+          scope.$eval("a .", scope);
+        }).toThrowMinErr('$parse', 'syntax',
+          "Token 'null' is an unexpected token at column 3 of the expression [a .] starting at [.].");
       });
 
       it('should resolve deeply nested paths (important for CSP mode)', function() {
