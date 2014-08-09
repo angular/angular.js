@@ -263,15 +263,15 @@ Lexer.prototype = {
     var ident = '';
     var start = this.index;
 
-    var lastDot, peekIndex, methodName, ch;
+    var lastDot, expectIdent, peekIndex, methodName, ch;
 
     while (this.index < this.text.length) {
       ch = this.text.charAt(this.index);
       if (ch === '.' || this.isIdent(ch) || this.isNumber(ch)) {
-        if (ch === '.') lastDot = this.index;
+        if (expectIdent = ch === '.') lastDot = this.index;
         ident += ch;
-      } else {
-        break;
+      } else if (!(this.isWhitespace(ch) && expectIdent)) {
+          break;
       }
       this.index++;
     }

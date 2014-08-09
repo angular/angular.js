@@ -71,6 +71,10 @@ describe('parser', function() {
       expect(tokens[i].string).toEqual('d"e');
     });
 
+    it('should tokenize identifiers with spaces after dots', function () {
+      expect(lex('foo. bar')[0].text).toEqual('foo.bar');
+    });
+
     it('should tokenize undefined', function() {
       var tokens = lex("undefined");
       var i = 0;
@@ -347,6 +351,14 @@ describe('parser', function() {
         expect(scope.$eval("a", scope)).toEqual(123);
         expect(scope.$eval("b.c", scope)).toEqual(456);
         expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
+      });
+
+      it('should handle white-spaces around dots in paths', function () {
+        scope.a = {b: 4};
+        expect(scope.$eval("a . b", scope)).toEqual(4);
+        expect(scope.$eval("a. b", scope)).toEqual(4);
+        expect(scope.$eval("a .b", scope)).toEqual(4);
+        expect(scope.$eval("a    . \nb", scope)).toEqual(4);
       });
 
       it('should resolve deeply nested paths (important for CSP mode)', function() {
