@@ -47,7 +47,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 ### Testing
 
-* **Unit testing:** [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), {@link guide/dev_guide.unit-testing Unit testing}, {@link guide/dev_guide.services.testing_services Testing services}, [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
+* **Unit testing:** [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), {@link guide/unit-testing Unit testing}, {@link guide/services#unit-testing Testing services}, [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
 * **Scenario testing:** [Protractor](https://github.com/angular/protractor)
 
 ## Specific Topics
