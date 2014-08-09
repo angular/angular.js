@@ -142,7 +142,7 @@
           <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
           </li>
-          <li class="animate-repeat" ng-if="results.length == 0">
+          <li class="animate-repeat" ng-hide="results.length">
             <strong>No results found...</strong>
           </li>
         </ul>
