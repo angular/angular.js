@@ -225,6 +225,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
+        var ngRepeatEndComment = document.createComment(' end ngRepeat: ' + expression + ' ');
+
         if (!match) {
           throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
             expression);
@@ -382,7 +384,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
-                clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
+                // http://jsperf.com/clone-vs-createcomment
+                clone[clone.length++] = ngRepeatEndComment.cloneNode();
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 // Note: We only need the first/last node of the cloned nodes.
