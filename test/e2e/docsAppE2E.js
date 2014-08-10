@@ -68,4 +68,11 @@ describe('docs.angularjs.org', function () {
       expect(element(by.css('.minerr-errmsg')).getText()).toEqual("Argument 'Missing' is not a function, got undefined");
     });
   });
+
+  describe("templates", function() {
+    it("should show parameter defaults", function() {
+      browser.get('index-debug.html#!/api/ng/service/$timeout');
+      expect(element.all(by.css('.input-arguments p em')).first().getText()).toContain('(default: 0)');
+    });
+  });
 });
