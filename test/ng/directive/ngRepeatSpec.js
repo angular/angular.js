@@ -174,14 +174,6 @@ describe('ngRepeat', function() {
     });
 
 
-    it("should throw an exception if 'track by' evaluates to 'hasOwnProperty'", function() {
-      scope.items = {age:20};
-      $compile('<div ng-repeat="(key, value) in items track by \'hasOwnProperty\'"></div>')(scope);
-      scope.$digest();
-      expect($exceptionHandler.errors.shift().message).toMatch(/ng:badname/);
-    });
-
-
     it('should track using build in $id function', function() {
       element = $compile(
           '<ul>' +
