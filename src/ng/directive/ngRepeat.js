@@ -211,6 +211,21 @@
 var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
+
+  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
+    // TODO(perf): generate setters to shave off ~40ms or 1-1.5%
+    scope[valueIdentifier] = value;
+    if (keyIdentifier) scope[keyIdentifier] = key;
+    scope.$index = index;
+    scope.$first = (index === 0);
+    scope.$last = (index === (arrayLength - 1));
+    scope.$middle = !(scope.$first || scope.$last);
+    // jshint bitwise: false
+    scope.$odd = !(scope.$even = (index&1) === 0);
+    // jshint bitwise: true
+  };
+
+
   return {
     restrict: 'A',
     multiElement: true,
@@ -291,18 +306,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             $scope[aliasAs] = collection;
           }
 
-          var updateScope = function(scope, index) {
-            scope[valueIdentifier] = value;
-            if (keyIdentifier) scope[keyIdentifier] = key;
-            scope.$index = index;
-            scope.$first = (index === 0);
-            scope.$last = (index === (arrayLength - 1));
-            scope.$middle = !(scope.$first || scope.$last);
-            // jshint bitwise: false
-            scope.$odd = !(scope.$even = (index&1) === 0);
-            // jshint bitwise: true
-          };
-
           if (isArrayLike(collection)) {
             collectionKeys = collection;
             trackByIdFn = trackByIdExpFn || trackByIdArrayFn;
@@ -379,7 +382,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 $animate.move(getBlockNodes(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index);
+              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength);
             } else {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
@@ -393,7 +396,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // by a directive with templateUrl when its template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
-                updateScope(block.scope, index);
+                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength);
               });
             }
           }
