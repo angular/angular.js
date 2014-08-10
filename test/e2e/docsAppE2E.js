@@ -37,7 +37,7 @@ describe('docs.angularjs.org', function () {
       var nameInput = element(by.model('user.name'));
       nameInput.sendKeys('!!!');
 
-      var code = element(by.css('tt'));
+      var code = element.all(by.css('tt')).first();
       expect(code.getText()).toContain('guest!!!');
     });
 
