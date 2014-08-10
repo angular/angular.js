@@ -270,16 +270,11 @@ function jqLiteOff(element, type, fn, unsupported) {
   var expandoStore = jqLiteExpandoStore(element);
   var events = expandoStore && expandoStore.events;
   var handle = expandoStore && expandoStore.handle;
-  var i;
-  var types;
 
   if (!handle) return; //no listeners registered
 
-  if (isUndefined(type)) {
-    types = Object.keys(events);
-    i = types.length;
-    while (i--) {
-      type = types[i];
+  if (!type) {
+    for (type in events) {
       if (type !== '$destroy') {
         removeEventListenerFn(element, type, events[type]);
       }
