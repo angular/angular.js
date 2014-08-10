@@ -297,7 +297,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         //   - scope: bound scope
         //   - element: previous element.
         //   - index: position
-        var lastBlockMap = {};
+        //
+        // We are using no-proto object so that we don't need to guard against inherited props via
+        // hasOwnProperty.
+        var lastBlockMap = createMap();
 
         //watch props
         $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
@@ -306,7 +309,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextNode,
               // Same as lastBlockMap but it has the current state. It will become the
               // lastBlockMap on the next iteration.
-              nextBlockMap = {},
+              nextBlockMap = createMap(),
               arrayLength,
               key, value, // key/value of iteration
               trackById,
@@ -343,39 +346,35 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
             trackById = trackByIdFn(key, value, index);
-            assertNotHasOwnProperty(trackById, '`track by` id');
-            if (lastBlockMap.hasOwnProperty(trackById)) {
+            if (lastBlockMap[trackById]) {
+              // found previously seen block
               block = lastBlockMap[trackById];
               delete lastBlockMap[trackById];
               nextBlockMap[trackById] = block;
               nextBlockOrder[index] = block;
-            } else if (nextBlockMap.hasOwnProperty(trackById)) {
-              // restore lastBlockMap
+            } else if (nextBlockMap[trackById]) {
+              // id collision detected. restore lastBlockMap and throw an error
               forEach(nextBlockOrder, function (block) {
                 if (block && block.scope) lastBlockMap[block.id] = block;
               });
-              // This is a duplicate and we need to throw an error
               throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
                   expression, trackById);
             } else {
               // new never before seen block
               nextBlockOrder[index] = {id: trackById, scope: undefined, clone: undefined};
-              nextBlockMap[trackById] = false;
+              nextBlockMap[trackById] = true;
             }
           }
 
           // remove existing items
           for (var blockKey in lastBlockMap) {
-            // lastBlockMap is our own object so we don't need to use special hasOwnPropertyFn
-            if (lastBlockMap.hasOwnProperty(blockKey)) {
-              block = lastBlockMap[blockKey];
-              elementsToRemove = getBlockNodes(block.clone);
-              $animate.leave(elementsToRemove);
-              forEach(elementsToRemove, function (element) {
-                element[NG_REMOVED] = true;
-              });
-              block.scope.$destroy();
-            }
+            block = lastBlockMap[blockKey];
+            elementsToRemove = getBlockNodes(block.clone);
+            $animate.leave(elementsToRemove);
+            forEach(elementsToRemove, function (element) {
+              element[NG_REMOVED] = true;
+            });
+            block.scope.$destroy();
           }
 
           // we are not using forEach for perf reasons (trying to avoid #call)
