@@ -86,6 +86,7 @@
     "assertNotHasOwnProperty": false,
     "getter": false,
     "getBlockNodes": false,
+    "createMap": false,
     "VALIDITY_STATE_PROPERTY": false,
 
     "skipDestroyOnNextJQueryCleanData": true,

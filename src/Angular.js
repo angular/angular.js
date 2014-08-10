@@ -83,6 +83,7 @@
   getter: true,
   getBlockNodes: true,
   hasOwnProperty: true,
+  createMap: true,
 */
 
 ////////////////////////////////////
