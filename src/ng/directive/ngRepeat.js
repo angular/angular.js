@@ -225,6 +225,14 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     // jshint bitwise: true
   };
 
+  var getBlockStart = function(block) {
+    return block.clone[0];
+  };
+
+  var getBlockEnd = function(block) {
+    return block.clone[block.clone.length - 1];
+  };
+
 
   return {
     restrict: 'A',
@@ -292,7 +300,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         var lastBlockMap = {};
 
         //watch props
-        $scope.$watchCollection(rhs, function ngRepeatAction(collection){
+        $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
           var index, length,
               previousNode = $element[0],     // current position of the node
               nextNode,
@@ -343,15 +351,15 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextBlockOrder[index] = block;
             } else if (nextBlockMap.hasOwnProperty(trackById)) {
               // restore lastBlockMap
-              forEach(nextBlockOrder, function(block) {
+              forEach(nextBlockOrder, function (block) {
                 if (block && block.scope) lastBlockMap[block.id] = block;
               });
               // This is a duplicate and we need to throw an error
               throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
-                                                                                                                                                     expression,       trackById);
+                  expression, trackById);
             } else {
               // new never before seen block
-              nextBlockOrder[index] = { id: trackById, scope: undefined, clone: undefined };
+              nextBlockOrder[index] = {id: trackById, scope: undefined, clone: undefined};
               nextBlockMap[trackById] = false;
             }
           }
@@ -363,7 +371,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               block = lastBlockMap[blockKey];
               elementsToRemove = getBlockNodes(block.clone);
               $animate.leave(elementsToRemove);
-              forEach(elementsToRemove, function(element) { element[NG_REMOVED] = true; });
+              forEach(elementsToRemove, function (element) {
+                element[NG_REMOVED] = true;
+              });
               block.scope.$destroy();
             }
           }
@@ -381,7 +391,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextNode = previousNode;
               do {
                 nextNode = nextNode.nextSibling;
-              } while(nextNode && nextNode[NG_REMOVED]);
+              } while (nextNode && nextNode[NG_REMOVED]);
 
               if (getBlockStart(block) != nextNode) {
                 // existing item which got moved
@@ -411,13 +421,5 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
       };
     }
   };
-
-  function getBlockStart(block) {
-    return block.clone[0];
-  }
-
-  function getBlockEnd(block) {
-    return block.clone[block.clone.length - 1];
-  }
 }];
 
