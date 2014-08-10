@@ -5,7 +5,7 @@ describe('parser', function() {
   beforeEach(function() {
     /* global getterFnCache: true */
     // clear cache
-    getterFnCache = {};
+    getterFnCache = createMap();
   });
 
 

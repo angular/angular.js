@@ -80,7 +80,7 @@ function ensureSafeFunction(obj, fullExpression) {
   }
 }
 
-var OPERATORS = {
+var OPERATORS = extend(createMap(), {
     /* jshint bitwise : false */
     'null':function(){return null;},
     'true':function(){return true;},
@@ -118,7 +118,7 @@ var OPERATORS = {
 //    '|':function(self, locals, a,b){return a|b;},
     '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
     '!':function(self, locals, a){return !a(self, locals);}
-};
+});
 /* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
@@ -301,9 +301,10 @@ Lexer.prototype = {
       text: ident
     };
 
-    // OPERATORS is our own object so we don't need to use special hasOwnPropertyFn
-    if (OPERATORS.hasOwnProperty(ident)) {
-      token.fn = OPERATORS[ident];
+    var fn = OPERATORS[ident];
+
+    if (fn) {
+      token.fn = fn;
       token.constant = true;
     } else {
       var getter = getterFn(ident, this.options, this.text);
@@ -834,7 +835,7 @@ function setter(obj, path, setValue, fullExp) {
   return setValue;
 }
 
-var getterFnCache = {};
+var getterFnCache = createMap();
 
 /**
  * Implementation of the "Black Hole" variant from:
@@ -875,16 +876,12 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
 }
 
 function getterFn(path, options, fullExp) {
-  // Check whether the cache has this getter already.
-  // We can use hasOwnProperty directly on the cache because we ensure,
-  // see below, that the cache never stores a path called 'hasOwnProperty'
-  if (getterFnCache.hasOwnProperty(path)) {
-    return getterFnCache[path];
-  }
+  var fn = getterFnCache[path];
+
+  if (fn) return fn;
 
   var pathKeys = path.split('.'),
-      pathKeysLength = pathKeys.length,
-      fn;
+      pathKeysLength = pathKeys.length;
 
   // http://jsperf.com/angularjs-parse-getter/6
   if (options.csp) {
@@ -923,11 +920,7 @@ function getterFn(path, options, fullExp) {
     fn = evaledFnGetter;
   }
 
-  // Only cache the value if it's not going to mess up the cache object
-  // This is more performant that using Object.prototype.hasOwnProperty.call
-  if (path !== 'hasOwnProperty') {
-    getterFnCache[path] = fn;
-  }
+  getterFnCache[path] = fn;
   return fn;
 }
 
@@ -984,7 +977,7 @@ function getterFn(path, options, fullExp) {
  *  service.
  */
 function $ParseProvider() {
-  var cache = {};
+  var cache = createMap();
 
   var $parseOptions = {
     csp: false
@@ -1001,9 +994,9 @@ function $ParseProvider() {
         case 'string':
           cacheKey = exp = exp.trim();
 
-          if (cache.hasOwnProperty(cacheKey)) {
-            parsedExpression = cache[cacheKey];
-          } else {
+          parsedExpression = cache[cacheKey];
+
+          if (!parsedExpression) {
             if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
               oneTime = true;
               exp = exp.substring(2);
@@ -1020,11 +1013,7 @@ function $ParseProvider() {
                 oneTimeLiteralWatch : oneTimeWatch;
             }
 
-            if (cacheKey !== 'hasOwnProperty') {
-              // Only cache the value if it's not going to mess up the cache object
-              // This is more performant that using Object.prototype.hasOwnProperty.call
-              cache[cacheKey] = parsedExpression;
-            }
+            cache[cacheKey] = parsedExpression;
           }
           return addInterceptor(parsedExpression, interceptorFn);
 
