@@ -166,7 +166,7 @@ Because we started using dependency injection and our controller has dependencie
 controller in our tests is a bit more complicated. We could use the `new` operator and provide the
 constructor with some kind of fake `$http` implementation. However, Angular provides a mock `$http`
 service that we can use in unit tests.  We configure "fake" responses to server requests by calling
-methods on a service called $httpBackend:
+methods on a service called `$httpBackend`:
 
 ```js
 describe('PhoneCat controllers', function() {
