@@ -2671,6 +2671,28 @@ describe('$compile', function() {
     });
 
 
+    it('should update parent scope when "="-bound NaN changes', inject(function($compile, $rootScope) {
+      $rootScope.num = NaN;
+      compile('<div my-component reference="num"></div>');
+      var isolateScope = element.isolateScope();
+      expect(isolateScope.reference).toBeNaN();
+
+      isolateScope.$apply(function(scope) { scope.reference = 64; });
+      expect($rootScope.num).toBe(64);
+    }));
+
+
+    it('should update isolate scope when "="-bound NaN changes', inject(function($compile, $rootScope) {
+      $rootScope.num = NaN;
+      compile('<div my-component reference="num"></div>');
+      var isolateScope = element.isolateScope();
+      expect(isolateScope.reference).toBeNaN();
+
+      $rootScope.$apply(function(scope) { scope.num = 64; });
+      expect(isolateScope.reference).toBe(64);
+    }));
+
+
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
         compile('<div><span my-component attr="some text">');
