@@ -967,7 +967,27 @@ forEach({
     forEach(eventFnsCopy, function(fn) {
       fn.apply(element, event.concat(eventData));
     });
+  },
+
+  detach: function(element) {
+    function triggerDestroy(el){
+     if(el && el.nodeType === 1){
+       new JQLite(el).triggerHandler('$destroy');
+       for ( var i = 0, children = el.childNodes || []; i < children.length; i++) {
+         triggerDestroy(children[i]);
+       }
+     }
+    }
+
+    // jQuery 'detach' method calls jQuery 'remvove' method with additional parameter
+    // this casues that the jqLitePatchJQueryRemove that patches jQuery remove triggers $destroy events as well
+    // the following function mimics this behaviour
+    triggerDestroy(element);
+    
+    var parent = element.parentNode;
+    if (parent) parent.removeChild(element);
   }
+
 }, function(fn, name){
   /**
    * chaining functions

@@ -348,7 +348,6 @@ describe('form', function() {
         // IE9 and IE10 are special and don't fire submit event when form was destroyed
         if (msie < 9) {
           expect(reloadPrevented).toBe(true);
-          $timeout.flush();
         }
 
         // prevent mem leak in test
@@ -410,7 +409,7 @@ describe('form', function() {
     });
 
 
-    it('should deregister a child form when its DOM is removed', function() {
+    it('should deregister a child form when its scope is destroyed', function() {
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
@@ -426,7 +425,7 @@ describe('form', function() {
       expect(parent).toBeDefined();
       expect(child).toBeDefined();
       expect(parent.$error.required).toEqual([child]);
-      doc.children().remove(); //remove child
+      scope.$destroy(); // destroy scope
 
       expect(parent.child).toBeUndefined();
       expect(scope.child).toBeUndefined();
@@ -434,7 +433,7 @@ describe('form', function() {
     });
 
 
-    it('should deregister a child form whose name is an expression when its DOM is removed', function() {
+    it('should deregister a child form whose name is an expression when its scope is destroyed', function() {
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child.form">' +
@@ -450,13 +449,39 @@ describe('form', function() {
       expect(parent).toBeDefined();
       expect(child).toBeDefined();
       expect(parent.$error.required).toEqual([child]);
-      doc.children().remove(); //remove child
+      scope.$destroy(); // destroy scope
 
       expect(parent.child).toBeUndefined();
       expect(scope.child.form).toBeUndefined();
       expect(parent.$error.required).toBe(false);
     });
 
+    it('should not deregister a child form where it or its parent is detached and reattached', function() {
+      doc = jqLite(
+        '<form name="parent">' +
+          '<div class="child-form-parent">' +
+            '<div class="ng-form" name="child">' +
+              '<input ng:model="modelA" name="inputA" required>' +
+            '</div>' +
+          '</div>' +
+        '</form>');
+      $compile(doc)(scope);
+      scope.$apply();
+
+      var parent = scope.parent,
+        child = scope.child;
+
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
+      expect(parent.$error.required).toEqual([child]);
+
+      var children = doc.children();
+
+      children.detach(); // detach -> remove from DOM
+      doc.append(children); // put back into DOM
+
+      expect(scope.child).toBeDefined();
+    });
 
     it('should deregister a input when it is removed from DOM', function() {
       doc = jqLite(
