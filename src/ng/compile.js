@@ -657,6 +657,28 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name  $compileProvider#enableBindingInfo
+   * @kind function
+   *
+   * @description
+   * Call this method to enable adding binding information to DOM elements at runtime.
+   * If enabled, the compiler will add the following to DOM elements that have been bound to the scope
+   * * `ng-binding` CSS class
+   * * `$binding` data object containing the value of the binding (or an array if there are multiple
+   *   bindings)
+   */
+  var addBindingInfo = noop;
+  this.enableBindingInfo = function() {
+    addBindingInfo = function(element, binding, appendBinding) {
+      if ( appendBinding ) {
+        binding = (element.data('$binding') || []).concat([binding]);
+      }
+      element.addClass('ng-binding').data('$binding', binding);
+    };
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
             '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
@@ -846,7 +868,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
-
+    compile.addBindingInfo = addBindingInfo;
     return compile;
 
     //================================
@@ -877,9 +899,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
           : $compileNodes;
 
-        forEach(transcludeControllers, function(instance, name) {
-          $linkNode.data('$' + name + 'Controller', instance);
-        });
+        if (transcludeControllers) {
+          var names = Object.keys(transcludeControllers);
+          var i = names.length;
+          var name;
+
+          while (i--) {
+            name = names[i];
+            $linkNode.data('$' + name + 'Controller', transcludeControllers[name]);
+          }
+        }
 
         $linkNode.data('$scope', scope);
 
@@ -1582,13 +1611,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         // PRELINKING
         for(i = 0, ii = preLinkFns.length; i < ii; i++) {
-          try {
-            linkFn = preLinkFns[i];
-            linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers), transcludeFn);
-          } catch (e) {
-            $exceptionHandler(e, startingTag($element));
-          }
+          linkFn = preLinkFns[i];
+          invokeLinkFn(linkFn,
+              linkFn.isolateScope ? isolateScope : scope,
+              $element,
+              attrs,
+              linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers),
+              transcludeFn
+          );
         }
 
         // RECURSION
@@ -1602,13 +1632,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         // POSTLINKING
         for(i = postLinkFns.length - 1; i >= 0; i--) {
-          try {
-            linkFn = postLinkFns[i];
-            linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers), transcludeFn);
-          } catch (e) {
-            $exceptionHandler(e, startingTag($element));
-          }
+          linkFn = postLinkFns[i];
+          invokeLinkFn(linkFn,
+              linkFn.isolateScope ? isolateScope : scope,
+              $element,
+              attrs,
+              linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers),
+              transcludeFn
+          );
         }
 
         // This is the function that is injected as `$transclude`.
@@ -1879,17 +1910,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         directives.push({
           priority: 0,
           compile: function textInterpolateCompileFn(templateNode) {
-            // when transcluding a template that has bindings in the root
-            // then we don't have a parent and should do this in the linkFn
-            var parent = templateNode.parent(), hasCompileParent = parent.length;
-            if (hasCompileParent) safeAddClass(templateNode.parent(), 'ng-binding');
-
             return function textInterpolateLinkFn(scope, node) {
-              var parent = node.parent(),
-                  bindings = parent.data('$binding') || [];
-              bindings.push(interpolateFn);
-              parent.data('$binding', bindings);
-              if (!hasCompileParent) safeAddClass(parent, 'ng-binding');
+              var parent = node.parent();
+              addBindingInfo(parent, interpolateFn, true);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;
               });
@@ -2064,6 +2087,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function cloneAndAnnotateFn(fn, annotation) {
       return extend(function() { return fn.apply(null, arguments); }, fn, annotation);
+    }
+
+
+    function invokeLinkFn(linkFn, scope, $element, attrs, controllers, transcludeFn) {
+      try {
+        linkFn(scope, $element, attrs, controllers, transcludeFn);
+      } catch(e) {
+        $exceptionHandler(e, startingTag($element));
+      }
     }
   }];
 }
