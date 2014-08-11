@@ -603,7 +603,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMinlength) {
     var minlength = int(attr.ngMinlength);
     var minLengthValidator = function(value) {
-      return validate(ctrl, 'minlength', ctrl.$isEmpty(value) || value.length >= minlength, value);
+      return validate(ctrl, 'minlength', ctrl.$isEmpty(value) || value.toString().length >= minlength, value);
     };
 
     ctrl.$parsers.push(minLengthValidator);
@@ -614,7 +614,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (attr.ngMaxlength) {
     var maxlength = int(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
-      return validate(ctrl, 'maxlength', ctrl.$isEmpty(value) || value.length <= maxlength, value);
+      return validate(ctrl, 'maxlength', ctrl.$isEmpty(value) || value.toString().length <= maxlength, value);
     };
 
     ctrl.$parsers.push(maxLengthValidator);
