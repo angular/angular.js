@@ -60,26 +60,35 @@ Afterwards, go ahead and [fork](http://help.github.com/forking) the [main Angula
 To build AngularJS, you clone the source code repository and use Grunt to generate the non-minified and
 minified AngularJS files:
 
-```shell
-# Clone your Github repository:
-git clone git@github.com:<github username>/angular.js.git
+1. Clone your Github repository:
+  ```
+  git clone git@github.com:<github username>/angular.js.git
+  ```
 
-# Go to the AngularJS directory:
-cd angular.js
+2. Go to the AngularJS directory:
+  ```shell
+  cd angular.js
+  ```
 
-# Add the main AngularJS repository as an upstream remote to your repository:
-git remote add upstream https://github.com/angular/angular.js.git
+3. Add the main AngularJS repository as an upstream remote to your repository:
+  ```
+  git remote add upstream https://github.com/angular/angular.js.git
+  ```
 
-# Install node.js dependencies:
-npm install
+4. Install node.js dependencies:
+  ```shell
+  npm install
+  ```
 
-# Install bower components:
-bower install
+5. Install bower components:
+  ```shell
+  bower install
+  ```
 
-# Build AngularJS:
-grunt package
-```
-
+6. Build AngularJS:
+  ```shell
+  grunt package
+  ```
 
 <div class="alert alert-warning">
 **Note:** If you're using Windows, you must use an elevated command prompt (right click, run as
