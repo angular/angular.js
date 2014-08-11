@@ -440,7 +440,6 @@ function isDefined(value){return typeof value !== 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-// TODO(perf): use !== null to avoid conversion???
 function isObject(value){return value != null && typeof value === 'object';}
 
 
