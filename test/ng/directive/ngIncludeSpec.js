@@ -362,6 +362,9 @@ describe('ngInclude', function() {
 
 
   describe('afterRendering', function() {
+
+    console.debug('now entering the mine');
+
     var callbackWasCalled = false;
 
     function compileAndLink(tpl) {
@@ -373,7 +376,7 @@ describe('ngInclude', function() {
     beforeEach(inject(putIntoCache('template.html', 'CONTENT')));
 
     it('should evaluate afterRendering if afterRendering attribute is present', inject(
-        compileAndLink('<div><ng:include src="tpl" afterRendering="callbackAfterRendering()"></ng:include></div>'),
+        compileAndLink('<div><ng:include src="tplasdasdasd" autoscroll someelse="yeah" after-rendering="callbackAfterRendering()"></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
 
       $rootScope.$apply(function () {
@@ -386,6 +389,26 @@ describe('ngInclude', function() {
       expect(callbackWasCalled).toBe(true);
 
     }));
+
+
+    it('should be something', inject(
+          putIntoCache('myUrl', 'my partial'),
+          function($rootScope, $compile) {
+      element = $compile('<div><ng:include src="url" after-rendering="asdasdasd"></ng:include></div>')($rootScope);
+
+      $rootScope.url = 'myUrl';
+
+      var called = 0;
+      // we want to assert only during first watch
+      $rootScope.$watch(function() {
+        if (!called) expect(element.text()).toBe('');
+        called++;
+      });
+
+      $rootScope.$digest();
+      expect(element.text()).toBe('my partial2');
+    }));
+
 
   });
 
