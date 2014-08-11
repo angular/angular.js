@@ -70,8 +70,9 @@ function FormController(element, attrs, $scope, $animate) {
   // convenience method for easy toggling of classes
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $animate.removeClass(element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
-    $animate.addClass(element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+    $animate.setClass(element,
+      (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey,
+      (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
   }
 
   /**
