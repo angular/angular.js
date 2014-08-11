@@ -361,6 +361,35 @@ describe('ngInclude', function() {
   }));
 
 
+  describe('afterRendering', function() {
+    var callbackWasCalled = false;
+
+    function compileAndLink(tpl) {
+      return function($compile, $rootScope) {
+        element = $compile(tpl)($rootScope);
+      };
+    }
+
+    beforeEach(inject(putIntoCache('template.html', 'CONTENT')));
+
+    it('should evaluate afterRendering if afterRendering attribute is present', inject(
+        compileAndLink('<div><ng:include src="tpl" afterRendering="callbackAfterRendering()"></ng:include></div>'),
+        function($rootScope, $animate, $timeout) {
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.callbackAfterRendering = function(){
+          callbackWasCalled = true;
+        };
+      });
+
+      expect(callbackWasCalled).toBe(true);
+
+    }));
+
+  });
+
+
   describe('autoscroll', function() {
     var autoScrollSpy;
 
