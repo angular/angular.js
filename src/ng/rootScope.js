@@ -699,7 +699,6 @@ function $RootScopeProvider(){
               asyncTask = asyncQueue.shift();
               asyncTask.scope.$eval(asyncTask.expression);
             } catch (e) {
-              clearPhase();
               $exceptionHandler(e);
             }
             lastDirtyWatch = null;
@@ -742,7 +741,6 @@ function $RootScopeProvider(){
                     }
                   }
                 } catch (e) {
-                  clearPhase();
                   $exceptionHandler(e);
                 }
               }
