@@ -1,6 +1,7 @@
 'use strict';
 
 function createXhr(method) {
+  // TODO(ie): remove
     //if IE and the method is not RFC2616 compliant, or if XMLHttpRequest
     //is not available, try getting an ActiveXObject. Otherwise, use XMLHttpRequest
     //if it is available

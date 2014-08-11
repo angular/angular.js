@@ -529,6 +529,7 @@ function $RootScopeProvider(){
               oldValue.length = oldLength = newLength;
             }
             // copy the items to oldValue and look for changes.
+            // TODO(perf): consider caching oldValue[i] and newValue[i]
             for (var i = 0; i < newLength; i++) {
               bothNaN = (oldValue[i] !== oldValue[i]) &&
                   (newValue[i] !== newValue[i]);
@@ -540,6 +541,7 @@ function $RootScopeProvider(){
           } else {
             if (oldValue !== internalObject) {
               // we are transitioning from something which was not an object into object.
+              // TODO(perf): Object.create(null) + don't use hasOwnProperty for oldValue
               oldValue = internalObject = {};
               oldLength = 0;
               changeDetected++;
@@ -700,7 +702,10 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
+                  // TODO(perf): is this if needed?
                   if (watch) {
+                    // TODO(perf): the last typeof number + NaN checks are executed for all counter watches
+                    //             can we skip it or at least remember if the lastValue is NaN
                     if ((value = watch.get(current)) !== (last = watch.last) &&
                         !(watch.eq
                             ? equals(value, last)
@@ -709,6 +714,7 @@ function $RootScopeProvider(){
                       dirty = true;
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value, null) : value;
+                      // TODO(perf): initialize all watches via async queue?
                       watch.fn(value, ((last === initWatchVal) ? value : last), current);
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
@@ -811,6 +817,7 @@ function $RootScopeProvider(){
         this.$$destroyed = true;
         if (this === $rootScope) return;
 
+        // TODO(perf): $$listenerCount should be Object.create(null), then use `for in`
         forEach(this.$$listenerCount, bind(null, decrementListenerCount, this));
 
         // sever all the references to parent scopes (after this cleanup, the current scope should

@@ -1188,6 +1188,7 @@ function radioInputType(scope, element, attr, ctrl) {
 
   ctrl.$render = function() {
     var value = attr.value;
+    // TODO(perf): update checked only when match since only one radio button can be checked at a time?
     element[0].checked = (value == ctrl.$viewValue);
   };
 
@@ -1966,6 +1967,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       modelValue = modelValue();
     }
 
+    // TODO(perf): why not move this to the action fn?
     // if scope model value and ngModel value are out of sync
     if (ctrl.$modelValue !== modelValue &&
         (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {

@@ -156,6 +156,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
           selectedScopes[i].$destroy();
           previousElements[i] = selected;
           $animate.leave(selected, function() {
+            // TODO(perf): this schedules rAF even without animations which dealocs the elements again via previousElements[i].remove() above;
             previousElements.splice(i, 1);
           });
         }

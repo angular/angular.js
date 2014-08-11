@@ -341,6 +341,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           arrayLength = collectionKeys.length;
 
           // locate existing items
+          // TODO(perf): don't reset nextBlockOrder.length ???
           length = nextBlockOrder.length = collectionKeys.length;
           for (index = 0; index < length; index++) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
@@ -386,6 +387,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
             block = nextBlockOrder[index];
+            // TODO(perf): simplify previousBlockBoundaryNode calculation
             if (nextBlockOrder[index - 1]) previousNode = getBlockEnd(nextBlockOrder[index - 1]);
 
             if (block.scope) {
@@ -406,8 +408,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
+                // TODO(perf): could we move this into the template element and have it cloned with it?
                 // http://jsperf.com/clone-vs-createcomment
                 clone[clone.length++] = ngRepeatEndComment.cloneNode();
+                // TODO(perf): support naked previousNode in `enter`?
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 // Note: We only need the first/last node of the cloned nodes.

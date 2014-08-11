@@ -911,6 +911,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           : $compileNodes;
 
         if (transcludeControllers) {
+          // TODO(perf): use Object.create(null) for transcludeControllers and then `for in`
           var names = Object.keys(transcludeControllers);
           var i = names.length;
           var name;
@@ -1061,6 +1062,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var clone = transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn);
         if (scopeCreated) {
+          // TODO(perf): do we really need this? looks bogus + tries to registers listeners on
+          //             boundary comment needs in repeater
           clone.on('$destroy', function() { transcludedScope.$destroy(); });
         }
         return clone;
@@ -1670,6 +1673,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var transcludeControllers;
 
           // no scope passed
+          // TODO(perf): arguments.length is slow, check if cloneAttachFn is truthy instead
+          // http://jsperf.com/isundefined-vs-arguments-length
           if (arguments.length < 2) {
             cloneAttachFn = scope;
             scope = undefined;
@@ -2075,6 +2080,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       if (parent) {
         parent.replaceChild(newNode, firstElementToRemove);
       }
+
+      // TODO(perf): what are we doing with this document fragment? could we return it for cloning?
       var fragment = document.createDocumentFragment();
       fragment.appendChild(firstElementToRemove);
       newNode[jqLite.expando] = firstElementToRemove[jqLite.expando];

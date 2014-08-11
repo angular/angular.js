@@ -308,6 +308,7 @@ Lexer.prototype = {
       token.constant = true;
     } else {
       var getter = getterFn(ident, this.options, this.text);
+      // TODO(perf): consider exposing the getter reference
       token.fn = extend(function(self, locals) {
         return (getter(self, locals));
       }, {

@@ -440,6 +440,7 @@ function isDefined(value){return typeof value !== 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
+// TODO(perf): use !== null to avoid conversion???
 function isObject(value){return value != null && typeof value === 'object';}
 
 
@@ -832,6 +833,7 @@ function shallowCopy(src, dst) {
   if (isArray(src)) {
     dst = dst || [];
 
+    // TODO(perf): how about slice?
     for (l = src.length; i < l; i++) {
       dst[i] = src[i];
     }
