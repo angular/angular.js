@@ -1056,8 +1056,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var clone = transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn);
         if (scopeCreated) {
-          // TODO(perf): do we really need this? looks bogus + tries to registers listeners on
-          //             boundary comment needs in repeater
           clone.on('$destroy', function() { transcludedScope.$destroy(); });
         }
         return clone;
