@@ -310,7 +310,6 @@ describe('ngInclude', function() {
   }));
 
 
-
   it('should not break attribute bindings on the same element', inject(function($compile, $rootScope, $httpBackend) {
     // regression #3793
 
@@ -360,6 +359,7 @@ describe('ngInclude', function() {
       delete window._ngIncludeCausesScriptToRun;
     } catch (e) {}
   }));
+
 
   describe('autoscroll', function() {
     var autoScrollSpy;
@@ -524,8 +524,6 @@ describe('ngInclude', function() {
 
 
 });
-
-
 
 describe('ngInclude and transcludes', function() {
   var element, directive;
