@@ -75,4 +75,14 @@ describe('docs.angularjs.org', function () {
       expect(element.all(by.css('.input-arguments p em')).first().getText()).toContain('(default: 0)');
     });
   });
+
+  describe("API pages", function() {
+    it("should display links to code on GitHub", function() {
+      browser.get('index-debug.html#!/api/ng/service/$http');
+      expect(element(by.css('.improve-docs')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/edit\/.+\/src\/ng\/http\.js/);
+
+      browser.get('index-debug.html#!/api/ng/service/$http');
+      expect(element(by.css('.view-source')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/tree\/.+\/src\/ng\/http\.js#L\d+/);
+    });
+  });
 });
