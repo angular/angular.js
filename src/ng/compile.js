@@ -889,13 +889,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           : $compileNodes;
 
         if (transcludeControllers) {
-          var names = Object.keys(transcludeControllers);
-          var i = names.length;
-          var name;
-
-          while (i--) {
-            name = names[i];
-            $linkNode.data('$' + name + 'Controller', transcludeControllers[name]);
+          for (var controllerName in transcludeControllers) {
+            $linkNode.data('$' + controllerName + 'Controller', transcludeControllers[controllerName]);
           }
         }
 
