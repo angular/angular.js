@@ -98,17 +98,56 @@ describe('bp', function() {
 
     describe('.onDOMContentLoaded()', function() {
       it('should call methods to write to the dom', function() {
-        var linksSpy = spyOn(bp.Document, 'addLinks');
         var buttonSpy = spyOn(bp.Document, 'addButton');
         var rangeSpy = spyOn(bp.Document, 'addSampleRange');
         var infoSpy = spyOn(bp.Document, 'addInfo');
 
         bp.Document.onDOMContentLoaded();
-        expect(linksSpy).toHaveBeenCalled();
-        expect(buttonSpy.callCount).toBe(3);
+        expect(buttonSpy.callCount).toBe(4);
         expect(rangeSpy).toHaveBeenCalled();
         expect(infoSpy).toHaveBeenCalled();
       });
+    });
+
+
+    describe('.loadNextScript()', function() {
+      it('should shift the first config from window.scripts', function() {
+        window.scripts = [{src: 'foo'}, {src: 'bar'}];
+        bp.Document.loadNextScript();
+        expect(window.scripts).toEqual([{src: 'bar'}]);
+      });
+
+
+      it('should override script with provided source from query params', function() {
+        var headSpy = spyOn(document.head, 'appendChild');
+        bp.setFakeWindow({
+          location: {
+            search: '?angular=foobar'
+          }
+        });
+        bp._window.scripts = [{
+          id: 'angular',
+          src: 'angular.js'
+        }];
+        bp.Document.loadNextScript();
+        expect(headSpy.calls[0].args[0].getAttribute('src')).toBe('foobar');
+      });
+    });
+
+
+    describe('.getParams()', function() {
+      it('should parse query params into an object', function() {
+        bp.setFakeWindow({
+          location: {
+            search: '?angular=foo&bar=baz'
+          }
+        });
+
+        expect(bp.Document.getParams()).toEqual({
+          angular: 'foo',
+          bar: 'baz'
+        });
+      })
     });
   });
 

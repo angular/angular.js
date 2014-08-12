@@ -19,6 +19,11 @@ var bp = window.bp = {
     characteristics: ['gcTime','testTime','garbageCount','retainedCount']
   }
 };
+bp._window = window;
+
+bp.setFakeWindow = function(win) {
+  bp._window = win;
+}
 
 bp.Measure.numMilliseconds = function() {
   if (window.performance != null && typeof window.performance.now == 'function') {
@@ -278,6 +283,37 @@ bp.Document.addInfo = function() {
   }
 };
 
+bp.Document.loadNextScript = function() {
+  if (!bp._window.scripts) return;
+  var params = bp.Document.getParams();
+  var config = bp._window.scripts.shift();
+  if (!config) return;
+  if (config.id && params[config.id]) {
+    config.src = params[config.id];
+  }
+  var tag = document.createElement('script');
+  tag.setAttribute('src', config.src);
+  tag.onload = bp.Document.loadNextScript;
+  document.head.appendChild(tag);
+};
+
+bp.Document.getParams = function() {
+  var params = {},
+      search = bp._window.location.search;
+  if (!search) return params;
+  if (search.indexOf('?') === 0) {
+    search = search.substr(1);
+  }
+
+  search = search.split('&');
+  search.forEach(function(tuple) {
+    tuple = tuple.split('=')
+    params[tuple[0]] = tuple[1];
+  });
+
+  return params;
+};
+
 bp.Document.onDOMContentLoaded = function() {
   if (!bp.Document.container()) return;
   bp.Document.addButton('loopBtn', bp.Runner.loopBenchmark);
@@ -286,37 +322,7 @@ bp.Document.onDOMContentLoaded = function() {
   bp.Document.addButton('profileBtn', bp.Runner.profile);
   bp.Document.addSampleRange();
   bp.Document.addInfo();
-
-  var params = getParams();
-  function loadNext () {
-    var config = window.scripts.shift();
-    if (!config) return;
-    if (config.id && params[config.id]) {
-      config.src = params[config.id];
-    }
-    var tag = document.createElement('script');
-    tag.setAttribute('src', config.src);
-    tag.onload = loadNext;
-    document.head.appendChild(tag);
-  }
-  loadNext();
-
-  function getParams() {
-    var params = {},
-        search = window.location.search;
-    if (!search) return params;
-    if (search.indexOf('?') === 0) {
-      search = search.substr(1);
-    }
-
-    search = search.split('&');
-    search.forEach(function(tuple) {
-      tuple = tuple.split('=')
-      params[tuple[0]] = tuple[1];
-    });
-
-    return params;
-  }
+  bp.Document.loadNextScript();
 };
 
 window.addEventListener('DOMContentLoaded', bp.Document.onDOMContentLoaded);
