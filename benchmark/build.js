@@ -8,7 +8,9 @@ var fs = require('fs'),
     webPath = path.resolve('web');
 
 //Start fresh
-rimraf(buildPath, function(err) {
+rimraf(buildPath, buildIt);
+
+function buildIt (err) {
   var template, benchmarks;
   if (err) throw err;
   fs.mkdirSync(buildPath);
@@ -22,6 +24,9 @@ rimraf(buildPath, function(err) {
     benchmarkPath = path.resolve(benchmarksPath, benchmark);
     fs.mkdirSync(path.resolve(buildPath, benchmark));
 
+    var config = new Config();
+    require(path.resolve(benchmarkPath, 'bp.conf.js'))(config);
+
     dependencies = fs.readdirSync(benchmarkPath);
     dependencies.forEach(function(dependency) {
       var dependencyPath = path.resolve('benchmarks', benchmark, dependency);
@@ -33,12 +38,37 @@ rimraf(buildPath, function(err) {
       else {
         fs.createReadStream(dependencyPath).pipe(fs.createWriteStream(path.resolve(buildPath, benchmark, dependency)));
       }
-
-      if (dependency.indexOf('.js') === (dependency.length - 3)) {
-        scriptTags += '<script src="'+ dependency +'"></script>\n';
-      }
     });
-    main = main.replace('%%SCRIPTS%%', scriptTags);
+    main = main.replace('%%SCRIPTS%%', parseScripts(config.scripts));
+
     fs.writeFileSync(path.resolve(buildPath, benchmark, 'index.html'), main);
   });
-});
+}
+
+function parseScripts (scriptList) {
+  var scriptsString = '';
+  return JSON.stringify(scriptList);
+
+  if (scriptList) {
+    scriptList.forEach(function(scriptConfig) {
+
+      /*scriptsString += ['<script ',
+                          (scriptConfig.id ? 'id="' + scriptConfig.id + '"' : ''),
+                          'src="' + scriptConfig.src + '"></script>'].join('');*/
+    });
+  }
+
+
+  return scriptsString;
+}
+
+function Config() {
+}
+
+Config.prototype.set = function (obj) {
+  for (var k in obj) {
+    if (obj.hasOwnProperty(k)) {
+      this[k] = obj[k];
+    }
+  }
+}

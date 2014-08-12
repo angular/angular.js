@@ -286,6 +286,37 @@ bp.Document.onDOMContentLoaded = function() {
   bp.Document.addButton('profileBtn', bp.Runner.profile);
   bp.Document.addSampleRange();
   bp.Document.addInfo();
+
+  var params = getParams();
+  function loadNext () {
+    var config = window.scripts.shift();
+    if (!config) return;
+    if (config.id && params[config.id]) {
+      config.src = params[config.id];
+    }
+    var tag = document.createElement('script');
+    tag.setAttribute('src', config.src);
+    tag.onload = loadNext;
+    document.head.appendChild(tag);
+  }
+  loadNext();
+
+  function getParams() {
+    var params = {},
+        search = window.location.search;
+    if (!search) return params;
+    if (search.indexOf('?') === 0) {
+      search = search.substr(1);
+    }
+
+    search = search.split('&');
+    search.forEach(function(tuple) {
+      tuple = tuple.split('=')
+      params[tuple[0]] = tuple[1];
+    });
+
+    return params;
+  }
 };
 
 window.addEventListener('DOMContentLoaded', bp.Document.onDOMContentLoaded);
