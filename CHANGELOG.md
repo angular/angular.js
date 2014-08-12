@@ -1,3 +1,114 @@
+<a name="1.3.0-beta.18"></a>
+# 1.3.0-beta.18 spontaneous-combustion (2014-08-12)
+
+
+## Bug Fixes
+
+- **$compile:** make '='-bindings NaN-aware
+  ([5038bf79](https://github.com/angular/angular.js/commit/5038bf79c6c8251d7449d887b44a4321e619c534),
+   [#8553](https://github.com/angular/angular.js/issues/8553), [#8554](https://github.com/angular/angular.js/issues/8554))
+- **$location:** add semicolon to whitelist of delimiters to unencode
+  ([36258033](https://github.com/angular/angular.js/commit/3625803349de04f175f87a22cbb608738003811a),
+   [#5019](https://github.com/angular/angular.js/issues/5019))
+- **$parse:**
+  - one-time binding for literal expressions works as expected
+  ([c024f282](https://github.com/angular/angular.js/commit/c024f28217cf8eedd695dd4b933ecf2ba4243c15),
+   [#8209](https://github.com/angular/angular.js/issues/8209))
+  - correctly assign expressions who's path is undefined and that use brackets notation
+  ([c03ad249](https://github.com/angular/angular.js/commit/c03ad249033e701f3ad7aa358102e1cb87f5025c),
+   [#8039](https://github.com/angular/angular.js/issues/8039))
+- **Scope:** add deregisterNotifier to oneTimeLiteralWatch signature
+  ([a001a417](https://github.com/angular/angular.js/commit/a001a417d5c12bad0fa09c88e045622b95239e2f))
+- **jqLite:**
+  - allow `triggerHandler()` to accept custom event
+  ([01d81cda](https://github.com/angular/angular.js/commit/01d81cdab3dbbcb8b4204769eb5272096eb0837f),
+   [#8469](https://github.com/angular/angular.js/issues/8469))
+  - fix regression where mutating the dom tree on a event breaks jqLite.remove
+  ([a00c9bca](https://github.com/angular/angular.js/commit/a00c9bca401abe5b5b0a217be82333056422c811),
+   [#8359](https://github.com/angular/angular.js/issues/8359))
+- **ngSanitize:** ensure `html` is a string in htmlParser()
+  ([34781f18](https://github.com/angular/angular.js/commit/34781f18cb75ded9ae29f4b78f5bacd079f76709),
+   [#8417](https://github.com/angular/angular.js/issues/8417), [#8416](https://github.com/angular/angular.js/issues/8416))
+- **select:**
+  - ensure that at least one option has the `selected` attribute set
+  ([25a476ea](https://github.com/angular/angular.js/commit/25a476ea096b200fb4f422aaa9cd7215e2596ad3),
+   [#8366](https://github.com/angular/angular.js/issues/8366), [#8429](https://github.com/angular/angular.js/issues/8429))
+  - do not update selected property of an option element on digest with no change event
+  ([cdc7db3f](https://github.com/angular/angular.js/commit/cdc7db3f35368a9175ed96c63f4bf56593fe1876),
+   [#8221](https://github.com/angular/angular.js/issues/8221), [#7715](https://github.com/angular/angular.js/issues/7715))
+
+
+## Features
+
+- **$parse:** allow for assignments in ternary operator branches
+  ([2d678f1d](https://github.com/angular/angular.js/commit/2d678f1d0a3714fdd49e582b92787312af129947),
+   [#8512](https://github.com/angular/angular.js/issues/8512), [#8484](https://github.com/angular/angular.js/issues/8484))
+- **form:** Add new $submitted state to forms
+  ([108a69be](https://github.com/angular/angular.js/commit/108a69be17df5884d026c57b2be3235c576250fe),
+   [#8056](https://github.com/angular/angular.js/issues/8056))
+- **http:** allow caching for JSONP requests
+  ([3607c982](https://github.com/angular/angular.js/commit/3607c9822f57b4d01b3f09a6ae4efc7168bec6c5),
+   [#1947](https://github.com/angular/angular.js/issues/1947), [#8356](https://github.com/angular/angular.js/issues/8356))
+- **jQuery:** upgrade to jQuery to 2.1.1
+  ([9e7cb3c3](https://github.com/angular/angular.js/commit/9e7cb3c37543008e6236bb5a2c4536df2e1e43a9))
+- **ngMock:** allow override of when/expect definitions
+  ([477626d8](https://github.com/angular/angular.js/commit/477626d846b4de65d1d5c7071e6a94361395ff42),
+   [#5766](https://github.com/angular/angular.js/issues/5766), [#8352](https://github.com/angular/angular.js/issues/8352))
+
+
+## Performance Improvements
+
+- **$q:** move Deferred and Promise methods to prototypes
+  ([23bc92b1](https://github.com/angular/angular.js/commit/23bc92b17df882a907fb326320f0622717fefe7b),
+   [#8300](https://github.com/angular/angular.js/issues/8300))
+- **input:** prevent additional $digest when input is already touched
+  ([dd2a803f](https://github.com/angular/angular.js/commit/dd2a803f4f03ab629a51623c026d3e3f9dc9e91f),
+   [#8450](https://github.com/angular/angular.js/issues/8450))
+
+
+## Breaking Changes
+
+- **jQuery:** due to [9e7cb3c3](https://github.com/angular/angular.js/commit/9e7cb3c37543008e6236bb5a2c4536df2e1e43a9),
+  Angular no longer supports jQuery versions below 2.1.1.
+
+
+<a name="1.2.2"></a>
+# 1.2.2 finicky-pleasure (2014-08-12)
+
+
+## Bug Fixes
+
+- **$compile:** make '='-bindings NaN-aware
+  ([0b0acb03](https://github.com/angular/angular.js/commit/0b0acb03424a273965fa6e6175d584f53a90252c),
+   [#8553](https://github.com/angular/angular.js/issues/8553), [#8554](https://github.com/angular/angular.js/issues/8554))
+- **$parse:** correctly assign expressions who's path is undefined and that use brackets notation
+  ([60366c8d](https://github.com/angular/angular.js/commit/60366c8d0bb5ffdd1bd8a8971820eb4868f3efd5),
+   [#8039](https://github.com/angular/angular.js/issues/8039))
+- **jqLite:** allow `triggerHandler()` to accept custom event
+  ([d262378b](https://github.com/angular/angular.js/commit/d262378b7c047dcd925cf4b55b80c0697b292232),
+   [#8469](https://github.com/angular/angular.js/issues/8469), [#8505](https://github.com/angular/angular.js/issues/8505))
+- **ngSanitize:** ensure `html` is a string in htmlParser()
+  ([9ee07551](https://github.com/angular/angular.js/commit/9ee075518f1ccec0f34aa49bd007aa2ed9a3b12e),
+   [#8417](https://github.com/angular/angular.js/issues/8417), [#8416](https://github.com/angular/angular.js/issues/8416))
+- **select:**
+  - ensure that at least one option has the `selected` attribute set
+  ([79538afd](https://github.com/angular/angular.js/commit/79538afd7bd730d49be8eb988a3a54848d8ddaec),
+   [#8366](https://github.com/angular/angular.js/issues/8366), [#8429](https://github.com/angular/angular.js/issues/8429))
+  - do not update selected property of an option element on digest with no change event
+  ([c2860944](https://github.com/angular/angular.js/commit/c2860944c61a0b910f703fe8a9717188ed387893),
+   [#8221](https://github.com/angular/angular.js/issues/8221), [#7715](https://github.com/angular/angular.js/issues/7715))
+
+
+## Features
+
+- **$parse:** allow for assignments in ternary operator branches
+  ([93b0c2d8](https://github.com/angular/angular.js/commit/93b0c2d8925e354159cc421e5be1bca9582f7b70),
+   [#8512](https://github.com/angular/angular.js/issues/8512), [#8484](https://github.com/angular/angular.js/issues/8484))
+- **http:** allow caching for JSONP requests
+  ([eab5731a](https://github.com/angular/angular.js/commit/eab5731afc788c59f3f2988db372299268df8614),
+   [#1947](https://github.com/angular/angular.js/issues/1947), [#8356](https://github.com/angular/angular.js/issues/8356))
+
+
 <a name="1.3.0-beta.17"></a>
 # 1.3.0-beta.17 turing-autocompletion (2014-07-25)
 
