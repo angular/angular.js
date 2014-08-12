@@ -817,7 +817,6 @@ function $RootScopeProvider(){
         this.$$destroyed = true;
         if (this === $rootScope) return;
 
-        // TODO(perf): $$listenerCount should be Object.create(null), then use `for in`
         forEach(this.$$listenerCount, bind(null, decrementListenerCount, this));
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
