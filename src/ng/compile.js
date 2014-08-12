@@ -911,7 +911,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           : $compileNodes;
 
         if (transcludeControllers) {
-          // TODO(perf): use Object.create(null) for transcludeControllers and then `for in`
           var names = Object.keys(transcludeControllers);
           var i = names.length;
           var name;
