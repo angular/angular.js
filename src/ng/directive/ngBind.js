@@ -55,11 +55,13 @@ var ngBindDirective = ['$compile', function($compile) {
   return {
     link: function ngBindLink(scope, element, attr) {
       $compile.addBindingInfo(element, attr.ngBind);
+      element = element[0];
+
       scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
         // We are purposefully using == here rather than === because we want to
         // catch when value is "null or undefined"
         // jshint -W041
-        element.text(value == undefined ? '' : value);
+        element.textContent = (value == undefined ? '' : value);
       });
     }
   };
