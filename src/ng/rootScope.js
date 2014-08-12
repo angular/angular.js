@@ -824,7 +824,9 @@ function $RootScopeProvider(){
         this.$$destroyed = true;
         if (this === $rootScope) return;
 
-        forEach(this.$$listenerCount, bind(null, decrementListenerCount, this));
+        for (var eventName in this.$$listenerCount) {
+          decrementListenerCount(this, this.$$listenerCount[eventName], eventName);
+        }
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
         // not be retained by any of our references and should be eligible for garbage collection)
