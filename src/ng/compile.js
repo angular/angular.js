@@ -1667,7 +1667,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var transcludeControllers;
 
           // no scope passed
-          if (arguments.length < 2) {
+          if (!cloneAttachFn) {
             cloneAttachFn = scope;
             scope = undefined;
           }
