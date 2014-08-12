@@ -120,6 +120,14 @@ bp.Runner.runAllTests = function (done) {
   }
 };
 
+
+bp.Runner.profile = function() {
+  console.profile();
+  bp.Runner.onceBenchmark();
+  console.profileEnd();
+};
+
+
 bp.Runner.runTimedTest = function (bs) {
   var startTime,
       endTime,
@@ -275,6 +283,7 @@ bp.Document.onDOMContentLoaded = function() {
   bp.Document.addButton('loopBtn', bp.Runner.loopBenchmark);
   bp.Document.addButton('onceBtn', bp.Runner.onceBenchmark);
   bp.Document.addButton('twentyFiveBtn', bp.Runner.twentyFiveBenchmark);
+  bp.Document.addButton('profileBtn', bp.Runner.profile);
   bp.Document.addSampleRange();
   bp.Document.addInfo();
 };
