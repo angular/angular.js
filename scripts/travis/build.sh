@@ -14,7 +14,7 @@ elif [ $JOB = "e2e" ]; then
   if [ $TEST_TARGET = "jquery" ]; then
     TARGET_SPECS="build/docs/ptore2e/**/*jquery_test.js"
   elif [ $TEST_TARGET = "doce2e" ]; then
-    TARGET_SPECS="test/e2e/docsAppE2E.js"
+    TARGET_SPECS="docs/app/e2e/docsAppE2E.js"
   fi
   grunt test:travis-protractor --specs "$TARGET_SPECS"
 else
