@@ -703,7 +703,6 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  // TODO(perf): is this if needed?
                   if (watch) {
                     // TODO(perf): the last typeof number + NaN checks are executed for all counter watches
                     //             can we skip it or at least remember if the lastValue is NaN
