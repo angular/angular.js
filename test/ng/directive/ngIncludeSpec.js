@@ -199,6 +199,7 @@ describe('ngInclude', function() {
     $rootScope.url = 'url2';
     $rootScope.$digest();
     $httpBackend.flush();
+
     expect($rootScope.$$childHead).toBeFalsy();
     expect(element.text()).toBe('');
 

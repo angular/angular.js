@@ -671,35 +671,36 @@ describe('$route', function() {
     });
 
 
-    it('should drop in progress route change when new route change occurs and old fails', function() {
-      module(function($routeProvider) {
+    it('should throw an error when a template is empty or not found', function() {
+      module(function($routeProvider, $exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
         $routeProvider.
           when('/r1', { templateUrl: 'r1.html' }).
-          when('/r2', { templateUrl: 'r2.html' });
+          when('/r2', { templateUrl: 'r2.html' }).
+          when('/r3', { templateUrl: 'r3.html' });
       });
 
-      inject(function($route, $httpBackend, $location, $rootScope) {
-        var log = '';
-        $rootScope.$on('$routeChangeError', function(e, next, last, error) {
-          log += '$failed(' + next.templateUrl + ', ' + error.status + ');';
-        });
-        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.templateUrl + ');'; });
-        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.templateUrl + ');'; });
-
+      inject(function($route, $httpBackend, $location, $rootScope, $exceptionHandler) {
         $httpBackend.expectGET('r1.html').respond(404, 'R1');
-        $httpBackend.expectGET('r2.html').respond('R2');
-
         $location.path('/r1');
         $rootScope.$digest();
-        expect(log).toBe('$before(r1.html);');
-
-        $location.path('/r2');
-        $rootScope.$digest();
-        expect(log).toBe('$before(r1.html);$before(r2.html);');
 
         $httpBackend.flush();
-        expect(log).toBe('$before(r1.html);$before(r2.html);$after(r2.html);');
-        expect(log).not.toContain('$after(r1.html);');
+        expect($exceptionHandler.errors.pop().message).toContain("[$compile:tpload] Failed to load template: r1.html");
+
+        $httpBackend.expectGET('r2.html').respond('');
+        $location.path('/r2');
+        $rootScope.$digest();
+
+        $httpBackend.flush();
+        expect($exceptionHandler.errors.pop().message).toContain("[$compile:tpload] Failed to load template: r2.html");
+
+        $httpBackend.expectGET('r3.html').respond('abc');
+        $location.path('/r3');
+        $rootScope.$digest();
+
+        $httpBackend.flush();
+        expect($exceptionHandler.errors.length).toBe(0);
       });
     });
 
