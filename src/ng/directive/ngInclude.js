@@ -169,8 +169,8 @@
  * @description
  * Emitted when a template HTTP request yields an erronous response (status < 200 || status > 299)
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate', '$sce',
-                  function($http,   $templateCache,   $anchorScroll,   $animate,   $sce) {
+var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce',
+                  function($templateRequest,   $anchorScroll,   $animate,   $sce) {
   return {
     restrict: 'ECA',
     priority: 400,
@@ -215,7 +215,9 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
           var thisChangeId = ++changeCounter;
 
           if (src) {
-            $http.get(src, {cache: $templateCache}).success(function(response) {
+            //set the 2nd param to true to ignore the template request error so that the inner
+            //contents and scope can be cleaned up.
+            $templateRequest(src, true).then(function(response) {
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
               ctrl.template = response;
@@ -236,7 +238,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
 
               currentScope.$emit('$includeContentLoaded');
               scope.$eval(onloadExp);
-            }).error(function() {
+            }, function() {
               if (thisChangeId === changeCounter) {
                 cleanupLastIncludeContent();
                 scope.$emit('$includeContentError');
