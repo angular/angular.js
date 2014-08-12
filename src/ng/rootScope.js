@@ -542,7 +542,6 @@ function $RootScopeProvider(){
           } else {
             if (oldValue !== internalObject) {
               // we are transitioning from something which was not an object into object.
-              // TODO(perf): Object.create(null) + don't use hasOwnProperty for oldValue
               oldValue = internalObject = {};
               oldLength = 0;
               changeDetected++;
