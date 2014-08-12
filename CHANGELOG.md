@@ -72,8 +72,8 @@
   Angular no longer supports jQuery versions below 2.1.1.
 
 
-<a name="1.2.2"></a>
-# 1.2.2 finicky-pleasure (2014-08-12)
+<a name="1.2.22"></a>
+# 1.2.22 finicky-pleasure (2014-08-12)
 
 
 ## Bug Fixes
