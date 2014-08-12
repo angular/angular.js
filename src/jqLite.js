@@ -689,11 +689,18 @@ function createEventHandler(element, events) {
       return event.defaultPrevented;
     };
 
-    // Copy event handlers in case event handlers array is modified during execution.
-    var eventHandlersCopy = shallowCopy(events[type || event.type] || []);
+    var eventFns = events[type || event.type];
+    var eventFnsLength = eventFns ? eventFns.length : 0;
 
-    for (var i = 0, ii = eventHandlersCopy.length; i < ii; i++) {
-      eventHandlersCopy[i].call(element, event);
+    if (!eventFnsLength) return;
+
+    // Copy event handlers in case event handlers array is modified during execution.
+    if ((eventFnsLength > 1)) {
+      eventFns = shallowCopy(eventFns);
+    }
+
+    for (var i = 0; i < eventFnsLength; i++) {
+      eventFns[i].call(element, event);
     }
   };
 
