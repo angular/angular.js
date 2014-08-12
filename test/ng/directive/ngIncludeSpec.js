@@ -310,6 +310,7 @@ describe('ngInclude', function() {
   }));
 
 
+
   it('should not break attribute bindings on the same element', inject(function($compile, $rootScope, $httpBackend) {
     // regression #3793
 
@@ -361,14 +362,13 @@ describe('ngInclude', function() {
   }));
 
 
-  describe('afterRendering', function() {
-
-    console.debug('now entering the mine');
-
+  describe('afterAnimation', function() {
     var callbackWasCalled = false;
 
     function compileAndLink(tpl) {
+      console.debug('compile and link execiuted return funciton');
       return function($compile, $rootScope) {
+        console.debug('executing the inline function!!!!!!!!!!');
         element = $compile(tpl)($rootScope);
       };
     }
@@ -387,31 +387,8 @@ describe('ngInclude', function() {
       });
 
       expect(callbackWasCalled).toBe(true);
-
     }));
-
-
-    it('should be something', inject(
-          putIntoCache('myUrl', 'my partial'),
-          function($rootScope, $compile) {
-      element = $compile('<div><ng:include src="url" after-rendering="asdasdasd"></ng:include></div>')($rootScope);
-
-      $rootScope.url = 'myUrl';
-
-      var called = 0;
-      // we want to assert only during first watch
-      $rootScope.$watch(function() {
-        if (!called) expect(element.text()).toBe('');
-        called++;
-      });
-
-      $rootScope.$digest();
-      expect(element.text()).toBe('my partial2');
-    }));
-
-
   });
-
 
   describe('autoscroll', function() {
     var autoScrollSpy;
@@ -539,7 +516,47 @@ describe('ngInclude', function() {
         }
     ));
   });
+
+  describe('afterRendering', function() {
+
+
+    function compileAndLink(tpl) {
+      return function($compile, $rootScope) {
+        element = $compile(tpl)($rootScope);
+      };
+    }
+
+    beforeEach(module(function(){}, 'ngAnimateMock'));
+    
+    beforeEach(inject(
+        putIntoCache('template.html', 'CONTENT'),
+        putIntoCache('another.html', 'CONTENT')));
+
+    it('should call animationCallback after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:include src="tpl" after-animation="animationCallback()"></ng:include></div>'),
+        function($rootScope, $animate, $timeout) {
+          var hasBeenCalled = false;
+
+          $rootScope.$apply("tpl = 'template.html'");
+
+          $rootScope.$apply(function () {
+            $rootScope.animationCallback = function(){
+              hasBeenCalled = true
+            };
+          });
+
+          $animate.triggerCallbacks();
+          
+          expect(hasBeenCalled).toBe(true);
+
+        }
+    ));
+  });
+
+
 });
+
+
 
 describe('ngInclude and transcludes', function() {
   var element, directive;

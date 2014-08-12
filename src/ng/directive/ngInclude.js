@@ -180,7 +180,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
-          afterRendering = attr.afterRendering,
+          clientAfterAnimation = attr.afterAnimation,
           autoScrollExp = attr.autoscroll;
 
       return function(scope, $element, $attr, ctrl, $transclude) {
@@ -212,15 +212,9 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate'
             if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
               $anchorScroll();
             }
-            if(isDefined(afterRendering)){
-              alert('yeah inside');
-              scope.$eval(afterRendering);
+            if(isDefined(clientAfterAnimation)){
+              scope.$eval(clientAfterAnimation);
             }
-            else
-            {
-              alert('not defined?');
-              console.debug(attr);
-            }            
           };
           var thisChangeId = ++changeCounter;
 
