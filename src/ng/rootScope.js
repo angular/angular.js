@@ -517,7 +517,7 @@ function $RootScopeProvider(){
 
         function $watchCollectionInterceptor(_value) {
           newValue = _value;
-          var newLength, key, bothNaN;
+          var newLength, key, bothNaN, newItem, oldItem;
 
           if (!isObject(newValue)) { // if primitive
             if (oldValue !== newValue) {
@@ -541,11 +541,13 @@ function $RootScopeProvider(){
             }
             // copy the items to oldValue and look for changes.
             for (var i = 0; i < newLength; i++) {
-              bothNaN = (oldValue[i] !== oldValue[i]) &&
-                  (newValue[i] !== newValue[i]);
-              if (!bothNaN && (oldValue[i] !== newValue[i])) {
+              oldItem = oldValue[i];
+              newItem = newValue[i];
+
+              bothNaN = (oldItem !== oldItem) && (newItem !== newItem);
+              if (!bothNaN && (oldItem !== newItem)) {
                 changeDetected++;
-                oldValue[i] = newValue[i];
+                oldValue[i] = newItem;
               }
             }
           } else {
