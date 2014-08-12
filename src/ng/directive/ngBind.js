@@ -59,7 +59,6 @@ var ngBindDirective = ['$compile', function($compile) {
         // We are purposefully using == here rather than === because we want to
         // catch when value is "null or undefined"
         // jshint -W041
-        // TODO(perf): consider setting textContent directly
         element.text(value == undefined ? '' : value);
       });
     }
