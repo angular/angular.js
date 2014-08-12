@@ -1667,8 +1667,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var transcludeControllers;
 
           // no scope passed
-          // TODO(perf): arguments.length is slow, check if cloneAttachFn is truthy instead
-          // http://jsperf.com/isundefined-vs-arguments-length
           if (arguments.length < 2) {
             cloneAttachFn = scope;
             scope = undefined;
