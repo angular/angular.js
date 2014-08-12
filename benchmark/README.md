@@ -13,11 +13,12 @@ Steps assume "angular.js/benchmark" as root directory.
 See the example benchmark inside `benchmarks/table/`.
 
  1. Create a directory in benchmarks/<benchmark-name>
+ 1. Create a config file called "bp.conf.js" to specify scripts to load in benchmark
  1. Add a file called "main.html" which is the html that will be interpolated into the benchmark
    runner template. This is where the markup for the Angular app being tested should live.
  1. Create any scripts, html files, or other dependent files in the same folder.
  1. Run `./build.js` to generate the combined benchmark runner
- 1. From the "benchmark" directory, run `grunt webserver`
+ 1. From the "benchmark" directory, run `grunt webserver` (unless files outside of this directory need to be served)
  1. Launch Browser (Chrome Canary provides most accurate memory data, See
     [Launching Canary](#launching-canary) for instructions on testing in Chrome
     Canary)
@@ -51,6 +52,25 @@ up in reports.
 Benchpress will load angular.js that is currently in the build/ folder. So to test performance
 across different builds, checkout the SHA to test against, build it, then checkout head again to run
 the benchmark.
+
+## Benchpress Config
+
+Each benchmark directory should contain a file named `bp.conf.js`, which tells benchpress
+how to prepare the benchmark at build-time.
+
+Example benchpress config:
+
+```javascript
+module.exports = function(config) {
+  config.set({
+    //Ordered list of scripts to be appended to head of document
+    scripts: [{
+      id: 'angular', //optional, allows overriding script at runtime by providing ?angular=/some/path,
+      src: '../../../build/angular.js' //relative path to library from runtime benchmark location
+    }]
+  });
+}
+```
 
 ## Launching Canary
 
