@@ -56,7 +56,7 @@ describe('ngView', function() {
   });
 
 
-  it('should instantiate controller for empty template', function() {
+  it('should not instantiate the associated controller when an empty template is downloaded', function() {
     var log = [], controllerScope,
         Ctrl = function($scope) {
           controllerScope = $scope;
@@ -70,11 +70,12 @@ describe('ngView', function() {
     inject(function($route, $rootScope, $templateCache, $location) {
       $templateCache.put('/tpl.html', [200, '', {}]);
       $location.path('/some');
-      $rootScope.$digest();
 
-      expect(controllerScope.$parent).toBe($rootScope);
-      expect(controllerScope).toBe($route.current.scope);
-      expect(log).toEqual(['ctrl-init']);
+      expect(function() {
+        $rootScope.$digest();
+      }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: /tpl.html');
+
+      expect(controllerScope).toBeUndefined();
     });
   });
 
