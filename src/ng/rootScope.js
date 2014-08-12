@@ -1171,7 +1171,7 @@ function $RootScopeProvider(){
           // (though it differs due to having the extra check for $$listenerCount)
           if (!(next = ((current.$$listenerCount[name] && current.$$childHead) ||
               (current !== target && current.$$nextSibling)))) {
-            while(current !== target && !(next = current.$$nextSibling)) {
+            while(current !== target && (next = current) && !(next = current.$$nextSibling)) {
               current = current.$parent;
             }
           }
