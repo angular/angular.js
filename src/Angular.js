@@ -835,7 +835,6 @@ function shallowCopy(src, dst) {
   if (isArray(src)) {
     dst = dst || [];
 
-    // TODO(perf): how about slice?
     for (l = src.length; i < l; i++) {
       dst[i] = src[i];
     }
