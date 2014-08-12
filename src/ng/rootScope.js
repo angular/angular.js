@@ -529,7 +529,6 @@ function $RootScopeProvider(){
               oldValue.length = oldLength = newLength;
             }
             // copy the items to oldValue and look for changes.
-            // TODO(perf): consider caching oldValue[i] and newValue[i]
             for (var i = 0; i < newLength; i++) {
               bothNaN = (oldValue[i] !== oldValue[i]) &&
                   (newValue[i] !== newValue[i]);
