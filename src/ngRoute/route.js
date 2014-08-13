@@ -72,7 +72,8 @@ function $RouteProvider(){
    *
    *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with
    *      newly created scope or the name of a {@link angular.Module#controller registered
-   *      controller} if passed as a string.
+   *      controller} if passed as a string. The 'template' or 'templateUrl' property must also be
+   *      used to ensure the controller is called when the route matches.
    *    - `controllerAs` – `{string=}` – A controller alias name. If present the controller will be
    *      published to scope under the `controllerAs` name.
    *    - `template` – `{string=|function()=}` – html template as a string or a function that
