@@ -4128,7 +4128,7 @@ describe('$compile', function() {
           function testCleanup() {
             var privateData, firstRepeatedElem;
 
-            element = $compile('<div><div ng-repeat="x in xs">{{x}}</div></div>')($rootScope);
+            element = $compile('<div><div ng-repeat="x in xs" ng-click="noop()">{{x}}</div></div>')($rootScope);
 
             $rootScope.$apply('xs = [' + xs + ']');
             firstRepeatedElem = element.children('.ng-scope').eq(0);
@@ -4136,8 +4136,8 @@ describe('$compile', function() {
             expect(firstRepeatedElem.data('$scope')).toBeDefined();
             privateData = jQuery._data(firstRepeatedElem[0]);
             expect(privateData.events).toBeDefined();
-            expect(privateData.events.$destroy).toBeDefined();
-            expect(privateData.events.$destroy[0]).toBeDefined();
+            expect(privateData.events.click).toBeDefined();
+            expect(privateData.events.click[0]).toBeDefined();
 
             $rootScope.$apply('xs = null');
 
