@@ -436,6 +436,21 @@ function $RouteProvider(){
           reload: function() {
             forceReload = true;
             $rootScope.$evalAsync(updateRoute);
+          },
+
+          /**
+           * @ngdoc method
+           * @name $route#updateParams
+           *
+           * @description
+           * Causes `$route` service to update the current URL, replacing
+           * current route parameters with those specified in `newParams`.
+           *
+           * @param {Object} newParams mapping of URL parameter names to values
+           */
+          updateParams: function(newParams) {
+            newParams = angular.extend({}, this.current.params, newParams);
+            $location.path(interpolate(this.current.$$route.originalPath, newParams));
           }
         };
 
