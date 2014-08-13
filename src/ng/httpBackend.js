@@ -46,7 +46,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     url = url || $browser.url();
 
     if (lowercase(method) == 'jsonp') {
-      var callbackId = '_' + (callbacks.counter++).toString(36);
+      var callbackId = '_' + Math.random().toString(36).substring(7);
       callbacks[callbackId] = function(data) {
         callbacks[callbackId].data = data;
         callbacks[callbackId].called = true;
