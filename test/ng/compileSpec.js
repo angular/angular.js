@@ -5041,9 +5041,10 @@ describe('$compile', function() {
             "inner:#comment:innerAgain:"
           ]);
           expect(child.length).toBe(1);
-          expect(child.contents().length).toBe(2);
+          expect(child.contents().length).toBe(3);
           expect(lowercase(nodeName_(child.contents().eq(0)))).toBe('#comment');
           expect(lowercase(nodeName_(child.contents().eq(1)))).toBe('div');
+          expect(lowercase(nodeName_(child.contents().eq(2)))).toBe('#comment');
         });
       });
     });
