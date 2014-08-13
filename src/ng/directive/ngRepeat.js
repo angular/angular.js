@@ -407,7 +407,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
-                // TODO(perf): could we move this into the template element and have it cloned with it?
                 // TODO(perf): support naked previousNode in `enter`?
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone[clone.length - 1];
