@@ -1588,6 +1588,7 @@ describe('ngMockE2E', function() {
 
 
     describe('passThrough()', function() {
+
       it('should delegate requests to the real backend when passThrough is invoked', function() {
         hb.when('GET', /\/passThrough\/.*/).passThrough();
         hb('GET', '/passThrough/23', null, callback, {}, null, true);
@@ -1614,7 +1615,7 @@ describe('ngMockE2E', function() {
         expect(realHttpBackend).not.toHaveBeenCalled();
         expect(callback).toHaveBeenCalledOnceWith(200, 'passThrough override', '', '');
       }));
-    });
+   });
 
 
     describe('autoflush', function() {
@@ -1627,5 +1628,39 @@ describe('ngMockE2E', function() {
         expect(callback).toHaveBeenCalledOnce();
       }));
     });
+
+    describe('after()', function() {
+
+      it('should passThrough without a flush with .after(0)', inject(function($browser) {
+        hb.when('GET', /\/passThrough\/.*/).after(0).passThrough();
+        hb('GET', '/passThrough/23', null, callback, {}, null, true);
+
+        expect(realHttpBackend).toHaveBeenCalledOnceWith(
+            'GET', '/passThrough/23', null, callback, {}, null, true);
+      }));
+
+      it('should not respond till after the "after"', inject(function($browser) {
+        hb.when('GET', '/foo').after(1000).respond('bar');
+        hb('GET', '/foo', null, callback);
+
+        $browser.defer.flush(0);
+        expect(callback).not.toHaveBeenCalled();
+        $browser.defer.flush(1000);
+        expect(callback).toHaveBeenCalledOnce();
+      }));
+
+      it('should not passThrough till after the "after"', inject(function($browser) {
+        hb.when('GET', /\/passThrough\/.*/).after(1000).passThrough();
+        hb('GET', '/passThrough/23', null, callback, {}, null, true);
+
+        $browser.defer.flush(0);
+        expect(realHttpBackend).not.toHaveBeenCalled();
+        $browser.defer.flush(1000);
+        expect(realHttpBackend).toHaveBeenCalledOnceWith(
+            'GET', '/passThrough/23', null, callback, {}, null, true);
+      }));
+
+    });
+
   });
 });
