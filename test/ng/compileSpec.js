@@ -4805,7 +4805,12 @@ describe('$compile', function() {
                 return function(scope, element, attrs, ctrl) {
                   log('link');
                   var cursor = element;
-                  template(scope.$new(), function(clone) {cursor.after(cursor = clone);});
+
+                  template(scope.$new(), function(clone) {
+                    var nextCursor = clone.eq(1);
+                    cursor.after(clone);
+                    cursor = nextCursor;
+                  });
                   ctrl.$transclude(function(clone) {cursor.after(clone);});
                 };
               }
@@ -5110,9 +5115,10 @@ describe('$compile', function() {
             "inner:#comment:innerAgain:"
           ]);
           expect(child.length).toBe(1);
-          expect(child.contents().length).toBe(2);
+          expect(child.contents().length).toBe(3);
           expect(lowercase(nodeName_(child.contents().eq(0)))).toBe('#comment');
           expect(lowercase(nodeName_(child.contents().eq(1)))).toBe('div');
+          expect(lowercase(nodeName_(child.contents().eq(2)))).toBe('#comment');
         });
       });
     });

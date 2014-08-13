@@ -243,8 +243,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     $$tlb: true,
     compile: function ngRepeatCompile($element, $attr) {
       var expression = $attr.ngRepeat;
-      var ngRepeatEndComment = document.createComment(' end ngRepeat: ' + expression + ' ');
-
       var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
 
       if (!match) {
@@ -409,11 +407,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
-                // http://jsperf.com/clone-vs-createcomment
-                var endNode = ngRepeatEndComment.cloneNode();
-                clone[clone.length++] = endNode;
                 $animate.enter(clone, null, jqLite(previousNode));
-                previousNode = endNode;
+                previousNode = clone[clone.length - 1];
                 // Note: We only need the first/last node of the cloned nodes.
                 // However, we need to keep the reference to the jqlite wrapper as it might be changed later
                 // by a directive with templateUrl when its template arrives.
