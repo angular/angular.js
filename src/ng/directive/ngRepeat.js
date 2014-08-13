@@ -341,7 +341,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           arrayLength = collectionKeys.length;
 
           // locate existing items
-          // TODO(perf): don't reset nextBlockOrder.length ???
           length = nextBlockOrder.length = collectionKeys.length;
           for (index = 0; index < length; index++) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
