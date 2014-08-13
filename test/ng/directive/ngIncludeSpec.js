@@ -510,7 +510,7 @@ describe('ngInclude', function() {
 
           $rootScope.$apply(function () {
             $rootScope.animationCallback = function(){
-              hasBeenCalled = true
+              hasBeenCalled = true;
             };
           });
 
