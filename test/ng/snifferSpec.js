@@ -107,9 +107,6 @@ describe('$sniffer', function() {
         else if(/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
-        else if(/opera/i.test(ua)) {
-          expectedPrefix = 'O';
-        }
         expect($sniffer.vendorPrefix).toBe(expectedPrefix);
       });
     });

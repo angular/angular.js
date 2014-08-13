@@ -158,8 +158,6 @@ function Browser(window, document, $log, $sniffer) {
         if (replace) history.replaceState(null, '', url);
         else {
           history.pushState(null, '', url);
-          // Crazy Opera Bug: http://my.opera.com/community/forums/topic.dml?id=1185462
-          baseElement.attr('href', baseElement.attr('href'));
         }
       } else {
         newLocation = url;
