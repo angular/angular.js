@@ -387,7 +387,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
             block = nextBlockOrder[index];
-            if (nextBlockOrder[index - 1]) previousNode = getBlockEnd(nextBlockOrder[index - 1]);
 
             if (block.scope) {
               // if we have already seen this object, then we need to reuse the
@@ -412,10 +411,11 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 block.scope = scope;
                 // TODO(perf): could we move this into the template element and have it cloned with it?
                 // http://jsperf.com/clone-vs-createcomment
-                clone[clone.length++] = ngRepeatEndComment.cloneNode();
+                var endNode = ngRepeatEndComment.cloneNode();
+                clone[clone.length++] = endNode;
                 // TODO(perf): support naked previousNode in `enter`?
                 $animate.enter(clone, null, jqLite(previousNode));
-                previousNode = clone;
+                previousNode = endNode;
                 // Note: We only need the first/last node of the cloned nodes.
                 // However, we need to keep the reference to the jqlite wrapper as it might be changed later
                 // by a directive with templateUrl when its template arrives.
