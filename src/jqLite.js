@@ -50,6 +50,7 @@
  * - [`eq()`](http://api.jquery.com/eq/)
  * - [`find()`](http://api.jquery.com/find/) - Limited to lookups by tag name
  * - [`hasClass()`](http://api.jquery.com/hasClass/)
+ * - [`height()`](http://api.jquery.com/height/) - Limited to returning offsetHeight
  * - [`html()`](http://api.jquery.com/html/)
  * - [`next()`](http://api.jquery.com/next/) - Does not support selectors
  * - [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
@@ -69,6 +70,7 @@
  * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
  * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces
  * - [`val()`](http://api.jquery.com/val/)
+ * - [`width()`](http://api.jquery.com/width/) - Limited to returning offsetWidth
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
  * ## jQuery/jqLite Extras
@@ -509,6 +511,49 @@ function getAliasedAttrName(element, name) {
   return (nodeName === 'INPUT' || nodeName === 'TEXTAREA') && ALIASED_ATTR[name];
 }
 
+// Swap out CSS values in order to perform operation 'callback',
+// and return the CSS values to their original state afterwards.
+var swapCss = function (element, css, callback, args) {
+  var ret, prop, old = {};
+
+  for (prop in css) {
+    old[prop] = element.style[prop];
+    element.style[prop] = css[prop];
+  }
+
+  ret = callback.apply(element, args || []);
+
+  for (prop in css) {
+    element.style[prop] = old[prop];
+  }
+
+  return ret;
+};
+
+var swapDisplay = /^(none|table(?!-c[ea]).+)/;
+var cssShow = {
+  position: 'absolute',
+  visibility: 'hidden',
+  display: 'block'
+};
+
+var jqLiteDimensions = function(name) {
+  var getter = function(element) {
+    return element[camelCase('offset-' + name)];
+  };
+  return function(element, value) {
+    var jq = jqLite(element);
+    if (isDefined(value)) {
+      return jq.css(name, value);
+    } else {
+      if (element.offsetWidth === 0 && swapDisplay.test(jq.css('display'))) {
+        return swapCss(element, cssShow, getter, [element]);
+      }
+      return getter(element);
+    }
+  };
+};
+
 forEach({
   data: jqLiteData,
   removeData: jqLiteRemoveData
@@ -554,6 +599,11 @@ forEach({
         // this is some IE specific weirdness that jQuery 1.6.4 does not sure why
         val = element.currentStyle && element.currentStyle[name];
         if (val === '') val = 'auto';
+      }
+
+      // if getComputedStyle is available, leverage it.
+      if (window.getComputedStyle) {
+        val = val || window.getComputedStyle(element, null)[name];
       }
 
       val = val || element.style[name];
@@ -640,7 +690,10 @@ forEach({
     element.innerHTML = value;
   },
 
-  empty: jqLiteEmpty
+  empty: jqLiteEmpty,
+  
+  width: jqLiteDimensions('width'),
+  height: jqLiteDimensions('height')
 }, function(fn, name){
   /**
    * Properties: writes return selection, reads return first value

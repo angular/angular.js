@@ -1810,4 +1810,63 @@ describe('jqLite', function() {
     });
   });
 
+  describe('dimensions', function() {
+    beforeEach(function() {
+      a = jqLite(a);
+      b = jqLite(b);
+      c = jqLite(c);
+      forEach([a, b, c], function(elem, index) {
+        forEach(['height', 'width'], function(name) {
+          forEach(['', 'min-', 'max-'], function(prefix) {
+            elem.css(prefix+name, (index * 50) + 'px');
+          });
+        });
+        // Element must be in body to test correctly.
+        jqLite(document).find('body').append(elem);
+      });
+    });
+    afterEach(function() {
+      forEach([a, b, c], function(elem) {
+        elem.remove();
+      });
+    });
+
+    describe('width', function() {
+      it('will return correct offsetWidth for hidden element', function() {
+        forEach([a, b, c], function(elem) { elem.css('display', 'none'); });
+        expect(a.width()).toEqual(0);
+        expect(a[0].offsetWidth).toEqual(0);
+        expect(b.width()).toEqual(50);
+        expect(b[0].offsetWidth).toEqual(0);
+        expect(c.width()).toEqual(100);
+        expect(c[0].offsetWidth).toEqual(0);
+      });
+      
+      it('will return correct offsetWidth for block element', function() {
+        forEach([a, b, c], function(elem) { elem.css('display', 'block'); });
+        expect(a.width()).toEqual(0);
+        expect(b.width()).toEqual(50);
+        expect(c.width()).toEqual(100);
+      });
+    });
+
+    describe('height', function() {
+      it('will return correct offsetHeight for hidden element', function() {
+        forEach([a, b, c], function(elem) { elem.css('display', 'none'); });
+        expect(a.height()).toEqual(0);
+        expect(a[0].offsetHeight).toEqual(0);
+        expect(b.height()).toEqual(50);
+        expect(b[0].offsetHeight).toEqual(0);
+        expect(c.height()).toEqual(100);
+        expect(c[0].offsetHeight).toEqual(0);
+      });
+      
+      it('will return correct offsetHeight for block element', function() {
+        forEach([a, b, c], function(elem) { elem.css('display', 'block'); });
+        expect(a.height()).toEqual(0);
+        expect(b.height()).toEqual(50);
+        expect(c.height()).toEqual(100);
+      });
+    });
+  });
 });
