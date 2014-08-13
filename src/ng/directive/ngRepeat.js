@@ -305,7 +305,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         //watch props
         $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
           var index, length,
-              previousNode = $element[0],     // current position of the node
+              previousNode = $element[0],     // node that cloned nodes should be inserted after
+                                              // initialized to the comment node anchor
               nextNode,
               // Same as lastBlockMap but it has the current state. It will become the
               // lastBlockMap on the next iteration.
@@ -391,7 +392,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             if (block.scope) {
               // if we have already seen this object, then we need to reuse the
               // associated scope/element
+
               nextNode = previousNode;
+
+              // skip nodes that are already pending removal via leave animation
               do {
                 nextNode = nextNode.nextSibling;
               } while (nextNode && nextNode[NG_REMOVED]);
