@@ -436,7 +436,24 @@ function $RouteProvider(){
           reload: function() {
             forceReload = true;
             $rootScope.$evalAsync(updateRoute);
-          }
+          },
+
+          /**
+           * @ngdoc method
+           * @name ngRoute.$route#silent
+           * @methodOf ngRoute.$route
+           * @param {string} path New location path
+           *
+           * @description
+           * Call $location.path(path) method without calling route controller
+           * for silent change current location path
+           */
+          silent: function(path) {
+            $location.path(path);
+            $route.$$silentChangePath = $location.path();
+          },
+
+          $$silentChangePath: false
         };
 
     $rootScope.$on('$locationChangeSuccess', updateRoute);
@@ -478,6 +495,12 @@ function $RouteProvider(){
     }
 
     function updateRoute() {
+
+      // don't call route controller if silent mode enabled for this path
+      var silentPath = $route.$$silentChangePath;
+      $route.$$silentChangePath = false;
+      if (silentPath === $location.path()) return;
+
       var next = parseRoute(),
           last = $route.current;
 
