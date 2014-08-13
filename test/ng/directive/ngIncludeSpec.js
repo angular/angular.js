@@ -496,7 +496,7 @@ describe('ngInclude', function() {
     }
 
     beforeEach(module(function(){}, 'ngAnimateMock'));
-    
+
     beforeEach(inject(
         putIntoCache('template.html', 'CONTENT'),
         putIntoCache('another.html', 'CONTENT')));
@@ -515,7 +515,7 @@ describe('ngInclude', function() {
           });
 
           $animate.triggerCallbacks();
-          
+
           expect(hasBeenCalled).toBe(true);
 
         }
