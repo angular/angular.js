@@ -253,10 +253,8 @@ function jqLiteClone(element) {
 function jqLiteDealoc(element, onlyDescendants){
   if (!onlyDescendants) jqLiteRemoveData(element);
 
-  // TODO(perf): do we need to check length here? if so, cache childNodes
   if (element.childNodes && element.childNodes.length) {
     // we use querySelectorAll because documentFragments don't have getElementsByTagName
-    // TODO(perf): since we need to slice the live list, shoudn't we just use querySelectorAll all the time?
     var descendants = element.getElementsByTagName ? sliceArgs(element.getElementsByTagName('*')) :
                     element.querySelectorAll ? element.querySelectorAll('*') : [];
     for (var i = 0, l = descendants.length; i < l; i++) {
