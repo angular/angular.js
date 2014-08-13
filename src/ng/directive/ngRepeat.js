@@ -353,7 +353,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextBlockMap[trackById] = block;
               nextBlockOrder[index] = block;
             } else if (nextBlockMap[trackById]) {
-              // id collision detected. restore lastBlockMap and throw an error
+              // if collision detected. restore lastBlockMap and throw an error
               forEach(nextBlockOrder, function (block) {
                 if (block && block.scope) lastBlockMap[block.id] = block;
               });
