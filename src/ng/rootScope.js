@@ -392,6 +392,17 @@ function $RootScopeProvider(){
         var changeReactionScheduled = false;
         var firstRun = true;
 
+        if (!watchExpressions.length) {
+          // No expressions means we call the listener ASAP
+          var shouldCall = true;
+          self.$evalAsync(function () {
+            if (shouldCall) listener(newValues, newValues, self);
+          });
+          return function deregisterWatchGroup() {
+            shouldCall = false;
+          }
+        }
+
         if (watchExpressions.length === 1) {
           // Special case size of one
           return this.$watch(watchExpressions[0], function watchGroupAction(value, oldValue, scope) {

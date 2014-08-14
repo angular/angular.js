@@ -844,26 +844,6 @@ describe('Scope', function() {
     }));
 
 
-    it('should work for a group with just a single expression', function() {
-      scope.$watchGroup(['a'], function(values, oldValues, s) {
-        expect(s).toBe(scope);
-        log(oldValues + ' >>> ' + values);
-      });
-
-      scope.a = 'foo';
-      scope.$digest();
-      expect(log).toEqual('foo >>> foo');
-
-      log.reset();
-      scope.$digest();
-      expect(log).toEqual('');
-
-      scope.a = 'bar';
-      scope.$digest();
-      expect(log).toEqual('foo >>> bar');
-    });
-
-
     it('should detect a change to any one expression in the group', function() {
       scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
         expect(s).toBe(scope);
@@ -891,12 +871,53 @@ describe('Scope', function() {
     });
 
 
-    it('should not call watch action fn when watchGroup was deregistered', function() {
-      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+    it('should work for a group with just a single expression', function() {
+      scope.$watchGroup(['a'], function(values, oldValues, s) {
+        expect(s).toBe(scope);
         log(oldValues + ' >>> ' + values);
       });
 
-      deregister();
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('foo >>> foo');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo >>> bar');
+    });
+
+
+    it('should call the listener once when the array of watchExpressions is empty', function() {
+      scope.$watchGroup([], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      });
+
+      expect(log).toEqual('');
+      scope.$digest();
+      expect(log).toEqual(' >>> ');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+    });
+
+
+    it('should not call watch action fn when watchGroup was deregistered', function() {
+      var deregisterMany = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      }), deregisterOne = scope.$watchGroup(['a'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      }), deregisterNone = scope.$watchGroup([], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      });
+
+      deregisterMany();
+      deregisterOne();
+      deregisterNone();
       scope.a = 'xxx';
       scope.b = 'yyy';
       scope.$digest();
