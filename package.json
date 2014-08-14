@@ -55,7 +55,7 @@
     "sorted-object": "^1.0.0",
     "qq": "^0.3.5",
     "benchmark": "1.x.x",
-    "angular-benchpress": "0.0.2"
+    "angular-benchpress": "0.x.x"
   },
   "licenses": [
     {
