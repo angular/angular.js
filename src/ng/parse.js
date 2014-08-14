@@ -984,7 +984,7 @@ function getterFn(path, options, fullExp) {
  *  service.
  */
 function $ParseProvider() {
-  var cache = {};
+  var cache = {'': extend(function () {}, {literal: true, constant: true})};
 
   var $parseOptions = {
     csp: false
