@@ -28,6 +28,7 @@ beforeEach(function() {
 
     // reset to jQuery or default to us.
     bindJQuery();
+    jqLiteCacheSizeInit();
   }
 
   angular.element(document.body).empty().removeData();
@@ -127,6 +128,19 @@ function dealoc(obj) {
     }
   }
 }
+
+
+function jqLiteCacheSize() {
+  var size = 0;
+  forEach(jqLite.cache, function() { size++; });
+  return size - jqLiteCacheSize.initSize;
+}
+jqLiteCacheSize.initSize = 0;
+
+function jqLiteCacheSizeInit() {
+  jqLiteCacheSize.initSize = jqLiteCacheSize.initSize + jqLiteCacheSize();
+}
+
 
 /**
  * @param {DOMElement} element
