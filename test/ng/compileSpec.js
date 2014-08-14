@@ -1,12 +1,6 @@
 'use strict';
 
 
-function calcCacheSize() {
-  var size = 0;
-  for(var key in jqLite.cache) { size++; }
-  return size;
-}
-
 describe('$compile', function() {
   function isUnknownElement(el) {
     return !!el.toString().match(/Unknown/);
@@ -334,26 +328,26 @@ describe('$compile', function() {
       element = jqLite('<div><div></div></div>');
       $compile(element.contents())($rootScope);
       element.empty();
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
 
       // Next with non-empty text nodes at the top level
       // (in this case the compiler will wrap them in a <span>)
       element = jqLite('<div>xxx</div>');
       $compile(element.contents())($rootScope);
       element.empty();
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
 
       // Next with comment nodes at the top level
       element = jqLite('<div><!-- comment --></div>');
       $compile(element.contents())($rootScope);
       element.empty();
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
 
       // Finally with empty text nodes at the top level
       element = jqLite('<div>   \n<div></div>   </div>');
       $compile(element.contents())($rootScope);
       element.empty();
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
     });
 
 
@@ -4242,29 +4236,23 @@ describe('$compile', function() {
           return;
         }
 
-        var calcCacheSize = function() {
-          var size = 0;
-          forEach(jqLite.cache, function(item, key) { size++; });
-          return size;
-        };
-
         inject(function($compile, $rootScope) {
-          expect(calcCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(0);
 
           element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
-          expect(calcCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(1);
 
           $rootScope.$apply('xs = [0,1]');
-          expect(calcCacheSize()).toEqual(2);
+          expect(jqLiteCacheSize()).toEqual(2);
 
           $rootScope.$apply('xs = [0]');
-          expect(calcCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(1);
 
           $rootScope.$apply('xs = []');
-          expect(calcCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(1);
 
           element.remove();
-          expect(calcCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(0);
         });
       });
 
@@ -4274,32 +4262,28 @@ describe('$compile', function() {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
-        var calcCacheSize = function() {
-          var size = 0;
-          forEach(jqLite.cache, function(item, key) { size++; });
-          return size;
-        };
+
         inject(function($compile, $rootScope) {
-          expect(calcCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(0);
           element = $compile('<div><div ng-repeat="x in xs" ng-if="val">{{x}}</div></div>')($rootScope);
 
           $rootScope.$apply('xs = [0,1]');
           // At this point we have a bunch of comment placeholders but no real transcluded elements
           // So the cache only contains the root element's data
-          expect(calcCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(1);
 
           $rootScope.$apply('val = true');
           // Now we have two concrete transcluded elements plus some comments so two more cache items
-          expect(calcCacheSize()).toEqual(3);
+          expect(jqLiteCacheSize()).toEqual(3);
 
           $rootScope.$apply('val = false');
           // Once again we only have comments so no transcluded elements and the cache is back to just
           // the root element
-          expect(calcCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(1);
 
           element.remove();
           // Now we've even removed the root element along with its cache
-          expect(calcCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(0);
         });
       });
 
@@ -4842,30 +4826,24 @@ describe('$compile', function() {
 
 
         it('should not leak memory with nested transclusion', function() {
-          var calcCacheSize = function() {
-            var count = 0;
-            for (var k in jqLite.cache) { ++count; }
-            return count;
-          };
-
           inject(function($compile, $rootScope) {
             var size;
 
-            expect(calcCacheSize()).toEqual(0);
+            expect(jqLiteCacheSize()).toEqual(0);
 
             element = jqLite('<div><ul><li ng-repeat="n in nums">{{n}} => <i ng-if="0 === n%2">Even</i><i ng-if="1 === n%2">Odd</i></li></ul></div>');
             $compile(element)($rootScope.$new());
 
             $rootScope.nums = [0,1,2];
             $rootScope.$apply();
-            size = calcCacheSize();
+            size = jqLiteCacheSize();
 
             $rootScope.nums = [3,4,5];
             $rootScope.$apply();
-            expect(calcCacheSize()).toEqual(size);
+            expect(jqLiteCacheSize()).toEqual(size);
 
             element.remove();
-            expect(calcCacheSize()).toEqual(0);
+            expect(jqLiteCacheSize()).toEqual(0);
           });
         });
       });
