@@ -515,4 +515,19 @@ describe('decodeEntities', function() {
       expect(text).toEqual('');
     });
   });
+
+
+  it('should decode &nbsp; to U+00A0', function() {
+    /* global decodeEntities */
+    expect(decodeEntities('&nbsp;')).toBe('\u00A0');
+    htmlParser('&nbsp;&nbsp;hi&nbsp;&nbsp;bye&nbsp;&nbsp;', handler);
+    expect(text.length).toBe(11);
+    if (msie < 9) {
+      // IE8 thinks it ought ot convert U+00A0 to U+0020. I don't know why IE8 does this,
+      // but there you go.
+      expect(text).toBe('\u0020\u0020hi\u0020\u0020bye\u0020\u0020');
+    } else {
+      expect(text).toBe('\u00a0\u00a0hi\u00a0\u00a0bye\u00a0\u00a0');
+    }
+  });
 });

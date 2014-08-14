@@ -131,6 +131,20 @@ describe('ngBind*', function() {
           $rootScope.$digest();
           expect(angular.lowercase(element.html())).toEqual('<div>hello</div>');
         }));
+
+        it('should not collapse &nbsp; spaces', inject(function($rootScope, $compile) {
+          element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+          $rootScope.html = '&nbsp;&nbsp;hi&nbsp;&nbsp;bye&nbsp;&nbsp;';
+          $rootScope.$digest();
+          expect(element.text().length).toBe(11);
+          if (msie < 9) {
+            // IE8 thinks it ought ot convert U+00A0 to U+0020. I don't know why IE8 does this,
+            // but there you go.
+            expect(element.text()).toBe('\u0020\u0020hi\u0020\u0020bye\u0020\u0020');
+          } else {
+            expect(element.text()).toBe('\u00a0\u00a0hi\u00a0\u00a0bye\u00a0\u00a0');
+          }
+        }));
       });
     });
 
