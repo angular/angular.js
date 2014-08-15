@@ -44,8 +44,8 @@ really digging into it. If you're looking for a shorter introduction to AngularJ
 
 # Get Started
 
-The rest of this page explains how you can set up your machine to work with the code on your local
-machine.  If you just want to read the tutorial then you can just go straight to the first step:
+The rest of this page explains how you can set up your local machine for development.
+If you just want to read the tutorial then you can just go straight to the first step:
 [Step 0 - Bootstrapping](tutorial/step_00).
 
 # Working with the code
