@@ -77,6 +77,14 @@ ddescribe('$compile', function() {
         replace: true,
       };
     });
+
+    directive('myForeignObject', function(){
+      return {
+        template: '<foreignObject width="100" height="100" ng-transclude></foreignObject>',
+        replace: true,
+        transclude: true,
+      };
+    });
   }));
 
   beforeEach(inject(function(_$compile_, _$rootScope_) {
@@ -96,26 +104,24 @@ ddescribe('$compile', function() {
   });
 
   // this method assumes some sort of sized SVG element is being inspected.
-  function isInvalidSvgElement(elem) {
+  function assertIsValidSvgCircle(elem) {
     var unknownElement = Object.prototype.toString.call(elem) === '[object HTMLUnknownElement]';
     expect(unknownElement).toBe(false);
     var box = elem.getBoundingClientRect();
-    return unknownElement || (box.width === 0 && box.height === 0);
+    expect(box.width === 0 && box.height === 0).toBe(false);
   }
 
   describe('svg namespace', function() {
-    it('should handle transcluded svg elements', inject(function($compile){
+    iit('should handle transcluded svg elements', inject(function($compile){
       element = jqLite('<div><svg-container>' +
         '<circle cx="4" cy="4" r="2"></circle>' +  
         '</svg-container></div>');  
       $compile(element.contents())($rootScope);
-
       document.body.appendChild(element[0]);
       
       var circle = element.find('circle');
-      //dump(element)
-      dump(circle[0])
-      expect(isInvalidSvgElement(circle[0])).toBe(false);
+
+      assertIsValidSvgCircle(circle[0]);
     }));
 
     iit('should handle custom svg elements inside svg tag', function(){
@@ -126,18 +132,44 @@ ddescribe('$compile', function() {
       document.body.appendChild(element[0]);
 
       var circle = element.find('circle');
-      expect(isInvalidSvgElement(circle[0])).toBe(false);
+      assertIsValidSvgCircle(circle[0]);
     });
 
-    it('should handle transcluded custom svg elements', function(){
-      element = jqLite('<svg-container>' +
+    iit('should handle transcluded custom svg elements', function(){
+      element = jqLite('<div><svg-container>' +
         '<svg-circle></svg-circle>' +
-        '</svg-container>');
+        '</svg-container></div>');
       $compile(element.contents())($rootScope);
       document.body.appendChild(element[0]);
 
       var circle = element.find('circle');
-      expect(isInvalidSvgElement(circle[0])).toBe(false);
+      assertIsValidSvgCircle(circle[0]);
+    });
+
+    iit('should handle foreignObject', function(){
+      element = jqLite('<div><svg-container>' +
+        '<foreignObject width="100" height="100"><div class="test" style="width:20px;height:20px">test</div></foreignObject>' +
+        '</svg-container></div>');
+      $compile(element.contents())($rootScope);
+      document.body.appendChild(element[0]);
+
+      var testElem = element.find('div');
+      expect(testElem[0].toString()).toBe('[object HTMLDivElement]');
+      var bounds = testElem[0].getBoundingClientRect();
+      expect(bounds.width === 20 && bounds.height === 20).toBe(true);
+    });
+
+    iit('should handle custom elements that transclude to foreignObject', function(){
+      element = jqLite('<div><svg-container>' +
+        '<my-foreign-object><div class="test" style="width:20px;height:20px">test</div></my-foreign-object>' +
+        '</svg-container></div>');
+      $compile(element.contents())($rootScope);
+      document.body.appendChild(element[0]);
+
+      var testElem = element.find('div');
+      expect(testElem[0].toString()).toBe('[object HTMLDivElement]');
+      var bounds = testElem[0].getBoundingClientRect();
+      expect(bounds.width === 20 && bounds.height === 20).toBe(true);
     });
   });
 

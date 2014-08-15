@@ -963,9 +963,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         var node = nodeList[i];
         namespace = namespace || HTML_NAMESPACE;
 
-        if(node.tagName === 'svg') {
+        var nodeTagName = nodeName_(node);
+        if(nodeTagName === 'svg') {
         	namespace = SVG_NAMESPACE;
         }
+        // else if(nodeTagName === 'foreignobject') {
+        // 	namespace = HTML_NAMESPACE;
+        // }
 
         nodeList.namespace = namespace;
 
@@ -993,7 +997,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             : compileNodes(childNodes,
                  nodeLinkFn ? (
                   (nodeLinkFn.transcludeOnThisElement || !nodeLinkFn.templateOnThisElement)
-                     && nodeLinkFn.transclude) : transcludeFn);
+                     && nodeLinkFn.transclude) : transcludeFn, undefined, undefined, undefined, undefined, namespace);
 
         linkFns.push(nodeLinkFn, childLinkFn);
         linkFnFound = linkFnFound || nodeLinkFn || childLinkFn;
@@ -1355,7 +1359,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 	            	var childTranscludeFn = childTranscludeFnFactory.fn;
 
 	            	if (!childTranscludeFn) {
-									childTranscludeFn = childTranscludeFnFactory.fn = compile($template, transcludeFn, null, null, null, arguments[4]);
+									childTranscludeFn = childTranscludeFnFactory.fn = compile($template, transcludeFn, undefined, undefined, undefined, arguments[4]);
 								}
 
 								return childTranscludeFn.apply(undefined, arguments);
@@ -1393,9 +1397,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             replaceWith(jqCollection, $compileNode, compileNode);
 
-
-            if ($compileNode[0].tagName === 'svg') {
+            var compileNodeTagName = nodeName_($compileNode[0]);
+            if (compileNodeTagName === 'svg') {
             	nodeLinkFn.namespace = $compileNode.namespace = SVG_NAMESPACE;
+           	} else if(compileNodeTagName=== 'foreignobject') {
+            	nodeLinkFn.namespace = $compileNode.namespace = HTML_NAMESPACE;
            	}
             
 
