@@ -75,6 +75,16 @@ describe('boolean attr directives', function() {
     expect(element.attr('open')).toBeTruthy();
   }));
 
+  it('should bind indeterminate', inject(function ($rootScope, $compile) {
+    element = $compile('<input type="checkbox" ng-indeterminate="isIndeterminate" />')($rootScope);
+    $rootScope.isIndeterminate = false;
+    $rootScope.$digest();
+    expect(element.attr('indeterminate')).toBeFalsy();
+    $rootScope.isIndeterminate = true;
+    $rootScope.$digest();
+    expect(element.attr('indeterminate')).toBeTruthy();
+  }));
+
 
   describe('multiple', function() {
     it('should NOT bind to multiple via ngMultiple', inject(function($rootScope, $compile) {

@@ -340,6 +340,40 @@
  *     then special attribute "open" will be set on the element
  */
 
+/**
+ * @ngdoc directive
+ * @name ngIndeterminate
+ * @restrict A
+ * @priority 100
+ *
+ * @description
+ * The HTML specification does not require browsers to preserve the values of boolean attributes
+ * such as indeterminate. (Their presence means true and their absence means false.)
+ * If we put an Angular interpolation expression into such an attribute then the
+ * binding information would be lost when the browser removes the attribute.
+ * The `ngIndeterminate` directive solves this problem for the `indeterminate` attribute.
+ * This complementary directive is not removed by the browser and so provides
+ * a permanent reliable place to store the binding information.
+ * @example
+    <example>
+      <file name="index.html">
+        Check me to mark the other indeterminate: <input type="checkbox" ng-model="master"><br/>
+        <input type="checkbox" id="indetSlave" ng-indeterminate="master">
+      </file>
+      <file name="protractor.js" type="protractor">
+        it('should toggle indeterminate', function() {
+          expect(element(by.id('indetSlave')).getAttribute('indeterminate')).toBeFalsy();
+          element(by.model('master')).click();
+          expect(element(by.id('indetSlave')).getAttribute('indeterminate')).toBeTruthy();
+        });
+      </file>
+    </example>
+ *
+ * @element INPUT
+ * @param {expression} ngIndeterminate If the {@link guide/expression expression} is truthy,
+ *     then special attribute "indeterminate" will be set on the element
+ */
+
 var ngAttributeAliasDirectives = {};
 
 
