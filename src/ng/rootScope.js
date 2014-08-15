@@ -400,7 +400,7 @@ function $RootScopeProvider(){
           });
           return function deregisterWatchGroup() {
             shouldCall = false;
-          }
+          };
         }
 
         if (watchExpressions.length === 1) {
