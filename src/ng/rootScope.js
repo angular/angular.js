@@ -134,7 +134,7 @@ function $RootScopeProvider(){
       this.$$postDigestQueue = [];
       this.$$listeners = {};
       this.$$listenerCount = {};
-      this.$$isolateBindings = {};
+      this.$$isolateBindings = null;
       this.$$applyAsyncQueue = [];
     }
 
