@@ -133,7 +133,6 @@ function $RootScopeProvider(){
       this.$$postDigestQueue = [];
       this.$$listeners = {};
       this.$$listenerCount = {};
-      this.$$isolateBindings = {};
     }
 
     /**
