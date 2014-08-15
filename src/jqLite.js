@@ -1,11 +1,10 @@
 'use strict';
 
-/* global
-
-  -JQLitePrototype,
-  -addEventListenerFn,
-  -removeEventListenerFn,
-  -BOOLEAN_ATTR
+/* global JQLitePrototype: true,
+  addEventListenerFn: true,
+  removeEventListenerFn: true,
+  BOOLEAN_ATTR: true,
+  ALIASED_ATTR: true,
 */
 
 //////////////////////////////////
@@ -15,7 +14,8 @@
 /**
  * @ngdoc function
  * @name angular.element
- * @function
+ * @module ng
+ * @kind function
  *
  * @description
  * Wraps a raw DOM element or HTML string as a [jQuery](http://jquery.com) element.
@@ -40,12 +40,14 @@
  * - [`after()`](http://api.jquery.com/after/)
  * - [`append()`](http://api.jquery.com/append/)
  * - [`attr()`](http://api.jquery.com/attr/)
- * - [`bind()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
+ * - [`bind()`](http://api.jquery.com/bind/) - Does not support namespaces, selectors or eventData
  * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
  * - [`clone()`](http://api.jquery.com/clone/)
  * - [`contents()`](http://api.jquery.com/contents/)
  * - [`css()`](http://api.jquery.com/css/)
  * - [`data()`](http://api.jquery.com/data/)
+ * - [`detach()`](http://api.jquery.com/detach/)
+ * - [`empty()`](http://api.jquery.com/empty/)
  * - [`eq()`](http://api.jquery.com/eq/)
  * - [`find()`](http://api.jquery.com/find/) - Limited to lookups by tag name
  * - [`hasClass()`](http://api.jquery.com/hasClass/)
@@ -53,6 +55,7 @@
  * - [`next()`](http://api.jquery.com/next/) - Does not support selectors
  * - [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
  * - [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
+ * - [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
  * - [`parent()`](http://api.jquery.com/parent/) - Does not support selectors
  * - [`prepend()`](http://api.jquery.com/prepend/)
  * - [`prop()`](http://api.jquery.com/prop/)
@@ -65,7 +68,7 @@
  * - [`text()`](http://api.jquery.com/text/)
  * - [`toggleClass()`](http://api.jquery.com/toggleClass/)
  * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
- * - [`unbind()`](http://api.jquery.com/off/) - Does not support namespaces
+ * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces
  * - [`val()`](http://api.jquery.com/val/)
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
@@ -83,8 +86,11 @@
  *   camelCase directive name, then the controller for this directive will be retrieved (e.g.
  *   `'ngModel'`).
  * - `injector()` - retrieves the injector of the current element or its parent.
- * - `scope()` - retrieves the {@link api/ng.$rootScope.Scope scope} of the current
+ * - `scope()` - retrieves the {@link ng.$rootScope.Scope scope} of the current
  *   element or its parent.
+ * - `isolateScope()` - retrieves an isolate {@link ng.$rootScope.Scope scope} if one is attached directly to the
+ *   current element. This getter should be used only on elements that contain a directive which starts a new isolate
+ *   scope. Calling `scope()` on this element always returns the original non-isolate scope.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
@@ -92,8 +98,9 @@
  * @returns {Object} jQuery object.
  */
 
+JQLite.expando = 'ng339';
+
 var jqCache = JQLite.cache = {},
-    jqName = JQLite.expando = 'ng-' + new Date().getTime(),
     jqId = 1,
     addEventListenerFn = (window.document.addEventListener
       ? function(element, type, fn) {element.addEventListener(type, fn, false);}
@@ -101,6 +108,14 @@ var jqCache = JQLite.cache = {},
     removeEventListenerFn = (window.document.removeEventListener
       ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
       : function(element, type, fn) {element.detachEvent('on' + type, fn); });
+
+/*
+ * !!! This is an undocumented "private" function !!!
+ */
+var jqData = JQLite._data = function(node) {
+  //jQuery always returns an object on cache miss
+  return this.cache[node[this.expando]] || {};
+};
 
 function jqNextId() { return ++jqId; }
 
@@ -122,53 +137,94 @@ function camelCase(name) {
     replace(MOZ_HACK_REGEXP, 'Moz$1');
 }
 
-/////////////////////////////////////////////
-// jQuery mutation patch
-//
-// In conjunction with bindJQuery intercepts all jQuery's DOM destruction apis and fires a
-// $destroy event on all DOM nodes being removed.
-//
-/////////////////////////////////////////////
+var SINGLE_TAG_REGEXP = /^<(\w+)\s*\/?>(?:<\/\1>|)$/;
+var HTML_REGEXP = /<|&#?\w+;/;
+var TAG_NAME_REGEXP = /<([\w:]+)/;
+var XHTML_TAG_REGEXP = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi;
 
-function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments) {
-  var originalJqFn = jQuery.fn[name];
-  originalJqFn = originalJqFn.$original || originalJqFn;
-  removePatch.$original = originalJqFn;
-  jQuery.fn[name] = removePatch;
+var wrapMap = {
+  'option': [1, '<select multiple="multiple">', '</select>'],
 
-  function removePatch(param) {
-    // jshint -W040
-    var list = filterElems && param ? [this.filter(param)] : [this],
-        fireEvent = dispatchThis,
-        set, setIndex, setLength,
-        element, childIndex, childLength, children;
+  'thead': [1, '<table>', '</table>'],
+  'col': [2, '<table><colgroup>', '</colgroup></table>'],
+  'tr': [2, '<table><tbody>', '</tbody></table>'],
+  'td': [3, '<table><tbody><tr>', '</tr></tbody></table>'],
+  '_default': [0, "", ""]
+};
 
-    if (!getterIfNoArguments || param != null) {
-      while(list.length) {
-        set = list.shift();
-        for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
-          element = jqLite(set[setIndex]);
-          if (fireEvent) {
-            element.triggerHandler('$destroy');
-          } else {
-            fireEvent = !fireEvent;
-          }
-          for(childIndex = 0, childLength = (children = element.children()).length;
-              childIndex < childLength;
-              childIndex++) {
-            list.push(jQuery(children[childIndex]));
-          }
-        }
-      }
+wrapMap.optgroup = wrapMap.option;
+wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
+wrapMap.th = wrapMap.td;
+
+function jqLiteIsTextNode(html) {
+  return !HTML_REGEXP.test(html);
+}
+
+function jqLiteAcceptsData(node) {
+  // The window object can accept data but has no nodeType
+  // Otherwise we are only interested in elements (1) and documents (9)
+  return !node.nodeType || node.nodeType === 1 || node.nodeType === 9;
+}
+
+function jqLiteBuildFragment(html, context) {
+  var elem, tmp, tag, wrap,
+      fragment = context.createDocumentFragment(),
+      nodes = [], i;
+
+  if (jqLiteIsTextNode(html)) {
+    // Convert non-html into a text node
+    nodes.push(context.createTextNode(html));
+  } else {
+    // Convert html into DOM nodes
+    tmp = tmp || fragment.appendChild(context.createElement("div"));
+    tag = (TAG_NAME_REGEXP.exec(html) || ["", ""])[1].toLowerCase();
+    wrap = wrapMap[tag] || wrapMap._default;
+    tmp.innerHTML = wrap[1] + html.replace(XHTML_TAG_REGEXP, "<$1></$2>") + wrap[2];
+
+    // Descend through wrappers to the right content
+    i = wrap[0];
+    while (i--) {
+      tmp = tmp.lastChild;
     }
-    return originalJqFn.apply(this, arguments);
+
+    nodes = concat(nodes, tmp.childNodes);
+
+    tmp = fragment.firstChild;
+    tmp.textContent = "";
   }
+
+  // Remove wrapper from fragment
+  fragment.textContent = "";
+  fragment.innerHTML = ""; // Clear inner HTML
+  forEach(nodes, function(node) {
+    fragment.appendChild(node);
+  });
+
+  return fragment;
+}
+
+function jqLiteParseHTML(html, context) {
+  context = context || document;
+  var parsed;
+
+  if ((parsed = SINGLE_TAG_REGEXP.exec(html))) {
+    return [context.createElement(parsed[1])];
+  }
+
+  if ((parsed = jqLiteBuildFragment(html, context))) {
+    return parsed.childNodes;
+  }
+
+  return [];
 }
 
 /////////////////////////////////////////////
 function JQLite(element) {
   if (element instanceof JQLite) {
     return element;
+  }
+  if (isString(element)) {
+    element = trim(element);
   }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
@@ -178,14 +234,7 @@ function JQLite(element) {
   }
 
   if (isString(element)) {
-    var div = document.createElement('div');
-    // Read about the NoScope elements here:
-    // http://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
-    div.innerHTML = '<div>&#160;</div>' + element; // IE insanity to make NoScope elements work!
-    div.removeChild(div.firstChild); // remove the superfluous div
-    jqLiteAddNodes(this, div.childNodes);
-    var fragment = jqLite(document.createDocumentFragment());
-    fragment.append(this); // detach the elements from the temporary DOM div.
+    jqLiteAddNodes(this, jqLiteParseHTML(element));
   } else {
     jqLiteAddNodes(this, element);
   }
@@ -195,10 +244,16 @@ function jqLiteClone(element) {
   return element.cloneNode(true);
 }
 
-function jqLiteDealoc(element){
-  jqLiteRemoveData(element);
-  for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
-    jqLiteDealoc(children[i]);
+function jqLiteDealoc(element, onlyDescendants){
+  if (!onlyDescendants) jqLiteRemoveData(element);
+
+  if (element.childNodes && element.childNodes.length) {
+    // we use querySelectorAll because documentFragments don't have getElementsByTagName
+    var descendants = element.getElementsByTagName ? sliceArgs(element.getElementsByTagName('*')) :
+                    element.querySelectorAll ? element.querySelectorAll('*') : [];
+    for (var i = 0, l = descendants.length; i < l; i++) {
+      jqLiteRemoveData(descendants[i]);
+    }
   }
 }
 
@@ -228,7 +283,7 @@ function jqLiteOff(element, type, fn, unsupported) {
 }
 
 function jqLiteRemoveData(element, name) {
-  var expandoId = element[jqName],
+  var expandoId = element.ng339,
       expandoStore = jqCache[expandoId];
 
   if (expandoStore) {
@@ -242,17 +297,17 @@ function jqLiteRemoveData(element, name) {
       jqLiteOff(element);
     }
     delete jqCache[expandoId];
-    element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
+    element.ng339 = undefined; // don't delete DOM expandos. IE and Chrome don't like it
   }
 }
 
 function jqLiteExpandoStore(element, key, value) {
-  var expandoId = element[jqName],
+  var expandoId = element.ng339,
       expandoStore = jqCache[expandoId || -1];
 
   if (isDefined(value)) {
     if (!expandoStore) {
-      element[jqName] = expandoId = jqNextId();
+      element.ng339 = expandoId = jqNextId();
       expandoStore = jqCache[expandoId] = {};
     }
     expandoStore[key] = value;
@@ -262,27 +317,29 @@ function jqLiteExpandoStore(element, key, value) {
 }
 
 function jqLiteData(element, key, value) {
-  var data = jqLiteExpandoStore(element, 'data'),
-      isSetter = isDefined(value),
-      keyDefined = !isSetter && isDefined(key),
-      isSimpleGetter = keyDefined && !isObject(key);
+  if (jqLiteAcceptsData(element)) {
+    var data = jqLiteExpandoStore(element, 'data'),
+        isSetter = isDefined(value),
+        keyDefined = !isSetter && isDefined(key),
+        isSimpleGetter = keyDefined && !isObject(key);
 
-  if (!data && !isSimpleGetter) {
-    jqLiteExpandoStore(element, 'data', data = {});
-  }
+    if (!data && !isSimpleGetter) {
+      jqLiteExpandoStore(element, 'data', data = {});
+    }
 
-  if (isSetter) {
-    data[key] = value;
-  } else {
-    if (keyDefined) {
-      if (isSimpleGetter) {
-        // don't create data in this case.
-        return data && data[key];
-      } else {
-        extend(data, key);
-      }
+    if (isSetter) {
+      data[key] = value;
     } else {
-      return data;
+      if (keyDefined) {
+        if (isSimpleGetter) {
+          // don't create data in this case.
+          return data && data[key];
+        } else {
+          extend(data, key);
+        }
+      } else {
+        return data;
+      }
     }
   }
 }
@@ -321,34 +378,70 @@ function jqLiteAddClass(element, cssClasses) {
   }
 }
 
+
 function jqLiteAddNodes(root, elements) {
+  // THIS CODE IS VERY HOT. Don't make changes without benchmarking.
+
   if (elements) {
-    elements = (!elements.nodeName && isDefined(elements.length) && !isWindow(elements))
-      ? elements
-      : [ elements ];
-    for(var i=0; i < elements.length; i++) {
-      root.push(elements[i]);
+
+    // if a Node (the most common case)
+    if (elements.nodeType) {
+      root[root.length++] = elements;
+    } else {
+      var length = elements.length;
+
+      // if an Array or NodeList and not a Window
+      if (typeof length === 'number' && elements.window !== elements) {
+        if (length) {
+          if (elements.item) {
+            // convert NodeList to an Array to make PhantomJS 1.x happy
+            elements = slice.call(elements);
+          }
+          push.apply(root, elements);
+        }
+      } else {
+        root[root.length++] = elements;
+      }
     }
   }
 }
+
 
 function jqLiteController(element, name) {
   return jqLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
 }
 
 function jqLiteInheritedData(element, name, value) {
-  element = jqLite(element);
-
   // if element is the document object work with the html element instead
   // this makes $(document).scope() possible
-  if(element[0].nodeType == 9) {
-    element = element.find('html');
+  if(element.nodeType == 9) {
+    element = element.documentElement;
   }
+  var names = isArray(name) ? name : [name];
 
-  while (element.length) {
-    if ((value = element.data(name)) !== undefined) return value;
-    element = element.parent();
+  while (element) {
+    for (var i = 0, ii = names.length; i < ii; i++) {
+      if ((value = jqLite.data(element, names[i])) !== undefined) return value;
+    }
+
+    // If dealing with a document fragment node with a host element, and no parent, use the host
+    // element as the parent. This enables directives within a Shadow DOM or polyfilled Shadow DOM
+    // to lookup parent controllers.
+    element = element.parentNode || (element.nodeType === 11 && element.host);
   }
+}
+
+function jqLiteEmpty(element) {
+  jqLiteDealoc(element, true);
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
+function jqLiteRemove(element, keepData) {
+  if (!keepData) jqLiteDealoc(element);
+  var parent = element.parentNode;
+  if (parent) parent.removeChild(element);
 }
 
 //////////////////////////////////////////
@@ -402,32 +495,55 @@ forEach('multiple,selected,checked,disabled,readOnly,required,open'.split(','), 
 });
 var BOOLEAN_ELEMENTS = {};
 forEach('input,select,option,textarea,button,form,details'.split(','), function(value) {
-  BOOLEAN_ELEMENTS[uppercase(value)] = true;
+  BOOLEAN_ELEMENTS[value] = true;
 });
+var ALIASED_ATTR = {
+  'ngMinlength' : 'minlength',
+  'ngMaxlength' : 'maxlength',
+  'ngPattern' : 'pattern'
+};
 
 function getBooleanAttrName(element, name) {
   // check dom last since we will most likely fail on name
   var booleanAttr = BOOLEAN_ATTR[name.toLowerCase()];
 
   // booleanAttr is here twice to minimize DOM access
-  return booleanAttr && BOOLEAN_ELEMENTS[element.nodeName] && booleanAttr;
+  return booleanAttr && BOOLEAN_ELEMENTS[nodeName_(element)] && booleanAttr;
 }
+
+function getAliasedAttrName(element, name) {
+  var nodeName = element.nodeName;
+  return (nodeName === 'INPUT' || nodeName === 'TEXTAREA') && ALIASED_ATTR[name];
+}
+
+forEach({
+  data: jqLiteData,
+  removeData: jqLiteRemoveData
+}, function(fn, name) {
+  JQLite[name] = fn;
+});
 
 forEach({
   data: jqLiteData,
   inheritedData: jqLiteInheritedData,
 
   scope: function(element) {
-    return jqLiteInheritedData(element, '$scope');
+    // Can't use jqLiteData here directly so we stay compatible with jQuery!
+    return jqLite.data(element, '$scope') || jqLiteInheritedData(element.parentNode || element, ['$isolateScope', '$scope']);
   },
 
-  controller: jqLiteController ,
+  isolateScope: function(element) {
+    // Can't use jqLiteData here directly so we stay compatible with jQuery!
+    return jqLite.data(element, '$isolateScope') || jqLite.data(element, '$isolateScopeNoTemplate');
+  },
+
+  controller: jqLiteController,
 
   injector: function(element) {
     return jqLiteInheritedData(element, '$injector');
   },
 
-  removeAttr: function(element,name) {
+  removeAttr: function(element, name) {
     element.removeAttribute(name);
   },
 
@@ -495,29 +611,21 @@ forEach({
   },
 
   text: (function() {
-    var NODE_TYPE_TEXT_PROPERTY = [];
-    if (msie < 9) {
-      NODE_TYPE_TEXT_PROPERTY[1] = 'innerText';    /** Element **/
-      NODE_TYPE_TEXT_PROPERTY[3] = 'nodeValue';    /** Text **/
-    } else {
-      NODE_TYPE_TEXT_PROPERTY[1] =                 /** Element **/
-      NODE_TYPE_TEXT_PROPERTY[3] = 'textContent';  /** Text **/
-    }
     getText.$dv = '';
     return getText;
 
     function getText(element, value) {
-      var textProp = NODE_TYPE_TEXT_PROPERTY[element.nodeType];
       if (isUndefined(value)) {
-        return textProp ? element[textProp] : '';
+        var nodeType = element.nodeType;
+        return (nodeType === 1 || nodeType === 3) ? element.textContent : '';
       }
-      element[textProp] = value;
+      element.textContent = value;
     }
   })(),
 
   val: function(element, value) {
     if (isUndefined(value)) {
-      if (nodeName_(element) === 'SELECT' && element.multiple) {
+      if (element.multiple && nodeName_(element) === 'select') {
         var result = [];
         forEach(element.options, function (option) {
           if (option.selected) {
@@ -535,25 +643,28 @@ forEach({
     if (isUndefined(value)) {
       return element.innerHTML;
     }
-    for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-      jqLiteDealoc(childNodes[i]);
-    }
+    jqLiteDealoc(element, true);
     element.innerHTML = value;
-  }
+  },
+
+  empty: jqLiteEmpty
 }, function(fn, name){
   /**
    * Properties: writes return selection, reads return first value
    */
   JQLite.prototype[name] = function(arg1, arg2) {
     var i, key;
+    var nodeCount = this.length;
 
     // jqLiteHasClass has only two arguments, but is a getter-only fn, so we need to special-case it
     // in a way that survives minification.
-    if (((fn.length == 2 && (fn !== jqLiteHasClass && fn !== jqLiteController)) ? arg1 : arg2) === undefined) {
+    // jqLiteEmpty takes no arguments but is a setter.
+    if (fn !== jqLiteEmpty &&
+        (((fn.length == 2 && (fn !== jqLiteHasClass && fn !== jqLiteController)) ? arg1 : arg2) === undefined)) {
       if (isObject(arg1)) {
 
         // we are a write, but the object properties are the key/values
-        for(i=0; i < this.length; i++) {
+        for (i = 0; i < nodeCount; i++) {
           if (fn === jqLiteData) {
             // data() takes the whole object in jQuery
             fn(this[i], arg1);
@@ -567,9 +678,10 @@ forEach({
         return this;
       } else {
         // we are a read, so read the first child.
+        // TODO: do we still need this?
         var value = fn.$dv;
         // Only if we have $dv do we iterate over all, otherwise it is just the first element.
-        var jj = (value === undefined) ? Math.min(this.length, 1) : this.length;
+        var jj = (value === undefined) ? Math.min(nodeCount, 1) : nodeCount;
         for (var j = 0; j < jj; j++) {
           var nodeValue = fn(this[j], arg1, arg2);
           value = value ? value + nodeValue : nodeValue;
@@ -578,7 +690,7 @@ forEach({
       }
     } else {
       // we are a write, so apply to all children
-      for(i=0; i < this.length; i++) {
+      for (i = 0; i < nodeCount; i++) {
         fn(this[i], arg1, arg2);
       }
       // return self for chaining
@@ -618,7 +730,10 @@ function createEventHandler(element, events) {
       return event.defaultPrevented || event.returnValue === false;
     };
 
-    forEach(events[type || event.type], function(fn) {
+    // Copy event handlers in case event handlers array is modified during execution.
+    var eventHandlersCopy = shallowCopy(events[type || event.type] || []);
+
+    forEach(eventHandlersCopy, function(fn) {
       fn.call(element, event);
     });
 
@@ -648,10 +763,13 @@ function createEventHandler(element, events) {
 forEach({
   removeData: jqLiteRemoveData,
 
-  dealoc: jqLiteDealoc,
-
   on: function onFn(element, type, fn, unsupported){
     if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+
+    // Do not add event handlers to non-elements because they will not be cleaned up.
+    if (!jqLiteAcceptsData(element)) {
+      return;
+    }
 
     var events = jqLiteExpandoStore(element, 'events'),
         handle = jqLiteExpandoStore(element, 'handle');
@@ -714,6 +832,19 @@ forEach({
 
   off: jqLiteOff,
 
+  one: function(element, type, fn) {
+    element = jqLite(element);
+
+    //add the listener twice so that when it is called
+    //you can remove the original function and still be
+    //able to call element.off(ev, fn) normally
+    element.on(type, function onFn() {
+      element.off(type, fn);
+      element.off(type, onFn);
+    });
+    element.on(type, fn);
+  },
+
   replaceWith: function(element, replaceNode) {
     var index, parent = element.parentNode;
     jqLiteDealoc(element);
@@ -737,7 +868,7 @@ forEach({
   },
 
   contents: function(element) {
-    return element.childNodes || [];
+    return element.contentDocument || element.childNodes || [];
   },
 
   append: function(element, node) {
@@ -766,10 +897,10 @@ forEach({
     wrapNode.appendChild(element);
   },
 
-  remove: function(element) {
-    jqLiteDealoc(element);
-    var parent = element.parentNode;
-    if (parent) parent.removeChild(element);
+  remove: jqLiteRemove,
+
+  detach: function(element) {
+    jqLiteRemove(element, true);
   },
 
   after: function(element, newElement) {
@@ -784,10 +915,15 @@ forEach({
   removeClass: jqLiteRemoveClass,
 
   toggleClass: function(element, selector, condition) {
-    if (isUndefined(condition)) {
-      condition = !jqLiteHasClass(element, selector);
+    if (selector) {
+      forEach(selector.split(' '), function(className){
+        var classCondition = condition;
+        if (isUndefined(classCondition)) {
+          classCondition = !jqLiteHasClass(element, className);
+        }
+        (classCondition ? jqLiteAddClass : jqLiteRemoveClass)(element, className);
+      });
     }
-    (condition ? jqLiteAddClass : jqLiteRemoveClass)(element, selector);
   },
 
   parent: function(element) {
@@ -809,24 +945,46 @@ forEach({
   },
 
   find: function(element, selector) {
-    return element.getElementsByTagName(selector);
+    if (element.getElementsByTagName) {
+      return element.getElementsByTagName(selector);
+    } else {
+      return [];
+    }
   },
 
   clone: jqLiteClone,
 
-  triggerHandler: function(element, eventName, eventData) {
+  triggerHandler: function(element, event, extraParameters) {
+
+    var dummyEvent, eventFnsCopy, handlerArgs;
+    var eventName = event.type || event;
     var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName];
 
-    eventData = eventData || [];
+    if (eventFns) {
 
-    var event = [{
-      preventDefault: noop,
-      stopPropagation: noop
-    }];
+      // Create a dummy event to pass to the handlers
+      dummyEvent = {
+        preventDefault: function() { this.defaultPrevented = true; },
+        isDefaultPrevented: function() { return this.defaultPrevented === true; },
+        stopPropagation: noop,
+        type: eventName,
+        target: element
+      };
 
-    forEach(eventFns, function(fn) {
-      fn.apply(element, event.concat(eventData));
-    });
+      // If a custom event was provided then extend our dummy event with it
+      if (event.type) {
+        dummyEvent = extend(dummyEvent, event);
+      }
+
+      // Copy event handlers in case event handlers array is modified during execution.
+      eventFnsCopy = shallowCopy(eventFns);
+      handlerArgs = extraParameters ? [dummyEvent].concat(extraParameters) : [dummyEvent];
+
+      forEach(eventFnsCopy, function(fn) {
+        fn.apply(element, handlerArgs);
+      });
+
+    }
   }
 }, function(fn, name){
   /**

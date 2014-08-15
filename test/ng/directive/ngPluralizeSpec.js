@@ -240,6 +240,6 @@ describe('ngPluralize', function() {
         expect(element.text()).toBe('Igor and 2 other people are viewing.');
         expect(elementAlt.text()).toBe('Igor and 2 other people are viewing.');
       });
-    })
+    });
   });
 });

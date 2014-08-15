@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 10 - Event Handlers
+@ngdoc tutorial
+@name 10 - Event Handlers
+@step 10
 @description
 
 <ul doc-tutorial-nav="10"></ul>
@@ -7,23 +8,17 @@
 
 In this step, you will add a clickable phone image swapper to the phone details page.
 
-
-<div doc-tutorial-reset="10"></div>
-
-
-The phone details view displays one large image of the current phone and several smaller thumbnail
+* The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
 clicking on the desired thumbnail image. Let's have a look at how we can do this with Angular.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-9...step-10
-GitHub}:
-
+<div doc-tutorial-reset="10"></div>
 
 ## Controller
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 ...
 var phonecatControllers = angular.module('phonecatControllers',[]);
 
@@ -38,7 +33,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$h
       $scope.mainImageUrl = imageUrl;
     }
   }]);
-</pre>
+```
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
 default value to the first phone image URL.
@@ -49,7 +44,8 @@ We also created a `setImage` event handler function that will change the value o
 ## Template
 
 __`app/partials/phone-detail.html`:__
-<pre>
+
+```html
 <img ng-src="{{mainImageUrl}}" class="phone">
 
 ...
@@ -60,11 +56,11 @@ __`app/partials/phone-detail.html`:__
   </li>
 </ul>
 ...
-</pre>
+```
 
 We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
 
-We also registered an {@link api/ng.directive:ngClick `ngClick`}
+We also registered an {@link ng.directive:ngClick `ngClick`}
 handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
 use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
 URL of the thumbnail image.
@@ -81,32 +77,74 @@ to the first phone image by default. The second test clicks on several thumbnail
 verifies that the main image changed appropriately.
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 ...
   describe('Phone detail view', function() {
 
 ...
 
     it('should display the first phone image as the main phone image', function() {
-      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
 
     it('should swap main image if a thumbnail image is clicked on', function() {
-      element('.phone-thumbs li:nth-child(3) img').click();
-      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.2.jpg');
+      element(by.css('.phone-thumbs li:nth-child(3) img')).click();
+      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
 
-      element('.phone-thumbs li:nth-child(1) img').click();
-      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+      element(by.css('.phone-thumbs li:nth-child(1) img')).click();
+      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
   });
-});
-</pre>
+```
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-10/test/e2e/runner.html
-Angular's server}.
+You can now rerun `npm run protractor` to see the tests run.
+
+
+You also have to refactor one of your unit tests because of the addition of the `mainImageUrl`
+model property to the `PhoneDetailCtrl` controller. Below, we create the function `xyzPhoneData`
+which returns the appropriate json with the `images` attribute in order to get the test to pass.
+
+__`test/unit/controllersSpec.js`:__
+
+```js
+...
+  beforeEach(module('phonecatApp'));
+
+...
+
+ describe('PhoneDetailCtrl', function(){
+    var scope, $httpBackend, ctrl,
+        xyzPhoneData = function() {
+          return {
+            name: 'phone xyz',
+            images: ['image/url1.png', 'image/url2.png']
+          }
+        };
+
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
+
+      $routeParams.phoneId = 'xyz';
+      scope = $rootScope.$new();
+      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
+    }));
+
+
+    it('should fetch phone detail', function() {
+      expect(scope.phone).toBeUndefined();
+      $httpBackend.flush();
+
+      expect(scope.phone).toEqual(xyzPhoneData());
+    });
+  });
+```
+
+Your unit tests should now be passing.
+
 
 # Experiments
 
@@ -120,7 +158,7 @@ Angular's server}.
 
           <button ng-click="hello('Elmo')">Hello</button>
 
-  to the `phone-details.html` template.
+  to the `phone-detail.html` template.
 
 <div style="display: none">
 TODO!

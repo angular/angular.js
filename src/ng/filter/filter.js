@@ -2,14 +2,11 @@
 
 /**
  * @ngdoc filter
- * @name ng.filter:filter
- * @function
+ * @name filter
+ * @kind function
  *
  * @description
  * Selects a subset of items from `array` and returns it as a new array.
- *
- * Note: This function is used to augment the `Array` type in Angular expressions. See
- * {@link ng.$filter} for more information about Angular arrays.
  *
  * @param {Array} array The source array.
  * @param {string|Object|function()} expression The predicate to be used for selecting items from
@@ -17,8 +14,8 @@
  *
  *   Can be one of:
  *
- *   - `string`: Predicate that results in a substring match using the value of `expression`
- *     string. All strings or objects with string properties in `array` that contain this string
+ *   - `string`: The string is evaluated as an expression and the resulting value is used for substring match against
+ *     the contents of the `array`. All strings or objects with string properties in `array` that contain this string
  *     will be returned. The predicate can be negated by prefixing the string with `!`.
  *
  *   - `Object`: A pattern object can be used to filter specific properties on objects contained
@@ -28,29 +25,29 @@
  *     property of the object. That's equivalent to the simple substring match with a `string`
  *     as described above.
  *
- *   - `function`: A predicate function can be used to write arbitrary filters. The function is
+ *   - `function(value)`: A predicate function can be used to write arbitrary filters. The function is
  *     called for each element of `array`. The final result is an array of those elements that
  *     the predicate returned true for.
  *
- * @param {function(expected, actual)|true|undefined} comparator Comparator which is used in
+ * @param {function(actual, expected)|true|undefined} comparator Comparator which is used in
  *     determining if the expected value (from the filter expression) and actual value (from
  *     the object in the array) should be considered a match.
  *
  *   Can be one of:
  *
- *     - `function(expected, actual)`:
- *       The function will be given the object value and the predicate value to compare and
- *       should return true if the item should be included in filtered result.
+ *   - `function(actual, expected)`:
+ *     The function will be given the object value and the predicate value to compare and
+ *     should return true if the item should be included in filtered result.
  *
- *     - `true`: A shorthand for `function(expected, actual) { return angular.equals(expected, actual)}`.
- *       this is essentially strict comparison of expected and actual.
+ *   - `true`: A shorthand for `function(actual, expected) { return angular.equals(expected, actual)}`.
+ *     this is essentially strict comparison of expected and actual.
  *
- *     - `false|undefined`: A short hand for a function which will look for a substring match in case
- *       insensitive way.
+ *   - `false|undefined`: A short hand for a function which will look for a substring match in case
+ *     insensitive way.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
        <div ng-init="friends = [{name:'John', phone:'555-1276'},
                                 {name:'Mary', phone:'800-BIG-MARY'},
                                 {name:'Mike', phone:'555-4321'},
@@ -73,36 +70,48 @@
        Equality <input type="checkbox" ng-model="strict"><br>
        <table id="searchObjResults">
          <tr><th>Name</th><th>Phone</th></tr>
-         <tr ng-repeat="friend in friends | filter:search:strict">
-           <td>{{friend.name}}</td>
-           <td>{{friend.phone}}</td>
+         <tr ng-repeat="friendObj in friends | filter:search:strict">
+           <td>{{friendObj.name}}</td>
+           <td>{{friendObj.phone}}</td>
          </tr>
        </table>
-     </doc:source>
-     <doc:scenario>
-       it('should search across all fields when filtering with a string', function() {
-         input('searchText').enter('m');
-         expect(repeater('#searchTextResults tr', 'friend in friends').column('friend.name')).
-           toEqual(['Mary', 'Mike', 'Adam']);
+     </file>
+     <file name="protractor.js" type="protractor">
+       var expectFriendNames = function(expectedNames, key) {
+         element.all(by.repeater(key + ' in friends').column(key + '.name')).then(function(arr) {
+           arr.forEach(function(wd, i) {
+             expect(wd.getText()).toMatch(expectedNames[i]);
+           });
+         });
+       };
 
-         input('searchText').enter('76');
-         expect(repeater('#searchTextResults tr', 'friend in friends').column('friend.name')).
-           toEqual(['John', 'Julie']);
+       it('should search across all fields when filtering with a string', function() {
+         var searchText = element(by.model('searchText'));
+         searchText.clear();
+         searchText.sendKeys('m');
+         expectFriendNames(['Mary', 'Mike', 'Adam'], 'friend');
+
+         searchText.clear();
+         searchText.sendKeys('76');
+         expectFriendNames(['John', 'Julie'], 'friend');
        });
 
        it('should search in specific fields when filtering with a predicate object', function() {
-         input('search.$').enter('i');
-         expect(repeater('#searchObjResults tr', 'friend in friends').column('friend.name')).
-           toEqual(['Mary', 'Mike', 'Julie', 'Juliette']);
+         var searchAny = element(by.model('search.$'));
+         searchAny.clear();
+         searchAny.sendKeys('i');
+         expectFriendNames(['Mary', 'Mike', 'Julie', 'Juliette'], 'friendObj');
        });
        it('should use a equal comparison when comparator is true', function() {
-         input('search.name').enter('Julie');
-         input('strict').check();
-         expect(repeater('#searchObjResults tr', 'friend in friends').column('friend.name')).
-           toEqual(['Julie']);
+         var searchName = element(by.model('search.name'));
+         var strict = element(by.model('strict'));
+         searchName.clear();
+         searchName.sendKeys('Julie');
+         strict.click();
+         expectFriendNames(['Julie'], 'friendObj');
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 function filterFilter() {
   return function(array, expression, comparator) {
@@ -127,6 +136,15 @@ function filterFilter() {
         };
       } else {
         comparator = function(obj, text) {
+          if (obj && text && typeof obj === 'object' && typeof text === 'object') {
+            for (var objKey in obj) {
+              if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey) &&
+                  comparator(obj[objKey], text[objKey])) {
+                return true;
+              }
+            }
+            return false;
+          }
           text = (''+text).toLowerCase();
           return (''+obj).toLowerCase().indexOf(text) > -1;
         };
@@ -176,23 +194,12 @@ function filterFilter() {
       case "object":
         // jshint +W086
         for (var key in expression) {
-          if (key == '$') {
-            (function() {
-              if (!expression[key]) return;
-              var path = key;
-              predicates.push(function(value) {
-                return search(value, expression[path]);
-              });
-            })();
-          } else {
-            (function() {
-              if (typeof(expression[key]) == 'undefined') { return; }
-              var path = key;
-              predicates.push(function(value) {
-                return search(getter(value,path), expression[path]);
-              });
-            })();
-          }
+          (function(path) {
+            if (typeof expression[path] === 'undefined') return;
+            predicates.push(function(value) {
+              return search(path == '$' ? value : (value && value[path]), expression[path]);
+            });
+          })(key);
         }
         break;
       case 'function':

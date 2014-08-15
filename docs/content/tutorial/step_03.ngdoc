@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 3 - Filtering Repeaters
+@ngdoc tutorial
+@name 3 - Filtering Repeaters
+@step 3
 @description
 
 <ul doc-tutorial-nav="3"></ul>
@@ -10,16 +11,10 @@ simple; we will add full text search (yes, it will be simple!). We will also wri
 test, because a good end-to-end test is a good friend. It stays with your app, keeps an eye on it,
 and quickly detects regressions.
 
-
-<div doc-tutorial-reset="3"></div>
-
-
-The app now has a search box. Notice that the phone list on the page changes depending on what a
+* The app now has a search box. Notice that the phone list on the page changes depending on what a
 user types into the search box.
 
-The most important differences between Steps 2 and 3 are listed below. You can see the full diff on
-{@link https://github.com/angular/angular-phonecat/compare/step-2...step-3
- GitHub}:
+<div doc-tutorial-reset="3"></div>
 
 
 ## Controller
@@ -30,16 +25,17 @@ We made no changes to the controller.
 ## Template
 
 __`app/index.html`:__
-<pre>
+
+```html
   <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span2">
+    <div class="row">
+      <div class="col-md-2">
         <!--Sidebar content-->
 
         Search: <input ng-model="query">
 
       </div>
-      <div class="span10">
+      <div class="col-md-10">
         <!--Body content-->
 
         <ul class="phones">
@@ -52,11 +48,11 @@ __`app/index.html`:__
       </div>
     </div>
   </div>
-</pre>
+```
 
 We added a standard HTML `<input>` tag and used Angular's
-{@link api/ng.filter:filter $filter} function to process the input for the
-{@link api/ng.directive:ngRepeat ngRepeat} directive.
+{@link ng.filter:filter filter} function to process the input for the
+{@link ng.directive:ngRepeat ngRepeat} directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
 list. This new code demonstrates the following:
@@ -71,7 +67,7 @@ the DOM to reflect the current state of the model.
 
 <img  class="diagram" src="img/tutorial/tutorial_03.png">
 
-* Use of the `filter` filter: The {@link api/ng.filter:filter filter} function uses the
+* Use of the `filter` filter: The {@link ng.filter:filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
 
   `ngRepeat` automatically updates the view in response to the changing number of phones returned
@@ -88,110 +84,133 @@ The search feature was fully implemented via templates and data-binding, so we'l
 end-to-end test, to verify that the feature works.
 
 __`test/e2e/scenarios.js`:__
-<pre>
+
+```js
 describe('PhoneCat App', function() {
 
   describe('Phone list view', function() {
 
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html');
+      browser.get('app/index.html');
     });
 
 
     it('should filter the phone list as user types into the search box', function() {
-      expect(repeater('.phones li').count()).toBe(3);
 
-      input('query').enter('nexus');
-      expect(repeater('.phones li').count()).toBe(1);
+      var phoneList = element.all(by.repeater('phone in phones'));
+      var query = element(by.model('query'));
 
-      input('query').enter('motorola');
-      expect(repeater('.phones li').count()).toBe(2);
+      expect(phoneList.count()).toBe(3);
+
+      query.sendKeys('nexus');
+      expect(phoneList.count()).toBe(1);
+
+      query.clear();
+      query.sendKeys('motorola');
+      expect(phoneList.count()).toBe(2);
     });
   });
 });
-</pre>
-
-Even though the syntax of this test looks very much like our controller unit test written with
-Jasmine, the end-to-end test uses APIs of {@link guide/dev_guide.e2e-testing Angular's end-to-end
-test runner}.
-
-To run the end-to-end test, open one of the following in a new browser tab:
-
-* node.js users: {@link http://localhost:8000/test/e2e/runner.html}
-* users with other http servers:
-`http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
-* casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
-
-Previously we've seen how Karma can be used to execute unit tests. Well, it can also run the
-end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike
-with unit tests, Karma will exit after the test run and will not automatically rerun the test
-suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
-
-Note: You must ensure you've installed karma-ng-scenario prior to running the `e2e-test.sh` script.
-You can do this by issuing `npm install karma-ng-scenario` into your terminal.
+```
 
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
 really is that easy to set up any functional, readable, end-to-end test.
 
+### Running End to End Tests with Protractor
+Even though the syntax of this test looks very much like our controller unit test written with
+Jasmine, the end-to-end test uses APIs of [Protractor](https://github.com/angular/protractor). Read
+about the Protractor APIs at https://github.com/angular/protractor/blob/master/docs/api.md.
+
+Much like Karma is the test runner for unit tests, we use Protractor to run end-to-end tests.
+Try it with `npm run protractor`. End-to-end tests are slow, so unlike with unit tests, Protractor
+will exit after the test run and will not automatically rerun the test suite on every file change.
+To rerun the test suite, execute `npm run protractor` again.
+
+<div class="alert alert-info">
+  Note: You must ensure your application is being served via a web-server to test with protractor.
+  You can do this using `npm start`.
+  You also need to ensure you've installed the protractor and updated webdriver prior to running the
+  `npm run protractor`. You can do this by issuing `npm install` and `npm run update-webdriver` into
+  your terminal.
+</div>
+
+
 # Experiments
 
-* Display the current value of the `query` model by adding a `{{query}}` binding into the
+### Display Current Query
+Display the current value of the `query` model by adding a `{{query}}` binding into the
 `index.html` template, and see how it changes when you type in the input box.
 
-* Let's see how we can get the current value of the `query` model to appear in the HTML page title.
+### Display Query in Title
+Let's see how we can get the current value of the `query` model to appear in the HTML page title.
 
-  You might think you could just add the `{{query}}` to the title tag element as follows:
+* Add an end-to-end test into the `describe` block, `test/e2e/scenarios.js` should look like this:
 
-          <title>Google Phone Gallery: {{query}}</title>
+  ```js
+    describe('PhoneCat App', function() {
+
+      describe('Phone list view', function() {
+    
+        beforeEach(function() {
+          browser.get('app/index.html');
+        });
+    
+        var phoneList = element.all(by.repeater('phone in phones'));
+        var query = element(by.model('query'));
+    
+        it('should filter the phone list as user types into the search box', function() {
+          expect(phoneList.count()).toBe(3);
+    
+          query.sendKeys('nexus');
+          expect(phoneList.count()).toBe(1);
+    
+          query.clear();
+          query.sendKeys('motorola');
+          expect(phoneList.count()).toBe(2);
+        });
+    
+        it('should display the current filter value in the title bar', function() {
+          query.clear();
+          expect(browser.getTitle()).toMatch(/Google Phone Gallery:\s*$/);
+    
+          query.sendKeys('nexus');
+          expect(browser.getTitle()).toMatch(/Google Phone Gallery: nexus$/);
+        });
+      });
+    });
+  ```
+
+  Run protractor (`npm run protractor`) to see this test fail.
+
+
+* You might think you could just add the `{{query}}` to the title tag element as follows:
+
+        <title>Google Phone Gallery: {{query}}</title>
 
   However, when you reload the page, you won't see the expected result. This is because the "query"
-  model lives in the scope, defined by the `ng-controller="PhoneListCtrl"` directive, on the body element:
+  model lives in the scope, defined by the `ng-controller="PhoneListCtrl"` directive, on the body
+  element:
 
           <body ng-controller="PhoneListCtrl">
 
   If you want to bind to the query model from the `<title>` element, you must __move__ the
-`ngController` declaration to the HTML element because it is the common parent of both the body
-and title elements:
+  `ngController` declaration to the HTML element because it is the common parent of both the body
+  and title elements:
 
-          <html ng-app ng-controller="PhoneListCtrl">
+          <html ng-app="phonecatApp" ng-controller="PhoneListCtrl">
 
   Be sure to __remove__ the `ng-controller` declaration from the body element.
 
-  While using double curlies works fine within the title element, you might have noticed that
+* Re-run `npm run protractor` to see the test now pass.
+
+* While using double curlies works fine within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
-solution would be to use the {@link api/ng.directive:ngBind
-ngBind} or {@link api/ng.directive:ngBindTemplate
-ngBindTemplate} directives, which are invisible to the user while the page is loading:
+solution would be to use the {@link ng.directive:ngBind ngBind} or
+{@link ng.directive:ngBindTemplate ngBindTemplate} directives, which are invisible to the user
+while the page is loading:
 
-          <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
-
-* Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
-
-  <pre>
-    it('should display the current filter value within an element with id "status"',
-        function() {
-      expect(element('#status').text()).toMatch(/Current filter: \s*$/);
-
-      input('query').enter('nexus');
-
-      expect(element('#status').text()).toMatch(/Current filter: nexus\s*$/);
-
-      //alternative version of the last assertion that tests just the value of the binding
-      using('#status').expect(binding('query')).toBe('nexus');
-    });
-  </pre>
-
-  Refresh the browser tab with the end-to-end test runner to see the test fail. To make the test
-pass, edit the `index.html` template to add a `div` or `p` element with `id` `"status"` and content
-with the `query` binding, prefixed by "Current filter:". For instance:
-
-          <div id="status">Current filter: {{query}}</div>
-
-* Add a `pause()` statement inside of an end-to-end test and rerun it. You'll see the runner pause;
-this gives you the opportunity to explore the state of your application while it is displayed in
-the browser. The app is live! You can change the search query to prove it. Notice how useful this
-is for troubleshooting end-to-end tests.
+        <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
 
 
 # Summary

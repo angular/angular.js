@@ -1,25 +1,17 @@
-@ngdoc overview
-@name Tutorial: 9 - Filters
+@ngdoc tutorial
+@name 9 - Filters
+@step 9
 @description
 
 <ul doc-tutorial-nav="9"></ul>
 
-
 In this step you will learn how to create your own custom display filter.
 
-
-<div doc-tutorial-reset="9"></div>
-
-
-Navigate to one of the detail pages.
-
-In the previous step, the details page displayed either "true" or "false" to indicate whether
+* In the previous step, the details page displayed either "true" or "false" to indicate whether
 certain phone features were present or not. We have used a custom filter to convert those text
 strings into glyphs: ✓ for "true", and ✘ for "false". Let's see what the filter code looks like.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-8...step-9
-GitHub}:
+<div doc-tutorial-reset="9"></div>
 
 
 ## Custom Filter
@@ -28,26 +20,28 @@ In order to create a new filter, you are going to create a `phonecatFilters` mod
 your custom filter with this module:
 
 __`app/js/filters.js`:__
-<pre>
+
+```js
 angular.module('phonecatFilters', []).filter('checkmark', function() {
   return function(input) {
     return input ? '\u2713' : '\u2718';
   };
 });
-</pre>
+```
 
 The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
 return one of the two unicode characters we have chosen to represent true (`\u2713` -> ✓) or false (`\u2718` -> ✘).
 
 Now that our filter is ready, we need to register the `phonecatFilters` module as a dependency for
-our main `phonecat` module.
+our main `phonecatApp` module.
 
 __`app/js/app.js`:__
-<pre>
+
+```js
 ...
-angular.module('phonecatApp', ['phonecatFilters']).
+angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']);
 ...
-</pre>
+```
 
 
 ## Template
@@ -56,12 +50,13 @@ Since the filter code lives in the `app/js/filters.js` file, we need to include 
 layout template.
 
 __`app/index.html`:__
-<pre>
+
+```html
 ...
  <script src="js/controllers.js"></script>
  <script src="js/filters.js"></script>
 ...
-</pre>
+```
 
 The syntax for using filters in Angular templates is as follows:
 
@@ -72,7 +67,8 @@ Let's employ the filter in the phone details template:
 
 
 __`app/partials/phone-detail.html`:__
-<pre>
+
+```html
 ...
     <dl>
       <dt>Infrared</dt>
@@ -81,7 +77,7 @@ __`app/partials/phone-detail.html`:__
       <dd>{{phone.connectivity.gps | checkmark}}</dd>
     </dl>
 ...
-</pre>
+```
 
 
 ## Test
@@ -89,7 +85,8 @@ __`app/partials/phone-detail.html`:__
 Filters, like any other component, should be tested and these tests are very easy to write.
 
 __`test/unit/filtersSpec.js`:__
-<pre>
+
+```js
 describe('filter', function() {
 
   beforeEach(module('phonecatFilters'));
@@ -103,23 +100,27 @@ describe('filter', function() {
     }));
   });
 });
-</pre>
+```
 
 We must call `beforeEach(module('phonecatFilters'))` before any of
 our filter tests execute. This call loads our `phonecatFilters` module into the injector
 for this test run.
 
 Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
-access to the filter that we want to test.  See {@link api/angular.mock.inject angular.mock.inject()}.
+access to the filter that we want to test.  See {@link angular.mock.inject angular.mock.inject()}.
+
+Notice that the suffix 'Filter' is appended to your filter name when injected.
+See the {@link guide/filter#using-filters-in-controllers-services-and-directives Filter Guide}
+section where this is outlined.
 
 You should now see the following output in the Karma tab:
 
-        Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)
+<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)</pre>
 
 
 # Experiments
 
-* Let's experiment with some of the {@link api/ng.$filter built-in Angular filters} and add the
+* Let's experiment with some of the {@link api/ng/filter built-in Angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`
@@ -127,9 +128,11 @@ following bindings to `index.html`:
   * `{{ 1304375948024 | date:"MM/dd/yyyy @ h:mma" }}`
 
 *  We can also create a model with an input element, and combine it with a filtered binding. Add
-the following to index.html:
+  the following to index.html:
 
-        <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+  ```html
+  <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+  ```
 
 
 # Summary

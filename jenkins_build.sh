@@ -1,20 +1,17 @@
 #!/bin/bash
 
+echo "#################################"
+echo "####  Jenkins Build  ############"
+echo "#################################"
+
 # Enable tracing and exit on first failure
 set -xe
 
-
-# Define reasonable set of browsers in case we are running manually from commandline
+# This is the default set of browsers to use on the CI server unless overridden via env variable
 if [[ -z "$BROWSERS" ]]
 then
-  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh,/Users/jenkins/bin/ie8.sh,/Users/jenkins/bin/ie9.sh"
+  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh"
 fi
-
-if [[ -z "$BROWSERS_E2E" ]]
-then
-  BROWSERS_E2E="Chrome,Firefox,/Users/jenkins/bin/safari.sh"
-fi
-
 
 # CLEAN #
 rm -f angular.min.js.gzip.size
@@ -25,13 +22,16 @@ rm -f angular.js.size
 npm install --color false
 grunt ci-checks package --no-color
 
+mkdir -p test_out
 
 # UNIT TESTS #
 grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
-
 # END TO END TESTS #
-grunt test:e2e --browsers $BROWSERS_E2E --reporters=dots,junit --no-colors --no-color
+grunt test:ci-protractor
+
+# DOCS APP TESTS #
+grunt test:docs --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
 # Promises/A+ TESTS #
 grunt test:promises-aplus --no-color

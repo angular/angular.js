@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngRepeat
+ * @name ngRepeat
  *
  * @description
  * The `ngRepeat` directive instantiates a template once per item from a collection. Each template
@@ -20,6 +20,8 @@
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
+ * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
+ * This may be useful when, for instance, nesting ngRepeats.
  *
  * # Special repeat start and end points
  * To repeat a series of elements instead of just one parent element, ngRepeat (as well as other ng directives) supports extending
@@ -28,7 +30,7 @@
  * up to and including the ending HTML tag where **ng-repeat-end** is placed.
  *
  * The example below makes use of this feature:
- * <pre>
+ * ```html
  *   <header ng-repeat-start="item in items">
  *     Header {{ item }}
  *   </header>
@@ -38,10 +40,10 @@
  *   <footer ng-repeat-end>
  *     Footer {{ item }}
  *   </footer>
- * </pre>
+ * ```
  *
  * And with an input of {@type ['A','B']} for the items variable in the example above, the output will evaluate to:
- * <pre>
+ * ```html
  *   <header>
  *     Header A
  *   </header>
@@ -60,15 +62,17 @@
  *   <footer>
  *     Footer B
  *   </footer>
- * </pre>
+ * ```
  *
  * The custom start and end points for ngRepeat also support all other HTML directive syntax flavors provided in AngularJS (such
  * as **data-ng-repeat-start**, **x-ng-repeat-start** and **ng:repeat-start**).
  *
  * @animations
- * enter - when a new item is added to the list or when an item is revealed after a filter
- * leave - when an item is removed from the list or when an item is filtered out
- * move - when an adjacent item is filtered out causing a reorder or when the item contents are reordered
+ * **.enter** - when a new item is added to the list or when an item is revealed after a filter
+ *
+ * **.leave** - when an item is removed from the list or when an item is filtered out
+ *
+ * **.move** - when an adjacent item is filtered out causing a reorder or when the item contents are reordered
  *
  * @element ANY
  * @scope
@@ -93,13 +97,20 @@
  *     mapped to the same DOM element, which is not possible.)  Filters should be applied to the expression,
  *     before specifying a tracking expression.
  *
- *     For example: `item in items` is equivalent to `item in items track by $id(item)'. This implies that the DOM elements
+ *     For example: `item in items` is equivalent to `item in items track by $id(item)`. This implies that the DOM elements
  *     will be associated by item identity in the array.
+ *
+ *   * `variable in expression as alias_expression` – You can also provide an optional alias expression which will then store the
+ *     intermediate results of the repeater after the filters have been applied. Typically this is used to render a special message
+ *     when a filter is active on the repeater, but the filtered result set is empty.
+ *
+ *     For example: `item in items | filter:x as results` will store the fragment of the repeated items as `results`, but only after
+ *     the items have been processed through the filter.
  *
  *     For example: `item in items track by $id(item)`. A built in `$id()` function can be used to assign a unique
  *     `$$hashKey` property to each item in the array. This property is then used as a key to associated DOM elements
  *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
- *     element in the same way ian the DOM.
+ *     element in the same way in the DOM.
  *
  *     For example: `item in items track by item.id` is a typical pattern when the items come from the database. In this
  *     case the object identity does not matter. Two objects are considered equivalent as long as their `id`
@@ -111,7 +122,7 @@
  * @example
  * This example initializes the scope to a list of names and
  * then uses `ngRepeat` to display every person:
-  <example animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
       <div ng-init="friends = [
         {name:'John', age:25, gender:'boy'},
@@ -128,8 +139,11 @@
         I have {{friends.length}} friends. They are:
         <input type="search" ng-model="q" placeholder="filter friends..." />
         <ul class="example-animate-container">
-          <li class="animate-repeat" ng-repeat="friend in friends | filter:q">
+          <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+          </li>
+          <li class="animate-repeat" ng-if="results.length == 0">
+            <strong>No results found...</strong>
           </li>
         </ul>
       </div>
@@ -170,25 +184,26 @@
         max-height:40px;
       }
     </file>
-    <file name="scenario.js">
-       it('should render initial data set', function() {
-         var r = using('.doc-example-live').repeater('ul li');
-         expect(r.count()).toBe(10);
-         expect(r.row(0)).toEqual(["1","John","25"]);
-         expect(r.row(1)).toEqual(["2","Jessie","30"]);
-         expect(r.row(9)).toEqual(["10","Samantha","60"]);
-         expect(binding('friends.length')).toBe("10");
-       });
+    <file name="protractor.js" type="protractor">
+      var friends = element.all(by.repeater('friend in friends'));
+
+      it('should render initial data set', function() {
+        expect(friends.count()).toBe(10);
+        expect(friends.get(0).getText()).toEqual('[1] John who is 25 years old.');
+        expect(friends.get(1).getText()).toEqual('[2] Jessie who is 30 years old.');
+        expect(friends.last().getText()).toEqual('[10] Samantha who is 60 years old.');
+        expect(element(by.binding('friends.length')).getText())
+            .toMatch("I have 10 friends. They are:");
+      });
 
        it('should update repeater when filter predicate changes', function() {
-         var r = using('.doc-example-live').repeater('ul li');
-         expect(r.count()).toBe(10);
+         expect(friends.count()).toBe(10);
 
-         input('q').enter('ma');
+         element(by.model('q')).sendKeys('ma');
 
-         expect(r.count()).toBe(2);
-         expect(r.row(0)).toEqual(["1","Mary","28"]);
-         expect(r.row(1)).toEqual(["2","Samantha","60"]);
+         expect(friends.count()).toBe(2);
+         expect(friends.get(0).getText()).toEqual('[1] Mary who is 28 years old.');
+         expect(friends.last().getText()).toEqual('[2] Samantha who is 60 years old.');
        });
       </file>
     </example>
@@ -197,15 +212,16 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
   return {
+    restrict: 'A',
+    multiElement: true,
     transclude: 'element',
     priority: 1000,
     terminal: true,
     $$tlb: true,
-    compile: function(element, attr, linker) {
-      return function($scope, $element, $attr){
+    link: function($scope, $element, $attr, ctrl, $transclude){
         var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
+        var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
+          trackByExp, trackByExpGetter, aliasAs, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
           lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
@@ -216,6 +232,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
         lhs = match[1];
         rhs = match[2];
+        aliasAs = match[3];
         trackByExp = match[4];
 
         if (trackByExp) {
@@ -260,7 +277,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               // lastBlockMap on the next iteration.
               nextBlockMap = {},
               arrayLength,
-              childScope,
               key, value, // key/value of iteration
               trackById,
               trackByIdFn,
@@ -269,6 +285,21 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextBlockOrder = [],
               elementsToRemove;
 
+          if (aliasAs) {
+            $scope[aliasAs] = collection;
+          }
+
+          var updateScope = function(scope, index) {
+            scope[valueIdentifier] = value;
+            if (keyIdentifier) scope[keyIdentifier] = key;
+            scope.$index = index;
+            scope.$first = (index === 0);
+            scope.$last = (index === (arrayLength - 1));
+            scope.$middle = !(scope.$first || scope.$last);
+            // jshint bitwise: false
+            scope.$odd = !(scope.$even = (index&1) === 0);
+            // jshint bitwise: true
+          };
 
           if (isArrayLike(collection)) {
             collectionKeys = collection;
@@ -277,9 +308,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             trackByIdFn = trackByIdExpFn || trackByIdObjFn;
             // if object, extract keys, sort them and use to determine order of iteration over obj props
             collectionKeys = [];
-            for (key in collection) {
-              if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-                collectionKeys.push(key);
+            for (var itemKey in collection) {
+              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) != '$') {
+                collectionKeys.push(itemKey);
               }
             }
             collectionKeys.sort();
@@ -302,7 +333,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
            } else if (nextBlockMap.hasOwnProperty(trackById)) {
              // restore lastBlockMap
              forEach(nextBlockOrder, function(block) {
-               if (block && block.startNode) lastBlockMap[block.id] = block;
+               if (block && block.scope) lastBlockMap[block.id] = block;
              });
              // This is a duplicate and we need to throw an error
              throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
@@ -315,11 +346,11 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
          }
 
           // remove existing items
-          for (key in lastBlockMap) {
+          for (var blockKey in lastBlockMap) {
             // lastBlockMap is our own object so we don't need to use special hasOwnPropertyFn
-            if (lastBlockMap.hasOwnProperty(key)) {
-              block = lastBlockMap[key];
-              elementsToRemove = getBlockElements(block);
+            if (lastBlockMap.hasOwnProperty(blockKey)) {
+              block = lastBlockMap[blockKey];
+              elementsToRemove = getBlockElements(block.clone);
               $animate.leave(elementsToRemove);
               forEach(elementsToRemove, function(element) { element[NG_REMOVED] = true; });
               block.scope.$destroy();
@@ -331,54 +362,49 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
             block = nextBlockOrder[index];
-            if (nextBlockOrder[index - 1]) previousNode = nextBlockOrder[index - 1].endNode;
+            if (nextBlockOrder[index - 1]) previousNode = getBlockEnd(nextBlockOrder[index - 1]);
 
-            if (block.startNode) {
+            if (block.scope) {
               // if we have already seen this object, then we need to reuse the
               // associated scope/element
-              childScope = block.scope;
-
               nextNode = previousNode;
               do {
                 nextNode = nextNode.nextSibling;
               } while(nextNode && nextNode[NG_REMOVED]);
 
-              if (block.startNode != nextNode) {
+              if (getBlockStart(block) != nextNode) {
                 // existing item which got moved
-                $animate.move(getBlockElements(block), null, jqLite(previousNode));
+                $animate.move(getBlockElements(block.clone), null, jqLite(previousNode));
               }
-              previousNode = block.endNode;
+              previousNode = getBlockEnd(block);
+              updateScope(block.scope, index);
             } else {
               // new item which we don't know about
-              childScope = $scope.$new();
-            }
-
-            childScope[valueIdentifier] = value;
-            if (keyIdentifier) childScope[keyIdentifier] = key;
-            childScope.$index = index;
-            childScope.$first = (index === 0);
-            childScope.$last = (index === (arrayLength - 1));
-            childScope.$middle = !(childScope.$first || childScope.$last);
-            // jshint bitwise: false
-            childScope.$odd = !(childScope.$even = (index&1) === 0);
-            // jshint bitwise: true
-
-            if (!block.startNode) {
-              linker(childScope, function(clone) {
+              $transclude(function(clone, scope) {
+                block.scope = scope;
                 clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
-                block.scope = childScope;
-                block.startNode = previousNode && previousNode.endNode ? previousNode.endNode : clone[0];
-                block.endNode = clone[clone.length - 1];
+                // Note: We only need the first/last node of the cloned nodes.
+                // However, we need to keep the reference to the jqlite wrapper as it might be changed later
+                // by a directive with templateUrl when its template arrives.
+                block.clone = clone;
                 nextBlockMap[block.id] = block;
+                updateScope(block.scope, index);
               });
             }
           }
           lastBlockMap = nextBlockMap;
         });
-      };
     }
   };
+
+  function getBlockStart(block) {
+    return block.clone[0];
+  }
+
+  function getBlockEnd(block) {
+    return block.clone[block.clone.length - 1];
+  }
 }];
 

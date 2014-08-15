@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * @ngdoc interface
+ * @ngdoc type
  * @name angular.Module
+ * @module ng
  * @description
  *
  * Interface for configuring angular {@link angular.module modules}.
@@ -11,18 +12,25 @@
 function setupModuleLoader(window) {
 
   var $injectorMinErr = minErr('$injector');
+  var ngMinErr = minErr('ng');
 
   function ensure(obj, name, factory) {
     return obj[name] || (obj[name] = factory());
   }
 
-  return ensure(ensure(window, 'angular', Object), 'module', function() {
+  var angular = ensure(window, 'angular', Object);
+
+  // We need to expose `angular.$$minErr` to modules such as `ngResource` that reference it during bootstrap
+  angular.$$minErr = angular.$$minErr || minErr;
+
+  return ensure(angular, 'module', function() {
     /** @type {Object.<string, angular.Module>} */
     var modules = {};
 
     /**
      * @ngdoc function
      * @name angular.module
+     * @module ng
      * @description
      *
      * The `angular.module` is a global place for creating, registering and retrieving Angular
@@ -36,10 +44,10 @@ function setupModuleLoader(window) {
      *
      * # Module
      *
-     * A module is a collection of services, directives, filters, and configuration information.
-     * `angular.module` is used to configure the {@link AUTO.$injector $injector}.
+     * A module is a collection of services, directives, controllers, filters, and configuration information.
+     * `angular.module` is used to configure the {@link auto.$injector $injector}.
      *
-     * <pre>
+     * ```js
      * // Create a new module
      * var myModule = angular.module('myModule', []);
      *
@@ -47,30 +55,36 @@ function setupModuleLoader(window) {
      * myModule.value('appName', 'MyCoolApp');
      *
      * // configure existing services inside initialization blocks.
-     * myModule.config(function($locationProvider) {
+     * myModule.config(['$locationProvider', function($locationProvider) {
      *   // Configure existing providers
      *   $locationProvider.hashPrefix('!');
-     * });
-     * </pre>
+     * }]);
+     * ```
      *
      * Then you can create an injector and load your modules like this:
      *
-     * <pre>
-     * var injector = angular.injector(['ng', 'MyModule'])
-     * </pre>
+     * ```js
+     * var injector = angular.injector(['ng', 'myModule'])
+     * ```
      *
      * However it's more likely that you'll just use
      * {@link ng.directive:ngApp ngApp} or
      * {@link angular.bootstrap} to simplify this process for you.
      *
      * @param {!string} name The name of the module to create or retrieve.
-     * @param {Array.<string>=} requires If specified then new module is being created. If
-     *        unspecified then the the module is being retrieved for further configuration.
-     * @param {Function} configFn Optional configuration function for the module. Same as
-     *        {@link angular.Module#methods_config Module#config()}.
+     * @param {!Array.<string>=} requires If specified then new module is being created. If
+     *        unspecified then the module is being retrieved for further configuration.
+     * @param {Function=} configFn Optional configuration function for the module. Same as
+     *        {@link angular.Module#config Module#config()}.
      * @returns {module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
+      var assertNotHasOwnProperty = function(name, context) {
+        if (name === 'hasOwnProperty') {
+          throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
+        }
+      };
+
       assertNotHasOwnProperty(name, 'module');
       if (requires && modules.hasOwnProperty(name)) {
         modules[name] = null;
@@ -86,20 +100,24 @@ function setupModuleLoader(window) {
         var invokeQueue = [];
 
         /** @type {!Array.<Function>} */
+        var configBlocks = [];
+
+        /** @type {!Array.<Function>} */
         var runBlocks = [];
 
-        var config = invokeLater('$injector', 'invoke');
+        var config = invokeLater('$injector', 'invoke', 'push', configBlocks);
 
         /** @type {angular.Module} */
         var moduleInstance = {
           // Private state
           _invokeQueue: invokeQueue,
+          _configBlocks: configBlocks,
           _runBlocks: runBlocks,
 
           /**
            * @ngdoc property
            * @name angular.Module#requires
-           * @propertyOf angular.Module
+           * @module ng
            * @returns {Array.<string>} List of module names which must be loaded before this module.
            * @description
            * Holds the list of modules which the injector will load before the current module is
@@ -110,7 +128,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc property
            * @name angular.Module#name
-           * @propertyOf angular.Module
+           * @module ng
            * @returns {string} Name of the module.
            * @description
            */
@@ -120,64 +138,64 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#provider
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name service name
            * @param {Function} providerType Construction function for creating new instance of the
            *                                service.
            * @description
-           * See {@link AUTO.$provide#provider $provide.provider()}.
+           * See {@link auto.$provide#provider $provide.provider()}.
            */
           provider: invokeLater('$provide', 'provider'),
 
           /**
            * @ngdoc method
            * @name angular.Module#factory
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name service name
            * @param {Function} providerFunction Function for creating new instance of the service.
            * @description
-           * See {@link AUTO.$provide#factory $provide.factory()}.
+           * See {@link auto.$provide#factory $provide.factory()}.
            */
           factory: invokeLater('$provide', 'factory'),
 
           /**
            * @ngdoc method
            * @name angular.Module#service
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name service name
            * @param {Function} constructor A constructor function that will be instantiated.
            * @description
-           * See {@link AUTO.$provide#service $provide.service()}.
+           * See {@link auto.$provide#service $provide.service()}.
            */
           service: invokeLater('$provide', 'service'),
 
           /**
            * @ngdoc method
            * @name angular.Module#value
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name service name
            * @param {*} object Service instance object.
            * @description
-           * See {@link AUTO.$provide#value $provide.value()}.
+           * See {@link auto.$provide#value $provide.value()}.
            */
           value: invokeLater('$provide', 'value'),
 
           /**
            * @ngdoc method
            * @name angular.Module#constant
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name constant name
            * @param {*} object Constant value.
            * @description
            * Because the constant are fixed, they get applied before other provide methods.
-           * See {@link AUTO.$provide#constant $provide.constant()}.
+           * See {@link auto.$provide#constant $provide.constant()}.
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
 
           /**
            * @ngdoc method
            * @name angular.Module#animation
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name animation name
            * @param {Function} animationFactory Factory function for creating new instance of an
            *                                    animation.
@@ -189,7 +207,7 @@ function setupModuleLoader(window) {
            * Defines an animation hook that can be later used with
            * {@link ngAnimate.$animate $animate} service and directives that use this service.
            *
-           * <pre>
+           * ```js
            * module.animation('.animation-name', function($inject1, $inject2) {
            *   return {
            *     eventName : function(element, done) {
@@ -201,7 +219,7 @@ function setupModuleLoader(window) {
            *     }
            *   }
            * })
-           * </pre>
+           * ```
            *
            * See {@link ngAnimate.$animateProvider#register $animateProvider.register()} and
            * {@link ngAnimate ngAnimate module} for more information.
@@ -211,7 +229,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#filter
-           * @methodOf angular.Module
+           * @module ng
            * @param {string} name Filter name.
            * @param {Function} filterFactory Factory function for creating new instance of filter.
            * @description
@@ -222,7 +240,7 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#controller
-           * @methodOf angular.Module
+           * @module ng
            * @param {string|Object} name Controller name, or an object map of controllers where the
            *    keys are the names and the values are the constructors.
            * @param {Function} constructor Controller constructor function.
@@ -234,31 +252,33 @@ function setupModuleLoader(window) {
           /**
            * @ngdoc method
            * @name angular.Module#directive
-           * @methodOf angular.Module
+           * @module ng
            * @param {string|Object} name Directive name, or an object map of directives where the
            *    keys are the names and the values are the factories.
            * @param {Function} directiveFactory Factory function for creating new instance of
            * directives.
            * @description
-           * See {@link ng.$compileProvider#methods_directive $compileProvider.directive()}.
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
           directive: invokeLater('$compileProvider', 'directive'),
 
           /**
            * @ngdoc method
            * @name angular.Module#config
-           * @methodOf angular.Module
+           * @module ng
            * @param {Function} configFn Execute this function on module load. Useful for service
            *    configuration.
            * @description
            * Use this method to register work which needs to be performed on module loading.
+           * For more about how to configure services, see
+           * {@link providers#providers_provider-recipe Provider Recipe}.
            */
           config: config,
 
           /**
            * @ngdoc method
            * @name angular.Module#run
-           * @methodOf angular.Module
+           * @module ng
            * @param {Function} initializationFn Execute this function after injector creation.
            *    Useful for application initialization.
            * @description
@@ -283,9 +303,10 @@ function setupModuleLoader(window) {
          * @param {String=} insertMethod
          * @returns {angular.Module}
          */
-        function invokeLater(provider, method, insertMethod) {
+        function invokeLater(provider, method, insertMethod, queue) {
+          if (!queue) queue = invokeQueue;
           return function() {
-            invokeQueue[insertMethod || 'push']([provider, method, arguments]);
+            queue[insertMethod || 'push']([provider, method, arguments]);
             return moduleInstance;
           };
         }

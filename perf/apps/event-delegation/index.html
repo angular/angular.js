@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html ng-app="perf" ng-controller="MainCtrl as ctrl">
+<head>
+  <meta charset="utf-8" />
+  <title>Event delegation</title>
+
+  <script src="../../../build/angular.js"></script>
+  <script src="../../../node_modules/benchmark/benchmark.js"></script>
+  <script src="ng_benchmark.js"></script>
+  <script src="app.js"></script>
+
+</head>
+<body>
+
+<h1>
+Benchmark: impact of event delegation
+</h1>
+
+How to run:
+<ul>
+  <li>For most stable results, run this in Chrome with the following command line option:
+    <pre>--js-flags="--expose-gc"</pre>
+  </li>
+</ul>
+
+How to read the results:
+<ul>
+  <li>The benchmark measures how long it takes to instantiate a given number of directives</li>
+  <li>ngClick is compared against ngShow and text interpolation as baseline. The results show
+      how expensive ngClick is compared to other very simple directives that touch the DOM.
+  </li>
+  <li>To measure the impact of jqLite.on vs element.addEventListener there is also a benchmark
+      that as a modified version of ngClick that uses element.addEventListener.
+  </li>
+  <li>The delegate event directive is compared against a noop directive with a compile and link function and the case with no directives.
+      The result shows how expensive it is to add a link function to a directive, as the delegate event directive has none.
+  </li>
+</ul>
+
+Results as of 7/31/2014:
+<ul>
+  <li>ngClick is very close to ngShow and text interpolation, especially when looking at a version of ngClick that does not use jqLite.on but element.addEventListener instead.</li>
+  <li>A delegate event directive that has no link function has the same speed as a directive with link function. I.e. ngClick is slower compared to the delegate event directive only because ngClick touches
+  the DOM for every element</li>
+  <li>A delegate event directive could be about 2x faster than ngClick. However, the overall performance
+      benefit depends on how many (and which) other directives are used on the same element
+      and what other things are part of the measures use case.
+      E.g. rows of a table with ngRepeat that use ngClick will probably also contain text interpolation.
+  </li>
+</ul>
+
+Benchmark Options:
+<p>
+<label>
+  Number of ngRepeats:
+  <input type="number" ng-model="ctrl.ngRepeatCount">
+</label>
+<br>
+<label>
+  Number of manual repeats inside the ngRepeat:
+  <input type="number" ng-model="ctrl.manualRepeatCount">
+</label>
+</p>
+
+<div ng-bench="ctrl.benchmarks"></div>
+
+</body>
+
+</html>

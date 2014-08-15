@@ -3,7 +3,7 @@
 var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
- * @ngdoc overview
+ * @ngdoc module
  * @name ngSanitize
  * @description
  *
@@ -11,7 +11,6 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *
  * The `ngSanitize` module provides functionality to sanitize HTML.
  *
- * {@installModule sanitize}
  *
  * <div doc-module-components="ngSanitize"></div>
  *
@@ -37,8 +36,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
  * @ngdoc service
- * @name ngSanitize.$sanitize
- * @function
+ * @name $sanitize
+ * @kind function
  *
  * @description
  *   The input is sanitized by parsing the html into tokens. All safe tokens (from a whitelist) are
@@ -46,25 +45,28 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *   it into the returned string, however, since our parser is more strict than a typical browser
  *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
  *   browser, won't make it through the sanitizer.
+ *   The whitelist is configured using the functions `aHrefSanitizationWhitelist` and
+ *   `imgSrcSanitizationWhitelist` of {@link ng.$compileProvider `$compileProvider`}.
  *
  * @param {string} html Html input.
  * @returns {string} Sanitized html.
  *
  * @example
-   <doc:example module="ngSanitize">
-   <doc:source>
+   <example module="sanitizeExample" deps="angular-sanitize.js">
+   <file name="index.html">
      <script>
-       function Ctrl($scope, $sce) {
-         $scope.snippet =
-           '<p style="color:blue">an html\n' +
-           '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
-           'snippet</p>';
-         $scope.deliberatelyTrustDangerousSnippet = function() {
-           return $sce.trustAsHtml($scope.snippet);
-         };
-       }
+         angular.module('sanitizeExample', ['ngSanitize'])
+           .controller('ExampleController', ['$scope', '$sce', function($scope, $sce) {
+             $scope.snippet =
+               '<p style="color:blue">an html\n' +
+               '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
+               'snippet</p>';
+             $scope.deliberatelyTrustDangerousSnippet = function() {
+               return $sce.trustAsHtml($scope.snippet);
+             };
+           }]);
      </script>
-     <div ng-controller="Ctrl">
+     <div ng-controller="ExampleController">
         Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
        <table>
          <tr>
@@ -96,56 +98,71 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
          </tr>
        </table>
        </div>
-   </doc:source>
-   <doc:scenario>
+   </file>
+   <file name="protractor.js" type="protractor">
      it('should sanitize the html snippet by default', function() {
-       expect(using('#bind-html-with-sanitize').element('div').html()).
+       expect(element(by.css('#bind-html-with-sanitize div')).getInnerHtml()).
          toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
      });
 
      it('should inline raw snippet if bound to a trusted value', function() {
-       expect(using('#bind-html-with-trust').element("div").html()).
+       expect(element(by.css('#bind-html-with-trust div')).getInnerHtml()).
          toBe("<p style=\"color:blue\">an html\n" +
               "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
               "snippet</p>");
      });
 
      it('should escape snippet without any filter', function() {
-       expect(using('#bind-default').element('div').html()).
+       expect(element(by.css('#bind-default div')).getInnerHtml()).
          toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
               "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
               "snippet&lt;/p&gt;");
      });
 
      it('should update', function() {
-       input('snippet').enter('new <b onclick="alert(1)">text</b>');
-       expect(using('#bind-html-with-sanitize').element('div').html()).toBe('new <b>text</b>');
-       expect(using('#bind-html-with-trust').element('div').html()).toBe(
+       element(by.model('snippet')).clear();
+       element(by.model('snippet')).sendKeys('new <b onclick="alert(1)">text</b>');
+       expect(element(by.css('#bind-html-with-sanitize div')).getInnerHtml()).
+         toBe('new <b>text</b>');
+       expect(element(by.css('#bind-html-with-trust div')).getInnerHtml()).toBe(
          'new <b onclick="alert(1)">text</b>');
-       expect(using('#bind-default').element('div').html()).toBe(
+       expect(element(by.css('#bind-default div')).getInnerHtml()).toBe(
          "new &lt;b onclick=\"alert(1)\"&gt;text&lt;/b&gt;");
      });
-   </doc:scenario>
-   </doc:example>
+   </file>
+   </example>
  */
-var $sanitize = function(html) {
+function $SanitizeProvider() {
+  this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
+    return function(html) {
+      var buf = [];
+      htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
+        return !/^unsafe/.test($$sanitizeUri(uri, isImage));
+      }));
+      return buf.join('');
+    };
+  }];
+}
+
+function sanitizeText(chars) {
   var buf = [];
-    htmlParser(html, htmlSanitizeWriter(buf));
-    return buf.join('');
-};
+  var writer = htmlSanitizeWriter(buf, angular.noop);
+  writer.chars(chars);
+  return buf.join('');
+}
 
 
 // Regular Expressions for parsing tags and attributes
 var START_TAG_REGEXP =
-       /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,
-  END_TAG_REGEXP = /^<\s*\/\s*([\w:-]+)[^>]*>/,
+       /^<((?:[a-zA-Z])[\w:-]*)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*(>?)/,
+  END_TAG_REGEXP = /^<\/\s*([\w:-]+)[^>]*>/,
   ATTR_REGEXP = /([\w:-]+)(?:\s*=\s*(?:(?:"((?:[^"])*)")|(?:'((?:[^'])*)')|([^>\s]+)))?/g,
   BEGIN_TAG_REGEXP = /^</,
-  BEGING_END_TAGE_REGEXP = /^<\s*\//,
+  BEGING_END_TAGE_REGEXP = /^<\//,
   COMMENT_REGEXP = /<!--(.*?)-->/g,
   DOCTYPE_REGEXP = /<!DOCTYPE([^>]*?)>/i,
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
-  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
+  SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
   // Match everything outside of normal chars and " (quote character)
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
 
@@ -192,7 +209,7 @@ var validAttrs = angular.extend({}, uriAttrs, makeMap(
     'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,'+
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,'+
-    'scope,scrolling,shape,span,start,summary,target,title,type,'+
+    'scope,scrolling,shape,size,span,start,summary,target,title,type,'+
     'valign,value,vspace,width'));
 
 function makeMap(str) {
@@ -215,10 +232,18 @@ function makeMap(str) {
  * @param {object} handler
  */
 function htmlParser( html, handler ) {
-  var index, chars, match, stack = [], last = html;
+  if (typeof html !== 'string') {
+    if (html === null || typeof html === 'undefined') {
+      html = '';
+    } else {
+      html = '' + html;
+    }
+  }
+  var index, chars, match, stack = [], last = html, text;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
   while ( html ) {
+    text = '';
     chars = true;
 
     // Make sure we're not in a script or style element
@@ -239,7 +264,7 @@ function htmlParser( html, handler ) {
         match = html.match( DOCTYPE_REGEXP );
 
         if ( match ) {
-          html = html.replace( match[0] , '');
+          html = html.replace( match[0], '');
           chars = false;
         }
       // end tag
@@ -257,16 +282,23 @@ function htmlParser( html, handler ) {
         match = html.match( START_TAG_REGEXP );
 
         if ( match ) {
-          html = html.substring( match[0].length );
-          match[0].replace( START_TAG_REGEXP, parseStartTag );
+          // We only have a valid start-tag if there is a '>'.
+          if ( match[4] ) {
+            html = html.substring( match[0].length );
+            match[0].replace( START_TAG_REGEXP, parseStartTag );
+          }
           chars = false;
+        } else {
+          // no ending tag found --- this piece should be encoded as an entity.
+          text += '<';
+          html = html.substring(1);
         }
       }
 
       if ( chars ) {
         index = html.indexOf("<");
 
-        var text = index < 0 ? html : html.substring( 0, index );
+        text += index < 0 ? html : html.substring( 0, index );
         html = index < 0 ? "" : html.substring( index );
 
         if (handler.chars) handler.chars( decodeEntities(text) );
@@ -346,15 +378,32 @@ function htmlParser( html, handler ) {
   }
 }
 
+var hiddenPre=document.createElement("pre");
+var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
 /**
  * decodes all entities into regular string
  * @param value
  * @returns {string} A string with decoded entities.
  */
-var hiddenPre=document.createElement("pre");
 function decodeEntities(value) {
-  hiddenPre.innerHTML=value.replace(/</g,"&lt;");
-  return hiddenPre.innerText || hiddenPre.textContent || '';
+  if (!value) { return ''; }
+
+  // Note: IE8 does not preserve spaces at the start/end of innerHTML
+  // so we must capture them and reattach them afterward
+  var parts = spaceRe.exec(value);
+  var spaceBefore = parts[1];
+  var spaceAfter = parts[3];
+  var content = parts[2];
+  if (content) {
+    hiddenPre.innerHTML=content.replace(/</g,"&lt;");
+    // innerText depends on styling as it doesn't display hidden elements.
+    // Therefore, it's better to use textContent not to cause unnecessary
+    // reflows. However, IE<9 don't support textContent so the innerText
+    // fallback is necessary.
+    content = 'textContent' in hiddenPre ?
+      hiddenPre.textContent : hiddenPre.innerText;
+  }
+  return spaceBefore + content + spaceAfter;
 }
 
 /**
@@ -362,11 +411,16 @@ function decodeEntities(value) {
  * resulting string can be safely inserted into attribute or
  * element text.
  * @param value
- * @returns escaped text
+ * @returns {string} escaped text
  */
 function encodeEntities(value) {
   return value.
     replace(/&/g, '&amp;').
+    replace(SURROGATE_PAIR_REGEXP, function (value) {
+      var hi = value.charCodeAt(0);
+      var low = value.charCodeAt(1);
+      return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
+    }).
     replace(NON_ALPHANUMERIC_REGEXP, function(value){
       return '&#' + value.charCodeAt(0) + ';';
     }).
@@ -384,7 +438,7 @@ function encodeEntities(value) {
  *     comment: function(text) {}
  * }
  */
-function htmlSanitizeWriter(buf){
+function htmlSanitizeWriter(buf, uriValidator){
   var ignore = false;
   var out = angular.bind(buf, buf.push);
   return {
@@ -398,7 +452,9 @@ function htmlSanitizeWriter(buf){
         out(tag);
         angular.forEach(attrs, function(value, key){
           var lkey=angular.lowercase(key);
-          if (validAttrs[lkey]===true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
+          var isImage = (tag === 'img' && lkey === 'src') || (lkey === 'background');
+          if (validAttrs[lkey] === true &&
+            (uriAttrs[lkey] !== true || uriValidator(value, isImage))) {
             out(' ');
             out(key);
             out('="');
@@ -430,4 +486,4 @@ function htmlSanitizeWriter(buf){
 
 
 // define ngSanitize module and register $sanitize service
-angular.module('ngSanitize', []).value('$sanitize', $sanitize);
+angular.module('ngSanitize', []).provider('$sanitize', $SanitizeProvider);

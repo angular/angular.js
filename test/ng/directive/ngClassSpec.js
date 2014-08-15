@@ -72,7 +72,8 @@ describe('ngClass', function() {
       $rootScope.$digest();
       expect(element.hasClass('A')).toBeFalsy();
       expect(element.hasClass('B')).toBeTruthy();
-  }));
+    })
+  );
 
 
   it('should support adding multiple classes via a space delimited string', inject(function($rootScope, $compile) {
@@ -152,6 +153,7 @@ describe('ngClass', function() {
     element.addClass('foo');
     $rootScope.dynCls = '';
     $rootScope.$digest();
+    expect(element[0].className).toBe('ng-scope');
   }));
 
 
@@ -159,6 +161,7 @@ describe('ngClass', function() {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = [undefined, null];
     $rootScope.$digest();
+    expect(element[0].className).toBe('ng-scope');
   }));
 
 
@@ -191,6 +194,37 @@ describe('ngClass', function() {
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
 
+
+  it("should allow ngClassOdd/Even on the same element with overlapping classes", inject(function($rootScope, $compile, $animate) {
+      var className;
+
+      element = $compile('<ul><li ng-repeat="i in [0,1,2]" ng-class-odd="\'same odd\'" ng-class-even="\'same even\'"></li><ul>')($rootScope);
+      $rootScope.$digest();
+      var e1 = jqLite(element[0].childNodes[1]);
+      var e2 = jqLite(element[0].childNodes[5]);
+      expect(e1.hasClass('same')).toBeTruthy();
+      expect(e1.hasClass('odd')).toBeTruthy();
+      expect(e2.hasClass('same')).toBeTruthy();
+      expect(e2.hasClass('odd')).toBeTruthy();
+    })
+  );
+
+  it('should allow ngClass with overlapping classes', inject(function($rootScope, $compile, $animate) {
+    element = $compile('<div ng-class="{\'same yes\': test, \'same no\': !test}"></div>')($rootScope);
+    $rootScope.$digest();
+
+    expect(element).toHaveClass('same');
+    expect(element).not.toHaveClass('yes');
+    expect(element).toHaveClass('no');
+
+    $rootScope.$apply(function() {
+      $rootScope.test = true;
+    });
+
+    expect(element).toHaveClass('same');
+    expect(element).toHaveClass('yes');
+    expect(element).not.toHaveClass('no');
+  }));
 
   it('should allow both ngClass and ngClassOdd/Even with multiple classes', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
@@ -261,6 +295,28 @@ describe('ngClass', function() {
   }));
 
 
+  it('should update ngClassOdd/Even when an item is added to the model', inject(function($rootScope, $compile) {
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in items" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'">i</li>' +
+      '<ul>')($rootScope);
+    $rootScope.items = ['b','c','d'];
+    $rootScope.$digest();
+
+    $rootScope.items.unshift('a');
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e4 = jqLite(element[0].childNodes[7]);
+
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeFalsy();
+
+    expect(e4.hasClass('even')).toBeTruthy();
+    expect(e4.hasClass('odd')).toBeFalsy();
+  }));
+
+
   it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
       '<li ng-repeat="i in items track by $index" ' +
@@ -309,7 +365,7 @@ describe('ngClass animations', function() {
   var body, element, $rootElement;
 
   it("should avoid calling addClass accidentally when removeClass is going on", function() {
-    module('mock.animate');
+    module('ngAnimateMock');
     inject(function($compile, $rootScope, $animate, $timeout) {
       var element = angular.element('<div ng-class="val"></div>');
       var body = jqLite(document.body);
@@ -320,24 +376,22 @@ describe('ngClass animations', function() {
 
       $rootScope.val = 'one';
       $rootScope.$digest();
-      $animate.flushNext('addClass');
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = '';
       $rootScope.$digest();
-      $animate.flushNext('removeClass'); //only removeClass is called
+      expect($animate.queue.shift().event).toBe('removeClass'); //only removeClass is called
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = 'one';
       $rootScope.$digest();
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = 'two';
       $rootScope.$digest();
-      $animate.flushNext('removeClass');
-      $animate.flushNext('addClass');
+      expect($animate.queue.shift().event).toBe('setClass');
       expect($animate.queue.length).toBe(0);
     });
   });
@@ -347,6 +401,7 @@ describe('ngClass animations', function() {
     //mocks are not used since the enter delegation method is called before addClass and
     //it makes it impossible to test to see that addClass is called first
     module('ngAnimate');
+    module('ngAnimateMock');
 
     var digestQueue = [];
     module(function($animateProvider) {
@@ -369,10 +424,14 @@ describe('ngClass animations', function() {
         };
       };
     });
-    inject(function($compile, $rootScope, $rootElement, $animate, $timeout, $document) {
+    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $document) {
 
-      //since we skip animations upon first digest, this needs to be set to true
-      $animate.enabled(true);
+      // Enable animations by triggering the first item in the postDigest queue
+      digestQueue.shift()();
+
+      // wait for the 2nd animation bootstrap digest to pass
+      $rootScope.$digest();
+      digestQueue.shift()();
 
       $rootScope.val = 'crazy';
       var element = angular.element('<div ng-class="val"></div>');
@@ -405,10 +464,53 @@ describe('ngClass animations', function() {
       //is spaced-out then it is required so that the original digestion
       //is kicked into gear
       $rootScope.$digest();
-      $timeout.flush();
+      $animate.triggerCallbacks();
 
       expect(element.data('state')).toBe('crazy-enter');
       expect(enterComplete).toBe(true);
+    });
+  });
+
+  it("should not remove classes if they're going to be added back right after", function() {
+    module('ngAnimateMock');
+
+    inject(function($rootScope, $compile, $animate) {
+      var className;
+
+      $rootScope.one = true;
+      $rootScope.two = true;
+      $rootScope.three = true;
+
+      var element = angular.element('<div ng-class="{one:one, two:two, three:three}"></div>');
+      $compile(element)($rootScope);
+      $rootScope.$digest();
+
+      //this fires twice due to the class observer firing
+      var item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.args[1]).toBe('one two three');
+
+      expect($animate.queue.length).toBe(0);
+
+      $rootScope.three = false;
+      $rootScope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.args[1]).toBe('three');
+
+      expect($animate.queue.length).toBe(0);
+
+      $rootScope.two = false;
+      $rootScope.three = true;
+      $rootScope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('setClass');
+      expect(item.args[1]).toBe('three');
+      expect(item.args[2]).toBe('two');
+
+      expect($animate.queue.length).toBe(0);
     });
   });
 });

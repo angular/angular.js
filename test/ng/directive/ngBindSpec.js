@@ -45,6 +45,43 @@ describe('ngBind*', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('-0false');
     }));
+
+    it('should one-time bind if the expression starts with two colons', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-bind="::a"></div>')($rootScope);
+      $rootScope.a = 'lucas';
+      expect($rootScope.$$watchers.length).toEqual(1);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('lucas');
+      expect($rootScope.$$watchers.length).toEqual(0);
+      $rootScope.a = undefined;
+      $rootScope.$digest();
+      expect(element.text()).toEqual('lucas');
+    }));
+
+    it('should be possible to bind to a new value within the same $digest', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-bind="::a"></div>')($rootScope);
+      $rootScope.$watch('a', function(newVal) { if (newVal === 'foo') { $rootScope.a = 'bar'; } });
+      $rootScope.a = 'foo';
+      $rootScope.$digest();
+      expect(element.text()).toEqual('bar');
+      $rootScope.a = undefined;
+      $rootScope.$digest();
+      expect(element.text()).toEqual('bar');
+    }));
+
+    it('should remove the binding if the value is defined at the end of a $digest loop', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-bind="::a"></div>')($rootScope);
+      $rootScope.$watch('a', function(newVal) { if (newVal === 'foo') { $rootScope.a = undefined; } });
+      $rootScope.a = 'foo';
+      $rootScope.$digest();
+      expect(element.text()).toEqual('');
+      $rootScope.a = 'bar';
+      $rootScope.$digest();
+      expect(element.text()).toEqual('bar');
+      $rootScope.a = 'man';
+      $rootScope.$digest();
+      expect(element.text()).toEqual('bar');
+    }));
   });
 
 
@@ -59,6 +96,22 @@ describe('ngBind*', function() {
     }));
 
 
+    it('should one-time bind the expressions that start with ::', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-bind-template="{{::hello}} {{::name}}!"></div>')($rootScope);
+      $rootScope.name = 'Misko';
+      expect($rootScope.$$watchers.length).toEqual(3);
+      $rootScope.$digest();
+      expect(element.hasClass('ng-binding')).toEqual(true);
+      expect(element.text()).toEqual(' Misko!');
+      expect($rootScope.$$watchers.length).toEqual(2);
+      $rootScope.hello = 'Hello';
+      $rootScope.name = 'Lucas';
+      $rootScope.$digest();
+      expect(element.text()).toEqual('Hello Misko!');
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
+
     it('should render object as JSON ignore $$', inject(function($rootScope, $compile) {
       element = $compile('<pre>{{ {key:"value", $$key:"hide"}  }}</pre>')($rootScope);
       $rootScope.$digest();
@@ -68,6 +121,14 @@ describe('ngBind*', function() {
 
 
   describe('ngBindHtml', function() {
+
+    it('should add ng-binding class to the element in compile phase', inject(function($compile) {
+      var element = jqLite('<div ng-bind-html="myHtml"></div>');
+      $compile(element);
+      expect(element.hasClass('ng-binding')).toBe(true);
+    }));
+
+
     describe('SCE disabled', function() {
       beforeEach(function() {
         module(function($sceProvider) { $sceProvider.enabled(false); });
@@ -78,6 +139,18 @@ describe('ngBind*', function() {
         $rootScope.html = '<div onclick="">hello</div>';
         $rootScope.$digest();
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      }));
+
+      it('should one-time bind if the expression starts with two colons', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="::html"></div>')($rootScope);
+        $rootScope.html = '<div onclick="">hello</div>';
+        expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.$digest();
+        expect(element.text()).toEqual('hello');
+        expect($rootScope.$$watchers.length).toEqual(0);
+        $rootScope.html = '<div onclick="">hello</div>';
+        $rootScope.$digest();
+        expect(element.text()).toEqual('hello');
       }));
     });
 

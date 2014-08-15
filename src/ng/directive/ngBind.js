@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBind
+ * @name ngBind
  * @restrict AC
  *
  * @description
@@ -13,7 +13,7 @@
  * Typically, you don't use `ngBind` directly, but instead you use the double curly markup like
  * `{{ expression }}` which is similar but less verbose.
  *
- * It is preferrable to use `ngBind` instead of `{{ expression }}` when a template is momentarily
+ * It is preferable to use `ngBind` instead of `{{ expression }}` if a template is momentarily
  * displayed by the browser in its raw state before Angular compiles it. Since `ngBind` is an
  * element attribute, it makes the bindings invisible to the user while the page is loading.
  *
@@ -26,41 +26,50 @@
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
-   <doc:example>
-     <doc:source>
+   <example module="bindExample">
+     <file name="index.html">
        <script>
-         function Ctrl($scope) {
-           $scope.name = 'Whirled';
-         }
+         angular.module('bindExample', [])
+           .controller('ExampleController', ['$scope', function($scope) {
+             $scope.name = 'Whirled';
+           }]);
        </script>
-       <div ng-controller="Ctrl">
+       <div ng-controller="ExampleController">
          Enter name: <input type="text" ng-model="name"><br>
          Hello <span ng-bind="name"></span>!
        </div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
-         expect(using('.doc-example-live').binding('name')).toBe('Whirled');
-         using('.doc-example-live').input('name').enter('world');
-         expect(using('.doc-example-live').binding('name')).toBe('world');
+         var nameInput = element(by.model('name'));
+
+         expect(element(by.binding('name')).getText()).toBe('Whirled');
+         nameInput.clear();
+         nameInput.sendKeys('world');
+         expect(element(by.binding('name')).getText()).toBe('world');
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
-var ngBindDirective = ngDirective(function(scope, element, attr) {
-  element.addClass('ng-binding').data('$binding', attr.ngBind);
-  scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
-    // We are purposefully using == here rather than === because we want to
-    // catch when value is "null or undefined"
-    // jshint -W041
-    element.text(value == undefined ? '' : value);
-  });
+var ngBindDirective = ngDirective({
+  compile: function(templateElement) {
+    templateElement.addClass('ng-binding');
+    return function (scope, element, attr) {
+      element.data('$binding', attr.ngBind);
+      scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
+        // We are purposefully using == here rather than === because we want to
+        // catch when value is "null or undefined"
+        // jshint -W041
+        element.text(value == undefined ? '' : value);
+      });
+    };
+  }
 });
 
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBindTemplate
+ * @name ngBindTemplate
  *
  * @description
  * The `ngBindTemplate` directive specifies that the element
@@ -76,35 +85,38 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
  *
  * @example
  * Try it here: enter text in text box and watch the greeting change.
-   <doc:example>
-     <doc:source>
+   <example module="bindExample">
+     <file name="index.html">
        <script>
-         function Ctrl($scope) {
-           $scope.salutation = 'Hello';
-           $scope.name = 'World';
-         }
+         angular.module('bindExample', [])
+           .controller('ExampleController', ['$scope', function ($scope) {
+             $scope.salutation = 'Hello';
+             $scope.name = 'World';
+           }]);
        </script>
-       <div ng-controller="Ctrl">
+       <div ng-controller="ExampleController">
         Salutation: <input type="text" ng-model="salutation"><br>
         Name: <input type="text" ng-model="name"><br>
         <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
        </div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind', function() {
-         expect(using('.doc-example-live').binding('salutation')).
-           toBe('Hello');
-         expect(using('.doc-example-live').binding('name')).
-           toBe('World');
-         using('.doc-example-live').input('salutation').enter('Greetings');
-         using('.doc-example-live').input('name').enter('user');
-         expect(using('.doc-example-live').binding('salutation')).
-           toBe('Greetings');
-         expect(using('.doc-example-live').binding('name')).
-           toBe('user');
+         var salutationElem = element(by.binding('salutation'));
+         var salutationInput = element(by.model('salutation'));
+         var nameInput = element(by.model('name'));
+
+         expect(salutationElem.getText()).toBe('Hello World!');
+
+         salutationInput.clear();
+         salutationInput.sendKeys('Greetings');
+         nameInput.clear();
+         nameInput.sendKeys('user');
+
+         expect(salutationElem.getText()).toBe('Greetings user!');
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {
@@ -120,7 +132,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngBindHtml
+ * @name ngBindHtml
  *
  * @description
  * Creates a binding that will innerHTML the result of evaluating the `expression` into the current
@@ -128,7 +140,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * ngSanitize.$sanitize $sanitize} service.  To utilize this functionality, ensure that `$sanitize`
  * is available, for example, by including {@link ngSanitize} in your module's dependencies (not in
  * core Angular.)  You may also bypass sanitization for values you know are safe. To do so, bind to
- * an explicitly trusted value via {@link ng.$sce#methods_trustAsHtml $sce.trustAsHtml}.  See the example
+ * an explicitly trusted value via {@link ng.$sce#trustAsHtml $sce.trustAsHtml}.  See the example
  * under {@link ng.$sce#Example Strict Contextual Escaping (SCE)}.
  *
  * Note: If a `$sanitize` service is unavailable and the bound value isn't explicitly trusted, you
@@ -138,37 +150,51 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.
  *
  * @example
- * Try it here: enter text in text box and watch the greeting change.
-   <doc:example module="ngBindHtmlExample" deps="angular-sanitize.js" >
-     <doc:source>
-       <script>
-         angular.module('ngBindHtmlExample', ['ngSanitize'])
+   Try it here: enter text in text box and watch the greeting change.
 
-         .controller('ngBindHtmlCtrl', ['$scope', function ngBindHtmlCtrl($scope) {
-           $scope.myHTML = 'I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>';
-         }]);
-       </script>
-       <div ng-controller="ngBindHtmlCtrl">
+   <example module="bindHtmlExample" deps="angular-sanitize.js">
+     <file name="index.html">
+       <div ng-controller="ExampleController">
         <p ng-bind-html="myHTML"></p>
        </div>
-     </doc:source>
-     <doc:scenario>
+     </file>
+
+     <file name="script.js">
+       angular.module('bindHtmlExample', ['ngSanitize'])
+         .controller('ExampleController', ['$scope', function($scope) {
+           $scope.myHTML =
+              'I am an <code>HTML</code>string with ' +
+              '<a href="#">links!</a> and other <em>stuff</em>';
+         }]);
+     </file>
+
+     <file name="protractor.js" type="protractor">
        it('should check ng-bind-html', function() {
-         expect(using('.doc-example-live').binding('myHTML')).
-           toBe('I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>');
+         expect(element(by.binding('myHTML')).getText()).toBe(
+             'I am an HTMLstring with links! and other stuff');
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
-  return function(scope, element, attr) {
-    element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
+  return {
+    restrict: 'A',
+    compile: function (tElement, tAttrs) {
+      tElement.addClass('ng-binding');
 
-    var parsed = $parse(attr.ngBindHtml);
-    function getStringValue() { return (parsed(scope) || '').toString(); }
+      return function (scope, element, attr) {
+        element.data('$binding', attr.ngBindHtml);
+        var parsed = $parse(attr.ngBindHtml);
+        var changeDetector = $parse(attr.ngBindHtml, function getStringValue(value) {
+          return (value || '').toString();
+        });
 
-    scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
-      element.html($sce.getTrustedHtml(parsed(scope)) || '');
-    });
+        scope.$watch(changeDetector, function ngBindHtmlWatchAction() {
+          // we re-evaluate the expr because we want a TrustedValueHolderType
+          // for $sce, not a string
+          element.html($sce.getTrustedHtml(parsed(scope)) || '');
+        });
+      };
+    }
   };
 }];

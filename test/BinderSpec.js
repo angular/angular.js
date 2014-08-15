@@ -167,30 +167,6 @@ describe('Binder', function() {
     expect(element[0].childNodes.length).toEqual(1);
   }));
 
-  it('IfTextBindingThrowsErrorDecorateTheSpan', function() {
-    module(function($exceptionHandlerProvider){
-      $exceptionHandlerProvider.mode('log');
-    });
-    inject(function($rootScope, $exceptionHandler, $compile) {
-      element = $compile('<div>{{error.throw()}}</div>', null, true)($rootScope);
-      var errorLogs = $exceptionHandler.errors;
-
-      $rootScope.error = {
-          'throw': function() {throw 'ErrorMsg1';}
-      };
-      $rootScope.$apply();
-
-      $rootScope.error['throw'] = function() {throw 'MyError';};
-      errorLogs.length = 0;
-      $rootScope.$apply();
-      expect(errorLogs.shift().message).toMatch(/^\[\$interpolate:interr\] Can't interpolate: \{\{error.throw\(\)\}\}\nMyError/);
-
-      $rootScope.error['throw'] = function() {return 'ok';};
-      $rootScope.$apply();
-      expect(errorLogs.length).toBe(0);
-    });
-  });
-
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function() {
     module(function($exceptionHandlerProvider){
       $exceptionHandlerProvider.mode('log');
@@ -272,6 +248,16 @@ describe('Binder', function() {
     $rootScope.hidden = 'false';
     $rootScope.$apply();
 
+    assertHidden(element);
+
+    $rootScope.hidden = 0;
+    $rootScope.$apply();
+
+    assertVisible(element);
+
+    $rootScope.hidden = false;
+    $rootScope.$apply();
+
     assertVisible(element);
 
     $rootScope.hidden = '';
@@ -289,6 +275,16 @@ describe('Binder', function() {
     assertVisible(element);
 
     $rootScope.show = 'false';
+    $rootScope.$apply();
+
+    assertVisible(element);
+
+    $rootScope.show = false;
+    $rootScope.$apply();
+
+    assertHidden(element);
+
+    $rootScope.show = false;
     $rootScope.$apply();
 
     assertHidden(element);
@@ -446,7 +442,9 @@ describe('Binder', function() {
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
     element = $compile('<div ng-bind="name"></div>')($rootScope);
     $rootScope.name = '';
-    $rootScope.$watch('watched', 'name=123');
+    $rootScope.$watch('watched', function () {
+      $rootScope.name = 123;
+    });
     $rootScope.watched = 'change';
     $rootScope.$apply();
     expect($rootScope.name).toBe(123);

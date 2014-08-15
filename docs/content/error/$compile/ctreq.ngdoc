@@ -1,0 +1,49 @@
+@ngdoc error
+@name $compile:ctreq
+@fullName Missing Required Controller
+@description
+
+This error occurs when {@link ng.$compile HTML compiler} tries to process a directive that specifies the {@link ng.$compile#description_comprehensive-directive-api_directive-definition-object `require` option} in a {@link ng.$compile#description_comprehensive-directive-api directive definition},
+but the required directive controller is not present on the current DOM element (or its ancestor element, if `^` was specified).
+
+To resolve this error ensure that there is no typo in the required controller name and that the required directive controller is present on the current element.
+
+If the required controller is expected to be on a ancestor element, make sure that you prefix the controller name in the `require` definition with `^`.
+
+If the required controller is optionally requested, use `?` or `^?` to specify that.
+
+
+Example of a directive that requires {@link ng.directive:ngModel ngModel} controller:
+```
+myApp.directive('myDirective', function() {
+  return {
+    require: 'ngModel',
+    ...
+  }
+}
+```
+
+This directive can then be used as:
+```
+<input ng-model="some.path" my-directive>
+```
+
+
+Example of a directive that optionally requires a {@link ng.directive:form form} controller from an ancestor:
+```
+myApp.directive('myDirective', function() {
+  return {
+    require: '^?form',
+    ...
+  }
+}
+```
+
+This directive can then be used as:
+```
+<form name="myForm">
+  <div>
+    <span my-directive></span>
+  </div>
+</form>
+```

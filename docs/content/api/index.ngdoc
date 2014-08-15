@@ -5,8 +5,19 @@
 # AngularJS API Docs
 Welcome to the AngularJS API docs page. These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
 
-The documentation is organized into **modules** which contain various components of an AngularJS application.
-These components are directives, services, filters, providers, types, global APIs and testing mocks.
+The documentation is organized into **{@link guide/module modules}** which contain various components of an AngularJS application.
+These components are {@link guide/directive directives}, {@link guide/services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates templates}, global APIs, and testing mocks.
+
+<div class="alert alert-info">
+**Angular Namespaces `$` and `$$`**
+
+To prevent accidental name collisions with your code,
+Angular prefixes names of public objects with `$` and names of private objects with `$$`.
+Please do not use the `$` or `$$` prefix in your code.
+</div>
+
+## Angular Namespace
+
 
 ## {@link ng ng (core module)}
 This module is provided by default and contains the core components of AngularJS.
@@ -22,8 +33,8 @@ This module is provided by default and contains the core components of AngularJS
       <p>
         Some examples include:
           {@link ng.directive:ngClick ngClick},
-          {@link ng.directive:ngInclude ngInclude},
-          {@link ng.directive:ngRepeat ngRepeat},
+          {@link directive:ngInclude ngInclude},
+          {@link directive:ngRepeat ngRepeat},
           etc… <br />
       </p>
     </td>
@@ -40,7 +51,6 @@ This module is provided by default and contains the core components of AngularJS
         Some examples include:
           {@link ng.$compile $compile},
           {@link ng.$http $http},
-          {@link ngRoute.$routeParams $routeParams},
           {@link ng.$location $location},
           etc…
       <p>
@@ -52,7 +62,7 @@ This module is provided by default and contains the core components of AngularJS
     </td>
     <td>
       <p>
-        The core filters available in the ng module are used to transform template data before it is renders within directives and expressions.
+        The core filters available in the ng module are used to transform template data before it is rendered within directives and expressions.
       </p>
       <p>
         Some examples include:
@@ -146,7 +156,7 @@ or JavaScript callbacks.
       {@link ngAnimate JS-based animations}
     </td>
     <td>
-      Use {@link angular.Module#methods_animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
+      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
 </table>
@@ -202,7 +212,7 @@ Use ngTouch when developing for mobile browsers/devices.
       {@link ngTouch#service Services / Factories}
     </td>
     <td>
-      The {@link ngTouch.$swipe $swipe} service is used to register and manage mobile DOM events. 
+      The {@link ngTouch.$swipe $swipe} service is used to register and manage mobile DOM events.
     </td>
   </tr>
   <tr>
@@ -242,7 +252,7 @@ Use ngSanitize to securely parse and manipulate HTML data in your application.
 
 ## {@link ngMock ngMock}
 
-Use ngMock to inject and mock modules, factories, services and providers within your unit tests 
+Use ngMock to inject and mock modules, factories, services and providers within your unit tests
 
 <div class="alert alert-info">Include the **angular-mocks.js** file into your test runner for this to work.</div>
 

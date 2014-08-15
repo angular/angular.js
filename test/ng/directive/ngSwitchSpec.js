@@ -66,6 +66,32 @@ describe('ngSwitch', function() {
   }));
 
 
+  it('should show all elements between start and end markers that match the current value',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when-start="1">A</li>' +
+        '<li>B</li>' +
+        '<li ng-switch-when-end>C</li>' +
+        '<li ng-switch-when-start="2">D</li>' +
+        '<li>E</li>' +
+        '<li ng-switch-when-end>F</li>' +
+      '</ul>')($rootScope);
+
+    $rootScope.$apply('select = "1"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('A');
+    expect(element.find('li').eq(1).text()).toBe('B');
+    expect(element.find('li').eq(2).text()).toBe('C');
+
+    $rootScope.$apply('select = "2"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('D');
+    expect(element.find('li').eq(1).text()).toBe('E');
+    expect(element.find('li').eq(2).text()).toBe('F');
+  }));
+
+
   it('should switch on switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="select">' +
@@ -77,6 +103,32 @@ describe('ngSwitch', function() {
     $rootScope.select = 1;
     $rootScope.$apply();
     expect(element.text()).toEqual('one');
+  }));
+
+
+  it('should show all default elements between start and end markers when no match',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when-start="1">A</li>' +
+        '<li>B</li>' +
+        '<li ng-switch-when-end>C</li>' +
+        '<li ng-switch-default-start>D</li>' +
+        '<li>E</li>' +
+        '<li ng-switch-default-end>F</li>' +
+      '</ul>')($rootScope);
+
+    $rootScope.$apply('select = "1"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('A');
+    expect(element.find('li').eq(1).text()).toBe('B');
+    expect(element.find('li').eq(2).text()).toBe('C');
+
+    $rootScope.$apply('select = "2"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('D');
+    expect(element.find('li').eq(1).text()).toBe('E');
+    expect(element.find('li').eq(2).text()).toBe('F');
   }));
 
 
@@ -189,13 +241,38 @@ describe('ngSwitch', function() {
     $rootScope.url = 'x';
     $rootScope.$apply();
     expect(getChildScope()).toBeUndefined();
-    expect(child1.$destroy).toHaveBeenCalledOnce();
+    expect(child1.$destroy).toHaveBeenCalled();
 
     $rootScope.url = 'a';
     $rootScope.$apply();
     var child2 = getChildScope();
     expect(child2).toBeDefined();
     expect(child2).not.toBe(child1);
+  }));
+
+
+  it("should interoperate with other transclusion directives like ngRepeat", inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-switch="value">' +
+          '<div ng-switch-when="foo" ng-repeat="foo in foos">{{value}}:{{foo}}|</div>' +
+          '<div ng-switch-default ng-repeat="bar in bars">{{value}}:{{bar}}|</div>' +
+      '</div>'
+    )($rootScope);
+    $rootScope.$apply('value="foo";foos=["one", "two"]');
+    expect(element.text()).toEqual('foo:one|foo:two|');
+
+    $rootScope.$apply('value="foo";foos=["one"]');
+    expect(element.text()).toEqual('foo:one|');
+
+    $rootScope.$apply('value="foo";foos=["one","two","three"]');
+    expect(element.text()).toEqual('foo:one|foo:two|foo:three|');
+
+    $rootScope.$apply('value="bar";bars=["up", "down"]');
+    expect(element.text()).toEqual('bar:up|bar:down|');
+
+    $rootScope.$apply('value="bar";bars=["up", "down", "forwards", "backwards"]');
+    expect(element.text()).toEqual('bar:up|bar:down|bar:forwards|bar:backwards|');
+
   }));
 
 
@@ -212,18 +289,41 @@ describe('ngSwitch', function() {
     // element now contains only empty repeater. this element is dealocated by local afterEach.
     // afterwards a global afterEach will check for leaks in jq data cache object
   }));
+
+
+  it('should properly support case labels with different numbers of transclude fns', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-switch="mode">' +
+        '<p ng-switch-when="a">Block1</p>' +
+        '<p ng-switch-when="a">Block2</p>' +
+        '<a href ng-switch-when="b">a</a>' +
+      '</div>'
+    )($rootScope);
+
+    $rootScope.$apply('mode = "a"');
+    expect(element.children().length).toBe(2);
+
+    $rootScope.$apply('mode = "b"');
+    expect(element.children().length).toBe(1);
+
+    $rootScope.$apply('mode = "a"');
+    expect(element.children().length).toBe(2);
+
+    $rootScope.$apply('mode = "b"');
+    expect(element.children().length).toBe(1);
+  }));
 });
 
 describe('ngSwitch animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
-    $rootElement.html(html);
+  function html(content) {
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
 
-  beforeEach(module('mock.animate'));
+  beforeEach(module('ngAnimateMock'));
 
   beforeEach(module(function() {
     // we need to run animation on attached elements;
@@ -255,9 +355,11 @@ describe('ngSwitch animations', function() {
       $scope.val = 'one';
       $scope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('one');
-  }));
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('one');
+    })
+  );
 
 
   it('should fire off the leave animation',
@@ -276,17 +378,59 @@ describe('ngSwitch animations', function() {
       $scope.val = 'two';
       $scope.$digest();
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('two');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('two');
 
       $scope.val = 'three';
       $scope.$digest();
 
-      item = $animate.flushNext('leave').element;
-      expect(item.text()).toBe('two');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('leave');
+      expect(item.element.text()).toBe('two');
 
-      item = $animate.flushNext('enter').element;
-      expect(item.text()).toBe('three');
-  }));
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('three');
+    })
+  );
 
+  it('should destroy the previous leave animation if a new one takes place', function() {
+    module(function($provide) {
+      $provide.value('$animate', {
+        enabled : function() { return true; },
+        leave : function() {
+          //DOM operation left blank
+        },
+        enter : function(element, parent, after) {
+          angular.element(after).after(element);
+        }
+      });
+    });
+    inject(function ($compile, $rootScope, $animate, $templateCache) {
+      var item;
+      var $scope = $rootScope.$new();
+      element = $compile(html(
+        '<div ng-switch="inc">' +
+          '<div ng-switch-when="one">one</div>' +
+          '<div ng-switch-when="two">two</div>' +
+        '</div>'
+      ))($scope);
+
+      $scope.$apply('inc = "one"');
+
+      var destroyed, inner = element.children(0);
+      inner.on('$destroy', function() {
+        destroyed = true;
+      });
+
+      $scope.$apply('inc = "two"');
+
+      $scope.$apply('inc = "one"');
+
+      $scope.$apply('inc = "two"');
+
+      expect(destroyed).toBe(true);
+    });
+  });
 });

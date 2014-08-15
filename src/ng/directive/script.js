@@ -2,32 +2,36 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:script
+ * @name script
  * @restrict E
  *
  * @description
- * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the
- * template can be used by `ngInclude`, `ngView` or directive templates.
+ * Load the content of a `<script>` element into {@link ng.$templateCache `$templateCache`}, so that the
+ * template can be used by {@link ng.directive:ngInclude `ngInclude`},
+ * {@link ngRoute.directive:ngView `ngView`}, or {@link guide/directive directives}. The type of the
+ * `<script>` element must be specified as `text/ng-template`, and a cache name for the template must be
+ * assigned through the element's `id`, which can then be used as a directive's `templateUrl`.
  *
- * @param {'text/ng-template'} type must be set to `'text/ng-template'`
+ * @param {string} type Must be set to `'text/ng-template'`.
+ * @param {string} id Cache name of the template.
  *
  * @example
-  <doc:example>
-    <doc:source>
+  <example>
+    <file name="index.html">
       <script type="text/ng-template" id="/tpl.html">
         Content of the template.
       </script>
 
       <a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
       <div id="tpl-content" ng-include src="currentTpl"></div>
-    </doc:source>
-    <doc:scenario>
+    </file>
+    <file name="protractor.js" type="protractor">
       it('should load template defined inside script tag', function() {
-        element('#tpl-link').click();
-        expect(element('#tpl-content').text()).toMatch(/Content of the template/);
+        element(by.css('#tpl-link')).click();
+        expect(element(by.css('#tpl-content')).getText()).toMatch(/Content of the template/);
       });
-    </doc:scenario>
-  </doc:example>
+    </file>
+  </example>
  */
 var scriptDirective = ['$templateCache', function($templateCache) {
   return {

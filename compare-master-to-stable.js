@@ -1,4 +1,6 @@
-#!/usr/local/bin/node
+#!/usr/bin/env node
+
+'use strict';
 
 var util = require('util');
 var cp = require('child_process');
@@ -121,9 +123,12 @@ then(function (tags) {
     value();
 }).
 then(function (tags) {
+  var master = tags.pop();
+  var stable = tags.pop();
+
   return [
-    { name: 'v1.0.x', tag: tags[0] },
-    { name: 'master', tag: tags[1] }
+    { name: stable.replace(/\d+$/, 'x'), tag: stable },
+    { name: 'master', tag: master}
   ];
 }).
 then(allInSeries(function (branch) {
@@ -143,7 +148,7 @@ then(allInSeries(function (branch) {
         return sha + (msg.toLowerCase().indexOf('fix') === -1 ? '   ' : ' * ') + msg;
       });
       branch.log = log.map(function (line) {
-        return line.substr(41)
+        return line.substr(41);
       });
       return branch;
     });

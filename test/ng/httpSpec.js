@@ -9,12 +9,12 @@ describe('$http', function() {
   });
 
   beforeEach(module(function($exceptionHandlerProvider) {
-      $exceptionHandlerProvider.mode('log');
+    $exceptionHandlerProvider.mode('log');
   }));
 
   afterEach(inject(function($exceptionHandler, $httpBackend, $rootScope) {
     forEach($exceptionHandler.errors, function(e) {
-      dump('Unhandled exception: ', e)
+      dump('Unhandled exception: ', e);
     });
 
     if ($exceptionHandler.errors.length) {
@@ -28,29 +28,6 @@ describe('$http', function() {
 
   describe('$httpProvider', function() {
     describe('interceptors', function() {
-     it('should accept injected rejected response interceptor', function() {
-        var wasCalled = false;
-        module(function($httpProvider, $provide) {
-          $httpProvider.responseInterceptors.push('injectedInterceptor');
-          $provide.factory('injectedInterceptor', ['$q', function($q) {
-            return function(promise) {
-              return promise.then(null, function authInterceptor(response) {
-                wasCalled = true;
-                expect(response.status).toEqual(401);
-                return $q.reject(response);
-              });
-            };
-          }]);
-        });
-        inject(function($http, $httpBackend) {
-          $httpBackend.expect('GET', '/url').respond(401);
-          $http({method: 'GET', url: '/url'});
-          $httpBackend.flush();
-          expect(wasCalled).toEqual(true);
-        });
-      });
-
-
       it('should chain request, requestReject, response and responseReject interceptors', function() {
         module(function($httpProvider) {
           var savedConfig, savedResponse;
@@ -83,7 +60,7 @@ describe('$http', function() {
             return {
               response: function(response) {
                 response.data += ':1';
-                savedResponse = response
+                savedResponse = response;
                 return $q.reject(':2');
               }
             };
@@ -128,28 +105,6 @@ describe('$http', function() {
               }
             };
           });
-          $httpProvider.responseInterceptors.push(function($q) {
-            return function(promise) {
-              var defer = $q.defer();
-
-              promise.then(function(response) {
-                response.data = '[' + response.data + '] legacy-1';
-                defer.resolve(response);
-              });
-              return defer.promise;
-            };
-          });
-          $httpProvider.responseInterceptors.push(function($q) {
-            return function(promise) {
-              var defer = $q.defer();
-
-              promise.then(function(response) {
-                response.data = '[' + response.data + '] legacy-2';
-                defer.resolve(response);
-              });
-              return defer.promise;
-            };
-          });
         });
         inject(function($http, $httpBackend) {
           var response;
@@ -158,82 +113,7 @@ describe('$http', function() {
             response = r;
           });
           $httpBackend.flush();
-          expect(response.data).toEqual('{{[[response] legacy-1] legacy-2} inner} outer');
-        });
-      });
-    });
-
-
-    describe('response interceptors', function() {
-
-      it('should default to an empty array', module(function($httpProvider) {
-        expect($httpProvider.responseInterceptors).toEqual([]);
-      }));
-
-
-      it('should pass the responses through interceptors', function() {
-        module(function($httpProvider, $provide) {
-          $provide.factory('testInterceptor', function ($q) {
-            return function(httpPromise) {
-              return httpPromise.then(function(response) {
-                var deferred = $q.defer();
-                deferred.resolve({
-                  data: response.data + '?',
-                  status: 209,
-                  headers: response.headers,
-                  request: response.config
-                });
-                return deferred.promise;
-              });
-            };
-          });
-          // just change the response data and pass the response object along
-          $httpProvider.responseInterceptors.push(function() {
-            return function(httpPromise) {
-              return httpPromise.then(function(response) {
-                response.data += '!';
-                return response;
-              });
-            }
-          });
-
-          // return a new resolved promise representing modified response object
-          $httpProvider.responseInterceptors.push('testInterceptor');
-        });
-        inject(function($http, $httpBackend) {
-          $httpBackend.expect('GET', '/foo').respond(201, 'Hello');
-          $http.get('/foo').success(function(data, status) {
-            expect(data).toBe('Hello!?');
-            expect(status).toBe(209);
-            callback();
-          });
-          $httpBackend.flush();
-          expect(callback).toHaveBeenCalledOnce();
-        });
-      });
-
-
-      it('should support interceptors defined as services', function() {
-        module(function($provide, $httpProvider) {
-          $provide.factory('myInterceptor', function() {
-            return function(promise) {
-              return promise.then(function(response) {
-                response.data = uppercase(response.data);
-                return response;
-              });
-            }
-          });
-          $httpProvider.responseInterceptors.push('myInterceptor');
-        });
-        inject(function($http, $httpBackend) {
-          var response;
-
-          $httpBackend.expect('GET', '/test').respond('hello!');
-          $http.get('/test').success(function(data) {response = data;});
-          expect(response).toBeUndefined();
-
-          $httpBackend.flush();
-          expect(response).toBe('HELLO!');
+          expect(response.data).toEqual('{{response} inner} outer');
         });
       });
     });
@@ -344,7 +224,7 @@ describe('$http', function() {
           $rootScope.$apply();
           expect(config.method).toEqual('get');
           expect(config.url).toEqual('/url');
-          expect(config.headers.foo).toEqual('bar')
+          expect(config.headers.foo).toEqual('bar');
         });
       });
 
@@ -405,6 +285,10 @@ describe('$http', function() {
       $http = $h;
     }]));
 
+    it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
+      $httpBackend.expect('GET', '/url').respond('');
+      $http({url: '/url'});
+    }));
 
     it('should do basic request', inject(function($httpBackend, $http) {
       $httpBackend.expect('GET', '/url').respond('');
@@ -438,8 +322,8 @@ describe('$http', function() {
 
 
       it('should expand arrays in params map', inject(function($httpBackend, $http) {
-          $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
-          $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
+        $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
+        $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
       }));
 
 
@@ -451,6 +335,17 @@ describe('$http', function() {
 
         $httpBackend.expect('GET', '/Path?!do%26h=g%3Da+h&:bar=$baz@1').respond('');
         $http({url: '/Path', params: {':bar': '$baz@1', '!do&h': 'g=a h'}, method: 'GET'});
+      });
+
+      it('should not add question mark when params is empty', function() {
+        $httpBackend.expect('GET', '/url').respond('');
+        $http({url: '/url', params: {}, method: 'GET'});
+      });
+
+      it('should not double quote dates', function() {
+        if (msie < 9) return;
+        $httpBackend.expect('GET', '/url?date=2014-07-15T17:30:00.000Z').respond('');
+        $http({url: '/url', params: {date:new Date('2014-07-15T17:30:00.000Z')}, method: 'GET'});
       });
     });
 
@@ -464,6 +359,30 @@ describe('$http', function() {
           expect(response.status).toBe(207);
           expect(response.headers()).toEqual({'content-encoding': 'smurf'});
           expect(response.config.url).toBe('/url');
+          callback();
+        });
+
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should pass statusText in response object when a request is successful', function() {
+        $httpBackend.expect('GET', '/url').respond(200, 'SUCCESS', {}, 'OK');
+        $http({url: '/url', method: 'GET'}).then(function(response) {
+          expect(response.statusText).toBe('OK');
+          callback();
+        });
+
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should pass statusText in response object when a request fails', function() {
+        $httpBackend.expect('GET', '/url').respond(404, 'ERROR', {}, 'Not Found');
+        $http({url: '/url', method: 'GET'}).then(null, function(response) {
+          expect(response.statusText).toBe('Not Found');
           callback();
         });
 
@@ -558,7 +477,7 @@ describe('$http', function() {
           expect(r.headers('nothing')).toBe(null);
         });
 
-        $http({url: '/url', method: 'GET'}).then(callback)
+        $http({url: '/url', method: 'GET'}).then(callback);
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
@@ -596,6 +515,7 @@ describe('$http', function() {
 
 
     describe('response headers parser', function() {
+      /* global parseHeaders: false */
 
       it('should parse basic', function() {
         var parsed = parseHeaders(
@@ -667,7 +587,7 @@ describe('$http', function() {
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {
-          'Custom': 'header',
+          'Custom': 'header'
         }});
 
         $httpBackend.flush();
@@ -738,6 +658,18 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should delete default headers if custom header function returns null', function () {
+
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return !('Accept' in headers);
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'Accept': function() { return null; }
+        }});
+        $httpBackend.flush();
+      });
+
       it('should override default headers with custom in a case insensitive manner', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['accept'] == 'Rewritten' &&
@@ -779,6 +711,22 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should NOT delete Content-Type header if request data/body is set by request transform', function() {
+        $httpBackend.expect('POST', '/url', {'one' : 'two'}, function(headers) {
+          return headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({
+          url: '/url',
+          method: 'POST',
+          transformRequest : function(data) {
+            data = {'one' : 'two'};
+            return data;
+          }
+        });
+
+        $httpBackend.flush();
+      });
 
       it('should set the XSRF cookie into a XSRF header', inject(function($browser) {
         function checkXSRF(secret, header) {
@@ -800,8 +748,8 @@ describe('$http', function() {
         $http({url: '/url', method: 'POST', headers: {'S-ome': 'Header'}});
         $http({url: '/url', method: 'PUT', headers: {'Another': 'Header'}});
         $http({url: '/url', method: 'DELETE', headers: {}});
-        $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'})
-        $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'})
+        $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'});
+        $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'});
 
         $httpBackend.flush();
       }));
@@ -826,6 +774,25 @@ describe('$http', function() {
         $http({url: '/url', method: 'DELETE', headers: headerConfig});
 
         $httpBackend.flush();
+      }));
+
+      it('should check the cache before checking the XSRF cookie', inject(function($browser, $cacheFactory) {
+        var testCache = $cacheFactory('testCache'),
+            executionOrder = [];
+
+        spyOn($browser, 'cookies').andCallFake(function() {
+          executionOrder.push('cookies');
+          return {'XSRF-TOKEN':'foo'};
+        });
+        spyOn(testCache, 'get').andCallFake(function() {
+          executionOrder.push('cache');
+        });
+
+        $httpBackend.expect('GET', '/url', undefined).respond('');
+        $http({url: '/url', method: 'GET', cache: testCache});
+        $httpBackend.flush();
+
+        expect(executionOrder).toEqual(['cache', 'cookies']);
       }));
     });
 
@@ -897,6 +864,15 @@ describe('$http', function() {
         $http.put('/url', 'some-data', {headers: {'Custom': 'Header'}});
       });
 
+      it('should have patch()', function(){
+        $httpBackend.expect('PATCH', '/url', 'some-data').respond('');
+        $http.patch('/url', 'some-data');
+      });
+
+      it('patch() should allow config param', function() {
+        $httpBackend.expect('PATCH', '/url', 'some-data', checkHeader('Custom', 'Header')).respond('');
+        $http.patch('/url', 'some-data', {headers: {'Custom': 'Header'}});
+      });
 
       it('should have jsonp()', function() {
         $httpBackend.expect('JSONP', '/url').respond('');
@@ -980,6 +956,16 @@ describe('$http', function() {
         });
 
 
+        it('should ignore Blob objects', function () {
+          if (!window.Blob) return;
+
+          var blob = new Blob(['blob!'], { type: 'text/plain' });
+
+          $httpBackend.expect('POST', '/url', '[object Blob]').respond('');
+          $http({ method: 'POST', url: '/url', data: blob });
+        });
+
+
         it('should have access to request headers', function() {
           $httpBackend.expect('POST', '/url', 'header1').respond(200);
           $http.post('/url', 'req', {
@@ -995,8 +981,8 @@ describe('$http', function() {
 
 
         it('should pipeline more functions', function() {
-          function first(d, h) {return d + '-first' + ':' + h('h1')}
-          function second(d) {return uppercase(d)}
+          function first(d, h) {return d + '-first' + ':' + h('h1');}
+          function second(d) {return uppercase(d);}
 
           $httpBackend.expect('POST', '/url', 'REQ-FIRST:V1').respond(200);
           $http.post('/url', 'req', {
@@ -1080,8 +1066,8 @@ describe('$http', function() {
 
 
         it('should pipeline more functions', function() {
-          function first(d, h) {return d + '-first' + ':' + h('h1')}
-          function second(d) {return uppercase(d)}
+          function first(d, h) {return d + '-first' + ':' + h('h1');}
+          function second(d) {return uppercase(d);}
 
           $httpBackend.expect('POST', '/url').respond(200, 'resp', {h1: 'v1'});
           $http.post('/url', '', {transformResponse: [first, second]}).success(callback);
@@ -1119,6 +1105,28 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(callback.mostRecentCall.args[0]).toBe('content');
       }));
+
+      it('should cache JSONP request when cache is provided', inject(function($rootScope) {
+        $httpBackend.expect('JSONP', '/url?cb=JSON_CALLBACK').respond('content');
+        $http({method: 'JSONP', url: '/url?cb=JSON_CALLBACK', cache: cache});
+        $httpBackend.flush();
+
+        $http({method: 'JSONP', url: '/url?cb=JSON_CALLBACK', cache: cache}).success(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toBe('content');
+      }));
+
+      it('should cache request when cache is provided and no method specified', function () {
+        doFirstCacheRequest();
+
+        $http({url: '/url', cache: cache}).success(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toBe('content');
+      });
 
 
       it('should not cache when cache is not provided', function() {
@@ -1280,7 +1288,7 @@ describe('$http', function() {
       describe('$http.defaults.cache', function () {
 
         it('should be undefined by default', function() {
-          expect($http.defaults.cache).toBeUndefined()
+          expect($http.defaults.cache).toBeUndefined();
         });
 
         it('should cache requests when no cache given in request config', function() {
@@ -1374,6 +1382,20 @@ describe('$http', function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
       }));
+
+
+      it('should reject promise when timeout promise resolves', inject(function($timeout) {
+        var onFulfilled = jasmine.createSpy('onFulfilled');
+        var onRejected = jasmine.createSpy('onRejected');
+        $httpBackend.expect('GET', '/some').respond(200);
+
+        $http({method: 'GET', url: '/some', timeout: $timeout(noop, 10)}).then(onFulfilled, onRejected);
+
+        $timeout.flush(100);
+
+        expect(onFulfilled).not.toHaveBeenCalled();
+        expect(onRejected).toHaveBeenCalledOnce();
+      }));
     });
 
 
@@ -1439,6 +1461,12 @@ describe('$http', function() {
         $http.get('/url');
         $httpBackend.flush();
       });
+
+      it('should have separate opbjects for defaults PUT and POST', function() {
+        expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
+        expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
+        expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
+      });
     });
   });
 
@@ -1458,7 +1486,11 @@ describe('$http', function() {
 
     inject(function($http, $rootScope) {
       $http({
-        method: 'GET', url: 'some.html', timeout: 12345, withCredentials: true, responseType: 'json'
+        method: 'GET',
+        url: 'some.html',
+        timeout: 12345,
+        withCredentials: true,
+        responseType: 'json'
       });
       $rootScope.$digest();
       expect($httpBackend).toHaveBeenCalledOnce();
@@ -1482,7 +1514,10 @@ describe('$http', function() {
     inject(function($http, $rootScope) {
       $http.defaults.withCredentials = true;
       $http({
-        method: 'GET', url: 'some.html', timeout: 12345, responseType: 'json'
+        method: 'GET',
+        url: 'some.html',
+        timeout: 12345,
+        responseType: 'json'
       });
       $rootScope.$digest();
       expect($httpBackend).toHaveBeenCalledOnce();

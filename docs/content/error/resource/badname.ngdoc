@@ -1,8 +1,0 @@
-@ngdoc error
-@name $resource:badname
-@fullName Cannot use hasOwnProperty as a parameter name
-@description
-
-Occurs when you try to use the name `hasOwnProperty` as a name of a parameter.
-Generally, a name cannot be `hasOwnProperty` because it is used, internally, on a object
-and allowing such a name would break lookups on this object.

@@ -11,47 +11,48 @@ See the [contributing guidelines](https://github.com/angular/angular.js/blob/mas
 for how to contribute your own code to AngularJS.
 
 
-1. <a href="#developing-angularjs_installing-dependencies">Installing Dependencies</a>
-2. <a href="#developing-angularjs_forking-angular-on-github">Forking Angular on Github</a>
-3. <a href="#developing-angularjs_building-angularjs">Building AngularJS</a>
-4. <a href="#developing-angularjs_running-a-local-development-web-server">Running a Local Development Web Server</a>
-5. <a href="#developing-angularjs_running-the-unit-test-suite">Running the Unit Test Suite</a>
-6. <a href="#developing-angularjs_running-the-end-to-end-test-suite">Running the End-to-end Test Suite</a>
+1. {@link misc/contribute#installing-dependencies Installing Dependencies}
+2. {@link misc/contribute#forking-angular-on-github Forking Angular on Github}
+3. {@link misc/contribute#building-angularjs Building AngularJS}
+4. {@link misc/contribute#running-a-local-development-web-server Running a Local Development Web Server}
+5. {@link misc/contribute#running-the-unit-test-suite Running the Unit Test Suite}
+6. {@link misc/contribute#running-the-end-to-end-test-suite Running the End-to-end Test Suite}
 
 ## Installing Dependencies
 
 Before you can build AngularJS, you must install and configure the following dependencies on your
 machine:
 
-* {@link http://git-scm.com/ Git}: The {@link http://help.github.com/mac-git-installation Github Guide to
-Installing Git} is a good source of information.
+* [Git](http://git-scm.com/): The [Github Guide to
+Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* {@link http://nodejs.org Node.js}: We use Node to generate the documentation, run a
+* [Node.js](http://nodejs.org): We use Node to generate the documentation, run a
 development web server, run tests, and generate distributable files. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
-* {@link http://www.java.com Java}: We minify JavaScript using our
-{@link https://developers.google.com/closure/ Closure Tools} jar. Make sure you have Java (version 6 or higher) installed
-and included in your {@link http://docs.oracle.com/javase/tutorial/essential/environment/paths.html PATH} variable.
+* [Java](http://www.java.com): We minify JavaScript using our
+[Closure Tools](https://developers.google.com/closure/) jar. Make sure you have Java (version 6 or higher) installed
+and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/environment/paths.html) variable.
 
-* {@link http://gruntjs.com Grunt}: We use Grunt as our build system. Install the grunt command-line tool globally with:
+* [Grunt](http://gruntjs.com): We use Grunt as our build system. Install the grunt command-line tool globally with:
 
   ```shell
   npm install -g grunt-cli
   ```
 
-* {@link http://bower.io/ Bower}: We use Bower to manage client-side packages for the docs. Install the `bower` command-line tool globally with:
+* [Bower](http://bower.io/): We use Bower to manage client-side packages for the docs. Install the `bower` command-line tool globally with:
 
   ```shell
   npm install -g bower
   ```
 
+**Note:** You may need to use sudo (for OSX, *nix, BSD etc) or run your command shell as Administrator (for Windows) to install Grunt &amp;
+Bower globally.
 
 ## Forking Angular on Github
 
-To create a Github account, follow the instructions {@link https://github.com/signup/free here}.
-Afterwards, go ahead and {@link http://help.github.com/forking fork} the {@link
-https://github.com/angular/angular.js main AngularJS repository}.
+To create a Github account, follow the instructions [here](https://github.com/signup/free).
+Afterwards, go ahead and [fork](http://help.github.com/forking) the [main AngularJS repository](https://github.com/angular/angular.js).
 
 
 ## Building AngularJS
@@ -81,8 +82,18 @@ grunt package
 
 
 <div class="alert alert-warning">
-**Note:** If you're using Windows you must run your command line with administrative privileges (right click, run as
-Administrator).
+**Note:** If you're using Windows, you must use an elevated command prompt (right click, run as
+Administrator). This is because `grunt package` creates some symbolic links.
+</div>
+
+<div class="alert alert-warning">
+**Note:** If you're using Linux, and npm install fails with the message
+'Please try running this command again as root/Administrator.', you may need to globally install grunt and bower:
+<ul>
+<li>sudo npm install -g grunt-cli</li>
+<li>sudo npm install -g bower</li>
+</ul>
+
 </div>
 
 The build output can be located under the `build` directory. It consists of the following files and
@@ -120,6 +131,10 @@ made available a local web server based on Node.js.
    ```
    By default, it serves the contents of the AngularJS project directory.
 
+3. To access the locally served docs, visit this URL:
+   ```
+   http://localhost:8000/build/docs/
+   ```
 
 ## Running the Unit Test Suite
 
@@ -166,11 +181,11 @@ grunt --help
 
 ## Running the End-to-end Test Suite
 
-Simply run:
+Angular's end to end tests are run with Protractor. Simply run:
 
 ```shell
 grunt test:e2e
 ```
 
-This will start the webserver and run the tests.
+This will start the webserver and run the tests on Chrome.
 

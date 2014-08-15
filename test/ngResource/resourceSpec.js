@@ -1,9 +1,14 @@
 'use strict';
 
 describe("resource", function() {
-  var $resource, CreditCard, callback, $httpBackend;
+  var $resource, CreditCard, callback, $httpBackend, resourceProvider;
 
   beforeEach(module('ngResource'));
+
+  beforeEach(module(function ($resourceProvider) {
+    resourceProvider = $resourceProvider;
+  }));
+
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
     $resource = $injector.get('$resource');
@@ -31,6 +36,50 @@ describe("resource", function() {
     $httpBackend.verifyNoOutstandingExpectation();
   });
 
+  describe('isValidDottedPath', function() {
+    /* global isValidDottedPath: false */
+    it('should support arbitrary dotted names', function() {
+      expect(isValidDottedPath('')).toBe(false);
+      expect(isValidDottedPath('1')).toBe(false);
+      expect(isValidDottedPath('1abc')).toBe(false);
+      expect(isValidDottedPath('.')).toBe(false);
+      expect(isValidDottedPath('$')).toBe(true);
+      expect(isValidDottedPath('a')).toBe(true);
+      expect(isValidDottedPath('A')).toBe(true);
+      expect(isValidDottedPath('a1')).toBe(true);
+      expect(isValidDottedPath('$a')).toBe(true);
+      expect(isValidDottedPath('$1')).toBe(true);
+      expect(isValidDottedPath('$$')).toBe(true);
+      expect(isValidDottedPath('$.$')).toBe(true);
+      expect(isValidDottedPath('.$')).toBe(false);
+      expect(isValidDottedPath('$.')).toBe(false);
+    });
+  });
+
+  describe('lookupDottedPath', function() {
+    /* global lookupDottedPath: false */
+    var data = {a: {b: 'foo', c: null}};
+
+    it('should throw for invalid path', function() {
+      expect(function() {
+        lookupDottedPath(data, '.ckck');
+      }).toThrowMinErr('$resource', 'badmember',
+                       'Dotted member path "@.ckck" is invalid.');
+    });
+
+    it('should get dotted paths', function() {
+      expect(lookupDottedPath(data, 'a')).toEqual({b: 'foo', c: null});
+      expect(lookupDottedPath(data, 'a.b')).toBe('foo');
+      expect(lookupDottedPath(data, 'a.c')).toBeNull();
+    });
+
+    it('should skip over null/undefined members', function() {
+      expect(lookupDottedPath(data, 'a.b.c')).toBe(undefined);
+      expect(lookupDottedPath(data, 'a.c.c')).toBe(undefined);
+      expect(lookupDottedPath(data, 'a.b.c.d')).toBe(undefined);
+      expect(lookupDottedPath(data, 'NOT_EXIST')).toBe(undefined);
+    });
+  });
 
   it('should not include a request body when calling $delete', function() {
     $httpBackend.expect('DELETE', '/fooresource', null).respond({});
@@ -49,6 +98,50 @@ describe("resource", function() {
     expect(typeof CreditCard.remove).toBe('function');
     expect(typeof CreditCard['delete']).toBe('function');
     expect(typeof CreditCard.query).toBe('function');
+  });
+
+
+  describe('shallow copy', function() {
+    /* global shallowClearAndCopy */
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowClearAndCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+
+
+    it('should omit "$$"-prefixed properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
+
+
+    it('should copy "$"-prefixed properties from copy', function() {
+      var original = {$some: true};
+      var clone = {};
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.$some).toBe(original.$some);
+    });
+
+
+    it('should omit properties from prototype chain', function() {
+      var original, clone = {};
+      function Func() {}
+      Func.prototype.hello = "world";
+
+      original = new Func();
+      original.goodbye = "world";
+
+      expect(shallowClearAndCopy(original, clone)).toBe(clone);
+      expect(clone.hello).toBeUndefined();
+      expect(clone.goodbye).toBe("world");
+    });
   });
 
 
@@ -108,6 +201,13 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
+  it('should not collapsed the url into an empty string', function() {
+    var R = $resource('/:foo/:bar/');
+
+    $httpBackend.when('GET', '/').respond('{}');
+
+    R.get({});
+  });
 
   it('should support escaping colons in url template', function() {
     var R = $resource('http://localhost\\:8080/Path/:a/\\:stillPath/:b');
@@ -129,23 +229,23 @@ describe("resource", function() {
 
     $httpBackend.expect('GET', '/Path/foo%231').respond('{}');
     $httpBackend.expect('GET', '/Path/doh!@foo?bar=baz%231').respond('{}');
+    $httpBackend.expect('GET', '/Path/herp$').respond('{}');
 
     R.get({a: 'foo#1'});
     R.get({a: 'doh!@foo', bar: 'baz#1'});
+    R.get({a: 'herp$'});
   });
-
 
   it('should not encode @ in url params', function() {
-   //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
-   //with regards to the character set (pchar) allowed in path segments
-   //so we need this test to make sure that we don't over-encode the params and break stuff like
-   //buzz api which uses @self
+    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+    //with regards to the character set (pchar) allowed in path segments
+    //so we need this test to make sure that we don't over-encode the params and break stuff like
+    //buzz api which uses @self
 
-   var R = $resource('/Path/:a');
-   $httpBackend.expect('GET', '/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1').respond('{}');
-   R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
+    var R = $resource('/Path/:a');
+    $httpBackend.expect('GET', '/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1').respond('{}');
+    R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
   });
-
 
   it('should encode array params', function() {
     var R = $resource('/Path/:a');
@@ -154,10 +254,56 @@ describe("resource", function() {
   });
 
   it('should not encode string "null" to "+" in url params', function() {
-   var R = $resource('/Path/:a');
-   $httpBackend.expect('GET', '/Path/null').respond('{}');
-   R.get({a: 'null'});
+    var R = $resource('/Path/:a');
+    $httpBackend.expect('GET', '/Path/null').respond('{}');
+    R.get({a: 'null'});
   });
+
+
+  it('should implicitly strip trailing slashes from URLs by default', function() {
+    var R = $resource('http://localhost:8080/Path/:a/');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support explicitly stripping trailing slashes from URLs', function() {
+    var R = $resource('http://localhost:8080/Path/:a/', {}, {}, {stripTrailingSlashes: true});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support explicitly keeping trailing slashes in URLs', function() {
+    var R = $resource('http://localhost:8080/Path/:a/', {}, {}, {stripTrailingSlashes: false});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo/').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support provider-level configuration to strip trailing slashes in URLs', function() {
+    // Set the new behavior for all new resources created by overriding the
+    // provider configuration
+    resourceProvider.defaults.stripTrailingSlashes = false;
+
+    var R = $resource('http://localhost:8080/Path/:a/');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo/').respond();
+    R.get({a: 'foo'});
+  });
+
+  it('should support overriding provider default trailing-slash stripping configuration', function() {
+    // Set the new behavior for all new resources created by overriding the
+    // provider configuration
+    resourceProvider.defaults.stripTrailingSlashes = false;
+
+    // Specific instances of $resource can still override the provider's default
+    var R = $resource('http://localhost:8080/Path/:a/', {}, {}, {stripTrailingSlashes: true});
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
 
   it('should allow relative paths in resource url', function () {
     var R = $resource(':relativePath');
@@ -186,6 +332,19 @@ describe("resource", function() {
     var item = LineItem.get({id: 456});
     $httpBackend.flush();
     expect(item).toEqualData({id:'abc'});
+  });
+
+
+  it('should support @_property lookups with underscores', function() {
+    $httpBackend.expect('GET', '/Order/123').respond({_id: {_key:'123'}, count: 0});
+    var LineItem = $resource('/Order/:_id', {_id: '@_id._key'});
+    var item = LineItem.get({_id: 123});
+    $httpBackend.flush();
+    expect(item).toEqualData({_id: {_key: '123'}, count: 0});
+    $httpBackend.expect('POST', '/Order/123').respond({_id: {_key:'123'}, count: 1});
+    item.$save();
+    $httpBackend.flush();
+    expect(item).toEqualData({_id: {_key: '123'}, count: 1});
   });
 
 
@@ -223,7 +382,7 @@ describe("resource", function() {
 
 
   it('should not throw TypeError on null default params', function() {
-    $httpBackend.expect('GET', '/Path?').respond('{}');
+    $httpBackend.expect('GET', '/Path').respond('{}');
     var R = $resource('/Path', {param: null}, {get: {method: 'GET'}});
 
     expect(function() {
@@ -243,9 +402,9 @@ describe("resource", function() {
 
 
   it('should throw an exception if a param is called "hasOwnProperty"', function() {
-     expect(function() {
+    expect(function() {
       $resource('/:hasOwnProperty').get();
-     }).toThrowMinErr('$resource','badname', "hasOwnProperty is not a valid parameter name");
+    }).toThrowMinErr('$resource','badname', "hasOwnProperty is not a valid parameter name");
   });
 
 
@@ -281,7 +440,7 @@ describe("resource", function() {
 
   it('should send correct headers', function() {
     $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
-       return headers['If-None-Match'] == "*";
+      return headers['If-None-Match'] == "*";
     }).respond({id:123});
 
     CreditCard.conditionalPut({id: {key:123}});
@@ -456,9 +615,12 @@ describe("resource", function() {
 
   it('should support dynamic default parameters (action specific)', function() {
     var currentGroup = 'students',
-        Person = $resource('/Person/:group/:id', {}, {
-          fetch: {method: 'GET', params: {group: function() { return currentGroup; }}}
-        });
+      Person = $resource('/Person/:group/:id', {}, {
+        fetch: {
+          method: 'GET',
+          params: {group: function() { return currentGroup; }}
+        }
+      });
 
     $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
 
@@ -478,6 +640,32 @@ describe("resource", function() {
     expect(person.name).toEqual('misko');
   });
 
+  it('should return a resource instance when calling a class method with a resource instance', function() {
+    $httpBackend.expect('GET', '/Person/123').respond('{"name":"misko"}');
+    var Person = $resource('/Person/:id');
+    var person = Person.get({id:123});
+    $httpBackend.flush();
+    $httpBackend.expect('POST', '/Person').respond('{"name":"misko2"}');
+
+    var person2 = Person.save(person);
+    $httpBackend.flush();
+
+    expect(person2).toEqual(jasmine.any(Person));
+  });
+
+  it('should not include $promise and $resolved when resource is toJson\'ed', function() {
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+    var cc = CreditCard.get({id: 123});
+    $httpBackend.flush();
+
+    expect(cc.$promise).toBeDefined();
+    expect(cc.$resolved).toBe(true);
+
+    var json = JSON.parse(angular.toJson(cc));
+    expect(json.$promise).not.toBeDefined();
+    expect(json.$resolved).not.toBeDefined();
+    expect(json).toEqual({id: 123, number: '9876'});
+  });
 
   describe('promise api', function() {
 
@@ -859,14 +1047,14 @@ describe("resource", function() {
   it('should transform request/response', function() {
     var Person = $resource('/Person/:id', {}, {
       save: {
-          method: 'POST',
-          params: {id: '@id'},
-          transformRequest: function(data) {
-            return angular.toJson({ __id: data.id });
-          },
-          transformResponse: function(data) {
-            return { id: data.__id };
-          }
+        method: 'POST',
+        params: {id: '@id'},
+        transformRequest: function(data) {
+          return angular.toJson({ __id: data.id });
+        },
+        transformResponse: function(data) {
+          return { id: data.__id };
+        }
       }
     });
 
@@ -924,6 +1112,27 @@ describe("resource", function() {
         var user = UserService.query();
         $httpBackend.flush();
         expect(user).toEqualData([ {id: 1, name: 'user1'} ]);
+      });
+
+      it('should not convert string literals in array into Resource objects', function() {
+        $httpBackend.expect('GET', '/names.json').respond(["mary", "jane"]);
+        var strings = $resource('/names.json').query();
+        $httpBackend.flush();
+        expect(strings).toEqualData(["mary", "jane"]);
+      });
+
+      it('should not convert number literals in array into Resource objects', function() {
+        $httpBackend.expect('GET', '/names.json').respond([213, 456]);
+        var numbers = $resource('/names.json').query();
+        $httpBackend.flush();
+        expect(numbers).toEqualData([213, 456]);
+      });
+
+      it('should not convert boolean literals in array into Resource objects', function() {
+        $httpBackend.expect('GET', '/names.json').respond([true, false]);
+        var bools = $resource('/names.json').query();
+        $httpBackend.flush();
+        expect(bools).toEqualData([true, false]);
       });
     });
 
@@ -1054,14 +1263,14 @@ describe("resource", function() {
 
       //    url parameter in action, parameter not ending the string
       $httpBackend.expect('GET', '/Customer/123/pay').respond({id: 'abc'});
-      var TypeItem = $resource('/foo/:type', {type: 'Order'}, {
+      TypeItem = $resource('/foo/:type', {type: 'Order'}, {
         get: {
           method: 'GET',
           params: {type: 'Customer'},
           url: '/:type/:typeId/pay'
         }
       });
-      var item = TypeItem.get({typeId: 123});
+      item = TypeItem.get({typeId: 123});
       $httpBackend.flush();
       expect(item).toEqualData({id: 'abc'});
     });
@@ -1129,7 +1338,7 @@ describe('resource', function() {
     expect(failureSpy).toHaveBeenCalled();
     expect(failureSpy.mostRecentCall.args[0]).toMatch(
         /^\[\$resource:badcfg\] Error in resource configuration. Expected response to contain an object but got an array/
-      )
+      );
   });
 
 

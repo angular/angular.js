@@ -1,6 +1,10 @@
+'use strict';
+
 describe("$animate", function() {
 
   describe("without animation", function() {
+    var element, $rootElement;
+
     beforeEach(module(function() {
       return function($compile, _$rootElement_, $rootScope) {
         element = $compile('<div></div>')($rootScope);
@@ -13,6 +17,19 @@ describe("$animate", function() {
       expect(element.contents().length).toBe(0);
       $animate.enter(child, element);
       expect(element.contents().length).toBe(1);
+    }));
+
+    it("should enter the element to the start of the parent container",
+      inject(function($animate, $compile, $rootScope) {
+
+      for(var i = 0; i < 5; i++) {
+        element.append(jqLite('<div> ' + i + '</div>'));
+      }
+
+      var child = jqLite('<div>first</div>');
+      $animate.enter(child, element);
+
+      expect(element.text()).toEqual('first 0 1 2 3 4');
     }));
 
     it("should remove the element at the end of leave animation", inject(function($animate, $compile, $rootScope) {
@@ -38,6 +55,20 @@ describe("$animate", function() {
       expect(element).toBeShown();
       $animate.addClass(element, 'ng-hide');
       expect(element).toBeHidden();
+    }));
+
+    it("should run each method and return a noop function", inject(function($animate, $document) {
+      var element = jqLite('<div></div>');
+      var move   = jqLite('<div></div>');
+      var parent = jqLite($document[0].body);
+      parent.append(move);
+
+      expect($animate.enter(element, parent)).toBe(noop);
+      expect($animate.move(element, move)).toBe(noop);
+      expect($animate.addClass(element, 'on')).toBe(noop);
+      expect($animate.addClass(element, 'off')).toBe(noop);
+      expect($animate.setClass(element, 'on', 'off')).toBe(noop);
+      expect($animate.leave(element)).toBe(noop);
     }));
 
     it("should add and remove classes on SVG elements", inject(function($animate) {

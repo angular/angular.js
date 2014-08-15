@@ -1,25 +1,56 @@
-@ngdoc overview
-@name Tutorial: 7 - Routing & Multiple Views
+@ngdoc tutorial
+@name 7 - Routing & Multiple Views
+@step 7
 @description
 
 <ul doc-tutorial-nav="7"></ul>
 
 
 In this step, you will learn how to create a layout template and how to build an app that has
-multiple views by adding routing.
+multiple views by adding routing, using an Angular module called 'ngRoute'.
 
+* When you now navigate to `app/index.html`, you are redirected to `app/index.html#/phones`
+  and the phone list appears in the browser.
+* When you click on a phone link the url changes to one specific to that phone and the stub of a
+  phone detail page is displayed.
 
 <div doc-tutorial-reset="7"></div>
 
+## Dependencies
 
-Note that when you now navigate to `app/index.html`, you are redirected to `app/index.html#/phones`
-and the same phone list appears in the browser. When you click on a phone link the stub of a phone
-detail page is displayed.
+The routing functionality added by this step is provided by angular in the `ngRoute` module, which
+is distributed separately from the core Angular framework.
 
+We are using [Bower][bower] to install client side dependencies.  This step updates the
+`bower.json` configuration file to include the new dependency:
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-6...step-7
-GitHub}.
+```json
+{
+  "name": "angular-seed",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-seed",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "1.2.x",
+    "angular-mocks": "~1.2.x",
+    "bootstrap": "~3.1.1",
+    "angular-route": "~1.2.x"
+  }
+}
+```
+
+The new dependency `"angular-route": "~1.2.x"` tells bower to install a version of the
+angular-route component that is compatible with version 1.2.x.  We must tell bower to download
+and install this dependency.
+
+If you have bower installed globally then you can run `bower install` but for this project we have
+preconfigured npm to run bower install for us:
+
+```
+npm install
+```
 
 
 ## Multiple Views, Routing and Layout Template
@@ -35,13 +66,11 @@ template into what we call a "layout template". This is a template that is commo
 our application. Other "partial templates" are then included into this layout template depending on
 the current "route" — the view that is currently displayed to the user.
 
-Application routes in Angular are declared via the
-{@link api/ngRoute.$routeProvider $routeProvider}, which is the provider of the
-{@link api/ngRoute.$route $route service}. This service makes it easy to wire together
-controllers, view templates, and the current
-URL location in the browser. Using this feature we can implement {@link
-http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
-history (back and forward navigation) and bookmarks.
+Application routes in Angular are declared via the {@link ngRoute.$routeProvider $routeProvider},
+which is the provider of the {@link ngRoute.$route $route service}. This service makes it easy to
+wire together controllers, view templates, and the current URL location in the browser. Using this
+feature we can implement [deep linking](http://en.wikipedia.org/wiki/Deep_linking), which lets us
+utilize the browser's history (back and forward navigation) and bookmarks.
 
 
 ### A Note About DI, Injector and Providers
@@ -49,12 +78,17 @@ history (back and forward navigation) and bookmarks.
 As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} (DI) is at the core of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
-When the application bootstraps, Angular creates an injector that will be used for all DI stuff in
-this app. The injector itself doesn't know anything about what `$http` or `$route` services do, in
-fact it doesn't even know about the existence of these services unless it is configured with proper
-module definitions. The sole responsibilities of the injector are to load specified module
-definition(s), register all service providers defined in these modules, and when asked, inject
-a specified function with dependencies (services) that it lazily instantiates via their providers.
+When the application bootstraps, Angular creates an injector that will be used to find and inject all
+of the services that are required by your app. The injector itself doesn't know anything about what
+`$http` or `$route` services do, in fact it doesn't even know about the existence of these services
+unless it is configured with proper module definitions.
+
+The injector only carries out the following steps :
+
+ * load the module definition(s) that you specify in your app
+ * register all Providers defined in these module definitions
+ * when asked to do so, inject a specified function and any necessary dependencies (services) that
+   it lazily instantiates via their Providers.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
@@ -68,16 +102,127 @@ service, the `$routeProvider` exposes APIs that allow you to define routes for y
 Angular modules solve the problem of removing global state from the application and provide a way
 of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try to
 solve the problem of script load ordering or lazy script fetching. These goals are totally independent and
-both module systems can live side by side and fulfil their goals.
+both module systems can live side by side and fulfill their goals.
+
+To deepen your understanding of DI on Angular, see
+[Understanding Dependency Injection](https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection).
+
+## Template
+
+The `$route` service is usually used in conjunction with the {@link ngRoute.directive:ngView
+ngView} directive. The role of the `ngView` directive is to include the view template for the current
+route into the layout template. This makes it a perfect fit for our `index.html` template.
+
+<div class="alert alert-info">
+**Note:** Starting with AngularJS version 1.2, `ngRoute` is in its own module and must be loaded by
+loading the additional `angular-route.js` file, which we download via Bower above.
+</div>
+
+__`app/index.html`:__
+
+```html
+<!doctype html>
+<html lang="en" ng-app="phonecatApp">
+<head>
+...
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/controllers.js"></script>
+</head>
+<body>
+
+  <div ng-view></div>
+
+</body>
+</html>
+```
+
+We have added two new `<script>` tags in our index file to load up extra JavaScript files into our
+application:
+
+- `angular-route.js` : defines the Angular `ngRoute` module, which provides us with routing.
+- `app.js` : this file now holds the root module of our application.
+
+Note that we removed most of the code in the `index.html` template and replaced it with a single
+line containing a div with the `ng-view` attribute. The code that we removed was placed into the
+`phone-list.html` template:
+
+__`app/partials/phone-list.html`:__
+
+```html
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2">
+      <!--Sidebar content-->
+
+      Search: <input ng-model="query">
+      Sort by:
+      <select ng-model="orderProp">
+        <option value="name">Alphabetical</option>
+        <option value="age">Newest</option>
+      </select>
+
+    </div>
+    <div class="col-md-10">
+      <!--Body content-->
+
+      <ul class="phones">
+        <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
+          <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
+          <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+          <p>{{phone.snippet}}</p>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+```
+
+<div style="display:none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_07_final.png">
+</div>
+
+We also added a placeholder template for the phone details view:
+
+__`app/partials/phone-detail.html`:__
+
+```html
+TBD: detail view for <span>{{phoneId}}</span>
+```
+
+Note how we are using the `phoneId` expression which will be defined in the `PhoneDetailCtrl` controller.
 
 ## The App Module
 
+To improve the organization of the app, we are making use of Angular's `ngRoute` module and we've
+moved the controllers into their own module `phonecatControllers` (as shown below).
+
+We added `angular-route.js` to `index.html` and created a new `phonecatControllers` module in
+`controllers.js`. That's not all we need to do to be able to use their code, however. We also have
+to add the modules as dependencies of our app. By listing these two modules as dependencies of
+`phonecatApp`, we can use the directives and services they provide.
+
+
 __`app/js/app.js`:__
-<pre>
+
+```js
 var phonecatApp = angular.module('phonecatApp', [
   'ngRoute',
   'phonecatControllers'
 ]);
+
+...
+```
+
+Notice the second argument passed to `angular.module`, `['ngRoute', 'phonecatControllers']`. This
+array lists the modules that `phonecatApp` depends on.
+
+
+```js
+...
 
 phonecatApp.config(['$routeProvider',
   function($routeProvider) {
@@ -94,62 +239,46 @@ phonecatApp.config(['$routeProvider',
         redirectTo: '/phones'
       });
   }]);
-</pre>
+```
 
-In order to configure our application with routes, we need to create a module for our application.
-We call this module `phonecatApp`. Notice the second argument passed to `angular.module`:
-`['ngRoute', 'phonecatControllers']`. This array lists the modules that `phonecatApp` depends on.
-
-Above, we added `angular-route.js` to `index.html`. That's not all we need to do to be able to use
-it, however. We also have to add `ngRoute` as a dependency of our app. To improve the organization
-of the app, we're going to move the controllers into their own file (as shown below), and call the
-module `phonecatControllers`. By listing these two modules as dependencies of `phonecatApp`, we
-can use the directives and services they provide.
-
-Thus using the `config` API we request the `$routeProvider` to be injected into our config function
-and use the {@link api/ngRoute.$routeProvider#methods_when `$routeProvider.when`} API to define our routes.
+Using the `phonecatApp.config()` method, we request the `$routeProvider` to be injected into our
+config function and use the {@link ngRoute.$routeProvider#when `$routeProvider.when()`} method to
+define our routes.
 
 Our application routes are defined as follows:
 
-* The phone list view will be shown when the URL hash fragment is `/phones`. To construct this
-view, Angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
+* `when('/phones')`: The phone list view will be shown when the URL hash fragment is `/phones`. To
+  construct this view, Angular will use the `phone-list.html` template and the `PhoneListCtrl`
+  controller.
 
-* The phone details view will be shown when the URL hash fragment matches '/phone/:phoneId', where
-`:phoneId` is a variable part of the URL. To construct the phone details view, angular will use the
-`phone-detail.html` template and the `PhoneDetailCtrl` controller.
+* `when('/phones/:phoneId')`: The phone details view will be shown when the URL hash fragment
+  matches '/phones/:phoneId', where `:phoneId` is a variable part of the URL. To construct the phone
+  details view, Angular will use the `phone-detail.html` template and the `PhoneDetailCtrl`
+  controller.
+
+* `otherwise({redirectTo: '/phones'})`:  triggers a redirection to `/phones` when the browser
+  address doesn't match either of our routes.
+
 
 We reused the `PhoneListCtrl` controller that we constructed in previous steps and we added a new,
 empty `PhoneDetailCtrl` controller to the `app/js/controllers.js` file for the phone details view.
 
-`$route.otherwise({redirectTo: '/phones'})` triggers a redirection to `/phones` when the browser
-address doesn't match either of our routes.
 
 Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
 the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
 URL. All variables defined with the `:` notation are extracted into the
-{@link api/ngRoute.$routeParams `$routeParams`} object.
-
-
-In order for our application to bootstrap with our newly created module we'll also need to specify
-the module name as the value of the {@link api/ng.directive:ngApp ngApp}
-directive:
-
-__`app/index.html`:__
-<pre>
-<!doctype html>
-<html lang="en" ng-app="phonecatApp">
-...
-</pre>
+{@link ngRoute.$routeParams `$routeParams`} object.
 
 
 ## Controllers
 
 __`app/js/controllers.js`:__
-<pre>
+
+```js
 var phonecatControllers = angular.module('phonecatControllers', []);
 
 phonecatControllers.controller('PhoneListCtrl', ['$scope', '$http',
-  function PhoneListCtrl($scope, $http) {
+  function ($scope, $http) {
     $http.get('phones/phones.json').success(function(data) {
       $scope.phones = data;
     });
@@ -161,93 +290,16 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
   function($scope, $routeParams) {
     $scope.phoneId = $routeParams.phoneId;
   }]);
-</pre>
+```
 
-Again, note that we created a new module called `phonecatControllers`. For small AngularJS applications,
-it's common to create just one module for all of your controllers if there are just a few. For larger apps,
-you will probably want to create separate modules for each major feature of your app.
+Again, note that we created a new module called `phonecatControllers`. For small AngularJS
+applications, it's common to create just one module for all of your controllers if there are just a
+few. As your application grows it is quite common to refactor your code into additional modules.
+For larger apps, you will probably want to create separate modules for each major feature of
+your app.
 
-Because our example app is relatively small, we'll add all of our controllers to this module.
-
-## Template
-
-The `$route` service is usually used in conjunction with the {@link api/ngRoute.directive:ngView
-ngView} directive. The role of the `ngView` directive is to include the view template for the current
-route into the layout template. This makes it a perfect fit for our `index.html` template.
-
-<div class="alert alert-info">
-**Note:** Starting with AngularJS version 1.2, `ngRoute` is in its own module and must be loaded by loading
-the `angular-route.js` file distributed with Angular. The easist way to load the file is to add a `<script>`
-tag to your `index.html` file as shown below.
-</div>
-
-__`app/index.html`:__
-<pre>
-<!doctype html>
-<html lang="en" ng-app="phonecatApp">
-<head>
-...
-  <script src="lib/angular/angular.js"></script>
-  <script src="lib/angular/angular-route.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/controllers.js"></script>
-</head>
-<body>
-
-  <div ng-view></div>
-
-</body>
-</html>
-</pre>
-
-Note that we removed most of the code in the `index.html` template and replaced it with a single
-line containing a div with the `ng-view` attribute. The code that we removed was placed into the
-`phone-list.html` template:
-
-__`app/partials/phone-list.html`:__
-<pre>
-<div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span2">
-      <!--Sidebar content-->
-
-      Search: <input ng-model="query">
-      Sort by:
-      <select ng-model="orderProp">
-        <option value="name">Alphabetical</option>
-        <option value="age">Newest</option>
-      </select>
-
-    </div>
-    <div class="span10">
-      <!--Body content-->
-
-      <ul class="phones">
-        <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
-          <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
-          <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
-          <p>{{phone.snippet}}</p>
-        </li>
-      </ul>
-
-    </div>
-  </div>
-</div>
-</pre>
-
-<div style="display:none">
-TODO!
-<img  class="diagram" src="img/tutorial/tutorial_07_final.png">
-</div>
-
-We also added a placeholder template for the phone details view:
-
-__`app/partials/phone-detail.html`:__
-<pre>
-TBD: detail view for {{phoneId}}
-</pre>
-
-Note how we are using `phoneId` model defined in the `PhoneDetailCtrl` controller.
+Because our example app is relatively small, we'll just add all of our controllers to the
+`phonecatControllers` module.
 
 
 ## Test
@@ -255,32 +307,36 @@ Note how we are using `phoneId` model defined in the `PhoneDetailCtrl` controlle
 To automatically verify that everything is wired properly, we wrote end-to-end tests that navigate
 to various URLs and verify that the correct view was rendered.
 
-<pre>
+```js
 ...
-  it('should redirect index.html to index.html#/phones', function() {
-    browser().navigateTo('../../app/index.html');
-    expect(browser().location().url()).toBe('/phones');
+   it('should redirect index.html to index.html#/phones', function() {
+    browser.get('app/index.html');
+    browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split('#')[1]).toBe('/phones');
+      });
   });
+
+  describe('Phone list view', function() {
+    beforeEach(function() {
+      browser.get('app/index.html#/phones');
+    });
 ...
 
- describe('Phone detail view', function() {
+  describe('Phone detail view', function() {
 
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+      browser.get('app/index.html#/phones/nexus-s');
     });
 
 
     it('should display placeholder page with phoneId', function() {
-      expect(binding('phoneId')).toBe('nexus-s');
+      expect(element(by.binding('phoneId')).getText()).toBe('nexus-s');
     });
- });
-</pre>
+  });
+```
 
 
-You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
-runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
-Angular's server}.
+You can now rerun `npm run protractor` to see the tests run.
 
 
 # Experiments
@@ -306,3 +362,6 @@ step 8} to implement the phone details view.
 
 
 <ul doc-tutorial-nav="7"></ul>
+
+
+[bower]: http://bower.io

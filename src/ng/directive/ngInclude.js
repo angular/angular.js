@@ -2,23 +2,23 @@
 
 /**
  * @ngdoc directive
- * @name ng.directive:ngInclude
+ * @name ngInclude
  * @restrict ECA
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
  * By default, the template URL is restricted to the same domain and protocol as the
- * application document. This is done by calling {@link ng.$sce#methods_getTrustedResourceUrl
+ * application document. This is done by calling {@link ng.$sce#getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols
- * you may either {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist them} or
- * {@link ng.$sce#methods_trustAsResourceUrl wrap them} as trusted values. Refer to Angular's {@link
+ * you may either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
+ * [wrap them](ng.$sce#trustAsResourceUrl) as trusted values. Refer to Angular's {@link
  * ng.$sce Strict Contextual Escaping}.
  *
  * In addition, the browser's
- * {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
- * Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
- * (CORS)} policy may further restrict whether the template is successfully loaded.
+ * [Same Origin Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest)
+ * and [Cross-Origin Resource Sharing (CORS)](http://www.w3.org/TR/cors/)
+ * policy may further restrict whether the template is successfully loaded.
  * For example, `ngInclude` won't work for cross-domain requests on all browsers and for `file://`
  * access on some browsers.
  *
@@ -32,7 +32,7 @@
  * @priority 400
  *
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
- *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
+ *                 make sure you wrap it in **single** quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
@@ -43,9 +43,9 @@
  *                  - Otherwise enable scrolling only if the expression evaluates to truthy value.
  *
  * @example
-  <example animations="true">
+  <example module="includeExample" deps="angular-animate.js" animations="true">
     <file name="index.html">
-     <div ng-controller="Ctrl">
+     <div ng-controller="ExampleController">
        <select ng-model="template" ng-options="t.name for t in templates">
         <option value="">(blank)</option>
        </select>
@@ -57,12 +57,13 @@
      </div>
     </file>
     <file name="script.js">
-      function Ctrl($scope) {
-        $scope.templates =
-          [ { name: 'template1.html', url: 'template1.html'}
-          , { name: 'template2.html', url: 'template2.html'} ];
-        $scope.template = $scope.templates[0];
-      }
+      angular.module('includeExample', ['ngAnimate'])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.templates =
+            [ { name: 'template1.html', url: 'template1.html'},
+              { name: 'template2.html', url: 'template2.html'} ];
+          $scope.template = $scope.templates[0];
+        }]);
      </file>
     <file name="template1.html">
       Content of template1.html
@@ -110,19 +111,33 @@
         top:50px;
       }
     </file>
-    <file name="scenario.js">
+    <file name="protractor.js" type="protractor">
+      var templateSelect = element(by.model('template'));
+      var includeElem = element(by.css('[ng-include]'));
+
       it('should load template1.html', function() {
-       expect(element('.doc-example-live [ng-include]').text()).
-         toMatch(/Content of template1.html/);
+        expect(includeElem.getText()).toMatch(/Content of template1.html/);
       });
+
       it('should load template2.html', function() {
-       select('template').option('1');
-       expect(element('.doc-example-live [ng-include]').text()).
-         toMatch(/Content of template2.html/);
+        if (browser.params.browser == 'firefox') {
+          // Firefox can't handle using selects
+          // See https://github.com/angular/protractor/issues/480
+          return;
+        }
+        templateSelect.click();
+        templateSelect.all(by.css('option')).get(2).click();
+        expect(includeElem.getText()).toMatch(/Content of template2.html/);
       });
+
       it('should change to blank', function() {
-       select('template').option('');
-       expect(element('.doc-example-live [ng-include]')).toBe(undefined);
+        if (browser.params.browser == 'firefox') {
+          // Firefox can't handle using selects
+          return;
+        }
+        templateSelect.click();
+        templateSelect.all(by.css('option')).get(0).click();
+        expect(includeElem.isPresent()).toBe(false);
       });
     </file>
   </example>
@@ -131,8 +146,7 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentRequested
- * @eventOf ng.directive:ngInclude
+ * @name ngInclude#$includeContentRequested
  * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted every time the ngInclude content is requested.
@@ -141,36 +155,53 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngInclude#$includeContentLoaded
- * @eventOf ng.directive:ngInclude
+ * @name ngInclude#$includeContentLoaded
  * @eventType emit on the current ngInclude scope
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animate', '$sce',
-                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animate,   $sce) {
+
+
+/**
+ * @ngdoc event
+ * @name ngInclude#$includeContentError
+ * @eventType emit on the scope ngInclude was declared in
+ * @description
+ * Emitted when a template HTTP request yields an erronous response (status < 200 || status > 299)
+ */
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$animate', '$sce',
+                  function($http,   $templateCache,   $anchorScroll,   $animate,   $sce) {
   return {
     restrict: 'ECA',
     priority: 400,
     terminal: true,
     transclude: 'element',
-    compile: function(element, attr, transclusion) {
+    controller: angular.noop,
+    compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, $element) {
+      return function(scope, $element, $attr, ctrl, $transclude) {
         var changeCounter = 0,
             currentScope,
+            previousElement,
             currentElement;
 
         var cleanupLastIncludeContent = function() {
-          if (currentScope) {
+          if(previousElement) {
+            previousElement.remove();
+            previousElement = null;
+          }
+          if(currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
           if(currentElement) {
-            $animate.leave(currentElement);
+            $animate.leave(currentElement, function() {
+              previousElement = null;
+            });
+            previousElement = currentElement;
             currentElement = null;
           }
         };
@@ -187,28 +218,55 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             $http.get(src, {cache: $templateCache}).success(function(response) {
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
+              ctrl.template = response;
 
-              transclusion(newScope, function(clone) {
+              // Note: This will also link all children of ng-include that were contained in the original
+              // html. If that content contains controllers, ... they could pollute/change the scope.
+              // However, using ng-include on an element with additional content does not make sense...
+              // Note: We can't remove them in the cloneAttchFn of $transclude as that
+              // function is called before linking the content, which would apply child
+              // directives to non existing elements.
+              var clone = $transclude(newScope, function(clone) {
                 cleanupLastIncludeContent();
-
-                currentScope = newScope;
-                currentElement = clone;
-
-                currentElement.html(response);
-                $animate.enter(currentElement, null, $element, afterAnimation);
-                $compile(currentElement.contents())(currentScope);
-                currentScope.$emit('$includeContentLoaded');
-                scope.$eval(onloadExp);
+                $animate.enter(clone, null, $element, afterAnimation);
               });
+
+              currentScope = newScope;
+              currentElement = clone;
+
+              currentScope.$emit('$includeContentLoaded');
+              scope.$eval(onloadExp);
             }).error(function() {
-              if (thisChangeId === changeCounter) cleanupLastIncludeContent();
+              if (thisChangeId === changeCounter) {
+                cleanupLastIncludeContent();
+                scope.$emit('$includeContentError');
+              }
             });
             scope.$emit('$includeContentRequested');
           } else {
             cleanupLastIncludeContent();
+            ctrl.template = null;
           }
         });
       };
     }
   };
 }];
+
+// This directive is called during the $transclude call of the first `ngInclude` directive.
+// It will replace and compile the content of the element with the loaded template.
+// We need this directive so that the element content is already filled when
+// the link function of another directive on the same element as ngInclude
+// is called.
+var ngIncludeFillContentDirective = ['$compile',
+  function($compile) {
+    return {
+      restrict: 'ECA',
+      priority: -400,
+      require: 'ngInclude',
+      link: function(scope, $element, $attr, ctrl) {
+        $element.html(ctrl.template);
+        $compile($element.contents())(scope);
+      }
+    };
+  }];

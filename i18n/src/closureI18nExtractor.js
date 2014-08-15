@@ -87,7 +87,11 @@ function pluralExtractor(content, localeInfo) {
       continue;
     }
     var temp = goog.i18n.pluralRules.select.toString().
-        replace(/goog.i18n.pluralRules.Keyword/g, 'PLURAL_CATEGORY').replace(/\n/g, '');
+        replace(/goog\.i18n\.pluralRules\.Keyword/g, 'PLURAL_CATEGORY').
+        replace(/goog\.i18n\.pluralRules\.get_vf_/g, 'getVF').
+        replace(/goog\.i18n\.pluralRules\.get_wt_/g, 'getWT').
+        replace(/goog\.i18n\.pluralRules\.decimals_/g, 'getDecimals').
+        replace(/\n/g, '');
 
     ///@@ is a crazy place holder to be replaced before writing to file
     localeInfo[localeIds[i]].pluralCat = "@@" + temp + "@@";
@@ -158,15 +162,39 @@ function outputLocale(localeInfo, localeID) {
   }
   localeObj.id = correctedLocaleId(localeID);
 
-  var prefix =
-      "'use strict';\n" +
-      'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
-          'var PLURAL_CATEGORY = {' +
-          'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
-          '};\n' +
-          '$provide.value("$locale", ';
+  var getDecimals = [
+    'function getDecimals(n) {',
+    '  n = n + \'\';',
+    '  var i = n.indexOf(\'.\');',
+    '  return (i == -1) ? 0 : n.length - i - 1;',
+    '}', '', ''
+  ].join('\n');
 
-  var suffix = ');\n}]);';
+  var getVF = [
+    'function getVF(n, opt_precision) {',
+    '  var v = opt_precision;', '',
+    '  if (undefined === v) {',
+    '    v = Math.min(getDecimals(n), 3);',
+    '  }', '',
+    '  var base = Math.pow(10, v);',
+    '  var f = ((n * base) | 0) % base;',
+    '  return {v: v, f: f};',
+    '}', '', ''
+  ].join('\n');
+
+  var getWT =
+  [
+    'function getWT(v, f) {',
+    '  if (f === 0) {',
+    '    return {w: 0, t: 0};',
+    '  }', '',
+    '  while ((f % 10) === 0) {',
+    '    f /= 10;',
+    '    v--;',
+    '  }', '',
+    '  return {w: v, t: f};',
+    '}', '', ''
+  ].join('\n');
 
   localeObj = {
     DATETIME_FORMATS: localeObj.DATETIME_FORMATS,
@@ -176,6 +204,26 @@ function outputLocale(localeInfo, localeID) {
   };
 
   var content = serializeContent(localeInfo[localeID]);
+  if (content.indexOf('getVF(') < 0) {
+    getVF = '';
+  }
+  if (content.indexOf('getWT(') < 0) {
+    getWT = '';
+  }
+  if (!getVF && content.indexOf('getDecimals(') < 0) {
+    getDecimals = '';
+  }
+
+  var prefix =
+      "'use strict';\n" +
+      'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
+          'var PLURAL_CATEGORY = {' +
+          'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
+          '};\n' +
+          getDecimals + getVF + getWT +
+          '$provide.value("$locale", ';
+
+  var suffix = ');\n}]);';
 
   return prefix + content + suffix;
 }
