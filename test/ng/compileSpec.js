@@ -3507,14 +3507,25 @@ describe('$compile', function() {
 
       expect(typeof componentScope.$$isolateBindings).toBe('object');
 
-      expect(componentScope.$$isolateBindings.attr).toBe('@attr');
-      expect(componentScope.$$isolateBindings.attrAlias).toBe('@attr');
-      expect(componentScope.$$isolateBindings.ref).toBe('=ref');
-      expect(componentScope.$$isolateBindings.refAlias).toBe('=ref');
-      expect(componentScope.$$isolateBindings.reference).toBe('=reference');
-      expect(componentScope.$$isolateBindings.expr).toBe('&expr');
-      expect(componentScope.$$isolateBindings.exprAlias).toBe('&expr');
+      expect(componentScope.$$isolateBindings.attr.mode).toBe('@');
+      expect(componentScope.$$isolateBindings.attr.attrName).toBe('attr');
+      expect(componentScope.$$isolateBindings.attrAlias.attrName).toBe('attr');
+      expect(componentScope.$$isolateBindings.ref.mode).toBe('=');
+      expect(componentScope.$$isolateBindings.ref.attrName).toBe('ref');
+      expect(componentScope.$$isolateBindings.refAlias.attrName).toBe('ref');
+      expect(componentScope.$$isolateBindings.reference.mode).toBe('=');
+      expect(componentScope.$$isolateBindings.reference.attrName).toBe('reference');
+      expect(componentScope.$$isolateBindings.expr.mode).toBe('&');
+      expect(componentScope.$$isolateBindings.expr.attrName).toBe('expr');
+      expect(componentScope.$$isolateBindings.exprAlias.attrName).toBe('expr');
 
+      var firstComponentScope = componentScope,
+          first$$isolateBindings = componentScope.$$isolateBindings;
+
+      dealoc(element);
+      compile('<div><span my-component>');
+      expect(componentScope).not.toBe(firstComponentScope);
+      expect(componentScope.$$isolateBindings).toBe(first$$isolateBindings);
     }));
 
 
