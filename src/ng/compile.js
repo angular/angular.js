@@ -1,5 +1,7 @@
 'use strict';
 
+window.dump = function() {};
+
 /* ! VARIABLE/FUNCTION NAMING CONVENTIONS THAT APPLY TO THIS FILE!
  *
  * DOM-related variables:
@@ -545,6 +547,35 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   // 'on' and be composed of only English letters.
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
 
+  var svgWrap = function(template) {  		
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = '<svg>'+template+'</svg>';
+    return wrapper.childNodes[0].childNodes;
+	};
+
+  var SVG_NAMESPACE = {
+  	type: 'svg',
+  	wrap: svgWrap,
+  	clone: svgWrap,
+  	cloneJqLite: function(elements) {
+  		var nodes = [];
+  		forEach(elements, function(element) {
+  			nodes.push(svgWrap(element.outerHTML)[0]);
+  		});
+  		return jqLite(nodes);
+  	}
+  };
+
+  var HTML_NAMESPACE = {
+  	type: 'html',
+  	wrap: identity,
+  	clone: jqLiteClone,
+  	cloneJqLite: function(elements) {
+  		return JQLitePrototype.clone.call(elements);
+  	}
+  };
+
+
   /**
    * @ngdoc method
    * @name $compileProvider#directive
@@ -852,12 +883,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     //================================
 
     function compile($compileNodes, transcludeFn, maxPriority, ignoreDirective,
-                        previousCompileContext) {
+                        previousCompileContext, namespace) {
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, whereas we need to preserve the original selector so that we can
         // modify it.
         $compileNodes = jqLite($compileNodes);
       }
+
+      $compileNodes.namespace = namespace || HTML_NAMESPACE;
+
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
       forEach($compileNodes, function(node, index){
@@ -867,15 +901,20 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       });
       var compositeLinkFn =
               compileNodes($compileNodes, transcludeFn, $compileNodes,
-                           maxPriority, ignoreDirective, previousCompileContext);
+                           maxPriority, ignoreDirective, previousCompileContext, namespace);
       safeAddClass($compileNodes, 'ng-scope');
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
+        //BAD?
+
+        dump($compileNodes.namespace, $compileNodes)
         var $linkNode = cloneConnectFn
-          ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
+          ? $compileNodes.namespace.cloneJqLite($compileNodes) // IMPORTANT!!!
           : $compileNodes;
+
+        $linkNode.namespace = $compileNodes.namespace;
 
         forEach(transcludeControllers, function(instance, name) {
           $linkNode.data('$' + name + 'Controller', instance);
@@ -914,34 +953,51 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      * @returns {Function} A composite linking function of all of the matched directives or null.
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective,
-                            previousCompileContext) {
+                            previousCompileContext, namespace) {
       var linkFns = [],
           attrs, directives, nodeLinkFn, childNodes, childLinkFn, linkFnFound;
 
       for (var i = 0; i < nodeList.length; i++) {
         attrs = new Attributes();
 
+        var node = nodeList[i];
+        namespace = namespace || HTML_NAMESPACE;
+
+        var nodeTagName = nodeName_(node);
+        if(nodeTagName === 'svg') {
+        	namespace = SVG_NAMESPACE;
+        }
+        // else if(nodeTagName === 'foreignobject') {
+        // 	namespace = HTML_NAMESPACE;
+        // }
+
+        nodeList.namespace = namespace;
+
         // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
-        directives = collectDirectives(nodeList[i], [], attrs, i === 0 ? maxPriority : undefined,
+        directives = collectDirectives(node, [], attrs, i === 0 ? maxPriority : undefined,
                                         ignoreDirective);
 
         nodeLinkFn = (directives.length)
-            ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement,
-                                      null, [], [], previousCompileContext)
+            ? applyDirectivesToNode(directives, node, attrs, transcludeFn, $rootElement,
+                                      null, [], [], previousCompileContext, namespace)
             : null;
+
+        if (nodeLinkFn) {
+        	nodeLinkFn.namespace = nodeLinkFn.namespace || namespace;
+        }
 
         if (nodeLinkFn && nodeLinkFn.scope) {
           safeAddClass(attrs.$$element, 'ng-scope');
         }
 
         childLinkFn = (nodeLinkFn && nodeLinkFn.terminal ||
-                      !(childNodes = nodeList[i].childNodes) ||
+                      !(childNodes = node.childNodes) ||
                       !childNodes.length)
             ? null
             : compileNodes(childNodes,
                  nodeLinkFn ? (
                   (nodeLinkFn.transcludeOnThisElement || !nodeLinkFn.templateOnThisElement)
-                     && nodeLinkFn.transclude) : transcludeFn);
+                     && nodeLinkFn.transclude) : transcludeFn, undefined, undefined, undefined, undefined, namespace);
 
         linkFns.push(nodeLinkFn, childLinkFn);
         linkFnFound = linkFnFound || nodeLinkFn || childLinkFn;
@@ -999,7 +1055,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
 
-      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers) {
+      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, namespace) {
         var scopeCreated = false;
 
         if (!transcludedScope) {
@@ -1008,7 +1064,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           scopeCreated = true;
         }
 
-        var clone = transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn);
+        var clone = transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn, namespace);
         if (scopeCreated) {
           clone.on('$destroy', function() { transcludedScope.$destroy(); });
         }
@@ -1189,7 +1245,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      */
     function applyDirectivesToNode(directives, compileNode, templateAttrs, transcludeFn,
                                    jqCollection, originalReplaceDirective, preLinkFns, postLinkFns,
-                                   previousCompileContext) {
+                                   previousCompileContext, namespace) {
       previousCompileContext = previousCompileContext || {};
 
       var terminalPriority = -Number.MAX_VALUE,
@@ -1276,6 +1332,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' +
                                               templateAttrs[directiveName] + ' '));
+            $compileNode.namespace = namespace;
             compileNode = $compileNode[0];
             replaceWith(jqCollection, sliceArgs($template), compileNode);
 
@@ -1291,9 +1348,23 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                           nonTlbTranscludeDirective: nonTlbTranscludeDirective
                                         });
           } else {
-            $template = jqLite(jqLiteClone(compileNode)).contents();
-            $compileNode.empty(); // clear contents
-            childTranscludeFn = compile($template, transcludeFn);
+          	//BAD?
+            //$template = jqLite(namespace.clone(compileNode)).contents();
+            //$compileNode.empty(); // clear contents
+            $template = $compileNode.contents();
+            $template.remove();
+            childTranscludeFn = (function($template) { 
+            	return function childTranscludeFnFactory() {
+	            	dump('x', arguments[4])
+	            	var childTranscludeFn = childTranscludeFnFactory.fn;
+
+	            	if (!childTranscludeFn) {
+									childTranscludeFn = childTranscludeFnFactory.fn = compile($template, transcludeFn, undefined, undefined, undefined, arguments[4]);
+								}
+
+								return childTranscludeFn.apply(undefined, arguments);
+							}
+						}($template));
           }
         }
 
@@ -1313,7 +1384,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (jqLiteIsTextNode(directiveValue)) {
               $template = [];
             } else {
-              $template = jqLite(wrapTemplate(directive.type, trim(directiveValue)));
+            	//BAD?
+              $template = jqLite(namespace.wrap(trim(directiveValue)));
             }
             compileNode = $template[0];
 
@@ -1324,6 +1396,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             }
 
             replaceWith(jqCollection, $compileNode, compileNode);
+
+            var compileNodeTagName = nodeName_($compileNode[0]);
+            if (compileNodeTagName === 'svg') {
+            	nodeLinkFn.namespace = $compileNode.namespace = SVG_NAMESPACE;
+           	} else if(compileNodeTagName=== 'foreignobject') {
+            	nodeLinkFn.namespace = $compileNode.namespace = HTML_NAMESPACE;
+           	}
+            
 
             var newTemplateAttrs = {$attr: {}};
 
@@ -1604,6 +1684,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         for(i = postLinkFns.length - 1; i >= 0; i--) {
           try {
             linkFn = postLinkFns[i];
+            dump(transcludeFn, nodeLinkFn.namespace);
+            $element.namespace = nodeLinkFn.namespace;
             linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
                 linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers), transcludeFn);
           } catch (e) {
@@ -1612,7 +1694,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         // This is the function that is injected as `$transclude`.
-        function controllersBoundTransclude(scope, cloneAttachFn) {
+        function controllersBoundTransclude(scope, cloneAttachFn, namespace) {
           var transcludeControllers;
 
           // no scope passed
@@ -1625,7 +1707,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             transcludeControllers = elementControllers;
           }
 
-          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers);
+          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers, namespace);
         }
       }
     }
@@ -1815,6 +1897,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               if (!(previousCompileContext.hasElementTranscludeDirective &&
                   origAsyncDirective.replace)) {
                 // it was cloned therefore we have to clone as well.
+              	//BAD
                 linkNode = jqLiteClone(compileNode);
               }
 

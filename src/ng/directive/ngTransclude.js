@@ -65,9 +65,9 @@ var ngTranscludeDirective = ngDirective({
        startingTag($element));
     }
 
-    $transclude(function(clone) {
+    $transclude(null, function(clone) {
       $element.empty();
       $element.append(clone);
-    });
+    }, $element.namespace);
   }
 });
