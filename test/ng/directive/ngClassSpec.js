@@ -391,7 +391,8 @@ describe('ngClass animations', function() {
 
       $rootScope.val = 'two';
       $rootScope.$digest();
-      expect($animate.queue.shift().event).toBe('setClass');
+      expect($animate.queue.shift().event).toBe('addClass');
+      expect($animate.queue.shift().event).toBe('removeClass');
       expect($animate.queue.length).toBe(0);
     });
   });
@@ -506,9 +507,12 @@ describe('ngClass animations', function() {
       $rootScope.$digest();
 
       item = $animate.queue.shift();
-      expect(item.event).toBe('setClass');
+      expect(item.event).toBe('addClass');
       expect(item.args[1]).toBe('three');
-      expect(item.args[2]).toBe('two');
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.args[1]).toBe('two');
 
       expect($animate.queue.length).toBe(0);
     });
