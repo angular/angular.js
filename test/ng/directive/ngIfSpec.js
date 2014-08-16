@@ -315,14 +315,12 @@ describe('ngIf animations', function () {
 
   it('should destroy the previous leave animation if a new one takes place', function() {
     module(function($provide) {
-      $provide.value('$animate', {
-        enabled : function() { return true; },
-        leave : function() {
-          //DOM operation left blank
-        },
-        enter : function(element, parent) {
-          parent.append(element);
-        }
+      $provide.decorator('$animate', function($delegate, $$q) {
+        var emptyPromise = $$q.defer().promise;
+        $delegate.leave = function() {
+          return emptyPromise;
+        };
+        return $delegate;
       });
     });
     inject(function ($compile, $rootScope, $animate) {

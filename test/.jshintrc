@@ -51,6 +51,7 @@
     "isBoolean": false,
     "trim": false,
     "isElement": false,
+    "isPromiseLike": false,
     "makeMap": false,
     "map": false,
     "size": false,

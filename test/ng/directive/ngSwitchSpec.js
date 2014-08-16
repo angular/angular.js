@@ -397,14 +397,12 @@ describe('ngSwitch animations', function() {
 
   it('should destroy the previous leave animation if a new one takes place', function() {
     module(function($provide) {
-      $provide.value('$animate', {
-        enabled : function() { return true; },
-        leave : function() {
-          //DOM operation left blank
-        },
-        enter : function(element, parent, after) {
-          angular.element(after).after(element);
-        }
+      $provide.decorator('$animate', function($delegate, $$q) {
+        var emptyPromise = $$q.defer().promise;
+        $delegate.leave = function() {
+          return emptyPromise;
+        };
+        return $delegate;
       });
     });
     inject(function ($compile, $rootScope, $animate, $templateCache) {
