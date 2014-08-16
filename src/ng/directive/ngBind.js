@@ -180,6 +180,7 @@ var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return {
     restrict: 'A',
     compile: function (tElement, tAttrs) {
+      assertNoInterpolation(tAttrs, 'ngBindHtml');
       tElement.addClass('ng-binding');
 
       return function (scope, element, attr) {

@@ -129,6 +129,13 @@ describe('ngBind*', function() {
     }));
 
 
+    it('should complain about accidental use of interpolation', inject(function($compile) {
+      expect(function() {
+        $compile('<div ng-bind-html="{{myHtml}}"></div>');
+      }).toThrow('Unexpected interpolation found in attribute ngBindHtml of element <div ng-bind-html="{{myHtml}}">');
+    }));
+
+
     describe('SCE disabled', function() {
       beforeEach(function() {
         module(function($sceProvider) { $sceProvider.enabled(false); });
