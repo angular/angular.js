@@ -5,6 +5,17 @@ describe("ngAnimate", function() {
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
 
+  function getMaxValue(prop, element, $window) {
+    var node = element[0];
+    var cs = $window.getComputedStyle(node);
+    var prop0 = 'webkit' + prop.charAt(0).toUpperCase() + prop.substr(1);
+    var values = (cs[prop0] || cs[prop]).split(/\s*,\s*/);
+    var maxDelay = 0;
+    forEach(values, function(value) {
+      maxDelay = Math.max(parseFloat(value) || 0, maxDelay);
+    });
+    return maxDelay;
+  }
 
   it("should disable animations on bootstrap for structural animations even after the first digest has passed", function() {
     var hasBeenAnimated = false;
@@ -1161,7 +1172,7 @@ describe("ngAnimate", function() {
           );
 
 
-          it("should stagger the items when the correct CSS class is provided",
+          it("should pause the playstate when performing a stagger animation",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
 
             if(!$sniffer.animations) return;
@@ -1198,10 +1209,9 @@ describe("ngAnimate", function() {
             $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toBeFalsy();
-            expect(elements[1].attr('style')).toMatch(/animation-delay: 0\.1\d*s/);
-            expect(elements[2].attr('style')).toMatch(/animation-delay: 0\.2\d*s/);
-            expect(elements[3].attr('style')).toMatch(/animation-delay: 0\.3\d*s/);
-            expect(elements[4].attr('style')).toMatch(/animation-delay: 0\.4\d*s/);
+            for(i = 1; i < 5; i++) {
+              expect(elements[i].attr('style')).toMatch(/animation-play-state:\s*paused/);
+            }
 
             //final closing timeout
             $timeout.flush();
@@ -1220,10 +1230,9 @@ describe("ngAnimate", function() {
             $timeout.verifyNoPendingTasks();
 
             expect(elements[0].attr('style')).toBeFalsy();
-            expect(elements[1].attr('style')).not.toMatch(/animation-delay: 0\.1\d*s/);
-            expect(elements[2].attr('style')).not.toMatch(/animation-delay: 0\.2\d*s/);
-            expect(elements[3].attr('style')).not.toMatch(/animation-delay: 0\.3\d*s/);
-            expect(elements[4].attr('style')).not.toMatch(/animation-delay: 0\.4\d*s/);
+            for(i=1;i<5;i++) {
+              expect(elements[i].attr('style')).not.toMatch(/animation-play-state:\s*paused/);
+            }
           }));
 
 
@@ -1255,23 +1264,26 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
 
             expect(elements[0].attr('style')).toBeUndefined();
-            expect(elements[1].attr('style')).toMatch(/animation:.*?none/);
-            expect(elements[2].attr('style')).toMatch(/animation:.*?none/);
-            expect(elements[3].attr('style')).toMatch(/animation:.*?none/);
+            for(i = 1; i < 4; i++) {
+              expect(elements[i].attr('style')).toMatch(/animation-play-state:\s*paused/);
+            }
 
             $animate.triggerReflow();
 
             expect(elements[0].attr('style')).toBeUndefined();
-            expect(elements[1].attr('style')).not.toMatch(/animation:.*?none/);
-            expect(elements[1].attr('style')).toMatch(/animation-delay: 0.2\d*s/);
-            expect(elements[2].attr('style')).not.toMatch(/animation:.*?none/);
-            expect(elements[2].attr('style')).toMatch(/animation-delay: 0.4\d*s/);
-            expect(elements[3].attr('style')).not.toMatch(/animation:.*?none/);
-            expect(elements[3].attr('style')).toMatch(/animation-delay: 0.6\d*s/);
+            for(i = 1; i < 4; i++) {
+              expect(elements[i].attr('style')).toMatch(/animation-play-state:\s*paused/);
+            }
+
+            $timeout.flush(800);
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i].attr('style')).not.toMatch(/animation-play-state/);
+            }
           }));
 
           it("should stagger items when multiple animation durations/delays are defined",
-            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement, $window) {
 
             if(!$sniffer.transitions) return;
 
@@ -1298,10 +1310,19 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
             $animate.triggerReflow();
 
-            expect(elements[0].attr('style')).toBeFalsy();
-            expect(elements[1].attr('style')).toMatch(/animation-delay: 1\.1\d*s,\s*2\.1\d*s/);
-            expect(elements[2].attr('style')).toMatch(/animation-delay: 1\.2\d*s,\s*2\.2\d*s/);
-            expect(elements[3].attr('style')).toMatch(/animation-delay: 1\.3\d*s,\s*2\.3\d*s/);
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).not.toHaveClass('ng-enter-active');
+              expect(elements[i]).toHaveClass('ng-enter-pending');
+              expect(getMaxValue('animationDelay', elements[i], $window)).toBe(2);
+            }
+
+            $timeout.flush(300);
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).toHaveClass('ng-enter-active');
+              expect(elements[i]).not.toHaveClass('ng-enter-pending');
+              expect(getMaxValue('animationDelay', elements[i], $window)).toBe(2);
+            }
           }));
 
         });
@@ -1577,7 +1598,7 @@ describe("ngAnimate", function() {
           }));
 
           it("should stagger the items when the correct CSS class is provided",
-            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement, $browser) {
 
             if(!$sniffer.transitions) return;
 
@@ -1612,11 +1633,8 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
             $animate.triggerReflow();
 
-            expect(elements[0].attr('style')).toBeFalsy();
-            expect(elements[1].attr('style')).toMatch(/transition-delay: 0\.1\d*s/);
-            expect(elements[2].attr('style')).toMatch(/transition-delay: 0\.2\d*s/);
-            expect(elements[3].attr('style')).toMatch(/transition-delay: 0\.3\d*s/);
-            expect(elements[4].attr('style')).toMatch(/transition-delay: 0\.4\d*s/);
+            expect($browser.deferredFns.length).toEqual(5); //4 staggers + 1 combined timeout
+            $timeout.flush();
 
             for(i = 0; i < 5; i++) {
               dealoc(elements[i]);
@@ -1629,16 +1647,12 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
             $animate.triggerReflow();
 
-            expect(elements[0].attr('style')).toBeFalsy();
-            expect(elements[1].attr('style')).not.toMatch(/transition-delay: 0\.1\d*s/);
-            expect(elements[2].attr('style')).not.toMatch(/transition-delay: 0\.2\d*s/);
-            expect(elements[3].attr('style')).not.toMatch(/transition-delay: 0\.3\d*s/);
-            expect(elements[4].attr('style')).not.toMatch(/transition-delay: 0\.4\d*s/);
+            expect($browser.deferredFns.length).toEqual(0); //no animation was triggered
           }));
 
 
           it("should stagger items when multiple transition durations/delays are defined",
-            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement, $window) {
 
             if(!$sniffer.transitions) return;
 
@@ -1665,11 +1679,19 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
             $animate.triggerReflow();
 
-            expect(elements[0].attr('style')).toMatch(/transition-duration: 1\d*s,\s*3\d*s;/);
-            expect(elements[0].attr('style')).not.toContain('transition-delay');
-            expect(elements[1].attr('style')).toMatch(/transition-delay: 2\.1\d*s,\s*4\.1\d*s/);
-            expect(elements[2].attr('style')).toMatch(/transition-delay: 2\.2\d*s,\s*4\.2\d*s/);
-            expect(elements[3].attr('style')).toMatch(/transition-delay: 2\.3\d*s,\s*4\.3\d*s/);
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).not.toHaveClass('ng-enter-active');
+              expect(elements[i]).toHaveClass('ng-enter-pending');
+              expect(getMaxValue('transitionDelay', elements[i], $window)).toBe(4);
+            }
+
+            $timeout.flush(300);
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).toHaveClass('ng-enter-active');
+              expect(elements[i]).not.toHaveClass('ng-enter-pending');
+              expect(getMaxValue('transitionDelay', elements[i], $window)).toBe(4);
+            }
           }));
 
 
@@ -1811,20 +1833,22 @@ describe("ngAnimate", function() {
             $animate.triggerReflow(); //reflow
             expect(element.children().length).toBe(5);
 
-            for(i = 0; i < 5; i++) {
-              expect(kids[i].hasClass('ng-enter-active')).toBe(true);
+            for(i = 1; i < 5; i++) {
+              expect(kids[i]).not.toHaveClass('ng-enter-active');
+              expect(kids[i]).toHaveClass('ng-enter-pending');
             }
 
-            $timeout.flush(7500);
+            $timeout.flush(2000);
 
-            for(i = 0; i < 5; i++) {
-              expect(kids[i].hasClass('ng-enter-active')).toBe(true);
+            for(i = 1; i < 5; i++) {
+              expect(kids[i]).toHaveClass('ng-enter-active');
+              expect(kids[i]).not.toHaveClass('ng-enter-pending');
             }
 
             //(stagger * index) + (duration + delay) * 150%
             //0.5 * 4 + 5 * 1.5 = 9500;
-            //9500 - 7500 = 2000
-            $timeout.flush(1999); //remove 1999 more
+            //9500 - 2000 - 7499 = 1
+            $timeout.flush(7499);
 
             for(i = 0; i < 5; i++) {
               expect(kids[i].hasClass('ng-enter-active')).toBe(true);
@@ -1835,6 +1859,52 @@ describe("ngAnimate", function() {
             for(i = 0; i < 5; i++) {
               expect(kids[i].hasClass('ng-enter-active')).toBe(false);
             }
+          }));
+
+          it("should cancel all the existing stagger timers when the animation is cancelled",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $browser) {
+
+            if (!$sniffer.transitions) return;
+
+            ss.addRule('.entering-element.ng-enter',
+              '-webkit-transition:5s linear all;' +
+                      'transition:5s linear all;');
+
+            ss.addRule('.entering-element.ng-enter-stagger',
+              '-webkit-transition-delay:1s;' +
+                      'transition-delay:1s;');
+
+            var cancellations = [];
+            element = $compile(html('<div></div>'))($rootScope);
+            var kids = [];
+            for(var i = 0; i < 5; i++) {
+              kids.push(angular.element('<div class="entering-element"></div>'));
+              cancellations.push($animate.enter(kids[i], element));
+            }
+            $rootScope.$digest();
+
+            $animate.triggerReflow(); //reflow
+            expect(element.children().length).toBe(5);
+
+            for(i = 1; i < 5; i++) {
+              expect(kids[i]).not.toHaveClass('ng-enter-active');
+              expect(kids[i]).toHaveClass('ng-enter-pending');
+            }
+
+            expect($browser.deferredFns.length).toEqual(5); //4 staggers + 1 combined timeout
+
+            forEach(cancellations, function(promise) {
+              $animate.cancel(promise);
+            });
+
+            for(i = 1; i < 5; i++) {
+              expect(kids[i]).not.toHaveClass('ng-enter');
+              expect(kids[i]).not.toHaveClass('ng-enter-active');
+              expect(kids[i]).not.toHaveClass('ng-enter-pending');
+            }
+
+            //the staggers are gone, but the global timeout remains
+            expect($browser.deferredFns.length).toEqual(1);
           }));
 
 
@@ -1873,7 +1943,7 @@ describe("ngAnimate", function() {
 
 
         it("should apply staggering to both transitions and keyframe animations when used within the same animation",
-          inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement, $browser) {
 
           if(!$sniffer.transitions) return;
 
@@ -1903,14 +1973,23 @@ describe("ngAnimate", function() {
 
           $rootScope.$digest();
           $animate.triggerReflow();
+          expect($browser.deferredFns.length).toEqual(3); //2 staggers + 1 combined timeout
 
           expect(elements[0].attr('style')).toBeFalsy();
+          expect(elements[1].attr('style')).toMatch(/animation-play-state:\s*paused/);
+          expect(elements[2].attr('style')).toMatch(/animation-play-state:\s*paused/);
 
-          expect(elements[1].attr('style')).toMatch(/transition-delay:\s+1.1\d*/);
-          expect(elements[1].attr('style')).toMatch(/animation-delay: 1\.2\d*s,\s*2\.2\d*s/);
+          for(i = 1; i < 3; i++) {
+            expect(elements[i]).not.toHaveClass('ng-enter-active');
+            expect(elements[i]).toHaveClass('ng-enter-pending');
+          }
 
-          expect(elements[2].attr('style')).toMatch(/transition-delay:\s+1.2\d*/);
-          expect(elements[2].attr('style')).toMatch(/animation-delay: 1\.4\d*s,\s*2\.4\d*s/);
+          $timeout.flush(0.4 * 1000);
+
+          for(i = 1; i < 3; i++) {
+            expect(elements[i]).toHaveClass('ng-enter-active');
+            expect(elements[i]).not.toHaveClass('ng-enter-pending');
+          }
 
           for(i = 0; i < 3; i++) {
             browserTrigger(elements[i],'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22000 });
