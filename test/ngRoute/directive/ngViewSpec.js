@@ -773,7 +773,10 @@ describe('ngView animations', function() {
         $rootScope.klass = 'boring';
         $rootScope.$digest();
 
-        expect($animate.queue.shift().event).toBe('setClass');
+        expect($animate.queue.shift().event).toBe('addClass');
+        expect($animate.queue.shift().event).toBe('removeClass');
+
+        $animate.triggerReflow();
 
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
@@ -843,14 +846,12 @@ describe('ngView animations', function() {
 
     it('should destroy the previous leave animation if a new one takes place', function() {
       module(function($provide) {
-        $provide.value('$animate', {
-          enabled : function() { return true; },
-          leave : function() {
-            //DOM operation left blank
-          },
-          enter : function(element, parent, after) {
-            angular.element(after).after(element);
-          }
+        $provide.decorator('$animate', function($delegate, $$q) {
+          var emptyPromise = $$q.defer().promise;
+          $delegate.leave = function() {
+            return emptyPromise;
+          };
+          return $delegate;
         });
       });
       inject(function ($compile, $rootScope, $animate, $location) {

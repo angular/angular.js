@@ -264,7 +264,7 @@
  *
  * Stagger animations are currently only supported within CSS-defined animations.
  *
- * <h2>JavaScript-defined Animations</h2>
+ * ## JavaScript-defined Animations
  * In the event that you do not want to use CSS3 transitions or CSS3 animations or if you wish to offer animations on browsers that do not
  * yet support CSS transitions/animations, then you can make use of JavaScript animations defined inside of your AngularJS module.
  *
@@ -366,6 +366,7 @@ angular.module('ngAnimate', ['ng'])
     var noop = angular.noop;
     var forEach = angular.forEach;
     var selectors = $animateProvider.$$selectors;
+    var isArray = angular.isArray;
 
     var ELEMENT_NODE = 1;
     var NG_ANIMATE_STATE = '$$ngAnimateState';
@@ -394,8 +395,13 @@ angular.module('ngAnimate', ['ng'])
       return extractElementNode(elm1) == extractElementNode(elm2);
     }
 
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$$asyncCallback', '$rootScope', '$document',
-                            function($delegate,   $injector,   $sniffer,   $rootElement,   $$asyncCallback,    $rootScope,   $document) {
+    function isEmpty(val) {
+      return !val && val.length === 0;
+    }
+
+    $provide.decorator('$animate',
+        ['$delegate', '$$q', '$injector', '$sniffer', '$rootElement', '$$asyncCallback', '$rootScope', '$document',
+ function($delegate,   $$q,   $injector,   $sniffer,   $rootElement,   $$asyncCallback,   $rootScope,   $document) {
 
       var globalAnimationCounter = 0;
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
@@ -419,20 +425,72 @@ angular.module('ngAnimate', ['ng'])
                 return classNameFilter.test(className);
               };
 
-      function blockElementAnimations(element) {
+      function classBasedAnimationsBlocked(element, setter) {
         var data = element.data(NG_ANIMATE_STATE) || {};
-        data.running = true;
-        element.data(NG_ANIMATE_STATE, data);
+        if (setter) {
+          data.running = true;
+          data.structural = true;
+          element.data(NG_ANIMATE_STATE, data);
+        }
+        return data.disabled || (data.running && data.structural);
       }
 
       function runAnimationPostDigest(fn) {
-        var cancelFn;
-        $rootScope.$$postDigest(function() {
-          cancelFn = fn();
-        });
-        return function() {
+        var cancelFn, defer = $$q.defer();
+        defer.promise.cancel = function() {
           cancelFn && cancelFn();
         };
+        $rootScope.$$postDigest(function() {
+          cancelFn = fn(function() {
+            defer.resolve();
+          });
+        });
+        return defer.promise;
+      }
+
+      function resolveElementClasses(element, cache, runningAnimations) {
+        runningAnimations = runningAnimations || {};
+        var map = {};
+
+        forEach(cache.add, function(className) {
+          if(className && className.length) {
+            map[className] = map[className] || 0;
+            map[className]++;
+          }
+        });
+
+        forEach(cache.remove, function(className) {
+          if(className && className.length) {
+            map[className] = map[className] || 0;
+            map[className]--;
+          }
+        });
+
+        var lookup = [];
+        forEach(runningAnimations, function(data, selector) {
+          forEach(selector.split(' '), function(s) {
+            lookup[s]=data;
+          });
+        });
+
+        var toAdd = [], toRemove = [];
+        forEach(map, function(status, className) {
+          var hasClass = element.hasClass(className);
+          var matchingAnimation = lookup[className] || {};
+          if (status < 0) {
+            //does it have the class or will it have the class
+            if(hasClass || matchingAnimation.event == 'addClass') {
+              toRemove.push(className);
+            }
+          } else if (status > 0) {
+            //is the class missing or will it be removed?
+            if(!hasClass || matchingAnimation.event == 'removeClass') {
+              toAdd.push(className);
+            }
+          }
+        });
+
+        return (toAdd.length + toRemove.length) > 0 && [toAdd.join(' '), toRemove.join(' ')];
       }
 
       function lookup(name) {
@@ -473,17 +531,26 @@ angular.module('ngAnimate', ['ng'])
           return;
         }
 
+        var classNameAdd, classNameRemove;
+        if(isArray(className)) {
+          classNameAdd = className[0];
+          classNameRemove = className[1];
+          if (isEmpty(classNameAdd)) {
+            className = classNameRemove;
+            animationEvent = 'removeClass';
+          } else if(isEmpty(classNameRemove)) {
+            className = classNameAdd;
+            animationEvent = 'addClass';
+          } else {
+            className = classNameAdd + ' ' + classNameRemove;
+          }
+        }
+
         var isSetClassOperation = animationEvent == 'setClass';
         var isClassBased = isSetClassOperation ||
                            animationEvent == 'addClass' ||
                            animationEvent == 'removeClass';
 
-        var classNameAdd, classNameRemove;
-        if(angular.isArray(className)) {
-          classNameAdd = className[0];
-          classNameRemove = className[1];
-          className = classNameAdd + ' ' + classNameRemove;
-        }
 
         var currentClassName = element.attr('class');
         var classes = currentClassName + ' ' + className;
@@ -610,7 +677,7 @@ angular.module('ngAnimate', ['ng'])
       /**
        * @ngdoc service
        * @name $animate
-       * @kind function
+       * @kind object
        *
        * @description
        * The `$animate` service provides animation detection support while performing DOM operations (enter, leave and move) as well as during addClass and removeClass operations.
@@ -624,6 +691,45 @@ angular.module('ngAnimate', ['ng'])
        * Requires the {@link ngAnimate `ngAnimate`} module to be installed.
        *
        * Please visit the {@link ngAnimate `ngAnimate`} module overview page learn more about how to use animations in your application.
+       * ## Callback Promises
+       * With AngularJS 1.3, each of the animation methods, on the `$animate` service, return a promise when called. The
+       * promise itself is then resolved once the animation has completed itself, has been cancelled or has been
+       * skipped due to animations being disabled. (Note that even if the animation is cancelled it will still
+       * call the resolve function of the animation.)
+       *
+       * ```js
+       * $animate.enter(element, container).then(function() {
+       *   //...this is called once the animation is complete...
+       * });
+       * ```
+       *
+       * Also note that, due to the nature of the callback promise, if any Angular-specific code (like changing the scope,
+       * location of the page, etc...) is executed within the callback promise then be sure to wrap the code using
+       * `$scope.$apply(...)`;
+       *
+       * ```js
+       * $animate.leave(element).then(function() {
+       *   $scope.$apply(function() {
+       *     $location.path('/new-page');
+       *   });
+       * });
+       * ```
+       *
+       * An animation can also be cancelled by calling the `cancel()` method on the returned promise.
+       *
+       * ```js
+       * var promise = $animate.addClass(element, 'super-long-animation').then(function() {
+       *   //this will still be called even if cancelled
+       * });
+       *
+       * element.on('click', function() {
+       *   //tooo lazy to wait for the animation to end
+       *   promise.cancel();
+       * });
+       * ```
+       *
+       * (Keep in mind that the cancel function is unique to `$animate` and promises in general due not provide support
+       * for calling cancel.)
        *
        */
       return {
@@ -652,23 +758,22 @@ angular.module('ngAnimate', ['ng'])
          * | 10. the .ng-enter-active class is added (this triggers the CSS transition/animation)                              | class="my-animation ng-animate ng-enter ng-enter-active" |
          * | 11. $animate waits for the animation to complete (via events and timeout)                                         | class="my-animation ng-animate ng-enter ng-enter-active" |
          * | 12. The animation ends and all generated CSS classes are removed from the element                                 | class="my-animation"                                     |
-         * | 13. The doneCallback() callback is fired (if provided)                                                            | class="my-animation"                                     |
+         * | 13. The returned promise is resolved.                                                                             | class="my-animation"                                     |
          *
          * @param {DOMElement} element the element that will be the focus of the enter animation
          * @param {DOMElement} parentElement the parent element of the element that will be the focus of the enter animation
          * @param {DOMElement} afterElement the sibling element (which is the previous element) of the element that will be the focus of the enter animation
-         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
-         * @return {function} the animation cancellation function
+         * @return {Promise} the animation callback promise
         */
-        enter : function(element, parentElement, afterElement, doneCallback) {
+        enter : function(element, parentElement, afterElement) {
           element = angular.element(element);
           parentElement = prepareElement(parentElement);
           afterElement = prepareElement(afterElement);
 
-          blockElementAnimations(element);
+          classBasedAnimationsBlocked(element, true);
           $delegate.enter(element, parentElement, afterElement);
-          return runAnimationPostDigest(function() {
-            return performAnimation('enter', 'ng-enter', stripCommentsFromElement(element), parentElement, afterElement, noop, doneCallback);
+          return runAnimationPostDigest(function(done) {
+            return performAnimation('enter', 'ng-enter', stripCommentsFromElement(element), parentElement, afterElement, noop, done);
           });
         },
 
@@ -697,22 +802,21 @@ angular.module('ngAnimate', ['ng'])
          * | 10. $animate waits for the animation to complete (via events and timeout)                                         | class="my-animation ng-animate ng-leave ng-leave-active" |
          * | 11. The animation ends and all generated CSS classes are removed from the element                                 | class="my-animation"                                     |
          * | 12. The element is removed from the DOM                                                                           | ...                                                      |
-         * | 13. The doneCallback() callback is fired (if provided)                                                            | ...                                                      |
+         * | 13. The returned promise is resolved.                                                                             | ...                                                      |
          *
          * @param {DOMElement} element the element that will be the focus of the leave animation
-         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
-         * @return {function} the animation cancellation function
+         * @return {Promise} the animation callback promise
         */
-        leave : function(element, doneCallback) {
+        leave : function(element) {
           element = angular.element(element);
 
           cancelChildAnimations(element);
-          blockElementAnimations(element);
+          classBasedAnimationsBlocked(element, true);
           this.enabled(false, element);
-          return runAnimationPostDigest(function() {
+          return runAnimationPostDigest(function(done) {
             return performAnimation('leave', 'ng-leave', stripCommentsFromElement(element), null, null, function() {
               $delegate.leave(element);
-            }, doneCallback);
+            }, done);
           });
         },
 
@@ -742,24 +846,23 @@ angular.module('ngAnimate', ['ng'])
          * | 10. the .ng-move-active class is added (this triggers the CSS transition/animation)                              | class="my-animation ng-animate ng-move ng-move-active" |
          * | 11. $animate waits for the animation to complete (via events and timeout)                                        | class="my-animation ng-animate ng-move ng-move-active" |
          * | 12. The animation ends and all generated CSS classes are removed from the element                                | class="my-animation"                                   |
-         * | 13. The doneCallback() callback is fired (if provided)                                                           | class="my-animation"                                   |
+         * | 13. The returned promise is resolved.                                                                            | class="my-animation"                                   |
          *
          * @param {DOMElement} element the element that will be the focus of the move animation
          * @param {DOMElement} parentElement the parentElement element of the element that will be the focus of the move animation
          * @param {DOMElement} afterElement the sibling element (which is the previous element) of the element that will be the focus of the move animation
-         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
-         * @return {function} the animation cancellation function
+         * @return {Promise} the animation callback promise
         */
-        move : function(element, parentElement, afterElement, doneCallback) {
+        move : function(element, parentElement, afterElement) {
           element = angular.element(element);
           parentElement = prepareElement(parentElement);
           afterElement = prepareElement(afterElement);
 
           cancelChildAnimations(element);
-          blockElementAnimations(element);
+          classBasedAnimationsBlocked(element, true);
           $delegate.move(element, parentElement, afterElement);
-          return runAnimationPostDigest(function() {
-            return performAnimation('move', 'ng-move', stripCommentsFromElement(element), parentElement, afterElement, noop, doneCallback);
+          return runAnimationPostDigest(function(done) {
+            return performAnimation('move', 'ng-move', stripCommentsFromElement(element), parentElement, afterElement, noop, done);
           });
         },
 
@@ -786,19 +889,14 @@ angular.module('ngAnimate', ['ng'])
          * | 7. $animate waits for the animation to complete (via events and timeout)                           | class="my-animation super super-add super-add-active"            |
          * | 8. The animation ends and all generated CSS classes are removed from the element                   | class="my-animation super"                                       |
          * | 9. The super class is kept on the element                                                          | class="my-animation super"                                       |
-         * | 10. The doneCallback() callback is fired (if provided)                                             | class="my-animation super"                                       |
+         * | 10. The returned promise is resolved.                                                              | class="my-animation super"                                       |
          *
          * @param {DOMElement} element the element that will be animated
          * @param {string} className the CSS class that will be added to the element and then animated
-         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
-         * @return {function} the animation cancellation function
+         * @return {Promise} the animation callback promise
         */
-        addClass : function(element, className, doneCallback) {
-          element = angular.element(element);
-          element = stripCommentsFromElement(element);
-          return performAnimation('addClass', className, element, null, null, function() {
-            $delegate.addClass(element, className);
-          }, doneCallback);
+        addClass : function(element, className) {
+          return this.setClass(element, className, []);
         },
 
         /**
@@ -823,20 +921,15 @@ angular.module('ngAnimate', ['ng'])
          * | 6. $animate scans the element styles to get the CSS transition/animation duration and delay                      | class="my-animation super ng-animate super-remove"               |
          * | 7. $animate waits for the animation to complete (via events and timeout)                                         | class="my-animation ng-animate super-remove super-remove-active" |
          * | 8. The animation ends and all generated CSS classes are removed from the element                                 | class="my-animation"                                             |
-         * | 9. The doneCallback() callback is fired (if provided)                                                            | class="my-animation"                                             |
+         * | 9. The returned promise is resolved.                                                                             | class="my-animation"                                             |
          *
          *
          * @param {DOMElement} element the element that will be animated
          * @param {string} className the CSS class that will be animated and then removed from the element
-         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
-         * @return {function} the animation cancellation function
+         * @return {Promise} the animation callback promise
         */
-        removeClass : function(element, className, doneCallback) {
-          element = angular.element(element);
-          element = stripCommentsFromElement(element);
-          return performAnimation('removeClass', className, element, null, null, function() {
-            $delegate.removeClass(element, className);
-          }, doneCallback);
+        removeClass : function(element, className) {
+          return this.setClass(element, [], className);
         },
 
         /**
@@ -856,23 +949,54 @@ angular.module('ngAnimate', ['ng'])
          * | 5. the .on, .on-add-active and .off-remove-active classes are added and .off is removed (this triggers the CSS transition/animation) | class="my-animation ng-animate on on-add on-add-active off-remove off-remove-active” |
          * | 6. $animate scans the element styles to get the CSS transition/animation duration and delay                                          | class="my-animation ng-animate on on-add on-add-active off-remove off-remove-active" |
          * | 7. $animate waits for the animation to complete (via events and timeout)                                                             | class="my-animation ng-animate on on-add on-add-active off-remove off-remove-active" |
-         * | 8. The animation ends and all generated CSS classes are removed from the element                                                     | class="my-animation"                                                                 |
-         * | 9. The doneCallback() callback is fired (if provided)                                                                                | class="my-animation"                                                                 |
+         * | 8. The animation ends and all generated CSS classes are removed from the element                                                     | class="my-animation on"                                                              |
+         * | 9. The returned promise is resolved.                                                                                                 | class="my-animation on"                                                              |
          *
          * @param {DOMElement} element the element which will have its CSS classes changed
          *   removed from it
          * @param {string} add the CSS classes which will be added to the element
          * @param {string} remove the CSS class which will be removed from the element
-         * @param {function=} done the callback function (if provided) that will be fired after the
          *   CSS classes have been set on the element
-         * @return {function} the animation cancellation function
+         * @return {Promise} the animation callback promise
          */
-        setClass : function(element, add, remove, doneCallback) {
+        setClass : function(element, add, remove) {
+          var STORAGE_KEY = '$$animateClasses';
           element = angular.element(element);
           element = stripCommentsFromElement(element);
-          return performAnimation('setClass', [add, remove], element, null, null, function() {
-            $delegate.setClass(element, add, remove);
-          }, doneCallback);
+
+          if(classBasedAnimationsBlocked(element)) {
+            return $delegate.setClass(element, add, remove);
+          }
+
+          add    = isArray(add)    ? add    : add.split(' ');
+          remove = isArray(remove) ? remove : remove.split(' ');
+
+          var cache = element.data(STORAGE_KEY);
+          if (cache) {
+            cache.add = cache.add.concat(add);
+            cache.remove = cache.remove.concat(remove);
+
+            //the digest cycle will combine all the animations into one function
+            return cache.promise;
+          } else {
+            element.data(STORAGE_KEY, cache = {
+              add : add,
+              remove : remove
+            });
+          }
+
+          return cache.promise = runAnimationPostDigest(function(done) {
+            var cache = element.data(STORAGE_KEY);
+            element.removeData(STORAGE_KEY);
+
+            var state = element.data(NG_ANIMATE_STATE) || {};
+            var classes = resolveElementClasses(element, cache, state.active);
+            return !classes
+              ? done()
+              : performAnimation('setClass', classes, element, null, null, function() {
+                  $delegate.setClass(element, classes[0], classes[1]);
+                }, done);
+          });
         },
 
         /**
@@ -931,6 +1055,7 @@ angular.module('ngAnimate', ['ng'])
           return noopCancel;
         }
 
+        animationEvent = runner.event;
         className = runner.className;
         var elementEvents = angular.element._data(runner.node);
         elementEvents = elementEvents && elementEvents.events;
@@ -939,25 +1064,11 @@ angular.module('ngAnimate', ['ng'])
           parentElement = afterElement ? afterElement.parent() : element.parent();
         }
 
-        var ngAnimateState  = element.data(NG_ANIMATE_STATE) || {};
-        var runningAnimations     = ngAnimateState.active || {};
-        var totalActiveAnimations = ngAnimateState.totalActive || 0;
-        var lastAnimation         = ngAnimateState.last;
-
-        //only allow animations if the currently running animation is not structural
-        //or if there is no animation running at all
-        var skipAnimations;
-        if (runner.isClassBased) {
-          skipAnimations = ngAnimateState.running ||
-                           ngAnimateState.disabled ||
-                           (lastAnimation && !lastAnimation.isClassBased);
-        }
-
         //skip the animation if animations are disabled, a parent is already being animated,
         //the element is not currently attached to the document body or then completely close
         //the animation if any matching animations are not found at all.
         //NOTE: IE8 + IE9 should close properly (run closeAnimation()) in case an animation was found.
-        if (skipAnimations || animationsDisabled(element, parentElement)) {
+        if (animationsDisabled(element, parentElement)) {
           fireDOMOperation();
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
@@ -965,7 +1076,12 @@ angular.module('ngAnimate', ['ng'])
           return noopCancel;
         }
 
+        var ngAnimateState  = element.data(NG_ANIMATE_STATE) || {};
+        var runningAnimations     = ngAnimateState.active || {};
+        var totalActiveAnimations = ngAnimateState.totalActive || 0;
+        var lastAnimation         = ngAnimateState.last;
         var skipAnimation = false;
+
         if(totalActiveAnimations > 0) {
           var animationsToCancel = [];
           if(!runner.isClassBased) {
@@ -1000,9 +1116,6 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
-        runningAnimations     = ngAnimateState.active || {};
-        totalActiveAnimations = ngAnimateState.totalActive || 0;
-
         if(runner.isClassBased && !runner.isSetClassOperation && !skipAnimation) {
           skipAnimation = (animationEvent == 'addClass') == element.hasClass(className); //opposite of XOR
         }
@@ -1014,6 +1127,9 @@ angular.module('ngAnimate', ['ng'])
           fireDoneCallbackAsync();
           return noopCancel;
         }
+
+        runningAnimations     = ngAnimateState.active || {};
+        totalActiveAnimations = ngAnimateState.totalActive || 0;
 
         if(animationEvent == 'leave') {
           //there's no need to ever remove the listener since the element
@@ -1089,11 +1205,7 @@ angular.module('ngAnimate', ['ng'])
 
         function fireDoneCallbackAsync() {
           fireDOMCallback('close');
-          if(doneCallback) {
-            $$asyncCallback(function() {
-              doneCallback();
-            });
-          }
+          doneCallback();
         }
 
         //it is less complicated to use a flag than managing and canceling
@@ -1474,14 +1586,15 @@ angular.module('ngAnimate', ['ng'])
         }
 
         var activeClassName = '';
+        var pendingClassName = '';
         forEach(className.split(' '), function(klass, i) {
-          activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
+          var prefix = (i > 0 ? ' ' : '') + klass;
+          activeClassName += prefix + '-active';
+          pendingClassName += prefix + '-pending';
         });
 
-        element.addClass(activeClassName);
         var eventCacheKey = elementData.cacheKey + ' ' + activeClassName;
         var timings = getElementAnimationDetails(element, eventCacheKey);
-
         var maxDuration = Math.max(timings.transitionDuration, timings.animationDuration);
         if(maxDuration === 0) {
           element.removeClass(activeClassName);
@@ -1491,8 +1604,6 @@ angular.module('ngAnimate', ['ng'])
         }
 
         var maxDelay = Math.max(timings.transitionDelay, timings.animationDelay);
-        var stagger = elementData.stagger;
-        var itemIndex = elementData.itemIndex;
         var maxDelayTime = maxDelay * ONE_SECOND;
 
         var style = '', appliedStyles = [];
@@ -1506,19 +1617,31 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
+        var itemIndex = elementData.itemIndex;
+        var stagger = elementData.stagger;
+
+        var staggerStyle, staggerTime = 0;
         if(itemIndex > 0) {
+          var transitionStaggerDelay = 0;
           if(stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
-            var delayStyle = timings.transitionDelayStyle;
-            style += CSS_PREFIX + 'transition-delay: ' +
-                     prepareStaggerDelay(delayStyle, stagger.transitionDelay, itemIndex) + '; ';
-            appliedStyles.push(CSS_PREFIX + 'transition-delay');
+            transitionStaggerDelay = stagger.transitionDelay * itemIndex;
           }
 
+          var animationStaggerDelay = 0;
           if(stagger.animationDelay > 0 && stagger.animationDuration === 0) {
-            style += CSS_PREFIX + 'animation-delay: ' +
-                     prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, itemIndex) + '; ';
-            appliedStyles.push(CSS_PREFIX + 'animation-delay');
+            animationStaggerDelay = stagger.animationDelay * itemIndex;
+
+            staggerStyle = CSS_PREFIX + 'animation-play-state';
+            appliedStyles.push(staggerStyle);
+
+            style += staggerStyle + ':paused;';
           }
+
+          staggerTime = Math.round(Math.max(transitionStaggerDelay, animationStaggerDelay) * 100) / 100;
+        }
+
+        if (!staggerTime) {
+          element.addClass(activeClassName);
         }
 
         if(appliedStyles.length > 0) {
@@ -1531,16 +1654,27 @@ angular.module('ngAnimate', ['ng'])
 
         var startTime = Date.now();
         var css3AnimationEvents = ANIMATIONEND_EVENT + ' ' + TRANSITIONEND_EVENT;
+        var animationTime     = (maxDelay + maxDuration) * CLOSING_TIME_BUFFER;
+        var totalTime         = (staggerTime + animationTime) * ONE_SECOND;
+
+        var staggerTimer;
+        if(staggerTime > 0) {
+          element.addClass(pendingClassName);
+          staggerTimer = $timeout(function() {
+            staggerTimer = null;
+            element.addClass(activeClassName);
+            element.removeClass(pendingClassName);
+            if (staggerStyle) {
+              element.css(staggerStyle, '');
+            }
+          }, staggerTime * ONE_SECOND, false);
+        }
 
         element.on(css3AnimationEvents, onAnimationProgress);
         elementData.closeAnimationFns.push(function() {
           onEnd();
           activeAnimationComplete();
         });
-
-        var staggerTime       = itemIndex * (Math.max(stagger.animationDelay, stagger.transitionDelay) || 0);
-        var animationTime     = (maxDelay + maxDuration) * CLOSING_TIME_BUFFER;
-        var totalTime         = (staggerTime + animationTime) * ONE_SECOND;
 
         elementData.running++;
         animationCloseHandler(element, totalTime);
@@ -1552,6 +1686,10 @@ angular.module('ngAnimate', ['ng'])
         function onEnd(cancelled) {
           element.off(css3AnimationEvents, onAnimationProgress);
           element.removeClass(activeClassName);
+          element.removeClass(pendingClassName);
+          if (staggerTimer) {
+            $timeout.cancel(staggerTimer);
+          }
           animateClose(element, className);
           var node = extractElementNode(element);
           for (var i in appliedStyles) {
@@ -1579,15 +1717,6 @@ angular.module('ngAnimate', ['ng'])
             activeAnimationComplete();
           }
         }
-      }
-
-      function prepareStaggerDelay(delayStyle, staggerDelay, index) {
-        var style = '';
-        forEach(delayStyle.split(','), function(val, i) {
-          style += (i > 0 ? ',' : '') +
-                   (index * staggerDelay + parseInt(val, 10)) + 's';
-        });
-        return style;
       }
 
       function animateBefore(animationEvent, element, className, calculationDecorator) {
@@ -1708,7 +1837,7 @@ angular.module('ngAnimate', ['ng'])
 
       function suffixClasses(classes, suffix) {
         var className = '';
-        classes = angular.isArray(classes) ? classes : classes.split(/\s+/);
+        classes = isArray(classes) ? classes : classes.split(/\s+/);
         forEach(classes, function(klass, i) {
           if(klass && klass.length > 0) {
             className += (i > 0 ? ' ' : '') + klass + suffix;

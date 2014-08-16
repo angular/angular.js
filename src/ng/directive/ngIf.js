@@ -113,7 +113,7 @@ var ngIfDirective = ['$animate', function($animate) {
             }
             if(block) {
               previousElements = getBlockElements(block.clone);
-              $animate.leave(previousElements, function() {
+              $animate.leave(previousElements).then(function() {
                 previousElements = null;
               });
               block = null;
