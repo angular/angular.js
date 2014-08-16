@@ -234,10 +234,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        *   CSS classes have been set on the element
        */
       setClass : function(element, add, remove, done) {
-        forEach(element, function (element) {
-          jqLiteAddClass(element, add);
-          jqLiteRemoveClass(element, remove);
-        });
+        this.addClass(element, add);
+        this.removeClass(element, remove);
         async(done);
         return noop;
       },

@@ -6194,9 +6194,12 @@ describe('$compile', function() {
         $rootScope.$digest();
 
         data = $animate.queue.shift();
-        expect(data.event).toBe('setClass');
+        expect(data.event).toBe('addClass');
         expect(data.args[1]).toBe('dice');
-        expect(data.args[2]).toBe('rice');
+
+        data = $animate.queue.shift();
+        expect(data.event).toBe('removeClass');
+        expect(data.args[1]).toBe('rice');
 
         expect(element.hasClass('ice')).toBe(true);
         expect(element.hasClass('dice')).toBe(true);
