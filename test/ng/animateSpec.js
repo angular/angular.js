@@ -57,18 +57,18 @@ describe("$animate", function() {
       expect(element).toBeHidden();
     }));
 
-    it("should run each method and return a noop function", inject(function($animate, $document) {
+    it("should run each method and return a promise", inject(function($animate, $document) {
       var element = jqLite('<div></div>');
       var move   = jqLite('<div></div>');
       var parent = jqLite($document[0].body);
       parent.append(move);
 
-      expect($animate.enter(element, parent)).toBe(noop);
-      expect($animate.move(element, move)).toBe(noop);
-      expect($animate.addClass(element, 'on')).toBe(noop);
-      expect($animate.addClass(element, 'off')).toBe(noop);
-      expect($animate.setClass(element, 'on', 'off')).toBe(noop);
-      expect($animate.leave(element)).toBe(noop);
+      expect($animate.enter(element, parent)).toBeAPromise();
+      expect($animate.move(element, move)).toBeAPromise();
+      expect($animate.addClass(element, 'on')).toBeAPromise();
+      expect($animate.removeClass(element, 'off')).toBeAPromise();
+      expect($animate.setClass(element, 'on', 'off')).toBeAPromise();
+      expect($animate.leave(element)).toBeAPromise();
     }));
 
     it("should add and remove classes on SVG elements", inject(function($animate) {

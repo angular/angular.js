@@ -441,7 +441,7 @@ describe('ngClass animations', function() {
       $compile(element)($rootScope);
 
       var enterComplete = false;
-      $animate.enter(element, $rootElement, null, function() {
+      $animate.enter(element, $rootElement, null).then(function() {
         enterComplete = true;
       });
 
