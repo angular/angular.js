@@ -1586,14 +1586,15 @@ angular.module('ngAnimate', ['ng'])
         }
 
         var activeClassName = '';
+        var pendingClassName = '';
         forEach(className.split(' '), function(klass, i) {
-          activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
+          var prefix = (i > 0 ? ' ' : '') + klass;
+          activeClassName += prefix + '-active';
+          pendingClassName += prefix + '-pending';
         });
 
-        element.addClass(activeClassName);
         var eventCacheKey = elementData.cacheKey + ' ' + activeClassName;
         var timings = getElementAnimationDetails(element, eventCacheKey);
-
         var maxDuration = Math.max(timings.transitionDuration, timings.animationDuration);
         if(maxDuration === 0) {
           element.removeClass(activeClassName);
@@ -1603,8 +1604,6 @@ angular.module('ngAnimate', ['ng'])
         }
 
         var maxDelay = Math.max(timings.transitionDelay, timings.animationDelay);
-        var stagger = elementData.stagger;
-        var itemIndex = elementData.itemIndex;
         var maxDelayTime = maxDelay * ONE_SECOND;
 
         var style = '', appliedStyles = [];
@@ -1618,19 +1617,31 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
+        var itemIndex = elementData.itemIndex;
+        var stagger = elementData.stagger;
+
+        var staggerStyle, staggerTime = 0;
         if(itemIndex > 0) {
+          var transitionStaggerDelay = 0;
           if(stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
-            var delayStyle = timings.transitionDelayStyle;
-            style += CSS_PREFIX + 'transition-delay: ' +
-                     prepareStaggerDelay(delayStyle, stagger.transitionDelay, itemIndex) + '; ';
-            appliedStyles.push(CSS_PREFIX + 'transition-delay');
+            transitionStaggerDelay = stagger.transitionDelay * itemIndex;
           }
 
+          var animationStaggerDelay = 0;
           if(stagger.animationDelay > 0 && stagger.animationDuration === 0) {
-            style += CSS_PREFIX + 'animation-delay: ' +
-                     prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, itemIndex) + '; ';
-            appliedStyles.push(CSS_PREFIX + 'animation-delay');
+            animationStaggerDelay = stagger.animationDelay * itemIndex;
+
+            staggerStyle = CSS_PREFIX + 'animation-play-state';
+            appliedStyles.push(staggerStyle);
+
+            style += staggerStyle + ':paused;';
           }
+
+          staggerTime = Math.round(Math.max(transitionStaggerDelay, animationStaggerDelay) * 100) / 100;
+        }
+
+        if (!staggerTime) {
+          element.addClass(activeClassName);
         }
 
         if(appliedStyles.length > 0) {
@@ -1643,16 +1654,27 @@ angular.module('ngAnimate', ['ng'])
 
         var startTime = Date.now();
         var css3AnimationEvents = ANIMATIONEND_EVENT + ' ' + TRANSITIONEND_EVENT;
+        var animationTime     = (maxDelay + maxDuration) * CLOSING_TIME_BUFFER;
+        var totalTime         = (staggerTime + animationTime) * ONE_SECOND;
+
+        var staggerTimer;
+        if(staggerTime > 0) {
+          element.addClass(pendingClassName);
+          staggerTimer = $timeout(function() {
+            staggerTimer = null;
+            element.addClass(activeClassName);
+            element.removeClass(pendingClassName);
+            if (staggerStyle) {
+              element.css(staggerStyle, '');
+            }
+          }, staggerTime * ONE_SECOND, false);
+        }
 
         element.on(css3AnimationEvents, onAnimationProgress);
         elementData.closeAnimationFns.push(function() {
           onEnd();
           activeAnimationComplete();
         });
-
-        var staggerTime       = itemIndex * (Math.max(stagger.animationDelay, stagger.transitionDelay) || 0);
-        var animationTime     = (maxDelay + maxDuration) * CLOSING_TIME_BUFFER;
-        var totalTime         = (staggerTime + animationTime) * ONE_SECOND;
 
         elementData.running++;
         animationCloseHandler(element, totalTime);
@@ -1664,6 +1686,10 @@ angular.module('ngAnimate', ['ng'])
         function onEnd(cancelled) {
           element.off(css3AnimationEvents, onAnimationProgress);
           element.removeClass(activeClassName);
+          element.removeClass(pendingClassName);
+          if (staggerTimer) {
+            $timeout.cancel(staggerTimer);
+          }
           animateClose(element, className);
           var node = extractElementNode(element);
           for (var i in appliedStyles) {
@@ -1691,15 +1717,6 @@ angular.module('ngAnimate', ['ng'])
             activeAnimationComplete();
           }
         }
-      }
-
-      function prepareStaggerDelay(delayStyle, staggerDelay, index) {
-        var style = '';
-        forEach(delayStyle.split(','), function(val, i) {
-          style += (i > 0 ? ',' : '') +
-                   (index * staggerDelay + parseInt(val, 10)) + 's';
-        });
-        return style;
       }
 
       function animateBefore(animationEvent, element, className, calculationDecorator) {
