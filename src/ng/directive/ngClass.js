@@ -56,15 +56,13 @@ function classDirective(name, selector) {
         function updateClasses (oldClasses, newClasses) {
           var toAdd = arrayDifference(newClasses, oldClasses);
           var toRemove = arrayDifference(oldClasses, newClasses);
-          toRemove = digestClassCounts(toRemove, -1);
           toAdd = digestClassCounts(toAdd, 1);
-
-          if (toAdd.length === 0) {
-            $animate.removeClass(element, toRemove);
-          } else if (toRemove.length === 0) {
+          toRemove = digestClassCounts(toRemove, -1);
+          if (toAdd && toAdd.length) {
             $animate.addClass(element, toAdd);
-          } else {
-            $animate.setClass(element, toAdd, toRemove);
+          }
+          if (toRemove && toRemove.length) {
+            $animate.removeClass(element, toRemove);
           }
         }
 
