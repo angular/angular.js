@@ -50,6 +50,11 @@ beforeEach(function() {
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
     toBeUntouched: cssMatcher('ng-untouched', 'ng-touched'),
     toBeTouched: cssMatcher('ng-touched', 'ng-untouched'),
+    toBeAPromise: function() {
+      this.message = valueFn(
+          "Expected object " + (this.isNot ? "not ": "") + "to be a promise");
+      return isPromiseLike(this.actual);
+    },
     toBeShown: function() {
       this.message = valueFn(
           "Expected element " + (this.isNot ? "": "not ") + "to have 'ng-hide' class");
