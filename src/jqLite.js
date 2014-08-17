@@ -925,9 +925,8 @@ forEach({
    */
   JQLite.prototype[name] = function(arg1, arg2, arg3) {
     var value;
-    var nodeCount = this.length;
 
-    for(var i=0; i < nodeCount; i++) {
+    for(var i = 0, ii = this.length; i < ii; i++) {
       if (isUndefined(value)) {
         value = fn(this[i], arg1, arg2, arg3);
         if (isDefined(value)) {
