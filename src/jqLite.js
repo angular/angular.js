@@ -728,7 +728,7 @@ forEach({
     }
 
     // http://jsperf.com/string-indexof-vs-split
-    var types = type.indexOf(' ') ? type.split(' ') : [type];
+    var types = type.indexOf(' ') >= 0 ? type.split(' ') : [type];
     var i = types.length;
 
     while (i--) {
