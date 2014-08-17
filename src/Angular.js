@@ -830,19 +830,16 @@ function copy(source, destination, stackSource, stackDest) {
  * Assumes that there no proto properties for objects
  */
 function shallowCopy(src, dst) {
-  var i = 0;
-  var l, key;
-
   if (isArray(src)) {
     dst = dst || [];
 
-    for (l = src.length; i < l; i++) {
+    for (var i = 0, ii = src.length; i < ii; i++) {
       dst[i] = src[i];
     }
   } else if (isObject(src)) {
     dst = dst || {};
 
-    for (key in src) {
+    for (var key in src) {
       if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
         dst[key] = src[key];
       }
