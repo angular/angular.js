@@ -211,7 +211,7 @@
  *
  * #### `restrict`
  * String of subset of `EACM` which restricts the directive to a specific directive
- * declaration style. If omitted, the default (attributes only) is used.
+ * declaration style. If omitted, the defaults (elements and attributes) are used.
  *
  * * `E` - Element name (default): `<my-directive></my-directive>`
  * * `A` - Attribute (default): `<div my-directive="exp"></div>`
