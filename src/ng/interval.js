@@ -37,8 +37,13 @@ function $IntervalProvider() {
       * @param {number} delay Number of milliseconds between each function call.
       * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
       *   indefinitely.
-      * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
-      *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
+      * @param {(boolean|Scope)=} [invokeApply=true] By default, {@link ng.$rootScope.Scope#$apply $apply}
+      * is called on the {@link ng.$rootScope $rootScope} after each tick of the interval.
+      * The default behavior can be changed by setting the parameter to one of:
+      *  - `true` (default) calls {@link ng.$rootScope.Scope#$apply $apply} on the {@link ng.$rootScope $rootScope}
+      *  - `false` skips dirty checking completely. Can be useful for performance.
+      *  - `Scope` calls {@link ng.$rootScope.Scope#$apply $apply} on the given {@link ng.$rootScope.Scope Scope}.
+      *  Useful if the scope was created as partially digestible {@link ng.$rootScope.Scope#$new partialDigest}.
       * @returns {promise} A promise which will be notified on each iteration.
       *
       * @example
@@ -136,6 +141,7 @@ function $IntervalProvider() {
           clearInterval = $window.clearInterval,
           iteration = 0,
           skipApply = (isDefined(invokeApply) && !invokeApply),
+          scope = isScope(invokeApply) ? invokeApply : $rootScope,
           deferred = (skipApply ? $$q : $q).defer(),
           promise = deferred.promise;
 
@@ -152,7 +158,7 @@ function $IntervalProvider() {
           delete intervals[promise.$$intervalId];
         }
 
-        if (!skipApply) $rootScope.$apply();
+        if (!skipApply) scope.$apply();
 
       }, delay);
 

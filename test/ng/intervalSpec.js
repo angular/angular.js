@@ -115,6 +115,28 @@ describe('$interval', function() {
   }));
 
 
+  it('should call $evalAsync or $digest on the scope that\'s passed as invokeApply',
+    inject(function($interval, $rootScope, $window, $timeout) {
+      var scope = $rootScope.$new({partialDigest: true});
+
+      var rootScopeDigest = jasmine.createSpy('rootScopeDigest');
+      var childScopeDigest = jasmine.createSpy('childScopeDigest');
+      $rootScope.$watch(rootScopeDigest);
+      scope.$watch(childScopeDigest);
+
+      var notifySpy = jasmine.createSpy('notify');
+
+      $interval(notifySpy, 1000, 1, scope);
+
+      $window.flush(2000);
+      $timeout.flush(); // flush $browser.defer() timeout
+
+      expect(notifySpy).toHaveBeenCalledOnce();
+      expect(rootScopeDigest).not.toHaveBeenCalled();
+      expect(childScopeDigest).toHaveBeenCalled();
+    }));
+
+
   it('should allow you to specify the delay time', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() { counter++; }, 123);
