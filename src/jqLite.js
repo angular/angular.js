@@ -454,11 +454,24 @@ function jqLiteRemove(element, keepData) {
 //////////////////////////////////////////
 var JQLitePrototype = JQLite.prototype = {
   ready: function(fn) {
-    // check if document already is loaded
+    var fired = false;
+
+    function trigger() {
+      if (fired) return;
+      fired = true;
+      fn();
+    }
+
+    // check if document is already loaded
     if (document.readyState === 'complete'){
-      setTimeout(fn);
+      setTimeout(trigger);
     } else {
-      this.on('DOMContentLoaded', fn);
+      this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
+      // we can not use jqLite since we are not done loading and jQuery could be loaded later.
+      // jshint -W064
+      JQLite(window).on('load', trigger); // fallback to window.onload for others
+      // jshint +W064
+      this.on('DOMContentLoaded', trigger);
     }
   },
   toString: function() {
