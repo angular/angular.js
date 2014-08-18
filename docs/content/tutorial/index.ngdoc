@@ -125,10 +125,13 @@ nodejs --version
 Once you have Node.js installed on your machine you can download the tool dependencies by running:
 
 ```
-npm install
+npm install bower
+npm install http-server
+npm install karma
+npm install protractor
 ```
 
-This command will download the following tools, into the `node_modules` directory:
+These commands will download the following tools, into the `node_modules` directory:
 
 - [Bower][bower] - client-side code package manager
 - [Http-Server][http-server] - simple local static web server
