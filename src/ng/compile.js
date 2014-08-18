@@ -1479,12 +1479,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
-        var i, ii, linkFn, controller, isolateScope, elementControllers, transcludeFn;
+        var i, ii, linkFn, controller, isolateScope, elementControllers, transcludeFn, $element,
+            attrs;
 
-        var $element = jqLite(linkNode);
-        var attrs = (compileNode === linkNode)
-              ? templateAttrs
-              : new Attributes($element, templateAttrs);
+        if (compileNode === linkNode) {
+          attrs = templateAttrs;
+          $element = templateAttrs.$$element;
+        } else {
+          $element = jqLite(linkNode);
+          attrs = new Attributes($element, templateAttrs);
+        }
 
         if (newIsolateScopeDirective) {
           var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
