@@ -188,43 +188,32 @@ function $InterpolateProvider() {
       var startIndex,
           endIndex,
           index = 0,
-          separators = [],
           expressions = [],
           parseFns = [],
           textLength = text.length,
-          hasInterpolation = false,
-          hasText = false,
           exp,
-          concat = [];
+          concat = [],
+          expressionPositions = [];
 
       while(index < textLength) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
              ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
-          if (index !== startIndex) hasText = true;
-          separators.push(text.substring(index, startIndex));
+          if (index !== startIndex) {
+            concat.push(unescapeText(text.substring(index, startIndex)));
+          }
           exp = text.substring(startIndex + startSymbolLength, endIndex);
           expressions.push(exp);
           parseFns.push($parse(exp, parseStringifyInterceptor));
           index = endIndex + endSymbolLength;
-          hasInterpolation = true;
+          expressionPositions.push(concat.length);
+          concat.push('');
         } else {
           // we did not find an interpolation, so we have to add the remainder to the separators array
           if (index !== textLength) {
-            hasText = true;
-            separators.push(text.substring(index));
+            concat.push(unescapeText(text.substring(index)));
           }
           break;
         }
-      }
-
-      forEach(separators, function(key, i) {
-        separators[i] = separators[i].
-          replace(escapedStartRegexp, startSymbol).
-          replace(escapedEndRegexp, endSymbol);
-      });
-
-      if (separators.length === expressions.length) {
-        separators.push('');
       }
 
       // Concatenating expressions makes it hard to reason about whether some combination of
@@ -233,23 +222,19 @@ function $InterpolateProvider() {
       // that's used is assigned or constructed by some JS code somewhere that is more testable or
       // make it obvious that you bound the value to some user controlled value.  This helps reduce
       // the load when auditing for XSS issues.
-      if (trustedContext && hasInterpolation && (hasText || expressions.length > 1)) {
+      if (trustedContext && concat.length > 1) {
           throw $interpolateMinErr('noconcat',
               "Error while interpolating: {0}\nStrict Contextual Escaping disallows " +
               "interpolations that concatenate multiple expressions when a trusted value is " +
               "required.  See http://docs.angularjs.org/api/ng.$sce", text);
       }
 
-      if (!mustHaveExpression || hasInterpolation) {
-        concat.length = separators.length + expressions.length;
-
+      if (!mustHaveExpression || expressions.length) {
         var compute = function(values) {
           for(var i = 0, ii = expressions.length; i < ii; i++) {
             if (allOrNothing && isUndefined(values[i])) return;
-            concat[2*i] = separators[i];
-            concat[(2*i)+1] = values[i];
+            concat[expressionPositions[i]] = values[i];
           }
-          concat[2*ii] = separators[ii];
           return concat.join('');
         };
 
@@ -299,7 +284,6 @@ function $InterpolateProvider() {
           }, {
           // all of these properties are undocumented for now
           exp: text, //just for compatibility with regular watchers created via $watch
-          separators: separators,
           expressions: expressions,
           $$watchDelegate: function (scope, listener, objectEquality) {
             var lastValue;
@@ -312,6 +296,11 @@ function $InterpolateProvider() {
             }, objectEquality);
           }
         });
+      }
+
+      function unescapeText(text) {
+        return text.replace(escapedStartRegexp, startSymbol).
+          replace(escapedEndRegexp, endSymbol);
       }
 
       function parseStringifyInterceptor(value) {
