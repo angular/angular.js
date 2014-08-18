@@ -703,6 +703,12 @@ can recognize the crawler and serve a HTML snapshots. For more information about
 see [Making AJAX Applications
 Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
 
+## Injecting $location and anchor links
+
+Injecting `$location` anywhere in the app, if html5mode is not enabled, may lead
+to the Angular breaking anchor links. Specifically, Angular will rewrite the 
+url by adding a `/` after the hash, which breaks anchor scrolling and may cause
+functionality issues on applications where `$location` does not control routing.
 
 # Testing with the $location service
 
