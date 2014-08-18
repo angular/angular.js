@@ -360,6 +360,17 @@ describe('ngInclude', function() {
     } catch (e) {}
   }));
 
+  it('should fire $includeContentLoaded with the template url as the second parameter', inject(function($rootScope, $compile, $templateCache) {
+    var called = 0;
+    $templateCache.put('/some/template.html', [200, '', {}]);
+    $rootScope.$on('$includeContentLoaded', function(event, src) {
+      expect(src).toBe('/some/template.html');
+      called++;
+    });
+    element = $compile('<div><ng:include src="\'/some/template.html\'"></ng:include></div>')($rootScope);
+    $rootScope.$digest();
+    expect(called).toBe(1);
+  }));
 
   describe('autoscroll', function() {
     var autoScrollSpy;
