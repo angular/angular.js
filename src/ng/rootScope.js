@@ -407,7 +407,7 @@ function $RootScopeProvider(){
           return this.$watch(watchExpressions[0], function watchGroupAction(value, oldValue, scope) {
             newValues[0] = value;
             oldValues[0] = oldValue;
-            listener.call(this, newValues, (value === oldValue) ? newValues : oldValues, scope);
+            listener(newValues, (value === oldValue) ? newValues : oldValues, scope);
           });
         }
 
