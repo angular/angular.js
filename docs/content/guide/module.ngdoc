@@ -26,10 +26,12 @@ should be bootstrapped. There are several advantages to this approach:
 
 I'm in a hurry. How do I get a Hello World module working?
 
-<example module='myApp'>
+<example ng-app-included="true">
   <file name="index.html">
-    <div>
-      {{ 'World' | greet }}
+    <div ng-app="myApp">
+      <div>
+        {{ 'World' | greet }}
+      </div>
     </div>
   </file>
 
