@@ -9,7 +9,8 @@ describe('NgModelController', function() {
 
     parentFormCtrl = {
       $setValidity: jasmine.createSpy('$setValidity'),
-      $setDirty: jasmine.createSpy('$setDirty')
+      $setDirty: jasmine.createSpy('$setDirty'),
+      $$clearControlValidity: noop
     };
 
     element = jqLite('<form><input></form>');
@@ -222,6 +223,106 @@ describe('NgModelController', function() {
       expect(ctrl.$pristine).toBe(false);
       expect(ctrl.$dirty).toBe(true);
       expect(parentFormCtrl.$setDirty).not.toHaveBeenCalled();
+    });
+
+    it('should remove all other errors when any parser returns undefined', function() {
+      var a, b, val = function(val, x) {
+        return x ? val : x;
+      };
+
+      ctrl.$parsers.push(function(v) { return val(v, a); });
+      ctrl.$parsers.push(function(v) { return val(v, b); });
+
+      ctrl.$validators.high = function(value) {
+        return !isDefined(value) || value > 5;
+      };
+
+      ctrl.$validators.even = function(value) {
+        return !isDefined(value) || value % 2 === 0;
+      };
+
+      a = b = true;
+
+      ctrl.$setViewValue('3');
+      expect(ctrl.$error).toEqual({ parse: false, high : true, even : true });
+
+      ctrl.$setViewValue('10');
+      expect(ctrl.$error).toEqual({ parse: false, high : false, even : false });
+
+      a = undefined;
+
+      ctrl.$setViewValue('12');
+      expect(ctrl.$error).toEqual({ parse: true });
+
+      a = true;
+      b = undefined;
+
+      ctrl.$setViewValue('14');
+      expect(ctrl.$error).toEqual({ parse: true });
+
+      a = undefined;
+      b = undefined;
+
+      ctrl.$setViewValue('16');
+      expect(ctrl.$error).toEqual({ parse: true });
+
+      a = b = false; //not undefined
+
+      ctrl.$setViewValue('2');
+      expect(ctrl.$error).toEqual({ parse: false, high : true, even : false });
+    });
+
+    it('should remove all non-parse-related CSS classes from the form when a parser fails',
+      inject(function($compile, $rootScope) {
+
+      var element = $compile('<form name="myForm">' +
+                               '<input name="myControl" ng-model="value" >' +
+                             '</form>')($rootScope);
+      var inputElm = element.find('input');
+      var ctrl = $rootScope.myForm.myControl;
+
+      var parserIsFailing = false;
+      ctrl.$parsers.push(function(value) {
+        return parserIsFailing ? undefined : value;
+      });
+
+      ctrl.$validators.alwaysFail = function() {
+        return false;
+      };
+
+      ctrl.$setViewValue('123');
+      scope.$digest();
+
+      expect(element).not.toHaveClass('ng-valid-parse');
+      expect(element).toHaveClass('ng-invalid-always-fail');
+
+      parserIsFailing = true;
+      ctrl.$setViewValue('12345');
+      scope.$digest();
+
+      expect(element).toHaveClass('ng-invalid-parse');
+      expect(element).not.toHaveClass('ng-invalid-always-fail');
+
+      dealoc(element);
+    }));
+
+    it('should set the ng-invalid-parse and ng-valid-parse CSS class when parsers fail and pass', function() {
+      var pass = true;
+      ctrl.$parsers.push(function(v) {
+        return pass ? v : undefined;
+      });
+
+      var input = element.find('input');
+
+      ctrl.$setViewValue('1');
+      expect(input).toHaveClass('ng-valid-parse');
+      expect(input).not.toHaveClass('ng-invalid-parse');
+
+      pass = undefined;
+
+      ctrl.$setViewValue('2');
+      expect(input).not.toHaveClass('ng-valid-parse');
+      expect(input).toHaveClass('ng-invalid-parse');
     });
   });
 
@@ -1639,6 +1740,16 @@ describe('input', function() {
       expect(inputElm.val()).toBe('2014-07');
     });
 
+    it('should label parse errors as `month`', function() {
+      compileInput('<input type="month" ng-model="val" name="alias" />', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('xxx');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.alias.$error.month).toBeTruthy();
+    });
 
     describe('min', function (){
       beforeEach(function (){
@@ -1768,6 +1879,17 @@ describe('input', function() {
         scope.value = new Date(Date.UTC(2014, 0, 17));
       });
       expect(inputElm.val()).toBe('2014-W03');
+    });
+
+    it('should label parse errors as `week`', function() {
+      compileInput('<input type="week" ng-model="val" name="alias" />', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('yyy');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.alias.$error.week).toBeTruthy();
     });
 
     describe('min', function (){
@@ -1916,6 +2038,17 @@ describe('input', function() {
 
       changeInputValueTo('2000-01-01T01:02');
       expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 0));
+    });
+
+    it('should label parse errors as `datetimelocal`', function() {
+      compileInput('<input type="datetime-local" ng-model="val" name="alias" />', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('zzz');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.alias.$error.datetimelocal).toBeTruthy();
     });
 
     describe('min', function (){
@@ -2094,6 +2227,17 @@ describe('input', function() {
       expect(+scope.value).toBe(+new Date(1970, 0, 1, 1, 2, 0));
     });
 
+    it('should label parse errors as `time`', function() {
+      compileInput('<input type="time" ng-model="val" name="alias" />', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('mmm');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.alias.$error.time).toBeTruthy();
+    });
+
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="time" ng-model="value" name="alias" min="09:30:00" />');
@@ -2251,6 +2395,17 @@ describe('input', function() {
       expect(inputElm.val()).toBe('2001-01-01');
     });
 
+    it('should label parse errors as `date`', function() {
+      compileInput('<input type="date" ng-model="val" name="alias" />', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('nnn');
+      expect(inputElm).toBeInvalid();
+      expect(scope.form.alias.$error.date).toBeTruthy();
+    });
+
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="date" ng-model="value" name="alias" min="2000-01-01" />');
@@ -2374,13 +2529,17 @@ describe('input', function() {
     });
 
 
-    it('should invalidate number if suffering from bad input', function() {
+    it('should only invalidate the model if suffering from bad input when the data is parsed', function() {
       compileInput('<input type="number" ng-model="age" />', {
         valid: false,
         badInput: true
       });
 
-      changeInputValueTo('10a');
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('this-will-fail-because-of-the-badInput-flag');
+
       expect(scope.age).toBeUndefined();
       expect(inputElm).toBeInvalid();
     });
@@ -2398,6 +2557,13 @@ describe('input', function() {
       changeInputValueTo('');
       expect(scope.age).toBeNull();
       expect(inputElm).toBeValid();
+    });
+
+    it('should throw if the model value is not a number', function() {
+      expect(function() {
+        scope.value = 'one';
+        compileInput('<input type="number" ng-model="value" />');
+      }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
     });
 
 
@@ -2440,7 +2606,7 @@ describe('input', function() {
 
         changeInputValueTo('20');
         expect(inputElm).toBeInvalid();
-        expect(scope.value).toBeFalsy();
+        expect(scope.value).toBeUndefined();
         expect(scope.form.alias.$error.max).toBeTruthy();
 
         changeInputValueTo('0');
@@ -2914,13 +3080,18 @@ describe('input', function() {
     });
 
 
-    it('should set $valid even if model fails other validators', function() {
-      compileInput('<input type="email" ng-model="value" required />');
-      changeInputValueTo('bademail');
+    it('should consider bad input as an error before any other errors are considered', function() {
+      compileInput('<input type="text" ng-model="value" required />', { badInput : true });
+      var ctrl = inputElm.controller('ngModel');
+      ctrl.$parsers.push(function() {
+        return undefined;
+      });
 
-      expect(inputElm).toHaveClass('ng-valid-required');
-      expect(inputElm.controller('ngModel').$error.required).toBe(false);
-      expect(inputElm).toBeInvalid(); // invalid because of the email validator
+      changeInputValueTo('abc123');
+
+      expect(ctrl.$error.parse).toBe(true);
+      expect(inputElm).toHaveClass('ng-invalid-parse');
+      expect(inputElm).toBeInvalid(); // invalid because of the number validator
     });
 
 
