@@ -1305,9 +1305,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             compileNode = $compileNode[0];
             replaceWith(jqCollection, sliceArgs($template), compileNode);
 
-            $template[$template.length++] = document.createComment(' end ' + directiveName + ': ' +
-                templateAttrs[directiveName] + ' ');
-
             childTranscludeFn = compile($template, transcludeFn, terminalPriority,
                                         replaceDirective && replaceDirective.name, {
                                           // Don't pass in:
