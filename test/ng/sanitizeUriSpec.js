@@ -30,6 +30,11 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     });
 
+    it('should sanitize javascript: urls with comments', function() {
+      testUrl = "javascript:alert(1)//data:image/";
+      expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:alert(1)//data:image/');
+    });
+
     it('should sanitize non-image data: urls', function() {
       testUrl = "data:application/javascript;charset=US-ASCII,alert('evil!');";
       expect(sanitizeImg(testUrl)).toBe("unsafe:data:application/javascript;charset=US-ASCII,alert('evil!');");
