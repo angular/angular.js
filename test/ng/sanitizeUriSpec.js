@@ -31,6 +31,7 @@ describe('sanitizeUri', function() {
     });
 
     it('should sanitize javascript: urls with comments', function() {
+      /* jshint scripturl:true */
       testUrl = "javascript:alert(1)//data:image/";
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:alert(1)//data:image/');
     });
