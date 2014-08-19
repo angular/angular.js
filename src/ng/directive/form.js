@@ -7,7 +7,8 @@ var nullFormCtrl = {
   $setValidity: noop,
   $setDirty: noop,
   $setPristine: noop,
-  $setSubmitted: noop
+  $setSubmitted: noop,
+  $$clearControlValidity: noop
 },
 SUBMITTED_CLASS = 'ng-submitted';
 
@@ -144,11 +145,15 @@ function FormController(element, attrs, $scope, $animate) {
     if (control.$name && form[control.$name] === control) {
       delete form[control.$name];
     }
+
+    form.$$clearControlValidity(control);
+    arrayRemove(controls, control);
+  };
+
+  form.$$clearControlValidity = function(control) {
     forEach(errors, function(queue, validationToken) {
       form.$setValidity(validationToken, true, control);
     });
-
-    arrayRemove(controls, control);
   };
 
   /**
