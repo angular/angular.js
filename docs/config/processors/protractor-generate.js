@@ -33,7 +33,8 @@ module.exports = {
         innerTest: file.fileContents,
         pathPrefix: '.', // Hold for if we test with full jQuery
         exampleId: example.id,
-        description: example.doc.id
+        description: example.doc.id,
+        'ng-app-included': example['ng-app-included']
       };
 
       if (env === 'jquery') {
