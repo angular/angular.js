@@ -150,6 +150,9 @@
  * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted every time the ngInclude content is requested.
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src URL of content to load.
  */
 
 
@@ -159,6 +162,9 @@
  * @eventType emit on the current ngInclude scope
  * @description
  * Emitted every time the ngInclude content is reloaded.
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src URL of content to load.
  */
 
 
@@ -168,6 +174,9 @@
  * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted when a template HTTP request yields an erronous response (status < 200 || status > 299)
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src URL of content to load.
  */
 var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce',
                   function($templateRequest,   $anchorScroll,   $animate,   $sce) {
@@ -236,15 +245,15 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
               currentScope = newScope;
               currentElement = clone;
 
-              currentScope.$emit('$includeContentLoaded');
+              currentScope.$emit('$includeContentLoaded', src);
               scope.$eval(onloadExp);
             }, function() {
               if (thisChangeId === changeCounter) {
                 cleanupLastIncludeContent();
-                scope.$emit('$includeContentError');
+                scope.$emit('$includeContentError', src);
               }
             });
-            scope.$emit('$includeContentRequested');
+            scope.$emit('$includeContentRequested', src);
           } else {
             cleanupLastIncludeContent();
             ctrl.template = null;
