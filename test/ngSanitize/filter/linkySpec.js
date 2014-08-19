@@ -25,6 +25,8 @@ describe('linky', function() {
                     toEqual('<a href="mailto:me@example.com">me@example.com</a>');
     expect(linky("send email to me@example.com, but")).
       toEqual('send email to <a href="mailto:me@example.com">me@example.com</a>, but');
+    expect(linky("my email is \"me@example.com\"")).
+      toEqual('my email is &#34;<a href="mailto:me@example.com">me@example.com</a>&#34;');
   });
 
   it('should handle target:', function() {
