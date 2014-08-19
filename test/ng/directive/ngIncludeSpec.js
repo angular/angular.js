@@ -121,7 +121,7 @@ describe('ngInclude', function() {
     element = $compile('<div><div><ng:include src="\'url\'"></ng:include></div></div>')($rootScope);
     $rootScope.$digest();
 
-    expect(contentRequestedSpy).toHaveBeenCalledOnce();
+    expect(contentRequestedSpy).toHaveBeenCalledOnceWith(jasmine.any(Object), 'url');
 
     $httpBackend.flush();
   }));
@@ -139,7 +139,7 @@ describe('ngInclude', function() {
     element = $compile('<div><div><ng:include src="\'url\'"></ng:include></div></div>')($rootScope);
     $rootScope.$digest();
 
-    expect(contentLoadedSpy).toHaveBeenCalledOnce();
+    expect(contentLoadedSpy).toHaveBeenCalledOnceWith(jasmine.any(Object), 'url');
   }));
 
 
@@ -161,7 +161,7 @@ describe('ngInclude', function() {
     $httpBackend.flush();
 
     expect(contentLoadedSpy).not.toHaveBeenCalled();
-    expect(contentErrorSpy).toHaveBeenCalledOnce();
+    expect(contentErrorSpy).toHaveBeenCalledOnceWith(jasmine.any(Object), 'tpl.html');
     expect(element.children('div').contents().length).toBe(0);
   }));
 
