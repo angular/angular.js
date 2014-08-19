@@ -1164,46 +1164,27 @@ describe('$location', function() {
     });
 
 
-    it('should rewrite relative links relative to current path when history disabled', function() {
-      configureService('link', true, false, true);
+    it('should not rewrite when clicking on relative hash fragments', function() {
+      configureService('#foo', true, true, true);
       inject(
         initBrowser(),
         initLocation(),
-        function($browser, $location) {
-          $location.path('/some');
+        function($browser) {
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some/link');
+          expectNoRewrite($browser);
         }
       );
     });
 
 
-    it('should replace current path when link begins with "/" and history disabled', function() {
-      configureService('/link', true, false, true);
+    it('should not rewrite when clicking on relative hash fragments in old browser', function() {
+      configureService('#foo', true, false, true);
       inject(
         initBrowser(),
         initLocation(),
-        function($browser, $location) {
-          $location.path('/some');
+        function($browser) {
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
-        }
-      );
-    });
-
-
-    it('should replace current hash fragment when link begins with "#" history disabled', function() {
-      configureService('#link', true, false, true);
-      inject(
-        initBrowser(),
-        initLocation(),
-        function($browser, $location) {
-          // Initialize browser URL
-          $location.path('/some');
-          $location.hash('foo');
-          browserTrigger(link, 'click');
-          expect($location.hash()).toBe('link');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some#link');
+          expectNoRewrite($browser);
         }
       );
     });
