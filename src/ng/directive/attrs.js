@@ -160,7 +160,7 @@
  *
  * @description
  *
- * The following markup will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
+ * We shouldn't do this, because it will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
  * ```html
  * <div ng-init="scope = { isDisabled: false }">
  *  <button disabled="{{scope.isDisabled}}">Disabled</button>
