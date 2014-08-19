@@ -135,7 +135,7 @@ These can be used interchangeably as you see fit and are equivalent.
 
 ### Implicit Dependencies
 
-The simplest way to get hold of the dependencies, is to assume that the function parameter names
+The simplest way to get hold of the dependencies is to assume that the function parameter names
 are the names of the dependencies.
 
 ```js
@@ -144,7 +144,7 @@ function MyController($scope, greeter) {
 }
 ```
 
-Given a function the injector can infer the names of the service to inject by examining the
+Given a function the injector can infer the names of the services to inject by examining the
 function declaration and extracting the parameter names. In the above example `$scope`, and
 `greeter` are two services which need to be injected into the function.
 
@@ -154,7 +154,7 @@ rename the method parameter names. This makes this way of annotating only useful
 
 ### `$inject` Property Annotation
 
-To allow the minifiers to rename the function parameters and still be able to inject right services,
+To allow the minifiers to rename the function parameters and still be able to inject the right services,
 the function needs to be annotated with the `$inject` property. The `$inject` property is an array
 of service names to inject.
 
@@ -166,7 +166,7 @@ MyController['$inject'] = ['$scope', 'greeter'];
 ```
 
 In this scenario the ordering of the values in the `$inject` array must match the ordering of the
-arguments to inject. Using above code snippet as an example, `$scope` will be injected into
+arguments to inject. Using the above code snippet as an example, `$scope` will be injected into
 `renamed$scope` and `greeter` into `renamedGreeter`. Care must be taken that the `$inject`
 annotation is kept in sync with the actual arguments in the function declaration.
 
@@ -206,7 +206,7 @@ someModule.factory('greeter', ['$window', function(renamed$window) {
 }]);
 ```
 
-Here, instead of simply providing the factory function, we pass an array, whose elements consist of
+Here, instead of simply providing the factory function, we pass an array whose elements consist of
 a list of strings (the names of the dependencies) followed by the function itself.
 
 Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
