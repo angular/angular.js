@@ -1564,6 +1564,16 @@ describe('jqLite', function() {
       expect(root.children().length).toBe(0);
       expect(span.parent().hasClass('sigil')).toBeTruthy();
     });
+    it('should wrap multiple elements', function() {
+      var root = jqLite('<div class="sigil"></div>');
+      var spans = jqLite('<span>A</span><span>B</span><span>C</span>');
+
+      spans.wrap(root);
+
+      expect(spans.eq(0).parent().hasClass('sigil')).toBeTruthy();
+      expect(spans.eq(1).parent().hasClass('sigil')).toBeTruthy();
+      expect(spans.eq(2).parent().hasClass('sigil')).toBeTruthy();
+    });
   });
 
 
