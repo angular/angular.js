@@ -361,15 +361,12 @@ describe('ngInclude', function() {
   }));
 
   it('should fire $includeContentLoaded with the template url as the second parameter', inject(function($rootScope, $compile, $templateCache) {
-    var called = 0;
+    var handlerSpy = jasmine.createSpy('handler');
     $templateCache.put('/some/template.html', [200, '', {}]);
-    $rootScope.$on('$includeContentLoaded', function(event, src) {
-      expect(src).toBe('/some/template.html');
-      called++;
-    });
+    $rootScope.$on('$includeContentLoaded', handlerSpy);
     element = $compile('<div><ng:include src="\'/some/template.html\'"></ng:include></div>')($rootScope);
     $rootScope.$digest();
-    expect(called).toBe(1);
+    expect(handlerSpy).toHaveBeenCalledWith(jasmine.any(Object), '/some/template.html');
   }));
 
   describe('autoscroll', function() {
