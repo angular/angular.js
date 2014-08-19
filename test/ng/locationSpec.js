@@ -853,15 +853,21 @@ describe('$location', function() {
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
         // fake the base behavior
-        if (!relLink) {
-          if (linkHref[0] == '/') {
-            linkHref = 'http://host.com' + linkHref;
-          } else if(!linkHref.match(/:\/\//)) {
-            linkHref = 'http://host.com/base/' + linkHref;
+        if (typeof linkHref === 'string') {
+          if (!relLink) {
+            if (linkHref[0] == '/') {
+              linkHref = 'http://host.com' + linkHref;
+            } else if(!linkHref.match(/:\/\//)) {
+              linkHref = 'http://host.com/base/' + linkHref;
+            }
           }
         }
 
-        link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
+        if (linkHref) {
+          link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
+        } else {
+          link = jqLite('<a ' + attrs + '>' + content + '</a>')[0];
+        }
 
         $provide.value('$sniffer', {history: supportHist});
         $locationProvider.html5Mode(html5Mode);
@@ -971,6 +977,20 @@ describe('$location', function() {
         function($browser) {
           browserTrigger(link, 'click');
           expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+        }
+      );
+    });
+
+
+    // Regression (gh-7721)
+    it('should not throw when clicking anchor with no href attribute when history enabled on old browser', function() {
+      configureService(null, true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
         }
       );
     });
