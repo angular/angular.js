@@ -28,9 +28,11 @@ I'm in a hurry. How do I get a Hello World module working?
 
 <example module='myApp'>
   <file name="index.html">
+  <html ng-app="myApp">
     <div>
       {{ 'World' | greet }}
     </div>
+    </html>
   </file>
 
   <file name="script.js">
