@@ -1556,6 +1556,15 @@ describe('jqLite', function() {
       text.wrap("<span>");
       expect(text.parent().text()).toEqual('A<a>B</a>C');
     });
+    it('should clone elements to be wrapped around target', function () {
+      var root = jqLite('<div class="sigil"></div>');
+      var span = jqLite('<span>A</span>');
+      jqLite(document.body).append(root);
+
+      span.wrap(root);
+      expect(root.text()).toBe('');
+      expect(span.parent().hasClass('sigil')).toBeTruthy();
+    });
   });
 
 
