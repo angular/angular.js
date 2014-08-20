@@ -996,6 +996,20 @@ describe('$location', function() {
     });
 
 
+    it('should produce relative paths correctly when $location.path() is "/" when history enabled on old browser', function() {
+      configureService('partial1', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/partial1');
+        }
+      );
+    });
+
+
     it('should rewrite abs link to hashbang url when history enabled on old browser', function() {
       configureService('/base/link?a#b', true, false);
       inject(
