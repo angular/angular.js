@@ -2100,28 +2100,26 @@ describe('$compile', function() {
 
           it('should work in jqLite and jQuery with jQuery.cleanData last patched by Angular', runTest);
 
-          if (jQuery) {
-            it('should work with another library patching jQuery.cleanData after Angular', function() {
-              var cleanedCount = 0;
-              var currentCleanData = jqLite.cleanData;
-              jqLite.cleanData = function(elems) {
-                cleanedCount += elems.length;
-                // Don't return the output and explicitly pass only the first parameter
-                // so that we're sure we're not relying on either of them. jQuery UI patch
-                // behaves in this way.
-                currentCleanData(elems);
-              };
+          it('should work with another library patching jqLite/jQuery.cleanData after Angular', function() {
+            var cleanedCount = 0;
+            var currentCleanData = jqLite.cleanData;
+            jqLite.cleanData = function(elems) {
+              cleanedCount += elems.length;
+              // Don't return the output and explicitly pass only the first parameter
+              // so that we're sure we're not relying on either of them. jQuery UI patch
+              // behaves in this way.
+              currentCleanData(elems);
+            };
 
-              runTest();
+            runTest();
 
-              // The initial ng-repeat div is dumped after parsing hence we expect cleanData
-              // count to be one larger than size of the iterated array.
-              expect(cleanedCount).toBe(is.length + 1);
+            // The initial ng-repeat div is dumped after parsing hence we expect cleanData
+            // count to be one larger than size of the iterated array.
+            expect(cleanedCount).toBe(is.length + 1);
 
-              // Restore the previous cleanData.
-              jqLite.cleanData = currentCleanData;
-            });
-          }
+            // Restore the previous cleanData.
+            jqLite.cleanData = currentCleanData;
+          });
         });
 
         describe('replace and not exactly one root element', function() {
@@ -8640,28 +8638,26 @@ describe('$compile', function() {
 
         it('should work without external libraries (except jQuery)', testCleanup);
 
-        if (jQuery) {
-          it('should work with another library patching jQuery.cleanData after AngularJS', function() {
-            var cleanedCount = 0;
-            var currentCleanData = jqLite.cleanData;
-            jqLite.cleanData = function(elems) {
-              cleanedCount += elems.length;
-              // Don't return the output and explicitly pass only the first parameter
-              // so that we're sure we're not relying on either of them. jQuery UI patch
-              // behaves in this way.
-              currentCleanData(elems);
-            };
+        it('should work with another library patching jqLite/jQuery.cleanData after AngularJS', function() {
+          var cleanedCount = 0;
+          var currentCleanData = jqLite.cleanData;
+          jqLite.cleanData = function(elems) {
+            cleanedCount += elems.length;
+            // Don't return the output and explicitly pass only the first parameter
+            // so that we're sure we're not relying on either of them. jQuery UI patch
+            // behaves in this way.
+            currentCleanData(elems);
+          };
 
-            testCleanup();
+          testCleanup();
 
-            // The ng-repeat template is removed/cleaned (the +1)
-            // and each clone of the ng-repeat template is also removed (xs.length)
-            expect(cleanedCount).toBe(xs.length + 1);
+          // The ng-repeat template is removed/cleaned (the +1)
+          // and each clone of the ng-repeat template is also removed (xs.length)
+          expect(cleanedCount).toBe(xs.length + 1);
 
-            // Restore the previous cleanData.
-            jqLite.cleanData = currentCleanData;
-          });
-        }
+          // Restore the previous cleanData.
+          jqLite.cleanData = currentCleanData;
+        });
       });
 
 
