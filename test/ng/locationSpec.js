@@ -1345,8 +1345,7 @@ describe('$location', function() {
         // we need to do this otherwise we can't simulate events
         $document.find('body').append($rootElement);
 
-        var element = $compile('<a href="/foo/view1">v1</a><a href="/foo/bar/view2">v2</a>')($rootScope);
-        $rootElement.append(element);
+        $rootElement.append('<a href="/foo/view1">v1</a><a href="/foo/bar/view2">v2</a>');
         var av1 = $rootElement.find('a').eq(0);
         var av2 = $rootElement.find('a').eq(1);
 
@@ -1356,8 +1355,6 @@ describe('$location', function() {
 
         browserTrigger(av2, 'click');
         expect($browser.url()).toEqual(base + '#/bar/view2');
-
-        $rootElement.remove();
       });
     });
   });
