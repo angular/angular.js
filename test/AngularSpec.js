@@ -796,7 +796,7 @@ describe('angular', function() {
       expect(function () {
         angular.bootstrap(element);
       }).toThrowMatching(
-        /\[ng:btstrpd\] App Already Bootstrapped with this Element '<div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?>'/i
+        /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
       );
 
       dealoc(element);
