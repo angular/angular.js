@@ -2091,7 +2091,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // that would break if another library patches the method after Angular does (one
         // example is jQuery UI). Instead, set a flag indicating scope destroying should be
         // skipped this one time.
-        skipDestroyOnNextJQueryCleanData = true;
+//        skipDestroyOnNextJQueryCleanData = true;
         jQuery.cleanData([firstElementToRemove]);
       }
 
