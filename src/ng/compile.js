@@ -907,9 +907,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
-        //BAD?
+        // NOTE: namespace passed into cloneJqLite on $compileNodes
 
-        dump($compileNodes.namespace, $compileNodes)
         var $linkNode = cloneConnectFn
           ? $compileNodes.namespace.cloneJqLite($compileNodes) // IMPORTANT!!!
           : $compileNodes;
@@ -1348,18 +1347,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                           nonTlbTranscludeDirective: nonTlbTranscludeDirective
                                         });
           } else {
-          	//BAD?
-            //$template = jqLite(namespace.clone(compileNode)).contents();
-            //$compileNode.empty(); // clear contents
             $template = $compileNode.contents();
             $template.remove();
             childTranscludeFn = (function($template) { 
             	return function childTranscludeFnFactory() {
-	            	dump('x', arguments[4])
+            		var namespaceArg = arguments[4];
 	            	var childTranscludeFn = childTranscludeFnFactory.fn;
 
 	            	if (!childTranscludeFn) {
-									childTranscludeFn = childTranscludeFnFactory.fn = compile($template, transcludeFn, undefined, undefined, undefined, arguments[4]);
+									childTranscludeFn = childTranscludeFnFactory.fn = compile($template, transcludeFn, undefined, undefined, undefined, namespaceArg);
 								}
 
 								return childTranscludeFn.apply(undefined, arguments);
@@ -1384,7 +1380,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (jqLiteIsTextNode(directiveValue)) {
               $template = [];
             } else {
-            	//BAD?
               $template = jqLite(namespace.wrap(trim(directiveValue)));
             }
             compileNode = $template[0];
@@ -1684,7 +1679,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         for(i = postLinkFns.length - 1; i >= 0; i--) {
           try {
             linkFn = postLinkFns[i];
-            dump(transcludeFn, nodeLinkFn.namespace);
             $element.namespace = nodeLinkFn.namespace;
             linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
                 linkFn.require && getControllers(linkFn.directiveName, linkFn.require, $element, elementControllers), transcludeFn);
@@ -1897,7 +1891,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               if (!(previousCompileContext.hasElementTranscludeDirective &&
                   origAsyncDirective.replace)) {
                 // it was cloned therefore we have to clone as well.
-              	//BAD
+              	// NOTE: namespace is not taken into account here. Should it be?
                 linkNode = jqLiteClone(compileNode);
               }
 

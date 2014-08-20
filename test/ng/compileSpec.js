@@ -8,7 +8,7 @@ function calcCacheSize() {
 }
 
 
-ddescribe('$compile', function() {
+describe('$compile', function() {
   var element, directive, $compile, $rootScope;
 
   beforeEach(module(provideLog, function($provide, $compileProvider){
@@ -112,7 +112,7 @@ ddescribe('$compile', function() {
   }
 
   describe('svg namespace', function() {
-    iit('should handle transcluded svg elements', inject(function($compile){
+    it('should handle transcluded svg elements', inject(function($compile){
       element = jqLite('<div><svg-container>' +
         '<circle cx="4" cy="4" r="2"></circle>' +  
         '</svg-container></div>');  
@@ -124,7 +124,7 @@ ddescribe('$compile', function() {
       assertIsValidSvgCircle(circle[0]);
     }));
 
-    iit('should handle custom svg elements inside svg tag', function(){
+    it('should handle custom svg elements inside svg tag', function(){
       element = jqLite('<div><svg width="300" height="300">' +
         '<svg-circle></svg-circle>' +
         '</svg></div>');
@@ -135,7 +135,7 @@ ddescribe('$compile', function() {
       assertIsValidSvgCircle(circle[0]);
     });
 
-    iit('should handle transcluded custom svg elements', function(){
+    it('should handle transcluded custom svg elements', function(){
       element = jqLite('<div><svg-container>' +
         '<svg-circle></svg-circle>' +
         '</svg-container></div>');
@@ -146,7 +146,7 @@ ddescribe('$compile', function() {
       assertIsValidSvgCircle(circle[0]);
     });
 
-    iit('should handle foreignObject', function(){
+    it('should handle foreignObject', function(){
       element = jqLite('<div><svg-container>' +
         '<foreignObject width="100" height="100"><div class="test" style="width:20px;height:20px">test</div></foreignObject>' +
         '</svg-container></div>');
@@ -159,7 +159,7 @@ ddescribe('$compile', function() {
       expect(bounds.width === 20 && bounds.height === 20).toBe(true);
     });
 
-    iit('should handle custom svg containers that transclude to foreignObject that transclude html', function(){
+    it('should handle custom svg containers that transclude to foreignObject that transclude html', function(){
       element = jqLite('<div><svg-container>' +
         '<my-foreign-object><div class="test" style="width:20px;height:20px">test</div></my-foreign-object>' +
         '</svg-container></div>');
@@ -172,8 +172,8 @@ ddescribe('$compile', function() {
       expect(bounds.width === 20 && bounds.height === 20).toBe(true);
     });
 
-    /// LUDICROUS SPEED! 💩🔥 (just checking)
-    iit('should handle custom svg containers that transclude to foreignObject that transclude to custom svg containers that transclude to custom elements', function(){
+    // NOTE: This test may be redundant.
+    it('should handle custom svg containers that transclude to foreignObject that transclude to custom svg containers that transclude to custom elements', function(){
       element = jqLite('<div><svg-container>' +
         '<my-foreign-object><svg-container><svg-circle></svg-circle></svg-container></my-foreign-object>' +
         '</svg-container></div>');
