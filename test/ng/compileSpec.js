@@ -2080,17 +2080,49 @@ describe('$compile', function() {
         ));
 
 
-        it('should work when directive is in a repeater', inject(
-          function($compile, $httpBackend, $rootScope) {
-            $httpBackend.expect('GET', 'hello.html').
-                respond('<span>i=<span ng-transclude></span>;</span>');
-            element = jqLite('<div><b class=hello ng-repeat="i in [1,2]">{{i}}</b></div>');
-            $compile(element)($rootScope);
+        describe('when directive is in a repeater', function() {
+          var is;
+          beforeEach(function() {
+            is = [1, 2];
+          });
 
-            $httpBackend.flush();
-            expect(element.text()).toEqual('i=1;i=2;');
+          function runTest() {
+            inject(function($compile, $httpBackend, $rootScope) {
+              $httpBackend.expect('GET', 'hello.html').
+                respond('<span>i=<span ng-transclude></span>;</span>');
+              element = jqLite('<div><b class=hello ng-repeat="i in [' + is + ']">{{i}}</b></div>');
+              $compile(element)($rootScope);
+
+              $httpBackend.flush();
+              expect(element.text()).toEqual('i=' + is.join(';i=') + ';');
+            });
           }
-        ));
+
+          it('should work in jqLite and jQuery with jQuery.cleanData last patched by Angular', runTest);
+
+          if (jQuery) {
+            it('should work with another library patching jQuery.cleanData after Angular', function() {
+              var cleanedCount = 0;
+              var currentCleanData = jqLite.cleanData;
+              jqLite.cleanData = function(elems) {
+                cleanedCount += elems.length;
+                // Don't return the output and explicitly pass only the first parameter
+                // so that we're sure we're not relying on either of them. jQuery UI patch
+                // behaves in this way.
+                currentCleanData(elems);
+              };
+
+              runTest();
+
+              // The initial ng-repeat div is dumped after parsing hence we expect cleanData
+              // count to be one larger than size of the iterated array.
+              expect(cleanedCount).toBe(is.length + 1);
+
+              // Restore the previous cleanData.
+              jqLite.cleanData = currentCleanData;
+            });
+          }
+        });
 
         describe('replace and not exactly one root element', function() {
 
@@ -8573,46 +8605,46 @@ describe('$compile', function() {
         });
       });
 
-      if (jQuery) {
-        describe('cleaning up after a replaced element', function() {
-          var $compile, xs;
-          beforeEach(inject(function(_$compile_) {
-            $compile = _$compile_;
-            xs = [0, 1];
-          }));
+      describe('cleaning up after a replaced element', function() {
+        var $compile, xs;
+        beforeEach(inject(function(_$compile_) {
+          $compile = _$compile_;
+          xs = [0, 1];
+        }));
 
-          function testCleanup() {
-            var privateData, firstRepeatedElem;
+        function testCleanup() {
+          var privateData, firstRepeatedElem;
 
-            element = $compile('<div><div ng-repeat="x in xs" ng-click="noop()">{{x}}</div></div>')($rootScope);
+          element = $compile('<div><div ng-repeat="x in xs" ng-click="noop()">{{x}}</div></div>')($rootScope);
 
-            $rootScope.$apply('xs = [' + xs + ']');
-            firstRepeatedElem = element.children('.ng-scope').eq(0);
+          $rootScope.$apply('xs = [' + xs + ']');
+          firstRepeatedElem = element.children('.ng-scope').eq(0);
 
-            expect(firstRepeatedElem.data('$scope')).toBeDefined();
-            privateData = jQuery._data(firstRepeatedElem[0]);
-            expect(privateData.events).toBeDefined();
-            expect(privateData.events.click).toBeDefined();
-            expect(privateData.events.click[0]).toBeDefined();
+          expect(firstRepeatedElem.data('$scope')).toBeDefined();
+          privateData = jqLite._data(firstRepeatedElem[0]);
+          expect(privateData.events).toBeDefined();
+          expect(privateData.events.click).toBeDefined();
+          expect(privateData.events.click[0]).toBeDefined();
 
-            //Ensure the AngularJS $destroy event is still sent
-            var destroyCount = 0;
-            element.find('div').on('$destroy', function() { destroyCount++; });
+          // Ensure the AngularJS $destroy event is still sent
+          var destroyCount = 0;
+          element.find('div').on('$destroy', function() { destroyCount++; });
 
-            $rootScope.$apply('xs = null');
+          $rootScope.$apply('xs = null');
 
-            expect(destroyCount).toBe(2);
-            expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
-            privateData = jQuery._data(firstRepeatedElem[0]);
-            expect(privateData && privateData.events).not.toBeDefined();
-          }
+          expect(destroyCount).toBe(2);
+          expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
+          privateData = jqLite._data(firstRepeatedElem[0]);
+          expect(privateData && privateData.events).not.toBeDefined();
+        }
 
-          it('should work without external libraries (except jQuery)', testCleanup);
+        it('should work without external libraries (except jQuery)', testCleanup);
 
+        if (jQuery) {
           it('should work with another library patching jQuery.cleanData after AngularJS', function() {
             var cleanedCount = 0;
-            var currentCleanData = jQuery.cleanData;
-            jQuery.cleanData = function(elems) {
+            var currentCleanData = jqLite.cleanData;
+            jqLite.cleanData = function(elems) {
               cleanedCount += elems.length;
               // Don't return the output and explicitly pass only the first parameter
               // so that we're sure we're not relying on either of them. jQuery UI patch
@@ -8626,11 +8658,11 @@ describe('$compile', function() {
             // and each clone of the ng-repeat template is also removed (xs.length)
             expect(cleanedCount).toBe(xs.length + 1);
 
-            // Restore the previous jQuery.cleanData.
-            jQuery.cleanData = currentCleanData;
+            // Restore the previous cleanData.
+            jqLite.cleanData = currentCleanData;
           });
-        });
-      }
+        }
+      });
 
 
       it('should add a $$transcluded property onto the transcluded scope', function() {
