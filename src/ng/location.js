@@ -682,6 +682,7 @@ function $LocationProvider(){
             // relative path - join with current path
             var stack = $location.path().split("/"),
               parts = href.split("/");
+            if (stack.length === 2 && !stack[1]) stack.length = 1;
             for (var i=0; i<parts.length; i++) {
               if (parts[i] == ".")
                 continue;
