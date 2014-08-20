@@ -91,10 +91,10 @@ describe('parser', function() {
     });
 
     it('should tokenize escaped quoted string', function() {
-      var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
+      var str = '"\\b\\t\\n\\v\\f\\r\\"\\\'\'\\\\\\u00A0\\x40"';
       var tokens = lex(str);
 
-      expect(tokens[0].string).toEqual('"\n\f\r\t\v\u00A0');
+      expect(tokens[0].string).toEqual('\b\t\n\v\f\r\"\'\'\\\u00A0\x40');
     });
 
     it('should tokenize unicode', function() {
@@ -190,6 +190,18 @@ describe('parser', function() {
       expect(function() {
         lex("'\\u1''bla'");
       }).toThrowMinErr("$parse", "lexerr", "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla'].");
+    });
+
+    it('should throw error on invalid hex', function() {
+      expect(function() {
+        lex("'\\x1''bla'");
+      }).toThrowMinErr("$parse", "lexerr", "Lexer Error: Invalid hex escape [\\x1'] at column 2 in expression ['\\x1''bla'].");
+    });
+
+    it('should throw error on octal literals', function() {
+      expect(function() {
+        lex("'\\11''bla'");
+      }).toThrowMinErr("$parse", "lexerr", "Lexer Error: Octal literals are not allowed at column 2 in expression ['\\11''bla'].");
     });
   });
 
