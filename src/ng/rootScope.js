@@ -307,7 +307,7 @@ function $RootScopeProvider(){
        *
        *
        *
-       * @param {(function()|string)} watchExpression Expression that is evaluated on each
+       * @param {(function()|string)} watchExp Expression that is evaluated on each
        *    {@link ng.$rootScope.Scope#$digest $digest} cycle. A change in the return value triggers
        *    a call to the `listener`.
        *
