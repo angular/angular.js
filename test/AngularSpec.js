@@ -366,6 +366,11 @@ describe('angular', function() {
       expect(equals(new Date(0), new Date(1))).toBe(false);
       expect(equals(new Date(0), 0)).toBe(false);
       expect(equals(0, new Date(0))).toBe(false);
+
+      expect(equals(new Date(undefined), new Date(undefined))).toBe(true);
+      expect(equals(new Date(undefined), new Date(0))).toBe(false);
+      expect(equals(new Date(undefined), new Date(null))).toBe(false);
+      expect(equals(new Date(undefined), new Date('wrong'))).toBe(true);
     });
 
     it('should correctly test for keys that are present on Object.prototype', function() {
