@@ -118,6 +118,16 @@ function numberFilter($locale) {
   };
 }
 
+function shiftDecimalPlace(number,fractionSize) {
+  var numberArray = number.toString().split('e');
+  var fractionUsed = +fractionSize;
+  //If number was already an exponent, adjust the exponent value rather than adding new exponent.
+  if(numberArray[1]) {
+    fractionUsed = +numberArray[1] + fractionUsed;
+  }
+  return +(numberArray[0] + 'e' + fractionUsed);
+}
+
 var DECIMAL_SEP = '.';
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   if (number == null || !isFinite(number) || isObject(number)) return '';
@@ -151,7 +161,10 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     // safely round numbers in JS without hitting imprecisions of floating-point arithmetics
     // inspired by:
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round
-    number = +(Math.round(+(number.toString() + 'e' + fractionSize)).toString() + 'e' + -fractionSize);
+    number = shiftDecimalPlace(Math.round(shiftDecimalPlace(number,fractionSize)),-fractionSize);
+    if(isNaN(number)) {
+      number = shiftDecimalPlace(shiftDecimalPlace(number,-fractionSize),fractionSize);
+    }
 
     var fraction = ('' + number).split(DECIMAL_SEP);
     var whole = fraction[0];

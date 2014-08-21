@@ -59,6 +59,26 @@ describe('filters', function() {
       expect(num).toBe('1.1112');
     });
 
+    it('should format large number',function() {
+      pattern.gsize = 2;
+      var num = formatNumber(12345868059685210000, pattern, ',', '.', 2);
+      expect(num).toBe('12,345,868,059,685,210,000.00');
+      num = formatNumber(79832749837498327498274983793234322432, pattern, ',', '.', 2);
+      expect(num).toBe('7.983274983749832e+37');
+      num = formatNumber(8798327498374983274928, pattern, ',', '.', 2);
+      expect(num).toBe('8.798327498374983e+21');
+      num = formatNumber(879832749374983274928, pattern, ',', '.', 2);
+      var msie = +((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+      var msie11 = (/Trident.*7.0/.exec(navigator.userAgent.toLowerCase()));
+      if(msie || msie11) {
+        expect(num).toBe('879,832,749,374,983,100,000.00');
+      } else {
+        expect(num).toBe('879,832,749,374,983,200,000.00');
+      }
+      num = formatNumber(879832749374983274928, pattern, ',', '.', 32);
+      expect(num).toBe('879,832,749,374,983,200,000.00000000000000000000000000000000');
+    });
+
     it('should format according different separators', function() {
       var num = formatNumber(1234567.1, pattern, '.', ',', 2);
       expect(num).toBe('1.234.567,10');
