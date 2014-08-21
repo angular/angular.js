@@ -353,6 +353,12 @@ function qFactory(nextTick, exceptionHandler) {
               callback[2](progress);
             }
           });
+        },
+        get: function(key) {
+          function getKey(obj) {
+            return obj[key];
+          }
+          return this.then(getKey, getKey);
         }
       }
     }

@@ -1124,6 +1124,10 @@ describe('q', function() {
         expect(typeof promise['finally']).toBe('function');
       });
 
+      it('should have a get method', function() {
+        expect(typeof promise.get).toBe('function');
+      });
+
 
       describe('then', function() {
         it('should allow registration of a success callback without an errback or progressback ' +
