@@ -235,6 +235,7 @@ function $$QProvider() {
  * @returns {object} Promise manager.
  */
 function qFactory(nextTick, exceptionHandler) {
+  var $qMinErr = minErr('$q');
   function callOnce(self, resolveFn, rejectFn) {
     var called = false;
     function wrap(fn) {
@@ -522,8 +523,7 @@ function qFactory(nextTick, exceptionHandler) {
 
   var $Q = function Q(resolver) {
     if (!isFunction(resolver)) {
-      // TODO(@caitp): minErr this
-      throw new TypeError('Expected resolverFn');
+      throw $qMinErr('norslvr', "Expected resolverFn, got '{0}'", resolver);
     }
 
     if (!(this instanceof Q)) {
