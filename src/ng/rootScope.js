@@ -622,6 +622,11 @@ function $RootScopeProvider(){
           }
         }
 
+        if (WTF_ENABLED) {
+          $watchCollectionAction.exp = listener;
+          changeDetector.exp = obj;
+        }
+
         return this.$watch(changeDetector, $watchCollectionAction);
       },
 
@@ -687,6 +692,15 @@ function $RootScopeProvider(){
             watchLog = [],
             logIdx, logMsg, asyncTask;
 
+        var wtfDigestScope, wtfDigestCycleScope, wtfDigestCycleCount, wtfAsyncQueueScope,
+            wtfAsyncQueueCount, wtfWatcherScope;
+
+        if (WTF_ENABLED) {
+          wtfDigestScope = WTF.trace.enterScope('$digest');
+          wtfDigestCycleCount = 0;
+          wtfAsyncQueueCount = 0;
+        }
+
         beginPhase('$digest');
         // Check for changes to browser url that happened in sync before the call to $digest
         $browser.$$checkUrlChange();
@@ -704,14 +718,28 @@ function $RootScopeProvider(){
           dirty = false;
           current = target;
 
+          if (WTF_ENABLED) {
+            wtfDigestCycleCount++;
+            wtfDigestCycleScope = WTF.trace.enterScope('$digest#' + wtfDigestCycleCount);
+            wtfAsyncQueueScope = WTF.trace.enterScope('$digest#asyncQueue');
+          }
+
           while(asyncQueue.length) {
             try {
+              if (WTF_ENABLED) {
+                wtfAsyncQueueCount++
+              }
               asyncTask = asyncQueue.shift();
               asyncTask.scope.$eval(asyncTask.expression);
             } catch (e) {
               $exceptionHandler(e);
             }
             lastDirtyWatch = null;
+          }
+
+          if (WTF_ENABLED) {
+            WTF.trace.appendScopeData('length', wtfAsyncQueueCount);
+            WTF.trace.leaveScope(wtfAsyncQueueScope);
           }
 
           traverseScopesLoop:
@@ -733,7 +761,33 @@ function $RootScopeProvider(){
                       dirty = true;
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value, null) : value;
+
+                      if (WTF_ENABLED) {
+                        wtfWatcherScope = WTF.trace.enterScope('watcher');
+                        if (watch.exp) {
+                          // interpolation watch.exp.exp
+                          // parse watch.exp
+                          if (watch.exp.exp) {
+                            WTF.trace.appendScopeData('exp', watch.exp.exp.toString());
+                          } else if (Object.hasOwnProperty.call(watch.exp, 'toString')) {
+                            WTF.trace.appendScopeData('exp', watch.exp.toString());
+                          } else {
+                            WTF.trace.appendScopeData('exp', watch.exp.name || watch.exp.toString());
+                          }
+                        }
+
+                        WTF.trace.appendScopeData('get', (watch.get.name || watch.get.toString()));
+                        WTF.trace.appendScopeData('fn', (watch.fn.name || watch.fn.toString()));
+                        WTF.trace.appendScopeData('previous', toJson(last));
+                        WTF.trace.appendScopeData('current', toJson(value));
+                      }
+
                       watch.fn(value, ((last === initWatchVal) ? value : last), current);
+
+                      if (WTF_ENABLED) {
+                        WTF.trace.leaveScope(wtfWatcherScope);
+                      }
+
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
                         if (!watchLog[logIdx]) watchLog[logIdx] = [];
@@ -777,16 +831,40 @@ function $RootScopeProvider(){
                 TTL, toJson(watchLog));
           }
 
+          if (WTF_ENABLED) {
+            WTF.trace.leaveScope(wtfDigestCycleScope);
+          }
+
         } while (dirty || asyncQueue.length);
+
+        if (WTF_ENABLED) {
+          WTF.trace.appendScopeData('cycles', wtfDigestCycleCount);
+          WTF.trace.leaveScope(wtfDigestScope);
+        }
 
         clearPhase();
 
+        var wtfPostDigestQueueScope, wtfPostDigestQueueCount;
+
+        if (WTF_ENABLED) {
+          wtfPostDigestQueueScope = WTF.trace.enterScope('$digest#postDigestQueue');
+          wtfPostDigestQueueCount = 0;
+        }
+
         while(postDigestQueue.length) {
           try {
+            if (WTF_ENABLED) {
+              wtfPostDigestQueueCount++;
+            }
             postDigestQueue.shift()();
           } catch (e) {
             $exceptionHandler(e);
           }
+        }
+
+        if (WTF_ENABLED) {
+          WTF.trace.appendScopeData('length', wtfPostDigestQueueCount);
+          WTF.trace.leaveScope(wtfPostDigestQueueScope);
         }
       },
 
@@ -895,6 +973,20 @@ function $RootScopeProvider(){
        * @returns {*} The result of evaluating the expression.
        */
       $eval: function(expr, locals) {
+        if (WTF_ENABLED) {
+          var wtfScope = WTF.trace.enterScope('$eval');
+
+          if (expr) {
+            WTF.trace.appendScopeData('expression', Object.hasOwnProperty.call(expr, 'toString') ? expr.toString() : (expr.name || expr.toString()));
+          }
+
+          var result = $parse(expr)(this, locals);
+
+          WTF.trace.leaveScope(wtfScope);
+
+          return result;
+        }
+
         return $parse(expr)(this, locals);
       },
 

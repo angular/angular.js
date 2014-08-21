@@ -325,7 +325,28 @@ function qFactory(nextTick, exceptionHandler) {
   function scheduleProcessQueue(state) {
     if (state.processScheduled || !state.pending) return;
     state.processScheduled = true;
-    nextTick(function() { processQueue(state); });
+
+    var fn = function() { processQueue(state); };
+
+    if (WTF_ENABLED) {
+      var pending = state.pending;
+
+      fn.toString = function() {
+        var callbacks = state.pending.map(function(p) {
+          return p[state.status];
+        }).filter(function(callback) {
+          return !!callback;
+        }).map(function(callback) {
+          return callback.name || callback.toString();
+        });
+
+       return (state.status === 1 ? 'resolving' : 'rejecting') + ' promise\n' +
+         'callbacks (' + callbacks.length + '):\n' + callbacks.join('\n\n') + '\n\n' +
+         'value: ' + toJson(state.value, true);
+      };
+    }
+
+    nextTick(fn);
   }
 
   function Deferred() {

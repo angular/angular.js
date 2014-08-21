@@ -1117,6 +1117,11 @@ function $ParseProvider() {
         // initial value is defined (for bind-once)
         return isDefined(value) ? result : value;
       };
+
+      if (WTF_ENABLED) {
+        fn.exp = parsedExpression;
+      }
+
       fn.$$watchDelegate = parsedExpression.$$watchDelegate;
       return fn;
     }

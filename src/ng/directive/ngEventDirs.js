@@ -62,6 +62,13 @@ forEach(
               var callback = function() {
                 fn(scope, {$event:event});
               };
+
+              if (WTF_ENABLED) {
+                callback.toString = function() {
+                  return 'ng-' + name + '="' + attr[directiveName] + '"';
+                };
+              }
+
               if (forceAsyncEvents[eventName] && scope.$$phase) {
                 scope.$evalAsync(callback);
               } else {

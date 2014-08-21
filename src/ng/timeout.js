@@ -39,6 +39,13 @@ function $TimeoutProvider() {
           timeoutId;
 
       timeoutId = $browser.defer(function() {
+        var wtfScope;
+
+        if (WTF_ENABLED) {
+          wtfScope = WTF.trace.enterScope('$timeout');
+          WTF.trace.appendScopeData('fn', fn.name || fn.toString());
+        }
+
         try {
           deferred.resolve(fn());
         } catch(e) {
@@ -50,6 +57,9 @@ function $TimeoutProvider() {
         }
 
         if (!skipApply) $rootScope.$apply();
+        if (WTF_ENABLED) {
+          WTF.trace.leaveScope(wtfScope);
+        }
       }, delay);
 
       promise.$$timeoutId = timeoutId;

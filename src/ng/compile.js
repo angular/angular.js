@@ -1024,11 +1024,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective,
                             previousCompileContext) {
+      var wtfScope, wtfHtml;
+
+      if (WTF_ENABLED) {
+        wtfScope = WTF.trace.enterScope('$compile#compile');
+        wtfHtml = '';
+      }
+
       var linkFns = [],
           attrs, directives, nodeLinkFn, childNodes, childLinkFn, linkFnFound, nodeLinkFnFound;
 
       for (var i = 0; i < nodeList.length; i++) {
         attrs = new Attributes();
+
+        if (WTF_ENABLED) {
+          wtfHtml += (nodeList[i].outerHTML || '');
+        }
 
         // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
         directives = collectDirectives(nodeList[i], [], attrs, i === 0 ? maxPriority : undefined,
@@ -1062,12 +1073,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         previousCompileContext = null;
       }
 
+      if (WTF_ENABLED) {
+        WTF.trace.appendScopeData('html', wtfHtml);
+        WTF.trace.leaveScope(wtfScope);
+      }
+
       // return a linking function if we have found anything, null otherwise
       return linkFnFound ? compositeLinkFn : null;
 
       function compositeLinkFn(scope, nodeList, $rootElement, parentBoundTranscludeFn) {
         var nodeLinkFn, childLinkFn, node, childScope, i, ii, idx, childBoundTranscludeFn;
         var stableNodeList;
+        var wtfLinkScope;
 
 
         if (nodeLinkFnFound) {
@@ -1089,6 +1106,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           node = stableNodeList[linkFns[i++]];
           nodeLinkFn = linkFns[i++];
           childLinkFn = linkFns[i++];
+
+          if (WTF_ENABLED) {
+            wtfLinkScope = WTF.trace.enterScope('$compile#link');
+            WTF.trace.appendScopeData('html', node.outerHTML || node.textContent);
+          }
 
           if (nodeLinkFn) {
             if (nodeLinkFn.scope) {
@@ -1117,6 +1139,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           } else if (childLinkFn) {
             childLinkFn(scope, node.childNodes, undefined, parentBoundTranscludeFn);
+          }
+
+          if (WTF_ENABLED) {
+            WTF.trace.leaveScope(wtfLinkScope);
           }
         }
       }

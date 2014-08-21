@@ -103,6 +103,8 @@
  * <div doc-module-components="ng"></div>
  */
 
+var WTF_ENABLED = WTF && WTF.PRESENT;
+
 var REGEX_STRING_REGEXP = /^\/(.+)\/([a-z]*)$/;
 
 // The name of a form control's ValidityState property.
