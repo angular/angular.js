@@ -815,6 +815,20 @@ describe('q', function() {
       });
 
 
+      it('should complain if promise fulfilled with itself', function() {
+        var resolveSpy = jasmine.createSpy('resolve');
+        var rejectSpy = jasmine.createSpy('reject');
+        promise.then(resolveSpy, rejectSpy);
+        deferred.resolve(deferred.promise);
+        mockNextTick.flush();
+
+        expect(resolveSpy).not.toHaveBeenCalled();
+        expect(rejectSpy).toHaveBeenCalled();
+        expect(rejectSpy.calls[0].args[0].message).
+            toMatch(/\[\$q\:qcycle\] Expected promise to be resolved with value other than itself/);
+      });
+
+
       it('should do nothing if a promise was previously resolved', function() {
         promise.then(success(), error());
         expect(logStr()).toBe('');
