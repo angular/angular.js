@@ -174,6 +174,12 @@ describe('angular', function() {
       expect(aCopy).toBe(aCopy.self);
       expect(aCopy.selfs[2]).not.toBe(a.selfs[2]);
     });
+
+    it('should clear destination arrays correctly when source is non-array', function() {
+      expect(copy(null, [1,2,3])).toEqual([]);
+      expect(copy(undefined, [1,2,3])).toEqual([]);
+      expect(copy({0: 1, 1: 2}, [1,2,3])).toEqual([1,2]);
+    });
   });
 
   describe("extend", function() {
