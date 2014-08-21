@@ -240,7 +240,7 @@ function htmlParser( html, handler ) {
     }
   }
   var index, chars, match, stack = [], last = html, text;
-  stack.last = function() { return stack[ stack.length - 1 ]; };
+  var getLast = function() { return stack[ stack.length - 1 ]; };
 
   while ( html ) {
     text = '';
