@@ -803,6 +803,7 @@ function copy(source, destination, stackSource, stackDest) {
       forEach(destination, function(value, key) {
         delete destination[key];
       });
+      if (isArray(destination)) destination.length = 0;
       for ( var key in source) {
         if(source.hasOwnProperty(key)) {
           result = copy(source[key], null, stackSource, stackDest);
