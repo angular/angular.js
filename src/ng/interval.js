@@ -80,7 +80,7 @@ function $IntervalProvider() {
       *         };
       *
       *         $scope.$on('$destroy', function() {
-      *           // Make sure that the interval nis destroyed too
+      *           // Make sure that the interval is destroyed too
       *           $scope.stopFight();
       *         });
       *       }])
