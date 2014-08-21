@@ -235,7 +235,7 @@ function $$QProvider() {
  * @returns {object} Promise manager.
  */
 function qFactory(nextTick, exceptionHandler) {
-  var $qMinErr = minErr('$q');
+  var $qMinErr = minErr('$q', TypeError);
   function callOnce(self, resolveFn, rejectFn) {
     var called = false;
     function wrap(fn) {
@@ -338,8 +338,16 @@ function qFactory(nextTick, exceptionHandler) {
   Deferred.prototype = {
     resolve: function(val) {
       if (this.promise.$$state.status) return;
-      if (val === this.promise) throw new TypeError('Cycle detected');
-      this.$$resolve(val);
+      if (val === this.promise) {
+        this.$$reject($qMinErr(
+          'qcycle',
+          "Expected promise to be resolved with value other than itself '{0}'",
+          val));
+      }
+      else {
+        this.$$resolve(val);
+      }
+
     },
 
     $$resolve: function(val) {
