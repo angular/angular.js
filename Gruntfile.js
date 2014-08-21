@@ -10,6 +10,7 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.loadTasks('lib/grunt');
+  grunt.loadNpmTasks('angular-benchpress');
 
   var NG_VERSION = versionInfo.currentVersion;
   NG_VERSION.cdn = versionInfo.cdnVersion;
@@ -22,7 +23,12 @@ module.exports = function(grunt) {
   //config
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
-
+    bp_build: {
+      options: {
+        buildPath: 'build/benchmarks',
+        benchmarksPath: 'benchmarks'
+      }
+    },
     parallel: {
       travis: {
         tasks: [
@@ -161,7 +167,7 @@ module.exports = function(grunt) {
       scenario: {
         dest: 'build/angular-scenario.js',
         src: [
-          'bower_components/jquery/jquery.js',
+          'bower_components/jquery/dist/jquery.js',
           util.wrap([files['angularSrc'], files['angularScenario']], 'ngScenario/angular')
         ],
         styles: {

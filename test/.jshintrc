@@ -82,7 +82,8 @@
     "assertArgFn": false,
     "assertNotHasOwnProperty": false,
     "getter": false,
-    "getBlockElements": false,
+    "getBlockNodes": false,
+    "createMap": false,
     "VALIDITY_STATE_PROPERTY": true,
 
     /* AngularPublic.js */

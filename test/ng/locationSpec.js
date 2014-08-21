@@ -62,6 +62,48 @@ describe('$location', function() {
   });
 
 
+  it('should not infinitely digest when using a semicolon in initial path', function() {
+    module(function($windowProvider, $locationProvider, $browserProvider) {
+      $locationProvider.html5Mode(true);
+      $windowProvider.$get = function() {
+        var win = {};
+        angular.extend(win, window);
+        win.addEventListener = angular.noop;
+        win.removeEventListener = angular.noop;
+        win.history = {
+          replaceState: angular.noop,
+          pushState: angular.noop
+        };
+        win.location = {
+          href: 'http://localhost:9876/;jsessionid=foo',
+          replace: function(val) {
+            win.location.href = val;
+          }
+        };
+        return win;
+      };
+      $browserProvider.$get = function($document, $window) {
+        var sniffer = {history: true, hashchange: false};
+        var logs = {log:[], warn:[], info:[], error:[]};
+        var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
+                   warn: function() { logs.warn.push(slice.call(arguments)); },
+                   info: function() { logs.info.push(slice.call(arguments)); },
+                   error: function() { logs.error.push(slice.call(arguments)); }};
+
+        /* global Browser: false */
+        var b = new Browser($window, $document, fakeLog, sniffer);
+        b.pollFns = [];
+        return b;
+      };
+    });
+    var self = this;
+    inject(function($location, $browser, $rootScope) {
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+    });
+  });
+
   describe('NewUrl', function() {
     beforeEach(function() {
       url = new LocationHtml5Url('http://www.domain.com:9877/');
@@ -323,6 +365,18 @@ describe('$location', function() {
         expect(url.search()).toEqual({'i j': '<>#'});
         expect(url.hash()).toBe('x <>#');
       });
+
+      it('should decode pluses as spaces in urls', function() {
+        url = new LocationHtml5Url('http://host.com/');
+        url.$$parse('http://host.com/?a+b=c+d');
+        expect(url.search()).toEqual({'a b':'c d'});
+      });
+
+      it('should retain pluses when setting search queries', function() {
+        url.search({'a+b':'c+d'});
+        expect(url.search()).toEqual({'a+b':'c+d'});
+      });
+
     });
   });
 
@@ -799,15 +853,21 @@ describe('$location', function() {
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
         // fake the base behavior
-        if (!relLink) {
-          if (linkHref[0] == '/') {
-            linkHref = 'http://host.com' + linkHref;
-          } else if(!linkHref.match(/:\/\//)) {
-            linkHref = 'http://host.com/base/' + linkHref;
+        if (typeof linkHref === 'string') {
+          if (!relLink) {
+            if (linkHref[0] == '/') {
+              linkHref = 'http://host.com' + linkHref;
+            } else if(!linkHref.match(/:\/\//)) {
+              linkHref = 'http://host.com/base/' + linkHref;
+            }
           }
         }
 
-        link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
+        if (linkHref) {
+          link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
+        } else {
+          link = jqLite('<a ' + attrs + '>' + content + '</a>')[0];
+        }
 
         $provide.value('$sniffer', {history: supportHist});
         $locationProvider.html5Mode(html5Mode);
@@ -922,6 +982,34 @@ describe('$location', function() {
     });
 
 
+    // Regression (gh-7721)
+    it('should not throw when clicking anchor with no href attribute when history enabled on old browser', function() {
+      configureService(null, true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should produce relative paths correctly when $location.path() is "/" when history enabled on old browser', function() {
+      configureService('partial1', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/partial1');
+        }
+      );
+    });
+
+
     it('should rewrite abs link to hashbang url when history enabled on old browser', function() {
       configureService('/base/link?a#b', true, false);
       inject(
@@ -963,6 +1051,32 @@ describe('$location', function() {
 
     it('should not rewrite links with target specified', function() {
       configureService('/a?b=c', true, true, 'target="some-frame"');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite links with `javascript:` URI', function() {
+      configureService(' jAvAsCrIpT:throw new Error("Boom!")', true, true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite links with `mailto:` URI', function() {
+      configureService(' mAiLtO:foo@bar.com', true, true, true);
       inject(
         initBrowser(),
         initLocation(),

@@ -241,13 +241,38 @@ describe('ngSwitch', function() {
     $rootScope.url = 'x';
     $rootScope.$apply();
     expect(getChildScope()).toBeUndefined();
-    expect(child1.$destroy).toHaveBeenCalledOnce();
+    expect(child1.$destroy).toHaveBeenCalled();
 
     $rootScope.url = 'a';
     $rootScope.$apply();
     var child2 = getChildScope();
     expect(child2).toBeDefined();
     expect(child2).not.toBe(child1);
+  }));
+
+
+  it("should interoperate with other transclusion directives like ngRepeat", inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-switch="value">' +
+          '<div ng-switch-when="foo" ng-repeat="foo in foos">{{value}}:{{foo}}|</div>' +
+          '<div ng-switch-default ng-repeat="bar in bars">{{value}}:{{bar}}|</div>' +
+      '</div>'
+    )($rootScope);
+    $rootScope.$apply('value="foo";foos=["one", "two"]');
+    expect(element.text()).toEqual('foo:one|foo:two|');
+
+    $rootScope.$apply('value="foo";foos=["one"]');
+    expect(element.text()).toEqual('foo:one|');
+
+    $rootScope.$apply('value="foo";foos=["one","two","three"]');
+    expect(element.text()).toEqual('foo:one|foo:two|foo:three|');
+
+    $rootScope.$apply('value="bar";bars=["up", "down"]');
+    expect(element.text()).toEqual('bar:up|bar:down|');
+
+    $rootScope.$apply('value="bar";bars=["up", "down", "forwards", "backwards"]');
+    expect(element.text()).toEqual('bar:up|bar:down|bar:forwards|bar:backwards|');
+
   }));
 
 

@@ -55,6 +55,20 @@ describe('angular', function() {
       expect(copy(re) === re).toBeFalsy();
     });
 
+    it("should copy RegExp with flags", function() {
+      var re = new RegExp('.*', 'gim');
+      expect(copy(re).global).toBe(true);
+      expect(copy(re).ignoreCase).toBe(true);
+      expect(copy(re).multiline).toBe(true);
+    });
+
+    it("should copy RegExp with lastIndex", function() {
+      var re = /a+b+/g;
+      var str = 'ab aabb';
+      expect(re.exec(str)[0]).toEqual('ab');
+      expect(copy(re).exec(str)[0]).toEqual('aabb');
+    });
+
     it("should deeply copy literal RegExp", function() {
       var objWithRegExp = {
         re: /.*/
@@ -170,6 +184,12 @@ describe('angular', function() {
       expect(aCopy).toBe(aCopy.self);
       expect(aCopy.selfs[2]).not.toBe(a.selfs[2]);
     });
+
+    it('should clear destination arrays correctly when source is non-array', function() {
+      expect(copy(null, [1,2,3])).toEqual([]);
+      expect(copy(undefined, [1,2,3])).toEqual([]);
+      expect(copy({0: 1, 1: 2}, [1,2,3])).toEqual([1,2]);
+    });
   });
 
   describe("extend", function() {
@@ -228,19 +248,6 @@ describe('angular', function() {
 
       expect(shallowCopy(original, clone)).toBe(clone);
       expect(clone.$some).toBe(original.$some);
-    });
-
-    it('should omit properties from prototype chain', function() {
-      var original, clone = {};
-      function Func() {}
-      Func.prototype.hello = "world";
-
-      original = new Func();
-      original.goodbye = "world";
-
-      expect(shallowCopy(original, clone)).toBe(clone);
-      expect(clone.hello).toBeUndefined();
-      expect(clone.goodbye).toBe("world");
     });
 
     it('should handle arrays', function() {
@@ -636,6 +643,16 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
+
+
+    it('should not invoke the iterator for indexed properties which are not present in the collection', function() {
+      var log = [];
+      var collection = [];
+      collection[5] = 'SPARSE';
+      forEach(collection, function (item, index) { log.push(item + index); });
+      expect(log.length).toBe(1);
+      expect(log[0]).toBe('SPARSE5');
+    });
   });
 
 
@@ -654,16 +671,16 @@ describe('angular', function() {
         toEqual('asdf1234asdf');
 
       //don't encode unreserved'
-      expect(encodeUriSegment("-_.!~*'() -_.!~*'()")).
-        toEqual("-_.!~*'()%20-_.!~*'()");
+      expect(encodeUriSegment("-_.!~*'(); -_.!~*'();")).
+        toEqual("-_.!~*'();%20-_.!~*'();");
 
       //don't encode the rest of pchar'
       expect(encodeUriSegment(':@&=+$, :@&=+$,')).
         toEqual(':@&=+$,%20:@&=+$,');
 
-      //encode '/', ';' and ' ''
+      //encode '/' and ' ''
       expect(encodeUriSegment('/; /;')).
-        toEqual('%2F%3B%20%2F%3B');
+        toEqual('%2F;%20%2F;');
     });
   });
 
@@ -685,7 +702,7 @@ describe('angular', function() {
 
       //encode '&', ';', '=', '+', and '#'
       expect(encodeUriQuery('&;=+# &;=+#')).
-        toEqual('%26%3B%3D%2B%23+%26%3B%3D%2B%23');
+        toEqual('%26;%3D%2B%23+%26;%3D%2B%23');
 
       //encode ' ' as '+'
       expect(encodeUriQuery('  ')).
@@ -785,7 +802,7 @@ describe('angular', function() {
       expect(function () {
         angular.bootstrap(element);
       }).toThrowMatching(
-        /\[ng:btstrpd\] App Already Bootstrapped with this Element '<div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?>'/i
+        /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
       );
 
       dealoc(element);

@@ -5,7 +5,7 @@ describe('parser', function() {
   beforeEach(function() {
     /* global getterFnCache: true */
     // clear cache
-    getterFnCache = {};
+    getterFnCache = createMap();
   });
 
 
@@ -428,6 +428,17 @@ describe('parser', function() {
         expect(scope.a).toEqual(123);
         expect(scope.b).toEqual(234);
       });
+
+        it('should evaluate assignments in ternary operator', function() {
+          scope.$eval('a = 1 ? 2 : 3');
+          expect(scope.a).toBe(2);
+
+          scope.$eval('0 ? a = 2 : a = 3');
+          expect(scope.a).toBe(3);
+
+          scope.$eval('1 ? a = 2 : a = 3');
+          expect(scope.a).toBe(2);
+        });
 
       it('should evaluate function call without arguments', function() {
         scope['const'] =  function(a,b){return 123;};
@@ -1078,6 +1089,22 @@ describe('parser', function() {
           fn.assign(scope, 123);
           expect(scope).toEqual({a:123});
         }));
+
+        it('should expose working assignment function for expressions ending with brackets', inject(function($parse) {
+          var fn = $parse('a.b["c"]');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(scope.a.b.c).toEqual(123);
+        }));
+
+        it('should expose working assignment function for expressions with brackets in the middle', inject(function($parse) {
+          var fn = $parse('a["b"].c');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(scope.a.b.c).toEqual(123);
+        }));
       });
 
       describe('one-time binding', function() {
@@ -1158,6 +1185,64 @@ describe('parser', function() {
           $rootScope.$digest();
           expect(fn()).toEqual(null);
         }));
+
+        describe('literal expressions', function () {
+          it('should only become stable when all the properties of an object have defined values', inject(function ($parse, $rootScope, log){
+            var fn = $parse('::{foo: foo, bar: bar}');
+            $rootScope.$watch(fn, function(value) { log(value); }, true);
+
+            expect(log.empty()).toEqual([]);
+            expect($rootScope.$$watchers.length).toBe(1);
+
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(1);
+            expect(log.empty()).toEqual([{foo: undefined, bar: undefined}]);
+
+            $rootScope.foo = 'foo';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(1);
+            expect(log.empty()).toEqual([{foo: 'foo', bar: undefined}]);
+
+            $rootScope.foo = 'foobar';
+            $rootScope.bar = 'bar';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(0);
+            expect(log.empty()).toEqual([{foo: 'foobar', bar: 'bar'}]);
+
+            $rootScope.foo = 'baz';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(0);
+            expect(log.empty()).toEqual([]);
+          }));
+
+          it('should only become stable when all the elements of an array have defined values', inject(function ($parse, $rootScope, log){
+            var fn = $parse('::[foo,bar]');
+            $rootScope.$watch(fn, function(value) { log(value); }, true);
+
+            expect(log.empty()).toEqual([]);
+            expect($rootScope.$$watchers.length).toBe(1);
+
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(1);
+            expect(log.empty()).toEqual([[undefined, undefined]]);
+
+            $rootScope.foo = 'foo';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(1);
+            expect(log.empty()).toEqual([['foo', undefined]]);
+
+            $rootScope.foo = 'foobar';
+            $rootScope.bar = 'bar';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(0);
+            expect(log.empty()).toEqual([['foobar', 'bar']]);
+
+            $rootScope.foo = 'baz';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(0);
+            expect(log.empty()).toEqual([]);
+          }));
+        });
       });
 
       describe('locals', function() {

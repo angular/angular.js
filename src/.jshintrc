@@ -51,6 +51,7 @@
     "isFile": false,
     "isBlob": false,
     "isBoolean": false,
+    "isPromiseLike": false,
     "trim": false,
     "isElement": false,
     "makeMap": false,
@@ -84,8 +85,11 @@
     "assertArgFn": false,
     "assertNotHasOwnProperty": false,
     "getter": false,
-    "getBlockElements": false,
+    "getBlockNodes": false,
+    "createMap": false,
     "VALIDITY_STATE_PROPERTY": false,
+
+    "skipDestroyOnNextJQueryCleanData": true,
 
     /* filters.js */
     "getFirstThursdayOfYear": false,

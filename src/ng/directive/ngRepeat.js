@@ -100,6 +100,13 @@
  *     For example: `item in items` is equivalent to `item in items track by $id(item)`. This implies that the DOM elements
  *     will be associated by item identity in the array.
  *
+ *   * `variable in expression as alias_expression` – You can also provide an optional alias expression which will then store the
+ *     intermediate results of the repeater after the filters have been applied. Typically this is used to render a special message
+ *     when a filter is active on the repeater, but the filtered result set is empty.
+ *
+ *     For example: `item in items | filter:x as results` will store the fragment of the repeated items as `results`, but only after
+ *     the items have been processed through the filter.
+ *
  *     For example: `item in items track by $id(item)`. A built in `$id()` function can be used to assign a unique
  *     `$$hashKey` property to each item in the array. This property is then used as a key to associated DOM elements
  *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
@@ -132,8 +139,11 @@
         I have {{friends.length}} friends. They are:
         <input type="search" ng-model="q" placeholder="filter friends..." />
         <ul class="example-animate-container">
-          <li class="animate-repeat" ng-repeat="friend in friends | filter:q">
+          <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+          </li>
+          <li class="animate-repeat" ng-if="results.length == 0">
+            <strong>No results found...</strong>
           </li>
         </ul>
       </div>
@@ -201,30 +211,78 @@
 var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
+
+  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
+    // TODO(perf): generate setters to shave off ~40ms or 1-1.5%
+    scope[valueIdentifier] = value;
+    if (keyIdentifier) scope[keyIdentifier] = key;
+    scope.$index = index;
+    scope.$first = (index === 0);
+    scope.$last = (index === (arrayLength - 1));
+    scope.$middle = !(scope.$first || scope.$last);
+    // jshint bitwise: false
+    scope.$odd = !(scope.$even = (index&1) === 0);
+    // jshint bitwise: true
+  };
+
+  var getBlockStart = function(block) {
+    return block.clone[0];
+  };
+
+  var getBlockEnd = function(block) {
+    return block.clone[block.clone.length - 1];
+  };
+
+
   return {
+    restrict: 'A',
     multiElement: true,
     transclude: 'element',
     priority: 1000,
     terminal: true,
     $$tlb: true,
-    link: function($scope, $element, $attr, ctrl, $transclude){
-        var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
-          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
-          lhs, rhs, valueIdentifier, keyIdentifier,
-          hashFnLocals = {$id: hashKey};
+    compile: function ngRepeatCompile($element, $attr) {
+      var expression = $attr.ngRepeat;
+      var ngRepeatEndComment = document.createComment(' end ngRepeat: ' + expression + ' ');
 
-        if (!match) {
-          throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
+      var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
+
+      if (!match) {
+        throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
             expression);
-        }
+      }
 
-        lhs = match[1];
-        rhs = match[2];
-        trackByExp = match[3];
+      var lhs = match[1];
+      var rhs = match[2];
+      var aliasAs = match[3];
+      var trackByExp = match[4];
 
-        if (trackByExp) {
-          trackByExpGetter = $parse(trackByExp);
+      match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
+
+      if (!match) {
+        throw ngRepeatMinErr('iidexp', "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
+            lhs);
+      }
+      var valueIdentifier = match[3] || match[1];
+      var keyIdentifier = match[2];
+
+      var trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn;
+      var hashFnLocals = {$id: hashKey};
+
+      if (trackByExp) {
+        trackByExpGetter = $parse(trackByExp);
+      } else {
+        trackByIdArrayFn = function (key, value) {
+          return hashKey(value);
+        };
+        trackByIdObjFn = function (key) {
+          return key;
+        };
+      }
+
+      return function ngRepeatLink($scope, $element, $attr, ctrl, $transclude) {
+
+        if (trackByExpGetter) {
           trackByIdExpFn = function(key, value, index) {
             // assign key, value, and $index to the locals so that they can be used in hash functions
             if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
@@ -232,58 +290,39 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             hashFnLocals.$index = index;
             return trackByExpGetter($scope, hashFnLocals);
           };
-        } else {
-          trackByIdArrayFn = function(key, value) {
-            return hashKey(value);
-          };
-          trackByIdObjFn = function(key) {
-            return key;
-          };
         }
-
-        match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
-        if (!match) {
-          throw ngRepeatMinErr('iidexp', "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
-                                                                    lhs);
-        }
-        valueIdentifier = match[3] || match[1];
-        keyIdentifier = match[2];
 
         // Store a list of elements from previous run. This is a hash where key is the item from the
         // iterator, and the value is objects with following properties.
         //   - scope: bound scope
         //   - element: previous element.
         //   - index: position
-        var lastBlockMap = {};
+        //
+        // We are using no-proto object so that we don't need to guard against inherited props via
+        // hasOwnProperty.
+        var lastBlockMap = createMap();
 
         //watch props
-        $scope.$watchCollection(rhs, function ngRepeatAction(collection){
+        $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
           var index, length,
-              previousNode = $element[0],     // current position of the node
+              previousNode = $element[0],     // node that cloned nodes should be inserted after
+                                              // initialized to the comment node anchor
               nextNode,
               // Same as lastBlockMap but it has the current state. It will become the
               // lastBlockMap on the next iteration.
-              nextBlockMap = {},
-              arrayLength,
+              nextBlockMap = createMap(),
+              collectionLength,
               key, value, // key/value of iteration
               trackById,
               trackByIdFn,
               collectionKeys,
               block,       // last object information {scope, element, id}
-              nextBlockOrder = [],
+              nextBlockOrder,
               elementsToRemove;
 
-          var updateScope = function(scope, index) {
-            scope[valueIdentifier] = value;
-            if (keyIdentifier) scope[keyIdentifier] = key;
-            scope.$index = index;
-            scope.$first = (index === 0);
-            scope.$last = (index === (arrayLength - 1));
-            scope.$middle = !(scope.$first || scope.$last);
-            // jshint bitwise: false
-            scope.$odd = !(scope.$even = (index&1) === 0);
-            // jshint bitwise: true
-          };
+          if (aliasAs) {
+            $scope[aliasAs] = collection;
+          }
 
           if (isArrayLike(collection)) {
             collectionKeys = collection;
@@ -300,95 +339,94 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             collectionKeys.sort();
           }
 
-          arrayLength = collectionKeys.length;
+          collectionLength = collectionKeys.length;
+          nextBlockOrder = new Array(collectionLength);
 
           // locate existing items
-          length = nextBlockOrder.length = collectionKeys.length;
-          for(index = 0; index < length; index++) {
-           key = (collection === collectionKeys) ? index : collectionKeys[index];
-           value = collection[key];
-           trackById = trackByIdFn(key, value, index);
-           assertNotHasOwnProperty(trackById, '`track by` id');
-           if(lastBlockMap.hasOwnProperty(trackById)) {
-             block = lastBlockMap[trackById];
-             delete lastBlockMap[trackById];
-             nextBlockMap[trackById] = block;
-             nextBlockOrder[index] = block;
-           } else if (nextBlockMap.hasOwnProperty(trackById)) {
-             // restore lastBlockMap
-             forEach(nextBlockOrder, function(block) {
-               if (block && block.scope) lastBlockMap[block.id] = block;
-             });
-             // This is a duplicate and we need to throw an error
-             throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
-                                                                                                                                                    expression,       trackById);
-           } else {
-             // new never before seen block
-             nextBlockOrder[index] = { id: trackById };
-             nextBlockMap[trackById] = false;
-           }
-         }
-
-          // remove existing items
-          for (var blockKey in lastBlockMap) {
-            // lastBlockMap is our own object so we don't need to use special hasOwnPropertyFn
-            if (lastBlockMap.hasOwnProperty(blockKey)) {
-              block = lastBlockMap[blockKey];
-              elementsToRemove = getBlockElements(block.clone);
-              $animate.leave(elementsToRemove);
-              forEach(elementsToRemove, function(element) { element[NG_REMOVED] = true; });
-              block.scope.$destroy();
+          for (index = 0; index < collectionLength; index++) {
+            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            value = collection[key];
+            trackById = trackByIdFn(key, value, index);
+            if (lastBlockMap[trackById]) {
+              // found previously seen block
+              block = lastBlockMap[trackById];
+              delete lastBlockMap[trackById];
+              nextBlockMap[trackById] = block;
+              nextBlockOrder[index] = block;
+            } else if (nextBlockMap[trackById]) {
+              // if collision detected. restore lastBlockMap and throw an error
+              forEach(nextBlockOrder, function (block) {
+                if (block && block.scope) lastBlockMap[block.id] = block;
+              });
+              throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
+                  expression, trackById);
+            } else {
+              // new never before seen block
+              nextBlockOrder[index] = {id: trackById, scope: undefined, clone: undefined};
+              nextBlockMap[trackById] = true;
             }
           }
 
+          // remove leftover items
+          for (var blockKey in lastBlockMap) {
+            block = lastBlockMap[blockKey];
+            elementsToRemove = getBlockNodes(block.clone);
+            $animate.leave(elementsToRemove);
+            if (elementsToRemove[0].parent) {
+              // if the element was not removed yet because of pending animation, mark it as deleted
+              // so that we can ignore it later
+              for (index = 0, length = elementsToRemove.length; index < length; index++) {
+                elementsToRemove[index][NG_REMOVED] = true;
+              }
+            }
+            block.scope.$destroy();
+          }
+
           // we are not using forEach for perf reasons (trying to avoid #call)
-          for (index = 0, length = collectionKeys.length; index < length; index++) {
+          for (index = 0; index < collectionLength; index++) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
             block = nextBlockOrder[index];
-            if (nextBlockOrder[index - 1]) previousNode = getBlockEnd(nextBlockOrder[index - 1]);
 
             if (block.scope) {
               // if we have already seen this object, then we need to reuse the
               // associated scope/element
+
               nextNode = previousNode;
+
+              // skip nodes that are already pending removal via leave animation
               do {
                 nextNode = nextNode.nextSibling;
-              } while(nextNode && nextNode[NG_REMOVED]);
+              } while (nextNode && nextNode[NG_REMOVED]);
 
               if (getBlockStart(block) != nextNode) {
                 // existing item which got moved
-                $animate.move(getBlockElements(block.clone), null, jqLite(previousNode));
+                $animate.move(getBlockNodes(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index);
+              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
             } else {
               // new item which we don't know about
-              $transclude(function(clone, scope) {
+              $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
-                clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
+                // http://jsperf.com/clone-vs-createcomment
+                var endNode = ngRepeatEndComment.cloneNode();
+                clone[clone.length++] = endNode;
                 $animate.enter(clone, null, jqLite(previousNode));
-                previousNode = clone;
+                previousNode = endNode;
                 // Note: We only need the first/last node of the cloned nodes.
                 // However, we need to keep the reference to the jqlite wrapper as it might be changed later
                 // by a directive with templateUrl when its template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
-                updateScope(block.scope, index);
+                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
               });
             }
           }
           lastBlockMap = nextBlockMap;
         });
+      };
     }
   };
-
-  function getBlockStart(block) {
-    return block.clone[0];
-  }
-
-  function getBlockEnd(block) {
-    return block.clone[block.clone.length - 1];
-  }
 }];
 

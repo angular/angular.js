@@ -352,7 +352,7 @@ element as a customer component.
 Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
 given scope.
 
-In its current implementation, we'd need to create a different controller each time In order to
+In its current implementation, we'd need to create a different controller each time in order to
 re-use such a directive:
 
 <example module="docsScopeProblemExample">
@@ -475,7 +475,6 @@ within our directive's template:
     angular.module('docsIsolationExample', [])
       .controller('Controller', ['$scope', function($scope) {
         $scope.naomi = { name: 'Naomi', address: '1600 Amphitheatre' };
-
         $scope.vojta = { name: 'Vojta', address: '3456 Somewhere Else' };
       }])
       .directive('myCustomer', function() {
@@ -537,7 +536,7 @@ where:
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
 to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
-end-to-end testing, where we want to ensure that all $timeouts have completed before completing the test.
+end-to-end testing, where we want to ensure that all `$timeout`s have completed before completing the test.
 We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
@@ -909,6 +908,30 @@ in the case when the directive is used as a component.
 Looking back at `myPane`'s definition, notice the last argument in its `link` function: `tabsCtrl`.
 When a directive requires a controller, it receives that controller as the fourth argument of its
 `link` function. Taking advantage of this, `myPane` can call the `addPane` function of `myTabs`.
+
+If multiple controllers are required, the `require` option of the directive can take an array argument.
+The corresponding parameter being sent to the `link` function will also be an array.
+
+```js
+angular.module('docsTabsExample', [])
+  .directive('myPane', function() {
+    return {
+      require: ['^myTabs', '^ngModel'],
+      restrict: 'E',
+      transclude: true,
+      scope: {
+        title: '@'
+      },
+      link: function(scope, element, attrs, controllers) {
+        var tabsCtrl = controllers[0],
+            modelCtrl = controllers[1];
+
+        tabsCtrl.addPane(scope);
+      },
+      templateUrl: 'my-pane.html'
+    };
+  });
+```
 
 Savvy readers may be wondering what the difference is between `link` and `controller`.
 The basic difference is that `controller` can expose an API, and `link` functions can interact with

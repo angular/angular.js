@@ -80,7 +80,7 @@ function ensureSafeFunction(obj, fullExpression) {
   }
 }
 
-var OPERATORS = {
+var OPERATORS = extend(createMap(), {
     /* jshint bitwise : false */
     'null':function(){return null;},
     'true':function(){return true;},
@@ -118,7 +118,7 @@ var OPERATORS = {
 //    '|':function(self, locals, a,b){return a|b;},
     '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
     '!':function(self, locals, a){return !a(self, locals);}
-};
+});
 /* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
@@ -301,14 +301,16 @@ Lexer.prototype = {
       text: ident
     };
 
-    // OPERATORS is our own object so we don't need to use special hasOwnPropertyFn
-    if (OPERATORS.hasOwnProperty(ident)) {
-      token.fn = OPERATORS[ident];
+    var fn = OPERATORS[ident];
+
+    if (fn) {
+      token.fn = fn;
       token.constant = true;
     } else {
       var getter = getterFn(ident, this.options, this.text);
-      token.fn = extend(function(self, locals) {
-        return (getter(self, locals));
+      // TODO(perf): consider exposing the getter reference
+      token.fn = extend(function $parsePathGetter(self, locals) {
+        return getter(self, locals);
       }, {
         assign: function(self, value) {
           return setter(self, ident, value, parser.text);
@@ -548,19 +550,31 @@ Parser.prototype = {
   filter: function() {
     var token = this.expect();
     var fn = this.$filter(token.text);
-    var argsFn = [];
-    while(this.expect(':')) {
-      argsFn.push(this.expression());
-    }
-    return valueFn(fnInvoke);
+    var argsFn;
+    var args;
 
-    function fnInvoke(self, locals, input) {
-      var args = [input];
-      for (var i = 0; i < argsFn.length; i++) {
-        args.push(argsFn[i](self, locals));
+    if (this.peek(':')) {
+      argsFn = [];
+      args = []; // we can safely reuse the array
+      while (this.expect(':')) {
+        argsFn.push(this.expression());
       }
-      return fn.apply(self, args);
     }
+
+    return valueFn(function $parseFilter(self, locals, input) {
+      if (args) {
+        args[0] = input;
+
+        var i = argsFn.length;
+        while (i--) {
+          args[i + 1] = argsFn[i](self, locals);
+        }
+
+        return fn.apply(undefined, args);
+      }
+
+      return fn(input);
+    });
   },
 
   expression: function() {
@@ -589,9 +603,9 @@ Parser.prototype = {
     var middle;
     var token;
     if ((token = this.expect('?'))) {
-      middle = this.ternary();
+      middle = this.assignment();
       if ((token = this.expect(':'))) {
-        return this.ternaryFn(left, middle, this.ternary());
+        return this.ternaryFn(left, middle, this.assignment());
       } else {
         this.throwError('expected :', token);
       }
@@ -675,11 +689,13 @@ Parser.prototype = {
     var field = this.expect().text;
     var getter = getterFn(field, this.options, this.text);
 
-    return extend(function(scope, locals, self) {
+    return extend(function $parseFieldAccess(scope, locals, self) {
       return getter(self || object(scope, locals));
     }, {
       assign: function(scope, value, locals) {
-        return setter(object(scope, locals), field, value, parser.text);
+        var o = object(scope, locals);
+        if (!o) object.assign(scope, o = {});
+        return setter(o, field, value, parser.text);
       }
     });
   },
@@ -690,7 +706,7 @@ Parser.prototype = {
     var indexFn = this.expression();
     this.consume(']');
 
-    return extend(function(self, locals) {
+    return extend(function $parseObjectIndex(self, locals) {
       var o = obj(self, locals),
           i = indexFn(self, locals),
           v;
@@ -701,15 +717,16 @@ Parser.prototype = {
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = indexFn(self, locals);
+        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
-        var safe = ensureSafeObject(obj(self, locals), parser.text);
-        return safe[key] = value;
+        var o = ensureSafeObject(obj(self, locals), parser.text);
+        if (!o) obj.assign(self, o = {});
+        return o[key] = value;
       }
     });
   },
 
-  functionCall: function(fn, contextGetter) {
+  functionCall: function(fnGetter, contextGetter) {
     var argsFn = [];
     if (this.peekToken().text !== ')') {
       do {
@@ -718,26 +735,30 @@ Parser.prototype = {
     }
     this.consume(')');
 
-    var parser = this;
+    var expressionText = this.text;
+    // we can safely reuse the array across invocations
+    var args = argsFn.length ? [] : null;
 
-    return function(scope, locals) {
-      var args = [];
+    return function $parseFunctionCall(scope, locals) {
       var context = contextGetter ? contextGetter(scope, locals) : scope;
+      var fn = fnGetter(scope, locals, context) || noop;
 
-      for (var i = 0; i < argsFn.length; i++) {
-        args.push(argsFn[i](scope, locals));
+      if (args) {
+        var i = argsFn.length;
+        while (i--) {
+          args[i] = argsFn[i](scope, locals);
+        }
       }
-      var fnPtr = fn(scope, locals, context) || noop;
 
-      ensureSafeObject(context, parser.text);
-      ensureSafeFunction(fnPtr, parser.text);
+      ensureSafeObject(context, expressionText);
+      ensureSafeFunction(fn, expressionText);
 
       // IE stupidity! (IE doesn't have apply for some native functions)
-      var v = fnPtr.apply
-            ? fnPtr.apply(context, args)
-            : fnPtr(args[0], args[1], args[2], args[3], args[4]);
+      var v = fn.apply
+            ? fn.apply(context, args)
+            : fn(args[0], args[1], args[2], args[3], args[4]);
 
-      return ensureSafeObject(v, parser.text);
+      return ensureSafeObject(v, expressionText);
     };
   },
 
@@ -831,7 +852,7 @@ function setter(obj, path, setValue, fullExp) {
   return setValue;
 }
 
-var getterFnCache = {};
+var getterFnCache = createMap();
 
 /**
  * Implementation of the "Black Hole" variant from:
@@ -872,16 +893,12 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
 }
 
 function getterFn(path, options, fullExp) {
-  // Check whether the cache has this getter already.
-  // We can use hasOwnProperty directly on the cache because we ensure,
-  // see below, that the cache never stores a path called 'hasOwnProperty'
-  if (getterFnCache.hasOwnProperty(path)) {
-    return getterFnCache[path];
-  }
+  var fn = getterFnCache[path];
+
+  if (fn) return fn;
 
   var pathKeys = path.split('.'),
-      pathKeysLength = pathKeys.length,
-      fn;
+      pathKeysLength = pathKeys.length;
 
   // http://jsperf.com/angularjs-parse-getter/6
   if (options.csp) {
@@ -901,7 +918,7 @@ function getterFn(path, options, fullExp) {
       };
     }
   } else {
-    var code = 'var p;\n';
+    var code = '';
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
       code += 'if(s == null) return undefined;\n' +
@@ -909,22 +926,18 @@ function getterFn(path, options, fullExp) {
                       // we simply dereference 's' on any .dot notation
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
-                      : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n';
+                      : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key + ';\n';
     });
     code += 'return s;';
 
     /* jshint -W054 */
-    var evaledFnGetter = new Function('s', 'k', code); // s=scope, k=locals
+    var evaledFnGetter = new Function('s', 'l', code); // s=scope, l=locals
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
     fn = evaledFnGetter;
   }
 
-  // Only cache the value if it's not going to mess up the cache object
-  // This is more performant that using Object.prototype.hasOwnProperty.call
-  if (path !== 'hasOwnProperty') {
-    getterFnCache[path] = fn;
-  }
+  getterFnCache[path] = fn;
   return fn;
 }
 
@@ -981,7 +994,7 @@ function getterFn(path, options, fullExp) {
  *  service.
  */
 function $ParseProvider() {
-  var cache = {};
+  var cache = createMap();
 
   var $parseOptions = {
     csp: false
@@ -991,15 +1004,16 @@ function $ParseProvider() {
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     $parseOptions.csp = $sniffer.csp;
 
-    return function(exp, interceptorFn) {
-      var parsedExpression, oneTime,
-          cacheKey = (exp = trim(exp));
+    return function $parse(exp, interceptorFn) {
+      var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
         case 'string':
-          if (cache.hasOwnProperty(cacheKey)) {
-            parsedExpression = cache[cacheKey];
-          } else {
+          cacheKey = exp = exp.trim();
+
+          parsedExpression = cache[cacheKey];
+
+          if (!parsedExpression) {
             if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
               oneTime = true;
               exp = exp.substring(2);
@@ -1009,14 +1023,14 @@ function $ParseProvider() {
             var parser = new Parser(lexer, $filter, $parseOptions);
             parsedExpression = parser.parse(exp);
 
-            if (parsedExpression.constant) parsedExpression.$$watchDelegate = constantWatch;
-            else if (oneTime) parsedExpression.$$watchDelegate = oneTimeWatch;
-
-            if (cacheKey !== 'hasOwnProperty') {
-              // Only cache the value if it's not going to mess up the cache object
-              // This is more performant that using Object.prototype.hasOwnProperty.call
-              cache[cacheKey] = parsedExpression;
+            if (parsedExpression.constant) {
+              parsedExpression.$$watchDelegate = constantWatchDelegate;
+            } else if (oneTime) {
+              parsedExpression.$$watchDelegate = parsedExpression.literal ?
+                oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
             }
+
+            cache[cacheKey] = parsedExpression;
           }
           return addInterceptor(parsedExpression, interceptorFn);
 
@@ -1028,7 +1042,7 @@ function $ParseProvider() {
       }
     };
 
-    function oneTimeWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
+    function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
@@ -1044,10 +1058,34 @@ function $ParseProvider() {
             }
           });
         }
-      }, objectEquality, deregisterNotifier);
+      }, objectEquality);
     }
 
-    function constantWatch(scope, listener, objectEquality, deregisterNotifier, parsedExpression) {
+    function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
+      var unwatch;
+      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+        return parsedExpression(scope);
+      }, function oneTimeListener(value, old, scope) {
+        if (isFunction(listener)) {
+          listener.call(this, value, old, scope);
+        }
+        if (isAllDefined(value)) {
+          scope.$$postDigest(function () {
+            if(isAllDefined(value)) unwatch();
+          });
+        }
+      }, objectEquality);
+
+      function isAllDefined(value) {
+        var allDefined = true;
+        forEach(value, function (val) {
+          if (!isDefined(val)) allDefined = false;
+        });
+        return allDefined;
+      }
+    }
+
+    function constantWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch;
       return unwatch = scope.$watch(function constantWatch(scope) {
         return parsedExpression(scope);
@@ -1056,23 +1094,21 @@ function $ParseProvider() {
           listener.apply(this, arguments);
         }
         unwatch();
-      }, objectEquality, deregisterNotifier);
+      }, objectEquality);
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {
-      if (isFunction(interceptorFn)) {
-        var fn = function interceptedExpression(scope, locals) {
-          var value = parsedExpression(scope, locals);
-          var result = interceptorFn(value, scope, locals);
-          // we only return the interceptor's result if the
-          // initial value is defined (for bind-once)
-          return isDefined(value) ? result : value;
-        };
-        fn.$$watchDelegate = parsedExpression.$$watchDelegate;
-        return fn;
-      } else {
-        return parsedExpression;
-      }
+      if (!interceptorFn) return parsedExpression;
+
+      var fn = function interceptedExpression(scope, locals) {
+        var value = parsedExpression(scope, locals);
+        var result = interceptorFn(value, scope, locals);
+        // we only return the interceptor's result if the
+        // initial value is defined (for bind-once)
+        return isDefined(value) ? result : value;
+      };
+      fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+      return fn;
     }
   }];
 }

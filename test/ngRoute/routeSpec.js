@@ -1046,7 +1046,6 @@ describe('$route', function() {
       });
     });
 
-
     describe('reload', function() {
 
       it('should reload even if reloadOnSearch is false', function() {
@@ -1077,5 +1076,107 @@ describe('$route', function() {
         });
       });
     });
+  });
+
+  describe('update', function() {
+    it('should support single-parameter route updating', function() {
+      var routeChangeSpy = jasmine.createSpy('route change');
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:barId', {controller: angular.noop});
+      });
+
+      inject(function($route, $routeParams, $location, $rootScope) {
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+        $location.path('/bar/1');
+        $rootScope.$digest();
+        routeChangeSpy.reset();
+
+        $route.updateParams({barId: '2'});
+        $rootScope.$digest();
+
+        expect($routeParams).toEqual({barId: '2'});
+        expect(routeChangeSpy).toHaveBeenCalledOnce();
+        expect($location.path()).toEqual('/bar/2');
+      });
+    });
+
+    it('should support total multi-parameter route updating', function() {
+      var routeChangeSpy = jasmine.createSpy('route change');
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:barId/:fooId/:spamId/:eggId', {controller: angular.noop});
+      });
+
+      inject(function($route, $routeParams, $location, $rootScope) {
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+        $location.path('/bar/1/2/3/4');
+        $rootScope.$digest();
+        routeChangeSpy.reset();
+
+        $route.updateParams({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
+        $rootScope.$digest();
+
+        expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '7', eggId: '8'});
+        expect(routeChangeSpy).toHaveBeenCalledOnce();
+        expect($location.path()).toEqual('/bar/5/6/7/8');
+      });
+    });
+
+    it('should support partial multi-parameter route updating', function() {
+      var routeChangeSpy = jasmine.createSpy('route change');
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:barId/:fooId/:spamId/:eggId', {controller: angular.noop});
+      });
+
+      inject(function($route, $routeParams, $location, $rootScope) {
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+        $location.path('/bar/1/2/3/4');
+        $rootScope.$digest();
+        routeChangeSpy.reset();
+
+        $route.updateParams({barId: '5', fooId: '6'});
+        $rootScope.$digest();
+
+        expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4'});
+        expect(routeChangeSpy).toHaveBeenCalledOnce();
+        expect($location.path()).toEqual('/bar/5/6/3/4');
+      });
+    });
+
+
+    it('should update query params when new properties are not in path', function() {
+      var routeChangeSpy = jasmine.createSpy('route change');
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:barId/:fooId/:spamId/', {controller: angular.noop});
+      });
+
+      inject(function($route, $routeParams, $location, $rootScope) {
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+        $location.path('/bar/1/2/3');
+        $location.search({initial: 'true'});
+        $rootScope.$digest();
+        routeChangeSpy.reset();
+
+        $route.updateParams({barId: '5', fooId: '6', eggId: '4'});
+        $rootScope.$digest();
+
+        expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4', initial: 'true'});
+        expect(routeChangeSpy).toHaveBeenCalledOnce();
+        expect($location.path()).toEqual('/bar/5/6/3/');
+        expect($location.search()).toEqual({eggId: '4', initial: 'true'});
+      });
+    });
+
+
+    it('should complain if called without an existing route', inject(function($route) {
+      expect($route.updateParams).toThrowMinErr('ngRoute', 'norout');
+    }));
   });
 });

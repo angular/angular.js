@@ -6,6 +6,10 @@
   line-height: 1.5;
 }
 
+.lang-text * {
+  color: #333333!important;
+}
+
 .pln {
   color: #333333;
 }

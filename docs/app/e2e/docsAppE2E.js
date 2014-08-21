@@ -37,7 +37,7 @@ describe('docs.angularjs.org', function () {
       var nameInput = element(by.model('user.name'));
       nameInput.sendKeys('!!!');
 
-      var code = element(by.css('tt'));
+      var code = element.all(by.css('tt')).first();
       expect(code.getText()).toContain('guest!!!');
     });
 
@@ -66,6 +66,23 @@ describe('docs.angularjs.org', function () {
     it('should display formatted error messages on error doc pages', function() {
       browser.get('index-debug.html#!error/ng/areq?p0=Missing&p1=not%20a%20function,%20got%20undefined');
       expect(element(by.css('.minerr-errmsg')).getText()).toEqual("Argument 'Missing' is not a function, got undefined");
+    });
+  });
+
+  describe("templates", function() {
+    it("should show parameter defaults", function() {
+      browser.get('index-debug.html#!/api/ng/service/$timeout');
+      expect(element.all(by.css('.input-arguments p em')).first().getText()).toContain('(default: 0)');
+    });
+  });
+
+  describe("API pages", function() {
+    it("should display links to code on GitHub", function() {
+      browser.get('index-debug.html#!/api/ng/service/$http');
+      expect(element(by.css('.improve-docs')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/edit\/.+\/src\/ng\/http\.js/);
+
+      browser.get('index-debug.html#!/api/ng/service/$http');
+      expect(element(by.css('.view-source')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/tree\/.+\/src\/ng\/http\.js#L\d+/);
     });
   });
 });

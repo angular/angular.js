@@ -44,8 +44,8 @@ really digging into it. If you're looking for a shorter introduction to AngularJ
 
 # Get Started
 
-The rest of this page explains how you can set up your machine to work with the code on your local
-machine.  If you just want to read the tutorial then you can just go straight to the first step:
+The rest of this page explains how you can set up your local machine for development.
+If you just want to read the tutorial then you can just go straight to the first step:
 [Step 0 - Bootstrapping](tutorial/step_00).
 
 # Working with the code
@@ -194,6 +194,11 @@ You can now browse to the application at:
 ```
 http://localhost:8000/app/index.html
 ```
+
+<div class="alert alert-info">
+To serve the web app on a different ip address or port, edit the "start" script within package.json.
+You can `-a` to set the address and `-p` to set the port.
+</div>
 
 ### Running Unit Tests
 

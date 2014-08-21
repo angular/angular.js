@@ -130,14 +130,6 @@ describe('jqLite', function() {
   });
 
   describe('_data', function() {
-    it('should provide access to the data present on the element', function() {
-      var element = jqLite('<i>foo</i>');
-      var data = ['value'];
-      element.data('val', data);
-      expect(angular.element._data(element[0]).data.val).toBe(data);
-      dealoc(element);
-    });
-
     it('should provide access to the events present on the element', function() {
       var element = jqLite('<i>foo</i>');
       expect(angular.element._data(element[0]).events).toBeUndefined();
@@ -386,6 +378,7 @@ describe('jqLite', function() {
       selected.removeData('prop2');
     });
 
+
     it('should add and remove data on SVGs', function() {
       var svg = jqLite('<svg><rect></rect></svg>');
 
@@ -414,6 +407,27 @@ describe('jqLite', function() {
       expect(calcCacheSize()).toEqual(0);
     });
 
+
+    it('should provide the non-wrapped data calls', function() {
+      var node = document.createElement('div');
+
+      expect(jqLite.data(node, "foo")).toBeUndefined();
+
+      jqLite.data(node, "foo", "bar");
+
+      expect(jqLite.data(node, "foo")).toBe("bar");
+      expect(jqLite(node).data("foo")).toBe("bar");
+
+      expect(jqLite.data(node)).toBe(jqLite(node).data());
+
+      jqLite.removeData(node, "foo");
+      expect(jqLite.data(node, "foo")).toBeUndefined();
+
+      jqLite.data(node, "bar", "baz");
+      jqLite.removeData(node);
+      jqLite.removeData(node);
+      expect(jqLite.data(node, "bar")).toBeUndefined();
+    });
 
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
@@ -444,6 +458,20 @@ describe('jqLite', function() {
       expect(element.html()).toBe('');
       expect(log).toEqual('destroyed');
     }));
+
+
+    it('should keep data if an element is removed via detach()', function() {
+      var root = jqLite('<div><span>abc</span></div>'),
+          span = root.find('span'),
+          data = span.data();
+
+      span.data('foo', 'bar');
+      span.detach();
+
+      expect(data).toEqual({foo: 'bar'});
+
+      span.remove();
+    });
 
 
     it('should retrieve all data if called without params', function() {
@@ -512,6 +540,16 @@ describe('jqLite', function() {
 
         browserTrigger(span);
         expect(log).toEqual('click;');
+      });
+
+      it('should work if the descendants of the element change while it\'s being removed', function() {
+        var div = jqLite('<div><p><span>text</span></p></div>');
+        div.find('p').on('$destroy', function() {
+          div.find('span').remove();
+        });
+        expect(function() {
+          div.remove();
+        }).not.toThrow();
       });
     });
   });
@@ -1518,6 +1556,24 @@ describe('jqLite', function() {
       text.wrap("<span>");
       expect(text.parent().text()).toEqual('A<a>B</a>C');
     });
+    it('should clone elements to be wrapped around target', function () {
+      var root = jqLite('<div class="sigil"></div>');
+      var span = jqLite('<span>A</span>');
+
+      span.wrap(root);
+      expect(root.children().length).toBe(0);
+      expect(span.parent().hasClass('sigil')).toBeTruthy();
+    });
+    it('should wrap multiple elements', function() {
+      var root = jqLite('<div class="sigil"></div>');
+      var spans = jqLite('<span>A</span><span>B</span><span>C</span>');
+
+      spans.wrap(root);
+
+      expect(spans.eq(0).parent().hasClass('sigil')).toBeTruthy();
+      expect(spans.eq(1).parent().hasClass('sigil')).toBeTruthy();
+      expect(spans.eq(2).parent().hasClass('sigil')).toBeTruthy();
+    });
   });
 
 
@@ -1557,6 +1613,16 @@ describe('jqLite', function() {
       var root = jqLite('<div><span>abc</span></div>');
       var span = root.find('span');
       expect(span.remove()).toEqual(span);
+      expect(root.html()).toEqual('');
+    });
+  });
+
+
+  describe('detach', function() {
+    it('should detach', function() {
+      var root = jqLite('<div><span>abc</span></div>');
+      var span = root.find('span');
+      expect(span.detach()).toEqual(span);
       expect(root.html()).toEqual('');
     });
   });
@@ -1694,9 +1760,11 @@ describe('jqLite', function() {
       element.triggerHandler('click');
       event = pokeSpy.mostRecentCall.args[0];
       expect(event.preventDefault).toBeDefined();
+      expect(event.target).toEqual(element[0]);
+      expect(event.type).toEqual('click');
     });
 
-    it('should pass data as an additional argument', function() {
+    it('should pass extra parameters as an additional argument', function() {
       var element = jqLite('<a>poke</a>'),
           pokeSpy = jasmine.createSpy('poke'),
           data;
@@ -1720,6 +1788,44 @@ describe('jqLite', function() {
       expect(event.isDefaultPrevented()).toBe(false);
       event.preventDefault();
       expect(event.isDefaultPrevented()).toBe(true);
+    });
+
+
+    it('should support handlers that deregister themselves', function() {
+      var element = jqLite('<a>poke</a>'),
+          clickSpy = jasmine.createSpy('click'),
+          clickOnceSpy = jasmine.createSpy('clickOnce').andCallFake(function() {
+            element.off('click', clickOnceSpy);
+          });
+
+      element.on('click', clickOnceSpy);
+      element.on('click', clickSpy);
+
+      element.triggerHandler('click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy).toHaveBeenCalledOnce();
+
+      element.triggerHandler('click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy.callCount).toBe(2);
+    });
+
+    it("should accept a custom event instead of eventName", function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          customEvent = {
+            type: 'click',
+            someProp: 'someValue'
+          },
+          actualEvent;
+
+      element.on('click', pokeSpy);
+      element.triggerHandler(customEvent);
+      actualEvent = pokeSpy.mostRecentCall.args[0];
+      expect(actualEvent.preventDefault).toBeDefined();
+      expect(actualEvent.someProp).toEqual('someValue');
+      expect(actualEvent.target).toEqual(element[0]);
+      expect(actualEvent.type).toEqual('click');
     });
   });
 

@@ -472,6 +472,23 @@ describe('ngModel', function() {
     dealoc(element);
   }));
 
+  it('should not cause a digest on "blur" event if control is already touched',
+      inject(function($compile, $rootScope) {
+
+    var element = $compile('<form name="myForm">' +
+                             '<input name="myControl" ng-model="value" >' +
+                           '</form>')($rootScope);
+    var inputElm = element.find('input');
+    var control = $rootScope.myForm.myControl;
+
+    control.$setTouched();
+    spyOn($rootScope, '$apply');
+    browserTrigger(inputElm, 'blur');
+
+    expect($rootScope.$apply).not.toHaveBeenCalled();
+
+    dealoc(element);
+  }));
 
   it('should register/deregister a nested ngModel with parent form when entering or leaving DOM',
       inject(function($compile, $rootScope) {
@@ -2633,7 +2650,7 @@ describe('input', function() {
     it("should not clobber text if model changes due to itself", function() {
       // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
       // $parseModel function runs it will change to 'a', in essence preventing
-      // the user from ever typying ','.
+      // the user from ever typing ','.
       compileInput('<input type="text" ng-model="list" ng-list />');
 
       changeInputValueTo('a ');
@@ -2671,26 +2688,69 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    describe('with a custom separator', function() {
+      it('should split on the custom separator', function() {
+        compileInput('<input type="text" ng-model="list" ng-list=":" />');
 
-    it('should allow custom separator', function() {
-      compileInput('<input type="text" ng-model="list" ng-list=":" />');
+        changeInputValueTo('a,a');
+        expect(scope.list).toEqual(['a,a']);
 
-      changeInputValueTo('a,a');
-      expect(scope.list).toEqual(['a,a']);
+        changeInputValueTo('a:b');
+        expect(scope.list).toEqual(['a', 'b']);
+      });
 
-      changeInputValueTo('a:b');
-      expect(scope.list).toEqual(['a', 'b']);
+
+      it("should join the list back together with the custom separator", function() {
+        compileInput('<input type="text" ng-model="list" ng-list=" : " />');
+
+        scope.$apply(function() {
+          scope.list = ['x', 'y', 'z'];
+        });
+        expect(inputElm.val()).toBe('x : y : z');
+      });
     });
 
+    describe('(with ngTrim undefined or true)', function() {
 
-    it('should allow regexp as a separator', function() {
-      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
+      it('should ignore separator whitespace when splitting', function() {
+        compileInput('<input type="text" ng-model="list" ng-list="  |  " />');
 
-      changeInputValueTo('a,b');
-      expect(scope.list).toEqual(['a', 'b']);
+        changeInputValueTo('a|b');
+        expect(scope.list).toEqual(['a', 'b']);
+      });
 
-      changeInputValueTo('a,b: c');
-      expect(scope.list).toEqual(['a', 'b', 'c']);
+      it('should trim whitespace from each list item', function() {
+        compileInput('<input type="text" ng-model="list" ng-list="|" />');
+
+        changeInputValueTo('a | b');
+        expect(scope.list).toEqual(['a', 'b']);
+      });
+    });
+
+    describe('(with ngTrim set to false)', function() {
+
+      it('should use separator whitespace when splitting', function() {
+        compileInput('<input type="text" ng-model="list" ng-trim="false" ng-list="  |  " />');
+
+        changeInputValueTo('a|b');
+        expect(scope.list).toEqual(['a|b']);
+
+        changeInputValueTo('a  |  b');
+        expect(scope.list).toEqual(['a','b']);
+
+      });
+
+      it("should not trim whitespace from each list item", function() {
+        compileInput('<input type="text" ng-model="list" ng-trim="false" ng-list="|" />');
+        changeInputValueTo('a  |  b');
+        expect(scope.list).toEqual(['a  ','  b']);
+      });
+
+      it("should support splitting on newlines", function() {
+        compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list="&#10;"></textarea');
+        changeInputValueTo('a\nb');
+        expect(scope.list).toEqual(['a','b']);
+      });
     });
   });
 

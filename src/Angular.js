@@ -47,6 +47,7 @@
   isFile: true,
   isBlob: true,
   isBoolean: true,
+  isPromiseLike: true,
   trim: true,
   isElement: true,
   makeMap: true,
@@ -80,8 +81,9 @@
   assertArgFn: true,
   assertNotHasOwnProperty: true,
   getter: true,
-  getBlockElements: true,
+  getBlockNodes: true,
   hasOwnProperty: true,
+  createMap: true,
 */
 
 ////////////////////////////////////
@@ -244,8 +246,11 @@ function forEach(obj, iterator, context) {
         }
       }
     } else if (isArray(obj) || isArrayLike(obj)) {
+      var isPrimitive = typeof obj !== 'object';
       for (key = 0, length = obj.length; key < length; key++) {
-        iterator.call(context, obj[key], key);
+        if (isPrimitive || key in obj) {
+          iterator.call(context, obj[key], key);
+        }
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
         obj.forEach(iterator, context);
@@ -439,7 +444,10 @@ function isDefined(value){return typeof value !== 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){return value != null && typeof value === 'object';}
+function isObject(value){
+  // http://jsperf.com/isobject4
+  return value !== null && typeof value === 'object';
+}
 
 
 /**
@@ -501,14 +509,7 @@ function isDate(value) {
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
  */
-var isArray = (function() {
-  if (!isFunction(Array.isArray)) {
-    return function(value) {
-      return toString.call(value) === '[object Array]';
-    };
-  }
-  return Array.isArray;
-})();
+var isArray = Array.isArray;
 
 /**
  * @ngdoc function
@@ -569,19 +570,14 @@ function isBoolean(value) {
 }
 
 
-var trim = (function() {
-  // native trim is way faster: http://jsperf.com/angular-trim-test
-  // but IE doesn't have it... :-(
-  // TODO: we should move this into IE/ES5 polyfill
-  if (!String.prototype.trim) {
-    return function(value) {
-      return isString(value) ? value.replace(/^\s\s*/, '').replace(/\s\s*$/, '') : value;
-    };
-  }
-  return function(value) {
-    return isString(value) ? value.trim() : value;
-  };
-})();
+function isPromiseLike(obj) {
+  return obj && isFunction(obj.then);
+}
+
+
+var trim = function(value) {
+  return isString(value) ? value.trim() : value;
+};
 
 
 /**
@@ -769,7 +765,8 @@ function copy(source, destination, stackSource, stackDest) {
       } else if (isDate(source)) {
         destination = new Date(source.getTime());
       } else if (isRegExp(source)) {
-        destination = new RegExp(source.source);
+        destination = new RegExp(source.source, source.toString().match(/[^\/]*$/)[0]);
+        destination.lastIndex = source.lastIndex;
       } else if (isObject(source)) {
         var emptyObject = Object.create(Object.getPrototypeOf(source));
         destination = copy(source, emptyObject, stackSource, stackDest);
@@ -803,9 +800,13 @@ function copy(source, destination, stackSource, stackDest) {
       }
     } else {
       var h = destination.$$hashKey;
-      forEach(destination, function(value, key) {
-        delete destination[key];
-      });
+      if (isArray(destination)) {
+        destination.length = 0;
+      } else {
+        forEach(destination, function(value, key) {
+          delete destination[key];
+        });
+      }
       for ( var key in source) {
         if(source.hasOwnProperty(key)) {
           result = copy(source[key], null, stackSource, stackDest);
@@ -824,24 +825,21 @@ function copy(source, destination, stackSource, stackDest) {
 }
 
 /**
- * Creates a shallow copy of an object, an array or a primitive
+ * Creates a shallow copy of an object, an array or a primitive.
+ *
+ * Assumes that there no proto properties for objects
  */
 function shallowCopy(src, dst) {
-  var i = 0;
   if (isArray(src)) {
     dst = dst || [];
 
-    for (; i < src.length; i++) {
+    for (var i = 0, ii = src.length; i < ii; i++) {
       dst[i] = src[i];
     }
   } else if (isObject(src)) {
     dst = dst || {};
 
-    var keys = Object.keys(src);
-
-    for (var l = keys.length; i < l; i++) {
-      var key = keys[i];
-
+    for (var key in src) {
       if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
         dst[key] = src[key];
       }
@@ -1099,7 +1097,7 @@ function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
   forEach((keyValue || "").split('&'), function(keyValue) {
     if ( keyValue ) {
-      key_value = keyValue.split('=');
+      key_value = keyValue.replace(/\+/g,'%20').split('=');
       key = tryDecodeURIComponent(key_value[0]);
       if ( isDefined(key) ) {
         var val = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
@@ -1169,13 +1167,14 @@ function encodeUriQuery(val, pctEncodeSpaces) {
              replace(/%3A/gi, ':').
              replace(/%24/g, '$').
              replace(/%2C/gi, ',').
+             replace(/%3B/gi, ';').
              replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
 }
 
 var ngAttrPrefixes = ['ng-', 'data-ng-', 'ng:', 'x-ng-'];
 
 function getNgAttribute(element, ngAttr) {
-  var attr, i, ii = ngAttrPrefixes.length, j, jj;
+  var attr, i, ii = ngAttrPrefixes.length;
   element = jqLite(element);
   for (i=0; i<ii; ++i) {
     attr = ngAttrPrefixes[i] + ngAttr;
@@ -1403,7 +1402,11 @@ function bootstrap(element, modules, config) {
 
     if (element.injector()) {
       var tag = (element[0] === document) ? 'document' : startingTag(element);
-      throw ngMinErr('btstrpd', "App Already Bootstrapped with this Element '{0}'", tag);
+      //Encode angle brackets to prevent input from being sanitized to empty string #8683
+      throw ngMinErr(
+          'btstrpd',
+          "App Already Bootstrapped with this Element '{0}'",
+          tag.replace(/</,'&lt;').replace(/>/,'&gt;'));
     }
 
     modules = modules || [];
@@ -1446,12 +1449,21 @@ function snake_case(name, separator) {
   });
 }
 
+var bindJQueryFired = false;
+var skipDestroyOnNextJQueryCleanData;
 function bindJQuery() {
   var originalCleanData;
+
+  if (bindJQueryFired) {
+    return;
+  }
+
   // bind to jQuery if present;
   jQuery = window.jQuery;
   // Use jQuery if it exists with proper functionality, otherwise default to us.
-  // Angular 1.2+ requires jQuery 1.7.1+ for on()/off() support.
+  // Angular 1.2+ requires jQuery 1.7+ for on()/off() support.
+  // Angular 1.3+ technically requires at least jQuery 2.1+ but it may work with older
+  // versions. It will not work for sure with jQuery <1.7, though.
   if (jQuery && jQuery.fn.on) {
     jqLite = jQuery;
     extend(jQuery.fn, {
@@ -1462,25 +1474,28 @@ function bindJQuery() {
       inheritedData: JQLitePrototype.inheritedData
     });
 
-    originalCleanData = jQuery.cleanData;
-    // Prevent double-proxying.
-    originalCleanData = originalCleanData.$$original || originalCleanData;
-
     // All nodes removed from the DOM via various jQuery APIs like .remove()
     // are passed through jQuery.cleanData. Monkey-patch this method to fire
     // the $destroy event on all removed nodes.
+    originalCleanData = jQuery.cleanData;
     jQuery.cleanData = function(elems) {
-      for (var i = 0, elem; (elem = elems[i]) != null; i++) {
-        jQuery(elem).triggerHandler('$destroy');
+      if (!skipDestroyOnNextJQueryCleanData) {
+        for (var i = 0, elem; (elem = elems[i]) != null; i++) {
+          jQuery(elem).triggerHandler('$destroy');
+        }
+      } else {
+        skipDestroyOnNextJQueryCleanData = false;
       }
       originalCleanData(elems);
     };
-    jQuery.cleanData.$$original = originalCleanData;
   } else {
     jqLite = JQLite;
   }
 
   angular.element = jqLite;
+
+  // Prevent double-proxying.
+  bindJQueryFired = true;
 }
 
 /**
@@ -1544,23 +1559,36 @@ function getter(obj, path, bindFnToScope) {
 /**
  * Return the DOM siblings between the first and last node in the given array.
  * @param {Array} array like object
- * @returns {DOMElement} object containing the elements
+ * @returns {jqLite} jqLite collection containing the nodes
  */
-function getBlockElements(nodes) {
-  var startNode = nodes[0],
-      endNode = nodes[nodes.length - 1];
-  if (startNode === endNode) {
-    return jqLite(startNode);
-  }
-
-  var element = startNode;
-  var elements = [element];
+function getBlockNodes(nodes) {
+  // TODO(perf): just check if all items in `nodes` are siblings and if they are return the original
+  //             collection, otherwise update the original collection.
+  var node = nodes[0];
+  var endNode = nodes[nodes.length - 1];
+  var blockNodes = [node];
 
   do {
-    element = element.nextSibling;
-    if (!element) break;
-    elements.push(element);
-  } while (element !== endNode);
+    node = node.nextSibling;
+    if (!node) break;
+    blockNodes.push(node);
+  } while (node !== endNode);
 
-  return jqLite(elements);
+  return jqLite(blockNodes);
+}
+
+
+/**
+ * Creates a new object without a prototype. This object is useful for lookup without having to
+ * guard against prototypically inherited properties via hasOwnProperty.
+ *
+ * Related micro-benchmarks:
+ * - http://jsperf.com/object-create2
+ * - http://jsperf.com/proto-map-lookup/2
+ * - http://jsperf.com/for-in-vs-object-keys2
+ *
+ * @returns {Object}
+ */
+function createMap() {
+  return Object.create(null);
 }

@@ -149,14 +149,14 @@ describe('Scope', function() {
 
     it('should clean up stable watches from $watchGroup', inject(function($rootScope) {
       $rootScope.$watchGroup(['::foo', '::bar'], function() {});
-      expect($rootScope.$$watchers.length).toEqual(3);
+      expect($rootScope.$$watchers.length).toEqual(2);
 
       $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(3);
+      expect($rootScope.$$watchers.length).toEqual(2);
 
       $rootScope.foo = 'foo';
       $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(2);
+      expect($rootScope.$$watchers.length).toEqual(1);
 
       $rootScope.bar = 'bar';
       $rootScope.$digest();
@@ -173,15 +173,6 @@ describe('Scope', function() {
         $rootScope.$digest();
         expect($exceptionHandler.errors[0].message).toEqual('abc');
         $log.assertEmpty();
-      });
-    });
-
-    it('should clear phase if an exception interrupt $digest cycle', function() {
-      inject(function($rootScope) {
-        $rootScope.$watch('a', function() {throw new Error('abc');});
-        $rootScope.a = 1;
-        try { $rootScope.$digest(); } catch(e) { }
-        expect($rootScope.$$phase).toBeNull();
       });
     });
 
@@ -526,34 +517,6 @@ describe('Scope', function() {
         expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
                              'watch2', 'watch3']);
       }));
-
-      describe('deregisterNotifier', function () {
-        it('should call the deregisterNotifier when the watch is deregistered', inject(
-          function($rootScope) {
-            var notifier = jasmine.createSpy('deregisterNotifier');
-            var listenerRemove = $rootScope.$watch('noop', noop, false, notifier);
-
-            expect(notifier).not.toHaveBeenCalled();
-
-            listenerRemove();
-            expect(notifier).toHaveBeenCalledOnce();
-          }));
-
-
-        it('should call the deregisterNotifier when a one-time expression is stable', inject(
-          function($rootScope) {
-            var notifier = jasmine.createSpy('deregisterNotifier');
-            $rootScope.$watch('::foo', noop, false, notifier);
-
-            expect(notifier).not.toHaveBeenCalledOnce();
-            $rootScope.$digest();
-            expect(notifier).not.toHaveBeenCalledOnce();
-
-            $rootScope.foo = 'foo';
-            $rootScope.$digest();
-            expect(notifier).toHaveBeenCalledOnce();
-          }));
-      });
     });
 
 
@@ -872,26 +835,6 @@ describe('Scope', function() {
     }));
 
 
-    it('should work for a group with just a single expression', function() {
-      scope.$watchGroup(['a'], function(values, oldValues, s) {
-        expect(s).toBe(scope);
-        log(oldValues + ' >>> ' + values);
-      });
-
-      scope.a = 'foo';
-      scope.$digest();
-      expect(log).toEqual('foo >>> foo');
-
-      log.reset();
-      scope.$digest();
-      expect(log).toEqual('');
-
-      scope.a = 'bar';
-      scope.$digest();
-      expect(log).toEqual('foo >>> bar');
-    });
-
-
     it('should detect a change to any one expression in the group', function() {
       scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
         expect(s).toBe(scope);
@@ -919,12 +862,53 @@ describe('Scope', function() {
     });
 
 
-    it('should not call watch action fn when watchGroup was deregistered', function() {
-      var deregister = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+    it('should work for a group with just a single expression', function() {
+      scope.$watchGroup(['a'], function(values, oldValues, s) {
+        expect(s).toBe(scope);
         log(oldValues + ' >>> ' + values);
       });
 
-      deregister();
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('foo >>> foo');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('foo >>> bar');
+    });
+
+
+    it('should call the listener once when the array of watchExpressions is empty', function() {
+      scope.$watchGroup([], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      });
+
+      expect(log).toEqual('');
+      scope.$digest();
+      expect(log).toEqual(' >>> ');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+    });
+
+
+    it('should not call watch action fn when watchGroup was deregistered', function() {
+      var deregisterMany = scope.$watchGroup(['a', 'b'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      }), deregisterOne = scope.$watchGroup(['a'], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      }), deregisterNone = scope.$watchGroup([], function(values, oldValues) {
+        log(oldValues + ' >>> ' + values);
+      });
+
+      deregisterMany();
+      deregisterOne();
+      deregisterNone();
       scope.a = 'xxx';
       scope.b = 'yyy';
       scope.$digest();

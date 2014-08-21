@@ -635,6 +635,8 @@ function $LocationProvider(){
     $location = new LocationMode(appBase, '#' + hashPrefix);
     $location.$$parse($location.$$rewrite(initialUrl));
 
+    var IGNORE_URI_REGEXP = /^\s*(javascript|mailto):/i;
+
     $rootElement.on('click', function(event) {
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
@@ -657,6 +659,9 @@ function $LocationProvider(){
         absHref = urlResolve(absHref.animVal).href;
       }
 
+      // Ignore when url is started with javascript: or mailto:
+      if (IGNORE_URI_REGEXP.test(absHref)) return;
+
       // Make relative links work in HTML5 mode for legacy browsers (or at least IE8 & 9)
       // The href should be a regular url e.g. /link/somewhere or link/somewhere or ../somewhere or
       // somewhere#anchor or http://example.com/somewhere
@@ -665,7 +670,7 @@ function $LocationProvider(){
         // http://msdn.microsoft.com/en-us/library/ie/dd347148(v=vs.85).aspx
         var href = elm.attr('href') || elm.attr('xlink:href');
 
-        if (href.indexOf('://') < 0) {         // Ignore absolute URLs
+        if (href && href.indexOf('://') < 0) {         // Ignore absolute URLs
           var prefix = '#' + hashPrefix;
           if (href[0] == '/') {
             // absolute path - replace old path
@@ -677,6 +682,7 @@ function $LocationProvider(){
             // relative path - join with current path
             var stack = $location.path().split("/"),
               parts = href.split("/");
+            if (stack.length === 2 && !stack[1]) stack.length = 1;
             for (var i=0; i<parts.length; i++) {
               if (parts[i] == ".")
                 continue;

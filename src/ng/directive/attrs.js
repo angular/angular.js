@@ -17,12 +17,12 @@
  *
  * The wrong way to write it:
  * ```html
- * <a href="http://www.gravatar.com/avatar/{{hash}}"/>
+ * <a href="http://www.gravatar.com/avatar/{{hash}}">link1</a>
  * ```
  *
  * The correct way to write it:
  * ```html
- * <a ng-href="http://www.gravatar.com/avatar/{{hash}}"/>
+ * <a ng-href="http://www.gravatar.com/avatar/{{hash}}">link1</a>
  * ```
  *
  * @element A
@@ -160,7 +160,7 @@
  *
  * @description
  *
- * The following markup will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
+ * We shouldn't do this, because it will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
  * ```html
  * <div ng-init="scope = { isDisabled: false }">
  *  <button disabled="{{scope.isDisabled}}">Disabled</button>
@@ -351,6 +351,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
+      restrict: 'A',
       priority: 100,
       link: function(scope, element, attr) {
         scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
@@ -403,8 +404,12 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
         }
 
         attr.$observe(normalized, function(value) {
-          if (!value)
-             return;
+          if (!value) {
+            if (attrName === 'href') {
+              attr.$set(name, null);
+            }
+            return;
+          }
 
           attr.$set(name, value);
 
