@@ -32,26 +32,6 @@ describe('NgModelController', function() {
   });
 
 
-  it('should fail on non-assignable model binding', inject(function($controller) {
-    var exception;
-
-    try {
-      $controller(NgModelController, {
-        $scope: null,
-        $element: jqLite('<input ng-model="1+2">'),
-        $attrs: {
-          ngModel: '1+2'
-        }
-      });
-    } catch (e) {
-      exception = e;
-    }
-
-    expect(exception.message).
-        toMatch(/^\[ngModel:nonassign\] Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">/);
-  }));
-
-
   it('should init the properties', function() {
     expect(ctrl.$untouched).toBe(true);
     expect(ctrl.$touched).toBe(false);
@@ -1579,6 +1559,18 @@ describe('input', function() {
       changeInputValueTo('d');
       expect(inputElm.val()).toBe('d');
       expect(scope.name).toBe('d');
+    });
+
+    it('should fail on non-assignable model binding if getterSetter is false', function() {
+      expect(function() {
+        compileInput('<input type="text" ng-model="accessor(user, \'name\')" />');
+      }).toThrowMinErr('ngModel', 'nonassign', 'Expression \'accessor(user, \'name\')\' is non-assignable.');
+    });
+
+    it('should not fail on non-assignable model binding if getterSetter is true', function() {
+      compileInput(
+        '<input type="text" ng-model="accessor(user, \'name\')" '+
+          'ng-model-options="{ getterSetter: true }" />');
     });
 
   });
