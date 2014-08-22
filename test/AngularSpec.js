@@ -264,6 +264,10 @@ describe('angular', function() {
     });
 
     it('should handle primitives', function() {
+      var src = 1,
+          dst = 2;
+
+      expect(shallowCopy(src, dst)).toBe(src);
       expect(shallowCopy('test')).toBe('test');
       expect(shallowCopy(3)).toBe(3);
       expect(shallowCopy(true)).toBe(true);
