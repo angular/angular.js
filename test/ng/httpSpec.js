@@ -1526,3 +1526,80 @@ describe('$http', function() {
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
 });
+
+
+describe('$http with $applyAapply', function() {
+  var $http, $httpBackend, $rootScope, $browser, log;
+  beforeEach(module(function($httpProvider) {
+    $httpProvider.useApplyAsync(true);
+  }, provideLog));
+
+
+  beforeEach(inject(['$http', '$httpBackend', '$rootScope', '$browser', 'log', function(http, backend, scope, browser, logger) {
+    $http = http;
+    $httpBackend = backend;
+    $rootScope = scope;
+    $browser = browser;
+    spyOn($rootScope, '$apply').andCallThrough();
+    spyOn($rootScope, '$applyAsync').andCallThrough();
+    spyOn($rootScope, '$digest').andCallThrough();
+    spyOn($browser.defer, 'cancel').andCallThrough();
+    log = logger;
+  }]));
+
+
+  it('should schedule coalesced apply on response', function() {
+    var handler = jasmine.createSpy('handler');
+    $httpBackend.expect('GET', '/template1.html').respond(200, '<h1>Header!</h1>', {});
+    $http.get('/template1.html').then(handler);
+    // Ensure requests are sent
+    $rootScope.$digest();
+
+    $httpBackend.flush(null, false);
+    expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
+    expect(handler).not.toHaveBeenCalled();
+
+    $browser.defer.flush();
+    expect(handler).toHaveBeenCalledOnce();
+  });
+
+
+  it('should combine multiple responses within short time frame into a single $apply', function() {
+    $httpBackend.expect('GET', '/template1.html').respond(200, '<h1>Header!</h1>', {});
+    $httpBackend.expect('GET', '/template2.html').respond(200, '<p>Body!</p>', {});
+
+    $http.get('/template1.html').then(log.fn('response 1'));
+    $http.get('/template2.html').then(log.fn('response 2'));
+    // Ensure requests are sent
+    $rootScope.$digest();
+
+    $httpBackend.flush(null, false);
+    expect(log).toEqual([]);
+
+    $browser.defer.flush();
+    expect(log).toEqual(['response 1', 'response 2']);
+  });
+
+
+  it('should handle pending responses immediately if a digest occurs on $rootScope', function() {
+    $httpBackend.expect('GET', '/template1.html').respond(200, '<h1>Header!</h1>', {});
+    $httpBackend.expect('GET', '/template2.html').respond(200, '<p>Body!</p>', {});
+    $httpBackend.expect('GET', '/template3.html').respond(200, '<p>Body!</p>', {});
+
+    $http.get('/template1.html').then(log.fn('response 1'));
+    $http.get('/template2.html').then(log.fn('response 2'));
+    $http.get('/template3.html').then(log.fn('response 3'));
+    // Ensure requests are sent
+    $rootScope.$digest();
+
+    // Intermediate $digest occurs before 3rd response is received, assert that pending responses
+    /// are handled
+    $httpBackend.flush(2);
+    expect(log).toEqual(['response 1', 'response 2']);
+
+    // Finally, third response is received, and a second coalesced $apply is started
+    $httpBackend.flush(null, false);
+    $browser.defer.flush();
+    expect(log).toEqual(['response 1', 'response 2', 'response 3']);
+  });
+});
