@@ -466,6 +466,11 @@ describe('browser', function() {
       expect(browser.url()).toBe("http://ff-bug/?single'quote");
     });
 
+    it('should decode colons to work around FF bug', function() {
+      fakeWindow.location.href = "http://ff-bug/?https%3Awww.google.com";
+      expect(browser.url()).toBe("http://ff-bug/?https:www.google.com");
+    });
+
     it('should not set URL when the URL is already set', function() {
       var current = fakeWindow.location.href;
       sniffer.history = false;
