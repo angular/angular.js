@@ -433,4 +433,25 @@ describe('ngSwitch animations', function() {
       expect(destroyed).toBe(true);
     });
   });
+
+  it('should work with svg elements when the svg container is transcluded', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('svgContainer', function() {
+        return {
+          template: '<svg ng-transclude></svg>',
+          replace: true,
+          transclude: true
+        };
+      });
+    });
+    inject(function($compile, $rootScope) {
+      element = $compile('<svg-container ng-switch="inc"><circle ng-switch-when="one"></circle>' +
+        '</svg-container>')($rootScope);
+      $rootScope.inc = 'one';
+      $rootScope.$apply();
+
+      var circle = element.find('circle');
+      expect(circle[0].toString()).toMatch(/SVG/);
+    });
+  });
 });
