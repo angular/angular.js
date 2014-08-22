@@ -393,18 +393,12 @@ describe('jqLite', function() {
 
 
     it('should not add to the cache if the node is a comment or text node', function() {
-      var calcCacheSize = function() {
-        var count = 0;
-        for (var k in jqLite.cache) { ++count; }
-        return count;
-      };
-
       var nodes = jqLite('<!-- some comment --> and some text');
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
       nodes.data('someKey');
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
       nodes.data('someKey', 'someValue');
-      expect(calcCacheSize()).toEqual(0);
+      expect(jqLiteCacheSize()).toEqual(0);
     });
 
 
