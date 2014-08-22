@@ -71,6 +71,7 @@ function $RootScopeProvider(){
   var TTL = 10;
   var $rootScopeMinErr = minErr('$rootScope');
   var lastDirtyWatch = null;
+  var applyAsyncId = null;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -134,6 +135,7 @@ function $RootScopeProvider(){
       this.$$listeners = {};
       this.$$listenerCount = {};
       this.$$isolateBindings = {};
+      this.$$applyAsyncQueue = [];
     }
 
     /**
@@ -688,6 +690,13 @@ function $RootScopeProvider(){
 
         beginPhase('$digest');
 
+        if (this === $rootScope && applyAsyncId !== null) {
+          // If this is the root scope, and $applyAsync has scheduled a deferred $apply(), then
+          // cancel the scheduled $apply and flush the queue of expressions to be evaluated.
+          $browser.defer.cancel(applyAsyncId);
+          flushApplyAsync();
+        }
+
         lastDirtyWatch = null;
 
         do { // "while dirty" loop
@@ -999,6 +1008,33 @@ function $RootScopeProvider(){
 
       /**
        * @ngdoc method
+       * @name $rootScope.Scope#$applyAsync
+       * @kind function
+       *
+       * @description
+       * Schedule the invokation of $apply to occur at a later time. The actual time difference
+       * varies across browsers, but is typically around ~10 milliseconds.
+       *
+       * This can be used to queue up multiple expressions which need to be evaluated in the same
+       * digest.
+       *
+       * @param {(string|function())=} exp An angular expression to be executed.
+       *
+       *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
+       *    - `function(scope)`: execute the function with current `scope` parameter.
+       */
+      $applyAsync: function(expr) {
+        var scope = this;
+        expr && $rootScope.$$applyAsyncQueue.push($applyAsyncExpression);
+        scheduleApplyAsync();
+
+        function $applyAsyncExpression() {
+          scope.$eval(expr);
+        }
+      },
+
+      /**
+       * @ngdoc method
        * @name $rootScope.Scope#$on
        * @kind function
        *
@@ -1229,5 +1265,25 @@ function $RootScopeProvider(){
      * because it's unique we can easily tell it apart from other values
      */
     function initWatchVal() {}
+
+    function flushApplyAsync() {
+      var queue = $rootScope.$$applyAsyncQueue;
+      while (queue.length) {
+        try {
+          queue.shift()();
+        } catch(e) {
+          $exceptionHandler(e);
+        }
+      }
+      applyAsyncId = null;
+    }
+
+    function scheduleApplyAsync() {
+      if (applyAsyncId === null) {
+        applyAsyncId = $browser.defer(function() {
+          $rootScope.$apply(flushApplyAsync);
+        });
+      }
+    }
   }];
 }
