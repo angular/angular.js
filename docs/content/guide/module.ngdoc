@@ -58,7 +58,7 @@ I'm in a hurry. How do I get a Hello World module working?
 Important things to notice:
 
   * The {@link angular.Module Module} API
-  * The reference to `myApp` module in `<html ng-app="myApp">`.
+  * The reference to `myApp` module in `<div ng-app="myApp">`.
     This is what bootstraps the app using your module.
   * The empty array in `angular.module('myApp', [])`.
     This array is the list of modules `myApp` depends on.
