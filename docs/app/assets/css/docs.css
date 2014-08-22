@@ -412,6 +412,7 @@ iframe.example {
 
 .main-body-grid .side-navigation {
   position:relative;
+  padding-bottom:136px;
 }
 
 .main-body-grid .side-navigation.ng-hide {
