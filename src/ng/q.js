@@ -519,6 +519,46 @@ function qFactory(nextTick, exceptionHandler) {
 
     return deferred.promise;
   }
+  
+  /**
+   * @ngdoc
+   * @name ng.$q#allSettled
+   * @methodOf ng.$q
+   * @description
+   * Combines multiple promises into a single promise that is resolved when all of the input
+   * promises are resolved or rejected if any of the promises are rejected.
+   *
+   * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
+   * @returns {Promise} Returns a single promise that will be resolved with an array/hash of values,
+   *   each value corresponding to the promise at the same index/key in the `promises` array/hash.
+   *   If any of the promises are resolved with a rejection, this resulting promise will be rejected
+   *   with an array/hash of values and/or rejection values.
+   */
+   
+  function allSettled(promises) {
+    var deferred = new Deferred(),
+        counter = 0,
+        results = isArray(promises) ? [] : {};
+
+    forEach(promises, function(promise, key) {
+      counter++;
+      when(promise).then(function(value) {
+        if (results.hasOwnProperty(key)) return;
+        results[key] = value;
+        if (!(--counter)) deferred.resolve(results);
+      }, function(reason) {
+        if (results.hasOwnProperty(key)) return;
+        results[key] = reason;
+        if (!(--counter)) deferred.reject(results);
+      });
+    });
+
+    if (counter === 0) {
+      deferred.resolve(results);
+    }
+
+    return deferred.promise;
+  }
 
   var $Q = function Q(resolver) {
     if (!isFunction(resolver)) {
@@ -550,6 +590,7 @@ function qFactory(nextTick, exceptionHandler) {
   $Q.reject = reject;
   $Q.when = when;
   $Q.all = all;
+  $Q.allSettled = allSettled;
 
   return $Q;
 }
