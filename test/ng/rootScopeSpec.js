@@ -1399,6 +1399,91 @@ describe('Scope', function() {
   });
 
 
+  describe('$applyAsync', function() {
+    beforeEach(module(function($exceptionHandlerProvider) {
+      $exceptionHandlerProvider.mode('log');
+    }));
+
+
+    it('should evaluate in the context of specific $scope', inject(function($rootScope, $browser) {
+      var scope = $rootScope.$new();
+      scope.$applyAsync('x = "CODE ORANGE"');
+
+      $browser.defer.flush();
+      expect(scope.x).toBe('CODE ORANGE');
+      expect($rootScope.x).toBeUndefined();
+    }));
+
+
+    it('should evaluate queued expressions in order', inject(function($rootScope, $browser) {
+      $rootScope.x = [];
+      $rootScope.$applyAsync('x.push("expr1")');
+      $rootScope.$applyAsync('x.push("expr2")');
+
+      $browser.defer.flush();
+      expect($rootScope.x).toEqual(['expr1', 'expr2']);
+    }));
+
+
+    it('should evaluate subsequently queued items in same turn', inject(function($rootScope, $browser) {
+      $rootScope.x = [];
+      $rootScope.$applyAsync(function() {
+        $rootScope.x.push('expr1');
+        $rootScope.$applyAsync('x.push("expr2")');
+        expect($browser.deferredFns.length).toBe(0);
+      });
+
+      $browser.defer.flush();
+      expect($rootScope.x).toEqual(['expr1', 'expr2']);
+    }));
+
+
+    it('should pass thrown exceptions to $exceptionHandler', inject(function($rootScope, $browser, $exceptionHandler) {
+      $rootScope.$applyAsync(function() {
+        throw 'OOPS';
+      });
+
+      $browser.defer.flush();
+      expect($exceptionHandler.errors).toEqual([
+        'OOPS'
+      ]);
+    }));
+
+
+    it('should evaluate subsequent expressions after an exception is thrown', inject(function($rootScope, $browser) {
+      $rootScope.$applyAsync(function() {
+        throw 'OOPS';
+      });
+      $rootScope.$applyAsync('x = "All good!"');
+
+      $browser.defer.flush();
+      expect($rootScope.x).toBe('All good!');
+    }));
+
+
+    it('should be cancelled if a $rootScope digest occurs before the next tick', inject(function($rootScope, $browser) {
+      var apply = spyOn($rootScope, '$apply').andCallThrough();
+      var cancel = spyOn($browser.defer, 'cancel').andCallThrough();
+      var expression = jasmine.createSpy('expr');
+
+      $rootScope.$applyAsync(expression);
+      $rootScope.$digest();
+      expect(expression).toHaveBeenCalledOnce();
+      expect(cancel).toHaveBeenCalledOnce();
+      expression.reset();
+      cancel.reset();
+
+      // assert that we no longer are waiting to execute
+      expect($browser.deferredFns.length).toBe(0);
+
+      // assert that another digest won't call the function again
+      $rootScope.$digest();
+      expect(expression).not.toHaveBeenCalled();
+      expect(cancel).not.toHaveBeenCalled();
+    }));
+  });
+
+
   describe('events', function() {
 
     describe('$on', function() {
