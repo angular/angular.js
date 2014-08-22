@@ -1599,10 +1599,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       pendingDebounce = null,
       ctrl = this;
 
-  if (!ngModelSet) {
-    throw $ngModelMinErr('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
-        $attr.ngModel, startingTag($element));
-  }
+  this.$$setOptions = function(options) {
+    ctrl.$options = options;
+
+    if (!ngModelSet && (!options || !options.getterSetter)) {
+      throw $ngModelMinErr('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
+          $attr.ngModel, startingTag($element));
+    }
+  };
 
   /**
    * @ngdoc method
@@ -2293,16 +2297,12 @@ var ngModelDirective = function() {
     controller: NgModelController,
     link: {
       pre: function(scope, element, attr, ctrls) {
-        // Pass the ng-model-options to the ng-model controller
-        if (ctrls[2]) {
-          ctrls[0].$options = ctrls[2].$options;
-        }
-
-        // notify others, especially parent forms
-
         var modelCtrl = ctrls[0],
             formCtrl = ctrls[1] || nullFormCtrl;
 
+        modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
+
+        // notify others, especially parent forms
         formCtrl.$addControl(modelCtrl);
 
         scope.$on('$destroy', function() {
