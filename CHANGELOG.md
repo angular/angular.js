@@ -1,3 +1,263 @@
+<a name="1.3.0-beta.19"></a>
+# 1.3.0-beta.19 rafter-ascension (2014-08-22)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - use the correct namespace for transcluded SVG elements
+  ([ffbd276d](https://github.com/angular/angular.js/commit/ffbd276d6def6ff35bfdb30553346e985f4a0de6),
+   [#8716](https://github.com/angular/angular.js/issues/8716))
+  - update the jQuery `.context` when an element is replaced by `replace:true` directive
+  ([f02f7d9c](https://github.com/angular/angular.js/commit/f02f7d9c15deea9c5d83212301e2a5e18223bbe5),
+   [#8253](https://github.com/angular/angular.js/issues/8253), [#7900](https://github.com/angular/angular.js/issues/7900))
+- **$location:**
+  - rewrite relative URI correctly if `path==='/'` in legacy html5Mode
+  ([d18b2819](https://github.com/angular/angular.js/commit/d18b2819768e467897dee7bc223876ca23ea71b1),
+   [#8684](https://github.com/angular/angular.js/issues/8684))
+  - don't call `indexOf()` of undefined `href` attribute
+  ([5b77e30c](https://github.com/angular/angular.js/commit/5b77e30c1ac49be7b079b82527a5631f68bac904),
+   [#7721](https://github.com/angular/angular.js/issues/7721), [#8681](https://github.com/angular/angular.js/issues/8681))
+- **$parse:** remove unused variable declaration in generated getters
+  ([6acea115](https://github.com/angular/angular.js/commit/6acea1152f72a4026583897c67bea2839bc9e89e))
+- **$sanitize:** sanitize javascript urls with comments
+  ([b7e82a33](https://github.com/angular/angular.js/commit/b7e82a33eee03fc683f982c6ee13d15d88b07f67),
+   [#8274](https://github.com/angular/angular.js/issues/8274))
+- **$watchGroup:** call listener once when the `watchExpressions` array is empty
+  ([bf0e8373](https://github.com/angular/angular.js/commit/bf0e83732aa02c7aa08d0ccdf122116235fcfa11))
+- **Angular:** make Date comparison in `equals()` `NaN`-aware
+  ([693e846a](https://github.com/angular/angular.js/commit/693e846add5089d0e516604ae4a109e445fd3664),
+   [#8650](https://github.com/angular/angular.js/issues/8650), [#8715](https://github.com/angular/angular.js/issues/8715))
+- **Scope:** don't clear the phase when an exception is thrown from asyncQueue or watch
+  ([bf1a57ad](https://github.com/angular/angular.js/commit/bf1a57ad4822bb152fdd4d2fb54c0689e466481b))
+- **copy:** clear array destinations correctly for non-array sources
+  ([a603e202](https://github.com/angular/angular.js/commit/a603e202cc7e048c2ab6f12dee1cc8f277cf6f4f),
+   [#8610](https://github.com/angular/angular.js/issues/8610), [#8702](https://github.com/angular/angular.js/issues/8702))
+- **forEach:** match behaviour of Array.prototype.forEach (ignore missing properties)
+  ([36230194](https://github.com/angular/angular.js/commit/36230194be8aa417b0af33d618060829a75c4c5f),
+   [#8510](https://github.com/angular/angular.js/issues/8510), [#8522](https://github.com/angular/angular.js/issues/8522), [#8525](https://github.com/angular/angular.js/issues/8525))
+- **input:**
+  - use lowercase method to account for undefined type
+  ([066c0499](https://github.com/angular/angular.js/commit/066c049957a8af2fe449040eca2f1cb499655e32))
+  - by default, do not trim input[type=password] values
+  ([a7fb357f](https://github.com/angular/angular.js/commit/a7fb357fa122e0a056ce1de838a2dfaf1ebc2953),
+   [#8250](https://github.com/angular/angular.js/issues/8250), [#8230](https://github.com/angular/angular.js/issues/8230))
+- **jQuery:** cooperate with other libraries monkey-patching jQuery.cleanData
+  ([b9389b26](https://github.com/angular/angular.js/commit/b9389b26ba2cf6aa70372fa32a7b28c62d174bf5),
+   [#8471](https://github.com/angular/angular.js/issues/8471))
+- **jqLite:**
+  - clone wrapNode in jqlite/wrap
+  ([77d3e754](https://github.com/angular/angular.js/commit/77d3e7544642396d868aa49b85f0c027e8057bd7),
+   [#3860](https://github.com/angular/angular.js/issues/3860), [#4194](https://github.com/angular/angular.js/issues/4194))
+  - revert the `ready()` optimization until jQuery does the same
+  ([1bdca93d](https://github.com/angular/angular.js/commit/1bdca93d708ce9441b26d00e564210755395edf7))
+- **linky:** handle quotes around email addresses
+  ([a9d22712](https://github.com/angular/angular.js/commit/a9d227120dc2d433372da415a450e56b783b57a0),
+   [#8520](https://github.com/angular/angular.js/issues/8520))
+- **minErr:** encode btstrpd error input to strip angle brackets
+  ([0872388a](https://github.com/angular/angular.js/commit/0872388a1b88b8637fdb0fb1ebbee269bead0508),
+   [#8683](https://github.com/angular/angular.js/issues/8683))
+- **ngRepeat:**
+  - allow aliasAs identifiers which contain but do not match reserved words
+  ([d713ad1b](https://github.com/angular/angular.js/commit/d713ad1b6607389649fbb8d12ac103565b02a1d4),
+   [#8729](https://github.com/angular/angular.js/issues/8729))
+  - make allowed aliasAs expressions more strict
+  ([09b29870](https://github.com/angular/angular.js/commit/09b298705f74255aff55bb7e4ba200c4200d712d),
+   [#8438](https://github.com/angular/angular.js/issues/8438), [#8440](https://github.com/angular/angular.js/issues/8440))
+
+
+## Features
+
+- **$compile:**
+  - use allOrNothing interpolation for ngAttr*
+  ([09de7b5d](https://github.com/angular/angular.js/commit/09de7b5db466498becb295ecf5c1d0a698b1512c),
+   [#8376](https://github.com/angular/angular.js/issues/8376), [#8399](https://github.com/angular/angular.js/issues/8399))
+- **benchpress:** configure benchpress grunt task
+  ([6bdaa4bc](https://github.com/angular/angular.js/commit/6bdaa4bc213805a58f51e9f5285dfe03bb06ddc3))
+- **jqLite:** implement the `detach` method
+  ([1a05daf5](https://github.com/angular/angular.js/commit/1a05daf5dc67813528afdb88086766dc22b6c0df),
+   [#5461](https://github.com/angular/angular.js/issues/5461))
+- **ngRoute:** add method for changing url params
+  ([77a1acc7](https://github.com/angular/angular.js/commit/77a1acc7fcad7a8a7d0376b33d38a8977372cfe2))
+
+
+## Performance Improvements
+
+- **$compile:**
+  - don't register $destroy callbacks on element-transcluded nodes
+  ([b5f7970b](https://github.com/angular/angular.js/commit/b5f7970be5950580bde4de0002a578daf3ae3aac))
+  - refactor publicLinkFn to simplify the code and use 'for in' loop
+  ([645625cf](https://github.com/angular/angular.js/commit/645625cf349a4be57691a7bf418b2386b4c1a53d))
+  - clone the nodeList during linking only if necessary
+  ([3e0a2e1f](https://github.com/angular/angular.js/commit/3e0a2e1f3367a5b4ae7d8de6cff559f522aacfba))
+  - delay object initialization in nodeLinkFn
+  ([31ed0af7](https://github.com/angular/angular.js/commit/31ed0af74b0081906415dcefe5610e1217cc0c48))
+  - optimize nodeLinkFn
+  ([35134a0e](https://github.com/angular/angular.js/commit/35134a0e237d193cd7d3995dacfdc6bf3e92635e))
+  - optimize publicLinkFn
+  ([274e9c4d](https://github.com/angular/angular.js/commit/274e9c4ddfd64138d39fcf84047aabc3ccde2f0b))
+- **$interpolate:** do not keep empty separators
+  ([94b5c9f0](https://github.com/angular/angular.js/commit/94b5c9f00edff7fa631d09316ceb9c7fd4c6426a))
+- **$parse:**
+  - don't bind filters to a context
+  ([8863b9d0](https://github.com/angular/angular.js/commit/8863b9d04c722b278fa93c5d66ad1e578ad6eb1f))
+  - optimize filter implementation
+  ([ece6ef47](https://github.com/angular/angular.js/commit/ece6ef479c741f17fc217d743cad64c516dbed27))
+  - speed up fn invocation for no args case
+  ([a17578ad](https://github.com/angular/angular.js/commit/a17578ad3db5d1375aec1d601055ab718eeafd10))
+  - speed up fn invocation by optimizing arg collection
+  ([fecfc5b0](https://github.com/angular/angular.js/commit/fecfc5b09feb7e4079364013b0beb6bf204ade2a))
+  - use no-proto maps as caches and avoid hasOwnProperty checks
+  ([d302ea0c](https://github.com/angular/angular.js/commit/d302ea0cfade2787d7cc500398b7dcd3e4eff945))
+  - trim expression only if string
+  ([a1341223](https://github.com/angular/angular.js/commit/a1341223c084c8188671bb8d6ea1608490b66f9f))
+- **$rootScope:** do not use `Function::call` when not needed
+  ([7eae29e5](https://github.com/angular/angular.js/commit/7eae29e5ab478ccb7e02fee8311f8b99ea1d165d))
+- **Scope:**
+  - optimize `$watchCollection` when used for watching objects
+  ([e822e906](https://github.com/angular/angular.js/commit/e822e9061c2a605649d91abbd641f757e2829275))
+  - don't use forEach in
+  ([301463a2](https://github.com/angular/angular.js/commit/301463a2e249011d7cb696c6cf34254f8317a706))
+  - watchCollection optimization
+  ([7d96ab0d](https://github.com/angular/angular.js/commit/7d96ab0d132d923ec3e3a212aaf9d79f1d4a02de))
+  - exit $broadcast early if nobody is listening for the given event
+  ([a09fa356](https://github.com/angular/angular.js/commit/a09fa356416c033a52666f3becf00524ecff3a03))
+  - use remove the need for the extra watch in $watchGroup
+  ([3f0e642e](https://github.com/angular/angular.js/commit/3f0e642eefcbbb315839c4456ba6ac029a7b8a20),
+   [#8396](https://github.com/angular/angular.js/issues/8396))
+- **benchpress:** add benchpress node module and port over large table test
+  ([1229334f](https://github.com/angular/angular.js/commit/1229334fbd8c778e95785d6a5e5589099ce655f7))
+- **isObject:** use strict comparison
+  ([d208ba25](https://github.com/angular/angular.js/commit/d208ba254442649d35f96c76bcd9e47326ec59f3))
+- **jqLite:**
+  - simplify jqLiteDealoc
+  ([f8f7a1df](https://github.com/angular/angular.js/commit/f8f7a1df34560222cb5d2e18d4be996f5553815a))
+  - optimize event handler
+  ([d05f27e2](https://github.com/angular/angular.js/commit/d05f27e274c41c33eebf4fe8035715d3f6596069))
+  - only take `str.split()` path when needed
+  ([187b1b8e](https://github.com/angular/angular.js/commit/187b1b8ef45babd86afa853dc9321cd23160096e),
+   [#8648](https://github.com/angular/angular.js/issues/8648))
+  - optimize `off()`
+  ([abb17cce](https://github.com/angular/angular.js/commit/abb17cce8b459e4646d1c2a2428b691c3d95fb4c))
+  - refactor jqLiteExpandoStore to minimize access to expensive element.ng339 expando property
+  ([1e8698b3](https://github.com/angular/angular.js/commit/1e8698b33e61b1a196f05f42856a2da4590a10e1))
+  - microoptimization in chaining fn
+  ([fafbd494](https://github.com/angular/angular.js/commit/fafbd494907a8c068d79415b7ba8f42f283be521))
+  - don't use String#split in on() unless we need it
+  ([bda673f8](https://github.com/angular/angular.js/commit/bda673f8e785f299407c8c45887f37448a0f0192))
+  - don't check isString many times in constructor
+  ([443b521e](https://github.com/angular/angular.js/commit/443b521e22f9ec7009b913a2fe78caee0a515e87))
+  - optimize jqLiteAcceptsData method
+  ([b493c62f](https://github.com/angular/angular.js/commit/b493c62f6b3e4288f5dee7c8b5952e088c2e3329))
+  - optimize `append()` and `after()`
+  ([8d933bf9](https://github.com/angular/angular.js/commit/8d933bf99520fe3936e33d3ee28fd37e574b99de))
+  - don't register DOM listener for $destroy event
+  ([6251751a](https://github.com/angular/angular.js/commit/6251751ad7bc2f3621db538edb5a9d7313a4ce6d))
+  - optimize event listener registration
+  ([566f1015](https://github.com/angular/angular.js/commit/566f1015d27118d259e0886910d6b73b3cb0eb10))
+  - improve createEventHandler method by switching from forEach to for loop
+  ([e9cd6dc0](https://github.com/angular/angular.js/commit/e9cd6dc055cb7bd80ae9232d8985b2bc3999135e))
+  - don't use `forEach` in `off()`
+  ([960a8410](https://github.com/angular/angular.js/commit/960a8410515b2d7d461d7c95e8a2ca3d75129087))
+  - don't recreate the Node.contains polyfill
+  ([d1536e7c](https://github.com/angular/angular.js/commit/d1536e7c8bf60549096138d08953a43190c7b1a6))
+  - speed up shallowCopy and special case Attributes cloning
+  ([54fa16e4](https://github.com/angular/angular.js/commit/54fa16e45d8769ce6708a28388326db0eea53c7e))
+- **ngBind:** bypass jquery/jqlite when setting text
+  ([0a738ce1](https://github.com/angular/angular.js/commit/0a738ce1760f38efe45e79aa133442be09b56803))
+- **ngRepeat:**
+  - simplify code and remove duplicate array.length access
+  ([08eb0558](https://github.com/angular/angular.js/commit/08eb05583bf39c63fef43b4faf29c61360699c81))
+  - optimize marking of nodes that are being removed via an animation
+  ([36e35b2c](https://github.com/angular/angular.js/commit/36e35b2cb17c5ff7c43746d9ac0a259f77ff494e))
+  - use no-proto objects for blockMaps
+  ([13d113c5](https://github.com/angular/angular.js/commit/13d113c522f124b91a1fd8606c22bbd399abf121))
+  - move work to compile fn
+  ([bdd853cb](https://github.com/angular/angular.js/commit/bdd853cb83839eef9901af164293611eaa23ee2c))
+  - move updateScope fn to factory and reuse it for all repeaters
+  ([e58d65a5](https://github.com/angular/angular.js/commit/e58d65a520cfbc630cbfbc248479416777ca16b2))
+  - clone boundary comment nodes
+  ([fbd48845](https://github.com/angular/angular.js/commit/fbd48845e0e88e9935f82fe4c9f686ad78b5d924))
+
+
+## Breaking Changes
+
+- **$compile:**
+  - due to [09de7b5d](https://github.com/angular/angular.js/commit/09de7b5db466498becb295ecf5c1d0a698b1512c),
+
+
+Now, `ng-attr-*` will never add the attribute to the DOM if any of the interpolated expressions
+evaluate to `undefined`.
+
+To work around this, initialize values which are intended to be the empty string with the
+empty string:
+
+For example, given the following markup:
+
+```html
+<div ng-attr-style="border-radius: {{value}}{{units}}"></div>
+```
+
+If `$scope.value` is `4`, and `$scope.units` is `undefined`, the resulting markup is unchanged:
+
+```html
+<div ng-attr-style="border-radius: {{value}}{{units}}"></div>
+```
+
+However, if $scope.units is `""`, then the resulting markup is updated:
+
+```html
+<div ng-attr-style="border-radius: {{value}}{{units}}" style="border-radius: 4"></div>
+```
+
+Closes #8376
+Closes #8399
+
+  - due to [0d608d04](https://github.com/angular/angular.js/commit/0d608d041f37a659d8d8ba7a9b688e132587035d),
+  element-transcluded directives now have an extra comment automatically appended to their cloned DOM
+
+This comment is usually needed to keep track the end boundary in the event child directives modify the root node(s).
+If not used for this purpose it can be safely ignored.
+
+  - due to [75c4cbf8](https://github.com/angular/angular.js/commit/75c4cbf81fcd6d49656d3cb044e59e5fd24e0479),
+  `directive.type` was renamed to `directive.templateNamespace`
+
+This change is breaking only within 1.3.0-beta releases: `directive.type` was renamed to `directive.templateNamespace`
+
+The property name `type` was too general.
+
+- **$parse:** due to [8863b9d0](https://github.com/angular/angular.js/commit/8863b9d04c722b278fa93c5d66ad1e578ad6eb1f),
+   `this` in filters is now undefined and no longer the scope
+
+It's a bad practice for filters to have hidden dependencies, so pulling stuff from scope directly
+is not a good idea. Scope being the filter context was never documented as public API, so we don't
+expect that any significant code depends on this behavior.
+
+If an existing filter has a dependency on the scope instance, the scope reference can
+be passed into the filter as a filter argument (this is highly discouraged for new code):
+
+Before: `{{ user.name | customFilter }}`
+After: `{{ user.name | customFilter:this }}`
+
+- **Scope:** due to [0554c1aa](https://github.com/angular/angular.js/commit/0554c1aae49a81691154a77e70b602b0f24dca81),
+  `deregisterNotifier` callback for `$watch` is no longer available
+
+This API was available only in the last few 1.3 beta versions and is not
+very useful for applications, so we don't expect that anyone will be affected
+by this change.
+
+- **input:** due to [a7fb357f](https://github.com/angular/angular.js/commit/a7fb357fa122e0a056ce1de838a2dfaf1ebc2953),
+  by default, do not trim `input[type=password]` values.
+
+Previously, `input[type=password]` would trim values by default, and would require an explicit `ng-trim="false"`
+to disable the trimming behaviour. After this change, `ng-trim` no longer affects `input[type=password]`, and will
+never trim the password value.
+
+Closes #8250
+Closes #8230
+
+
+
 <a name="1.3.0-beta.18"></a>
 # 1.3.0-beta.18 spontaneous-combustion (2014-08-12)
 
