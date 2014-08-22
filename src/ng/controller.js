@@ -68,24 +68,13 @@ function $ControllerProvider() {
      * It's just a simple call to {@link auto.$injector $injector}, but extracted into
      * a service, so that one can override this service with [BC version](https://gist.github.com/1649788).
      */
-    return function(expression, locals, later, ident) {
-      // PRIVATE API:
-      //   param `later` --- indicates that the controller's constructor is invoked at a later time.
-      //                     If true, $controller will allocate the object with the correct
-      //                     prototype chain, but will not invoke the controller until a returned
-      //                     callback is invoked.
-      //   param `ident` --- An optional label which overrides the label parsed from the controller
-      //                     expression, if any.
+    return function(expression, locals) {
       var instance, match, constructor, identifier;
-      later = later === true;
-      if (ident && isString(ident)) {
-        identifier = ident;
-      }
 
       if(isString(expression)) {
         match = expression.match(CNTRL_REG),
         constructor = match[1],
-        identifier = identifier || match[3];
+        identifier = match[3];
         expression = controllers.hasOwnProperty(constructor)
             ? controllers[constructor]
             : getter(locals.$scope, constructor, true) ||
@@ -94,51 +83,19 @@ function $ControllerProvider() {
         assertArgFn(expression, constructor, true);
       }
 
-      if (later) {
-        // Instantiate controller later:
-        // This machinery is used to create an instance of the object before calling the
-        // controller's constructor itself.
-        //
-        // This allows properties to be added to the controller before the constructor is
-        // invoked. Primarily, this is used for isolate scope bindings in $compile.
-        //
-        // This feature is not intended for use by applications, and is thus not documented
-        // publicly.
-        var Constructor = function() {};
-        Constructor.prototype = (isArray(expression) ?
-          expression[expression.length - 1] : expression).prototype;
-        instance = new Constructor();
-
-        if (identifier) {
-          addIdentifier(locals, identifier, instance, constructor || expression.name);
-        }
-
-        return extend(function() {
-          $injector.invoke(expression, instance, locals, constructor);
-          return instance;
-        }, {
-          instance: instance,
-          identifier: identifier
-        });
-      }
-
       instance = $injector.instantiate(expression, locals, constructor);
 
       if (identifier) {
-        addIdentifier(locals, identifier, instance, constructor || expression.name);
+        if (!(locals && typeof locals.$scope === 'object')) {
+          throw minErr('$controller')('noscp',
+              "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.",
+              constructor || expression.name, identifier);
+        }
+
+        locals.$scope[identifier] = instance;
       }
 
       return instance;
     };
-
-    function addIdentifier(locals, identifier, instance, name) {
-      if (!(locals && isObject(locals.$scope))) {
-        throw minErr('$controller')('noscp',
-          "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.",
-          name, identifier);
-      }
-
-      locals.$scope[identifier] = instance;
-    }
   }];
 }
