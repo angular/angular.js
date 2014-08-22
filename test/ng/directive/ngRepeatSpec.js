@@ -418,6 +418,36 @@ describe('ngRepeat', function() {
     });
 
 
+    it('should support alias identifiers containing reserved words', inject(function($exceptionHandler) {
+      scope.x = 'bl';
+      scope.items = [
+        { name : 'red' },
+        { name : 'blue' },
+        { name : 'green' },
+        { name : 'black' },
+        { name : 'orange' },
+        { name : 'blonde' }
+      ];
+      forEach([
+        'null2',
+        'qthis',
+        'qthisq',
+        'fundefined',
+        '$$parent'
+      ], function(name) {
+        var expr = 'item in items | filter:x as ' + name + ' track by $index';
+        element = $compile('<div><div ng-repeat="' + expr + '"></div></div>')(scope);
+        scope.$digest();
+        expect(scope[name]).toEqual([
+          { name: 'blue' },
+          { name: 'black' },
+          { name: 'blonde' }
+        ]);
+        dealoc(element);
+      });
+    }));
+
+
     it('should throw if alias identifier is not a simple identifier', inject(function($exceptionHandler) {
       scope.x = 'bl';
       scope.items = [
