@@ -620,8 +620,11 @@ function $HttpProvider() {
       var config = {
         method: 'get',
         transformRequest: defaults.transformRequest,
-        transformResponse: defaults.transformResponse
+        transformResponse: []
       };
+      if (!requestConfig.responseType || requestConfig.responseType === 'json') {
+        config.transformResponse = defaults.transformResponse;
+      }
       var headers = mergeHeaders(requestConfig);
 
       extend(config, requestConfig);
