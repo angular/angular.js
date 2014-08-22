@@ -122,6 +122,11 @@
  * <img ng-src="http://www.gravatar.com/avatar/{{hash}}"/>
  * ```
  *
+ * <div class="alert alert-warning">Using `ngSrc` with a value that is not undefined will trigger a network call.
+ * In the example above, if `hash` is undefined, a call would be made to *http://www.gravatar.com/avatar/*.
+ * <br />Instead, if you use the following `<img ng-src="{{fullUrl}}"/>`, no network call would be triggered
+ * if the `fullUrl` is undefined.</div>
+ * 
  * @element IMG
  * @param {template} ngSrc any string which can contain `{{}}` markup.
  */
