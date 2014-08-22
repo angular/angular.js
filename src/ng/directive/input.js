@@ -912,7 +912,7 @@ function addNativeHtml5Validators(ctrl, validatorName, badFlags, ignoreFlags, va
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop(VALIDITY_STATE_PROPERTY);
   var placeholder = element[0].placeholder, noevent = {};
-  var type = element[0].type.toLowerCase();
+  var type = lowercase(element[0].type);
   ctrl.$$validityState = validity;
 
   // In composition mode, users are still inputing intermediate text buffer,
