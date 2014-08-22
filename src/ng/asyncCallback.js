@@ -1,6 +1,6 @@
 'use strict';
 
-function $$AsyncCallbackProvider(){
+function $$AsyncCallbackProvider() {
   this.$get = ['$$rAF', '$timeout', function($$rAF, $timeout) {
     return $$rAF.supported
       ? function(fn) { return $$rAF(fn); }
