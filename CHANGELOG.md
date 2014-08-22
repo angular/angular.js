@@ -1,3 +1,55 @@
+<a name="1.2.23"></a>
+# 1.2.23 superficial-malady (2014-08-22)
+
+
+## Bug Fixes
+
+- **$location:**
+  - rewrite relative URI correctly if `path==='/'` in legacy html5Mode
+  ([c6e4defc](https://github.com/angular/angular.js/commit/c6e4defcb6ec1ff43e9590b8fe9601d9e9da445d),
+   [#8684](https://github.com/angular/angular.js/issues/8684))
+  - don't call `indexOf()` of undefined `href` attribute
+  ([74a7afcb](https://github.com/angular/angular.js/commit/74a7afcb31b2e2aef2d7a4c3e3cf29f320669b0e),
+   [#7721](https://github.com/angular/angular.js/issues/7721), [#8681](https://github.com/angular/angular.js/issues/8681))
+- **$sanitize:** sanitize javascript urls with comments
+  ([4f387050](https://github.com/angular/angular.js/commit/4f3870500da6f6f0c1b1d20c70404996b1a39585),
+   [#8274](https://github.com/angular/angular.js/issues/8274))
+- **Angular:** make Date comparison in equals() NaN-aware
+  ([98f60372](https://github.com/angular/angular.js/commit/98f603722d81046031ad4a10e0a49b692871c2b2),
+   [#8650](https://github.com/angular/angular.js/issues/8650), [#8715](https://github.com/angular/angular.js/issues/8715))
+- **copy:** clear array destinations correctly for non-array sources
+  ([888b0f54](https://github.com/angular/angular.js/commit/888b0f5400c2357dcc91300d1a4e66e52a8d8801),
+   [#8610](https://github.com/angular/angular.js/issues/8610), [#8702](https://github.com/angular/angular.js/issues/8702))
+- **input:**
+  - use lowercase method to account for undefined type
+  ([456026ef](https://github.com/angular/angular.js/commit/456026eff12ad70fa27dd08ec6bddc63e0f3e604))
+  - by default, do not trim `input[type=password]` values
+  ([ebece0bc](https://github.com/angular/angular.js/commit/ebece0bcb9d64e59beb1c9b3418bed25e50ceef4),
+   [#8250](https://github.com/angular/angular.js/issues/8250), [#8230](https://github.com/angular/angular.js/issues/8230))
+- **linky:** handle quotes around email addresses
+  ([effc98fd](https://github.com/angular/angular.js/commit/effc98fdc91937ae0aca30bc53e34a3c29863cd6),
+   [#8520](https://github.com/angular/angular.js/issues/8520))
+- **minErr:** encode btstrpd error input to strip angle brackets
+  ([aaf9c5e5](https://github.com/angular/angular.js/commit/aaf9c5e598996ab17bce9579c8bfe63628b6620e),
+   [#8683](https://github.com/angular/angular.js/issues/8683))
+- **ngHref:** remove attribute when empty value instead of ignoring
+  ([ed56872b](https://github.com/angular/angular.js/commit/ed56872bb2c9c479f90a479f52e3d4ef9c80d0c7),
+   [#2755](https://github.com/angular/angular.js/issues/2755))
+
+
+## Breaking Changes
+
+- **input:** due to [ebece0bc](https://github.com/angular/angular.js/commit/ebece0bcb9d64e59beb1c9b3418bed25e50ceef4),
+
+Previously, `input[type=password]` would trim values by default, and would require an explicit ng-trim="false"
+to disable the trimming behaviour. After this CL, `ng-trim` no longer affects `input[type=password]`, and will
+never trim the password value.
+
+Closes #8250
+Closes #8230
+
+
+
 <a name="1.3.0-beta.19"></a>
 # 1.3.0-beta.19 rafter-ascension (2014-08-22)
 
