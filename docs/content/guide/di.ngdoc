@@ -109,7 +109,7 @@ asks the injector to create an instance of the controller and its dependencies.
 injector.instantiate(MyController);
 ```
 
-This is all done behinds the scenes. Notice that by having the `ng-controller` ask the injector to
+This is all done behind the scenes. Notice that by having the `ng-controller` ask the injector to
 instantiate the class, it can satisfy all of the dependencies of `MyController` without the
 controller ever knowing about the injector.
 
