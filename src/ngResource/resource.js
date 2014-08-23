@@ -28,10 +28,11 @@ function lookupDottedPath(obj, path) {
  * Create a shallow copy of an object and clear other fields from the destination
  */
 function shallowClearAndCopy(src, dst) {
+  var reg = /^\${2}/;
   dst = dst || {};
 
   angular.forEach(dst, function(value, key){
-    delete dst[key];
+    reg.test(key) || delete dst[key];
   });
 
   for (var key in src) {
