@@ -83,6 +83,11 @@ describe('filters', function() {
       num = formatNumber(123.1, pattern, ',', '.', 3);
       expect(num).toBe('123.100');
     });
+
+    it('should format numbers that round to zero as nonnegative', function(){
+      var num = formatNumber(-0.01, pattern, ',', '.', 1);
+      expect(num).toBe('0.0');
+    });
   });
 
   describe('currency', function() {
@@ -184,7 +189,7 @@ describe('filters', function() {
       expect(number(1e-6, 6)).toEqual('0.000001');
       expect(number(1e-7, 6)).toEqual('0.000000');
 
-      expect(number(-1e-50, 0)).toEqual('-0');
+      expect(number(-1e-50, 0)).toEqual('0');
       expect(number(-1e-6, 6)).toEqual('-0.000001');
       expect(number(-1e-7, 6)).toEqual('-0.000000');
     });
