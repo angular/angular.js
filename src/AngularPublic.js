@@ -137,7 +137,8 @@ function publishExternalAPI(angular){
     'uppercase': uppercase,
     'callbacks': {counter: 0},
     '$$minErr': minErr,
-    '$$csp': csp
+    '$$csp': csp,
+    'reloadWithDebugInfo': reloadWithDebugInfo
   });
 
   angularModule = setupModuleLoader(window);

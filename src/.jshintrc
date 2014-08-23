@@ -88,6 +88,7 @@
     "getBlockNodes": false,
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": false,
+    "reloadWithDebugInfo": false,
 
     "skipDestroyOnNextJQueryCleanData": true,
 

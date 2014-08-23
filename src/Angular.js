@@ -1402,6 +1402,14 @@ function bootstrap(element, modules, config) {
     modules.unshift(['$provide', function($provide) {
       $provide.value('$rootElement', element);
     }]);
+
+    if (config.debugInfoEnabled) {
+      // Pushing so that this overrides `debugInfoEnabled` setting defined in user's `modules`.
+      modules.push(['$compileProvider', function($compileProvider) {
+        $compileProvider.debugInfoEnabled(true);
+      }]);
+    }
+
     modules.unshift('ng');
     var injector = createInjector(modules, config.strictDi);
     injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector',
@@ -1415,7 +1423,13 @@ function bootstrap(element, modules, config) {
     return injector;
   };
 
+  var NG_ENABLE_DEBUG_INFO = /^NG_ENABLE_DEBUG_INFO!/;
   var NG_DEFER_BOOTSTRAP = /^NG_DEFER_BOOTSTRAP!/;
+
+  if (window && NG_ENABLE_DEBUG_INFO.test(window.name)) {
+    config.debugInfoEnabled = true;
+    window.name = window.name.replace(NG_ENABLE_DEBUG_INFO, '');
+  }
 
   if (window && !NG_DEFER_BOOTSTRAP.test(window.name)) {
     return doBootstrap();
@@ -1428,6 +1442,32 @@ function bootstrap(element, modules, config) {
     });
     doBootstrap();
   };
+}
+
+/**
+ * @ngdoc function
+ * @name angular.reloadWithDebugInfo
+ * @module ng
+ * @description
+ * Use this function to reload the current application with debug information turned on.
+ *
+ * To improve performance adding various debugging information can be disabled.
+ * See {@link $compileProvider#debugInfoEnabled}.
+ *
+ * This overrides any setting of `$compileProvider.debugInfoEnabled()` that you defined in your
+ * modules. If you wish to debug an application via this information then you should open up a debug
+ * console in the browser then call this method directly in this console:
+ *
+ * ```js
+ * angular.reloadWithDebugInfo();
+ * ```
+ *
+ * The page should reload and the debug information should now be available.
+ *
+ */
+function reloadWithDebugInfo(doReload) {
+  window.name = 'NG_ENABLE_DEBUG_INFO!' + window.name;
+  if ( doReload !== false ) window.location.reload();
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
