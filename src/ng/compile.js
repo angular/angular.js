@@ -668,6 +668,34 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name  $compileProvider#debugInfoEnabled
+   *
+   * @param {boolean=} enabled update the debugInfoEnabled state if provided, otherwise just return the
+   * current debugInfoEnabled state
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   *
+   * @kind function
+   *
+   * @description
+   * Call this method to enable/disable various debug runtime information in the compiler such as adding
+   * binding information and a reference to the current scope on to DOM elements.
+   * If enabled, the compiler will add the following to DOM elements that have been bound to the scope
+   * * `ng-binding` CSS class
+   * * `$binding` data property containing an array of the binding expressions
+   *
+   * The default value is true.
+   */
+  var debugInfoEnabled = true;
+  this.debugInfoEnabled = function(enabled) {
+    if(isDefined(enabled)) {
+      debugInfoEnabled = enabled;
+      return this;
+    }
+    return debugInfoEnabled;
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
             '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
@@ -867,6 +895,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
+    compile.$$addBindingInfo = debugInfoEnabled ? function $$addBindingInfo(element, binding) {
+      element
+          .addClass('ng-binding')
+          .data('$binding',
+              (element.data('$binding') || []).concat(binding.expressions || [binding])
+          );
+    } : noop;
 
     return compile;
 
@@ -1947,17 +1982,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         directives.push({
           priority: 0,
           compile: function textInterpolateCompileFn(templateNode) {
-            // when transcluding a template that has bindings in the root
-            // then we don't have a parent and should do this in the linkFn
-            var parent = templateNode.parent(), hasCompileParent = parent.length;
-            if (hasCompileParent) safeAddClass(templateNode.parent(), 'ng-binding');
-
             return function textInterpolateLinkFn(scope, node) {
-              var parent = node.parent(),
-                  bindings = parent.data('$binding') || [];
-              bindings.push(interpolateFn);
-              parent.data('$binding', bindings);
-              if (!hasCompileParent) safeAddClass(parent, 'ng-binding');
+              var parent = node.parent();
+              compile.$$addBindingInfo(parent, interpolateFn);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;
               });
