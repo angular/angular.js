@@ -2491,13 +2491,33 @@ describe('$compile', function() {
           }));
     });
 
-    it('should decorate the binding with ng-binding and interpolation function', inject(
-        function($compile, $rootScope) {
+    describe('decorating with binding info', function() {
+
+      it('should not occur if `debugInfoEnabled` is false', function() {
+        module(function($compileProvider) {
+          $compileProvider.debugInfoEnabled(false);
+        });
+
+        inject(function($compile, $rootScope) {
+          element = $compile('<div>{{1+2}}</div>')($rootScope);
+          expect(element.hasClass('ng-binding')).toBe(false);
+          expect(element.data('$binding')).toBeUndefined();
+        });
+      });
+
+
+      it('should occur if `debugInfoEnabled` is true', function() {
+        module(function($compileProvider) {
+          $compileProvider.debugInfoEnabled(true);
+        });
+
+        inject(function($compile, $rootScope) {
           element = $compile('<div>{{1+2}}</div>')($rootScope);
           expect(element.hasClass('ng-binding')).toBe(true);
-          expect(element.data('$binding')[0].exp).toEqual('{{1+2}}');
-        }));
-
+          expect(element.data('$binding')).toEqual(['1+2']);
+        });
+      });
+    });
 
     it('should observe interpolated attrs', inject(function($rootScope, $compile) {
       $compile('<div some-attr="{{value}}" observer></div>')($rootScope);
