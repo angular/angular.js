@@ -105,7 +105,7 @@ describe('$interpolate', function() {
       expect(function() {
         $interpolate('{{\\{\\{foo\\}\\}}}')(obj);
       }).toThrowMinErr('$parse', 'lexerr',
-        'Lexer Error: Unexpected next character  at columns 0-0 [\\] in expression [\\{\\{foo\\}\\]');
+        'Lexer Error: Unexpected next character  at columns 0-0 [\\] in expression [\\{\\{foo\\}\\}]');
     }));
 
 
@@ -115,6 +115,14 @@ describe('$interpolate', function() {
     // and maintenance burden of context-sensitive escaping)
     it('should evaluate expressions between escaped start/end symbols', inject(function($interpolate) {
       expect($interpolate('\\{\\{Hello, {{bar}}!\\}\\}')(obj)).toBe('{{Hello, World!}}');
+    }));
+
+    it('should pick the first end symbol location that forms a valid expression', inject(function($interpolate) {
+      expect($interpolate('{{{}}}')(obj)).toBe('{}');
+      expect($interpolate('{{"{{ }}"}}')(obj)).toBe('{{ }}');
+      expect($interpolate('{{{foo: "bar"}}}')(obj)).toBe('{"foo":"bar"}');
+      expect($interpolate('{{{foo: {"bar": "baz"}}}}')(obj)).toBe('{"foo":{"bar":"baz"}}');
+      expect($interpolate('{{[{foo: {"bar": "baz"}}]}}')(obj)).toBe('[{"foo":{"bar":"baz"}}]');
     }));
   });
 

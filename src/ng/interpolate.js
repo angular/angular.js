@@ -41,6 +41,8 @@ var $interpolateMinErr = minErr('$interpolate');
 function $InterpolateProvider() {
   var startSymbol = '{{';
   var endSymbol = '}}';
+  var quoteChars = '\'"';
+  var brackets = {"(": ")", "[": "]", "{": "}"};
 
   /**
    * @ngdoc method
@@ -193,17 +195,42 @@ function $InterpolateProvider() {
           textLength = text.length,
           exp,
           concat = [],
-          expressionPositions = [];
+          expressionPositions = [],
+          quoteChar,
+          bracketCounts = {},
+          ch;
 
+      forEach(brackets, function(start, end) {
+        bracketCounts[start] = 0;
+        bracketCounts[end] = 0;
+      });
       while(index < textLength) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
              ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
           if (index !== startIndex) {
             concat.push(unescapeText(text.substring(index, startIndex)));
           }
+          index = startIndex + startSymbolLength;
+          while (index < endIndex || quoteChar !== undefined || !bracketsMatch(bracketCounts)) {
+            if (index >= endIndex) {
+              endIndex = text.indexOf(endSymbol, endIndex + 1);
+              if (endIndex === -1) {
+                break;
+              }
+            }
+            ch = text[index];
+            if (quoteChar) {
+              if (quoteChar === ch) quoteChar = undefined;
+              else if (ch === '\\') index++;
+            } else {
+              if (ch in bracketCounts) bracketCounts[ch]++;
+              else if (quoteChars.indexOf(ch) != -1) quoteChar = ch;
+            }
+            index++;
+          }
           exp = text.substring(startIndex + startSymbolLength, endIndex);
-          expressions.push(exp);
           parseFns.push($parse(exp, parseStringifyInterceptor));
+          expressions.push(exp);
           index = endIndex + endSymbolLength;
           expressionPositions.push(concat.length);
           concat.push('');
@@ -311,6 +338,14 @@ function $InterpolateProvider() {
             err.toString());
           $exceptionHandler(newErr);
         }
+      }
+
+      function bracketsMatch(bracketCounts) {
+        var match = true;
+        forEach(brackets, function(start, end) {
+          match = match && bracketCounts[start] === bracketCounts[end];
+        });
+        return match;
       }
     }
 
