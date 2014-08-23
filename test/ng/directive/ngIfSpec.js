@@ -5,6 +5,7 @@ describe('ngIf', function () {
 
   beforeEach(module(function(_$compileProvider_) {
     $compileProvider = _$compileProvider_;
+    $compileProvider.enableDebugInfo(true);
   }));
   beforeEach(inject(function ($rootScope, _$compile_) {
     $scope = $rootScope.$new();

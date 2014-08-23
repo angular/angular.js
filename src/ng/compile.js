@@ -886,6 +886,17 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     };
 
+
+    function safeAddClass($element, className) {
+      try {
+        $element.addClass(className);
+      } catch(e) {
+        // ignore, since it means that we are trying to set class on
+        // SVG element, where class name is read-only.
+      }
+    }
+
+
     var startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
         denormalizeTemplate = (startSymbol == '{{' || endSymbol  == '}}')
@@ -895,17 +906,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
+
     compile.$$addBindingInfo = enableDebugInfo ? function $$addBindingInfo(element, binding) {
-      element
-          .addClass('ng-binding')
-          .data('$binding',
-              (element.data('$binding') || []).concat(binding.expressions || [binding])
-          );
+      safeAddClass(element, 'ng-binding');
+      element.data('$binding', (element.data('$binding') || []).concat(binding.expressions || [binding]));
     } : noop;
 
     compile.$$addScopeInfo = enableDebugInfo ? function $$addScopeInfo(element, scope, isolated, noTemplate) {
-      safeAddClass(isolated ? 'ng-isolate-scope' : 'ng-scope');
-      element .data(noTemplate ? isolated ? '$isolateScopeNoTemplate' : '$isolateScope' : '$scope', scope);
+      safeAddClass(jqLite(element), isolated ? 'ng-isolate-scope' : 'ng-scope');
+      var dataName = isolated ? (noTemplate ? '$isolateScopeNoTemplate' : '$isolateScope') : '$scope';
+      element.data ? element.data(dataName, scope) : jqLite.data(element, dataName, scope);
     } : noop;
 
     return compile;
@@ -929,9 +939,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var compositeLinkFn =
               compileNodes($compileNodes, transcludeFn, $compileNodes,
                            maxPriority, ignoreDirective, previousCompileContext);
-      safeAddClass($compileNodes, 'ng-scope');
-      var namespace = null;
+
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn, futureParentElement){
+        var namespace = null;
         assertArg(scope, 'scope');
         if (!namespace) {
           namespace = detectNamespaceForChildElements(futureParentElement);
@@ -954,7 +964,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        $linkNode.data('$scope', scope);
+        compile.$$addScopeInfo($linkNode, scope);
 
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
         if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode, parentBoundTranscludeFn);
@@ -969,15 +979,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         return 'html';
       } else {
         return nodeName_(node) !== 'foreignobject' && node.toString().match(/SVG/) ? 'svg': 'html';
-      }
-    }
-
-    function safeAddClass($element, className) {
-      try {
-        $element.addClass(className);
-      } catch(e) {
-        // ignore, since it means that we are trying to set class on
-        // SVG element, where class name is read-only.
       }
     }
 
@@ -1012,10 +1013,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement,
                                       null, [], [], previousCompileContext)
             : null;
-
-        if (nodeLinkFn && nodeLinkFn.scope) {
-          safeAddClass(attrs.$$element, 'ng-scope');
-        }
 
         childLinkFn = (nodeLinkFn && nodeLinkFn.terminal ||
                       !(childNodes = nodeList[i].childNodes) ||
@@ -1064,7 +1061,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (nodeLinkFn) {
             if (nodeLinkFn.scope) {
               childScope = scope.$new();
-              jqLite.data(node, '$scope', childScope);
+              compile.$$addScopeInfo(node, childScope);
             } else {
               childScope = scope;
             }
@@ -1565,14 +1562,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           isolateScope = scope.$new(true);
 
-          if (templateDirective && (templateDirective === newIsolateScopeDirective ||
-              templateDirective === newIsolateScopeDirective.$$originalDirective)) {
-            $element.data('$isolateScope', isolateScope);
-          } else {
-            $element.data('$isolateScopeNoTemplate', isolateScope);
-          }
-
-
+          compile.$$addScopeInfo($element, isolateScope, true, !(templateDirective && (templateDirective === newIsolateScopeDirective ||
+              templateDirective === newIsolateScopeDirective.$$originalDirective)));
 
           safeAddClass($element, 'ng-isolate-scope');
 

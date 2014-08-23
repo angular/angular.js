@@ -294,10 +294,15 @@ describe('$compile', function() {
 
   describe('compile phase', function() {
 
-    it('should attach scope to the document node when it is compiled explicitly', inject(function($document){
-      $compile($document)($rootScope);
-      expect($document.scope()).toBe($rootScope);
-    }));
+    it('should attach scope to the document node when it is compiled explicitly', function() {
+      module(function($compileProvider) {
+        $compileProvider.enableDebugInfo(true);
+      });
+      inject(function($document){
+        $compile($document)($rootScope);
+        expect($document.scope()).toBe($rootScope);
+      });
+    });
 
     it('should wrap root text nodes in spans', inject(function($compile, $rootScope) {
       element = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
@@ -464,7 +469,7 @@ describe('$compile', function() {
               toEqual('<div factory-error linking-error template-error>');
           expect($exceptionHandler.errors[2][0]).toEqual('LinkingError');
           expect(ie($exceptionHandler.errors[2][1])).
-              toEqual('<div class="ng-scope" factory-error linking-error template-error>');
+              toEqual('<div factory-error linking-error template-error>');
 
 
           // crazy stuff to make IE happy
@@ -1981,7 +1986,10 @@ describe('$compile', function() {
       describe('scope', function() {
         var iscope;
 
-        beforeEach(module(function() {
+        beforeEach(module(function($compileProvider) {
+
+          $compileProvider.enableDebugInfo(true);
+
           forEach(['', 'a', 'b'], function(name) {
             directive('scope' + uppercase(name), function(log) {
               return {
@@ -2088,11 +2096,18 @@ describe('$compile', function() {
         }));
 
 
-        it('should allow creation of new scopes', inject(function($rootScope, $compile, log) {
-          element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('2; log-2-1; LOG');
-          expect(element.find('span').hasClass('ng-scope')).toBe(true);
-        }));
+        it('should allow creation of new scopes', function() {
+
+          module(function($compileProvider) {
+            $compileProvider.enableDebugInfo(true);
+          });
+
+          inject(function($rootScope, $compile, log) {
+            element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
+            expect(log).toEqual('2; log-2-1; LOG');
+            expect(element.find('span').hasClass('ng-scope')).toBe(true);
+          });
+        });
 
 
         it('should allow creation of new isolated scopes for directives', inject(
@@ -2231,6 +2246,10 @@ describe('$compile', function() {
 
 
         describe('scope()/isolate() scope getters', function() {
+
+          beforeEach(module(function($compileProvider) {
+            $compileProvider.enableDebugInfo(true);
+          }));
 
           describe('with no directives', function() {
 
@@ -2493,11 +2512,18 @@ describe('$compile', function() {
 
     describe("decorating with binding info", function() {
 
-      it('should not occur if `enableDebugInfo` has not been called', inject(function($compile, $rootScope) {
-        element = $compile('<div>{{1+2}}</div>')($rootScope);
-        expect(element.hasClass('ng-binding')).toBe(false);
-        expect(element.data('$binding')).toBeUndefined();
-      }));
+      it('should not occur if `enableDebugInfo` is falsy', function() {
+
+        module(function($compileProvider) {
+          $compileProvider.enableDebugInfo(false);
+        });
+
+        inject(function($compile, $rootScope) {
+          element = $compile('<div>{{1+2}}</div>')($rootScope);
+          expect(element.hasClass('ng-binding')).toBe(false);
+          expect(element.data('$binding')).toBeUndefined();
+        });
+      });
 
 
       it('should occur if `enableDebugInfo` has been called', function() {
@@ -2963,7 +2989,10 @@ describe('$compile', function() {
   describe('isolated locals', function() {
     var componentScope, regularScope;
 
-    beforeEach(module(function() {
+    beforeEach(module(function($compileProvider) {
+
+      $compileProvider.enableDebugInfo(true);
+
       directive('myComponent', function() {
         return {
           scope: {
@@ -3483,6 +3512,11 @@ describe('$compile', function() {
 
 
   describe('controller', function() {
+
+    beforeEach(module(function($compileProvider) {
+      $compileProvider.enableDebugInfo(true);
+    }));
+
     it('should get required controller', function() {
       module(function() {
         directive('main', function(log) {
@@ -4246,11 +4280,16 @@ describe('$compile', function() {
 
 
 
-      it('should not leak if two "element" transclusions are on the same element', function () {
+      it('should not leak if two "element" transclusions are on the same element (with debug info)', function () {
         if (jQuery) {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
+
+
+        module(function($compileProvider) {
+          $compileProvider.enableDebugInfo(true);
+        });
 
         inject(function($compile, $rootScope) {
           expect(jqLiteCacheSize()).toEqual(0);
@@ -4273,11 +4312,47 @@ describe('$compile', function() {
       });
 
 
-      it('should not leak if two "element" transclusions are on the same element', function () {
+      it('should not leak if two "element" transclusions are on the same element (without debug info)', function () {
         if (jQuery) {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
+
+
+        module(function($compileProvider) {
+          $compileProvider.enableDebugInfo(false);
+        });
+
+        inject(function($compile, $rootScope) {
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('xs = [0,1]');
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('xs = [0]');
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('xs = []');
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          element.remove();
+          expect(jqLiteCacheSize()).toEqual(0);
+        });
+      });
+
+
+      it('should not leak if two "element" transclusions are on the same element (with debug info)', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
+        module(function($compileProvider) {
+          $compileProvider.enableDebugInfo(true);
+        });
 
         inject(function($compile, $rootScope) {
           expect(jqLiteCacheSize()).toEqual(0);
@@ -4303,9 +4378,50 @@ describe('$compile', function() {
         });
       });
 
+
+      it('should not leak if two "element" transclusions are on the same element (without debug info)', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
+        module(function($compileProvider) {
+          $compileProvider.enableDebugInfo(false);
+        });
+
+        inject(function($compile, $rootScope) {
+          expect(jqLiteCacheSize()).toEqual(0);
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="val">{{x}}</div></div>')($rootScope);
+
+          $rootScope.$apply('xs = [0,1]');
+          // At this point we have a bunch of comment placeholders but no real transcluded elements
+          // So the cache only contains the root element's data
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('val = true');
+          // Now we have two concrete transcluded elements plus some comments so two more cache items
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('val = false');
+          // Once again we only have comments so no transcluded elements and the cache is back to just
+          // the root element
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          element.remove();
+          // Now we've even removed the root element along with its cache
+          expect(jqLiteCacheSize()).toEqual(0);
+        });
+      });
+
+
       if (jQuery) {
         describe('cleaning up after a replaced element', function () {
           var $compile, xs;
+
+          beforeEach(module(function($compileProvider) {
+            $compileProvider.enableDebugInfo(true);
+          }));
+
           beforeEach(inject(function (_$compile_) {
             $compile = _$compile_;
             xs = [0, 1];
@@ -4317,7 +4433,7 @@ describe('$compile', function() {
             element = $compile('<div><div ng-repeat="x in xs" ng-click="noop()">{{x}}</div></div>')($rootScope);
 
             $rootScope.$apply('xs = [' + xs + ']');
-            firstRepeatedElem = element.children('.ng-scope').eq(0);
+            firstRepeatedElem = element.children().eq(0);
 
             expect(firstRepeatedElem.data('$scope')).toBeDefined();
             privateData = jQuery._data(firstRepeatedElem[0]);
@@ -5216,7 +5332,9 @@ describe('$compile', function() {
           }));
         });
         inject(function($compile) {
-          element = $compile('<div transclude><div child></div></div>')($rootScope);
+          // We need to wrap the transclude directive's element in a parent element so that the
+          // cloned element gets deallocated/cleaned up correctly
+          element = $compile('<div><div transclude><div child></div></div></div>')($rootScope);
           expect(capturedTranscludeCtrl).toBeTruthy();
         });
       });
@@ -5918,175 +6036,187 @@ describe('$compile', function() {
     }));
 
 
-    it('should set up and destroy the transclusion scopes correctly',
-          inject(function($compile, $rootScope) {
-      element = $compile(
-        '<div>' +
-          '<div ng-if-start="val0"><span ng-if="val1"></span></div>' +
-          '<div ng-if-end><span ng-if="val2"></span></div>' +
-        '</div>'
-      )($rootScope);
-      $rootScope.$apply('val0 = true; val1 = true; val2 = true');
+    it('should set up and destroy the transclusion scopes correctly', function() {
 
-      // At this point we should have something like:
-      //
-      // <div class="ng-scope">
-      //
-      //   <!-- ngIf: val0 -->
-      //
-      //   <div ng-if-start="val0" class="ng-scope">
-      //     <!-- ngIf: val1 -->
-      //     <span ng-if="val1" class="ng-scope"></span>
-      //     <!-- end ngIf: val1 -->
-      //   </div>
-      //
-      //   <div ng-if-end="" class="ng-scope">
-      //     <!-- ngIf: val2 -->
-      //     <span ng-if="val2" class="ng-scope"></span>
-      //     <!-- end ngIf: val2 -->
-      //   </div>
-      //
-      //   <!-- end ngIf: val0 -->
-      // </div>
-      var ngIfStartScope = element.find('div').eq(0).scope();
-      var ngIfEndScope = element.find('div').eq(1).scope();
+      module(function($compileProvider) {
+        $compileProvider.enableDebugInfo(true);
+      });
 
-      expect(ngIfStartScope.$id).toEqual(ngIfEndScope.$id);
+      inject(function($compile, $rootScope) {
+        element = $compile(
+          '<div>' +
+            '<div ng-if-start="val0"><span ng-if="val1"></span></div>' +
+            '<div ng-if-end><span ng-if="val2"></span></div>' +
+          '</div>'
+        )($rootScope);
+        $rootScope.$apply('val0 = true; val1 = true; val2 = true');
 
-      var ngIf1Scope = element.find('span').eq(0).scope();
-      var ngIf2Scope = element.find('span').eq(1).scope();
+        // At this point we should have something like:
+        //
+        // <div>
+        //
+        //   <!-- ngIf: val0 -->
+        //
+        //   <div ng-if-start="val0">
+        //     <!-- ngIf: val1 -->
+        //     <span ng-if="val1"></span>
+        //     <!-- end ngIf: val1 -->
+        //   </div>
+        //
+        //   <div ng-if-end="">
+        //     <!-- ngIf: val2 -->
+        //     <span ng-if="val2"></span>
+        //     <!-- end ngIf: val2 -->
+        //   </div>
+        //
+        //   <!-- end ngIf: val0 -->
+        // </div>
+        var ngIfStartScope = element.find('div').eq(0).scope();
+        var ngIfEndScope = element.find('div').eq(1).scope();
 
-      expect(ngIf1Scope.$id).not.toEqual(ngIf2Scope.$id);
-      expect(ngIf1Scope.$parent.$id).toEqual(ngIf2Scope.$parent.$id);
+        expect(ngIfStartScope.$id).toEqual(ngIfEndScope.$id);
 
-      $rootScope.$apply('val1 = false');
+        var ngIf1Scope = element.find('span').eq(0).scope();
+        var ngIf2Scope = element.find('span').eq(1).scope();
 
-      // Now we should have something like:
-      //
-      // <div class="ng-scope">
-      //   <!-- ngIf: val0 -->
-      //   <div ng-if-start="val0" class="ng-scope">
-      //     <!-- ngIf: val1 -->
-      //   </div>
-      //   <div ng-if-end="" class="ng-scope">
-      //     <!-- ngIf: val2 -->
-      //     <span ng-if="val2" class="ng-scope"></span>
-      //     <!-- end ngIf: val2 -->
-      //   </div>
-      //   <!-- end ngIf: val0 -->
-      // </div>
+        expect(ngIf1Scope.$id).not.toEqual(ngIf2Scope.$id);
+        expect(ngIf1Scope.$parent.$id).toEqual(ngIf2Scope.$parent.$id);
 
-      expect(ngIfStartScope.$$destroyed).not.toEqual(true);
-      expect(ngIf1Scope.$$destroyed).toEqual(true);
-      expect(ngIf2Scope.$$destroyed).not.toEqual(true);
+        $rootScope.$apply('val1 = false');
 
-      $rootScope.$apply('val0 = false');
+        // Now we should have something like:
+        //
+        // <div>
+        //   <!-- ngIf: val0 -->
+        //   <div ng-if-start="val0">
+        //     <!-- ngIf: val1 -->
+        //   </div>
+        //   <div ng-if-end="">
+        //     <!-- ngIf: val2 -->
+        //     <span ng-if="val2"></span>
+        //     <!-- end ngIf: val2 -->
+        //   </div>
+        //   <!-- end ngIf: val0 -->
+        // </div>
 
-      // Now we should have something like:
-      //
-      // <div class="ng-scope">
-      //   <!-- ngIf: val0 -->
-      // </div>
+        expect(ngIfStartScope.$$destroyed).not.toEqual(true);
+        expect(ngIf1Scope.$$destroyed).toEqual(true);
+        expect(ngIf2Scope.$$destroyed).not.toEqual(true);
 
-      expect(ngIfStartScope.$$destroyed).toEqual(true);
-      expect(ngIf1Scope.$$destroyed).toEqual(true);
-      expect(ngIf2Scope.$$destroyed).toEqual(true);
-    }));
+        $rootScope.$apply('val0 = false');
 
+        // Now we should have something like:
+        //
+        // <div>
+        //   <!-- ngIf: val0 -->
+        // </div>
 
-    it('should set up and destroy the transclusion scopes correctly',
-          inject(function($compile, $rootScope) {
-      element = $compile(
-        '<div>' +
-          '<div ng-repeat-start="val in val0" ng-if="val1"></div>' +
-          '<div ng-repeat-end ng-if="val2"></div>' +
-        '</div>'
-      )($rootScope);
-
-      // To begin with there is (almost) nothing:
-      // <div class="ng-scope">
-      //   <!-- ngRepeat: val in val0 -->
-      // </div>
-
-      expect(element.scope().$id).toEqual($rootScope.$id);
-
-      // Now we create all the elements
-      $rootScope.$apply('val0 = [1]; val1 = true; val2 = true');
-
-      // At this point we have:
-      //
-      // <div class="ng-scope">
-      //
-      //   <!-- ngRepeat: val in val0 -->
-      //   <!-- ngIf: val1 -->
-      //   <div ng-repeat-start="val in val0" class="ng-scope">
-      //   </div>
-      //   <!-- end ngIf: val1 -->
-      //
-      //   <!-- ngIf: val2 -->
-      //   <div ng-repeat-end="" class="ng-scope">
-      //   </div>
-      //   <!-- end ngIf: val2 -->
-      //   <!-- end ngRepeat: val in val0 -->
-      // </div>
-      var ngIf1Scope = element.find('div').eq(0).scope();
-      var ngIf2Scope = element.find('div').eq(1).scope();
-      var ngRepeatScope = ngIf1Scope.$parent;
-
-      expect(ngIf1Scope.$id).not.toEqual(ngIf2Scope.$id);
-      expect(ngIf1Scope.$parent.$id).toEqual(ngRepeatScope.$id);
-      expect(ngIf2Scope.$parent.$id).toEqual(ngRepeatScope.$id);
-
-      // What is happening here??
-      // We seem to have a repeater scope which doesn't actually match to any element
-      expect(ngRepeatScope.$parent.$id).toEqual($rootScope.$id);
+        expect(ngIfStartScope.$$destroyed).toEqual(true);
+        expect(ngIf1Scope.$$destroyed).toEqual(true);
+        expect(ngIf2Scope.$$destroyed).toEqual(true);
+      });
+  });
 
 
-      // Now remove the first ngIf element from the first item in the repeater
-      $rootScope.$apply('val1 = false');
+    it('should set up and destroy the transclusion scopes correctly', function() {
 
-      // At this point we should have:
-      //
-      // <div class="ng-scope">
-      //   <!-- ngRepeat: val in val0 -->
-      //
-      //   <!-- ngIf: val1 -->
-      //
-      //   <!-- ngIf: val2 -->
-      //   <div ng-repeat-end="" ng-if="val2" class="ng-scope"></div>
-      //   <!-- end ngIf: val2 -->
-      //
-      //   <!-- end ngRepeat: val in val0 -->
-      // </div>
-      //
-      expect(ngRepeatScope.$$destroyed).toEqual(false);
-      expect(ngIf1Scope.$$destroyed).toEqual(true);
-      expect(ngIf2Scope.$$destroyed).toEqual(false);
+      module(function($compileProvider) {
+        $compileProvider.enableDebugInfo(true);
+      });
 
-      // Now remove the second ngIf element from the first item in the repeater
-      $rootScope.$apply('val2 = false');
+      inject(function($compile, $rootScope) {
+        element = $compile(
+          '<div>' +
+            '<div ng-repeat-start="val in val0" ng-if="val1"></div>' +
+            '<div ng-repeat-end ng-if="val2"></div>' +
+          '</div>'
+        )($rootScope);
 
-      // We are mostly back to where we started
-      //
-      // <div class="ng-scope">
-      //   <!-- ngRepeat: val in val0 -->
-      //   <!-- ngIf: val1 -->
-      //   <!-- ngIf: val2 -->
-      //   <!-- end ngRepeat: val in val0 -->
-      // </div>
+        // To begin with there is (almost) nothing:
+        // <div>
+        //   <!-- ngRepeat: val in val0 -->
+        // </div>
 
-      expect(ngRepeatScope.$$destroyed).toEqual(false);
-      expect(ngIf1Scope.$$destroyed).toEqual(true);
-      expect(ngIf2Scope.$$destroyed).toEqual(true);
+        expect(element.scope().$id).toEqual($rootScope.$id);
 
-      // Finally remove the repeat items
-      $rootScope.$apply('val0 = []');
+        // Now we create all the elements
+        $rootScope.$apply('val0 = [1]; val1 = true; val2 = true');
 
-      // Somehow this ngRepeat scope knows how to destroy itself...
-      expect(ngRepeatScope.$$destroyed).toEqual(true);
-      expect(ngIf1Scope.$$destroyed).toEqual(true);
-      expect(ngIf2Scope.$$destroyed).toEqual(true);
-    }));
+        // At this point we have:
+        //
+        // <div>
+        //
+        //   <!-- ngRepeat: val in val0 -->
+        //   <!-- ngIf: val1 -->
+        //   <div ng-repeat-start="val in val0">
+        //   </div>
+        //   <!-- end ngIf: val1 -->
+        //
+        //   <!-- ngIf: val2 -->
+        //   <div ng-repeat-end="">
+        //   </div>
+        //   <!-- end ngIf: val2 -->
+        //   <!-- end ngRepeat: val in val0 -->
+        // </div>
+        var ngIf1Scope = element.find('div').eq(0).scope();
+        var ngIf2Scope = element.find('div').eq(1).scope();
+        var ngRepeatScope = ngIf1Scope.$parent;
+
+        expect(ngIf1Scope.$id).not.toEqual(ngIf2Scope.$id);
+        expect(ngIf1Scope.$parent.$id).toEqual(ngRepeatScope.$id);
+        expect(ngIf2Scope.$parent.$id).toEqual(ngRepeatScope.$id);
+
+        // What is happening here??
+        // We seem to have a repeater scope which doesn't actually match to any element
+        expect(ngRepeatScope.$parent.$id).toEqual($rootScope.$id);
+
+
+        // Now remove the first ngIf element from the first item in the repeater
+        $rootScope.$apply('val1 = false');
+
+        // At this point we should have:
+        //
+        // <div>
+        //   <!-- ngRepeat: val in val0 -->
+        //
+        //   <!-- ngIf: val1 -->
+        //
+        //   <!-- ngIf: val2 -->
+        //   <div ng-repeat-end="" ng-if="val2"></div>
+        //   <!-- end ngIf: val2 -->
+        //
+        //   <!-- end ngRepeat: val in val0 -->
+        // </div>
+        //
+        expect(ngRepeatScope.$$destroyed).toEqual(false);
+        expect(ngIf1Scope.$$destroyed).toEqual(true);
+        expect(ngIf2Scope.$$destroyed).toEqual(false);
+
+        // Now remove the second ngIf element from the first item in the repeater
+        $rootScope.$apply('val2 = false');
+
+        // We are mostly back to where we started
+        //
+        // <div>
+        //   <!-- ngRepeat: val in val0 -->
+        //   <!-- ngIf: val1 -->
+        //   <!-- ngIf: val2 -->
+        //   <!-- end ngRepeat: val in val0 -->
+        // </div>
+
+        expect(ngRepeatScope.$$destroyed).toEqual(false);
+        expect(ngIf1Scope.$$destroyed).toEqual(true);
+        expect(ngIf2Scope.$$destroyed).toEqual(true);
+
+        // Finally remove the repeat items
+        $rootScope.$apply('val0 = []');
+
+        // Somehow this ngRepeat scope knows how to destroy itself...
+        expect(ngRepeatScope.$$destroyed).toEqual(true);
+        expect(ngIf1Scope.$$destroyed).toEqual(true);
+        expect(ngIf2Scope.$$destroyed).toEqual(true);
+      });
+    });
 
     it('should throw error if unterminated', function () {
       module(function($compileProvider) {

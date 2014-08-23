@@ -182,34 +182,42 @@ describe('ngInclude', function() {
   }));
 
 
-  it('should create child scope and destroy old one', inject(
+  it('should create child scope and destroy old one', function() {
+
+    module(function($compileProvider) {
+      $compileProvider.enableDebugInfo(true);
+    });
+
+    inject(
         function($rootScope, $compile, $httpBackend) {
-    $httpBackend.whenGET('url1').respond('partial {{$parent.url}}');
-    $httpBackend.whenGET('url2').respond(404);
+      $httpBackend.whenGET('url1').respond('partial {{$parent.url}}');
+      $httpBackend.whenGET('url2').respond(404);
 
-    element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
-    expect(element.children().scope()).toBeFalsy();
+      element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
+      expect(element.children().scope()).toBeFalsy();
 
-    $rootScope.url = 'url1';
-    $rootScope.$digest();
-    $httpBackend.flush();
-    expect(element.children().scope().$parent).toBe($rootScope);
-    expect(element.text()).toBe('partial url1');
+      $rootScope.url = 'url1';
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.children().scope().$parent).toBe($rootScope);
+      expect(element.text()).toBe('partial url1');
 
-    $rootScope.url = 'url2';
-    $rootScope.$digest();
-    $httpBackend.flush();
-    expect($rootScope.$$childHead).toBeFalsy();
-    expect(element.text()).toBe('');
+      $rootScope.url = 'url2';
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect($rootScope.$$childHead).toBeFalsy();
+      expect(element.text()).toBe('');
 
-    $rootScope.url = 'url1';
-    $rootScope.$digest();
-    expect(element.children().scope().$parent).toBe($rootScope);
+      $rootScope.url = 'url1';
+      $rootScope.$digest();
+      expect(element.children().scope().$parent).toBe($rootScope);
 
-    $rootScope.url = null;
-    $rootScope.$digest();
-    expect($rootScope.$$childHead).toBeFalsy();
-  }));
+      $rootScope.url = null;
+      $rootScope.$digest();
+      expect($rootScope.$$childHead).toBeFalsy();
+    });
+
+  });
 
 
   it('should do xhr request and cache it',

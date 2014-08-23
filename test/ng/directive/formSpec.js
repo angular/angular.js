@@ -15,6 +15,11 @@ describe('form', function() {
     });
   }));
 
+  // Let's turn on the debugInfo so that we can use element.scope()
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.enableDebugInfo(true);
+  }));
+
   beforeEach(inject(function($injector, $sniffer) {
     $compile = $injector.get('$compile');
     scope = $injector.get('$rootScope');
@@ -496,6 +501,7 @@ describe('form', function() {
 
 
     it('should chain nested forms in repeater', function() {
+
       doc = jqLite(
          '<ng:form name=parent>' +
           '<ng:form ng:repeat="f in forms" name=child>' +
