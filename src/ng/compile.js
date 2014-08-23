@@ -668,6 +668,33 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name  $compileProvider#enableDebugInfo
+   *
+   * @param {boolean=} enabled update the enableDebugInfo state if provided, otherwise just return the
+   * current enabled state
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   *
+   * @kind function
+   *
+   * @description
+   * Call this method to enable various debug runtime information in the compiler such as adding
+   * binding information and a reference to the current scope on to DOM elements.
+   * If enabled, the compiler will add the following to DOM elements that have been bound to the scope
+   * * `ng-binding` CSS class
+   * * `$binding` data object containing the value of the binding (or an array if there are multiple
+   *   bindings)
+   */
+  var enableDebugInfo = false;
+  this.enableDebugInfo = function(enabled) {
+    if(isDefined(enabled)) {
+      enableDebugInfo = enabled;
+      return this;
+    }
+    return enableDebugInfo;
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
             '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
@@ -868,6 +895,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
+    compile.$$addBindingInfo = enableDebugInfo ? function $$addBindingInfo(element, binding) {
+      element
+          .addClass('ng-binding')
+          .data('$binding',
+              (element.data('$binding') || []).concat(binding.expressions || [binding])
+          );
+    } : noop;
+
+    compile.$$addScopeInfo = enableDebugInfo ? function $$addScopeInfo(element, scope, isolated, noTemplate) {
+      safeAddClass(isolated ? 'ng-isolate-scope' : 'ng-scope');
+      element .data(noTemplate ? isolated ? '$isolateScopeNoTemplate' : '$isolateScope' : '$scope', scope);
+    } : noop;
 
     return compile;
 
@@ -1948,17 +1987,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         directives.push({
           priority: 0,
           compile: function textInterpolateCompileFn(templateNode) {
-            // when transcluding a template that has bindings in the root
-            // then we don't have a parent and should do this in the linkFn
-            var parent = templateNode.parent(), hasCompileParent = parent.length;
-            if (hasCompileParent) safeAddClass(templateNode.parent(), 'ng-binding');
-
             return function textInterpolateLinkFn(scope, node) {
-              var parent = node.parent(),
-                  bindings = parent.data('$binding') || [];
-              bindings.push(interpolateFn);
-              parent.data('$binding', bindings);
-              if (!hasCompileParent) safeAddClass(parent, 'ng-binding');
+              var parent = node.parent();
+              compile.$$addBindingInfo(parent, interpolateFn, true);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;
               });
