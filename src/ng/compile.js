@@ -264,7 +264,7 @@
  * api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
- * #### `replace` ([*DEPRECATED*!], will be removed in next major release)
+ * #### `replace` ([*DEPRECATED*!], will be removed in next major release - i.e. v2.0)
  * specify what the template should replace. Defaults to `false`.
  *
  * * `true` - the template will replace the directive's element.
@@ -274,7 +274,7 @@
  * one. See the {@link guide/directive#creating-custom-directives_creating-directives_template-expanding-directive
  * Directives Guide} for an example.
  *
- * There very few scenarios were element replacement is required for the application function,
+ * There are very few scenarios where element replacement is required for the application function,
  * the main one being reusable custom components that are used within SVG contexts
  * (because SVG doesn't work with custom elements in the DOM tree).
  *
