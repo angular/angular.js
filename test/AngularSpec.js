@@ -1099,6 +1099,26 @@ describe('angular', function() {
   });
 
 
+  describe("reloadWithDebugInfo", function() {
+
+    it("should reload the current page with debugInfo turned on", function() {
+
+      element = jqLite('<div>{{1+2}}</div>');
+      angular.bootstrap(element);
+      expect(element.hasClass('ng-scope')).toBe(false);
+      dealoc(element);
+
+      // We pass the false to prevent the page actually reloading
+      angular.reloadWithDebugInfo(false);
+
+      element = jqLite('<div>{{1+2}}</div>');
+      angular.bootstrap(element);
+      expect(element.hasClass('ng-scope')).toBe(true);
+      dealoc(element);
+    });
+  });
+
+
   describe('startingElementHtml', function(){
     it('should show starting element tag only', function(){
       expect(startingTag('<ng-abc x="2A"><div>text</div></ng-abc>')).
