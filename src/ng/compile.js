@@ -960,7 +960,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective,
                             previousCompileContext) {
       var linkFns = [],
-          attrs, directives, nodeLinkFn, childNodes, childLinkFn, linkFnFound, nodeLinkFnFound;
+          attrs, directives, nodeLinkFn, childNodes, childLinkFn, nodeLinkFnFound;
 
       for (var i = 0; i < nodeList.length; i++) {
         attrs = new Attributes();
@@ -987,38 +987,39 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   (nodeLinkFn.transcludeOnThisElement || !nodeLinkFn.templateOnThisElement)
                      && nodeLinkFn.transclude) : transcludeFn);
 
-        linkFns.push(nodeLinkFn, childLinkFn);
-        linkFnFound = linkFnFound || nodeLinkFn || childLinkFn;
-        nodeLinkFnFound = nodeLinkFnFound || nodeLinkFn;
+        if (nodeLinkFn || childLinkFn) {
+          linkFns.push(i, nodeLinkFn, childLinkFn);
+          nodeLinkFnFound = nodeLinkFnFound || nodeLinkFn;
+        }
 
         //use the previous context only for the first element in the virtual group
         previousCompileContext = null;
       }
 
       // return a linking function if we have found anything, null otherwise
-      return linkFnFound ? compositeLinkFn : null;
+      return linkFns.length ? compositeLinkFn : null;
 
       function compositeLinkFn(scope, nodeList, $rootElement, parentBoundTranscludeFn) {
-        var nodeLinkFn, childLinkFn, node, childScope, i, ii, n, childBoundTranscludeFn;
+        var nodeLinkFn, childLinkFn, node, childScope, i, ii, idx, childBoundTranscludeFn;
         var stableNodeList;
 
 
         if (nodeLinkFnFound) {
           // copy nodeList so that if a nodeLinkFn removes or adds an element at this DOM level our
           // offsets don't get screwed up
-          var nodeListLength = nodeList.length;
-          stableNodeList = new Array(nodeListLength);
+          stableNodeList = [];
 
-          for (i = 0; i < nodeListLength; i++) {
-            stableNodeList[i] = nodeList[i];
+          // create a sparse array by only copying the elements which have a linkFn
+          for (i = 0, ii = linkFns.length; i < ii; i+=3) {
+            idx = linkFns[i];
+            stableNodeList[idx] = nodeList[idx];
           }
         } else {
           stableNodeList = nodeList;
         }
 
-        // TODO(perf): when the DOM is sparsely annotated with directives, we spend a lot of time iterating over nulls here
-        for(i = 0, n = 0, ii = linkFns.length; i < ii; n++) {
-          node = stableNodeList[n];
+        for(i = 0, ii = linkFns.length; i < ii; ) {
+          node = stableNodeList[ linkFns[i++] ];
           nodeLinkFn = linkFns[i++];
           childLinkFn = linkFns[i++];
 
