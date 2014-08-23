@@ -487,6 +487,42 @@ describe('ngInclude', function() {
         }
     ));
   });
+
+  describe('afterAnimation', function() {
+    function compileAndLink(tpl) {
+      return function($compile, $rootScope) {
+        element = $compile(tpl)($rootScope);
+      };
+    }
+
+    beforeEach(module(function(){}, 'ngAnimateMock'));
+
+    beforeEach(inject(
+        putIntoCache('template.html', 'CONTENT'),
+        putIntoCache('another.html', 'CONTENT')));
+
+    it('should call animationCallback after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:include src="tpl" after-animation="animationCallback()"></ng:include></div>'),
+        function($rootScope, $animate, $timeout) {
+          var hasBeenCalled = false;
+
+          $rootScope.$apply("tpl = 'template.html'");
+
+          $rootScope.$apply(function () {
+            $rootScope.animationCallback = function(){
+              hasBeenCalled = true;
+            };
+          });
+
+          $animate.triggerCallbacks();
+
+          expect(hasBeenCalled).toBe(true);
+
+        }
+    ));
+  });
+
+
 });
 
 describe('ngInclude and transcludes', function() {
