@@ -501,7 +501,7 @@ describe('ngInclude', function() {
         putIntoCache('template.html', 'CONTENT'),
         putIntoCache('another.html', 'CONTENT')));
 
-    it('should call the function "animationCallback" after the "enter" animation completes', inject(
+    it('should call the "animationCallback"-function after the "enter" animation completes', inject(
         compileAndLink('<div><ng:include src="tpl" after-animation="animationCallback()"></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
           var hasBeenCalled = false;
