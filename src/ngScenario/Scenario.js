@@ -304,9 +304,6 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     var element = windowJquery(this),
         bindings;
     if (bindings = element.data('$binding')) {
-      if (!angular.isArray(bindings)) {
-        bindings = [bindings];
-      }
       for(var expressions = [], binding, j=0, jj=bindings.length;  j<jj; j++) {
         binding = bindings[j];
 
