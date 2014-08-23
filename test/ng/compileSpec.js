@@ -4250,11 +4250,16 @@ describe('$compile', function() {
 
 
 
-      it('should not leak if two "element" transclusions are on the same element', function () {
+      it('should not leak if two "element" transclusions are on the same element (with debug info)', function () {
         if (jQuery) {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
+
+
+        module(function($compileProvider) {
+          $compileProvider.debugInfoEnabled(true);
+        });
 
         inject(function($compile, $rootScope) {
           expect(jqLiteCacheSize()).toEqual(0);
@@ -4277,11 +4282,47 @@ describe('$compile', function() {
       });
 
 
-      it('should not leak if two "element" transclusions are on the same element', function () {
+      it('should not leak if two "element" transclusions are on the same element (without debug info)', function () {
         if (jQuery) {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
+
+
+        module(function($compileProvider) {
+          $compileProvider.debugInfoEnabled(false);
+        });
+
+        inject(function($compile, $rootScope) {
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('xs = [0,1]');
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('xs = [0]');
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          $rootScope.$apply('xs = []');
+          expect(jqLiteCacheSize()).toEqual(0);
+
+          element.remove();
+          expect(jqLiteCacheSize()).toEqual(0);
+        });
+      });
+
+
+      it('should not leak if two "element" transclusions are on the same element (with debug info)', function () {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
+        module(function($compileProvider) {
+          $compileProvider.debugInfoEnabled(true);
+        });
 
         inject(function($compile, $rootScope) {
           expect(jqLiteCacheSize()).toEqual(0);
@@ -5220,7 +5261,9 @@ describe('$compile', function() {
           }));
         });
         inject(function($compile) {
-          element = $compile('<div transclude><div child></div></div>')($rootScope);
+          // We need to wrap the transclude directive's element in a parent element so that the
+          // cloned element gets deallocated/cleaned up correctly
+          element = $compile('<div><div transclude><div child></div></div></div>')($rootScope);
           expect(capturedTranscludeCtrl).toBeTruthy();
         });
       });
