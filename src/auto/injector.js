@@ -693,7 +693,7 @@ function createInjector(modulesToLoad, strictDi) {
   // Module Loading
   ////////////////////////////////////
   function loadModules(modulesToLoad){
-    var runBlocks = [], moduleFn, invokeQueue;
+    var runBlocks = [], moduleFn;
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);
