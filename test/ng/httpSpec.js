@@ -1368,7 +1368,7 @@ describe('$http', function() {
         $http({method: 'GET', url: '/some', timeout: canceler.promise}).error(
             function(data, status, headers, config) {
               expect(data).toBeUndefined();
-              expect(status).toBe(0);
+              expect(status).toBe(-1);
               expect(headers()).toEqual({});
               expect(config.url).toBe('/some');
               callback();
