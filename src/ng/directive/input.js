@@ -113,6 +113,9 @@ var inputType = {
      * modern browsers do not yet support this input type, it is important to provide cues to users on the
      * expected input format via a placeholder or label. The model must always be a Date object.
      *
+     * The timezone to be used to read/write the `Date` instance in the model can be defined using
+     * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
+     *
      * @param {string} ngModel Assignable angular expression to data-bind to.
      * @param {string=} name Property name of the form under which the control is published.
      * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
@@ -197,6 +200,9 @@ var inputType = {
     * Input with datetime validation and transformation. In browsers that do not yet support
     * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
     * local datetime format (yyyy-MM-ddTHH:mm), for example: `2010-12-28T14:57`. The model must be a Date object.
+    *
+    * The timezone to be used to read/write the `Date` instance in the model can be defined using
+    * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
     *
     * @param {string} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
@@ -284,6 +290,9 @@ var inputType = {
    * local time format (HH:mm), for example: `14:57`. Model must be a Date object. This binding will always output a
    * Date object to the model of January 1, 1970, or local date `new Date(1970, 0, 1, HH, mm)`.
    *
+   * The timezone to be used to read/write the `Date` instance in the model can be defined using
+   * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
+   *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
@@ -369,6 +378,9 @@ var inputType = {
     * the HTML5 week input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
     * week format (yyyy-W##), for example: `2013-W02`. The model must always be a Date object.
     *
+    * The timezone to be used to read/write the `Date` instance in the model can be defined using
+    * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
+    *
     * @param {string} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
@@ -452,6 +464,9 @@ var inputType = {
    * the HTML5 month input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
    * month format (yyyy-MM), for example: `2009-01`. The model must always be a Date object. In the event the model is
    * not set to the first of the month, the first of that model's month is assumed.
+   *
+   * The timezone to be used to read/write the `Date` instance in the model can be defined using
+   * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -1061,6 +1076,7 @@ function createDateParser(regexp, mapping) {
 function createDateInputType(type, regexp, parseDate, format) {
    return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
       textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+      var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
 
       ctrl.$parsers.push(function(value) {
          if(ctrl.$isEmpty(value)) {
@@ -1070,7 +1086,11 @@ function createDateInputType(type, regexp, parseDate, format) {
 
          if(regexp.test(value)) {
             ctrl.$setValidity(type, true);
-            return parseDate(value);
+            var parsedDate = parseDate(value);
+            if (timezone === 'UTC') {
+              parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+            }
+            return parsedDate;
          }
 
          ctrl.$setValidity(type, false);
@@ -1079,7 +1099,7 @@ function createDateInputType(type, regexp, parseDate, format) {
 
       ctrl.$formatters.push(function(value) {
          if(isDate(value)) {
-            return $filter('date')(value, format);
+            return $filter('date')(value, format, timezone);
          }
          return '';
       });
@@ -2604,6 +2624,9 @@ var ngValueDirective = function() {
  *     `ngModelOptions="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
        `ngModel` as getters/setters.
+ *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
+ *     `<input type="date">`, `<input type="time">`, ... . Right now, the only supported value is `'UTC'`,
+ *     otherwise the default timezone of the browser will be used.
  *
  * @example
 
