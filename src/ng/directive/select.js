@@ -115,7 +115,7 @@ var ngOptionsMinErr = minErr('ngOptions');
 
           Select <a href ng-click="myColor = { name:'not in list', shade: 'other' }">bogus</a>.<br>
           <hr/>
-          Currently selected: {{ {selected_color:myColor}  }}
+          Currently selected: <span id="x">{{ {selected_color:myColor} }}</span>
           <div style="border:solid 1px black; height:20px"
                ng-style="{'background-color':myColor.name}">
           </div>
@@ -123,13 +123,14 @@ var ngOptionsMinErr = minErr('ngOptions');
       </file>
       <file name="protractor.js" type="protractor">
          it('should check ng-options', function() {
-           expect(element(by.binding('{selected_color:myColor}')).getText()).toMatch('red');
+          var selectedColor = element(by.binding(' {selected_color:myColor} '));
+           expect(selectedColor.getText()).toMatch('red');
            element.all(by.model('myColor')).first().click();
            element.all(by.css('select[ng-model="myColor"] option')).first().click();
-           expect(element(by.binding('{selected_color:myColor}')).getText()).toMatch('black');
+           expect(selectedColor.getText()).toMatch('black');
            element(by.css('.nullable select[ng-model="myColor"]')).click();
            element.all(by.css('.nullable select[ng-model="myColor"] option')).first().click();
-           expect(element(by.binding('{selected_color:myColor}')).getText()).toMatch('null');
+           expect(selectedColor.getText()).toMatch('null');
          });
       </file>
     </example>
