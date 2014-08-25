@@ -755,17 +755,19 @@ describe('$http', function() {
       }));
 
       it('should send execute result if header value is function', inject(function() {
-        var headerConfig = {'Accept': function() { return 'Rewritten'; }};
+        var headerConfig = {'Accept': function(config) { return 'Rewritten-' + config.method; }};
 
-        function checkHeaders(headers) {
-          return headers['Accept'] == 'Rewritten';
+        function checkHeaders(method) {
+          return function(headers) {
+            return headers['Accept'] == 'Rewritten-' + method;
+          };
         }
 
-        $httpBackend.expect('GET', '/url', undefined, checkHeaders).respond('');
-        $httpBackend.expect('POST', '/url', undefined, checkHeaders).respond('');
-        $httpBackend.expect('PUT', '/url', undefined, checkHeaders).respond('');
-        $httpBackend.expect('PATCH', '/url', undefined, checkHeaders).respond('');
-        $httpBackend.expect('DELETE', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('GET', '/url', undefined, checkHeaders('GET')).respond('');
+        $httpBackend.expect('POST', '/url', undefined, checkHeaders('POST')).respond('');
+        $httpBackend.expect('PUT', '/url', undefined, checkHeaders('PUT')).respond('');
+        $httpBackend.expect('PATCH', '/url', undefined, checkHeaders('PATCH')).respond('');
+        $httpBackend.expect('DELETE', '/url', undefined, checkHeaders('DELETE')).respond('');
 
         $http({url: '/url', method: 'GET', headers: headerConfig});
         $http({url: '/url', method: 'POST', headers: headerConfig});
