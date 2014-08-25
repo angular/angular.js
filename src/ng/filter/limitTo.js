@@ -40,8 +40,8 @@
      <file name="protractor.js" type="protractor">
        var numLimitInput = element(by.model('numLimit'));
        var letterLimitInput = element(by.model('letterLimit'));
-       var limitedNumbers = element(by.binding('numbers | limitTo:numLimit'));
-       var limitedLetters = element(by.binding('letters | limitTo:letterLimit'));
+       var limitedNumbers = element(by.binding(' numbers | limitTo:numLimit '));
+       var limitedLetters = element(by.binding(' letters | limitTo:letterLimit '));
 
        it('should limit the number array to first three items', function() {
          expect(numLimitInput.getAttribute('value')).toBe('3');
