@@ -1627,6 +1627,18 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should use UTC if specified in the options', function() {
+      compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      changeInputValueTo('2013-07');
+      expect(+scope.value).toBe(Date.UTC(2013, 6, 1));
+
+      scope.$apply(function() {
+        scope.value = new Date(Date.UTC(2014, 6, 1));
+      });
+      expect(inputElm.val()).toBe('2014-07');
+    });
+
 
     describe('min', function (){
       beforeEach(function (){
@@ -1746,6 +1758,18 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should use UTC if specified in the options', function() {
+      compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      changeInputValueTo('2013-W03');
+      expect(+scope.value).toBe(Date.UTC(2013, 0, 17));
+
+      scope.$apply(function() {
+        scope.value = new Date(Date.UTC(2014, 0, 17));
+      });
+      expect(inputElm.val()).toBe('2014-W03');
+    });
+
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="week" ng-model="value" name="alias" min="2013-W01" />');
@@ -1861,6 +1885,18 @@ describe('input', function() {
       changeInputValueTo('');
       expect(scope.test).toBeNull();
       expect(inputElm).toBeValid();
+    });
+
+    it('should use UTC if specified in the options', function() {
+      compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      changeInputValueTo('2000-01-01T01:02');
+      expect(+scope.value).toBe(Date.UTC(2000, 0, 1, 1, 2));
+
+      scope.$apply(function() {
+        scope.value = new Date(Date.UTC(2001, 0, 1, 1, 2));
+      });
+      expect(inputElm.val()).toBe('2001-01-01T01:02');
     });
 
     describe('min', function (){
@@ -2008,6 +2044,18 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should use UTC if specified in the options', function() {
+      compileInput('<input type="time" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      changeInputValueTo('23:02');
+      expect(+scope.value).toBe(Date.UTC(1970, 0, 1, 23, 2));
+
+      scope.$apply(function() {
+        scope.value = new Date(Date.UTC(1971, 0, 1, 23, 2));
+      });
+      expect(inputElm.val()).toBe('23:02');
+    });
+
     describe('min', function (){
       beforeEach(function (){
         compileInput('<input type="time" ng-model="value" name="alias" min="09:30" />');
@@ -2151,6 +2199,18 @@ describe('input', function() {
       changeInputValueTo('');
       expect(scope.test).toBeNull();
       expect(inputElm).toBeValid();
+    });
+
+    it('should use UTC if specified in the options', function() {
+      compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      changeInputValueTo('2000-01-01');
+      expect(+scope.value).toBe(Date.UTC(2000, 0, 1));
+
+      scope.$apply(function() {
+        scope.value = new Date(Date.UTC(2001, 0, 1));
+      });
+      expect(inputElm.val()).toBe('2001-01-01');
     });
 
     describe('min', function (){
