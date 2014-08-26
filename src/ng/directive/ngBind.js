@@ -123,7 +123,7 @@ var ngBindDirective = ['$compile', function($compile) {
 var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate, $compile) {
   return function(scope, element, attr) {
     var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
-    $compile.$$addBindingInfo(element, interpolateFn);
+    $compile.$$addBindingInfo(element, interpolateFn.expressions);
     attr.$observe('ngBindTemplate', function(value) {
       element.text(value);
     });
