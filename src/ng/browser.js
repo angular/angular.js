@@ -234,6 +234,13 @@ function Browser(window, document, $log, $sniffer) {
     return callback;
   };
 
+  /**
+   * Checks whether the url has changed outside of Angular.
+   * Needs to be exported to be able to check for changes that have been done in sync,
+   * as hashchange/popstate events fire in async.
+   */
+  self.$$checkUrlChange = fireUrlChange;
+
   //////////////////////////////////////////////////////////////
   // Misc API
   //////////////////////////////////////////////////////////////

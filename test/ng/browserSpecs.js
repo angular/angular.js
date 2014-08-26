@@ -36,7 +36,7 @@ function MockWindow() {
   };
 
   this.location = {
-    href: 'http://server',
+    href: 'http://server/',
     replace: noop
   };
 
@@ -414,7 +414,7 @@ describe('browser', function() {
 
       expect(replaceState).not.toHaveBeenCalled();
       expect(locationReplace).not.toHaveBeenCalled();
-      expect(fakeWindow.location.href).toEqual('http://server');
+      expect(fakeWindow.location.href).toEqual('http://server/');
     });
 
     it('should use history.replaceState when available', function() {
@@ -426,7 +426,7 @@ describe('browser', function() {
 
       expect(pushState).not.toHaveBeenCalled();
       expect(locationReplace).not.toHaveBeenCalled();
-      expect(fakeWindow.location.href).toEqual('http://server');
+      expect(fakeWindow.location.href).toEqual('http://server/');
     });
 
     it('should set location.href when pushState not available', function() {
@@ -448,7 +448,7 @@ describe('browser', function() {
 
       expect(pushState).not.toHaveBeenCalled();
       expect(replaceState).not.toHaveBeenCalled();
-      expect(fakeWindow.location.href).toEqual('http://server');
+      expect(fakeWindow.location.href).toEqual('http://server/');
     });
 
     it('should return $browser to allow chaining', function() {
@@ -615,4 +615,32 @@ describe('browser', function() {
       expect(browser.baseHref()).toEqual('/base/path/');
     });
   });
+
+  describe('integration tests with $location', function() {
+
+    beforeEach(module(function($provide, $locationProvider) {
+      spyOn(fakeWindow.history, 'pushState').andCallFake(function(stateObj, title, newUrl) {
+        fakeWindow.location.href = newUrl;
+      });
+      $provide.value('$browser', browser);
+      browser.pollFns = [];
+
+      $locationProvider.html5Mode(true);
+    }));
+
+    it('should update $location when it was changed outside of Angular in sync '+
+       'before $digest was called', function() {
+      inject(function($rootScope, $location) {
+        fakeWindow.history.pushState(null, '', 'http://server/someTestHash');
+
+        // Verify that infinite digest reported in #6976 no longer occurs
+        expect(function() {
+          $rootScope.$digest();
+        }).not.toThrow();
+
+        expect($location.path()).toBe('/someTestHash');
+      });
+    });
+  });
+
 });
