@@ -1172,6 +1172,9 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   ctrl.$formatters.push(function(value) {
+    if (isString(value) && !isNaN(value)) {
+      value = Number(value);
+    }
     return validate(ctrl, 'number', ctrl.$isEmpty(value) || isNumber(value), value);
   });
 }

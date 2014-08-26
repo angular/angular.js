@@ -2401,6 +2401,54 @@ describe('input', function() {
     });
 
 
+    it('should translate numeric base-10 strings in model to numbers', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply(function() {
+        scope.age = '10';
+      });
+
+      expect(scope.age).toBe('10');
+      expect(inputElm.val()).toBe('10');
+    });
+
+
+    it('should translate numeric base-16 strings in model to numbers', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply(function() {
+        scope.age = '0xFf';
+      });
+
+      expect(scope.age).toBe('0xFf');
+      expect(inputElm.val()).toBe('255');
+    });
+
+
+    it('should translate scientific notation from numeric strings in model to numbers', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply(function() {
+        scope.age = '0.1e6';
+      });
+
+      expect(scope.age).toBe('0.1e6');
+      expect(inputElm.val()).toBe('100000');
+    });
+
+
+    it('should remove leading zeros from numeric strings in model', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply(function() {
+        scope.age = '010';
+      });
+
+      expect(scope.age).toBe('010');
+      expect(inputElm.val()).toBe('10');
+    });
+
+
     describe('min', function() {
 
       it('should validate', function() {
