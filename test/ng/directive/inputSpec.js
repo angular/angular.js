@@ -1816,7 +1816,7 @@ describe('input', function() {
       compileInput('<input type="datetime-local" ng-model="lunchtime"/>');
 
       scope.$apply(function(){
-        scope.lunchtime = '2013-12-16T11:30';
+        scope.lunchtime = '2013-12-16T11:30:00';
       });
 
       expect(inputElm.val()).toBe('');
@@ -1826,20 +1826,20 @@ describe('input', function() {
       compileInput('<input type="datetime-local" ng-model="tenSecondsToNextYear"/>');
 
       scope.$apply(function (){
-        scope.tenSecondsToNextYear = new Date(2013, 11, 31, 23, 59);
+        scope.tenSecondsToNextYear = new Date(2013, 11, 31, 23, 59, 0);
       });
 
-      expect(inputElm.val()).toBe('2013-12-31T23:59');
+      expect(inputElm.val()).toBe('2013-12-31T23:59:00');
     });
 
     it('should set the model undefined if the view is invalid', function (){
       compileInput('<input type="datetime-local" ng-model="breakMe"/>');
 
       scope.$apply(function (){
-        scope.breakMe = new Date(2009, 0, 6, 16, 25);
+        scope.breakMe = new Date(2009, 0, 6, 16, 25, 0);
       });
 
-      expect(inputElm.val()).toBe('2009-01-06T16:25');
+      expect(inputElm.val()).toBe('2009-01-06T16:25:00');
 
       try {
         //set to text for browsers with datetime-local validation.
@@ -1891,62 +1891,81 @@ describe('input', function() {
       compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
       changeInputValueTo('2000-01-01T01:02');
-      expect(+scope.value).toBe(Date.UTC(2000, 0, 1, 1, 2));
+      expect(+scope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
 
       scope.$apply(function() {
-        scope.value = new Date(Date.UTC(2001, 0, 1, 1, 2));
+        scope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
       });
-      expect(inputElm.val()).toBe('2001-01-01T01:02');
+      expect(inputElm.val()).toBe('2001-01-01T01:02:00');
+    });
+
+    it('should allow to specify the seconds', function() {
+      compileInput('<input type="datetime-local" ng-model="value"" />');
+
+      changeInputValueTo('2000-01-01T01:02:03');
+      expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 3));
+
+      scope.$apply(function() {
+        scope.value = new Date(2001, 0, 1, 1, 2, 3);
+      });
+      expect(inputElm.val()).toBe('2001-01-01T01:02:03');
+    });
+
+    it('should allow to skip the seconds', function() {
+      compileInput('<input type="datetime-local" ng-model="value"" />');
+
+      changeInputValueTo('2000-01-01T01:02');
+      expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 0));
     });
 
     describe('min', function (){
       beforeEach(function (){
-        compileInput('<input type="datetime-local" ng-model="value" name="alias" min="2000-01-01T12:30" />');
+        compileInput('<input type="datetime-local" ng-model="value" name="alias" min="2000-01-01T12:30:00" />');
       });
 
       it('should invalidate', function (){
-        changeInputValueTo('1999-12-31T01:02');
+        changeInputValueTo('1999-12-31T01:02:00');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
         expect(scope.form.alias.$error.min).toBeTruthy();
       });
 
       it('should validate', function (){
-        changeInputValueTo('2000-01-01T23:02');
+        changeInputValueTo('2000-01-01T23:02:00');
         expect(inputElm).toBeValid();
-        expect(+scope.value).toBe(+new Date(2000, 0, 1, 23, 2));
+        expect(+scope.value).toBe(+new Date(2000, 0, 1, 23, 2, 0));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
     });
 
     describe('max', function (){
       beforeEach(function (){
-        compileInput('<input type="datetime-local" ng-model="value" name="alias" max="2019-01-01T01:02" />');
+        compileInput('<input type="datetime-local" ng-model="value" name="alias" max="2019-01-01T01:02:00" />');
       });
 
       it('should invalidate', function (){
-        changeInputValueTo('2019-12-31T01:02');
+        changeInputValueTo('2019-12-31T01:02:00');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
         expect(scope.form.alias.$error.max).toBeTruthy();
       });
 
       it('should validate', function() {
-        changeInputValueTo('2000-01-01T01:02');
+        changeInputValueTo('2000-01-01T01:02:00');
         expect(inputElm).toBeValid();
-        expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2));
+        expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 0));
         expect(scope.form.alias.$error.max).toBeFalsy();
       });
     });
 
     it('should validate even if max value changes on-the-fly', function(done) {
-      scope.max = '2013-01-01T01:02';
+      scope.max = '2013-01-01T01:02:00';
       compileInput('<input type="datetime-local" ng-model="value" name="alias" max="{{max}}" />');
 
-      changeInputValueTo('2014-01-01T12:34');
+      changeInputValueTo('2014-01-01T12:34:00');
       expect(inputElm).toBeInvalid();
 
-      scope.max = '2001-01-01T01:02';
+      scope.max = '2001-01-01T01:02:00';
       scope.$digest(function () {
         expect(inputElm).toBeValid();
         done();
@@ -1954,13 +1973,13 @@ describe('input', function() {
     });
 
     it('should validate even if min value changes on-the-fly', function(done) {
-      scope.min = '2013-01-01T01:02';
+      scope.min = '2013-01-01T01:02:00';
       compileInput('<input type="datetime-local" ng-model="value" name="alias" min="{{min}}" />');
 
-      changeInputValueTo('2010-01-01T12:34');
+      changeInputValueTo('2010-01-01T12:34:00');
       expect(inputElm).toBeInvalid();
 
-      scope.min = '2014-01-01T01:02';
+      scope.min = '2014-01-01T01:02:00';
       scope.$digest(function () {
         expect(inputElm).toBeValid();
         done();
@@ -1973,7 +1992,7 @@ describe('input', function() {
       compileInput('<input type="time" ng-model="lunchtime"/>');
 
       scope.$apply(function(){
-        scope.lunchtime = '11:30';
+        scope.lunchtime = '11:30:00';
       });
 
       expect(inputElm.val()).toBe('');
@@ -1983,20 +2002,20 @@ describe('input', function() {
       compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
 
       scope.$apply(function (){
-        scope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41);
+        scope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0);
       });
 
-      expect(inputElm.val()).toBe('15:41');
+      expect(inputElm.val()).toBe('15:41:00');
     });
 
     it('should set the model undefined if the view is invalid', function (){
       compileInput('<input type="time" ng-model="breakMe"/>');
 
       scope.$apply(function (){
-        scope.breakMe = new Date(1970, 0, 1, 16, 25);
+        scope.breakMe = new Date(1970, 0, 1, 16, 25, 0);
       });
 
-      expect(inputElm.val()).toBe('16:25');
+      expect(inputElm.val()).toBe('16:25:00');
 
       try {
         //set to text for browsers with time validation.
@@ -2047,63 +2066,82 @@ describe('input', function() {
     it('should use UTC if specified in the options', function() {
       compileInput('<input type="time" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
-      changeInputValueTo('23:02');
-      expect(+scope.value).toBe(Date.UTC(1970, 0, 1, 23, 2));
+      changeInputValueTo('23:02:00');
+      expect(+scope.value).toBe(Date.UTC(1970, 0, 1, 23, 2, 0));
 
       scope.$apply(function() {
-        scope.value = new Date(Date.UTC(1971, 0, 1, 23, 2));
+        scope.value = new Date(Date.UTC(1971, 0, 1, 23, 2, 0));
       });
-      expect(inputElm.val()).toBe('23:02');
+      expect(inputElm.val()).toBe('23:02:00');
+    });
+
+    it('should allow to specify the seconds', function() {
+      compileInput('<input type="time" ng-model="value"" />');
+
+      changeInputValueTo('01:02:03');
+      expect(+scope.value).toBe(+new Date(1970, 0, 1, 1, 2, 3));
+
+      scope.$apply(function() {
+        scope.value = new Date(1970, 0, 1, 1, 2, 3);
+      });
+      expect(inputElm.val()).toBe('01:02:03');
+    });
+
+    it('should allow to skip the seconds', function() {
+      compileInput('<input type="time" ng-model="value"" />');
+
+      changeInputValueTo('01:02');
+      expect(+scope.value).toBe(+new Date(1970, 0, 1, 1, 2, 0));
     });
 
     describe('min', function (){
       beforeEach(function (){
-        compileInput('<input type="time" ng-model="value" name="alias" min="09:30" />');
+        compileInput('<input type="time" ng-model="value" name="alias" min="09:30:00" />');
       });
 
       it('should invalidate', function (){
-        changeInputValueTo('01:02');
+        changeInputValueTo('01:02:00');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
         expect(scope.form.alias.$error.min).toBeTruthy();
       });
 
       it('should validate', function (){
-        changeInputValueTo('23:02');
+        changeInputValueTo('23:02:00');
         expect(inputElm).toBeValid();
-        expect(+scope.value).toBe(+new Date(1970, 0, 1, 23, 2));
+        expect(+scope.value).toBe(+new Date(1970, 0, 1, 23, 2, 0));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
     });
 
     describe('max', function (){
       beforeEach(function (){
-        compileInput('<input type="time" ng-model="value" name="alias" max="22:30" />');
+        compileInput('<input type="time" ng-model="value" name="alias" max="22:30:00" />');
       });
 
       it('should invalidate', function (){
-        changeInputValueTo('23:00');
+        changeInputValueTo('23:00:00');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
         expect(scope.form.alias.$error.max).toBeTruthy();
       });
 
       it('should validate', function() {
-        changeInputValueTo('05:30');
+        changeInputValueTo('05:30:00');
         expect(inputElm).toBeValid();
-        expect(+scope.value).toBe(+new Date(1970, 0, 1, 5, 30));
+        expect(+scope.value).toBe(+new Date(1970, 0, 1, 5, 30, 0));
         expect(scope.form.alias.$error.max).toBeFalsy();
       });
     });
 
     it('should validate even if max value changes on-the-fly', function(done) {
-      scope.max = '21:02';
+      scope.max = '21:02:00';
       compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
 
-      changeInputValueTo('22:34');
+      changeInputValueTo('22:34:00');
       expect(inputElm).toBeInvalid();
 
-      scope.max = '12:34';
+      scope.max = '12:34:00';
       scope.$digest(function () {
         expect(inputElm).toBeValid();
         done();
@@ -2111,13 +2149,13 @@ describe('input', function() {
     });
 
     it('should validate even if min value changes on-the-fly', function(done) {
-      scope.min = '08:45';
+      scope.min = '08:45:00';
       compileInput('<input type="time" ng-model="value" name="alias" min="{{min}}" />');
 
-      changeInputValueTo('06:15');
+      changeInputValueTo('06:15:00');
       expect(inputElm).toBeInvalid();
 
-      scope.min = '13:50';
+      scope.min = '13:50:00';
       scope.$digest(function () {
         expect(inputElm).toBeValid();
         done();
