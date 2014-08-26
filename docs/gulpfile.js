@@ -42,7 +42,7 @@ gulp.task('assets', ['bower'], function() {
     copyComponent('open-sans-fontface'),
     copyComponent('lunr.js','/*.js'),
     copyComponent('google-code-prettify'),
-    copyComponent('jquery', '/jquery.*'),
+    copyComponent('jquery', '/dist/*.js'),
     copyComponent('marked', '/**/*.js', '../node_modules', 'package.json')
   );
 });
