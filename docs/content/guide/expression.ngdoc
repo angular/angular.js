@@ -321,3 +321,13 @@ When using a directive that takes an expression
 </ul>
 ```
 
+When using a filter (chain) to avoid filtering expression values over and over
+again on each digest cycle.
+
+```html
+  <div>{{::(text | someFilter)}}</div>
+```
+
+Observe that `::(text | someFilter)` is not the same as `::text | someFilter`. The
+former is unstable as long as the last filter returns undefined while the latter
+is unstable as long as `text` is undefined.
