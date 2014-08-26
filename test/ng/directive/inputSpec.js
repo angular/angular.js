@@ -1947,7 +1947,7 @@ describe('input', function() {
       compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
 
       scope.$apply(function (){
-        scope.threeFortyOnePm = new Date(0, 0, 1, 15, 41);
+        scope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41);
       });
 
       expect(inputElm.val()).toBe('15:41');
@@ -1957,7 +1957,7 @@ describe('input', function() {
       compileInput('<input type="time" ng-model="breakMe"/>');
 
       scope.$apply(function (){
-        scope.breakMe = new Date(0, 0, 1, 16, 25);
+        scope.breakMe = new Date(1970, 0, 1, 16, 25);
       });
 
       expect(inputElm.val()).toBe('16:25');
@@ -2023,7 +2023,7 @@ describe('input', function() {
       it('should validate', function (){
         changeInputValueTo('23:02');
         expect(inputElm).toBeValid();
-        expect(+scope.value).toBe(+new Date(0, 0, 1, 23, 2));
+        expect(+scope.value).toBe(+new Date(1970, 0, 1, 23, 2));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
     });
@@ -2043,7 +2043,7 @@ describe('input', function() {
       it('should validate', function() {
         changeInputValueTo('05:30');
         expect(inputElm).toBeValid();
-        expect(+scope.value).toBe(+new Date(0, 0, 1, 5, 30));
+        expect(+scope.value).toBe(+new Date(1970, 0, 1, 5, 30));
         expect(scope.form.alias.$error.max).toBeFalsy();
       });
     });
