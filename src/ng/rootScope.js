@@ -687,6 +687,8 @@ function $RootScopeProvider(){
             logIdx, logMsg, asyncTask;
 
         beginPhase('$digest');
+        // Check for changes to browser url that happened in sync with the call to $digest
+        $browser.$$checkUrlChangedOutsideAngular();
 
         lastDirtyWatch = null;
 
