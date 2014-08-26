@@ -611,7 +611,7 @@ function makeMap(str) {
 
 
 function nodeName_(element) {
-  return lowercase(element.nodeName ? element.nodeName : element[0].nodeName);
+  return lowercase(element.nodeName || element[0].nodeName);
 }
 
 
