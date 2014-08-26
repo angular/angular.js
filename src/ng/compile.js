@@ -907,8 +907,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
     compile.$$addBindingInfo = debugInfoEnabled ? function $$addBindingInfo(element, binding) {
+      var bindings = element.data('$binding') || [];
+
+      if (isArray(binding)) {
+        bindings = bindings.concat(binding);
+      } else {
+        bindings.push(binding);
+      }
+
       safeAddClass(element, 'ng-binding');
-      element.data('$binding', (element.data('$binding') || []).concat(binding.expressions || [binding]));
+      element.data('$binding', bindings);
     } : noop;
 
     compile.$$addScopeInfo = debugInfoEnabled ? function $$addScopeInfo(element, scope, isolated, noTemplate) {
@@ -1979,7 +1987,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           compile: function textInterpolateCompileFn(templateNode) {
             return function textInterpolateLinkFn(scope, node) {
               var parent = node.parent();
-              compile.$$addBindingInfo(parent, interpolateFn);
+              compile.$$addBindingInfo(parent, interpolateFn.expressions);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;
               });
