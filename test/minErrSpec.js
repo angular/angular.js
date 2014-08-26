@@ -82,4 +82,12 @@ describe('minErr', function () {
     expect(myError.message).toMatch(/^\[26\] This is a Foo/);
     expect(myNamespacedError.message).toMatch(/^\[test:26\] That is a Bar/);
   });
+
+
+  it('should accept an optional 2nd argument to construct custom errors', function() {
+    var normalMinErr = minErr('normal');
+    expect(normalMinErr('acode', 'aproblem') instanceof TypeError).toBe(false);
+    var typeMinErr = minErr('type', TypeError);
+    expect(typeMinErr('acode', 'aproblem') instanceof TypeError).toBe(true);
+  });
 });
