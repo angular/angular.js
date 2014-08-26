@@ -242,7 +242,7 @@ function FormController(element, attrs, $scope, $animate) {
 
   /**
    * @ngdoc method
-   * @name form.FormController#setSubmitted
+   * @name form.FormController#$setSubmitted
    *
    * @description
    * Sets the form to its submitted state.
