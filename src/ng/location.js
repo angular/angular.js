@@ -428,7 +428,7 @@ LocationHashbangInHtml5Url.prototype =
    * If the argument is a hash object containing an array of values, these values will be encoded
    * as duplicate search parameters in the url.
    *
-   * @param {(string|Array<string>|boolean)=} paramValue If `search` is a string, then `paramValue`
+   * @param {(string|Number|Array<string>|boolean)=} paramValue If `search` is a string or number, then `paramValue`
    * will override only a single search property.
    *
    * If `paramValue` is an array, it will override the property of the `search` component of
