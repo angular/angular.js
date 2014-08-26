@@ -30,7 +30,7 @@ function Browser(window, document, $log, $sniffer) {
       setTimeout = window.setTimeout,
       clearTimeout = window.clearTimeout,
       pendingDeferIds = {},
-      urlChangedOutsideAngular = false;
+      hasChangedOutside = false;
 
   self.isMock = false;
 
@@ -181,7 +181,7 @@ function Browser(window, document, $log, $sniffer) {
         return newLocation;
       }
       if (lastBrowserUrl !== (currentHref = location.href.replace(/%27/g,"'"))) {
-        urlChangedOutsideAngular = true;
+        hasChangedOutside = true;
       }
       return currentHref;
     }
@@ -202,13 +202,13 @@ function Browser(window, document, $log, $sniffer) {
    * @param {boolean} val New value to set as urlChangedOutsideAngular,
    *                  typically used to reset value to false.
    */
-  self.urlChangedOutsideAngular = function(val) {
-    if (isDefined(val)) {
-      urlChangedOutsideAngular = val;
+  self.urlChangedOutsideAngular = function(hasChanged) {
+    if (isDefined(hasChanged)) {
+      hasChangedOutside = hasChanged;
       return self;
     }
     else {
-      return urlChangedOutsideAngular;
+      return hasChangedOutside;
     }
   };
 
@@ -217,7 +217,7 @@ function Browser(window, document, $log, $sniffer) {
 
   function fireUrlChange() {
     newLocation = null;
-    urlChangedOutsideAngular = false;
+    hasChangedOutside = false;
     if (lastBrowserUrl == self.url()) return;
 
     lastBrowserUrl = self.url();
