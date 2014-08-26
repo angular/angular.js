@@ -285,8 +285,8 @@ Great! But what if we wanted to have our directive match the tag name `<my-custo
 If we simply put a `<my-customer>` element into the HTML, it doesn't work.
 
 <div class="alert alert-warning">
-**Note:** When you create a directive, it is restricted to attribute only by default. In order to
-create directives that are triggered by element or class name, you need to use the `restrict` option.
+**Note:** When you create a directive, it is restricted to attribute and elements only by default. In order to
+create directives that are triggered by class name, you need to use the `restrict` option.
 </div>
 
 The `restrict` option is typically set to:
