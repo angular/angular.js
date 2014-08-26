@@ -56,6 +56,8 @@ angular.mock.$Browser = function() {
     return listener;
   };
 
+  self.$$checkUrlChange = angular.noop;
+
   self.cookieHash = {};
   self.lastCookieHash = {};
   self.deferredFns = [];
