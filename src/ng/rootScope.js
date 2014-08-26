@@ -689,6 +689,8 @@ function $RootScopeProvider(){
             logIdx, logMsg, asyncTask;
 
         beginPhase('$digest');
+        // Check for changes to browser url that happened in sync before the call to $digest
+        $browser.$$checkUrlChange();
 
         if (this === $rootScope && applyAsyncId !== null) {
           // If this is the root scope, and $applyAsync has scheduled a deferred $apply(), then
