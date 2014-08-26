@@ -610,18 +610,8 @@ function makeMap(str) {
 }
 
 
-if (msie < 9) {
-  nodeName_ = function(element) {
-    element = element.nodeName ? element : element[0];
-    return lowercase(
-      (element.scopeName && element.scopeName != 'HTML')
-      ? element.scopeName + ':' + element.nodeName : element.nodeName
-    );
-  };
-} else {
-  nodeName_ = function(element) {
-    return lowercase(element.nodeName ? element.nodeName : element[0].nodeName);
-  };
+function nodeName_(element) {
+  return lowercase(element.nodeName ? element.nodeName : element[0].nodeName);
 }
 
 
