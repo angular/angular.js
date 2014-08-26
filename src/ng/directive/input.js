@@ -282,7 +282,7 @@ var inputType = {
    * Input with time validation and transformation. In browsers that do not yet support
    * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
    * local time format (HH:mm), for example: `14:57`. Model must be a Date object. This binding will always output a
-   * Date object to the model of January 1, 1900, or local date `new Date(0, 0, 1, HH, mm)`.
+   * Date object to the model of January 1, 1970, or local date `new Date(1970, 0, 1, HH, mm)`.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -303,7 +303,7 @@ var inputType = {
      <script>
       angular.module('timeExample', [])
         .controller('DateController', ['$scope', function($scope) {
-          $scope.value = new Date(0, 0, 1, 14, 57);
+          $scope.value = new Date(1970, 0, 1, 14, 57);
         }]);
      </script>
      <form name="myForm" ng-controller="DateController as dateCtrl">
@@ -1042,7 +1042,7 @@ function createDateParser(regexp, mapping) {
 
          if(parts) {
             parts.shift();
-            map = { yyyy: 0, MM: 1, dd: 1, HH: 0, mm: 0 };
+            map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0 };
 
             forEach(parts, function(part, index) {
                if(index < mapping.length) {
