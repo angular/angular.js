@@ -250,9 +250,10 @@ function qFactory(nextTick, exceptionHandler) {
   }
 
   /**
-   * @ngdoc
+   * @ngdoc method
    * @name ng.$q#defer
-   * @methodOf ng.$q
+   * @kind function
+   *
    * @description
    * Creates a `Deferred` object which represents a task which will finish in the future.
    *
@@ -402,9 +403,10 @@ function qFactory(nextTick, exceptionHandler) {
   };
 
   /**
-   * @ngdoc
-   * @name ng.$q#reject
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#reject
+   * @kind function
+   *
    * @description
    * Creates a promise that is resolved as rejected with the specified `reason`. This api should be
    * used to forward rejection in a chain of promises. If you are dealing with the last promise in
@@ -471,9 +473,10 @@ function qFactory(nextTick, exceptionHandler) {
   };
 
   /**
-   * @ngdoc
-   * @name ng.$q#when
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#when
+   * @kind function
+   *
    * @description
    * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
    * This is useful when you are dealing with an object that might or might not be a promise, or if
@@ -491,9 +494,10 @@ function qFactory(nextTick, exceptionHandler) {
   };
 
   /**
-   * @ngdoc
-   * @name ng.$q#all
-   * @methodOf ng.$q
+   * @ngdoc method
+   * @name $q#all
+   * @kind function
+   *
    * @description
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.
