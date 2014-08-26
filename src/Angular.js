@@ -1465,9 +1465,9 @@ function bootstrap(element, modules, config) {
  * The page should reload and the debug information should now be available.
  *
  */
-function reloadWithDebugInfo(doReload) {
+function reloadWithDebugInfo() {
   window.name = 'NG_ENABLE_DEBUG_INFO!' + window.name;
-  if ( doReload !== false ) window.location.reload();
+  window.location.reload();
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
