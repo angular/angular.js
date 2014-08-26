@@ -223,11 +223,14 @@ describe('filters', function() {
     it('should do basic filter', function() {
       expect(date(noon)).toEqual(date(noon, 'mediumDate'));
       expect(date(noon, '')).toEqual(date(noon, 'mediumDate'));
+      expect(date(noon, '', true)).toEqual(date(noon, 'mediumDate', true));
     });
 
     it('should accept number or number string representing milliseconds as input', function() {
       expect(date(noon.getTime())).toEqual(date(noon.getTime(), 'mediumDate'));
       expect(date(noon.getTime() + "")).toEqual(date(noon.getTime() + "", 'mediumDate'));
+      expect(date(noon.getTime(), null, true)).toEqual(date(noon.getTime(), 'mediumDate', true));
+      expect(date(noon.getTime() + "", null, true)).toEqual(date(noon.getTime() + "", 'mediumDate', true));
     });
 
     it('should accept various format strings', function() {
@@ -268,11 +271,53 @@ describe('filters', function() {
                       toEqual('September 03, 1');
     });
 
+    it('should accept various format strings formatted as UTC', function() {
+      expect(date(secondWeek, 'yyyy-Ww', true)).
+                      toEqual('2013-W2');
+
+      expect(date(secondWeek, 'yyyy-Www', true)).
+                      toEqual('2013-W02');
+
+      expect(date(morning, "yy-MM-dd HH:mm:ss", true)).
+                      toEqual('10-09-03 12:05:08');
+
+      expect(date(morning, "yy-MM-dd HH:mm:ss.sss", true)).
+                      toEqual('10-09-03 12:05:08.001');
+
+      expect(date(midnight, "yyyy-M-d h=H:m:saZ", true)).
+                      toEqual('2010-9-3 5=5:5:8AM+0000');
+
+      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ", true)).
+                      toEqual('2010-09-03 05=05:05:08AM+0000');
+
+      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ss.sssaZ", true)).
+                      toEqual('2010-09-03 05=05:05:08.123AM+0000');
+
+      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ", true)).
+                      toEqual('2010-09-03 05=17:05:08PM+0000');
+
+      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ss.sssaZ", true)).
+                      toEqual('2010-09-03 05=17:05:08.012PM+0000');
+
+      expect(date(noon, "EEE, MMM d, yyyy", true)).
+                      toEqual('Fri, Sep 3, 2010');
+
+      expect(date(noon, "EEEE, MMMM dd, yyyy", true)).
+                      toEqual('Friday, September 03, 2010');
+
+      expect(date(earlyDate, "MMMM dd, y", true)).
+                      toEqual('September 03, 1');
+    });
+
     it('should accept negative numbers as strings', function() {
       //Note: this tests a timestamp set for 3 days before the unix epoch.
       //The behavior of `date` depends on your timezone, which is why we check just
       //the year and not the whole daye. See Issue #4218
       expect(date('-259200000').split(' ')[2]).toEqual('1969');
+    });
+
+    it('should accept negative numbers as strings formatted as UTC', function() {
+      expect(date('-259200000', null, true)).toEqual('Dec 29, 1969');
     });
 
     it('should format timezones correctly (as per ISO_8601)', function() {
@@ -299,14 +344,42 @@ describe('filters', function() {
                     toEqual('2010-09-03T06:35:08-0530');
     });
 
+    it('should format timezones as +0000 formatted as UTC', function() {
+      //Note: TzDate's first argument is offset, _not_ timezone.
+      var utc       = new angular.mock.TzDate( 0, '2010-09-03T12:05:08.000Z');
+      var eastOfUTC = new angular.mock.TzDate(-5, '2010-09-03T12:05:08.000Z');
+      var westOfUTC = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z');
+      var eastOfUTCPartial = new angular.mock.TzDate(-5.5, '2010-09-03T12:05:08.000Z');
+      var westOfUTCPartial = new angular.mock.TzDate(+5.5, '2010-09-03T12:05:08.000Z');
+
+      expect(date(utc, "yyyy-MM-ddTHH:mm:ssZ", true)).
+                    toEqual('2010-09-03T12:05:08+0000');
+
+      expect(date(eastOfUTC, "yyyy-MM-ddTHH:mm:ssZ", true)).
+                    toEqual('2010-09-03T12:05:08+0000');
+
+      expect(date(westOfUTC, "yyyy-MM-ddTHH:mm:ssZ", true)).
+                    toEqual('2010-09-03T12:05:08+0000');
+
+      expect(date(eastOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ", true)).
+                    toEqual('2010-09-03T12:05:08+0000');
+
+      expect(date(westOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ", true)).
+                    toEqual('2010-09-03T12:05:08+0000');
+    });
+
     it('should treat single quoted strings as string literals', function() {
       expect(date(midnight, "yyyy'de' 'a'x'dd' 'adZ' h=H:m:saZ")).
                       toEqual('2010de axdd adZ 12=0:5:8AM-0500');
+      expect(date(midnight, "yyyy'de' 'a'x'dd' 'adZ' h=H:m:saZ", true)).
+                      toEqual('2010de axdd adZ 5=5:5:8AM+0000');
     });
 
     it('should treat a sequence of two single quotes as a literal single quote', function() {
       expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
                       toEqual("2010de a'dd adZ 12=0:5:8AM-0500");
+      expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ", true)).
+                      toEqual("2010de a'dd adZ 5=5:5:8AM+0000");
     });
 
     it('should accept default formats', function() {
@@ -336,6 +409,33 @@ describe('filters', function() {
                       toEqual('12:05 PM');
     });
 
+    it('should accept default formats formatted as UTC', function() {
+
+      expect(date(noon, "medium", true)).
+                      toEqual('Sep 3, 2010 5:05:08 PM');
+
+      expect(date(noon, "short", true)).
+                      toEqual('9/3/10 5:05 PM');
+
+      expect(date(noon, "fullDate", true)).
+                      toEqual('Friday, September 3, 2010');
+
+      expect(date(noon, "longDate", true)).
+                      toEqual('September 3, 2010');
+
+      expect(date(noon, "mediumDate", true)).
+                      toEqual('Sep 3, 2010');
+
+      expect(date(noon, "shortDate", true)).
+                      toEqual('9/3/10');
+
+      expect(date(noon, "mediumTime", true)).
+                      toEqual('5:05:08 PM');
+
+      expect(date(noon, "shortTime", true)).
+                      toEqual('5:05 PM');
+    });
+
     it('should parse format ending with non-replaced string', function() {
       expect(date(morning, 'yy/xxx')).toEqual('10/xxx');
     });
@@ -363,6 +463,28 @@ describe('filters', function() {
       expect(date('2003-09-10T13Z', format)).toEqual('2003-09-' + localDay + ' 00');
     });
 
+    it('should support various iso8061 date strings with timezone as input formatted as UTC', function() {
+      var format = 'yyyy-MM-dd ss';
+
+      var localDay = new Date(Date.UTC(2003, 9, 10, 13, 2, 3, 0)).getDate();
+
+      //full ISO8061
+      expect(date('2003-09-10T13:02:03.000Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+
+      expect(date('2003-09-10T13:02:03.000+00:00', format, true)).toEqual('2003-09-' + localDay + ' 03');
+
+      expect(date('20030910T033203-0930', format, true)).toEqual('2003-09-' + localDay + ' 03');
+
+      //no millis
+      expect(date('2003-09-10T13:02:03Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+
+      //no seconds
+      expect(date('2003-09-10T13:02Z', format, true)).toEqual('2003-09-' + localDay + ' 00');
+
+      //no minutes
+      expect(date('2003-09-10T13Z', format, true)).toEqual('2003-09-' + localDay + ' 00');
+    });
+
 
     it('should parse iso8061 date strings without timezone as local time', function() {
       var format = 'yyyy-MM-dd HH-mm-ss';
@@ -374,6 +496,18 @@ describe('filters', function() {
 
       //no time
       expect(date('2003-09-10', format)).toEqual('2003-09-10 00-00-00');
+    });
+
+    it('should parse iso8061 date strings without timezone as local time even if formatted as UTC', function() {
+      var format = 'yyyy-MM-dd HH-mm-ss';
+
+      //full ISO8061 without timezone
+      expect(date('2003-09-10T03:02:04.000', format, true)).toEqual('2003-09-10 10-02-04');
+
+      expect(date('20030910T030204', format, true)).toEqual('2003-09-10 10-02-04');
+
+      //no time
+      expect(date('2003-09-10', format, true)).toEqual('2003-09-10 07-00-00');
     });
 
     it('should support different degrees of subsecond precision', function () {
@@ -389,6 +523,21 @@ describe('filters', function() {
       expect(date('2003-09-10T13:02:03.123Z', format)).toEqual('2003-09-' + localDay + ' 03');
       expect(date('2003-09-10T13:02:03.12Z', format)).toEqual('2003-09-' + localDay + ' 03');
       expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-' + localDay + ' 03');
+    });
+
+    it('should support different degrees of subsecond precision formatted as UTC', function () {
+      var format = 'yyyy-MM-dd ss';
+
+      var localDay = new Date(Date.UTC(2003, 9-1, 10, 13, 2, 3, 123)).getDate();
+
+      expect(date('2003-09-10T13:02:03.12345678Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.1234567Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.123456Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.12345Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.1234Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.123Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.12Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.1Z', format, true)).toEqual('2003-09-' + localDay + ' 03');
     });
   });
 });

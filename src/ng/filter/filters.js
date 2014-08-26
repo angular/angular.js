@@ -213,8 +213,8 @@ function padNumber(num, digits, trim) {
 
 function dateGetter(name, size, offset, trim) {
   offset = offset || 0;
-  return function(date) {
-    var value = date['get' + name]();
+  return function(date, utc) {
+    var value = date['get' + (utc ? 'UTC' : '') + name]();
     if (offset > 0 || value > -offset)
       value += offset;
     if (value === 0 && offset == -12 ) value = 12;
@@ -223,16 +223,16 @@ function dateGetter(name, size, offset, trim) {
 }
 
 function dateStrGetter(name, shortForm) {
-  return function(date, formats) {
-    var value = date['get' + name]();
+  return function(date, utc, formats) {
+    var value = date['get' + (utc ? 'UTC' : '') + name]();
     var get = uppercase(shortForm ? ('SHORT' + name) : name);
 
     return formats[get][value];
   };
 }
 
-function timeZoneGetter(date) {
-  var zone = -1 * date.getTimezoneOffset();
+function timeZoneGetter(date, utc) {
+  var zone = utc ? 0 : -1 * date.getTimezoneOffset();
   var paddedZone = (zone >= 0) ? "+" : "";
 
   paddedZone += padNumber(Math[zone > 0 ? 'floor' : 'ceil'](zone / 60), 2) +
@@ -241,24 +241,36 @@ function timeZoneGetter(date) {
   return paddedZone;
 }
 
-function getFirstThursdayOfYear(year) {
+function makeDate(year, month, day, utc) {
+  if (utc) {
+    return new Date(Date.UTC(year, month, day));
+  } else {
+    return new Date(year, month, day);
+  }
+}
+
+function getFirstThursdayOfYear(year, utc) {
     // 0 = index of January
-    var dayOfWeekOnFirst = (new Date(year, 0, 1)).getDay();
+    var firstDay = makeDate(year, 0, 1, utc),
+      dayOfWeekOnFirst = utc ? firstDay.getUTCDay() : firstDay.getDay();
     // 4 = index of Thursday (+1 to account for 1st = 5)
     // 11 = index of *next* Thursday (+1 account for 1st = 12)
-    return new Date(year, 0, ((dayOfWeekOnFirst <= 4) ? 5 : 12) - dayOfWeekOnFirst);
+    return makeDate(year, 0, ((dayOfWeekOnFirst <= 4) ? 5 : 12) - dayOfWeekOnFirst, utc);
 }
 
-function getThursdayThisWeek(datetime) {
-    return new Date(datetime.getFullYear(), datetime.getMonth(),
+function getThursdayThisWeek(datetime, utc) {
+    return makeDate(utc ? datetime.getUTCFullYear() : datetime.getFullYear(),
+      utc ? datetime.getUTCMonth() : datetime.getMonth(),
       // 4 = index of Thursday
-      datetime.getDate() + (4 - datetime.getDay()));
+      (utc ? datetime.getUTCDate() : datetime.getDate()) +
+        (4 - (utc ? datetime.getUTCDay() : datetime.getDay())),
+      utc);
 }
 
-function weekGetter(size) {
+function weekGetter(size, utc) {
    return function(date) {
-      var firstThurs = getFirstThursdayOfYear(date.getFullYear()),
-         thisThurs = getThursdayThisWeek(date);
+      var firstThurs = getFirstThursdayOfYear(utc ? date.getUTCFullYear() : date.getFullYear(), utc),
+         thisThurs = getThursdayThisWeek(date, utc);
 
       var diff = +thisThurs - +firstThurs,
          result = 1 + Math.round(diff / 6.048e8); // 6.048e8 ms per week
@@ -267,8 +279,8 @@ function weekGetter(size) {
    };
 }
 
-function ampmGetter(date, formats) {
-  return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
+function ampmGetter(date, utc, formats) {
+  return (utc ? date.getUTCHours() : date.getHours()) < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
 }
 
 var DATE_FORMATS = {
@@ -362,6 +374,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *    specified in the string input, the time is considered to be in the local timezone.
  * @param {string=} format Formatting rules (see Description). If not specified,
  *    `mediumDate` is used.
+ * @param {boolean} utc true if formatting in UTC rather than local.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
  * @example
@@ -369,8 +382,10 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
      <file name="index.html">
        <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
            <span>{{1288323623006 | date:'medium'}}</span><br>
-       <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
-          <span>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span><br>
+       <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z':false}}</span>:
+          <span>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z':false}}</span><br>
+       <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z':true}}</span>:
+          <span>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z':true}}</span><br>
        <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
           <span>{{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}</span><br>
        <span ng-non-bindable>{{1288323623006 | date:"MM/dd/yyyy 'at' h:mma"}}</span>:
@@ -380,8 +395,10 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
        it('should format date', function() {
          expect(element(by.binding("1288323623006 | date:'medium'")).getText()).
             toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
-         expect(element(by.binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).getText()).
+         expect(element(by.binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z':false")).getText()).
             toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} (\-|\+)?\d{4}/);
+         expect(element(by.binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z':true")).getText()).
+            toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \+0000/);
          expect(element(by.binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).getText()).
             toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
          expect(element(by.binding("'1288323623006' | date:\"MM/dd/yyyy 'at' h:mma\"")).getText()).
@@ -421,7 +438,7 @@ function dateFilter($locale) {
   }
 
 
-  return function(date, format) {
+  return function(date, format, utc) {
     var text = '',
         parts = [],
         fn, match;
@@ -453,7 +470,7 @@ function dateFilter($locale) {
 
     forEach(parts, function(value){
       fn = DATE_FORMATS[value];
-      text += fn ? fn(date, $locale.DATETIME_FORMATS)
+      text += fn ? fn(date, !!utc, $locale.DATETIME_FORMATS)
                  : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
     });
 

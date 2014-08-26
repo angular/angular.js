@@ -720,6 +720,10 @@ angular.mock.TzDate = function (offset, timestamp) {
     return self.date.getDay();
   };
 
+  self.getUTCDay = function() {
+    return self.origDate.getUTCDay();
+  };
+
   // provide this method only on browsers that already have it
   if (self.toISOString) {
     self.toISOString = function() {
@@ -734,7 +738,7 @@ angular.mock.TzDate = function (offset, timestamp) {
   }
 
   //hide all methods not implemented in this mock that the Date prototype exposes
-  var unimplementedMethods = ['getUTCDay',
+  var unimplementedMethods = [
       'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
       'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
       'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
