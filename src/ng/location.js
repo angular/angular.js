@@ -738,10 +738,10 @@ function $LocationProvider(){
     // update browser
     var changeCounter = 0;
     $rootScope.$watch(function $locationWatch() {
-      var oldUrl = $browser.url();
+      var browserUrl = $browser.url();
       var currentReplace = $location.$$replace;
 
-      if (!changeCounter || oldUrl != $location.absUrl()) {
+      if (!changeCounter || browserUrl != $location.absUrl()) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
           /**
@@ -755,15 +755,15 @@ function $LocationProvider(){
            * NOTE: Method does not exist on mock $browser
            */
           if ($browser.urlChangedOutsideAngular && $browser.urlChangedOutsideAngular()) {
-            $location.$$parse(oldUrl);
+            $location.$$parse(browserUrl);
             $browser.urlChangedOutsideAngular(false);
           }
-          else if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
+          else if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), browserUrl).
               defaultPrevented) {
-            $location.$$parse(oldUrl);
+            $location.$$parse(browserUrl);
           } else {
             $browser.url($location.absUrl(), currentReplace);
-            afterLocationChange(oldUrl);
+            afterLocationChange(browserUrl);
           }
         });
       }
