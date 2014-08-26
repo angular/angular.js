@@ -2385,6 +2385,18 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
     });
 
+    it('should invalidate number with ngModelOptions if suffering from bad input', function() {
+      compileInput('<input type="number" ng-model="age" ' +
+                   'ng-model-options="{updateOn: \'blur\'}"/>', {
+        valid: false,
+        badInput: true
+      });
+
+      changeInputValueTo('10a');
+      browserTrigger(inputElm, 'blur');
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
 
     it('should validate number if transition from bad input to empty string', function() {
       var validity = {
@@ -2400,6 +2412,22 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should validate when bad input number with ngModelOptions changes to empty', function() {
+      var validity = {
+        valid: false,
+        badInput: true
+      };
+      compileInput('<input type="number" ng-model="age" ' +
+                   'ng-model-options="{updateOn: \'blur\'}"/>', validity);
+      changeInputValueTo('10a');
+      browserTrigger(inputElm, 'blur');
+      validity.badInput = false;
+      validity.valid = true;
+      changeInputValueTo('');
+      browserTrigger(inputElm, 'blur');
+      expect(scope.age).toBeNull();
+      expect(inputElm).toBeValid();
+    });
 
     describe('min', function() {
 

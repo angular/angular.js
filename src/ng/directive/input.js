@@ -970,13 +970,12 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     // If a control is suffering from bad input, browsers discard its value, so it may be
     // necessary to revalidate even if the control's value is the same empty value twice in
     // a row.
-    var revalidate = validity && ctrl.$$hasNativeValidators;
-    if (ctrl.$viewValue !== value || (value === '' && revalidate)) {
+    if (ctrl.$viewValue !== value || (value === '' && ctrl.$$hasNativeValidators)) {
       if (scope.$$phase) {
-        ctrl.$setViewValue(value, event, revalidate);
+        ctrl.$setViewValue(value, event);
       } else {
         scope.$apply(function() {
-          ctrl.$setViewValue(value, event, revalidate);
+          ctrl.$setViewValue(value, event);
         });
       }
     }
@@ -1865,23 +1864,24 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * event defined in `ng-model-options`. this method is rarely needed as `NgModelController`
    * usually handles calling this in response to input events.
    */
-  this.$commitViewValue = function(revalidate) {
+  this.$commitViewValue = function() {
     var viewValue = ctrl.$viewValue;
 
     $timeout.cancel(pendingDebounce);
-    if (!revalidate && ctrl.$$lastCommittedViewValue === viewValue) {
+    if (ctrl.$$lastCommittedViewValue !== viewValue) {
+      // change to dirty
+      if (ctrl.$pristine) {
+        ctrl.$dirty = true;
+        ctrl.$pristine = false;
+        $animate.removeClass($element, PRISTINE_CLASS);
+        $animate.addClass($element, DIRTY_CLASS);
+        parentForm.$setDirty();
+      }
+    } else if (viewValue !== '' || !ctrl.$$hasNativeValidators) {
       return;
     }
     ctrl.$$lastCommittedViewValue = viewValue;
 
-    // change to dirty
-    if (ctrl.$pristine) {
-      ctrl.$dirty = true;
-      ctrl.$pristine = false;
-      $animate.removeClass($element, PRISTINE_CLASS);
-      $animate.addClass($element, DIRTY_CLASS);
-      parentForm.$setDirty();
-    }
 
     var modelValue = viewValue;
     forEach(ctrl.$parsers, function(fn) {
@@ -1954,14 +1954,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} value Value from the view.
    * @param {string} trigger Event that triggered the update.
    */
-  this.$setViewValue = function(value, trigger, revalidate) {
+  this.$setViewValue = function(value, trigger) {
     ctrl.$viewValue = value;
     if (!ctrl.$options || ctrl.$options.updateOnDefault) {
-      ctrl.$$debounceViewValueCommit(trigger, revalidate);
+      ctrl.$$debounceViewValueCommit(trigger);
     }
   };
 
-  this.$$debounceViewValueCommit = function(trigger, revalidate) {
+  this.$$debounceViewValueCommit = function(trigger) {
     var debounceDelay = 0,
         options = ctrl.$options,
         debounce;
@@ -1980,10 +1980,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     $timeout.cancel(pendingDebounce);
     if (debounceDelay) {
       pendingDebounce = $timeout(function() {
-        ctrl.$commitViewValue(revalidate);
+        ctrl.$commitViewValue();
       }, debounceDelay);
     } else {
-      ctrl.$commitViewValue(revalidate);
+      ctrl.$commitViewValue();
     }
   };
 
