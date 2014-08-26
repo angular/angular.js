@@ -752,9 +752,8 @@ function $LocationProvider(){
            *       window events (or polling if events aren't supported), but those methods are
            *       async. For this reason, $browser.url() will perform a comparison with each call
            *       to the method as a getter.
-           * NOTE: Method does not exist on mock $browser
            */
-          if ($browser.urlChangedOutsideAngular && $browser.urlChangedOutsideAngular()) {
+          if ($browser.urlChangedOutsideAngular()) {
             $location.$$parse(browserUrl);
             $browser.urlChangedOutsideAngular(false);
           }
