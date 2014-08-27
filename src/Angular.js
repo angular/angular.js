@@ -10,7 +10,6 @@
   toString: true,
   ngMinErr: true,
   angularModule: true,
-  nodeName_: true,
   uid: true,
   REGEX_STRING_REGEXP: true,
   VALIDITY_STATE_PROPERTY: true,
@@ -170,7 +169,6 @@ var /** holds major version number for IE or NaN for real browsers */
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
-    nodeName_,
     uid               = 0;
 
 /**
