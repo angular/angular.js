@@ -89,7 +89,8 @@ function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
       PROTECTION_PREFIX = /^\)\]\}',?\n/,
-      CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json;charset=utf-8'};
+      CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json;charset=utf-8'},
+      APPLY_ASYNC_WAIT = 10;
 
   /**
    * @ngdoc property
@@ -148,6 +149,23 @@ function $HttpProvider() {
    * array, on request, but reverse order, on response.
    */
   var interceptorFactories = this.interceptors = [];
+
+  /**
+   * @ngdoc method
+   * @name $httpProvider#debounceApply
+   * @description
+   *
+   * Sets the amount of milliseconds to wait before calling $digest when a response is received. If
+   * multiple responses are received during this window, they will all share the same digest. This
+   * ends up adding a small wait before handling to $http responses, but will shave time off of an
+   * application due to processing fewer digests.
+   *
+   * @param {number} timeout value to wait for coalesced calls to $apply. If a number is not specified,
+   *   the value used is 0. The default is 10.
+   */
+  this.debounceApply = function(timeout) {
+    APPLY_ASYNC_WAIT = timeout;
+  };
 
   this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
       function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
@@ -950,7 +968,7 @@ function $HttpProvider() {
         }
 
         resolvePromise(response, status, headersString, statusText);
-        if (!$rootScope.$$phase) $rootScope.$apply();
+        $rootScope.$applyAsync(APPLY_ASYNC_WAIT);
       }
 
 

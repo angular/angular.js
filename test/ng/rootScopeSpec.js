@@ -1399,6 +1399,104 @@ describe('Scope', function() {
   });
 
 
+  describe('$applyAsync', function() {
+    beforeEach(module(function($exceptionHandlerProvider) {
+      $exceptionHandlerProvider.mode('log');
+    }));
+
+
+    it('should log exceptions from $digest', function() {
+      module(function($rootScopeProvider, $exceptionHandlerProvider) {
+        $rootScopeProvider.digestTtl(2);
+      });
+      inject(function($rootScope, $exceptionHandler, $timeout) {
+        $rootScope.$watch('a', function() {$rootScope.b++;});
+        $rootScope.$watch('b', function() {$rootScope.a++;});
+        $rootScope.a = $rootScope.b = 0;
+
+        $rootScope.$applyAsync();
+        $timeout.flush();
+
+        expect($exceptionHandler.errors[0]).toBeDefined();
+
+        expect($rootScope.$$phase).toBeNull();
+      });
+    });
+
+
+    describe('recursive $apply protection', function() {
+      it('should throw an exception if $apply is called while a watch is being initialized', inject(
+          function($rootScope, $timeout, $exceptionHandler) {
+        var childScope1 = $rootScope.$new();
+        childScope1.$watch('x', function() {
+          childScope1.$apply();
+        });
+        $rootScope.$applyAsync();
+        $timeout.flush();
+        expect($exceptionHandler.errors[0].message).
+          toMatch(/^\[\$rootScope:inprog\] \$digest already in progress/);
+      }));
+
+
+      it('should thrown an exception if $apply in called from a watch fn (after init)', inject(
+          function($rootScope, $exceptionHandler, $timeout) {
+        var childScope2 = $rootScope.$new();
+        childScope2.$watch('x', function(newVal, oldVal) {
+          if (newVal !== oldVal) {
+            childScope2.$apply();
+          }
+        });
+
+        $rootScope.$applyAsync();
+        $timeout.flush();
+
+        expect($exceptionHandler.errors.length).toBe(0);
+
+        childScope2.x = 'something';
+        $rootScope.$applyAsync();
+        $timeout.flush();
+
+        expect($exceptionHandler.errors[0].message).
+          toMatch(/^\[\$rootScope:inprog\] \$digest already in progress/);
+      }));
+
+
+      it('should not throw when calling $applyAsync during $digest', inject(
+          function($rootScope, $exceptionHandler, $timeout) {
+        var childScope2 = $rootScope.$new();
+        childScope2.$watch('x', function(newVal, oldVal, scope) {
+          scope.$applyAsync();
+        });
+
+        $rootScope.$digest();
+
+        expect($exceptionHandler.errors.length).toBe(0);
+      }));
+    });
+
+
+    it('should debounce calls to $digest from calls to $applyAsync', inject(
+        function($rootScope, $exceptionHandler, $timeout) {
+      var spy = spyOn($rootScope, '$digest');
+
+      $rootScope.$applyAsync(100);
+      $rootScope.$applyAsync(20);
+      $rootScope.$applyAsync(40);
+      $rootScope.$applyAsync(60);
+      $rootScope.$applyAsync(80);
+
+      $timeout.flush(25);
+      expect(spy).not.toHaveBeenCalled();
+      $timeout.flush(25);
+      expect(spy).not.toHaveBeenCalled();
+      $timeout.flush(25);
+      expect(spy).not.toHaveBeenCalled();
+      $timeout.flush(25);
+      expect(spy).toHaveBeenCalled();
+    }));
+  });
+
+
   describe('events', function() {
 
     describe('$on', function() {

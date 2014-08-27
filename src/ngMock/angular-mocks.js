@@ -1088,7 +1088,7 @@ angular.mock.dump = function(object) {
    ```
  */
 angular.mock.$HttpBackendProvider = function() {
-  this.$get = ['$rootScope', createHttpBackendMock];
+  this.$get = ['$rootScope', '$timeout', createHttpBackendMock];
 };
 
 /**
@@ -1105,7 +1105,7 @@ angular.mock.$HttpBackendProvider = function() {
  * @param {Object=} $browser Auto-flushing enabled if specified
  * @return {Object} Instance of $httpBackend mock
  */
-function createHttpBackendMock($rootScope, $delegate, $browser) {
+function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   var definitions = [],
       expectations = [],
       responses = [],
@@ -1487,12 +1487,19 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * @param {number=} count Number of responses to flush (in the order they arrived). If undefined,
    *   all pending requests will be flushed. If there are no pending requests when the flush method
    *   is called an exception is thrown (as this typically a sign of programming error).
+   * @param {number=|boolean} flushTimeout amount to pass to $timeout.flush(). If value is false,
+   *   $timeout.flush() is never called --- Otherwise, if the value is a number, it is called with
+   *   that value. Otherwise, it is called with Infinity. This enables applications to test their
+   *   behaviour using simulated coalesced $applyAsync calls.
    */
-  $httpBackend.flush = function(count) {
+  $httpBackend.flush = function(count, flushTimeout) {
     $rootScope.$digest();
-    if (!responses.length) throw new Error('No pending request to flush !');
+    if (!responses.length && !angular.isNumber(flushTimeout) && typeof flushTimeout !== "boolean") {
+      throw new Error('No pending request to flush !');
+    }
 
-    if (angular.isDefined(count)) {
+    // flush the responses
+    if (angular.isNumber(count)) {
       while (count--) {
         if (!responses.length) throw new Error('No more pending request to flush !');
         responses.shift()();
@@ -1502,6 +1509,16 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
         responses.shift()();
       }
     }
+
+    // If asking to flush timeout, do so
+    if (typeof $timeout.flush === 'function' && flushTimeout !== false) {
+      if (typeof flushTimeout === 'number') {
+        $timeout.flush(flushTimeout);
+      } else {
+        $timeout.flush(Infinity);
+      }
+    }
+
     $httpBackend.verifyNoOutstandingExpectation();
   };
 
@@ -1672,6 +1689,20 @@ function MockXhr() {
   this.abort = angular.noop;
 }
 
+angular.mock.$RootScopeDecorator = ['$delegate', '$browser', function ($delegate, $browser) {
+  var Scope = $delegate.constructor;
+  var digest = Scope.prototype.$digest;
+
+  Scope.prototype.$digest = function(caller) {
+    digest.call(this);
+    if (caller === "applyAsync") {
+      if (angular.isFunction(this.$$didAsyncDigest)) {
+        this.$$didAsyncDigest();
+      }
+    }
+  };
+  return $delegate;
+}];
 
 /**
  * @ngdoc service
@@ -1798,6 +1829,7 @@ angular.module('ngMock', ['ng']).provider({
   $httpBackend: angular.mock.$HttpBackendProvider,
   $rootElement: angular.mock.$RootElementProvider
 }).config(['$provide', function($provide) {
+  $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
   $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
   $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
@@ -2006,7 +2038,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  */
 angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator =
-  ['$rootScope', '$delegate', '$browser', createHttpBackendMock];
+  ['$rootScope', '$timeout', '$delegate', '$browser', createHttpBackendMock];
 
 
 if(window.jasmine || window.mocha) {

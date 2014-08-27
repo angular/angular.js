@@ -272,17 +272,20 @@ describe('$http', function() {
 
 
   describe('the instance', function() {
-    var $httpBackend, $http, $rootScope;
+    var $httpBackend, $http, $rootScope, $timeout, $$didAsyncDigest;
 
     beforeEach(inject(['$rootScope', function($rs) {
       $rootScope = $rs;
 
-      spyOn($rootScope, '$apply').andCallThrough();
+      spyOn($rootScope, '$digest').andCallThrough();
+      spyOn($rootScope, '$applyAsync').andCallThrough();
+      $$didAsyncDigest = $rootScope.$$didAsyncDigest = jasmine.createSpy('$$didAsyncDigest');
     }]));
 
-    beforeEach(inject(['$httpBackend', '$http', function($hb, $h) {
+    beforeEach(inject(['$httpBackend', '$http', '$timeout', function($hb, $h, $t) {
       $httpBackend = $hb;
       $http = $h;
+      $timeout = $t;
     }]));
 
     it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
@@ -889,11 +892,16 @@ describe('$http', function() {
 
     describe('scope.$apply', function() {
 
-      it('should $apply after success callback', function() {
+      it('should $applyAsync after success callback', function() {
         $httpBackend.when('GET').respond(200);
         $http({method: 'GET', url: '/some'});
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
+        $httpBackend.flush(null, 0);
+        expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
+
+        expect($$didAsyncDigest).not.toHaveBeenCalled();
+        $httpBackend.flush(null, Infinity);
+
+        expect($$didAsyncDigest).toHaveBeenCalledOnce();
       });
 
 
@@ -901,20 +909,38 @@ describe('$http', function() {
         $httpBackend.when('GET').respond(404);
         $http({method: 'GET', url: '/some'});
         $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
+        expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
       });
 
 
-      it('should $apply even if exception thrown during callback', inject(function($exceptionHandler){
+      it('should $applyAsync even if exception thrown during callback', inject(function($exceptionHandler){
         $httpBackend.when('GET').respond(200);
         callback.andThrow('error in callback');
 
         $http({method: 'GET', url: '/some'}).then(callback);
         $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
+        expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
 
         $exceptionHandler.errors = [];
       }));
+
+
+      it('should react to multiple responses in a single $digest', function() {
+        var spy = $rootScope.$$didAsyncDigest = jasmine.createSpy('$$didAsyncDigest');
+        $httpBackend.whenGET('/url1').respond(200);
+        $httpBackend.whenGET('/url2').respond(200);
+        $http({method: 'GET', url: '/url1'}).then(callback);
+        $http({method: 'GET', url: '/url2'}).then(callback);
+        expect(spy.callCount).toBe(0);
+        expect(callback.callCount).toBe(0);
+
+        $httpBackend.flush(null, 1);
+        expect(spy.callCount).toBe(0);
+
+        $httpBackend.flush(null, Infinity);
+        expect(spy.callCount).toBe(1);
+        expect(callback.callCount).toBe(2);
+      });
     });
 
 
