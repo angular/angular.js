@@ -915,14 +915,20 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         bindings.push(binding);
       }
 
-      safeAddClass($element, 'ng-binding');
       $element.data('$binding', bindings);
     } : noop;
 
+    compile.$$addBindingClass = debugInfoEnabled ? function $$addBindingClass($element) {
+      safeAddClass($element, 'ng-binding');
+    } : noop;
+
     compile.$$addScopeInfo = debugInfoEnabled ? function $$addScopeInfo($element, scope, isolated, noTemplate) {
-      safeAddClass($element, isolated ? 'ng-isolate-scope' : 'ng-scope');
       var dataName = isolated ? (noTemplate ? '$isolateScopeNoTemplate' : '$isolateScope') : '$scope';
       $element.data(dataName, scope);
+    } : noop;
+
+    compile.$$addScopeClass = debugInfoEnabled ? function $$addScopeClass($element, isolated) {
+      safeAddClass($element, isolated ? 'ng-isolate-scope' : 'ng-scope');
     } : noop;
 
     return compile;
@@ -946,6 +952,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var compositeLinkFn =
               compileNodes($compileNodes, transcludeFn, $compileNodes,
                            maxPriority, ignoreDirective, previousCompileContext);
+
+      compile.$$addScopeClass($compileNodes);
 
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn, futureParentElement){
         var namespace = null;
@@ -1020,6 +1028,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement,
                                       null, [], [], previousCompileContext)
             : null;
+
+        if (nodeLinkFn && nodeLinkFn.scope) {
+          compile.$$addScopeClass(attrs.$$element);
+        }
 
         childLinkFn = (nodeLinkFn && nodeLinkFn.terminal ||
                       !(childNodes = nodeList[i].childNodes) ||
@@ -1574,8 +1586,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           compile.$$addScopeInfo($element, isolateScope, true, !(templateDirective && (templateDirective === newIsolateScopeDirective ||
               templateDirective === newIsolateScopeDirective.$$originalDirective)));
-
-          safeAddClass($element, 'ng-isolate-scope');
+          compile.$$addScopeClass($element, true);
 
           forEach(newIsolateScopeDirective.scope, function(definition, scopeName) {
             var match = definition.match(LOCAL_REGEXP) || [],
@@ -1985,8 +1996,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         directives.push({
           priority: 0,
           compile: function textInterpolateCompileFn(templateNode) {
+            var templateNodeParent = templateNode.parent(),
+                hasCompileParent = !!templateNodeParent.length;
+
+            // When transcluding a template that has bindings in the root
+            // we don't have a parent and thus need to add the class during linking fn.
+            if (hasCompileParent) compile.$$addBindingClass(templateNodeParent);
+
             return function textInterpolateLinkFn(scope, node) {
               var parent = node.parent();
+              if (!hasCompileParent) compile.$$addBindingClass(parent);
               compile.$$addBindingInfo(parent, interpolateFn.expressions);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;
