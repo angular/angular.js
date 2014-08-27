@@ -54,9 +54,9 @@
 var ngBindDirective = ['$compile', function($compile) {
   return {
     restrict: 'AC',
-    compile: function(templateElement) {
+    compile: function ngBindCompile(templateElement) {
       $compile.$$addBindingClass(templateElement);
-      return function (scope, element, attr) {
+      return function ngBindLink(scope, element, attr) {
         $compile.$$addBindingInfo(element, attr.ngBind);
         scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
           // We are purposefully using == here rather than === because we want to
@@ -123,9 +123,9 @@ var ngBindDirective = ['$compile', function($compile) {
  */
 var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate, $compile) {
   return {
-    compile: function(templateElement) {
+    compile: function ngBindTemplateCompile(templateElement) {
       $compile.$$addBindingClass(templateElement);
-      return function(scope, element, attr) {
+      return function ngBindTemplateLink(scope, element, attr) {
         var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
         $compile.$$addBindingInfo(element, interpolateFn.expressions);
         attr.$observe('ngBindTemplate', function(value) {
@@ -133,7 +133,7 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
         });
       };
     }
-  }
+  };
 }];
 
 
@@ -185,10 +185,10 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
 var ngBindHtmlDirective = ['$sce', '$parse', '$compile', function($sce, $parse, $compile) {
   return {
     restrict: 'A',
-    compile: function (tElement, tAttrs) {
+    compile: function ngBindHtmlCompile(tElement, tAttrs) {
       $compile.$$addBindingClass(tElement);
 
-      return function (scope, element, attr) {
+      return function ngBindHtmlLink(scope, element, attr) {
         $compile.$$addBindingInfo(element, attr.ngBindHtml);
         var ngBindHtmlGetter = $parse(attr.ngBindHtml);
         var ngBindHtmlWatch = $parse(attr.ngBindHtml, function getStringValue(value) {
