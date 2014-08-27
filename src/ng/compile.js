@@ -188,7 +188,7 @@
  * * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
  *   `function([scope], cloneLinkingFn, futureParentElement)`.
  *    * `scope`: optional argument to override the scope.
- *    * `cloneLinkingFn`: optional argument to create clones of the original translcuded content.
+ *    * `cloneLinkingFn`: optional argument to create clones of the original transcluded content.
  *    * `futureParentElement`:
  *        * defines the parent to which the `cloneLinkingFn` will add the cloned elements.
  *        * default: `$element.parent()` resp. `$element` for `transclude:'element'` resp. `transclude:true`.
