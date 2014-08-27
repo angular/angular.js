@@ -906,8 +906,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
-    compile.$$addBindingInfo = debugInfoEnabled ? function $$addBindingInfo(element, binding) {
-      var bindings = element.data('$binding') || [];
+    compile.$$addBindingInfo = debugInfoEnabled ? function $$addBindingInfo($element, binding) {
+      var bindings = $element.data('$binding') || [];
 
       if (isArray(binding)) {
         bindings = bindings.concat(binding);
@@ -915,14 +915,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         bindings.push(binding);
       }
 
-      safeAddClass(element, 'ng-binding');
-      element.data('$binding', bindings);
+      safeAddClass($element, 'ng-binding');
+      $element.data('$binding', bindings);
     } : noop;
 
-    compile.$$addScopeInfo = debugInfoEnabled ? function $$addScopeInfo(element, scope, isolated, noTemplate) {
-      safeAddClass(element, isolated ? 'ng-isolate-scope' : 'ng-scope');
+    compile.$$addScopeInfo = debugInfoEnabled ? function $$addScopeInfo($element, scope, isolated, noTemplate) {
+      safeAddClass($element, isolated ? 'ng-isolate-scope' : 'ng-scope');
       var dataName = isolated ? (noTemplate ? '$isolateScopeNoTemplate' : '$isolateScope') : '$scope';
-      element.data(dataName, scope);
+      $element.data(dataName, scope);
     } : noop;
 
     return compile;
