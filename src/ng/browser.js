@@ -122,7 +122,7 @@ function Browser(window, document, $log, $sniffer) {
   // URL API
   //////////////////////////////////////////////////////////////
 
-  var lastBrowserUrl = location.href,
+  var lastBrowserUrl = location.href.replace(/%3A/g, ":"),
       baseElement = document.find('base'),
       newLocation = null;
 
@@ -175,7 +175,7 @@ function Browser(window, document, $log, $sniffer) {
       // - newLocation is a workaround for an IE7-9 issue with location.replace and location.href
       //   methods not updating location.href synchronously.
       // - the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return newLocation || location.href.replace(/%27/g,"'");
+      return newLocation || location.href.replace(/%27/g,"'").replace(/%3A/g, ":");
     }
   };
 
