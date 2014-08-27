@@ -769,25 +769,57 @@ describe('$location', function() {
     });
 
 
-    it('should update location when location changed outside of Angular', function() {
+    it('should update url when location changed outside of Angular by changing hash', function() {
+      var fakeWindow = {
+        addEventListener: angular.noop,
+        location: {
+          replace: angular.noop,
+          href: '/hello'
+        },
+        history: {
+        }
+      };
+
       module(function($windowProvider, $locationProvider, $browserProvider) {
         $locationProvider.html5Mode(true);
-        $browserProvider.$get = function($document, $window, $log, $sniffer) {
-          var b = new Browser($window, $document, $log, $sniffer);
+        $browserProvider.$get = function($document, $log, $sniffer) {
+          var b = new Browser(fakeWindow, $document, $log, $sniffer);
           b.pollFns = [];
           return b;
         };
       });
-      inject(function($rootScope, $browser, $location, $sniffer){
-        if ($sniffer.history) {
+
+      inject(function($rootScope, $location) {
+        fakeWindow.location.href = '/hello#goodbye';
+        expect(function() {
+          $rootScope.$digest();
+        }).not.toThrow();
+        expect($location.hash()).toBe('goodbye');
+        expect($location.url()).toBe('/hello#goodbye');
+      });
+    });
+
+
+    it('should update url when location changed outside of Angular with replaceState', function() {
+      if (window.history.replaceState) {
+        module(function($windowProvider, $locationProvider, $browserProvider) {
+          $locationProvider.html5Mode(true);
+          $browserProvider.$get = function($document, $window, $log, $sniffer) {
+            var b = new Browser($window, $document, $log, $sniffer);
+            b.pollFns = [];
+            return b;
+          };
+        });
+
+        inject(function($rootScope, $browser, $location, $sniffer){
           window.history.replaceState(null, '', '/hello');
           // Verify that infinite digest reported in #6976 no longer occurs
           expect(function() {
             $rootScope.$digest();
           }).not.toThrow();
           expect($location.path()).toBe('/hello');
-        }
-      });
+        });
+      }
     });
 
 
