@@ -1450,20 +1450,9 @@ function bootstrap(element, modules, config) {
  * @module ng
  * @description
  * Use this function to reload the current application with debug information turned on.
+ * This takes precedence over a call to `$compileProvider.debugInfoEnabled(false)`.
  *
- * To improve performance adding various debugging information can be disabled.
- * See {@link $compileProvider#debugInfoEnabled}.
- *
- * This overrides any setting of `$compileProvider.debugInfoEnabled()` that you defined in your
- * modules. If you wish to debug an application via this information then you should open up a debug
- * console in the browser then call this method directly in this console:
- *
- * ```js
- * angular.reloadWithDebugInfo();
- * ```
- *
- * The page should reload and the debug information should now be available.
- *
+ * See {@link ng.$compileProvider#debugInfoEnabled} for more.
  */
 function reloadWithDebugInfo() {
   window.name = 'NG_ENABLE_DEBUG_INFO!' + window.name;
