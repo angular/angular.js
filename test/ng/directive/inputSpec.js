@@ -799,6 +799,8 @@ describe('ngModel', function() {
 
     expect(element).toBeInvalid();
     expect(element).toHaveClass('ng-invalid-required');
+
+    dealoc(element);
   }));
 
 
