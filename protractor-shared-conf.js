@@ -19,6 +19,13 @@ exports.config = {
 
     browser.addMockModule('disableNgAnimate', disableNgAnimate);
 
+    browser.addMockModule('enable-binding-info', function() {
+      angular.module('enable-binding-info', [])
+        .config(['$compileProvider', function($compileProvider) {
+          $compileProvider.enableDebugInfo(true);
+        }]);
+    });
+
     // Store the name of the browser that's currently being used.
     browser.getCapabilities().then(function(caps) {
       browser.params.browser = caps.get('browserName');

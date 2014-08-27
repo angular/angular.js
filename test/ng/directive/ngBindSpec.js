@@ -3,6 +3,9 @@
 describe('ngBind*', function() {
   var element;
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.enableDebugInfo(true);
+  }));
 
   afterEach(function() {
     dealoc(element);
@@ -121,13 +124,6 @@ describe('ngBind*', function() {
 
 
   describe('ngBindHtml', function() {
-
-    it('should add ng-binding class to the element in compile phase', inject(function($compile) {
-      var element = jqLite('<div ng-bind-html="myHtml"></div>');
-      $compile(element);
-      expect(element.hasClass('ng-binding')).toBe(true);
-    }));
-
 
     describe('SCE disabled', function() {
       beforeEach(function() {

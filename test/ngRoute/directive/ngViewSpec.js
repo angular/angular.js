@@ -103,9 +103,10 @@ describe('ngView', function() {
   it('should support string controller declaration', function() {
     var MyCtrl = jasmine.createSpy('MyCtrl');
 
-    module(function($controllerProvider, $routeProvider) {
+    module(function($controllerProvider, $routeProvider, $compileProvider) {
       $controllerProvider.register('MyCtrl', ['$scope', MyCtrl]);
       $routeProvider.when('/foo', {controller: 'MyCtrl', templateUrl: '/tpl.html'});
+      $compileProvider.enableDebugInfo(true);
     });
 
     inject(function($route, $location, $rootScope, $templateCache) {
@@ -489,8 +490,9 @@ describe('ngView', function() {
       $scope.ctrl = this;
     }
 
-    module(function($routeProvider) {
+    module(function($routeProvider, $compileProvider) {
       $routeProvider.when('/foo', {templateUrl: 'tpl.html', controller: MyCtrl});
+      $compileProvider.enableDebugInfo(true);
     });
 
     inject(function($templateCache, $location, $rootScope, $route) {
@@ -517,8 +519,9 @@ describe('ngView', function() {
   it('should not set $scope or $controllerController on top level text elements in the view', function() {
     function MyCtrl($scope) {}
 
-    module(function($routeProvider) {
+    module(function($routeProvider, $compileProvider) {
       $routeProvider.when('/foo', {templateUrl: 'tpl.html', controller: MyCtrl});
+      $compileProvider.enableDebugInfo(true);
     });
 
     inject(function($templateCache, $location, $rootScope, $route) {

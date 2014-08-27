@@ -490,7 +490,7 @@ function dateFilter($locale) {
      </file>
      <file name="protractor.js" type="protractor">
        it('should jsonify filtered objects', function() {
-         expect(element(by.binding("{'name':'value'}")).getText()).toMatch(/\{\n  "name": ?"value"\n}/);
+         expect(element(by.binding(" {'name':'value'} | json ")).getText()).toMatch(/\{\n  "name": ?"value"\n}/);
        });
      </file>
    </example>

@@ -221,34 +221,41 @@ describe('ngSwitch', function() {
   }));
 
 
-  it('should properly create and destroy child scopes', inject(function($rootScope, $compile) {
-    element = $compile(
-      '<ng:switch on="url">' +
-        '<div ng-switch-when="a">{{name}}</div>' +
-      '</ng:switch>')($rootScope);
-    $rootScope.$apply();
+  it('should properly create and destroy child scopes', function() {
 
-    var getChildScope = function() { return element.find('div').scope(); };
+    module(function($compileProvider) {
+      $compileProvider.enableDebugInfo(true);
+    });
 
-    expect(getChildScope()).toBeUndefined();
+    inject(function($rootScope, $compile) {
+      element = $compile(
+        '<ng:switch on="url">' +
+          '<div ng-switch-when="a">{{name}}</div>' +
+        '</ng:switch>')($rootScope);
+      $rootScope.$apply();
 
-    $rootScope.url = 'a';
-    $rootScope.$apply();
-    var child1 = getChildScope();
-    expect(child1).toBeDefined();
-    spyOn(child1, '$destroy');
+      var getChildScope = function() { return element.find('div').scope(); };
 
-    $rootScope.url = 'x';
-    $rootScope.$apply();
-    expect(getChildScope()).toBeUndefined();
-    expect(child1.$destroy).toHaveBeenCalled();
+      expect(getChildScope()).toBeUndefined();
 
-    $rootScope.url = 'a';
-    $rootScope.$apply();
-    var child2 = getChildScope();
-    expect(child2).toBeDefined();
-    expect(child2).not.toBe(child1);
-  }));
+      $rootScope.url = 'a';
+      $rootScope.$apply();
+      var child1 = getChildScope();
+      expect(child1).toBeDefined();
+      spyOn(child1, '$destroy');
+
+      $rootScope.url = 'x';
+      $rootScope.$apply();
+      expect(getChildScope()).toBeUndefined();
+      expect(child1.$destroy).toHaveBeenCalled();
+
+      $rootScope.url = 'a';
+      $rootScope.$apply();
+      var child2 = getChildScope();
+      expect(child2).toBeDefined();
+      expect(child2).not.toBe(child1);
+    });
+  });
 
 
   it("should interoperate with other transclusion directives like ngRepeat", inject(function($rootScope, $compile) {

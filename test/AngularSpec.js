@@ -807,7 +807,7 @@ describe('angular', function() {
       expect(function () {
         angular.bootstrap(element);
       }).toThrowMatching(
-        /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
+        /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div( class="?ng\-scope"?)?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
       );
 
       dealoc(element);
@@ -1095,6 +1095,26 @@ describe('angular', function() {
         expect(element.html()).toBe('3');
         expect(window.name).toEqual('my custom name');
       });
+    });
+  });
+
+
+  describe("reloadWithDebugInfo", function() {
+
+    it("should reload the current page with debugInfo turned on", function() {
+
+      element = jqLite('<div>{{1+2}}</div>');
+      angular.bootstrap(element);
+      expect(element.hasClass('ng-scope')).toBe(false);
+      dealoc(element);
+
+      // We pass the false to prevent the page actually reloading
+      angular.reloadWithDebugInfo(false);
+
+      element = jqLite('<div>{{1+2}}</div>');
+      angular.bootstrap(element);
+      expect(element.hasClass('ng-scope')).toBe(true);
+      dealoc(element);
     });
   });
 

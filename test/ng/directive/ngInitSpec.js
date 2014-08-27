@@ -28,8 +28,9 @@ describe('ngInit', function() {
 
 
   it("should be evaluated after ngController", function() {
-    module(function($controllerProvider) {
+    module(function($controllerProvider, $compileProvider) {
       $controllerProvider.register('TestCtrl', function($scope) {});
+      $compileProvider.enableDebugInfo(true);
     });
     inject(function($rootScope, $compile) {
       element = $compile('<div><div ng-controller="TestCtrl" ' +

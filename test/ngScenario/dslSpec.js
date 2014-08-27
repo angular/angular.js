@@ -9,6 +9,10 @@ describe("angular.scenario.dsl", function() {
     dealoc(element);
   });
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.enableDebugInfo(true);
+  }));
+
   beforeEach(module('ngSanitize'));
 
   beforeEach(inject(function($injector) {
