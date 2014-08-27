@@ -1,0 +1,42 @@
+@ngdoc overview
+@name  Running in Production
+@description
+
+# Running an AngularJS App in Production
+
+There are a few things you might consider when running your AngularJS application in production.
+
+
+## Disabling Debug Data
+
+By default AngularJS attaches information about scopes to DOM nodes, and adds CSS classes
+to data-bound elements. The information that is not included is:
+
+As a result of `ngBind`, `ngBindHtml` or `{{...}}` interpolations, binding data and CSS class
+`ng-class` is attached to the corresponding element.
+
+Where the compiler has created a new scope, the scope and either `ng-scope` or `ng-isolated-scope`
+CSS class are attached to the corresponding element. These scope references can then be accessed via
+`element.scope()` and `element.isolateScope()`.
+
+Tools like [Protractor](github.com/angular/protractor) and
+[Batarang](https://github.com/angular/angularjs-batarang) need this information to run,
+but you can disable this in production for a significant performance boost with:
+
+```js
+myApp.config(['$compileProvider', function ($compileProvider) {
+  $compileProvider.debugInfoEnabled(false);
+}]);
+```
+
+If you wish to debug an application with this information then you should open up a debug
+console in the browser then call this method directly in this console:
+
+```js
+angular.reloadWithDebugInfo();
+```
+
+The page should reload and the debug information should now be available.
+
+For more see the docs pages on {@link ng.$compileProvider#debugInfoEnabled `$compileProvider`}
+and {@link ng/function/angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
