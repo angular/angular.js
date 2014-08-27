@@ -3,6 +3,9 @@
 describe('ngClass', function() {
   var element;
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.debugInfoEnabled(false);
+  }));
 
   afterEach(function() {
     dealoc(element);
@@ -39,9 +42,9 @@ describe('ngClass', function() {
   }));
 
 
-  it('should support adding multiple classes conditionally via a map of class names to boolean' +
+  it('should support adding multiple classes conditionally via a map of class names to boolean ' +
       'expressions', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
         '<div class="existing" ' +
             'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB()}">' +
         '</div>')($rootScope);
@@ -63,7 +66,7 @@ describe('ngClass', function() {
 
   it('should remove classes when the referenced object is the same but its property is changed',
     inject(function($rootScope, $compile) {
-      var element = $compile('<div ng-class="classes"></div>')($rootScope);
+      element = $compile('<div ng-class="classes"></div>')($rootScope);
       $rootScope.classes = { A: true, B: true };
       $rootScope.$digest();
       expect(element.hasClass('A')).toBeTruthy();
@@ -124,7 +127,7 @@ describe('ngClass', function() {
     $rootScope.$digest();
     $rootScope.dynCls = 'foo';
     $rootScope.$digest();
-    expect(element[0].className).toBe('ui-panel ui-selected ng-scope foo');
+    expect(element[0].className).toBe('ui-panel ui-selected foo');
   }));
 
 
@@ -132,7 +135,7 @@ describe('ngClass', function() {
     element = $compile('<div class="panel bar" ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'panel';
     $rootScope.$digest();
-    expect(element[0].className).toBe('panel bar ng-scope');
+    expect(element[0].className).toBe('panel bar');
   }));
 
 
@@ -142,7 +145,7 @@ describe('ngClass', function() {
     $rootScope.$digest();
     $rootScope.dynCls = 'window';
     $rootScope.$digest();
-    expect(element[0].className).toBe('bar ng-scope window');
+    expect(element[0].className).toBe('bar window');
   }));
 
 
@@ -153,7 +156,7 @@ describe('ngClass', function() {
     element.addClass('foo');
     $rootScope.dynCls = '';
     $rootScope.$digest();
-    expect(element[0].className).toBe('ng-scope');
+    expect(element[0].className).toBe('');
   }));
 
 
@@ -161,7 +164,7 @@ describe('ngClass', function() {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = [undefined, null];
     $rootScope.$digest();
-    expect(element[0].className).toBe('ng-scope');
+    expect(element[0].className).toBe('');
   }));
 
 
@@ -364,10 +367,14 @@ describe('ngClass', function() {
 describe('ngClass animations', function() {
   var body, element, $rootElement;
 
+  afterEach(function() {
+    dealoc(element);
+  });
+
   it("should avoid calling addClass accidentally when removeClass is going on", function() {
     module('ngAnimateMock');
     inject(function($compile, $rootScope, $animate, $timeout) {
-      var element = angular.element('<div ng-class="val"></div>');
+      element = angular.element('<div ng-class="val"></div>');
       var body = jqLite(document.body);
       body.append(element);
       $compile(element)($rootScope);
@@ -432,7 +439,7 @@ describe('ngClass animations', function() {
       digestQueue.shift()();
 
       $rootScope.val = 'crazy';
-      var element = angular.element('<div ng-class="val"></div>');
+      element = angular.element('<div ng-class="val"></div>');
       jqLite($document[0].body).append($rootElement);
 
       $compile(element)($rootScope);
@@ -479,7 +486,7 @@ describe('ngClass animations', function() {
       $rootScope.two = true;
       $rootScope.three = true;
 
-      var element = angular.element('<div ng-class="{one:one, two:two, three:three}"></div>');
+      element = angular.element('<div ng-class="{one:one, two:two, three:three}"></div>');
       $compile(element)($rootScope);
       $rootScope.$digest();
 
