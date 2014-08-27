@@ -55,6 +55,7 @@ var ngBindDirective = ['$compile', function($compile) {
   return {
     restrict: 'AC',
     compile: function(templateElement) {
+      $compile.$$addBindingClass(templateElement);
       return function (scope, element, attr) {
         $compile.$$addBindingInfo(element, attr.ngBind);
         scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
@@ -121,13 +122,18 @@ var ngBindDirective = ['$compile', function($compile) {
    </example>
  */
 var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate, $compile) {
-  return function(scope, element, attr) {
-    var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
-    $compile.$$addBindingInfo(element, interpolateFn.expressions);
-    attr.$observe('ngBindTemplate', function(value) {
-      element.text(value);
-    });
-  };
+  return {
+    compile: function(templateElement) {
+      $compile.$$addBindingClass(templateElement);
+      return function(scope, element, attr) {
+        var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
+        $compile.$$addBindingInfo(element, interpolateFn.expressions);
+        attr.$observe('ngBindTemplate', function(value) {
+          element.text(value);
+        });
+      };
+    }
+  }
 }];
 
 
@@ -180,6 +186,7 @@ var ngBindHtmlDirective = ['$sce', '$parse', '$compile', function($sce, $parse, 
   return {
     restrict: 'A',
     compile: function (tElement, tAttrs) {
+      $compile.$$addBindingClass(tElement);
 
       return function (scope, element, attr) {
         $compile.$$addBindingInfo(element, attr.ngBindHtml);
