@@ -920,9 +920,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     } : noop;
 
     compile.$$addScopeInfo = debugInfoEnabled ? function $$addScopeInfo(element, scope, isolated, noTemplate) {
-      safeAddClass(jqLite(element), isolated ? 'ng-isolate-scope' : 'ng-scope');
+      safeAddClass(element, isolated ? 'ng-isolate-scope' : 'ng-scope');
       var dataName = isolated ? (noTemplate ? '$isolateScopeNoTemplate' : '$isolateScope') : '$scope';
-      element.data ? element.data(dataName, scope) : jqLite.data(element, dataName, scope);
+      element.data(dataName, scope);
     } : noop;
 
     return compile;
@@ -1071,7 +1071,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (nodeLinkFn) {
             if (nodeLinkFn.scope) {
               childScope = scope.$new();
-              compile.$$addScopeInfo(node, childScope);
+              compile.$$addScopeInfo(jqLite(node), childScope);
             } else {
               childScope = scope;
             }
