@@ -1175,6 +1175,33 @@ describe('$route', function() {
     });
 
 
+    it('should support globbed route updating',  function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:foo*', {});
+        $routeProvider.when('/baz/:foo*/edit', {});
+      });
+
+      inject(function($rootScope, $route, $location, $routeParams) {
+        $location.path('/bar/multi/segment/path');
+        $rootScope.$digest();
+        expect($routeParams).toEqual({foo: 'multi/segment/path'});
+        $route.updateParams({foo: 'new'});
+        $rootScope.$digest();
+        expect($routeParams).toEqual({foo: 'new'});
+        $location.path('/baz/multi/segment/path/edit');
+
+        $rootScope.$digest();
+        expect($routeParams).toEqual({foo: 'multi/segment/path'});
+        $route.updateParams({foo: 'new'});
+        $rootScope.$digest();
+        expect($routeParams).toEqual({foo: 'new'});
+        $route.updateParams({foo: 'new/multi'});
+        $rootScope.$digest();
+        expect($routeParams).toEqual({foo: 'new/multi'});
+      });
+    });
+
+
     it('should complain if called without an existing route', inject(function($route) {
       expect($route.updateParams).toThrowMinErr('ngRoute', 'norout');
     }));
