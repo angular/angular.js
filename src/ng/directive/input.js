@@ -899,7 +899,18 @@ function testFlags(validity, flags) {
   return false;
 }
 
+function stringBasedInputType(ctrl) {
+  ctrl.$formatters.push(function(value) {
+    return ctrl.$isEmpty(value) ? value : value.toString();
+  });
+}
+
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
+}
+
+function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop(VALIDITY_STATE_PROPERTY);
   var placeholder = element[0].placeholder, noevent = {};
   var type = lowercase(element[0].type);
@@ -1050,7 +1061,7 @@ function createDateParser(regexp, mapping) {
 function createDateInputType(type, regexp, parseDate, format) {
    return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
       badInputChecker(scope, element, attr, ctrl);
-      textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+      baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
       var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
 
       ctrl.$$parserName = type;
@@ -1100,7 +1111,7 @@ function badInputChecker(scope, element, attr, ctrl) {
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   ctrl.$$parserName = 'number';
   ctrl.$parsers.push(function(value) {
@@ -1134,7 +1145,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
 
   ctrl.$$parserName = 'url';
   ctrl.$validators.url = function(modelValue, viewValue) {
@@ -1145,7 +1157,8 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
 
   ctrl.$$parserName = 'email';
   ctrl.$validators.email = function(modelValue, viewValue) {
@@ -2585,6 +2598,7 @@ var minlengthDirective = function() {
 var ngListDirective = function() {
   return {
     restrict: 'A',
+    priority: 100,
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
       // We want to control whitespace trimming so we use this convoluted approach
