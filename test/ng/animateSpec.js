@@ -71,6 +71,14 @@ describe("$animate", function() {
       expect($animate.leave(element)).toBeAPromise();
     }));
 
+    it("should provide noop `enabled` and `cancel` methods", inject(function($animate) {
+      expect($animate.enabled).toBe(angular.noop);
+      expect($animate.enabled()).toBeUndefined();
+
+      expect($animate.cancel).toBe(angular.noop);
+      expect($animate.cancel()).toBeUndefined();
+    }));
+
     it("should add and remove classes on SVG elements", inject(function($animate) {
       if (!window.SVGElement) return;
       var svg = jqLite('<svg><rect></rect></svg>');
