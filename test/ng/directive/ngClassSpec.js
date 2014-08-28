@@ -427,10 +427,7 @@ describe('ngClass animations', function() {
     });
     inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $document) {
 
-      // Enable animations by triggering the first item in the postDigest queue
-      digestQueue.shift()();
-
-      // wait for the 2nd animation bootstrap digest to pass
+      // Animations are enabled right away since there are no remote HTTP template requests
       $rootScope.$digest();
       digestQueue.shift()();
 
