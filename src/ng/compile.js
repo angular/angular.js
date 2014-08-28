@@ -558,7 +558,6 @@ var $compileMinErr = minErr('$compile');
 /**
  * @ngdoc provider
  * @name $compileProvider
- * @kind function
  *
  * @description
  */
