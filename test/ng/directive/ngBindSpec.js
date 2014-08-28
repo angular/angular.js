@@ -122,6 +122,14 @@ describe('ngBind*', function() {
 
   describe('ngBindHtml', function() {
 
+    it('should complain about accidental use of interpolation', inject(function($compile) {
+      expect(function() {
+        $compile('<div ng-bind-html="{{myHtml}}"></div>');
+      }).toThrowMinErr('$parse', 'syntax', "Syntax Error: Token 'myHtml' is unexpected, " +
+          "expecting [:] at column 3 of the expression [{{myHtml}}] starting at [myHtml}}].");
+    }));
+
+
     describe('SCE disabled', function() {
       beforeEach(function() {
         module(function($sceProvider) { $sceProvider.enabled(false); });
