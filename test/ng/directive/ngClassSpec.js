@@ -146,7 +146,7 @@ describe('ngClass', function() {
   }));
 
 
-  it('should remove classes even if they were added by another code', inject(function($rootScope, $compile) {
+  it('should remove classes if they were added programmatically', inject(function($rootScope, $compile) {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'foo';
     $rootScope.$digest();
