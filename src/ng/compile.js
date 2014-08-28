@@ -955,26 +955,29 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var compositeLinkFn =
               compileNodes($compileNodes, transcludeFn, $compileNodes,
                            maxPriority, ignoreDirective, previousCompileContext);
-
       compile.$$addScopeClass($compileNodes);
-
+      var namespace = null;
+      var namespaceAdaptedCompileNodes = $compileNodes;
+      var lastCompileNode;
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn, futureParentElement){
-        var namespace = null;
         assertArg(scope, 'scope');
         if (!namespace) {
           namespace = detectNamespaceForChildElements(futureParentElement);
-          if (namespace !== 'html') {
-            $compileNodes = jqLite(
-              wrapTemplate(namespace, jqLite('<div>').append($compileNodes).html())
-            );
-          }
         }
+        if (namespace !== 'html' && $compileNodes[0] !== lastCompileNode) {
+          namespaceAdaptedCompileNodes = jqLite(
+            wrapTemplate(namespace, jqLite('<div>').append($compileNodes).html())
+          );
+        }
+        // When using a directive with replace:true and templateUrl the $compileNodes
+        // might change, so we need to recreate the namespace adapted compileNodes.
+        lastCompileNode = $compileNodes[0];
 
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
         var $linkNode = cloneConnectFn
-          ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
-          : $compileNodes;
+          ? JQLitePrototype.clone.call(namespaceAdaptedCompileNodes) // IMPORTANT!!!
+          : namespaceAdaptedCompileNodes;
 
         if (transcludeControllers) {
           for (var controllerName in transcludeControllers) {
@@ -1940,7 +1943,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // it was cloned therefore we have to clone as well.
                 linkNode = jqLiteClone(compileNode);
               }
-
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
 
               // Copy in CSS classes from original node
