@@ -321,7 +321,7 @@ function $InterpolateProvider() {
      * @description
      * Symbol to denote the start of expression in the interpolated string. Defaults to `{{`.
      *
-     * Use {@link ng.$interpolateProvider#startSymbol $interpolateProvider#startSymbol} to change
+     * Use {@link ng.$interpolateProvider#startSymbol $interpolateProvider.startSymbol} to change
      * the symbol.
      *
      * @returns {string} start symbol.
@@ -337,7 +337,7 @@ function $InterpolateProvider() {
      * @description
      * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
      *
-     * Use {@link ng.$interpolateProvider#endSymbol $interpolateProvider#endSymbol} to change
+     * Use {@link ng.$interpolateProvider#endSymbol $interpolateProvider.endSymbol} to change
      * the symbol.
      *
      * @returns {string} end symbol.
