@@ -48,9 +48,13 @@ forEach(
           var fn = $parse(attr[directiveName]);
           return function ngEventHandler(scope, element) {
             element.on(lowercase(name), function(event) {
-              scope.$apply(function() {
+              if(!scope.$$phase) {
+                scope.$apply(function() {
+                  fn(scope, {$event:event});
+                });
+              } else {
                 fn(scope, {$event:event});
-              });
+              }
             });
           };
         }
