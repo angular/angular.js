@@ -53,6 +53,7 @@ describe('Filter: filter', function() {
     var items = [{first: 'misko', last: 'hevery'},
                  {first: 'adam', last: 'abrons'}];
 
+    expect(filter(items, {first: undefined}).length).toBe(2);
     expect(filter(items, {first:'', last:''}).length).toBe(2);
     expect(filter(items, {first:'', last:'hevery'}).length).toBe(1);
     expect(filter(items, {first:'adam', last:'hevery'}).length).toBe(0);
@@ -75,6 +76,8 @@ describe('Filter: filter', function() {
                  {person: {name: 'Rita'}},
                  {person: {name: 'Billy'}},
                  {person: {name: 'Joan'}}];
+
+    expect(filter(items, {person: {name : undefined}}).length).toBe(4);
     expect(filter(items, {person: {name: 'Jo'}}).length).toBe(2);
     expect(filter(items, {person: {name: 'Jo'}})).toEqual([
       {person: {name: 'John'}}, {person: {name: 'Joan'}}
