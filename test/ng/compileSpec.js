@@ -2613,6 +2613,24 @@ describe('$compile', function() {
     });
 
 
+    it('should NOT break inlined JSON values in directive template',
+        function() {
+      module(function($interpolateProvider, $compileProvider) {
+        $interpolateProvider.startSymbol('##').endSymbol(']]');
+        $compileProvider.directive('myDirective', function() {
+          return {
+            template: '<span foo=\'{"ctx":{"id":3}}\'></span>'
+          };
+        });
+      });
+
+      inject(function($compile) {
+        element = $compile('<div>##hello|uppercase]]|<div my-directive></div></div>')($rootScope);
+        expect(element.children('div').children('span').attr('foo')).toBe('{"ctx":{"id":3}}');
+      });
+    });
+
+
     it('should support custom start/end interpolation symbols in async directive template',
         function() {
       module(function($interpolateProvider, $compileProvider) {

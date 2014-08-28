@@ -858,13 +858,38 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     };
 
+    // Search for '{{' and '}}' and replace them with the start and end symbols defined
+    // by the developer in $interpolateProvider.
+    function denormalizeTemplateFn(template) {
+      var length = template.length,
+          index = 0,
+          startIndex = template.indexOf('{{'),
+          endIndex;
+
+      while (index < length) {
+        if ( ((startIndex = template.indexOf('{{', index)) != -1) && ((endIndex = template.indexOf('}}', startIndex + 2)) != -1) ) {
+          template = template.substring(0, startIndex)
+                   + startSymbol
+                   + template.substring(startIndex + 2, endIndex)
+                   + endSymbol
+                   + template.substring(endIndex + 2);
+          index = endIndex + (startSymbol.length - 2) + endSymbol.length;
+          // length of template may have changed if startSymbol and/or endSymbol
+          // have different length than default symbols ('{{' and '}}')
+          length = template.length;
+        } else {
+          index = length;
+        }
+      }
+
+      return template;
+    }
+
     var startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
         denormalizeTemplate = (startSymbol == '{{' || endSymbol  == '}}')
             ? identity
-            : function denormalizeTemplate(template) {
-              return template.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
-        },
+            : denormalizeTemplateFn,
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
 
