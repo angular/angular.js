@@ -289,6 +289,39 @@ describe('$compile', function() {
 
     }));
 
+    it('should support directives with SVG templates and a slow url '+
+       'that are stamped out later by a transcluding directive', function() {
+      module(function() {
+        directive('svgCircleUrl', valueFn({
+          replace: true,
+          templateUrl: 'template.html',
+          templateNamespace: 'SVG',
+        }));
+      });
+      inject(function($compile, $rootScope, $httpBackend) {
+        $httpBackend.expect('GET', 'template.html').respond('<circle></circle>');
+        element = $compile('<svg><svg-circle-url ng-repeat="l in list"/></svg>')($rootScope);
+
+        // initially the template is not yet loaded
+        $rootScope.$apply(function() {
+          $rootScope.list = [1];
+        });
+        expect(element.find('svg-circle-url').length).toBe(1);
+        expect(element.find('circle').length).toBe(0);
+
+        // template is loaded and replaces the existing nodes
+        $httpBackend.flush();
+        expect(element.find('svg-circle-url').length).toBe(0);
+        expect(element.find('circle').length).toBe(1);
+
+        // new entry should immediately use the loaded template
+        $rootScope.$apply(function() {
+          $rootScope.list.push(2);
+        });
+        expect(element.find('svg-circle-url').length).toBe(0);
+        expect(element.find('circle').length).toBe(2);
+      });
+    });
   });
 
 
