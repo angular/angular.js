@@ -35,6 +35,7 @@ angular.mock.$Browser = function() {
   self.$$url = "http://server/";
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
+  self.$$hasChangedOutside = false;
 
   // TODO(vojta): remove this temporary api
   self.$$completeOutstandingRequest = angular.noop;
@@ -68,6 +69,16 @@ angular.mock.$Browser = function() {
     self.deferredFns.push({time:(self.defer.now + delay), fn:fn, id: self.deferredNextId});
     self.deferredFns.sort(function(a,b){ return a.time - b.time;});
     return self.deferredNextId++;
+  };
+
+  self.urlChangedOutsideAngular = function (hasChanged) {
+    if (isDefined(hasChanged)) {
+      self.$$hasChangedOutside = hasChanged;
+      return self;
+    }
+    else {
+      return self.$$hasChangedOutside;
+    }
   };
 
 
@@ -148,6 +159,10 @@ angular.mock.$Browser.prototype = {
     if (url) {
       this.$$url = url;
       return this;
+    }
+
+    if (this.$$mockLocation && this.$$mockLocation.href && url !== (this.$$url = this.$$mockLocation.href.replace(/%27/g,"'"))) {
+      this.hasChangedOutside = true;
     }
 
     return this.$$url;

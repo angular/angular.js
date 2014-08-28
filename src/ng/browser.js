@@ -29,7 +29,8 @@ function Browser(window, document, $log, $sniffer) {
       history = window.history,
       setTimeout = window.setTimeout,
       clearTimeout = window.clearTimeout,
-      pendingDeferIds = {};
+      pendingDeferIds = {},
+      hasChangedOutside = false;
 
   self.isMock = false;
 
@@ -146,6 +147,7 @@ function Browser(window, document, $log, $sniffer) {
    * @param {boolean=} replace Should new url replace current history record ?
    */
   self.url = function(url, replace) {
+    var currentHref;
     // Android Browser BFCache causes location, history reference to become stale.
     if (location !== window.location) location = window.location;
     if (history !== window.history) history = window.history;
@@ -175,7 +177,38 @@ function Browser(window, document, $log, $sniffer) {
       // - newLocation is a workaround for an IE7-9 issue with location.replace and location.href
       //   methods not updating location.href synchronously.
       // - the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return newLocation || location.href.replace(/%27/g,"'");
+      if (newLocation) {
+        return newLocation;
+      }
+      if (lastBrowserUrl !== (currentHref = location.href.replace(/%27/g,"'"))) {
+        hasChangedOutside = true;
+      }
+      return currentHref;
+    }
+  };
+
+  /**
+   * @name $browser#urlChangedOutsideAngular
+   *
+   * @description
+   * GETTER:
+   * Without any argument, this method just returns current value of urlChangedOutsideAngular.
+   *
+   * SETTER:
+   * With at least one argument, this method sets urlChangedOutsideAngular to new value.
+   *
+   * NOTE: this api is intended for use only by the $location service inside of $locationWatch.
+   *
+   * @param {boolean} val New value to set as urlChangedOutsideAngular,
+   *                  typically used to reset value to false.
+   */
+  self.urlChangedOutsideAngular = function(hasChanged) {
+    if (isDefined(hasChanged)) {
+      hasChangedOutside = hasChanged;
+      return self;
+    }
+    else {
+      return hasChangedOutside;
     }
   };
 
@@ -184,6 +217,7 @@ function Browser(window, document, $log, $sniffer) {
 
   function fireUrlChange() {
     newLocation = null;
+    hasChangedOutside = false;
     if (lastBrowserUrl == self.url()) return;
 
     lastBrowserUrl = self.url();
