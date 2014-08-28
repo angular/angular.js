@@ -1,5 +1,11 @@
 var app = angular.module('largetableBenchmark', []);
 
+app.config(function($compileProvider) {
+  if ($compileProvider.debugInfoEnabled) {
+    $compileProvider.debugInfoEnabled(false);
+  }
+});
+
 app.filter('noop', function() {
   return function(input) {
     return input;
