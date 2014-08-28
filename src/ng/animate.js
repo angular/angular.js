@@ -88,7 +88,6 @@ var $AnimateProvider = ['$provide', function($provide) {
       // only serve one instance of a promise in order to save CPU cycles
       if (!currentDefer) {
         currentDefer = $$q.defer();
-        currentDefer.promise.cancel = noop; //ngAnimate.$animate provides this
         $$asyncCallback(function() {
           currentDefer.resolve();
           currentDefer = null;
