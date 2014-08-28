@@ -15,7 +15,7 @@ it makes development fun!
 * Tutorial: http://docs.angularjs.org/tutorial
 * API Docs: http://docs.angularjs.org/api
 * Developer Guide: http://docs.angularjs.org/guide
-* Contribution guidelines: http://docs.angularjs.org/misc/contribute
+* Contribution guidelines: [CONTRIBUTING.md](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
 * Dashboard: http://dashboard.angularjs.org
 
 Building AngularJS
@@ -37,7 +37,7 @@ To execute end-to-end (e2e) tests, use:
     grunt test:e2e
 
 To learn more about the grunt tasks, run `grunt --help` and also read our
-[contribution guidelines](http://docs.angularjs.org/misc/contribute).
+[contribution guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
 
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/README.md?pixel)](https://github.com/igrigorik/ga-beacon)
