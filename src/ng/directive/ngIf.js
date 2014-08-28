@@ -5,6 +5,8 @@
  * @name ngIf
  * @restrict A
  *
+ * NOT AVAILABLE UNTIL ANGULAR 1.1.5!!
+ * 
  * @description
  * The `ngIf` directive removes or recreates a portion of the DOM tree based on an
  * {expression}. If the expression assigned to `ngIf` evaluates to a false
