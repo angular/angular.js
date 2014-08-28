@@ -50,6 +50,48 @@ describe("ngAnimate", function() {
     });
   });
 
+  it("should disable animations for two digests until all pending HTTP requests are complete during bootstrap", function() {
+    var animateSpy = jasmine.createSpy();
+    module(function($animateProvider, $compileProvider) {
+      $compileProvider.directive('myRemoteDirective', function() {
+        return {
+          templateUrl : 'remote.html'
+        };
+      });
+      $animateProvider.register('.my-structrual-animation', function() {
+        return {
+          enter : animateSpy,
+          leave : animateSpy
+        };
+      });
+    });
+    inject(function($rootScope, $compile, $animate, $rootElement, $document, $httpBackend) {
+
+      $httpBackend.whenGET('remote.html').respond(200, '<strong>content</strong>');
+
+      var element = $compile('<div my-remote-directive class="my-structrual-animation">...</div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      // running this twice just to prove that the dual post digest is run
+      $rootScope.$digest();
+      $rootScope.$digest();
+
+      $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+
+      expect(animateSpy).not.toHaveBeenCalled();
+
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      $animate.leave(element);
+      $rootScope.$digest();
+
+      expect(animateSpy).toHaveBeenCalled();
+    });
+  });
+
 
   //we use another describe block because the before/after operations below
   //are used across all animations tests and we don't want that same behavior
