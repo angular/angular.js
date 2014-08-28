@@ -783,6 +783,66 @@ describe('ngModel', function() {
     dealoc(element);
   }));
 
+  it('should always format the viewValue as a string for a blank input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input name="field" ng-model="val" /></form>')($rootScope);
+
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
+
+  it('should always format the viewValue as a string for a `text` input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input type="text" name="field" ng-model="val" /></form>')($rootScope);
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
+
+  it('should always format the viewValue as a string for an `email` input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input type="email" name="field" ng-model="val" /></form>')($rootScope);
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
+
+  it('should always format the viewValue as a string for a `url` input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input type="url" name="field" ng-model="val" /></form>')($rootScope);
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
 
   it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
     var element = $compile('<form name="myForm">' +
