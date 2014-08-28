@@ -5,7 +5,6 @@ var $interpolateMinErr = minErr('$interpolate');
 /**
  * @ngdoc provider
  * @name $interpolateProvider
- * @kind function
  *
  * @description
  *
