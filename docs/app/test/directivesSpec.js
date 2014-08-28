@@ -6,18 +6,18 @@ describe("code", function() {
 
   beforeEach(module('directives'));
 
-  beforeEach(inject(function($rootScope, $compile) {
+  beforeEach(inject(function($rootScope, $compile, $window) {
     // Provide stub for pretty print function
-    oldPP = window.prettyPrintOne;
-    prettyPrintOne = window.prettyPrintOne = jasmine.createSpy();
+    oldPP = $window.prettyPrintOne;
+    prettyPrintOne = $window.prettyPrintOne = jasmine.createSpy();
 
     scope = $rootScope.$new();
     compile = $compile;
   }));
 
-  afterEach(function() {
-    window.prettyPrintOne = oldPP;
-  });
+  afterEach(inject(function($window) {
+    $window.prettyPrintOne = oldPP;
+  }));
 
 
   it('should pretty print innerHTML', function() {

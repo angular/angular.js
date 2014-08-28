@@ -15,8 +15,15 @@ angular.module('directives', [])
   };
 }])
 
-
-.directive('code', function() {
+/**
+ * code Directive
+ *
+ * @description The code blocks are prettified using google-code-pretify's prettyPrintOne.
+ * The prettyPrintOne function is invoked with `prettyPrintOne(html, lang, linenums)`, where `html` is
+ * the innerHTML of the element, `lang` allows language declaration by adding `class="lang-javascript"`
+ * and `linenums` is boolean which adds line numbers  by adding a class name `linenum`.
+ */
+.directive('code', ['$window', function($window) {
   return {
     restrict: 'E',
     terminal: true,
@@ -25,8 +32,8 @@ angular.module('directives', [])
       var match = /lang-(\S+)/.exec(element[0].className);
       var lang = match && match[1];
       var html = element.html();
-      element.html(window.prettyPrintOne(html, lang, linenums));
+      element.html($window.prettyPrintOne(html, lang, linenums));
     }
   };
-});
+}]);
 
