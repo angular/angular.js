@@ -411,33 +411,30 @@ angular.module('ngAnimate', ['ng'])
 
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
-      // disable animations during bootstrap, but once we bootstrapped, wait again
-      // for another digest until enabling animations. Enter, leave and move require
-      // a follow-up digest so having a watcher here is enough to let both digests pass.
-      // However, when any directive or view templates are downloaded then we need to
-      // handle postpone enabling animations until they are fully completed and then...
-      var watchFn = $rootScope.$watch(
+      // Wait until all directive and route-related templates are downloaded and
+      // compiled. The $templateRequest.totalPendingRequests variable keeps track of
+      // all of the remote templates being currently downloaded. If there are no
+      // templates currently downloading then the watcher will still fire anyway.
+      var deregisterWatch = $rootScope.$watch(
         function() { return $templateRequest.totalPendingRequests; },
         function(val, oldVal) {
-          if (oldVal === 0) {
-            if (val === 0) {
-              $rootScope.$$postDigest(onApplicationReady);
-            }
-          } else if(val === 0) {
-            // ...when the template has been downloaded we digest twice again until the
-            // animations are set to enabled (since enter, leave and move require a
-            // follow-up).
+          if (val !== 0) return;
+          deregisterWatch();
+
+          // Now that all templates have been downloaded, $animate will wait until
+          // the post digest queue is empty before enabling animations. By having two
+          // calls to $postDigest calls we can ensure that the flag is enabled at the
+          // very end of the post digest queue. Since all of the animations in $animate
+          // use $postDigest, it's important that the code below executes at the end.
+          // This basically means that the page is fully downloaded and compiled before
+          // any animations are triggered.
+          $rootScope.$$postDigest(function() {
             $rootScope.$$postDigest(function() {
-              $rootScope.$$postDigest(onApplicationReady);
+              rootAnimateState.running = false;
             });
-          }
+          });
         }
       );
-
-      function onApplicationReady() {
-        rootAnimateState.running = false;
-        watchFn();
-      }
 
       var globalAnimationCounter = 0;
       var classNameFilter = $animateProvider.classNameFilter();
