@@ -301,9 +301,9 @@ describe('$location', function() {
     });
 
     it('should not rewrite when hashbang url is not given', function() {
-      initService(true, '!', true);
+      initService({html5Mode:true,hashPrefix: '!',supportHistory: true});
       inject(
-        initBrowser('http://domain.com/base/a/b', '/base'),
+        initBrowser({url:'http://domain.com/base/a/b',basePath: '/base'}),
         function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/a/b');
         }
@@ -536,24 +536,24 @@ describe('$location', function() {
   });
 
 
-  function initService(html5Mode, hashPrefix, supportHistory) {
+  function initService(options) {
     return module(function($provide, $locationProvider){
-      $locationProvider.html5Mode(html5Mode);
-      $locationProvider.hashPrefix(hashPrefix);
-      $provide.value('$sniffer', {history: supportHistory});
+      $locationProvider.html5Mode(options.html5Mode);
+      $locationProvider.hashPrefix(options.hashPrefix);
+      $provide.value('$sniffer', {history: options.supportHistory});
     });
   }
-  function initBrowser(url, basePath) {
+  function initBrowser(options) {
     return function($browser){
-      $browser.url(url);
-      $browser.$$baseHref = basePath;
+      $browser.url(options.url);
+      $browser.$$baseHref = options.basePath;
     };
   }
 
   describe('wiring', function() {
 
-    beforeEach(initService(false, '!', true));
-    beforeEach(inject(initBrowser('http://new.com/a/b#!', 'http://new.com/a/b')));
+    beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
+    beforeEach(inject(initBrowser({url:'http://new.com/a/b#!',basePath: 'http://new.com/a/b'})));
 
 
     it('should update $location when browser url changes', inject(function($browser, $location) {
@@ -677,9 +677,9 @@ describe('$location', function() {
   describe('disabled history', function() {
 
     it('should use hashbang url with hash prefix', function() {
-      initService(false, '!');
+      initService({html5Mode:false,hashPrefix: '!'});
       inject(
-        initBrowser('http://domain.com/base/index.html#!/a/b', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/index.html#!/a/b',basePath: '/base/index.html'}),
         function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!/a/b');
           $location.path('/new');
@@ -692,9 +692,9 @@ describe('$location', function() {
 
 
     it('should use hashbang url without hash prefix', function() {
-      initService(false, '');
+      initService({html5Mode:false,hashPrefix: ''});
       inject(
-        initBrowser('http://domain.com/base/index.html#/a/b', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/index.html#/a/b',basePath: '/base/index.html'}),
         function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#/a/b');
           $location.path('/new');
@@ -715,9 +715,9 @@ describe('$location', function() {
     }));
 
     it('should use hashbang url with hash prefix', function() {
-      initService(true, '!!', false);
+      initService({html5Mode:true,hashPrefix: '!!',supportHistory: false});
       inject(
-        initBrowser('http://domain.com/base/index.html#!!/a/b', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/index.html#!!/a/b',basePath: '/base/index.html'}),
         function($rootScope, $location,  $browser) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!!/a/b');
           $location.path('/new');
@@ -730,9 +730,9 @@ describe('$location', function() {
 
 
     it('should redirect to hashbang url when new url given', function() {
-      initService(true, '!');
+      initService({html5Mode:true,hashPrefix: '!'});
       inject(
-        initBrowser('http://domain.com/base/new-path/index.html', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/new-path/index.html',basePath: '/base/index.html'}),
         function($browser, $location) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!/new-path/index.html');
         }
@@ -740,9 +740,9 @@ describe('$location', function() {
     });
 
     it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
-      initService(true, '!', false);
+      initService({html5Mode:true,hashPrefix: '!',supportHistory: false});
       inject(
-        initBrowser('http://domain.com/base/index.html', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/index.html',basePath: '/base/index.html'}),
         function($browser, $location) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!/index.html');
         }
@@ -759,9 +759,9 @@ describe('$location', function() {
     }));
 
     it('should use new url', function() {
-      initService(true, '', true);
+      initService({html5Mode:true,hashPrefix: '',supportHistory: true});
       inject(
-        initBrowser('http://domain.com/base/old/index.html#a', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/old/index.html#a',basePath: '/base/index.html'}),
         function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/old/index.html#a');
           $location.path('/new');
@@ -774,9 +774,9 @@ describe('$location', function() {
 
 
     it('should rewrite when hashbang url given', function() {
-      initService(true, '!', true);
+      initService({html5Mode:true,hashPrefix: '!',supportHistory: true});
       inject(
-        initBrowser('http://domain.com/base/index.html#!/a/b', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/index.html#!/a/b',basePath: '/base/index.html'}),
         function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/a/b');
           $location.path('/new');
@@ -790,9 +790,9 @@ describe('$location', function() {
 
 
     it('should rewrite when hashbang url given (without hash prefix)', function() {
-      initService(true, '', true);
+      initService({html5Mode:true,hashPrefix: '',supportHistory: true});
       inject(
-        initBrowser('http://domain.com/base/index.html#/a/b', '/base/index.html'),
+        initBrowser({url:'http://domain.com/base/index.html#/a/b',basePath: '/base/index.html'}),
         function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/a/b');
           expect($location.path()).toBe('/a/b');
@@ -802,9 +802,9 @@ describe('$location', function() {
 
 
     it('should set appBase to serverBase if base[href] is missing', function() {
-      initService(true, '!', true);
+      initService({html5Mode:true,hashPrefix: '!',supportHistory: true});
       inject(
-          initBrowser('http://domain.com/my/view1#anchor1', ''),
+          initBrowser({url:'http://domain.com/my/view1#anchor1',basePath: ''}),
           function($rootScope, $location, $browser) {
             expect($browser.url()).toBe('http://domain.com/my/view1#anchor1');
             expect($location.path()).toBe('/my/view1');
@@ -847,12 +847,14 @@ describe('$location', function() {
 
     var root, link, originalBrowser, lastEventPreventDefault;
 
-    function configureService(linkHref, html5Mode, supportHist, relLink, attrs, content) {
-      if (typeof relLink !== "boolean") {
-        content = attrs;
-        attrs = relLink;
-        relLink = false;
-      }
+    function configureService(options) {
+      var linkHref = options.linkHref,
+          html5Mode = options.html5Mode,
+          supportHist = options.supportHist,
+          relLink = options.relLink,
+          attrs = options.attrs,
+          content = options.content;
+
       module(function($provide, $locationProvider) {
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
@@ -921,7 +923,7 @@ describe('$location', function() {
 
 
     it('should rewrite rel link to new url when history enabled on new browser', function() {
-      configureService('link?a#b', true, true);
+      configureService({linkHref: 'link?a#b', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -934,7 +936,7 @@ describe('$location', function() {
 
 
     it('should do nothing if already on the same URL', function() {
-      configureService('/base/', true, true);
+      configureService({linkHref: '/base/', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -961,7 +963,7 @@ describe('$location', function() {
 
 
     it('should rewrite abs link to new url when history enabled on new browser', function() {
-      configureService('/base/link?a#b', true, true);
+      configureService({linkHref: '/base/link?a#b', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -974,7 +976,7 @@ describe('$location', function() {
 
 
     it('should rewrite rel link to hashbang url when history enabled on old browser', function() {
-      configureService('link?a#b', true, false);
+      configureService({linkHref: 'link?a#b', html5Mode: true, supportHist: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -988,7 +990,7 @@ describe('$location', function() {
 
     // Regression (gh-7721)
     it('should not throw when clicking anchor with no href attribute when history enabled on old browser', function() {
-      configureService(null, true, false);
+      configureService({linkHref: null, html5Mode: true, supportHist: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -1001,7 +1003,7 @@ describe('$location', function() {
 
 
     it('should produce relative paths correctly when $location.path() is "/" when history enabled on old browser', function() {
-      configureService('partial1', true, false, true);
+      configureService({linkHref: 'partial1', html5Mode: true, supportHist: false, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1015,7 +1017,7 @@ describe('$location', function() {
 
 
     it('should rewrite abs link to hashbang url when history enabled on old browser', function() {
-      configureService('/base/link?a#b', true, false);
+      configureService({linkHref: '/base/link?a#b', html5Mode: true, supportHist: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -1028,7 +1030,7 @@ describe('$location', function() {
 
 
     it('should not rewrite full url links do different domain', function() {
-      configureService('http://www.dot.abc/a?b=c', true);
+      configureService({linkHref: 'http://www.dot.abc/a?b=c', html5Mode: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1041,7 +1043,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with target="_blank"', function() {
-      configureService('/a?b=c', true, true, 'target="_blank"');
+      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="_blank"'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1054,7 +1056,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with target specified', function() {
-      configureService('/a?b=c', true, true, 'target="some-frame"');
+      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="some-frame"'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1067,7 +1069,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with `javascript:` URI', function() {
-      configureService(' jAvAsCrIpT:throw new Error("Boom!")', true, true, true);
+      configureService({linkHref: ' jAvAsCrIpT:throw new Error("Boom!")', html5Mode: true, supportHist: true, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1080,7 +1082,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with `mailto:` URI', function() {
-      configureService(' mAiLtO:foo@bar.com', true, true, true);
+      configureService({linkHref: ' mAiLtO:foo@bar.com', html5Mode: true, supportHist: true, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1093,7 +1095,7 @@ describe('$location', function() {
 
 
     it('should rewrite full url links to same domain and base path', function() {
-      configureService('http://host.com/base/new', true);
+      configureService({linkHref: 'http://host.com/base/new', html5Mode: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1106,7 +1108,7 @@ describe('$location', function() {
 
 
     it('should rewrite when clicked span inside link', function() {
-      configureService('some/link', true, true, '', '<span>link</span>');
+      configureService({linkHref: 'some/link', html5Mode: true, supportHist: true, attrs: '', content: '<span>link</span>'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1122,7 +1124,7 @@ describe('$location', function() {
 
     it('should not rewrite when link to different base path when history enabled on new browser',
         function() {
-      configureService('/other_base/link', true, true);
+      configureService({linkHref: '/other_base/link', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1136,7 +1138,7 @@ describe('$location', function() {
 
     it('should not rewrite when link to different base path when history enabled on old browser',
         function() {
-      configureService('/other_base/link', true, false);
+      configureService({linkHref: '/other_base/link', html5Mode: true, supportHist: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -1149,7 +1151,7 @@ describe('$location', function() {
 
 
     it('should not rewrite when link to different base path when history disabled', function() {
-      configureService('/other_base/link', false);
+      configureService({linkHref: '/other_base/link', html5Mode: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -1163,7 +1165,7 @@ describe('$location', function() {
 
     it('should not rewrite when full link to different base path when history enabled on new browser',
         function() {
-      configureService('http://host.com/other_base/link', true, true);
+      configureService({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1177,7 +1179,7 @@ describe('$location', function() {
 
     it('should not rewrite when full link to different base path when history enabled on old browser',
         function() {
-      configureService('http://host.com/other_base/link', true, false);
+      configureService({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -1190,7 +1192,7 @@ describe('$location', function() {
 
 
     it('should not rewrite when full link to different base path when history disabled', function() {
-      configureService('http://host.com/other_base/link', false);
+      configureService({linkHref: 'http://host.com/other_base/link', html5Mode: false});
       inject(
         initBrowser(),
         initLocation(),
@@ -1203,7 +1205,7 @@ describe('$location', function() {
 
 
     it('should rewrite relative links relative to current path when history disabled', function() {
-      configureService('link', true, false, true);
+      configureService({linkHref: 'link', html5Mode: true, supportHist: false, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1217,7 +1219,7 @@ describe('$location', function() {
 
 
     it('should replace current path when link begins with "/" and history disabled', function() {
-      configureService('/link', true, false, true);
+      configureService({linkHref: '/link', html5Mode: true, supportHist: false, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1231,7 +1233,7 @@ describe('$location', function() {
 
 
     it('should replace current hash fragment when link begins with "#" history disabled', function() {
-      configureService('#link', true, false, true);
+      configureService({linkHref: '#link', html5Mode: true, supportHist: false, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1251,7 +1253,7 @@ describe('$location', function() {
     if (!msie || msie >= 9) {
 
       it('should not rewrite when clicked with ctrl pressed', function() {
-        configureService('/a?b=c', true, true);
+        configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
         inject(
           initBrowser(),
           initLocation(),
@@ -1264,7 +1266,7 @@ describe('$location', function() {
 
 
       it('should not rewrite when clicked with meta pressed', function() {
-        configureService('/a?b=c', true, true);
+        configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
         inject(
           initBrowser(),
           initLocation(),
