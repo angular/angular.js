@@ -338,7 +338,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             // if object, extract keys, sort them and use to determine order of iteration over obj props
             collectionKeys = [];
             for (var itemKey in collection) {
-              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) != '$') {
+              if (collection.hasOwnProperty(itemKey) && !(itemKey.charAt(0) === '$' && itemKey.charAt(1) === '$')) {
                 collectionKeys.push(itemKey);
               }
             }
