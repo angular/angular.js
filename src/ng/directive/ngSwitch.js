@@ -146,6 +146,11 @@ var ngSwitchDirective = ['$animate', function($animate) {
 
       scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
         var i, ii;
+        for (i = 0, ii = previousElements.length; i < ii; ++i) {
+          previousElements[i].remove();
+        }
+        previousElements.length = 0;
+
         for (i = 0, ii = selectedScopes.length; i < ii; ++i) {
           var selected = getBlockNodes(selectedElements[i].clone);
           selectedScopes[i].$destroy();
