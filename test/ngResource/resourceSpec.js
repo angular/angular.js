@@ -811,6 +811,21 @@ describe("resource", function() {
       });
 
 
+      it ('should provide http status code for success callback', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond(202, {id: 123, number: '9876'});
+
+        var statusCode;
+        var cc = CreditCard.get({id: 123}, function(data, headers, status) {
+          statusCode = status;
+        });
+
+        $httpBackend.flush();
+
+        expect(cc).toEqualData({id: 123, number: '9876'});
+        expect(statusCode).toBe(202);
+      });
+
+
       it('should allow parsing a value from headers', function() {
         // https://github.com/angular/angular.js/pull/2607#issuecomment-17759933
         $httpBackend.expect('POST', '/CreditCard').respond(201, '', {'Location': '/new-id'});
