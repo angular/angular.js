@@ -134,7 +134,6 @@ describe('filters', function() {
       expect(number(1234)).toEqual('1,234');
       expect(number(1234.5678)).toEqual('1,234.568');
       expect(number(Number.NaN)).toEqual('');
-      expect(number(null)).toEqual('');
       expect(number({})).toEqual('');
       expect(number([])).toEqual('');
       expect(number(+Infinity)).toEqual('');
@@ -163,6 +162,11 @@ describe('filters', function() {
       expect(number(1.255,    2)).toEqual("1.26");
       expect(number(1.255,    3)).toEqual("1.255");
       expect(number(0,        8)).toEqual("0.00000000");
+    });
+
+    it('should pass through null and undefined to be compatible with one-time binding', function() {
+      expect(number(null)).toBe(null);
+      expect(number(undefined)).toBe(undefined);
     });
 
     it('should filter exponentially large numbers', function() {
