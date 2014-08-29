@@ -63,7 +63,7 @@ describe('$location', function() {
 
 
   it('should not infinitely digest when using a semicolon in initial path', function() {
-    module(function($windowProvider, $locationProvider, $browserProvider) {
+    module(function($windowProvider, $locationProvider, $browserProvider, $documentProvider) {
       $locationProvider.html5Mode(true);
       $windowProvider.$get = function() {
         var win = {};
@@ -82,6 +82,13 @@ describe('$location', function() {
         };
         return win;
       };
+      var baseElement = jqLite('<base href="/">');
+      $documentProvider.$get = function() {
+        return {
+          0: window.document,
+          find: jasmine.createSpy('find').andReturn(baseElement)
+        };
+      };
       $browserProvider.$get = function($document, $window) {
         var sniffer = {history: true, hashchange: false};
         var logs = {log:[], warn:[], info:[], error:[]};
@@ -93,6 +100,7 @@ describe('$location', function() {
         /* global Browser: false */
         var b = new Browser($window, $document, fakeLog, sniffer);
         b.pollFns = [];
+        b.$$baseHref = '/';
         return b;
       };
     });
@@ -796,18 +804,6 @@ describe('$location', function() {
       );
     });
 
-
-    it('should set appBase to serverBase if base[href] is missing', function() {
-      initService({html5Mode:true,hashPrefix: '!',supportHistory: true});
-      inject(
-          initBrowser({url:'http://domain.com/my/view1#anchor1',basePath: ''}),
-          function($rootScope, $location, $browser) {
-            expect($browser.url()).toBe('http://domain.com/my/view1#anchor1');
-            expect($location.path()).toBe('/my/view1');
-            expect($location.hash()).toBe('anchor1');
-          }
-      );
-    });
   });
 
   describe('PATH_MATCH', function() {
@@ -854,12 +850,12 @@ describe('$location', function() {
       module(function($provide, $locationProvider) {
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
-        // fake the base behavior
         if (typeof linkHref === 'string') {
           if (!relLink) {
             if (linkHref[0] == '/') {
               linkHref = 'http://host.com' + linkHref;
             } else if(!linkHref.match(/:\/\//)) {
+              // fake the behavior of <base> tag
               linkHref = 'http://host.com/base/' + linkHref;
             }
           }
@@ -884,8 +880,8 @@ describe('$location', function() {
     }
 
     function initBrowser() {
-      return function($browser){
-        $browser.url('http://host.com/base');
+      return function($browser, $document){
+        $browser.url('http://host.com/base/index.html');
         $browser.$$baseHref = '/base/index.html';
       };
     }
@@ -999,12 +995,14 @@ describe('$location', function() {
 
 
     it('should produce relative paths correctly when $location.path() is "/" when history enabled on old browser', function() {
-      configureService({linkHref: 'partial1', html5Mode: true, supportHist: false, relLink: true});
+      configureService({linkHref: 'partial1', html5Mode: true, supportHist: false});
       inject(
         initBrowser(),
         initLocation(),
-        function($browser, $location) {
-          $location.path('/');
+        function($browser, $location, $rootScope) {
+          $rootScope.$apply(function() {
+            $location.path('/');
+          });
           browserTrigger(link, 'click');
           expectRewriteTo($browser, 'http://host.com/base/index.html#!/partial1');
         }
@@ -1199,44 +1197,16 @@ describe('$location', function() {
       );
     });
 
-
-    it('should rewrite relative links relative to current path when history disabled', function() {
-      configureService({linkHref: 'link', html5Mode: true, supportHist: false, relLink: true});
-      inject(
-        initBrowser(),
-        initLocation(),
-        function($browser, $location) {
-          $location.path('/some');
-          browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some/link');
-        }
-      );
-    });
-
-
-    it('should replace current path when link begins with "/" and history disabled', function() {
-      configureService({linkHref: '/link', html5Mode: true, supportHist: false, relLink: true});
-      inject(
-        initBrowser(),
-        initLocation(),
-        function($browser, $location) {
-          $location.path('/some');
-          browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
-        }
-      );
-    });
-
-
     it('should replace current hash fragment when link begins with "#" history disabled', function() {
       configureService({linkHref: '#link', html5Mode: true, supportHist: false, relLink: true});
       inject(
         initBrowser(),
         initLocation(),
-        function($browser, $location) {
-          // Initialize browser URL
-          $location.path('/some');
-          $location.hash('foo');
+        function($browser, $location, $rootScope) {
+          $rootScope.$apply(function() {
+            $location.path('/some');
+            $location.hash('foo');
+          });
           browserTrigger(link, 'click');
           expect($location.hash()).toBe('link');
           expectRewriteTo($browser, 'http://host.com/base/index.html#!/some#link');
@@ -1244,6 +1214,22 @@ describe('$location', function() {
       );
     });
 
+    it('should replace current hash fragment when link begins with "#" history enabled', function() {
+      configureService({linkHref: '#link', html5Mode: true, supportHist: true, relLink: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location, $rootScope) {
+          $rootScope.$apply(function() {
+            $location.path('/some');
+            $location.hash('foo');
+          });
+          browserTrigger(link, 'click');
+          expect($location.hash()).toBe('link');
+          expectRewriteTo($browser, 'http://host.com/base/some#link');
+        }
+      );
+    });
 
     // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
     if (!msie || msie >= 9) {
@@ -1356,7 +1342,8 @@ describe('$location', function() {
 
         var event = {
           target: jqLite(window.document.body).find('a')[0],
-          preventDefault: jasmine.createSpy('preventDefault')
+          preventDefault: jasmine.createSpy('preventDefault'),
+          isDefaultPrevented: jasmine.createSpy().andReturn(false)
         };
 
 
@@ -1386,7 +1373,8 @@ describe('$location', function() {
 
         var event = {
           target: jqLite(window.document.body).find('a')[0],
-          preventDefault: jasmine.createSpy('preventDefault')
+          preventDefault: jasmine.createSpy('preventDefault'),
+          isDefaultPrevented: jasmine.createSpy().andReturn(false)
         };
 
 
@@ -1551,8 +1539,12 @@ describe('$location', function() {
 
 
     it('should listen on click events on href and prevent browser default in html5 mode', function() {
-      module(function($locationProvider) {
+      module(function($locationProvider, $provide) {
         $locationProvider.html5Mode(true);
+        $provide.decorator('$browser', function($delegate) {
+          $delegate.$$baseHref = '/';
+          return $delegate;
+        });
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/somePath">link</a>');
           $compile($rootElement)($rootScope);
@@ -1609,6 +1601,13 @@ describe('$location', function() {
     );
   });
 
+  function parseLinkAndReturn(location, url, relHref) {
+    if (location.$$parseLinkUrl(url, relHref)) {
+      return location.absUrl();
+    }
+    return undefined;
+  }
+
   describe('LocationHtml5Url', function() {
     var location, locationIndex;
 
@@ -1618,13 +1617,18 @@ describe('$location', function() {
     });
 
     it('should rewrite URL', function() {
-      expect(location.$$rewrite('http://other')).toEqual(undefined);
-      expect(location.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
-      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
-      expect(location.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
-      expect(locationIndex.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
-      expect(locationIndex.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
-      expect(locationIndex.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+      expect(parseLinkAndReturn(location, 'http://other')).toEqual(undefined);
+      expect(parseLinkAndReturn(location, 'http://server/pre')).toEqual('http://server/pre/');
+      expect(parseLinkAndReturn(location, 'http://server/pre/')).toEqual('http://server/pre/');
+      expect(parseLinkAndReturn(location, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(location, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
+
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre')).toEqual('http://server/pre/');
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre/')).toEqual('http://server/pre/');
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(location, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
     });
   });
 
@@ -1632,14 +1636,21 @@ describe('$location', function() {
   describe('LocationHashbangUrl', function() {
     var location;
 
+    function parseLinkAndReturn(location, url, relHref) {
+      if (location.$$parseLinkUrl(url, relHref)) {
+        return location.absUrl();
+      }
+      return undefined;
+    }
+
     it('should rewrite URL', function() {
       /* jshint scripturl: true */
       location = new LocationHashbangUrl('http://server/pre/', '#');
 
-      expect(location.$$rewrite('http://other')).toEqual(undefined);
-      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
-      expect(location.$$rewrite('http://server/pre/#otherPath')).toEqual('http://server/pre/#otherPath');
-      expect(location.$$rewrite('javascript:void(0)')).toEqual(undefined);
+      expect(parseLinkAndReturn(location, 'http://other')).toEqual(undefined);
+      expect(parseLinkAndReturn(location, 'http://server/pre/')).toEqual('http://server/pre/');
+      expect(parseLinkAndReturn(location, 'http://server/pre/#otherPath')).toEqual('http://server/pre/#/otherPath');
+      expect(parseLinkAndReturn(location, 'javascript:void(0)')).toEqual(undefined);
     });
 
     it("should not set hash if one was not originally specified", function() {
@@ -1689,13 +1700,18 @@ describe('$location', function() {
     });
 
     it('should rewrite URL', function() {
-      expect(location.$$rewrite('http://other')).toEqual(undefined);
-      expect(location.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
-      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
-      expect(location.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/#!otherPath');
-      expect(locationIndex.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
-      expect(locationIndex.$$rewrite('http://server/pre/')).toEqual(undefined);
-      expect(locationIndex.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/index.html#!otherPath');
+      expect(parseLinkAndReturn(location, 'http://other')).toEqual(undefined);
+      expect(parseLinkAndReturn(location, 'http://server/pre')).toEqual('http://server/pre/#!');
+      expect(parseLinkAndReturn(location, 'http://server/pre/')).toEqual('http://server/pre/#!');
+      expect(parseLinkAndReturn(location, 'http://server/pre/otherPath')).toEqual('http://server/pre/#!/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(location, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/#!/otherPath#test');
+
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre')).toEqual('http://server/pre/index.html#!');
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre/')).toEqual(undefined);
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre/otherPath')).toEqual('http://server/pre/index.html#!/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(locationIndex, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/index.html#!/otherPath#test');
     });
   });
 });
