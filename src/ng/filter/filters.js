@@ -50,8 +50,8 @@
  */
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
   return function(amount, currencySymbol){
+    var formats = $locale.NUMBER_FORMATS;
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
     return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
                 replace(/\u00A4/g, currencySymbol);
@@ -111,8 +111,8 @@ function currencyFilter($locale) {
 
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
   return function(number, fractionSize) {
+    var formats = $locale.NUMBER_FORMATS;
     return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP, formats.DECIMAL_SEP,
       fractionSize);
   };
