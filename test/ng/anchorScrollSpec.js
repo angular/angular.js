@@ -110,6 +110,10 @@ describe('$anchorScroll', function() {
       return function($provide, $locationProvider) {
         $provide.value('$sniffer', {history: config.historyApi});
         $locationProvider.html5Mode(config.html5Mode);
+        $provide.decorator('$browser', function($delegate) {
+          $delegate.$$baseHref = '/';
+          return $delegate;
+        });
       };
     }
 
