@@ -673,6 +673,13 @@ function $LocationProvider(){
         if (href && href.indexOf('://') < 0) {         // Ignore absolute URLs
           var prefix = '#' + hashPrefix;
           if (href[0] == '/') {
+            // Account for base href already present in appBase
+            if (baseHref && href.indexOf(baseHref) === 0) {
+              href = href.substr(baseHref.length);
+              if (!href || href[0] != '/') {
+                href = '/' + href;
+              }
+            }
             // absolute path - replace old path
             absHref = appBase + prefix + href;
           } else if (href[0] == '#') {

@@ -1432,6 +1432,37 @@ describe('$location', function() {
         }).not.toThrow();
       });
     });
+
+
+    it('should transform the url correctly when a base path is present and html5mode is enabled but not supported', function() {
+      var serverUrl, base;
+      module(function() {
+        return function($browser) {
+          serverUrl = 'http://server';
+          base = '/foo/bar'
+          $browser.url(serverUrl + base);
+          $browser.$$baseHref = base;
+        };
+      });
+      inject(initService(true, '', false), function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        $rootElement.append('<a href="/foo/bar/view1">v1</a><a href="/foo/bar/baz/view2">v2</a><a href="/view3">v3</a>');
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+        var av3 = $rootElement.find('a').eq(2);
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(serverUrl + base + '#/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(serverUrl + base + '#/baz/view2');
+
+        browserTrigger(av3, 'click');
+        expect($browser.url()).toEqual(serverUrl + base + '#/view3');
+      });
+    });
   });
 
 
