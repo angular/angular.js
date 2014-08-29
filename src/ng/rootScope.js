@@ -156,9 +156,8 @@ function $RootScopeProvider(){
        * @description
        * Creates a new child {@link ng.$rootScope.Scope scope}.
        *
-       * The parent scope will propagate the {@link ng.$rootScope.Scope#$digest $digest()} and
-       * {@link ng.$rootScope.Scope#$digest $digest()} events. The scope can be removed from the
-       * scope hierarchy using {@link ng.$rootScope.Scope#$destroy $destroy()}.
+       * The parent scope will propagate the {@link ng.$rootScope.Scope#$digest $digest()} event.
+       * The scope can be removed from the scope hierarchy using {@link ng.$rootScope.Scope#$destroy $destroy()}.
        *
        * {@link ng.$rootScope.Scope#$destroy $destroy()} must be called on a scope when it is
        * desired for the scope and its child scopes to be permanently detached from the parent and
