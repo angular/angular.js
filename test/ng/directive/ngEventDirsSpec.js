@@ -42,18 +42,30 @@ describe('event directives', function() {
 
   describe('focus', function() {
 
-    it('should call the listener asynchronously during $apply',
-        inject(function($rootScope, $compile) {
-      element = $compile('<input type="text" ng-focus="focus()">')($rootScope);
-      $rootScope.focus = jasmine.createSpy('focus');
+    describe('call the listener asynchronously during $apply', function() {
+      function run(scope) {
+        inject(function($compile) {
+          element = $compile('<input type="text" ng-focus="focus()">')(scope);
+          scope.focus = jasmine.createSpy('focus');
 
-      $rootScope.$apply(function() {
-        element.triggerHandler('focus');
-        expect($rootScope.focus).not.toHaveBeenCalled();
-      });
+          scope.$apply(function() {
+            element.triggerHandler('focus');
+            expect(scope.focus).not.toHaveBeenCalled();
+          });
 
-      expect($rootScope.focus).toHaveBeenCalledOnce();
-    }));
+          expect(scope.focus).toHaveBeenCalledOnce();
+        });
+      }
+
+      it('should call the listener with non isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new());
+      }));
+
+      it('should call the listener with isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new(true));
+      }));
+
+    });
 
     it('should call the listener synchronously inside of $apply if outside of $apply',
         inject(function($rootScope, $compile) {
@@ -72,18 +84,30 @@ describe('event directives', function() {
 
   describe('blur', function() {
 
-    it('should call the listener asynchronously during $apply',
-        inject(function($rootScope, $compile) {
-      element = $compile('<input type="text" ng-blur="blur()">')($rootScope);
-      $rootScope.blur = jasmine.createSpy('blur');
+    describe('call the listener asynchronously during $apply', function() {
+      function run(scope) {
+        inject(function($compile) {
+          element = $compile('<input type="text" ng-blur="blur()">')(scope);
+          scope.blur = jasmine.createSpy('blur');
 
-      $rootScope.$apply(function() {
-        element.triggerHandler('blur');
-        expect($rootScope.blur).not.toHaveBeenCalled();
-      });
+          scope.$apply(function() {
+            element.triggerHandler('blur');
+            expect(scope.blur).not.toHaveBeenCalled();
+          });
 
-      expect($rootScope.blur).toHaveBeenCalledOnce();
-    }));
+          expect(scope.blur).toHaveBeenCalledOnce();
+        });
+      }
+
+      it('should call the listener with non isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new());
+      }));
+
+      it('should call the listener with isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new(true));
+      }));
+
+    });
 
     it('should call the listener synchronously inside of $apply if outside of $apply',
         inject(function($rootScope, $compile) {
