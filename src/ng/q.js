@@ -512,22 +512,32 @@ function qFactory(nextTick, exceptionHandler) {
   function all(promises) {
     var deferred = new Deferred(),
         counter = 0,
-        results = isArray(promises) ? [] : {};
+        results = isArray(promises) ? [] : {},
+        shouldReject = false,
+        resolver = function () {
+          if (shouldReject) deferred.reject(results);
+          else deferred.resolve(results);
+        };
 
     forEach(promises, function(promise, key) {
       counter++;
       when(promise).then(function(value) {
         if (results.hasOwnProperty(key)) return;
         results[key] = value;
-        if (!(--counter)) deferred.resolve(results);
+        if (!(--counter)) resolver();
       }, function(reason) {
         if (results.hasOwnProperty(key)) return;
-        deferred.reject(reason);
+        results[key] = reason;
+        if (!(--counter)) {
+          deferred.reject(results);
+          return;
+        }
+        shouldReject = true;
       });
     });
 
     if (counter === 0) {
-      deferred.resolve(results);
+      resolver();
     }
 
     return deferred.promise;
