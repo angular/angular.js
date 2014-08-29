@@ -400,6 +400,9 @@ forEach(
  * @description
  * Specify custom behavior on blur event.
  *
+ * A [blur event](https://developer.mozilla.org/en-US/docs/Web/Events/blur) fires when
+ * an element has lost focus.
+ *
  * Note: As the `blur` event is executed synchronously also during DOM manipulations
  * (e.g. removing a focussed input),
  * AngularJS executes the expression using `scope.$evalAsync` if the event is fired
