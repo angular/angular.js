@@ -244,18 +244,24 @@ describe('filters', function() {
                       toEqual('10-09-03 07:05:08.001');
 
       expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
-                      toEqual('2010-9-3 12=0:5:8AM-0500');
+                      toEqual('2010-9-3 12=0:5:8am-0500');
 
       expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                      toEqual('2010-09-03 12=00:05:08AM-0500');
+                      toEqual('2010-09-03 12=00:05:08am-0500');
 
       expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
+                      toEqual('2010-09-03 12=00:05:08.123am-0500');
+
+      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ss.sssAZ")).
                       toEqual('2010-09-03 12=00:05:08.123AM-0500');
 
       expect(date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                      toEqual('2010-09-03 12=12:05:08PM-0500');
+                      toEqual('2010-09-03 12=12:05:08pm-0500');
 
       expect(date(noon, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
+                      toEqual('2010-09-03 12=12:05:08.012pm-0500');
+
+      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ss.sssAZ")).
                       toEqual('2010-09-03 12=12:05:08.012PM-0500');
 
       expect(date(noon, "EEE, MMM d, yyyy")).
@@ -301,12 +307,12 @@ describe('filters', function() {
 
     it('should treat single quoted strings as string literals', function() {
       expect(date(midnight, "yyyy'de' 'a'x'dd' 'adZ' h=H:m:saZ")).
-                      toEqual('2010de axdd adZ 12=0:5:8AM-0500');
+                      toEqual('2010de axdd adZ 12=0:5:8am-0500');
     });
 
     it('should treat a sequence of two single quotes as a literal single quote', function() {
       expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
-                      toEqual("2010de a'dd adZ 12=0:5:8AM-0500");
+                      toEqual("2010de a'dd adZ 12=0:5:8am-0500");
     });
 
     it('should accept default formats', function() {

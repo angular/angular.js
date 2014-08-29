@@ -267,8 +267,11 @@ function weekGetter(size) {
    };
 }
 
-function ampmGetter(date, formats) {
-  return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
+function ampmGetter(capitalLetters) {
+  var ampms = (capitalLetters) ? 'AMPMS' : 'ampms';
+  return function(date, formats) {
+    return date.getHours() < 12 ? formats[ampms][0] : formats[ampms][1];
+  };
 }
 
 var DATE_FORMATS = {
@@ -294,13 +297,14 @@ var DATE_FORMATS = {
    sss: dateGetter('Milliseconds', 3),
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
-     a: ampmGetter,
+     a: ampmGetter(false),
+     A: ampmGetter(true),
      Z: timeZoneGetter,
     ww: weekGetter(2),
      w: weekGetter(1)
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z|w+))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaAZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|A|Z|w+))(.*)/,
     NUMBER_STRING = /^\-?\d+$/;
 
 /**
@@ -333,7 +337,8 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   * `'ss'`: Second in minute, padded (00-59)
  *   * `'s'`: Second in minute (0-59)
  *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
- *   * `'a'`: am/pm marker
+ *   * `'a'`: am/pm marker, lowercase (am/pm)
+ *   * `'A'`: am/pm marker, uppercase (AM/PM)
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
  *   * `'ww'`: ISO-8601 week of year (00-53)
  *   * `'w'`: ISO-8601 week of year (0-53)
@@ -341,16 +346,16 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   `format` string can also be one of the following predefined
  *   {@link guide/i18n localizable formats}:
  *
- *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss a'` for en_US locale
+ *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss A'` for en_US locale
  *     (e.g. Sep 3, 2010 12:05:08 pm)
- *   * `'short'`: equivalent to `'M/d/yy h:mm a'` for en_US  locale (e.g. 9/3/10 12:05 pm)
+ *   * `'short'`: equivalent to `'M/d/yy h:mm A'` for en_US  locale (e.g. 9/3/10 12:05 pm)
  *   * `'fullDate'`: equivalent to `'EEEE, MMMM d, y'` for en_US  locale
  *     (e.g. Friday, September 3, 2010)
  *   * `'longDate'`: equivalent to `'MMMM d, y'` for en_US  locale (e.g. September 3, 2010)
  *   * `'mediumDate'`: equivalent to `'MMM d, y'` for en_US  locale (e.g. Sep 3, 2010)
  *   * `'shortDate'`: equivalent to `'M/d/yy'` for en_US locale (e.g. 9/3/10)
- *   * `'mediumTime'`: equivalent to `'h:mm:ss a'` for en_US locale (e.g. 12:05:08 pm)
- *   * `'shortTime'`: equivalent to `'h:mm a'` for en_US locale (e.g. 12:05 pm)
+ *   * `'mediumTime'`: equivalent to `'h:mm:ss A'` for en_US locale (e.g. 12:05:08 pm)
+ *   * `'shortTime'`: equivalent to `'h:mm A'` for en_US locale (e.g. 12:05 pm)
  *
  *   `format` string can contain literal values. These need to be escaped by surrounding with single quotes (e.g.
  *   `"h 'in the morning'"`). In order to output a single quote, escape it - i.e., two single quotes in a sequence
