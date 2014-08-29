@@ -25,7 +25,7 @@ describe('$httpBackend', function() {
     while (len--) fakeTimeout.fns.shift()();
   };
   fakeTimeout.cancel = function(id) {
-    var i = indexOf(fakeTimeout.ids, id);
+    var i = fakeTimeout.ids.indexOf(id);
     if (i >= 0) {
       fakeTimeout.fns.splice(i, 1);
       fakeTimeout.delays.splice(i, 1);
@@ -50,7 +50,7 @@ describe('$httpBackend', function() {
           fakeDocument.$$scripts.push(script);
         }),
         removeChild: jasmine.createSpy('body.removeChild').andCallFake(function(script) {
-          var index = indexOf(fakeDocument.$$scripts, script);
+          var index = fakeDocument.$$scripts.indexOf(script);
           if (index != -1) {
             fakeDocument.$$scripts.splice(index, 1);
           }

@@ -53,7 +53,6 @@
   map: true,
   size: true,
   includes: true,
-  indexOf: true,
   arrayRemove: true,
   isLeafNode: true,
   copy: true,
@@ -651,20 +650,11 @@ function size(obj, ownPropsOnly) {
 
 
 function includes(array, obj) {
-  return indexOf(array, obj) != -1;
-}
-
-function indexOf(array, obj) {
-  if (array.indexOf) return array.indexOf(obj);
-
-  for (var i = 0; i < array.length; i++) {
-    if (obj === array[i]) return i;
-  }
-  return -1;
+  return Array.prototype.indexOf.call(array, obj) != -1;
 }
 
 function arrayRemove(array, value) {
-  var index = indexOf(array, value);
+  var index = array.indexOf(value);
   if (index >=0)
     array.splice(index, 1);
   return value;
@@ -769,7 +759,7 @@ function copy(source, destination, stackSource, stackDest) {
     stackDest = stackDest || [];
 
     if (isObject(source)) {
-      var index = indexOf(stackSource, source);
+      var index = stackSource.indexOf(source);
       if (index !== -1) return stackDest[index];
 
       stackSource.push(source);

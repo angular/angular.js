@@ -167,7 +167,7 @@ beforeEach(function() {
 
 
     toBeOneOf: function() {
-      return indexOf(arguments, this.actual) !== -1;
+      return Array.prototype.indexOf.call(arguments, this.actual) !== -1;
     },
 
     toHaveClass: function(clazz) {
