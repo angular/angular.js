@@ -222,7 +222,7 @@ function sortedHtml(element, showNgClass) {
           var value = node.style[css];
           if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
             var text = lowercase(css + ': ' + value);
-            if (value != 'false' && indexOf(style, text) == -1) {
+            if (value != 'false' && style.indexOf(text) == -1) {
               style.push(text);
             }
           }

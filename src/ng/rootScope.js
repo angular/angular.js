@@ -1079,7 +1079,7 @@ function $RootScopeProvider(){
 
         var self = this;
         return function() {
-          namedListeners[indexOf(namedListeners, listener)] = null;
+          namedListeners[namedListeners.indexOf(listener)] = null;
           decrementListenerCount(self, 1, name);
         };
       },

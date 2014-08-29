@@ -58,7 +58,6 @@
     "map": false,
     "size": false,
     "includes": false,
-    "indexOf": false,
     "arrayRemove": false,
     "isLeafNode": false,
     "copy": false,
