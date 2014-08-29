@@ -1414,6 +1414,22 @@ describe('input', function() {
 
     }));
 
+    it('should not trigger digest while debouncing', inject(function($timeout) {
+      compileInput(
+          '<input type="text" ng-model="name" name="alias" '+
+            'ng-model-options="{ debounce: 10000 }"'+
+          '/>');
+
+      var watchSpy = jasmine.createSpy('watchSpy');
+      scope.$watch(watchSpy);
+
+      changeInputValueTo('a');
+      expect(watchSpy).not.toHaveBeenCalled();
+
+      $timeout.flush(10000);
+      expect(watchSpy).toHaveBeenCalled();
+    }));
+
     it('should allow selecting different debounce timeouts for each event',
       inject(function($timeout) {
       compileInput(
