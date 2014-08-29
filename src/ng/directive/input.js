@@ -958,13 +958,7 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     // a row.
     var revalidate = validity && ctrl.$$hasNativeValidators;
     if (ctrl.$viewValue !== value || (value === '' && revalidate)) {
-      if (scope.$root.$$phase) {
-        ctrl.$setViewValue(value, event, revalidate);
-      } else {
-        scope.$apply(function() {
-          ctrl.$setViewValue(value, event, revalidate);
-        });
-      }
+      ctrl.$setViewValue(value, event, revalidate);
     }
   };
 
@@ -1175,9 +1169,7 @@ function radioInputType(scope, element, attr, ctrl) {
 
   var listener = function(ev) {
     if (element[0].checked) {
-      scope.$apply(function() {
-        ctrl.$setViewValue(attr.value, ev && ev.type);
-      });
+      ctrl.$setViewValue(attr.value, ev && ev.type);
     }
   };
 
@@ -1209,9 +1201,7 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
   var falseValue = parseConstantExpr($parse, scope, 'ngFalseValue', attr.ngFalseValue, false);
 
   var listener = function(ev) {
-    scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked, ev && ev.type);
-    });
+    ctrl.$setViewValue(element[0].checked, ev && ev.type);
   };
 
   element.on('click', listener);
@@ -2108,8 +2098,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       pendingDebounce = $timeout(function() {
         ctrl.$commitViewValue(revalidate);
       }, debounceDelay);
-    } else {
+    } else if ($scope.$root.$$phase) {
       ctrl.$commitViewValue(revalidate);
+    } else {
+      $scope.$apply(function() {
+        ctrl.$commitViewValue(revalidate);
+      });
     }
   };
 
@@ -2326,9 +2320,7 @@ var ngModelDirective = function() {
         var modelCtrl = ctrls[0];
         if (modelCtrl.$options && modelCtrl.$options.updateOn) {
           element.on(modelCtrl.$options.updateOn, function(ev) {
-            scope.$apply(function() {
-              modelCtrl.$$debounceViewValueCommit(ev && ev.type);
-            });
+            modelCtrl.$$debounceViewValueCommit(ev && ev.type);
           });
         }
 
