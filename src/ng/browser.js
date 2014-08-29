@@ -22,7 +22,7 @@
  * @param {object} $log console.log or an object with the same interface.
  * @param {object} $sniffer $sniffer service
  */
-function Browser(window, document, $log, $sniffer) {
+function Browser(window, document, $log, $sniffer, expiry) {
   var self = this,
       rawDocument = document[0],
       location = window.location,
@@ -291,8 +291,11 @@ function Browser(window, document, $log, $sniffer) {
 
     if (name) {
       if (value === undefined) {
+        if (!expiry) {
+          expiry = 'Thu, 01 Jan 1970 00:00:00 GMT';
+        }
         rawDocument.cookie = encodeURIComponent(name) + "=;path=" + cookiePath +
-                                ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                                ";expires=" + expiry;
       } else {
         if (isString(value)) {
           cookieLength = (rawDocument.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) +
@@ -383,8 +386,11 @@ function Browser(window, document, $log, $sniffer) {
 }
 
 function $BrowserProvider(){
+  var self = this;
+  this.$$cookieExpiry = null;
+
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function( $window,   $log,   $sniffer,   $document){
-        return new Browser($window, $document, $log, $sniffer);
+        return new Browser($window, $document, $log, $sniffer, self.$$cookieExpiry);
       }];
 }

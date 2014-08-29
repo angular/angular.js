@@ -23,6 +23,7 @@ angular.mock = {};
  * that there are several helper methods available which can be used in tests.
  */
 angular.mock.$BrowserProvider = function() {
+  this.$$cookieExpiry = null;
   this.$get = function() {
     return new angular.mock.$Browser();
   };
@@ -35,6 +36,8 @@ angular.mock.$Browser = function() {
   self.$$url = "http://server/";
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
+  self.$$expiry = angular.mock.$BrowserProvider.$$cookieExpiry ||
+    'Thu, 01 Jan 1970 00:00:00 GMT';
 
   // TODO(vojta): remove this temporary api
   self.$$completeOutstandingRequest = angular.noop;
