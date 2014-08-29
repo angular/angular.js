@@ -2314,6 +2314,17 @@ describe('input', function() {
       expect(scope.form.alias.$error.month).toBeTruthy();
     });
 
+    it('should only change the month of a bound date', function() {
+      compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      scope.$apply(function() {
+        scope.value = new Date(Date.UTC(2013, 7, 1, 1, 0, 0, 0));
+      });
+      changeInputValueTo('2013-12');
+      expect(+scope.value).toBe(Date.UTC(2013, 11, 1, 1, 0, 0, 0));
+      expect(inputElm.val()).toBe('2013-12');
+    });
+
     describe('min', function (){
       var scope;
       beforeEach(inject(function ($rootScope){
@@ -2404,6 +2415,18 @@ describe('input', function() {
       });
 
       expect(inputElm.val()).toBe('2013-W02');
+    });
+
+    it('should not affect the hours or minutes of a bound date', function (){
+      compileInput('<input type="week" ng-model="secondWeek"/>');
+
+      scope.$apply(function(){
+        scope.secondWeek = new Date(2013, 0, 11, 1, 0, 0, 0);
+      });
+
+      changeInputValueTo('2013-W03');
+
+      expect(+scope.secondWeek).toBe(+new Date(2013, 0, 17, 1, 0, 0, 0));
     });
 
     it('should set the model undefined if the input is an invalid week string', function () {
@@ -2934,6 +2957,17 @@ describe('input', function() {
       expect(scope.form.alias.$error.time).toBeTruthy();
     });
 
+    it('should only change hours and minute of a bound date', function() {
+      compileInput('<input type="time" ng-model="value"" />');
+
+      scope.$apply(function(){
+        scope.value = new Date(2013, 2, 3, 1, 0, 0);
+      });
+
+      changeInputValueTo('01:02');
+      expect(+scope.value).toBe(+new Date(2013, 2, 3, 1, 2, 0));
+    });
+
     describe('min', function (){
       var scope;
       beforeEach(inject(function ($rootScope){
@@ -3139,6 +3173,50 @@ describe('input', function() {
       changeInputValueTo('nnn');
       expect(inputElm).toBeInvalid();
       expect(scope.form.alias.$error.date).toBeTruthy();
+    });
+
+    it('should work with multiple date types bound to the same model', function() {
+      formElm = jqLite('<form name="form"></form>');
+
+      var timeElm = jqLite('<input type="time" ng-model="val" />'),
+          monthElm = jqLite('<input type="month" ng-model="val" />'),
+          weekElm = jqLite('<input type="week" ng-model="val" />');
+
+      formElm.append(timeElm);
+      formElm.append(monthElm);
+      formElm.append(weekElm);
+
+      $compile(formElm)(scope);
+
+      scope.$apply(function() {
+        scope.val = new Date(2013, 1, 2, 3, 4, 5, 6);
+      });
+
+      expect(timeElm.val()).toBe('03:04:05');
+      expect(monthElm.val()).toBe('2013-02');
+      expect(weekElm.val()).toBe('2013-W05');
+
+      changeGivenInputTo(monthElm, '2012-02');
+      expect(monthElm.val()).toBe('2012-02');
+      expect(timeElm.val()).toBe('03:04:05');
+      expect(weekElm.val()).toBe('2012-W05');
+
+      changeGivenInputTo(timeElm, '04:05:06');
+      expect(monthElm.val()).toBe('2012-02');
+      expect(timeElm.val()).toBe('04:05:06');
+      expect(weekElm.val()).toBe('2012-W05');
+
+      changeGivenInputTo(weekElm, '2014-W01');
+      expect(monthElm.val()).toBe('2014-01');
+      expect(timeElm.val()).toBe('04:05:06');
+      expect(weekElm.val()).toBe('2014-W01');
+
+      expect(+scope.val).toBe(+new Date(2014, 0, 2, 4, 5, 6, 6));
+
+      function changeGivenInputTo(inputElm, value) {
+        inputElm.val(value);
+        browserTrigger(inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
+      }
     });
 
     describe('min', function (){
