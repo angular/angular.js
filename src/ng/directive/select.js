@@ -413,9 +413,17 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         ctrl.$render = render;
 
-        scope.$watchCollection(valuesFn, render);
+        scope.$watchCollection(valuesFn, function () {
+          if (scope.$$postDigestQueue.indexOf(render) === -1) {
+            scope.$$postDigest(render);
+          }
+        });
         if ( multiple ) {
-          scope.$watchCollection(function() { return ctrl.$modelValue; }, render);
+          scope.$watchCollection(function() { return ctrl.$modelValue; }, function () {
+            if (scope.$$postDigestQueue.indexOf(render) === -1) {
+              scope.$$postDigest(render);
+            }
+          });
         }
 
         function getSelectedSet() {
