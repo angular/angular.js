@@ -594,16 +594,7 @@ describe('jqLite', function() {
       expect(input.attr('READONLY')).toBe('readonly');
 
       input.attr('readonly', false);
-
-      // attr('readonly') fails in jQuery 1.6.4, so we have to bypass it
-      //expect(input.attr('readOnly')).toBeUndefined();
-      //expect(input.attr('readonly')).toBeUndefined();
-      if (msie < 9) {
-        expect(input[0].getAttribute('readonly')).toBe('');
-      } else {
-        expect(input[0].getAttribute('readonly')).toBe(null);
-      }
-      //expect('readOnly' in input[0].attributes).toBe(false);
+      expect(input[0].getAttribute('readonly')).toBe(null);
 
       input.attr('readOnly', 'READonly');
       expect(input.attr('readonly')).toBe('readonly');
@@ -877,26 +868,15 @@ describe('jqLite', function() {
       expect(jqLite(b).css('margin')).toEqual('3px');
 
       selector.css('margin', '');
-      if (msie <= 8) {
-        expect(jqLite(a).css('margin')).toBe('auto');
-        expect(jqLite(b).css('margin')).toBe('auto');
-      } else {
-        expect(jqLite(a).css('margin')).toBeFalsy();
-        expect(jqLite(b).css('margin')).toBeFalsy();
-      }
+      expect(jqLite(a).css('margin')).toBeFalsy();
+      expect(jqLite(b).css('margin')).toBeFalsy();
     });
 
 
     it('should set a bunch of css properties specified via an object', function() {
-      if (msie <= 8) {
-        expect(jqLite(a).css('margin')).toBe('auto');
-        expect(jqLite(a).css('padding')).toBe('0px');
-        expect(jqLite(a).css('border')).toBeUndefined();
-      } else {
-        expect(jqLite(a).css('margin')).toBeFalsy();
-        expect(jqLite(a).css('padding')).toBeFalsy();
-        expect(jqLite(a).css('border')).toBeFalsy();
-      }
+      expect(jqLite(a).css('margin')).toBeFalsy();
+      expect(jqLite(a).css('padding')).toBeFalsy();
+      expect(jqLite(a).css('border')).toBeFalsy();
 
       jqLite(a).css({'margin': '1px', 'padding': '2px', 'border': ''});
 
@@ -1185,14 +1165,7 @@ describe('jqLite', function() {
         if (window.jQuery) return;
         var browserMoveTrigger = function(from, to){
           var fireEvent = function(type, element, relatedTarget){
-            var evnt, msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
-            if (msie < 9){
-              evnt = document.createEventObject();
-              evnt.srcElement = element;
-              evnt.relatedTarget = relatedTarget;
-              element.fireEvent('on' + type, evnt);
-              return;
-            }
+            var evnt;
             evnt = document.createEvent('MouseEvents');
 
             var originalPreventDefault = evnt.preventDefault,
@@ -1535,8 +1508,6 @@ describe('jqLite', function() {
     });
 
     it('should select all types iframe contents', function() {
-      // IE8 does not like this test, although the functionality may still work there.
-      if (msie < 9) return;
       var iframe_ = document.createElement('iframe');
       var tested = false;
       var iframe = jqLite(iframe_);

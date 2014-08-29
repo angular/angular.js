@@ -371,9 +371,6 @@ describe('angular', function() {
 
     it('should correctly test for keys that are present on Object.prototype', function() {
       /* jshint -W001 */
-      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
-      // things like hasOwnProperty even if it is explicitly defined on the actual object!
-      if (msie<=8) return;
       expect(equals({}, {hasOwnProperty: 1})).toBe(false);
       expect(equals({}, {toString: null})).toBe(false);
     });
@@ -1033,15 +1030,13 @@ describe('angular', function() {
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
     });
 
-    if (!msie || msie >= 9) {
-      it('should correctly detect node name with "namespace" when xmlns is NOT defined', function() {
-        var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
-                           '<ngtest:foo ngtest:attr="bar"></ng-test>' +
-                         '</div>')[0];
-        expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
-        expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
-      });
-    }
+    it('should correctly detect node name with "namespace" when xmlns is NOT defined', function() {
+      var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
+                         '<ngtest:foo ngtest:attr="bar"></ng-test>' +
+                       '</div>')[0];
+      expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
+      expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
+    });
   });
 
 

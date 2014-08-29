@@ -257,17 +257,13 @@ describe('form', function() {
         reloadPrevented = e.defaultPrevented || (e.returnValue === false);
       };
 
-      // native dom event listeners in IE8 fire in LIFO order so we have to register them
-      // there in different order than in other browsers
-      if (msie==8) addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
-
       $compile(doc)(scope);
 
       scope.submitMe = function() {
         submitted = true;
       };
 
-      if (msie!=8) addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
+      addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
 
       browserTrigger(doc.find('input'));
 
@@ -316,13 +312,9 @@ describe('form', function() {
         reloadPrevented = e.defaultPrevented || (e.returnValue === false);
       };
 
-      // native dom event listeners in IE8 fire in LIFO order so we have to register them
-      // there in different order than in other browsers
-      if (msie == 8) addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
-
       $compile(doc)(scope);
 
-      if (msie != 8) addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
+      addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
 
       browserTrigger(doc.find('button'), 'click');
 
@@ -330,11 +322,6 @@ describe('form', function() {
       setTimeout(function() { nextTurn = true;}, 100);
 
       waitsFor(function() { return nextTurn; });
-
-
-      // I can't get IE8 to automatically trigger submit in this test, in production it does it
-      // properly
-      if (msie == 8) browserTrigger(form, 'submit');
 
       runs(function() {
         expect(doc.html()).toBe('');
@@ -344,12 +331,6 @@ describe('form', function() {
                                        // the event propagates there. we can fix this if we see
                                        // the issue in the wild, I'm not going to bother to do it
                                        // now. (i)
-
-        // IE9 and IE10 are special and don't fire submit event when form was destroyed
-        if (msie < 9) {
-          expect(reloadPrevented).toBe(true);
-          $timeout.flush();
-        }
 
         // prevent mem leak in test
         removeEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
