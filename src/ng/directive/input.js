@@ -2474,7 +2474,7 @@ var maxlengthDirective = function() {
         ctrl.$validate();
       });
       ctrl.$validators.maxlength = function(value) {
-        return ctrl.$isEmpty(value) || value.length <= maxlength;
+        return ctrl.$isEmpty(value) || value.toString().length <= maxlength;
       };
     }
   };
@@ -2493,7 +2493,7 @@ var minlengthDirective = function() {
         ctrl.$validate();
       });
       ctrl.$validators.minlength = function(value) {
-        return ctrl.$isEmpty(value) || value.length >= minlength;
+        return ctrl.$isEmpty(value) || value.toString().length >= minlength;
       };
     }
   };

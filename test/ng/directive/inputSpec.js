@@ -1762,6 +1762,11 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(inputElm).toBeValid();
+
+      scope.$apply(function() {
+        scope.value = 1234;
+      });
+      expect(inputElm).toBeValid();
     });
 
     it('should listen on ng-minlength when minlength is observed', function() {
@@ -1801,6 +1806,11 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       changeInputValueTo('aaa');
+      expect(inputElm).toBeValid();
+
+      scope.$apply(function() {
+        scope.value = 42;
+      });
       expect(inputElm).toBeValid();
     });
 
