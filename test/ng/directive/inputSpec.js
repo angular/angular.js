@@ -1157,6 +1157,7 @@ describe('input', function() {
           return eventName !== 'input';
         };
 
+        scope = scope.$new(true);
         compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
         scope.field = 'fake field';
