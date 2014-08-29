@@ -958,13 +958,7 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     // value, so it may be necessary to revalidate (by calling $setViewValue again) even if the
     // control's value is the same empty value twice in a row.
     if (ctrl.$viewValue !== value || (value === '' && ctrl.$$hasNativeValidators)) {
-      if (scope.$root.$$phase) {
-        ctrl.$setViewValue(value, event);
-      } else {
-        scope.$apply(function() {
-          ctrl.$setViewValue(value, event);
-        });
-      }
+      ctrl.$setViewValue(value, event);
     }
   };
 
@@ -1218,9 +1212,7 @@ function radioInputType(scope, element, attr, ctrl) {
 
   var listener = function(ev) {
     if (element[0].checked) {
-      scope.$apply(function() {
-        ctrl.$setViewValue(attr.value, ev && ev.type);
-      });
+      ctrl.$setViewValue(attr.value, ev && ev.type);
     }
   };
 
@@ -1252,9 +1244,7 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
   var falseValue = parseConstantExpr($parse, scope, 'ngFalseValue', attr.ngFalseValue, false);
 
   var listener = function(ev) {
-    scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked, ev && ev.type);
-    });
+    ctrl.$setViewValue(element[0].checked, ev && ev.type);
   };
 
   element.on('click', listener);
@@ -1633,8 +1623,8 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$validators = {};
@@ -2157,8 +2147,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       pendingDebounce = $timeout(function() {
         ctrl.$commitViewValue();
       }, debounceDelay);
-    } else {
+    } else if ($rootScope.$$phase) {
       ctrl.$commitViewValue();
+    } else {
+      $scope.$apply(function() {
+        ctrl.$commitViewValue();
+      });
     }
   };
 
@@ -2375,9 +2369,7 @@ var ngModelDirective = function() {
         var modelCtrl = ctrls[0];
         if (modelCtrl.$options && modelCtrl.$options.updateOn) {
           element.on(modelCtrl.$options.updateOn, function(ev) {
-            scope.$apply(function() {
-              modelCtrl.$$debounceViewValueCommit(ev && ev.type);
-            });
+            modelCtrl.$$debounceViewValueCommit(ev && ev.type);
           });
         }
 
