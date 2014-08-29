@@ -224,6 +224,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           optionsExp = attr.ngOptions,
           nullOption = false, // if false, user will not be able to select it (used by ngOptions)
           emptyOption,
+          renderScheduled = false,
           // we can't just jqLite('<option>') since jqLite is not smart enough
           // to create it in <select> and IE barfs otherwise.
           optionTemplate = jqLite(document.createElement('option')),
@@ -413,9 +414,19 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         ctrl.$render = render;
 
-        scope.$watchCollection(valuesFn, render);
+        scope.$watchCollection(valuesFn, function () {
+          if (!renderScheduled) {
+            scope.$$postDigest(render);
+            renderScheduled = true;
+          }
+        });
         if ( multiple ) {
-          scope.$watchCollection(function() { return ctrl.$modelValue; }, render);
+          scope.$watchCollection(function() { return ctrl.$modelValue; }, function () {
+            if (!renderScheduled) {
+              scope.$$postDigest(render);
+              renderScheduled = true;
+            }
+          });
         }
 
         function getSelectedSet() {
@@ -438,6 +449,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
 
         function render() {
+          renderScheduled = false;
+
               // Temporary location for the option groups before we render them
           var optionGroups = {'':[]},
               optionGroupNames = [''],
