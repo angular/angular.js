@@ -1292,47 +1292,43 @@ describe('input', function() {
     expect(scope.name).toEqual('adam');
   });
 
-  if (!msie || msie >= 9) {
-    describe('compositionevents', function() {
-      it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
-        $sniffer.android = false;
+  describe('compositionevents', function() {
+    it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
+      $sniffer.android = false;
 
-        compileInput('<input type="text" ng-model="name" name="alias"" />');
-        changeInputValueTo('a');
-        expect(scope.name).toEqual('a');
-        browserTrigger(inputElm, 'compositionstart');
-        changeInputValueTo('adam');
-        expect(scope.name).toEqual('a');
-        browserTrigger(inputElm, 'compositionend');
-        changeInputValueTo('adam');
-        expect(scope.name).toEqual('adam');
-      }));
+      compileInput('<input type="text" ng-model="name" name="alias"" />');
+      changeInputValueTo('a');
+      expect(scope.name).toEqual('a');
+      browserTrigger(inputElm, 'compositionstart');
+      changeInputValueTo('adam');
+      expect(scope.name).toEqual('a');
+      browserTrigger(inputElm, 'compositionend');
+      changeInputValueTo('adam');
+      expect(scope.name).toEqual('adam');
+    }));
 
-      it('should update the model between "compositionstart" and "compositionend" on android', inject(function($sniffer) {
-        $sniffer.android = true;
+    it('should update the model between "compositionstart" and "compositionend" on android', inject(function($sniffer) {
+      $sniffer.android = true;
 
-        compileInput('<input type="text" ng-model="name" name="alias"" />');
-        changeInputValueTo('a');
-        expect(scope.name).toEqual('a');
-        browserTrigger(inputElm, 'compositionstart');
-        changeInputValueTo('adam');
-        expect(scope.name).toEqual('adam');
-        browserTrigger(inputElm, 'compositionend');
-        changeInputValueTo('adam2');
-        expect(scope.name).toEqual('adam2');
-      }));
-    });
-  }
+      compileInput('<input type="text" ng-model="name" name="alias"" />');
+      changeInputValueTo('a');
+      expect(scope.name).toEqual('a');
+      browserTrigger(inputElm, 'compositionstart');
+      changeInputValueTo('adam');
+      expect(scope.name).toEqual('adam');
+      browserTrigger(inputElm, 'compositionend');
+      changeInputValueTo('adam2');
+      expect(scope.name).toEqual('adam2');
+    }));
+  });
 
   it('should update the model on "compositionend"', function() {
     compileInput('<input type="text" ng-model="name" name="alias" />');
-    if (!msie || msie >= 9) {
-      browserTrigger(inputElm, 'compositionstart');
-      changeInputValueTo('caitp');
-      expect(scope.name).toBeUndefined();
-      browserTrigger(inputElm, 'compositionend');
-      expect(scope.name).toEqual('caitp');
-    }
+    browserTrigger(inputElm, 'compositionstart');
+    changeInputValueTo('caitp');
+    expect(scope.name).toBeUndefined();
+    browserTrigger(inputElm, 'compositionend');
+    expect(scope.name).toEqual('caitp');
   });
 
   it('should not dirty the model on an input event in response to a placeholder change', inject(function($sniffer) {

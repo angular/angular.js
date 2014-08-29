@@ -52,96 +52,70 @@
       return keys.indexOf(key) !== -1;
     }
 
-    if (msie < 9) {
-      if (inputType == 'radio' || inputType == 'checkbox') {
-          element.checked = !element.checked;
-      }
-
-      // WTF!!! Error: Unspecified error.
-      // Don't know why, but some elements when detached seem to be in inconsistent state and
-      // calling .fireEvent() on them will result in very unhelpful error (Error: Unspecified error)
-      // forcing the browser to compute the element position (by reading its CSS)
-      // puts the element in consistent state.
-      element.style.posLeft;
-
-      // TODO(vojta): create event objects with pressed keys to get it working on IE<9
-      var ret = element.fireEvent('on' + eventType);
-      if (inputType == 'submit') {
-        while(element) {
-          if (element.nodeName.toLowerCase() == 'form') {
-            element.fireEvent('onsubmit');
-            break;
-          }
-          element = element.parentNode;
-        }
-      }
-      return ret;
-    } else {
-      var evnt;
-      if(/transitionend/.test(eventType)) {
-        if(window.WebKitTransitionEvent) {
-          evnt = new WebKitTransitionEvent(eventType, eventData);
-          evnt.initEvent(eventType, false, true);
-        }
-        else {
-          try {
-            evnt = new TransitionEvent(eventType, eventData);
-          }
-          catch(e) {
-            evnt = document.createEvent('TransitionEvent');
-            evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
-          }
-        }
-      }
-      else if(/animationend/.test(eventType)) {
-        if(window.WebKitAnimationEvent) {
-          evnt = new WebKitAnimationEvent(eventType, eventData);
-          evnt.initEvent(eventType, false, true);
-        }
-        else {
-          try {
-            evnt = new AnimationEvent(eventType, eventData);
-          }
-          catch(e) {
-            evnt = document.createEvent('AnimationEvent');
-            evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
-          }
-        }
+    var evnt;
+    if(/transitionend/.test(eventType)) {
+      if(window.WebKitTransitionEvent) {
+        evnt = new WebKitTransitionEvent(eventType, eventData);
+        evnt.initEvent(eventType, false, true);
       }
       else {
-        evnt = document.createEvent('MouseEvents');
-        x = x || 0;
-        y = y || 0;
-        evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'),
-            pressed('alt'), pressed('shift'), pressed('meta'), 0, element);
+        try {
+          evnt = new TransitionEvent(eventType, eventData);
+        }
+        catch(e) {
+          evnt = document.createEvent('TransitionEvent');
+          evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
+        }
       }
-
-      /* we're unable to change the timeStamp value directly so this
-       * is only here to allow for testing where the timeStamp value is
-       * read */
-      evnt.$manualTimeStamp = eventData.timeStamp;
-
-      if(!evnt) return;
-
-      var originalPreventDefault = evnt.preventDefault,
-          appWindow = element.ownerDocument.defaultView,
-          fakeProcessDefault = true,
-          finalProcessDefault,
-          angular = appWindow.angular || {};
-
-      // igor: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
-      angular['ff-684208-preventDefault'] = false;
-      evnt.preventDefault = function() {
-        fakeProcessDefault = false;
-        return originalPreventDefault.apply(evnt, arguments);
-      };
-
-      element.dispatchEvent(evnt);
-      finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);
-
-      delete angular['ff-684208-preventDefault'];
-
-      return finalProcessDefault;
     }
+    else if(/animationend/.test(eventType)) {
+      if(window.WebKitAnimationEvent) {
+        evnt = new WebKitAnimationEvent(eventType, eventData);
+        evnt.initEvent(eventType, false, true);
+      }
+      else {
+        try {
+          evnt = new AnimationEvent(eventType, eventData);
+        }
+        catch(e) {
+          evnt = document.createEvent('AnimationEvent');
+          evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
+        }
+      }
+    }
+    else {
+      evnt = document.createEvent('MouseEvents');
+      x = x || 0;
+      y = y || 0;
+      evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'),
+          pressed('alt'), pressed('shift'), pressed('meta'), 0, element);
+    }
+
+    /* we're unable to change the timeStamp value directly so this
+     * is only here to allow for testing where the timeStamp value is
+     * read */
+    evnt.$manualTimeStamp = eventData.timeStamp;
+
+    if(!evnt) return;
+
+    var originalPreventDefault = evnt.preventDefault,
+        appWindow = element.ownerDocument.defaultView,
+        fakeProcessDefault = true,
+        finalProcessDefault,
+        angular = appWindow.angular || {};
+
+    // igor: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
+    angular['ff-684208-preventDefault'] = false;
+    evnt.preventDefault = function() {
+      fakeProcessDefault = false;
+      return originalPreventDefault.apply(evnt, arguments);
+    };
+
+    element.dispatchEvent(evnt);
+    finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);
+
+    delete angular['ff-684208-preventDefault'];
+
+    return finalProcessDefault;
   };
 }());

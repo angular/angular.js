@@ -389,7 +389,6 @@ describe('$compile', function() {
       // it turns out that when a browser plugin is bound to an DOM element (typically <object>),
       // the plugin's context rather than the usual DOM apis are exposed on this element, so
       // childNodes might not exist.
-      if (msie < 9) return;
 
       element = jqLite('<div>{{1+2}}</div>');
 
