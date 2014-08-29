@@ -33,7 +33,7 @@ angular.module('DocsController', [])
 
   $scope.navClass = function(navItem) {
     return {
-      active: navItem.href && this.currentPage.path,
+      active: navItem.href && this.currentPage && this.currentPage.path,
       'nav-index-section': navItem.type === 'section'
     };
   };
