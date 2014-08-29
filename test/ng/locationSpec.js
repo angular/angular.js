@@ -1276,34 +1276,30 @@ describe('$location', function() {
       );
     });
 
-    // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
-    if (!msie || msie >= 9) {
-
-      it('should not rewrite when clicked with ctrl pressed', function() {
-        configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
-        inject(
-          initBrowser(),
-          initLocation(),
-          function($browser) {
-            browserTrigger(link, 'click', { keys: ['ctrl'] });
-            expectNoRewrite($browser);
-          }
-        );
-      });
+    it('should not rewrite when clicked with ctrl pressed', function() {
+      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click', { keys: ['ctrl'] });
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
-      it('should not rewrite when clicked with meta pressed', function() {
-        configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
-        inject(
-          initBrowser(),
-          initLocation(),
-          function($browser) {
-            browserTrigger(link, 'click', { keys: ['meta'] });
-            expectNoRewrite($browser);
-          }
-        );
-      });
-    }
+    it('should not rewrite when clicked with meta pressed', function() {
+      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click', { keys: ['meta'] });
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
     it('should not mess up hash urls when clicking on links in hashbang mode', function() {
