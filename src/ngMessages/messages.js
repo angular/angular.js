@@ -8,7 +8,7 @@
  * The `ngMessages` module provides enhanced support for displaying messages within templates
  * (typically within forms or when rendering message objects that return key/value data).
  * Instead of relying on JavaScript code and/or complex ng-if statements within your form template to
- * show and hide error messages specific to the state of an input field, the `ngMessages` and
+ * show and hide error messagehhhhhhhhhhhhhhhhhhhhhhs specific to the state of an input field, the `ngMessages` and
  * `ngMessage` directives are designed to handle the complexity, inheritance and priority
  * sequencing based on the order of how the messages are defined in the template.
  *
