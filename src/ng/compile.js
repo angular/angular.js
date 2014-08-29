@@ -189,6 +189,7 @@
  * * `$scope` - Current scope associated with the element
  * * `$element` - Current element
  * * `$attrs` - Current attributes object for the element
+ * * `$name` - Name of the directive
  * * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
  *   `function([scope], cloneLinkingFn, futureParentElement)`.
  *    * `scope`: optional argument to override the scope.
@@ -1606,6 +1607,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
               $element: $element,
               $attrs: attrs,
+              $name: directive.name,
               $transclude: transcludeFn
             }, controllerInstance;
 

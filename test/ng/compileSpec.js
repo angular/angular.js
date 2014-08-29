@@ -3689,6 +3689,25 @@ describe('$compile', function() {
     });
 
 
+    it('should get the directive\'s name injected as $name', function() {
+      module(function() {
+        directive('dirA', function(log) {
+          return {
+            controller: function($name, $attrs) {
+              log($name);
+              log($attrs[$name]);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div dir-a="foo"></div>')($rootScope);
+        $rootScope.$digest();
+        expect(log).toEqual('dirA; foo');
+      });
+    });
+
+
     it('should require controller of an isolate directive from a non-isolate directive on the ' +
         'same element', function() {
       var IsolateController = function() {};
