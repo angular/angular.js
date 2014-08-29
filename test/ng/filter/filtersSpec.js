@@ -98,10 +98,14 @@ describe('filters', function() {
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
     });
 
+    it('should pass through null and undefined to be compatible with one-time binding', function() {
+      expect(currency(undefined)).toBe(undefined);
+      expect(currency(null)).toBe(null);
+    });
 
     it('should return empty string for non-numbers', function() {
-      expect(currency()).toBe('');
       expect(currency('abc')).toBe('');
+      expect(currency({})).toBe('');
     });
 
     it('should handle zero and nearly-zero values properly', function() {
