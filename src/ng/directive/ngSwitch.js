@@ -154,7 +154,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
             return function(){
               previousElements.splice(i, 1).remove();
             };
-          }(i));
+          }(i)));
         }
 
         selectedElements.length = 0;
