@@ -314,7 +314,7 @@ describe('ngSwitch', function() {
   }));
 });
 
-describe('ngSwitch animations', function() {
+describe('ngSwitch animation', function() {
   var body, element, $rootElement;
 
   function html(content) {
@@ -322,8 +322,6 @@ describe('ngSwitch animations', function() {
     element = $rootElement.children().eq(0);
     return element;
   }
-
-  beforeEach(module('ngAnimateMock'));
 
   beforeEach(module(function() {
     // we need to run animation on attached elements;
@@ -339,117 +337,122 @@ describe('ngSwitch animations', function() {
     dealoc(element);
   });
 
-  it('should fire off the enter animation',
-    inject(function($compile, $rootScope, $animate) {
-      var item;
-      var $scope = $rootScope.$new();
-      element = $compile(html(
-        '<div ng-switch on="val">' +
-          '<div ng-switch-when="one">one</div>' +
-          '<div ng-switch-when="two">two</div>' +
-          '<div ng-switch-when="three">three</div>' +
-        '</div>'
-      ))($scope);
-
-      $rootScope.$digest(); // re-enable the animations;
-      $scope.val = 'one';
-      $scope.$digest();
-
-      item = $animate.queue.shift();
-      expect(item.event).toBe('enter');
-      expect(item.element.text()).toBe('one');
-    })
-  );
-
-
-  it('should fire off the leave animation',
-    inject(function($compile, $rootScope, $animate) {
-      var item;
-      var $scope = $rootScope.$new();
-      element = $compile(html(
-        '<div ng-switch on="val">' +
-          '<div ng-switch-when="one">one</div>' +
-          '<div ng-switch-when="two">two</div>' +
-          '<div ng-switch-when="three">three</div>' +
-        '</div>'
-      ))($scope);
-
-      $rootScope.$digest(); // re-enable the animations;
-      $scope.val = 'two';
-      $scope.$digest();
-
-      item = $animate.queue.shift();
-      expect(item.event).toBe('enter');
-      expect(item.element.text()).toBe('two');
-
-      $scope.val = 'three';
-      $scope.$digest();
-
-      item = $animate.queue.shift();
-      expect(item.event).toBe('leave');
-      expect(item.element.text()).toBe('two');
-
-      item = $animate.queue.shift();
-      expect(item.event).toBe('enter');
-      expect(item.element.text()).toBe('three');
-    })
-  );
-
-  it('should destroy the previous leave animation if a new one takes place', function() {
-    module(function($provide) {
-      $provide.decorator('$animate', function($delegate, $$q) {
-        var emptyPromise = $$q.defer().promise;
-        $delegate.leave = function() {
-          return emptyPromise;
-        };
-        return $delegate;
+  describe('behavior', function() {
+    it('should destroy the previous leave animation if a new one takes place', function() {
+      module('ngAnimate');
+      module(function($animateProvider) {
+        $animateProvider.register('.long-leave', function() {
+          return {
+            leave : function(element, done) {
+              //do nothing at all
+            }
+          };
+        });
       });
-    });
-    inject(function ($compile, $rootScope, $animate, $templateCache) {
-      var item;
-      var $scope = $rootScope.$new();
-      element = $compile(html(
-        '<div ng-switch="inc">' +
-          '<div ng-switch-when="one">one</div>' +
-          '<div ng-switch-when="two">two</div>' +
-        '</div>'
-      ))($scope);
+      inject(function ($compile, $rootScope, $animate, $templateCache) {
+        var item;
+        var $scope = $rootScope.$new();
+        element = $compile(html(
+          '<div ng-switch="inc">' +
+            '<div ng-switch-when="one">one</div>' +
+            '<div ng-switch-when="two">two</div>' +
+          '</div>'
+        ))($scope);
 
-      $scope.$apply('inc = "one"');
+        $scope.$apply('inc = "one"');
 
-      var destroyed, inner = element.children(0);
-      inner.on('$destroy', function() {
-        destroyed = true;
+        var destroyed, inner = element.children(0);
+        inner.on('$destroy', function() {
+          destroyed = true;
+        });
+
+        $scope.$apply('inc = "two"');
+
+        $scope.$apply('inc = "one"');
+
+        expect(destroyed).toBe(true);
       });
-
-      $scope.$apply('inc = "two"');
-
-      $scope.$apply('inc = "one"');
-
-      $scope.$apply('inc = "two"');
-
-      expect(destroyed).toBe(true);
     });
   });
 
-  it('should work with svg elements when the svg container is transcluded', function() {
-    module(function($compileProvider) {
-      $compileProvider.directive('svgContainer', function() {
-        return {
-          template: '<svg ng-transclude></svg>',
-          replace: true,
-          transclude: true
-        };
-      });
-    });
-    inject(function($compile, $rootScope) {
-      element = $compile('<svg-container ng-switch="inc"><circle ng-switch-when="one"></circle>' +
-        '</svg-container>')($rootScope);
-      $rootScope.inc = 'one';
-      $rootScope.$apply();
+  describe('events', function() {
+    beforeEach(module('ngAnimateMock'));
 
-      var circle = element.find('circle');
-      expect(circle[0].toString()).toMatch(/SVG/);
+    it('should fire off the enter animation',
+      inject(function($compile, $rootScope, $animate) {
+        var item;
+        var $scope = $rootScope.$new();
+        element = $compile(html(
+          '<div ng-switch on="val">' +
+            '<div ng-switch-when="one">one</div>' +
+            '<div ng-switch-when="two">two</div>' +
+            '<div ng-switch-when="three">three</div>' +
+          '</div>'
+        ))($scope);
+
+        $rootScope.$digest(); // re-enable the animations;
+        $scope.val = 'one';
+        $scope.$digest();
+
+        item = $animate.queue.shift();
+        expect(item.event).toBe('enter');
+        expect(item.element.text()).toBe('one');
+      })
+    );
+
+
+    it('should fire off the leave animation',
+      inject(function($compile, $rootScope, $animate) {
+        var item;
+        var $scope = $rootScope.$new();
+        element = $compile(html(
+          '<div ng-switch on="val">' +
+            '<div ng-switch-when="one">one</div>' +
+            '<div ng-switch-when="two">two</div>' +
+            '<div ng-switch-when="three">three</div>' +
+          '</div>'
+        ))($scope);
+
+        $rootScope.$digest(); // re-enable the animations;
+        $scope.val = 'two';
+        $scope.$digest();
+
+        item = $animate.queue.shift();
+        expect(item.event).toBe('enter');
+        expect(item.element.text()).toBe('two');
+
+        $scope.val = 'three';
+        $scope.$digest();
+
+        item = $animate.queue.shift();
+        expect(item.event).toBe('leave');
+        expect(item.element.text()).toBe('two');
+
+        item = $animate.queue.shift();
+        expect(item.event).toBe('enter');
+        expect(item.element.text()).toBe('three');
+      })
+    );
+
+    it('should work with svg elements when the svg container is transcluded', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('svgContainer', function() {
+          return {
+            template: '<svg ng-transclude></svg>',
+            replace: true,
+            transclude: true
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<svg-container ng-switch="inc"><circle ng-switch-when="one"></circle>' +
+          '</svg-container>')($rootScope);
+        $rootScope.inc = 'one';
+        $rootScope.$apply();
+
+        var circle = element.find('circle');
+        expect(circle[0].toString()).toMatch(/SVG/);
+      });
     });
   });
 });
