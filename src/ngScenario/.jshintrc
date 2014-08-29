@@ -9,7 +9,6 @@
     "browserTrigger": false,
     "console": false,
     "alert": false,
-    "indexOf": false,
     "_jQuery": false,
     "angularInit": false,
     "formatException": false,

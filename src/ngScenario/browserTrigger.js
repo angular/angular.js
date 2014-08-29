@@ -3,17 +3,6 @@
 (function() {
   var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1], 10);
 
-  function indexOf(array, obj) {
-    if (array.indexOf) return array.indexOf(obj);
-
-    for ( var i = 0; i < array.length; i++) {
-      if (obj === array[i]) return i;
-    }
-    return -1;
-  }
-
-
-
   /**
    * Triggers a browser event. Attempts to choose the right event if one is
    * not specified.
@@ -60,7 +49,7 @@
 
     keys = keys || [];
     function pressed(key) {
-      return indexOf(keys, key) !== -1;
+      return keys.indexOf(key) !== -1;
     }
 
     if (msie < 9) {

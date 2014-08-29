@@ -191,7 +191,7 @@ function FormController(element, attrs, $scope, $animate) {
     var pendingChange, pending = form.$pending && form.$pending[validationToken];
 
     if (pending) {
-      pendingChange = indexOf(pending, control) >= 0;
+      pendingChange = pending.indexOf(control) >= 0;
       if (pendingChange) {
         arrayRemove(pending, control);
         pendingCount--;
