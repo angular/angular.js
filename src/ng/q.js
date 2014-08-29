@@ -519,7 +519,11 @@ function qFactory(nextTick, exceptionHandler) {
       when(promise).then(function(value) {
         if (results.hasOwnProperty(key)) return;
         results[key] = value;
-        if (!(--counter)) deferred.resolve(results);
+        if (!(--counter)) {
+          deferred.resolve(results);
+        } else {
+          deferred.notify(results);
+        }
       }, function(reason) {
         if (results.hasOwnProperty(key)) return;
         deferred.reject(reason);
