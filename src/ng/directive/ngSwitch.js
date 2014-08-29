@@ -141,22 +141,23 @@ var ngSwitchDirective = ['$animate', function($animate) {
       var watchExpr = attr.ngSwitch || attr.on,
           selectedTranscludes = [],
           selectedElements = [],
-          previousElements = [],
+          previousLeaveAnimations = [],
           selectedScopes = [];
 
       scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
         var i, ii;
-        for (i = 0, ii = previousElements.length; i < ii; ++i) {
-          previousElements[i].remove();
+        for (i = 0, ii = previousLeaveAnimations.length; i < ii; ++i) {
+          $animate.cancel(previousLeaveAnimations[i]);
         }
-        previousElements.length = 0;
+        previousLeaveAnimations.length = 0;
 
         for (i = 0, ii = selectedScopes.length; i < ii; ++i) {
           var selected = getBlockNodes(selectedElements[i].clone);
           selectedScopes[i].$destroy();
-          previousElements[i] = selected;
-          $animate.leave(selected).then(function() {
-            previousElements.splice(i, 1);
+
+          var promise = previousLeaveAnimations[i] = $animate.leave(selected);
+          promise.then(function() {
+            previousLeaveAnimations.splice(i, 1);
           });
         }
 
