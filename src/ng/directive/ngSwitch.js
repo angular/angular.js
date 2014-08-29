@@ -156,7 +156,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
           selectedScopes[i].$destroy();
           previousElements[i] = selected;
           $animate.leave(selected).then(function() {
-            previousElements.splice(i, 1);
+            previousElements[i] ? previousElements.splice(i, 1) : angular.noop();
           });
         }
 
