@@ -165,7 +165,6 @@ var ngSwitchDirective = ['$animate', function($animate) {
         selectedScopes.length = 0;
 
         if ((selectedTranscludes = ngSwitchController.cases['!' + value] || ngSwitchController.cases['?'])) {
-          scope.$eval(attr.change);
           forEach(selectedTranscludes, function(selectedTransclude) {
             selectedTransclude.transclude(function(caseElement, selectedScope) {
               selectedScopes.push(selectedScope);

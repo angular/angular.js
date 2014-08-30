@@ -208,19 +208,6 @@ describe('ngSwitch', function() {
     expect(element.text()).toEqual('236');
   }));
 
-
-  it('should call change on switch', inject(function($rootScope, $compile) {
-    element = $compile(
-      '<ng:switch on="url" change="name=\'works\'">' +
-        '<div ng-switch-when="a">{{name}}</div>' +
-      '</ng:switch>')($rootScope);
-    $rootScope.url = 'a';
-    $rootScope.$apply();
-    expect($rootScope.name).toEqual('works');
-    expect(element.text()).toEqual('works');
-  }));
-
-
   it('should properly create and destroy child scopes', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="url">' +
