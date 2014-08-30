@@ -11,7 +11,6 @@ env:
     - JOB=unit
     - JOB=e2e TEST_TARGET=jqlite
     - JOB=e2e TEST_TARGET=jquery
-    - JOB=e2e TEST_TARGET=doce2e
   global:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
