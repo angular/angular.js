@@ -1,6 +1,29 @@
 'use strict';
 
+var webdriver = require('protractor/node_modules/selenium-webdriver');
+
 describe('docs.angularjs.org', function () {
+
+  beforeEach(function() {
+    // read and clear logs from previous tests
+    browser.manage().logs().get('browser');
+  });
+
+
+  afterEach(function() {
+    // verify that there were no console errors in the browser
+    browser.manage().logs().get('browser').then(function(browserLog) {
+      var filteredLog = browserLog.filter(function(logEntry) {
+        return logEntry.level.value > webdriver.logging.Level.WARNING.value;
+      });
+      expect(filteredLog.length).toEqual(0);
+      if (filteredLog.length) {
+        console.log('browser console errors: ' + require('util').inspect(filteredLog));
+      }
+    });
+  });
+
+
   describe('App', function () {
     // it('should filter the module list when searching', function () {
     //   browser.get();
@@ -66,6 +89,12 @@ describe('docs.angularjs.org', function () {
     it('should display formatted error messages on error doc pages', function() {
       browser.get('index-debug.html#!error/ng/areq?p0=Missing&p1=not%20a%20function,%20got%20undefined');
       expect(element(by.css('.minerr-errmsg')).getText()).toEqual("Argument 'Missing' is not a function, got undefined");
+    });
+
+
+    it("should display links to code on GitHub", function() {
+      browser.get('index-debug.html#!/api/does/not/exist');
+      expect(element(by.css('h1')).getText()).toBe('Oops!');
     });
   });
 

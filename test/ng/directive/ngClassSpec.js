@@ -434,7 +434,10 @@ describe('ngClass animations', function() {
     });
     inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $document) {
 
-      // Animations are enabled right away since there are no remote HTTP template requests
+      // Animations need to digest twice in order to be enabled regardless if there are no template HTTP requests.
+      $rootScope.$digest();
+      digestQueue.shift()();
+
       $rootScope.$digest();
       digestQueue.shift()();
 
