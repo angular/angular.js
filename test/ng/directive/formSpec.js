@@ -494,6 +494,35 @@ describe('form', function() {
       expect(doc.find('div').hasClass('ng-valid-required')).toBe(true);
     });
 
+  it('should leave the parent form invalid when deregister a removed input', function() {
+    doc = jqLite(
+      '<form name="parent">' +
+        '<div class="ng-form" name="child">' +
+          '<input ng-if="inputPresent" ng-model="modelA" name="inputA" required>' +
+          '<input ng-model="modelB" name="inputB" required>' +
+        '</div>' +
+      '</form>');
+    $compile(doc)(scope);
+    scope.inputPresent = true;
+    scope.$apply();
+
+    var parent = scope.parent,
+        child = scope.child,
+        inputA = child.inputA,
+        inputB = child.inputB;
+
+    expect(parent).toBeDefined();
+    expect(child).toBeDefined();
+    expect(parent.$error.required).toEqual([child]);
+    expect(child.$error.required).toEqual([inputB, inputA]);
+
+    //remove child input
+    scope.inputPresent = false;
+    scope.$apply();
+
+    expect(parent.$error.required).toEqual([child]);
+    expect(child.$error.required).toEqual([inputB]);
+  });
 
     it('should chain nested forms in repeater', function() {
       doc = jqLite(
