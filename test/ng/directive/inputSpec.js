@@ -783,6 +783,66 @@ describe('ngModel', function() {
     dealoc(element);
   }));
 
+  it('should always format the viewValue as a string for a blank input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input name="field" ng-model="val" /></form>')($rootScope);
+
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
+
+  it('should always format the viewValue as a string for a `text` input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input type="text" name="field" ng-model="val" /></form>')($rootScope);
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
+
+  it('should always format the viewValue as a string for an `email` input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input type="email" name="field" ng-model="val" /></form>')($rootScope);
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
+
+  it('should always format the viewValue as a string for a `url` input type when the value is present',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    var form = $compile('<form name="form"><input type="url" name="field" ng-model="val" /></form>')($rootScope);
+    $rootScope.val = 123;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe('123');
+
+    $rootScope.val = null;
+    $rootScope.$digest();
+    expect($rootScope.form.field.$viewValue).toBe(null);
+
+    dealoc(form);
+  }));
 
   it('should set the control touched state on "blur" event', inject(function($compile, $rootScope) {
     var element = $compile('<form name="myForm">' +
@@ -2899,6 +2959,97 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect(scope.form.alias.$error.required).toBeTruthy();
+      });
+    });
+
+    describe('minlength', function() {
+
+      it('should invalidate values that are shorter than the given minlength', function() {
+        compileInput('<input type="number" ng-model="value" ng-minlength="3" />');
+
+        changeInputValueTo('12');
+        expect(inputElm).toBeInvalid();
+
+        changeInputValueTo('123');
+        expect(inputElm).toBeValid();
+      });
+
+      it('should listen on ng-minlength when minlength is observed', function() {
+        var value = 0;
+        compileInput('<input type="number" ng-model="value" ng-minlength="min" attr-capture />');
+        attrs.$observe('minlength', function(v) {
+          value = int(attrs.minlength);
+        });
+
+        scope.$apply(function() {
+          scope.min = 5;
+        });
+
+        expect(value).toBe(5);
+      });
+
+      it('should observe the standard minlength attribute and register it as a validator on the model', function() {
+        compileInput('<input type="number" name="input" ng-model="value" minlength="{{ min }}" />');
+        scope.$apply(function() {
+          scope.min = 10;
+        });
+
+        changeInputValueTo('12345');
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.input.$error.minlength).toBe(true);
+
+        scope.$apply(function() {
+          scope.min = 5;
+        });
+
+        expect(inputElm).toBeValid();
+        expect(scope.form.input.$error.minlength).not.toBe(true);
+      });
+    });
+
+
+    describe('maxlength', function() {
+
+      it('should invalidate values that are longer than the given maxlength', function() {
+        compileInput('<input type="number" ng-model="value" ng-maxlength="5" />');
+
+        changeInputValueTo('12345678');
+        expect(inputElm).toBeInvalid();
+
+        changeInputValueTo('123');
+        expect(inputElm).toBeValid();
+      });
+
+      it('should listen on ng-maxlength when maxlength is observed', function() {
+        var value = 0;
+        compileInput('<input type="number" ng-model="value" ng-maxlength="max" attr-capture />');
+        attrs.$observe('maxlength', function(v) {
+          value = int(attrs.maxlength);
+        });
+
+        scope.$apply(function() {
+          scope.max = 10;
+        });
+
+        expect(value).toBe(10);
+      });
+
+      it('should observe the standard maxlength attribute and register it as a validator on the model', function() {
+        compileInput('<input type="number" name="input" ng-model="value" maxlength="{{ max }}" />');
+        scope.$apply(function() {
+          scope.max = 1;
+        });
+
+        changeInputValueTo('12345');
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.input.$error.maxlength).toBe(true);
+
+        scope.$apply(function() {
+          scope.max = 6;
+        });
+
+        expect(inputElm).toBeValid();
+        expect(scope.form.input.$error.maxlength).not.toBe(true);
       });
     });
   });

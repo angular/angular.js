@@ -325,20 +325,22 @@ to URLs that should be handled with `.`. Now, links to locations, which are not 
 are not prefixed with `.` and will not be intercepted by the `otherwise` rule in your `$routeProvider`.
 
 
+### Relative links
+
+Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url base in
+the head of your main html file (`<base href="/my-base">`). With that, relative urls will
+always be resolved to this base url, event if the initial url of the document was different.
+
+There is one exception: Links that only contain a hash fragment (e.g. `<a href="#target">`)
+will only change `$location.hash()` and not modify the url otherwise. This is useful for scrolling
+to anchors on the same page without needing to know on which page the user currently is.
+
 ### Server side
 
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
-to entry point of your application (e.g. index.html)
-
-### Relative links
-
-Be sure to check all relative links, images, scripts etc. You must either specify the url base in
-the head of your main html file (`<base href="/my-base">`) or you must use absolute urls
-(starting with `/`) everywhere because relative urls will be resolved to absolute urls using the
-initial absolute url of the document, which is often different from the root of the application.
-
-Running Angular apps with the History API enabled from document root is strongly encouraged as it
-takes care of all relative link issues.
+to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
+this case, as it allows Angular to differentiate between the part of the url that is the application
+base and the path that should be handeled by the application.
 
 ### Sending links among different browsers
 
