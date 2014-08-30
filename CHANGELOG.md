@@ -154,7 +154,7 @@ Closes #8492
 
 In html5 mode without a `<base>` tag on older browser that don't support the history API
 relative paths were adding up. E.g. clicking on `<a href="page1">` and then on `<a href="page2">`
-would produce `$location.path()==='/page1/page2'. The code that introduced this behavior was removed
+would produce `$location.path()==='/page1/page2'`. The code that introduced this behavior was removed
 and Angular now also requires a `<base>` tag to be present when using html5 mode.
 
 Closes #8172, #8233
