@@ -15,3 +15,4 @@ Example scenarios of multiple incompatible directives applied to the same elemen
 * Multiple directives publishing a controller under the same name.
 * Multiple directives declared with the `transclusion` option.
 * Multiple directives attempting to define a `template` or `templateURL`.
+* One of the directive attempting to bind on the atribute and the atribute is name of the other directive
