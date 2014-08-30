@@ -176,7 +176,9 @@ module.exports = function(grunt) {
       },
       angular: {
         dest: 'build/angular.js',
-        src: util.wrap([files['angularSrc']], 'angular'),
+        // Adding WTF shim here for now, so that it's outside of the wrapper function,
+        // because the shim requires no strict mode.
+        src: ['wtf/wtf-trace.js'].concat(util.wrap([files['angularSrc']], 'angular')),
         styles: {
           css: ['css/angular.css'],
           generateCspCssFile: true,
