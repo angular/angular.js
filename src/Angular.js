@@ -1500,9 +1500,13 @@ function bindJQuery() {
     // the $destroy event on all removed nodes.
     originalCleanData = jQuery.cleanData;
     jQuery.cleanData = function(elems) {
+      var events;
       if (!skipDestroyOnNextJQueryCleanData) {
         for (var i = 0, elem; (elem = elems[i]) != null; i++) {
-          jQuery(elem).triggerHandler('$destroy');
+          events = jQuery._data(elem, "events");
+          if (events && events.$destroy) {
+            jQuery(elem).triggerHandler('$destroy');
+          }
         }
       } else {
         skipDestroyOnNextJQueryCleanData = false;
