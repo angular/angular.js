@@ -160,8 +160,6 @@ function FormController(element, attrs, $scope, $animate) {
     function clear(queue, validationToken) {
       form.$setValidity(validationToken, true, control);
     }
-
-    parentForm.$$clearControlValidity(form);
   };
 
   form.$$setPending = function(validationToken, control) {
