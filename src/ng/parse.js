@@ -531,7 +531,7 @@ Parser.prototype = {
         // TODO(size): maybe we should not support multiple statements?
         return (statements.length === 1)
             ? statements[0]
-            : function(self, locals) {
+            : function $parseStatements(self, locals) {
                 var value;
                 for (var i = 0, ii = statements.length; i < ii; i++) {
                   value = statements[i](self, locals);
@@ -598,7 +598,7 @@ Parser.prototype = {
             this.text.substring(0, token.index) + '] can not be assigned to', token);
       }
       right = this.ternary();
-      return function(scope, locals) {
+      return function $parseAssignment(scope, locals) {
         return left.assign(scope, right(scope, locals), locals);
       };
     }
@@ -788,7 +788,7 @@ Parser.prototype = {
     }
     this.consume(']');
 
-    return extend(function(self, locals) {
+    return extend(function $parseArrayLiteral(self, locals) {
       var array = [];
       for (var i = 0; i < elementFns.length; i++) {
         array.push(elementFns[i](self, locals));
@@ -821,7 +821,7 @@ Parser.prototype = {
     }
     this.consume('}');
 
-    return extend(function(self, locals) {
+    return extend(function $parseObjectLiteral(self, locals) {
       var object = {};
       for (var i = 0; i < keyValues.length; i++) {
         var keyValue = keyValues[i];
