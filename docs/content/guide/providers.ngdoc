@@ -97,9 +97,8 @@ created by this recipe.
 Note: All services in Angular are singletons. That means that the injector uses each recipe at most
 once to create the object. The injector then caches the reference for all future needs.
 
-Since Factory is more a powerful version of the Value recipe, you can construct the same service with it.
-Using our previous `clientId` Value recipe example, we can rewrite it as a Factory recipe like
-this:
+Since a Factory is a more powerful version of the Value recipe, the same service can be constructed with it.
+Using our previous `clientId` Value recipe example, we can rewrite it as a Factory recipe like this:
 
 ```javascript
 myApp.factory('clientId', function clientIdFactory() {
@@ -134,11 +133,11 @@ token.
 
 <div class="alert alert-success">
 **Best Practice:** name the factory functions as `<serviceId>Factory`
-(e.g. apiTokenFactory). While this naming convention is not required, it helps when navigating the code base
+(e.g., apiTokenFactory). While this naming convention is not required, it helps when navigating the codebase
 or looking at stack traces in the debugger.
 </div>
 
-Just like with Value recipe, Factory recipe can create a service of any type, whether it be a
+Just like with the Value recipe, the Factory recipe can create a service of any type, whether it be a
 primitive, object literal, function, or even an instance of a custom type.
 
 
@@ -153,7 +152,7 @@ function UnicornLauncher(apiToken) {
 
   this.launchedCount = 0;
   this.launch = function() {
-    // make a request to the remote api and include the apiToken
+    // Make a request to the remote API and include the apiToken
     ...
     this.launchedCount++;
   }
@@ -170,7 +169,7 @@ myApp.factory('unicornLauncher', ["apiToken", function(apiToken) {
 ```
 
 
-This is, however, exactly the use-case that Service recipe is the most suitable for.
+This is, however, exactly the use-case that the Service recipe is the most suitable for.
 
 The Service recipe produces a service just like the Value or Factory recipes, but it does so by
 *invoking a constructor with the `new` operator*. The constructor can take zero or more arguments,
@@ -189,7 +188,7 @@ myApp.service('unicornLauncher', ["apiToken", UnicornLauncher]);
 Much simpler!
 
 Note: Yes, we have called one of our service recipes 'Service'. We regret this and know that we'll
-be somehow punished for our mis-deed. It's like we named one of our offspring 'Child'. Boy,
+be somehow punished for our misdeed. It's like we named one of our offspring 'Child'. Boy,
 that would mess with the teachers.
 
 
@@ -199,8 +198,8 @@ As already mentioned in the intro, the Provider recipe is the core recipe type a
 all the other recipe types are just syntactic sugar on top of it. It is the most verbose recipe
 with the most abilities, but for most services it's overkill.
 
-Provider recipe is syntactically defined as a custom type that implements a `$get` method. This
-method is a factory function just like the one we use in Factory recipe. In fact, if you define
+The Provider recipe is syntactically defined as a custom type that implements a `$get` method. This
+method is a factory function just like the one we use in the Factory recipe. In fact, if you define
 a Factory recipe, an empty Provider type with the `$get` method set to your factory function is
 automatically created under the hood.
 
@@ -248,7 +247,7 @@ and wires (injects) all provider instances only.
 
 During application bootstrap, before Angular goes off creating all services, it configures and
 instantiates all providers. We call this the configuration phase of the application life-cycle.
-During this phase services aren't accessible because they haven't been created yet.
+During this phase, services aren't accessible because they haven't been created yet.
 
 Once the configuration phase is over, interaction with providers is disallowed and the process of
 creating services starts. We call this part of the application life-cycle the run phase.
@@ -259,9 +258,9 @@ creating services starts. We call this part of the application life-cycle the ru
 We've just learned how Angular splits the life-cycle into configuration phase and run phase and how
 you can provide configuration to your application via the config function. Since the config
 function runs in the configuration phase when no services are available, it doesn't have access
-even to simple value objects created via Value recipe.
+even to simple value objects created via the Value recipe.
 
-Since simple values, like url prefix, don't have dependencies or configuration, it is often handy
+Since simple values, like URL prefixes, don't have dependencies or configuration, it's often handy
 to make them available in both the configuration and run phases. This is what the Constant recipe
 is for.
 
@@ -317,7 +316,7 @@ Let's take a look at how we would create a very simple component via the directi
 on the `planetName` constant we've just defined and displays the planet name, in our case:
 "Planet Name: Greasy Giant".
 
-Since the directives are registered via Factory recipe, we can use the same syntax as with factories.
+Since the directives are registered via the Factory recipe, we can use the same syntax as with factories.
 
 ```javascript
 myApp.directive('myPlanet', ['planetName', function myPlanetDirectiveFactory(planetName) {
@@ -340,7 +339,7 @@ We can then use the component like this:
 </html>
 ```
 
-Using Factory recipes you can also define Angular's filters and animations, but the controllers
+Using Factory recipes, you can also define Angular's filters and animations, but the controllers
 are a bit special. You create a controller as a custom type that declares its dependencies as
 arguments for its constructor function. This constructor is then registered with a module. Let's
 take a look at the `DemoController`, created in one of the early examples:
@@ -351,7 +350,7 @@ myApp.controller('DemoController', ['clientId', function DemoController(clientId
 }]);
 ```
 
-The DemoController is instantiated via its constructor every time the app needs an instance of
+The DemoController is instantiated via its constructor, every time the app needs an instance of
 DemoController (in our simple app it's just once). So unlike services, controllers are not
 singletons. The constructor is called with all the requested services, in our case the `clientId`
 service.
@@ -365,12 +364,12 @@ To wrap it up, let's summarize the most important points:
 - There are five recipe types that define how to create objects: Value, Factory, Service, Provider
   and Constant.
 - Factory and Service are the most commonly used recipes. The only difference between them is that
-  Service recipe works better for objects of custom type, while Factory can produce JavaScript
+  the Service recipe works better for objects of a custom type, while the Factory can produce JavaScript
   primitives and functions.
 - The Provider recipe is the core recipe type and all the other ones are just syntactic sugar on it.
 - Provider is the most complex recipe type. You don't need it unless you are building a reusable
   piece of code that needs global configuration.
-- All special purpose objects except for Controller are defined via Factory recipes.
+- All special purpose objects except for the Controller are defined via Factory recipes.
 
 <table class="table table-bordered code-table">
 <thead>
