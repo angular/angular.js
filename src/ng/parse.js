@@ -790,7 +790,7 @@ Parser.prototype = {
 
     return extend(function $parseArrayLiteral(self, locals) {
       var array = [];
-      for (var i = 0; i < elementFns.length; i++) {
+      for (var i = 0, ii = elementFns.length; i < ii; i++) {
         array.push(elementFns[i](self, locals));
       }
       return array;
@@ -823,7 +823,7 @@ Parser.prototype = {
 
     return extend(function $parseObjectLiteral(self, locals) {
       var object = {};
-      for (var i = 0; i < keyValues.length; i++) {
+      for (var i = 0, ii = keyValues.length; i < ii; i++) {
         var keyValue = keyValues[i];
         object[keyValue.key] = keyValue.value(self, locals);
       }
