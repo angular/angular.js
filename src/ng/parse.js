@@ -533,11 +533,8 @@ Parser.prototype = {
             ? statements[0]
             : function(self, locals) {
                 var value;
-                for (var i = 0; i < statements.length; i++) {
-                  var statement = statements[i];
-                  if (statement) {
-                    value = statement(self, locals);
-                  }
+                for (var i = 0, ii = statements.length; i < ii; i++) {
+                  value = statements[i](self, locals);
                 }
                 return value;
               };
