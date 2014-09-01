@@ -2590,13 +2590,13 @@ describe('input', function() {
     });
 
     it('should set the view if the model if a valid Date object.', function(){
-      compileInput('<input type="datetime-local" ng-model="tenSecondsToNextYear"/>');
+      compileInput('<input type="datetime-local" ng-model="halfSecondToNextYear"/>');
 
       scope.$apply(function (){
-        scope.tenSecondsToNextYear = new Date(2013, 11, 31, 23, 59, 0);
+        scope.halfSecondToNextYear = new Date(2013, 11, 31, 23, 59, 59, 500);
       });
 
-      expect(inputElm.val()).toBe('2013-12-31T23:59:00');
+      expect(inputElm.val()).toBe('2013-12-31T23:59:59.500');
     });
 
     it('should set the model undefined if the view is invalid', function (){
@@ -2606,7 +2606,7 @@ describe('input', function() {
         scope.breakMe = new Date(2009, 0, 6, 16, 25, 0);
       });
 
-      expect(inputElm.val()).toBe('2009-01-06T16:25:00');
+      expect(inputElm.val()).toBe('2009-01-06T16:25:00.000');
 
       try {
         //set to text for browsers with datetime-local validation.
@@ -2663,7 +2663,21 @@ describe('input', function() {
       scope.$apply(function() {
         scope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
       });
-      expect(inputElm.val()).toBe('2001-01-01T01:02:00');
+      expect(inputElm.val()).toBe('2001-01-01T01:02:00.000');
+    });
+
+    it('should allow to specify the milliseconds', function() {
+      compileInput('<input type="datetime-local" ng-model="value"" />');
+
+      changeInputValueTo('2000-01-01T01:02:03.500');
+      expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 3, 500));
+    });
+
+    it('should allow to specify single digit milliseconds', function() {
+      compileInput('<input type="datetime-local" ng-model="value"" />');
+
+      changeInputValueTo('2000-01-01T01:02:03.4');
+      expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 3, 400));
     });
 
     it('should allow to specify the seconds', function() {
@@ -2675,7 +2689,7 @@ describe('input', function() {
       scope.$apply(function() {
         scope.value = new Date(2001, 0, 1, 1, 2, 3);
       });
-      expect(inputElm.val()).toBe('2001-01-01T01:02:03');
+      expect(inputElm.val()).toBe('2001-01-01T01:02:03.000');
     });
 
     it('should allow to skip the seconds', function() {
@@ -2854,10 +2868,10 @@ describe('input', function() {
       compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
 
       scope.$apply(function (){
-        scope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0);
+        scope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
       });
 
-      expect(inputElm.val()).toBe('15:41:00');
+      expect(inputElm.val()).toBe('15:41:00.500');
     });
 
     it('should set the model undefined if the view is invalid', function (){
@@ -2867,7 +2881,7 @@ describe('input', function() {
         scope.breakMe = new Date(1970, 0, 1, 16, 25, 0);
       });
 
-      expect(inputElm.val()).toBe('16:25:00');
+      expect(inputElm.val()).toBe('16:25:00.000');
 
       try {
         //set to text for browsers with time validation.
@@ -2924,7 +2938,21 @@ describe('input', function() {
       scope.$apply(function() {
         scope.value = new Date(Date.UTC(1971, 0, 1, 23, 2, 0));
       });
-      expect(inputElm.val()).toBe('23:02:00');
+      expect(inputElm.val()).toBe('23:02:00.000');
+    });
+
+    it('should allow to specify the milliseconds', function() {
+      compileInput('<input type="time" ng-model="value"" />');
+
+      changeInputValueTo('01:02:03.500');
+      expect(+scope.value).toBe(+new Date(1970, 0, 1, 1, 2, 3, 500));
+    });
+
+    it('should allow to specify single digit milliseconds', function() {
+      compileInput('<input type="time" ng-model="value"" />');
+
+      changeInputValueTo('01:02:03.4');
+      expect(+scope.value).toBe(+new Date(1970, 0, 1, 1, 2, 3, 400));
     });
 
     it('should allow to specify the seconds', function() {
@@ -2936,7 +2964,7 @@ describe('input', function() {
       scope.$apply(function() {
         scope.value = new Date(1970, 0, 1, 1, 2, 3);
       });
-      expect(inputElm.val()).toBe('01:02:03');
+      expect(inputElm.val()).toBe('01:02:03.000');
     });
 
     it('should allow to skip the seconds', function() {
@@ -3192,13 +3220,13 @@ describe('input', function() {
         scope.val = new Date(2013, 1, 2, 3, 4, 5, 6);
       });
 
-      expect(timeElm.val()).toBe('03:04:05');
+      expect(timeElm.val()).toBe('03:04:05.006');
       expect(monthElm.val()).toBe('2013-02');
       expect(weekElm.val()).toBe('2013-W05');
 
       changeGivenInputTo(monthElm, '2012-02');
       expect(monthElm.val()).toBe('2012-02');
-      expect(timeElm.val()).toBe('03:04:05');
+      expect(timeElm.val()).toBe('03:04:05.006');
       expect(weekElm.val()).toBe('2012-W05');
 
       changeGivenInputTo(timeElm, '04:05:06');
@@ -3208,10 +3236,10 @@ describe('input', function() {
 
       changeGivenInputTo(weekElm, '2014-W01');
       expect(monthElm.val()).toBe('2014-01');
-      expect(timeElm.val()).toBe('04:05:06');
+      expect(timeElm.val()).toBe('04:05:06.000');
       expect(weekElm.val()).toBe('2014-W01');
 
-      expect(+scope.val).toBe(+new Date(2014, 0, 2, 4, 5, 6, 6));
+      expect(+scope.val).toBe(+new Date(2014, 0, 2, 4, 5, 6, 0));
 
       function changeGivenInputTo(inputElm, value) {
         inputElm.val(value);
