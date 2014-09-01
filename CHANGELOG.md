@@ -317,7 +317,50 @@ Closes #8803
 Closes #6910
 Closes #5402
 
+- **$compile:** due to [5f3f25a1](https://github.com/angular/angular.js/commit/5f3f25a1a6f9d4f2a66e2700df3b9c5606f1c255),
 
+The returned value from directive controller constructors are now ignored, and only the constructed
+instance itself will be attached to the node's expando. This change is necessary in order to ensure
+that it's possible to bind properties to the controller's instance before the actual constructor is
+invoked, as a convenience to developers.
+
+In the past, the following would have worked:
+
+```js
+angular.module("myApp", []).
+    directive("myDirective", function() {
+        return {
+            controller: function($scope) {
+                return {
+                    doAThing: function() { $scope.thingDone = true; },
+                    undoAThing: function() { $scope.thingDone = false; }
+                };
+            },
+            link: function(scope, element, attrs, ctrl) {
+                ctrl.doAThing();
+            }
+        };
+    });
+```
+
+However now, the reference to `doAThing()` will be undefined, because the return value of the controller's constructor is ignored. In order to work around this, one can opt for several strategies, including the use of `_.extend()` or `merge()` like routines, like so:
+
+```js
+angular.module("myApp", []).
+    directive("myDirective", function() {
+        return {
+            controller: function($scope) {
+                _.extend(this, {
+                    doAThing: function() { $scope.thingDone = true; },
+                    undoAThing: function() { $scope.thingDone = false; }
+                });
+            },
+            link: function(scope, element, attrs, ctrl) {
+                ctrl.doAThing();
+            }
+        };
+    });
+```
 
 <a name="1.2.23"></a>
 # 1.2.23 superficial-malady (2014-08-22)
