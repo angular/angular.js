@@ -1307,15 +1307,6 @@ function angularInit(element, bootstrap) {
       module,
       config = {};
 
-  // The element `element` has priority over any other element
-  forEach(ngAttrPrefixes, function(prefix) {
-    var name = prefix + 'app';
-
-    if (!appElement && element.hasAttribute && element.hasAttribute(name)) {
-      appElement = element;
-      module = element.getAttribute(name);
-    }
-  });
   forEach(ngAttrPrefixes, function(prefix) {
     var name = prefix + 'app';
     var candidate;
