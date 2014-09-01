@@ -9,6 +9,7 @@
  numberFilter: true,
  orderByFilter: true,
  uppercaseFilter: true,
+ regexFilter: true,
  */
 
 /**
@@ -145,6 +146,7 @@ function $FilterProvider($provide) {
     numberFilter: false,
     orderByFilter: false,
     uppercaseFilter: false,
+    regexFilter: false,
   */
 
   register('currency', currencyFilter);
@@ -156,4 +158,5 @@ function $FilterProvider($provide) {
   register('number', numberFilter);
   register('orderBy', orderByFilter);
   register('uppercase', uppercaseFilter);
+  register('regex', regexFilter);
 }

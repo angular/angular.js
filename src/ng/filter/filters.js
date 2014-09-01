@@ -531,3 +531,98 @@ var lowercaseFilter = valueFn(lowercase);
  * @see angular.uppercase
  */
 var uppercaseFilter = valueFn(uppercase);
+
+/**
+ * @ngdoc filter
+ * @name regex
+ * @kind function
+ *
+ * @description
+ *   Allows you to search within an array to find values matching the supplied regular expression.
+ *
+ * @param {Array} array The source array.
+ * @param {string} expression The regular expression to be used for selecting items from `array`.
+ *
+ *     It is converter to a RegExp object and used to evaluate tha array's values against it.
+ * @returns {array} the filtered results.
+ *
+ *
+ * @example
+ <example>
+   <file name="index.html">
+     <div ng-init="friends = [{name:'Anna', address: {city: '', street: '', number:'', postcode: ''}},
+                              {name:'Armelina', address: {city: '', street: '', number:'', postcode: ''}},
+                              {name:'George', address: {city: '', street: '', number:'', postcode: ''}},
+                              {name:'Elizabeth', address: {city: '', street: '', number:'', postcode: ''}},
+                              {name:'Olympia', address: {city: '', street: '', number:'', postcode: ''}}]">
+
+       Search: <input ng-model="regexText"></input>
+       <table id="searchTextResults">
+         <thead>
+           <th>Name</th>
+         </thead>
+         <tbody>
+           <tr id="result" ng-repeat="friend in friends | regex:regexText">
+             <td>{{friend.name}}</td>
+           </tr>
+         </tbody>
+       </table>
+     </div>
+   </file>
+   <file name="protractor.js" type="protractor">
+     it('should filter objects according to a regular expression', function() {
+       element(by.model('regexText')).clear();
+       element(by.model('regexText')).sendKeys('.*nn.*');
+       expect(element.all(by.id('result')).count()).toBe(1);
+       expect(element.all(by.id('result')).get(0).getText()).toBe('Anna');
+     });
+   </file>
+ </example>
+ *
+ */
+regexFilter.$inject = ['$filter'];
+function regexFilter($filter) {
+  return function(array, expression) {
+      var fields = [],
+          fillFields = function(expression) {
+              for (var key in expression) {
+                  if (typeof key === 'object') {
+                      fillFields(expression[key]);
+                  }
+                  fields.push(key);
+              }
+          },
+          isObject = typeof expression === 'object';
+      if(isObject) {
+          fillFields(expression);
+      }
+      var regexCheck = function(regex, value){
+              return ('' + value).match(new RegExp(regex));
+          },
+          matches = function(value) {
+              if(!isObject) {
+                  return regexCheck(expression, value);
+              }
+              if(fields.length > 0) {
+                  var match;
+                  for (var key in fields) {
+                      match = regexCheck(expression[fields[key]], value);
+                  }
+                  return match;
+              }
+              return true;
+          },
+          regexPredicate = function(value) {
+            if(typeof value !== 'object') {
+                return matches(value);
+            }
+            for (var key in value) {
+               var exists = fields.length ? fields.indexOf(key) >= 0 : true;
+               if(exists && regexPredicate(value[key])) {
+                   return true;
+               }
+            }
+          };
+      return $filter('filter')(array, regexPredicate);
+  };
+}
