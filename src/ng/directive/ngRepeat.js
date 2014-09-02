@@ -417,7 +417,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
                 // http://jsperf.com/clone-vs-createcomment
-                var endNode = ngRepeatEndComment.cloneNode();
+                var endNode = ngRepeatEndComment.cloneNode(false);
                 clone[clone.length++] = endNode;
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = endNode;
