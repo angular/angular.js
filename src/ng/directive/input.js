@@ -1031,30 +1031,30 @@ function weekParser(isoWeek) {
 
 function createDateParser(regexp, mapping) {
   return function(iso) {
-      var parts, map;
+    var parts, map;
 
-      if (isDate(iso)) {
-        return iso;
+    if (isDate(iso)) {
+      return iso;
+    }
+
+    if (isString(iso)) {
+      regexp.lastIndex = 0;
+      parts = regexp.exec(iso);
+
+      if (parts) {
+        parts.shift();
+        map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0, ss: 0 };
+
+        forEach(parts, function(part, index) {
+          if (index < mapping.length) {
+            map[mapping[index]] = +part;
+          }
+        });
+        return new Date(map.yyyy, map.MM - 1, map.dd, map.HH, map.mm, map.ss || 0);
       }
+    }
 
-      if (isString(iso)) {
-         regexp.lastIndex = 0;
-         parts = regexp.exec(iso);
-
-         if (parts) {
-            parts.shift();
-            map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0, ss: 0 };
-
-            forEach(parts, function(part, index) {
-               if (index < mapping.length) {
-                  map[mapping[index]] = +part;
-               }
-            });
-            return new Date(map.yyyy, map.MM - 1, map.dd, map.HH, map.mm, map.ss || 0);
-         }
-      }
-
-      return NaN;
+    return NaN;
   };
 }
 
