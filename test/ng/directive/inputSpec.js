@@ -730,6 +730,31 @@ describe('NgModelController', function() {
       dealoc(element);
     }));
 
+    it('should re-evaluate the form validity state against a parsed view value',
+      inject(function($compile, $rootScope, $q) {
+      var element = $compile('<form name="myForm">' +
+                               '<input type="number" name="curiousnumber" ng-model="curiousnumber" />' +
+                             '</form>')($rootScope);
+      var inputElm = element.find('input');
+
+      var formCtrl = $rootScope.myForm;
+      var curiousnumberCtrl = formCtrl.curiousnumber;
+      var curiousnumberDefer;
+      curiousnumberCtrl.$asyncValidators.isCurious = function() {
+        curiousnumberDefer = $q.defer();
+        return curiousnumberDefer.promise;
+      };
+
+      curiousnumberCtrl.$setViewValue("22");
+      $rootScope.$digest();
+      expect(curiousnumberCtrl.$pending.isCurious).toBe(true);
+
+      curiousnumberDefer.resolve();
+      $rootScope.$digest();
+      expect(curiousnumberCtrl.$pending).toBeUndefined();
+
+      dealoc(element);
+    }));
   });
 });
 
