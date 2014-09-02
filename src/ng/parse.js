@@ -258,7 +258,7 @@ Lexer.prototype = {
   },
 
   readIdent: function() {
-    var parser = this;
+    var expression = this.text;
 
     var ident = '';
     var start = this.index;
@@ -317,13 +317,13 @@ Lexer.prototype = {
       token.fn = fn;
       token.constant = true;
     } else {
-      var getter = getterFn(ident, this.options, this.text);
+      var getter = getterFn(ident, this.options, expression);
       // TODO(perf): consider exposing the getter reference
       token.fn = extend(function $parsePathGetter(self, locals) {
         return getter(self, locals);
       }, {
         assign: function(self, value) {
-          return setter(self, ident, value, parser.text);
+          return setter(self, ident, value, expression);
         }
       });
     }
@@ -686,9 +686,9 @@ Parser.prototype = {
   },
 
   fieldAccess: function(object) {
-    var parser = this;
+    var expression = this.text;
     var field = this.expect().text;
-    var getter = getterFn(field, this.options, this.text);
+    var getter = getterFn(field, this.options, expression);
 
     return extend(function $parseFieldAccess(scope, locals, self) {
       return getter(self || object(scope, locals));
@@ -696,13 +696,13 @@ Parser.prototype = {
       assign: function(scope, value, locals) {
         var o = object(scope, locals);
         if (!o) object.assign(scope, o = {});
-        return setter(o, field, value, parser.text);
+        return setter(o, field, value, expression);
       }
     });
   },
 
   objectIndex: function(obj) {
-    var parser = this;
+    var expression = this.text;
 
     var indexFn = this.expression();
     this.consume(']');
@@ -712,15 +712,15 @@ Parser.prototype = {
           i = indexFn(self, locals),
           v;
 
-      ensureSafeMemberName(i, parser.text);
+      ensureSafeMemberName(i, expression);
       if (!o) return undefined;
-      v = ensureSafeObject(o[i], parser.text);
+      v = ensureSafeObject(o[i], expression);
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
+        var key = ensureSafeMemberName(indexFn(self, locals), expression);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
-        var o = ensureSafeObject(obj(self, locals), parser.text);
+        var o = ensureSafeObject(obj(self, locals), expression);
         if (!o) obj.assign(self, o = {});
         return o[key] = value;
       }
