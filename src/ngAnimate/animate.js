@@ -494,7 +494,7 @@ angular.module('ngAnimate', ['ng'])
 
         var toAdd = [], toRemove = [];
         forEach(map, function(status, className) {
-          var hasClass = element.hasClass(className);
+          var hasClass = angular.$$hasClass(element[0], className);
           var matchingAnimation = lookup[className] || {};
 
           // When addClass and removeClass is called then $animate will check to
