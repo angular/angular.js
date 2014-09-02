@@ -545,13 +545,10 @@ Parser.prototype = {
   filterChain: function() {
     var left = this.expression();
     var token;
-    while (true) {
-      if ((token = this.expect('|'))) {
-        left = this.binaryFn(left, token.fn, this.filter());
-      } else {
-        return left;
-      }
+    while ((token = this.expect('|'))) {
+      left = this.binaryFn(left, token.fn, this.filter());
     }
+    return left;
   },
 
   filter: function() {
@@ -624,13 +621,10 @@ Parser.prototype = {
   logicalOR: function() {
     var left = this.logicalAND();
     var token;
-    while (true) {
-      if ((token = this.expect('||'))) {
-        left = this.binaryFn(left, token.fn, this.logicalAND());
-      } else {
-        return left;
-      }
+    while ((token = this.expect('||'))) {
+      left = this.binaryFn(left, token.fn, this.logicalAND());
     }
+    return left;
   },
 
   logicalAND: function() {
