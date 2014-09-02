@@ -44,15 +44,16 @@ describe('event directives', function() {
 
     it('should call the listener asynchronously during $apply',
         inject(function($rootScope, $compile) {
-      element = $compile('<input type="text" ng-focus="focus()">')($rootScope);
-      $rootScope.focus = jasmine.createSpy('focus');
+      var scope = $rootScope.$new(true);
+      element = $compile('<input type="text" ng-focus="focus()">')(scope);
+      scope.focus = jasmine.createSpy('focus');
 
-      $rootScope.$apply(function() {
+      scope.$apply(function() {
         element.triggerHandler('focus');
-        expect($rootScope.focus).not.toHaveBeenCalled();
+        expect(scope.focus).not.toHaveBeenCalled();
       });
 
-      expect($rootScope.focus).toHaveBeenCalledOnce();
+      expect(scope.focus).toHaveBeenCalledOnce();
     }));
 
     it('should call the listener synchronously inside of $apply if outside of $apply',
@@ -74,15 +75,16 @@ describe('event directives', function() {
 
     it('should call the listener asynchronously during $apply',
         inject(function($rootScope, $compile) {
-      element = $compile('<input type="text" ng-blur="blur()">')($rootScope);
-      $rootScope.blur = jasmine.createSpy('blur');
+      var scope = $rootScope.$new(true);
+      element = $compile('<input type="text" ng-blur="blur()">')(scope);
+      scope.blur = jasmine.createSpy('blur');
 
-      $rootScope.$apply(function() {
+      scope.$apply(function() {
         element.triggerHandler('blur');
-        expect($rootScope.blur).not.toHaveBeenCalled();
+        expect(scope.blur).not.toHaveBeenCalled();
       });
 
-      expect($rootScope.blur).toHaveBeenCalledOnce();
+      expect(scope.blur).toHaveBeenCalledOnce();
     }));
 
     it('should call the listener synchronously inside of $apply if outside of $apply',
