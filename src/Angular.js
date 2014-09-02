@@ -234,21 +234,21 @@ function isArrayLike(obj) {
  */
 
 function forEach(obj, iterator, context) {
-  var key, length;
+  var key, length, bindedIterator = context ? bind(context, iterator) : iterator;
   if (obj) {
     if (isFunction(obj)) {
       for (key in obj) {
         // Need to check if hasOwnProperty exists,
         // as on IE8 the result of querySelectorAll is an object without a hasOwnProperty function
         if (key != 'prototype' && key != 'length' && key != 'name' && (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
-          iterator.call(context, obj[key], key);
+          bindedIterator(obj[key], key);
         }
       }
     } else if (isArray(obj) || isArrayLike(obj)) {
       var isPrimitive = typeof obj !== 'object';
       for (key = 0, length = obj.length; key < length; key++) {
         if (isPrimitive || key in obj) {
-          iterator.call(context, obj[key], key);
+          bindedIterator(obj[key], key);
         }
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
@@ -256,7 +256,7 @@ function forEach(obj, iterator, context) {
     } else {
       for (key in obj) {
         if (obj.hasOwnProperty(key)) {
-          iterator.call(context, obj[key], key);
+          bindedIterator(obj[key], key);
         }
       }
     }
@@ -276,8 +276,9 @@ function sortedKeys(obj) {
 
 function forEachSorted(obj, iterator, context) {
   var keys = sortedKeys(obj);
+  iterator = context ? bind(context, iterator) : iterator;
   for ( var i = 0; i < keys.length; i++) {
-    iterator.call(context, obj[keys[i]], keys[i]);
+    iterator(obj[keys[i]], keys[i]);
   }
   return keys;
 }
