@@ -616,8 +616,9 @@ function nodeName_(element) {
 
 function map(obj, iterator, context) {
   var results = [];
+  iterator = context ? bind(context, iterator) : iterator;
   forEach(obj, function(value, index, list) {
-    results.push(iterator.call(context, value, index, list));
+    results.push(iterator(value, index, list));
   });
   return results;
 }
