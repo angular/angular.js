@@ -100,7 +100,6 @@ describe('$location', function() {
         /* global Browser: false */
         var b = new Browser($window, $document, fakeLog, sniffer);
         b.pollFns = [];
-        b.$$baseHref = '/';
         return b;
       };
     });
@@ -1541,10 +1540,6 @@ describe('$location', function() {
     it('should listen on click events on href and prevent browser default in html5 mode', function() {
       module(function($locationProvider, $provide) {
         $locationProvider.html5Mode(true);
-        $provide.decorator('$browser', function($delegate) {
-          $delegate.$$baseHref = '/';
-          return $delegate;
-        });
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/somePath">link</a>');
           $compile($rootElement)($rootScope);
