@@ -4641,6 +4641,18 @@ describe("ngAnimate", function() {
         expect(child.hasClass('ng-enter')).toBe(false);
         expect(child.hasClass('ng-enter-active')).toBe(false);
       }));
+
+
+      it('should properly remove classes from SVG elements', inject(function($animate, $rootScope) {
+        var element = jqLite('<svg width="500" height="500"><rect class="class-of-doom"></rect></svg>');
+        var child = element.find('rect');
+        $animate.removeClass(child, 'class-of-doom');
+
+        $rootScope.$digest();
+        expect(child.attr('class')).toBe('');
+
+        dealoc(element);
+      }));
     });
   });
 });
