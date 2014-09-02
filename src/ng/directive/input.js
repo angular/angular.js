@@ -1010,43 +1010,43 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 }
 
 function weekParser(isoWeek) {
-   if(isDate(isoWeek)) {
-      return isoWeek;
-   }
+  if (isDate(isoWeek)) {
+    return isoWeek;
+  }
 
-   if(isString(isoWeek)) {
-      WEEK_REGEXP.lastIndex = 0;
-      var parts = WEEK_REGEXP.exec(isoWeek);
-      if(parts) {
-         var year = +parts[1],
-            week = +parts[2],
-            firstThurs = getFirstThursdayOfYear(year),
-            addDays = (week - 1) * 7;
-         return new Date(year, 0, firstThurs.getDate() + addDays);
-      }
-   }
+  if (isString(isoWeek)) {
+    WEEK_REGEXP.lastIndex = 0;
+    var parts = WEEK_REGEXP.exec(isoWeek);
+    if (parts) {
+      var year = +parts[1],
+          week = +parts[2],
+          firstThurs = getFirstThursdayOfYear(year),
+          addDays = (week - 1) * 7;
+      return new Date(year, 0, firstThurs.getDate() + addDays);
+    }
+  }
 
-   return NaN;
+  return NaN;
 }
 
 function createDateParser(regexp, mapping) {
-   return function(iso) {
+  return function(iso) {
       var parts, map;
 
-      if(isDate(iso)) {
-         return iso;
+      if (isDate(iso)) {
+        return iso;
       }
 
-      if(isString(iso)) {
+      if (isString(iso)) {
          regexp.lastIndex = 0;
          parts = regexp.exec(iso);
 
-         if(parts) {
+         if (parts) {
             parts.shift();
             map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0, ss: 0 };
 
             forEach(parts, function(part, index) {
-               if(index < mapping.length) {
+               if (index < mapping.length) {
                   map[mapping[index]] = +part;
                }
             });
@@ -1055,47 +1055,47 @@ function createDateParser(regexp, mapping) {
       }
 
       return NaN;
-   };
+  };
 }
 
 function createDateInputType(type, regexp, parseDate, format) {
-   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
-      badInputChecker(scope, element, attr, ctrl);
-      baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
-      var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
+  return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
+    badInputChecker(scope, element, attr, ctrl);
+    baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+    var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
 
-      ctrl.$$parserName = type;
-      ctrl.$parsers.push(function(value) {
-         if (ctrl.$isEmpty(value)) return null;
-         if (regexp.test(value)) {
-            var parsedDate = parseDate(value);
-            if (timezone === 'UTC') {
-              parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
-            }
-            return parsedDate;
-         }
-         return undefined;
-      });
-
-      ctrl.$formatters.push(function(value) {
-         if(isDate(value)) {
-            return $filter('date')(value, format, timezone);
-         }
-         return '';
-      });
-
-      if(attr.min) {
-        ctrl.$validators.min = function(value) {
-          return ctrl.$isEmpty(value) || isUndefined(attr.min) || parseDate(value) >= parseDate(attr.min);
-        };
+    ctrl.$$parserName = type;
+    ctrl.$parsers.push(function(value) {
+      if (ctrl.$isEmpty(value)) return null;
+      if (regexp.test(value)) {
+        var parsedDate = parseDate(value);
+        if (timezone === 'UTC') {
+          parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+        }
+        return parsedDate;
       }
+      return undefined;
+    });
 
-      if(attr.max) {
-        ctrl.$validators.max = function(value) {
-          return ctrl.$isEmpty(value) || isUndefined(attr.max) || parseDate(value) <= parseDate(attr.max);
-        };
+    ctrl.$formatters.push(function(value) {
+      if (isDate(value)) {
+        return $filter('date')(value, format, timezone);
       }
-   };
+      return '';
+    });
+
+    if (attr.min) {
+      ctrl.$validators.min = function(value) {
+        return ctrl.$isEmpty(value) || isUndefined(attr.min) || parseDate(value) >= parseDate(attr.min);
+      };
+    }
+
+    if (attr.max) {
+      ctrl.$validators.max = function(value) {
+        return ctrl.$isEmpty(value) || isUndefined(attr.max) || parseDate(value) <= parseDate(attr.max);
+      };
+    }
+  };
 }
 
 function badInputChecker(scope, element, attr, ctrl) {
@@ -1115,8 +1115,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   ctrl.$$parserName = 'number';
   ctrl.$parsers.push(function(value) {
-    if(ctrl.$isEmpty(value))      return null;
-    if(NUMBER_REGEXP.test(value)) return parseFloat(value);
+    if (ctrl.$isEmpty(value))      return null;
+    if (NUMBER_REGEXP.test(value)) return parseFloat(value);
     return undefined;
   });
 
@@ -1528,7 +1528,7 @@ var VALID_CLASS = 'ng-valid',
             restrict: 'A', // only activate on element attribute
             require: '?ngModel', // get a hold of NgModelController
             link: function(scope, element, attrs, ngModel) {
-              if(!ngModel) return; // do nothing if no ng-model
+              if (!ngModel) return; // do nothing if no ng-model
 
               // Specify how UI should be updated
               ngModel.$render = function() {
@@ -1546,7 +1546,7 @@ var VALID_CLASS = 'ng-valid',
                 var html = element.html();
                 // When we clear the content editable the browser leaves a <br> behind
                 // If strip-br attribute is provided then we strip this out
-                if( attrs.stripBr && html == '<br>' ) {
+                if ( attrs.stripBr && html == '<br>' ) {
                   html = '';
                 }
                 ngModel.$setViewValue(html);
@@ -1693,7 +1693,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     // just incase an asnyc validator is still running while
     // the parser fails
-    if(ctrl.$pending) {
+    if (ctrl.$pending) {
       ctrl.$$clearPending();
     }
 
@@ -1777,7 +1777,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$valid = true;
         ctrl.$invalid = false;
       }
-    } else if(!$error[validationErrorKey]) {
+    } else if (!$error[validationErrorKey]) {
       invalidCount++;
       if (!pendingCount) {
         toggleValidCss(false);
@@ -1933,7 +1933,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$$runValidators = function(modelValue, viewValue) {
     // this is called in the event if incase the input value changes
     // while a former asynchronous validator is still doing its thing
-    if(ctrl.$pending) {
+    if (ctrl.$pending) {
       ctrl.$$clearPending();
     }
 
@@ -2001,7 +2001,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     var hasBadInput, modelValue = viewValue;
     for(var i = 0; i < ctrl.$parsers.length; i++) {
       modelValue = ctrl.$parsers[i](modelValue);
-      if(isUndefined(modelValue)) {
+      if (isUndefined(modelValue)) {
         hasBadInput = true;
         break;
       }
@@ -2092,11 +2092,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         options = ctrl.$options,
         debounce;
 
-    if(options && isDefined(options.debounce)) {
+    if (options && isDefined(options.debounce)) {
       debounce = options.debounce;
-      if(isNumber(debounce)) {
+      if (isNumber(debounce)) {
         debounceDelay = debounce;
-      } else if(isNumber(debounce[trigger])) {
+      } else if (isNumber(debounce[trigger])) {
         debounceDelay = debounce[trigger];
       } else if (isNumber(debounce['default'])) {
         debounceDelay = debounce['default'];
@@ -2452,7 +2452,7 @@ var patternDirective = function() {
 
       var regexp, patternExp = attr.ngPattern || attr.pattern;
       attr.$observe('pattern', function(regex) {
-        if(isString(regex) && regex.length > 0) {
+        if (isString(regex) && regex.length > 0) {
           regex = new RegExp(regex);
         }
 
