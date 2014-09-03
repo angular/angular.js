@@ -1447,7 +1447,7 @@ var VALID_CLASS = 'ng-valid',
  *      perform an asynchronous validation (e.g. a HTTP request). The validation function that is provided
  *      is expected to return a promise when it is run during the model validation process. Once the promise
  *      is delivered then the validation status will be set to true when fulfilled and false when rejected.
- *      When the asynchronous validators are trigged, each of the validators will run in parallel and the model
+ *      When the asynchronous validators are triggered, each of the validators will run in parallel and the model
  *      value will only be updated once all validators have been fulfilled. Also, keep in mind that all
  *      asynchronous validators will only run once all synchronous validators have passed.
  *
@@ -1457,12 +1457,14 @@ var VALID_CLASS = 'ng-valid',
  * ```js
  * ngModel.$asyncValidators.uniqueUsername = function(modelValue, viewValue) {
  *   var value = modelValue || viewValue;
+ *
+ *   // Lookup user by username
  *   return $http.get('/api/users/' + value).
- *      then(function() {
- *        //username exists, this means the validator fails
- *        return false;
- *      }, function() {
- *        //username does not exist, therefore this validation is true
+ *      then(function resolved() {
+ *        //username exists, this means validation fails
+ *        return $q.reject('exists');
+ *      }, function rejected() {
+ *        //username does not exist, therefore this validation passes
  *        return true;
  *      });
  * };
