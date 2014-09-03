@@ -211,6 +211,10 @@ facilitate the browser URL change and history management.
 ## Hashbang mode (default mode)
 
 In this mode, `$location` uses Hashbang URLs in all browsers.
+Angular also does not intercept and rewrite links in this mode. I.e. links work
+as expected and also perform full page reloads when other parts of the url
+than the hash fragment was changed.
+
 
 ### Example
 
@@ -249,6 +253,10 @@ having to worry about whether the browser displaying your app supports the histo
 
 - Opening a regular URL in a legacy browser -> redirects to a hashbang URL
 - Opening hashbang URL in a modern browser -> rewrites to a regular URL
+
+Note that in this mode, Angular intercepts all links (subject to the "Html link rewriting" rules below)
+and updates the url in a way that never performs a full page reload.
+
 
 ### Example
 
@@ -298,8 +306,8 @@ history API  or not; the `$location` service makes this transparent to you.
 
 ### Html link rewriting
 
-When you use HTML5 history API mode, you will need different links in different browsers, but all you
-have to do is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
+When you use HTML5 history API mode, you will not need special hashbang links. All you have to do
+is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
 
 When a user clicks on this link,
 
@@ -314,16 +322,8 @@ reload to the original link.
   Example: `<a href="/ext/link?a=b" target="_self">link</a>`
 - Absolute links that go to a different domain<br>
   Example: `<a href="http://angularjs.org/">link</a>`
-- Links starting with '/' that lead to a different base path when base is defined<br>
+- Links starting with '/' that lead to a different base path<br>
   Example: `<a href="/not-my-base/link">link</a>`
-
-When running Angular in the root of a domain, along side perhaps a normal application in the same
-directory, the "otherwise" route handler will try to handle all the URLs, including ones that map
-to static files.
-
-To prevent this, you can set your base href for the app to `<base href=".">` and then prefix links
-to URLs that should be handled with `.`. Now, links to locations, which are not to be routed by Angular,
-are not prefixed with `.` and will not be intercepted by the `otherwise` rule in your `$routeProvider`.
 
 
 ### Server side
