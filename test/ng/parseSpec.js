@@ -722,7 +722,7 @@ describe('parser', function() {
               scope.$eval('a.toString.constructor = 1', scope);
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                    'Expression: a.toString.constructor = 1');
+                    'Expression: a.toString.constructor');
           });
 
           it('should disallow traversing the Function object in a setter: E02', function() {
@@ -733,7 +733,7 @@ describe('parser', function() {
               scope.$eval('hasOwnProperty.constructor.prototype.valueOf = 1');
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                    'Expression: hasOwnProperty.constructor.prototype.valueOf = 1');
+                    'Expression: hasOwnProperty.constructor.prototype.valueOf');
           });
 
           it('should disallow passing the Function object as a parameter: E03', function() {
