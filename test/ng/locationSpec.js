@@ -1230,7 +1230,7 @@ describe('$location', function() {
           initBrowser(),
           initLocation(),
           function($browser) {
-            browserTrigger(link, 'click', ['ctrl']);
+            browserTrigger(link, 'click', { keys: ['ctrl'] });
             expectNoRewrite($browser);
           }
         );
@@ -1243,7 +1243,7 @@ describe('$location', function() {
           initBrowser(),
           initLocation(),
           function($browser) {
-            browserTrigger(link, 'click', ['meta']);
+            browserTrigger(link, 'click', { keys: ['meta'] });
             expectNoRewrite($browser);
           }
         );
