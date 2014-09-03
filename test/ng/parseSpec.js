@@ -722,7 +722,7 @@ describe('parser', function() {
               scope.$eval('a.toString.constructor = 1', scope);
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                    'Expression: a.toString.constructor = 1');
+                    'Expression: a.toString.constructor');
           });
 
 
