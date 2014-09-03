@@ -1,6 +1,10 @@
 module.exports = function(config) {
   config.set({
-    scripts: [{
+    scripts: [
+    {
+      "id": "jquery",
+      "src": "jquery-noop.js"
+    },{
       id: 'angular',
       src: '/build/angular.js'
     },{
