@@ -506,6 +506,8 @@ forEach('input,select,option,textarea,button,form,details'.split(','), function(
 var ALIASED_ATTR = {
   'ngMinlength' : 'minlength',
   'ngMaxlength' : 'maxlength',
+  'ngMin' : 'min',
+  'ngMax' : 'max',
   'ngPattern' : 'pattern'
 };
 
