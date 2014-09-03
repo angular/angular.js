@@ -1082,16 +1082,30 @@ function createDateInputType(type, regexp, parseDate, format) {
       return '';
     });
 
-    if (attr.min) {
+    if (attr.min || attr.ngMin) {
+      var minVal;
       ctrl.$validators.min = function(value) {
-        return ctrl.$isEmpty(value) || isUndefined(attr.min) || parseDate(value) >= parseDate(attr.min);
+        return ctrl.$isEmpty(value) || isUndefined(minVal) || parseDate(value) >= minVal;
       };
+      attr.$observe('min', function(val) {
+        minVal = parseObservedDateValue(val);
+        ctrl.$validate();
+      });
     }
 
-    if (attr.max) {
+    if (attr.max || attr.ngMax) {
+      var maxVal;
       ctrl.$validators.max = function(value) {
-        return ctrl.$isEmpty(value) || isUndefined(attr.max) || parseDate(value) <= parseDate(attr.max);
+        return ctrl.$isEmpty(value) || isUndefined(maxVal) || parseDate(value) <= maxVal;
       };
+      attr.$observe('max', function(val) {
+        maxVal = parseObservedDateValue(val);
+        ctrl.$validate();
+      });
+    }
+
+    function parseObservedDateValue(val) {
+      return isDefined(val) ? (isDate(val) ? val : parseDate(val)) : undefined;
     }
   };
 }
