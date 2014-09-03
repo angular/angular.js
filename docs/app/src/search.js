@@ -127,13 +127,13 @@ angular.module('search', [])
   };
 })
 
-.directive('docsSearchInput', ['$document',function($document) {
+.directive('docsSearchInput', ['$document', function($document) {
   return function(scope, element, attrs) {
     var ESCAPE_KEY_KEYCODE = 27,
         FORWARD_SLASH_KEYCODE = 191;
     angular.element($document[0].body).on('keydown', function(event) {
       var input = element[0];
-      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
+      if(event.keyCode == FORWARD_SLASH_KEYCODE && $document[0].activeElement != input) {
         event.stopPropagation();
         event.preventDefault();
         input.focus();
