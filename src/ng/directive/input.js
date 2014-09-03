@@ -1129,15 +1129,35 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   });
 
   if (attr.min) {
+    var minVal;
     ctrl.$validators.min = function(value) {
-      return ctrl.$isEmpty(value) || isUndefined(attr.min) || value >= parseFloat(attr.min);
+      return ctrl.$isEmpty(value) || isUndefined(minVal) || value >= minVal;
     };
+
+    attr.$observe('min', function(val) {
+      if (isDefined(val) && !isNumber(val)) {
+        val = parseFloat(val, 10);
+      }
+      minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
   }
 
   if (attr.max) {
+    var maxVal;
     ctrl.$validators.max = function(value) {
-      return ctrl.$isEmpty(value) || isUndefined(attr.max) || value <= parseFloat(attr.max);
+      return ctrl.$isEmpty(value) || isUndefined(maxVal) || value <= maxVal;
     };
+
+    attr.$observe('max', function(val) {
+      if (isDefined(val) && !isNumber(val)) {
+        val = parseFloat(val, 10);
+      }
+      maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
   }
 }
 
