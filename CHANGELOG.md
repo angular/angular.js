@@ -2745,6 +2745,13 @@ For more info: http://blog.angularjs.org/2013/12/angularjs-13-new-release-approa
     application if 100s of elements are being inserted into the page. Therefore after this
     change callbacks are only fired if registered on the element being animated.
 
+- **input:**
+  - due to [a9fcb0d0](https://github.com/angular/angular.js/commit/a9fcb0d0fc6456f80501b8820d02b04d7c15b6d6),
+    input[type=file] will no longer support ngModel. Due to browser support being spotty among target browsers,
+    file inputs cannot be cleanly supported, and even features which technically do work (such as ng-change)
+    work in an inconsistent way depending on the attributes of the form control.
+
+    As a workaround, one can manually listen for change events on file inputs and handle them manually.
 
 <a name="1.2.12"></a>
 # 1.2.12 cauliflower-eradication (2014-02-07)
