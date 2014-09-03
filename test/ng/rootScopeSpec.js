@@ -1555,6 +1555,24 @@ describe('Scope', function() {
         }));
 
 
+        it('should not decrement twice if the deregistration function is called twice', inject(function($rootScope) {
+          var spy = jasmine.createSpy(),
+            child = $rootScope.$new(),
+            listenerRemove1,
+            listenerRemove2;
+
+          listenerRemove1 = child.$on('abc', spy);
+          listenerRemove2 = child.$on('abc', spy);
+
+          expect($rootScope.$$listenerCount['abc']).toBe(2);
+          listenerRemove1();
+          expect($rootScope.$$listenerCount['abc']).toBe(1);
+          listenerRemove1();
+          expect($rootScope.$$listenerCount['abc']).toBe(1);
+          listenerRemove2();
+          expect($rootScope.$$listenerCount['abc']).toBeUndefined();
+        }));
+
         it('should decrement ancestor $$listenerCount entries', inject(function($rootScope) {
           var child1 = $rootScope.$new(),
               child2 = child1.$new(),

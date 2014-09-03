@@ -1078,11 +1078,12 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
-        var namedListeners = this.$$listeners[name];
+        var namedListeners = this.$$listeners[name],
+          listenerWrap = {listener: listener};
         if (!namedListeners) {
           this.$$listeners[name] = namedListeners = [];
         }
-        namedListeners.push(listener);
+        namedListeners.push(listenerWrap);
 
         var current = this;
         do {
@@ -1094,8 +1095,11 @@ function $RootScopeProvider(){
 
         var self = this;
         return function() {
-          namedListeners[indexOf(namedListeners, listener)] = null;
-          decrementListenerCount(self, 1, name);
+          var idx = indexOf(namedListeners, listenerWrap);
+          if (idx >= 0) {
+            namedListeners[idx] = null;
+            decrementListenerCount(self, 1, name);
+          }
         };
       },
 
@@ -1153,7 +1157,7 @@ function $RootScopeProvider(){
             }
             try {
               //allow all listeners attached to the current scope to run
-              namedListeners[i].apply(null, listenerArgs);
+              namedListeners[i].listener.apply(null, listenerArgs);
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -1226,7 +1230,7 @@ function $RootScopeProvider(){
             }
 
             try {
-              listeners[i].apply(null, listenerArgs);
+              listeners[i].listener.apply(null, listenerArgs);
             } catch(e) {
               $exceptionHandler(e);
             }
