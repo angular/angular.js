@@ -334,20 +334,6 @@ describe('parser', function() {
         expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
       });
 
-      it('should parse filters', function() {
-        $filterProvider.register('substring', valueFn(function(input, start, end) {
-          return input.substring(start, end);
-        }));
-
-        expect(function() {
-          scope.$eval("1|nonexistent");
-        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter');
-
-        scope.offset =  3;
-        expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
-        expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
-      });
-
       it('should access scope', function() {
         scope.a =  123;
         scope.b = {c: 456};
@@ -590,12 +576,6 @@ describe('parser', function() {
     //    expect(scope.$eval('books[1]')).toEqual("moby");
       });
 
-      it('should evaluate grouped filters', function() {
-        scope.name = 'MISKO';
-        expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
-        expect(scope.$eval('n')).toEqual('misko');
-      });
-
       it('should evaluate remainder', function() {
         expect(scope.$eval('1%2')).toEqual(1);
       });
@@ -676,6 +656,32 @@ describe('parser', function() {
         scope.b = {c: "bc"};
         expect(scope.$eval('a + \n b.c + \r "\td" + \t \r\n\r "\r\n\n"')).toEqual("abc\td\r\n\n");
       });
+
+
+      describe('filters', function() {
+
+        it('should parse filters', function() {
+          $filterProvider.register('substring', valueFn(function(input, start, end) {
+            return input.substring(start, end);
+          }));
+
+          expect(function() {
+            scope.$eval("1|nonexistent");
+          }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter');
+
+          scope.offset =  3;
+          expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
+          expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
+        });
+
+
+        it('should evaluate grouped filters', function() {
+          scope.name = 'MISKO';
+          expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
+          expect(scope.$eval('n')).toEqual('misko');
+        });
+      });
+
 
       describe('sandboxing', function() {
         describe('Function constructor', function() {
