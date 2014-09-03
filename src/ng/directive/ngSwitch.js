@@ -42,7 +42,7 @@
  *
  *
  * @scope
- * @priority 800
+ * @priority 1200
  * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
  * On child elements add:
  *
