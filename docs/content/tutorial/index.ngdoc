@@ -62,7 +62,7 @@ a few git commands.
 ### Install Git
 
 You can download and install Git from http://git-scm.com/download. Once installed you should have
-access to the `git` command line tool.  The main commands that you will need to use are:
+access to the `git` command line tool(i.e. Git Bash).  The main commands that you will need to use are:
 
 - `git clone ...` : clone a remote repository onto your local machine
 - `git checkout ...` : check out a particular branch or a tagged version of the code to hack on
@@ -70,13 +70,13 @@ access to the `git` command line tool.  The main commands that you will need to 
 ### Download angular-phonecat
 
 Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by running the following
-command:
+command in Git Bash:
 
 ```
 git clone --depth=14 https://github.com/angular/angular-phonecat.git
 ```
 
-This command creates the `angular-phonecat` directory in your current directory.
+This command creates the `angular-phonecat` directory in your current directory. If you want to change directory then please use CD command and then execute above command.
 
 <div class="alert alert-info">The `--depth=14` option just tells Git to pull down only the last 14 commits.  This makes the
 download much smaller and faster.
@@ -98,7 +98,7 @@ If you want to run the preconfigured local web-server and the test tools then yo
 [Node.js v0.10.27+][node].
 
 You can download a Node.js installer for your operating system from http://nodejs.org/download/.
-
+Note: While installing Nodejs please make sure that you install it in angular-phonecat directory.
 Check the version of Node.js that you have installed by running the following command:
 
 ```
@@ -137,7 +137,7 @@ This command will download the following tools, into the `node_modules` director
 
 Running `npm install` will also automatically use bower to download the Angular framework into the
 `app/bower_components` directory.
-
+Note: if npm command execution gives error: ENOENT then create npm foled in listed directory.
 <div class="alert alert-info">
   Note the angular-phonecat project is setup to install and run these utilities via npm scripts.
   This means that you do not have to have any of these utilities installed globally on your system
