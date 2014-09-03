@@ -2063,9 +2063,12 @@ describe('input', function() {
     });
 
     describe('min', function (){
-      beforeEach(function (){
-        compileInput('<input type="month" ng-model="value" name="alias" min="2013-01" />');
-      });
+      var scope;
+      beforeEach(inject(function ($rootScope){
+        scope = $rootScope;
+        $rootScope.minVal = '2013-01';
+        compileInput('<input type="month" ng-model="value" name="alias" min="{{ minVal }}" />');
+      }));
 
       it('should invalidate', function (){
         changeInputValueTo('2012-12');
@@ -2080,12 +2083,27 @@ describe('input', function() {
         expect(+scope.value).toBe(+new Date(2013, 6, 1));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should revalidate when the min value changes', function (){
+        changeInputValueTo('2013-07');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.min).toBeFalsy();
+
+        scope.minVal = '2014-01';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+      });
     });
 
     describe('max', function(){
-      beforeEach(function (){
-        compileInput('<input type="month" ng-model="value" name="alias" max="2013-01" />');
-      });
+      var scope;
+      beforeEach(inject(function ($rootScope){
+        scope = $rootScope;
+        $rootScope.maxVal = '2013-01';
+        compileInput('<input type="month" ng-model="value" name="alias" max="{{ maxVal }}" />');
+      }));
 
       it('should validate', function (){
         changeInputValueTo('2012-03');
@@ -2098,6 +2116,18 @@ describe('input', function() {
         changeInputValueTo('2013-05');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeUndefined();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should revalidate when the max value changes', function (){
+        changeInputValueTo('2012-07');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.max).toBeFalsy();
+
+        scope.maxVal = '2012-01';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
         expect(scope.form.alias.$error.max).toBeTruthy();
       });
     });
@@ -2204,9 +2234,12 @@ describe('input', function() {
     });
 
     describe('min', function (){
-      beforeEach(function (){
-        compileInput('<input type="week" ng-model="value" name="alias" min="2013-W01" />');
-      });
+      var scope;
+      beforeEach(inject(function ($rootScope){
+        scope = $rootScope;
+        $rootScope.minVal = '2013-W01';
+        compileInput('<input type="week" ng-model="value" name="alias" min="{{ minVal }}" />');
+      }));
 
       it('should invalidate', function (){
         changeInputValueTo('2012-W12');
@@ -2221,12 +2254,26 @@ describe('input', function() {
         expect(+scope.value).toBe(+new Date(2013, 0, 17));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should revalidate when the min value changes', function (){
+        changeInputValueTo('2013-W03');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.min).toBeFalsy();
+
+        scope.minVal = '2014-W01';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+      });
     });
 
     describe('max', function(){
-      beforeEach(function (){
-        compileInput('<input type="week" ng-model="value" name="alias" max="2013-W01" />');
-      });
+      beforeEach(inject(function ($rootScope){
+        $rootScope.maxVal = '2013-W01';
+        scope = $rootScope;
+        compileInput('<input type="week" ng-model="value" name="alias" max="{{ maxVal }}" />');
+      }));
 
       it('should validate', function (){
         changeInputValueTo('2012-W01');
@@ -2239,6 +2286,18 @@ describe('input', function() {
         changeInputValueTo('2013-W03');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeUndefined();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should revalidate when the max value changes', function (){
+        changeInputValueTo('2012-W03');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.max).toBeFalsy();
+
+        scope.maxVal = '2012-W01';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
         expect(scope.form.alias.$error.max).toBeTruthy();
       });
     });
@@ -2363,9 +2422,12 @@ describe('input', function() {
     });
 
     describe('min', function (){
-      beforeEach(function (){
-        compileInput('<input type="datetime-local" ng-model="value" name="alias" min="2000-01-01T12:30:00" />');
-      });
+      var scope;
+      beforeEach(inject(function ($rootScope){
+        $rootScope.minVal = '2000-01-01T12:30:00';
+        scope = $rootScope;
+        compileInput('<input type="datetime-local" ng-model="value" name="alias" min="{{ minVal }}" />');
+      }));
 
       it('should invalidate', function (){
         changeInputValueTo('1999-12-31T01:02:00');
@@ -2380,12 +2442,27 @@ describe('input', function() {
         expect(+scope.value).toBe(+new Date(2000, 0, 1, 23, 2, 0));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should revalidate when the min value changes', function (){
+        changeInputValueTo('2000-02-01T01:02:00');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.min).toBeFalsy();
+
+        scope.minVal = '2010-01-01T01:02:00';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+      });
     });
 
     describe('max', function (){
-      beforeEach(function (){
-        compileInput('<input type="datetime-local" ng-model="value" name="alias" max="2019-01-01T01:02:00" />');
-      });
+      var scope;
+      beforeEach(inject(function ($rootScope){
+        $rootScope.maxVal = '2019-01-01T01:02:00';
+        scope = $rootScope;
+        compileInput('<input type="datetime-local" ng-model="value" name="alias" max="{{ maxVal }}" />');
+      }));
 
       it('should invalidate', function (){
         changeInputValueTo('2019-12-31T01:02:00');
@@ -2399,6 +2476,18 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect(+scope.value).toBe(+new Date(2000, 0, 1, 1, 2, 0));
         expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should revalidate when the max value changes', function (){
+        changeInputValueTo('2000-02-01T01:02:00');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.max).toBeFalsy();
+
+        scope.maxVal = '2000-01-01T01:02:00';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.max).toBeTruthy();
       });
     });
 
@@ -2550,9 +2639,12 @@ describe('input', function() {
     });
 
     describe('min', function (){
-      beforeEach(function (){
-        compileInput('<input type="time" ng-model="value" name="alias" min="09:30:00" />');
-      });
+      var scope;
+      beforeEach(inject(function ($rootScope){
+        $rootScope.minVal = '09:30:00';
+        scope = $rootScope;
+        compileInput('<input type="time" ng-model="value" name="alias" min="{{ minVal }}" />');
+      }));
 
       it('should invalidate', function (){
         changeInputValueTo('01:02:00');
@@ -2566,6 +2658,18 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect(+scope.value).toBe(+new Date(1970, 0, 1, 23, 2, 0));
         expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+
+      it('should revalidate when the min value changes', function (){
+        changeInputValueTo('23:02:00');
+        expect(inputElm).toBeValid();
+        expect(scope.form.alias.$error.min).toBeFalsy();
+
+        scope.minVal = '23:55:00';
+        scope.$digest();
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.min).toBeTruthy();
       });
     });
 
@@ -2589,32 +2693,30 @@ describe('input', function() {
       });
     });
 
-    it('should validate even if max value changes on-the-fly', function(done) {
-      scope.max = '21:02:00';
+    it('should validate even if max value changes on-the-fly', function() {
+      scope.max = '4:02:00';
       compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
 
-      changeInputValueTo('22:34:00');
+      changeInputValueTo('05:34:00');
       expect(inputElm).toBeInvalid();
 
-      scope.max = '12:34:00';
-      scope.$digest(function () {
-        expect(inputElm).toBeValid();
-        done();
-      });
+      scope.max = '06:34:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
     });
 
-    it('should validate even if min value changes on-the-fly', function(done) {
+    it('should validate even if min value changes on-the-fly', function() {
       scope.min = '08:45:00';
       compileInput('<input type="time" ng-model="value" name="alias" min="{{min}}" />');
 
       changeInputValueTo('06:15:00');
       expect(inputElm).toBeInvalid();
 
-      scope.min = '13:50:00';
-      scope.$digest(function () {
-        expect(inputElm).toBeValid();
-        done();
-      });
+      scope.min = '05:50:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
     });
   });
 
