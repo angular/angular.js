@@ -994,7 +994,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.9.7",
+      "version": "0.9.8",
       "dependencies": {
         "lodash": {
           "version": "2.4.1"
