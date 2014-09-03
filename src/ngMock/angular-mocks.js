@@ -1107,7 +1107,7 @@ angular.mock.$HttpBackendProvider = function() {
  * @param {Object=} $browser Auto-flushing enabled if specified
  * @return {Object} Instance of $httpBackend mock
  */
-function createHttpBackendMock($rootScope, $delegate, $browser) {
+function createHttpBackendMock($rootScope, $delegate, $browser, $timeout) {
   var definitions = [],
       expectations = [],
       responses = [],
@@ -1181,12 +1181,30 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
     var i = -1, definition;
     while ((definition = definitions[++i])) {
       if (definition.match(method, url, data, headers || {})) {
-        if (definition.response) {
-          // if $browser specified, we do auto flush all requests
-          ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
-        } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers, timeout, withCredentials);
-        } else throw new Error('No response defined !');
+
+        // if the delay is falsey (null, ie not set, or set to 0), then handle as before.
+        // this is so that any existing tests work, otherwise they'd need to add a flush.
+        if ( !definition.delay ) {
+          if (definition.response) {
+            // if $browser specified, we do auto flush all requests
+            ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
+          } else if (definition.passThrough) {
+            $delegate(method, url, data, callback, headers, timeout, withCredentials);
+          } else throw new Error('No response defined !');
+        }
+        else if ( !$browser ) {
+          throw new Error("Can only use `after()` on e2e and backendless mocks, not unit test");
+        } else {
+          var wrapFunc;
+          if (definition.response) {
+            wrapFunc = wrapResponse(definition);
+          } else if (definition.passThrough) {
+            wrapFunc = function () {
+              $delegate(method, url, data, callback, headers, timeout, withCredentials);
+            };
+          } else throw new Error('No response defined !');
+          $browser.defer(wrapFunc, definition.delay);
+        }
         return;
       }
     }
@@ -1235,6 +1253,10 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
       chain.passThrough = function() {
         definition.response = undefined;
         definition.passThrough = true;
+        return chain;
+      };
+      chain.after = function ( millis ) {
+        definition.delay = millis;
         return chain;
       };
     }
@@ -1585,6 +1607,9 @@ function MockHttpExpectation(method, url, data, headers) {
 
   this.data = data;
   this.headers = headers;
+  // the number of milliseconds to delay the response in E2E and
+  //   backendless responses.
+  this.delay   = null;
 
   this.match = function(m, u, d, h) {
     if (method != m) return false;
@@ -1897,7 +1922,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *  - passThrough – `{function()}` – Any request matching a backend definition with
  *    `passThrough` handler will be passed through to the real backend (an XHR request will be made
  *    to the server.)
- *  - Both methods return the `requestHandler` object for possible overrides.
+ *  - after - `{function(milliseconds)}` - Any request with an `after` call will have it's response
+ *    delayed by that number of milliseconds.
+ *  - All methods return the `requestHandler` object for possible overrides.
  */
 
 /**
@@ -1910,9 +1937,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string|RegExp|function(string)} url HTTP url or function that receives the url
  *   and returns true if the url match the current definition.
  * @param {(Object|function(Object))=} headers HTTP headers.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 
 /**
@@ -1925,9 +1952,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string|RegExp|function(string)} url HTTP url or function that receives the url
  *   and returns true if the url match the current definition.
  * @param {(Object|function(Object))=} headers HTTP headers.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 
 /**
@@ -1940,9 +1967,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string|RegExp|function(string)} url HTTP url or function that receives the url
  *   and returns true if the url match the current definition.
  * @param {(Object|function(Object))=} headers HTTP headers.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 
 /**
@@ -1956,9 +1983,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *   and returns true if the url match the current definition.
  * @param {(string|RegExp)=} data HTTP request body.
  * @param {(Object|function(Object))=} headers HTTP headers.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 
 /**
@@ -1972,9 +1999,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *   and returns true if the url match the current definition.
  * @param {(string|RegExp)=} data HTTP request body.
  * @param {(Object|function(Object))=} headers HTTP headers.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 
 /**
@@ -1988,9 +2015,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *   and returns true if the url match the current definition.
  * @param {(string|RegExp)=} data HTTP request body.
  * @param {(Object|function(Object))=} headers HTTP headers.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 
 /**
@@ -2002,13 +2029,13 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * @param {string|RegExp|function(string)} url HTTP url or function that receives the url
  *   and returns true if the url match the current definition.
- * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ * @returns {requestHandler} Returns an object with `respond`, `passThrough`, and `after` methods that
  *   control how a matched request is handled. You can save this object for later use and invoke
- *   `respond` or `passThrough` again in order to change how a matched request is handled.
+ *   `respond`, `passThrough`, or `after` again in order to change how a matched request is handled.
  */
 angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator =
-  ['$rootScope', '$delegate', '$browser', createHttpBackendMock];
+  ['$rootScope', '$delegate', '$browser', '$timeout', createHttpBackendMock];
 
 
 if(window.jasmine || window.mocha) {
