@@ -516,6 +516,17 @@ describe('NgModelController', function() {
       expect(ctrl.$pending).toBeUndefined();
     }));
 
+    it('should not run validators in case view value is not re-rendered', function() {
+      ctrl.$formatters.push(function(value) {
+        return 'nochange';
+      });
+
+      ctrl.$validators.spyValidator = jasmine.createSpy('spyValidator');
+      scope.$apply('value = "first"');
+      scope.$apply('value = "second"');
+      expect(ctrl.$validators.spyValidator).toHaveBeenCalledOnce();
+    });
+
     it('should throw an error when a promise is not returned for an asynchronous validator', inject(function($q) {
       ctrl.$asyncValidators.async = function(value) {
         return true;
