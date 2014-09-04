@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Running in Production
+@sortOrder 540
 @description
 
 # Running an AngularJS App in Production

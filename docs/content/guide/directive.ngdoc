@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Directives
+@sortOrder 300
 @description
 
 # Creating Custom Directives

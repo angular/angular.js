@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Controllers
+@sortOrder 220
 @description
 
 # Understanding Controllers

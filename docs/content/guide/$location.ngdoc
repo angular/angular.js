@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Using $location
+@sortOrder 500
 @description
 
 # What does it do?

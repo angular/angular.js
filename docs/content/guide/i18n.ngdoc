@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  i18n and l10n
+@sortOrder 520
 @description
 
 # i18n and l10n
