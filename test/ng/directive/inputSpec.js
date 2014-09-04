@@ -2526,6 +2526,42 @@ describe('input', function() {
 
       expect(inputElm).toBeValid();
     });
+
+    it('should validate even if ng-max value changes on-the-fly', function() {
+      scope.max = '2013-01-01T01:02:00';
+      compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-max="max" />');
+
+      changeInputValueTo('2014-01-01T12:34:00');
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2001-01-01T01:02:00';
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2024-01-01T01:02:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should validate even if ng-min value changes on-the-fly', function() {
+      scope.min = '2013-01-01T01:02:00';
+      compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-min="min" />');
+
+      changeInputValueTo('2010-01-01T12:34:00');
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '2014-01-01T01:02:00';
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '2009-01-01T01:02:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
   });
 
   describe('time', function () {
@@ -2717,6 +2753,32 @@ describe('input', function() {
     it('should validate even if min value changes on-the-fly', function() {
       scope.min = '08:45:00';
       compileInput('<input type="time" ng-model="value" name="alias" min="{{min}}" />');
+
+      changeInputValueTo('06:15:00');
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '05:50:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should validate even if ng-max value changes on-the-fly', function() {
+      scope.max = '4:02:00';
+      compileInput('<input type="time" ng-model="value" name="alias" ng-max="max" />');
+
+      changeInputValueTo('05:34:00');
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '06:34:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should validate even if ng-min value changes on-the-fly', function() {
+      scope.min = '08:45:00';
+      compileInput('<input type="time" ng-model="value" name="alias" ng-min="min" />');
 
       changeInputValueTo('06:15:00');
       expect(inputElm).toBeInvalid();
@@ -2922,6 +2984,42 @@ describe('input', function() {
     it('should validate even if min value changes on-the-fly', function() {
       scope.min = '2013-01-01';
       compileInput('<input type="date" ng-model="value" name="alias" min="{{min}}" />');
+
+      changeInputValueTo('2010-01-01');
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '2014-01-01';
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '2009-01-01';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should validate even if ng-max value changes on-the-fly', function() {
+      scope.max = '2013-01-01';
+      compileInput('<input type="date" ng-model="value" name="alias" ng-max="max" />');
+
+      changeInputValueTo('2014-01-01');
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2001-01-01';
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2021-01-01';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+    it('should validate even if ng-min value changes on-the-fly', function() {
+      scope.min = '2013-01-01';
+      compileInput('<input type="date" ng-model="value" name="alias" ng-min="min" />');
 
       changeInputValueTo('2010-01-01');
       expect(inputElm).toBeInvalid();
