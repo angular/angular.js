@@ -2491,7 +2491,7 @@ describe('input', function() {
       });
     });
 
-    it('should validate even if max value changes on-the-fly', function(done) {
+    it('should validate even if max value changes on-the-fly', function() {
       scope.max = '2013-01-01T01:02:00';
       compileInput('<input type="datetime-local" ng-model="value" name="alias" max="{{max}}" />');
 
@@ -2499,13 +2499,17 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       scope.max = '2001-01-01T01:02:00';
-      scope.$digest(function () {
-        expect(inputElm).toBeValid();
-        done();
-      });
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2024-01-01T01:02:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
     });
 
-    it('should validate even if min value changes on-the-fly', function(done) {
+    it('should validate even if min value changes on-the-fly', function() {
       scope.min = '2013-01-01T01:02:00';
       compileInput('<input type="datetime-local" ng-model="value" name="alias" min="{{min}}" />');
 
@@ -2513,10 +2517,14 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       scope.min = '2014-01-01T01:02:00';
-      scope.$digest(function () {
-        expect(inputElm).toBeValid();
-        done();
-      });
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '2009-01-01T01:02:00';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
     });
   });
 
@@ -2837,6 +2845,23 @@ describe('input', function() {
         expect(+scope.value).toBe(+new Date(2000, 0, 1));
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should parse ISO-based date strings as a valid min date value', inject(function($rootScope) {
+        var scope = $rootScope.$new();
+        var element = $compile('<form name="myForm">' +
+                                 '<input name="myControl" type="date" min="{{ min }}" ng-model="value">' +
+                               '</form>')(scope);
+
+        var inputElm = element.find('input');
+
+        scope.value = new Date(2010, 1, 1, 0, 0, 0);
+        scope.min = new Date(2014, 10, 10, 0, 0, 0);
+        scope.$digest();
+
+        expect(scope.myForm.myControl.$error.min).toBeTruthy();
+
+        dealoc(element);
+      }));
     });
 
     describe('max', function (){
@@ -2857,9 +2882,26 @@ describe('input', function() {
         expect(+scope.value).toBe(+new Date(2000, 0, 1));
         expect(scope.form.alias.$error.max).toBeFalsy();
       });
+
+      it('should parse ISO-based date strings as a valid max date value', inject(function($rootScope) {
+        var scope = $rootScope.$new();
+        var element = $compile('<form name="myForm">' +
+                                 '<input name="myControl" type="date" max="{{ max }}" ng-model="value">' +
+                               '</form>')(scope);
+
+        var inputElm = element.find('input');
+
+        scope.value = new Date(2020, 1, 1, 0, 0, 0);
+        scope.max = new Date(2014, 10, 10, 0, 0, 0);
+        scope.$digest();
+
+        expect(scope.myForm.myControl.$error.max).toBeTruthy();
+
+        dealoc(element);
+      }));
     });
 
-    it('should validate even if max value changes on-the-fly', function(done) {
+    it('should validate even if max value changes on-the-fly', function() {
       scope.max = '2013-01-01';
       compileInput('<input type="date" ng-model="value" name="alias" max="{{max}}" />');
 
@@ -2867,13 +2909,17 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       scope.max = '2001-01-01';
-      scope.$digest(function () {
-        expect(inputElm).toBeValid();
-        done();
-      });
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.max = '2021-01-01';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
     });
 
-    it('should validate even if min value changes on-the-fly', function(done) {
+    it('should validate even if min value changes on-the-fly', function() {
       scope.min = '2013-01-01';
       compileInput('<input type="date" ng-model="value" name="alias" min="{{min}}" />');
 
@@ -2881,10 +2927,14 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       scope.min = '2014-01-01';
-      scope.$digest(function () {
-        expect(inputElm).toBeValid();
-        done();
-      });
+      scope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      scope.min = '2009-01-01';
+      scope.$digest();
+
+      expect(inputElm).toBeValid();
     });
   });
 
