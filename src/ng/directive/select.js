@@ -436,16 +436,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         function getSelectedSet() {
           var selectedSet = false;
           if (multiple) {
-            var modelValue = ctrl.$modelValue;
-            if (trackFn && isArray(modelValue)) {
+            var viewValue = ctrl.$viewValue;
+            if (trackFn && isArray(viewValue)) {
               selectedSet = new HashMap([]);
               var locals = {};
-              for (var trackIndex = 0; trackIndex < modelValue.length; trackIndex++) {
-                locals[valueName] = modelValue[trackIndex];
-                selectedSet.put(trackFn(scope, locals), modelValue[trackIndex]);
+              for (var trackIndex = 0; trackIndex < viewValue.length; trackIndex++) {
+                locals[valueName] = viewValue[trackIndex];
+                selectedSet.put(trackFn(scope, locals), viewValue[trackIndex]);
               }
             } else {
-              selectedSet = new HashMap(modelValue);
+              selectedSet = new HashMap(viewValue);
             }
           }
           return selectedSet;
@@ -470,7 +470,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroup,
               option,
               existingParent, existingOptions, existingOption,
-              modelValue = ctrl.$modelValue,
+              viewValue = ctrl.$viewValue,
               values = valuesFn(scope) || [],
               keys = keyName ? sortedKeys(values) : values,
               key,
@@ -508,10 +508,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             } else {
               if (trackFn) {
                 var modelCast = {};
-                modelCast[valueName] = modelValue;
+                modelCast[valueName] = viewValue;
                 selected = trackFn(scope, modelCast) === trackFn(scope, locals);
               } else {
-                selected = modelValue === valueFn(scope, locals);
+                selected = viewValue === valueFn(scope, locals);
               }
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
@@ -527,7 +527,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             });
           }
           if (!multiple) {
-            if (nullOption || modelValue === null) {
+            if (nullOption || viewValue === null) {
               // insert null option if we have a placeholder, or the model is null
               optionGroups[''].unshift({id:'', label:'', selected:!selectedSet});
             } else if (!selectedSet) {
