@@ -11,6 +11,7 @@
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var ISO_DATE_REGEXP = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
 var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d))?$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
@@ -1036,6 +1037,15 @@ function createDateParser(regexp, mapping) {
     }
 
     if (isString(iso)) {
+      // When a date is JSON'ified to wraps itself inside of an extra
+      // set of double quotes. This makes the date parsing code unable
+      // to match the date string and parse it as a date.
+      if (iso.charAt(0) == '"' && iso.charAt(iso.length-1) == '"') {
+        iso = iso.substring(1, iso.length-1);
+      }
+      if (ISO_DATE_REGEXP.test(iso)) {
+        return new Date(iso);
+      }
       regexp.lastIndex = 0;
       parts = regexp.exec(iso);
 
@@ -1082,7 +1092,7 @@ function createDateInputType(type, regexp, parseDate, format) {
       return '';
     });
 
-    if (attr.min || attr.ngMin) {
+    if (isDefined(attr.min) || attr.ngMin) {
       var minVal;
       ctrl.$validators.min = function(value) {
         return ctrl.$isEmpty(value) || isUndefined(minVal) || parseDate(value) >= minVal;
@@ -1093,7 +1103,7 @@ function createDateInputType(type, regexp, parseDate, format) {
       });
     }
 
-    if (attr.max || attr.ngMax) {
+    if (isDefined(attr.max) || attr.ngMax) {
       var maxVal;
       ctrl.$validators.max = function(value) {
         return ctrl.$isEmpty(value) || isUndefined(maxVal) || parseDate(value) <= maxVal;
