@@ -41,7 +41,7 @@ describe('q', function() {
   }
 
   function _argumentsToString(args) {
-    return map(sliceArgs(args), _argToString).join(',');
+    return sliceArgs(args).map(_argToString).join(',');
   }
 
   // Help log invocation of success(), finally(), progress() and error()

@@ -55,7 +55,6 @@
     "trim": false,
     "isElement": false,
     "makeMap": false,
-    "map": false,
     "size": false,
     "includes": false,
     "arrayRemove": false,
