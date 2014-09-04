@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Migrating from 1.0 to 1.2
+@sortOrder 550
 @description
 
 # Migrating from 1.0 to 1.2

@@ -1,6 +1,6 @@
-@workInProgress
 @ngdoc overview
 @name  E2E Testing
+@sortOrder 420
 @description
 
 # E2E Testing
