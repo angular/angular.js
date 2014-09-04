@@ -143,7 +143,9 @@ var ngSwitchDirective = ['$animate', function($animate) {
           selectedElements = [],
           previousLeaveAnimations = [],
           selectedScopes = [];
-
+      if(!!attr.on && attr.ngSwitch === 'ng-switch'){
+          watchExpr = attr.on;
+      }
       scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
         var i, ii;
         for (i = 0, ii = previousLeaveAnimations.length; i < ii; ++i) {
