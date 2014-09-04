@@ -154,11 +154,12 @@ var ngSwitchDirective = ['$animate', function($animate) {
         for (i = 0, ii = selectedScopes.length; i < ii; ++i) {
           var selected = getBlockNodes(selectedElements[i].clone);
           selectedScopes[i].$destroy();
-
           var promise = previousLeaveAnimations[i] = $animate.leave(selected);
-          promise.then(function() {
-            previousLeaveAnimations.splice(i, 1);
-          });
+          promise.then((function(i) {
+            return function(){
+              previousLeaveAnimations.splice(i, 1);
+            };
+          }(i)));
         }
 
         selectedElements.length = 0;
