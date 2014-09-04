@@ -220,7 +220,7 @@ function $HttpProvider() {
      * it is important to familiarize yourself with these APIs and the guarantees they provide.
      *
      *
-     * # General usage
+     * ## General usage
      * The `$http` service is a function which takes a single argument — a configuration object —
      * that is used to generate an HTTP request and returns  a {@link ng.$q promise}
      * with two $http specific methods: `success` and `error`.
@@ -247,7 +247,7 @@ function $HttpProvider() {
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
      *
-     * # Writing Unit Tests that use $http
+     * ## Writing Unit Tests that use $http
      * When unit testing (using {@link ngMock ngMock}), it is necessary to call
      * {@link ngMock.$httpBackend#flush $httpBackend.flush()} to flush each pending
      * request using trained responses.
@@ -258,7 +258,7 @@ function $HttpProvider() {
      * $httpBackend.flush();
      * ```
      *
-     * # Shortcut methods
+     * ## Shortcut methods
      *
      * Shortcut methods are also available. All shortcut methods require passing in the URL, and
      * request data must be passed in for POST/PUT requests.
@@ -279,7 +279,7 @@ function $HttpProvider() {
      * - {@link ng.$http#patch $http.patch}
      *
      *
-     * # Setting HTTP Headers
+     * ## Setting HTTP Headers
      *
      * The $http service will automatically add certain HTTP headers to all requests. These defaults
      * can be fully configured by accessing the `$httpProvider.defaults.headers` configuration
@@ -310,36 +310,69 @@ function $HttpProvider() {
      * calling `$http(config)`, which overrides the defaults without changing them globally.
      *
      *
-     * # Transforming Requests and Responses
+     * ## Transforming Requests and Responses
      *
-     * Both requests and responses can be transformed using transform functions. By default, Angular
-     * applies these transformations:
+     * Both requests and responses can be transformed using transformation functions: `transformRequest`
+     * and `transformResponse`. These properties can be a single function that returns
+     * the transformed value (`{function(data, headersGetter)`) or an array of such transformation functions,
+     * which allows you to `push` or `unshift` a new transformation function into the transformation chain.
      *
-     * Request transformations:
+     * ### Default Transformations
+     *
+     * The `$httpProvider` provider and `$http` service expose `defaults.transformRequest` and
+     * `defaults.transformResponse` properties. If a request does not provide its own transformations
+     * then these will be applied.
+     *
+     * You can augment or replace the default transformations by modifying these properties by adding to or
+     * replacing the array.
+     *
+     * Angular provides the following default transformations:
+     *
+     * Request transformations (`$httpProvider.defaults.transformRequest` and `$http.defaults.transformRequest`):
      *
      * - If the `data` property of the request configuration object contains an object, serialize it
      *   into JSON format.
      *
-     * Response transformations:
+     * Response transformations (`$httpProvider.defaults.transformResponse` and `$http.defaults.transformResponse`):
      *
      *  - If XSRF prefix is detected, strip it (see Security Considerations section below).
      *  - If JSON response is detected, deserialize it using a JSON parser.
      *
-     * To globally augment or override the default transforms, modify the
-     * `$httpProvider.defaults.transformRequest` and `$httpProvider.defaults.transformResponse`
-     * properties. These properties are by default an array of transform functions, which allows you
-     * to `push` or `unshift` a new transformation function into the transformation chain. You can
-     * also decide to completely override any default transformations by assigning your
-     * transformation functions to these properties directly without the array wrapper.  These defaults
-     * are again available on the $http factory at run-time, which may be useful if you have run-time
-     * services you wish to be involved in your transformations.
      *
-     * Similarly, to locally override the request/response transforms, augment the
-     * `transformRequest` and/or `transformResponse` properties of the configuration object passed
+     * ### Overriding the Default Transformations Per Request
+     *
+     * If you wish override the request/response transformations only for a single request then provide
+     * `transformRequest` and/or `transformResponse` properties on the configuration object passed
      * into `$http`.
      *
+     * Note that if you provide these properties on the config object the default transformations will be
+     * overwritten. If you wish to augment the default transformations then you must include them in your
+     * local transformation array.
      *
-     * # Caching
+     * The following code demonstrates adding a new response transformation to be run after the default response
+     * transformations have been run.
+     *
+     * ```js
+     * function appendTransform(defaults, transform) {
+     *
+     *   // We can't guarantee that the default transformation is an array
+     *   defaults = angular.isArray(defaults) ? defaults : [defaults];
+     *
+     *   // Append the new transformation to the defaults
+     *   return defaults.concat(transform);
+     * }
+     *
+     * $http({
+     *   url: '...',
+     *   method: 'GET',
+     *   transformResponse: appendTransform($http.defaults.transformResponse, function(value) {
+     *     return doTransform(value);
+     *   })
+     * });
+     * ```
+     *
+     *
+     * ## Caching
      *
      * To enable caching, set the request configuration `cache` property to `true` (to use default
      * cache) or to a custom cache object (built with {@link ng.$cacheFactory `$cacheFactory`}).
@@ -362,7 +395,7 @@ function $HttpProvider() {
      * If you set the default cache to `false` then only requests that specify their own custom
      * cache object will be cached.
      *
-     * # Interceptors
+     * ## Interceptors
      *
      * Before you start creating interceptors, be sure to understand the
      * {@link ng.$q $q and deferred/promise APIs}.
@@ -447,7 +480,7 @@ function $HttpProvider() {
      *   });
      * ```
      *
-     * # Security Considerations
+     * ## Security Considerations
      *
      * When designing web applications, consider security threats from:
      *
@@ -458,7 +491,7 @@ function $HttpProvider() {
      * pre-configured with strategies that address these issues, but for this to work backend server
      * cooperation is required.
      *
-     * ## JSON Vulnerability Protection
+     * ### JSON Vulnerability Protection
      *
      * A [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx)
      * allows third party website to turn your JSON resource URL into
@@ -480,7 +513,7 @@ function $HttpProvider() {
      * Angular will strip the prefix, before processing the JSON.
      *
      *
-     * ## Cross Site Request Forgery (XSRF) Protection
+     * ### Cross Site Request Forgery (XSRF) Protection
      *
      * [XSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery) is a technique by which
      * an unauthorized site can gain your user's private data. Angular provides a mechanism
@@ -522,10 +555,12 @@ function $HttpProvider() {
      *      `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
      *      transform function or an array of such functions. The transform function takes the http
      *      request body and headers and returns its transformed (typically serialized) version.
+     *      See {@link #overriding-the-default-transformations-per-request Overriding the Default Transformations}
      *    - **transformResponse** –
      *      `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
      *      transform function or an array of such functions. The transform function takes the http
      *      response body and headers and returns its transformed (typically deserialized) version.
+     *      See {@link #overriding-the-default-transformations-per-request Overriding the Default Transformations}
      *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
      *      GET request, otherwise if a cache instance built with
      *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
