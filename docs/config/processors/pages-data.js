@@ -119,13 +119,20 @@ var navGroupMappers = {
     })];
   },
   pages: function(pages, area) {
-    return [getNavGroup(pages, area, 'path', function(page) {
-      return {
-        name: page.name,
-        href: page.path,
-        type: 'page'
-      };
-    })];
+    return [getNavGroup(
+      pages,
+      area,
+      function(page) {
+        return page.sortOrder || page.path;
+      },
+      function(page) {
+        return {
+          name: page.name,
+          href: page.path,
+          type: 'page'
+        };
+      }
+    )];
   }
 };
 
