@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Modules
+@sortOrder 320
 @description
 
 # What is a Module?

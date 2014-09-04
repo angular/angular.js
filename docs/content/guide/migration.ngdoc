@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Migrating from Previous Versions
+@sortOrder 550
 @description
 
 Minor version releases in AngularJS introduce several breaking changes that may require changes to your

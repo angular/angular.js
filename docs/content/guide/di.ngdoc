@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Dependency Injection
+@sortOrder 250
 @description
 
 # Dependency Injection
