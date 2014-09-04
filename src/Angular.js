@@ -50,7 +50,6 @@
   trim: true,
   isElement: true,
   makeMap: true,
-  map: true,
   size: true,
   includes: true,
   arrayRemove: true,
@@ -614,15 +613,6 @@ function makeMap(str) {
 
 function nodeName_(element) {
   return lowercase(element.nodeName || element[0].nodeName);
-}
-
-
-function map(obj, iterator, context) {
-  var results = [];
-  forEach(obj, function(value, index, list) {
-    results.push(iterator.call(context, value, index, list));
-  });
-  return results;
 }
 
 

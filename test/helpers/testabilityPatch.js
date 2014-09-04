@@ -335,7 +335,7 @@ var karmaDump = window.dump || function() {
 };
 
 window.dump = function () {
-  karmaDump.apply(undefined, map(arguments, function(arg) {
+  karmaDump.apply(undefined, Array.prototype.map.call(arguments, function(arg) {
     return angular.mock.dump(arg);
   }));
 };

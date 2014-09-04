@@ -147,12 +147,12 @@ describe('parser', function() {
 
     it('should tokenize function invocation', function() {
       var tokens = lex("a()");
-      expect(map(tokens, function(t) { return t.text;})).toEqual(['a', '(', ')']);
+      expect(tokens.map(function(t) { return t.text;})).toEqual(['a', '(', ')']);
     });
 
     it('should tokenize method invocation', function() {
       var tokens = lex("a.b.c (d) - e.f()");
-      expect(map(tokens, function(t) { return t.text;})).
+      expect(tokens.map(function(t) { return t.text;})).
           toEqual(['a.b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
     });
 
