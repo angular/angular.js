@@ -1550,6 +1550,130 @@ describe('select', function() {
         expect(scope.value).toBe(false);
       });
     });
+
+    describe('ngModelCtrl', function() {
+      it('should prefix the model value with the word "the" using $parsers', function() {
+        createSelect({
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+        });
+
+        scope.form.select.$parsers.push(function(value) {
+          return 'the ' + value;
+        });
+
+        element.val('2');
+        browserTrigger(element, 'change');
+        expect(scope.value).toBe('the third');
+        expect(element.val()).toBe('2');
+      });
+
+      it('should prefix the view value with the word "the" using $formatters', function() {
+        createSelect({
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in [\'the first\', \'the second\', \'the third\', \'the fourth\']',
+        });
+
+        scope.form.select.$formatters.push(function(value) {
+          return 'the ' + value;
+        });
+
+        scope.$apply(function() {
+          scope.value = 'third';
+        });
+        expect(element.val()).toBe('2');
+      });
+
+      it('should fail validation when $validators fail', function() {
+        createSelect({
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+        });
+
+        scope.form.select.$validators.fail = function() {
+          return false;
+        };
+
+        element.val('2');
+        browserTrigger(element, 'change');
+        expect(element).toBeInvalid();
+        expect(scope.value).toBeUndefined();
+        expect(element.val()).toBe('2');
+      });
+
+      it('should pass validation when $validators pass', function() {
+        createSelect({
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+        });
+
+        scope.form.select.$validators.pass = function() {
+          return true;
+        };
+
+        element.val('2');
+        browserTrigger(element, 'change');
+        expect(element).toBeValid();
+        expect(scope.value).toBe('third');
+        expect(element.val()).toBe('2');
+      });
+
+      it('should fail validation when $asyncValidators fail', inject(function($q, $rootScope) {
+        var defer;
+        createSelect({
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+        });
+
+        scope.form.select.$asyncValidators.async = function() {
+          defer = $q.defer();
+          return defer.promise;
+        };
+
+        element.val('2');
+        browserTrigger(element, 'change');
+        expect(scope.form.select.$pending).toBeDefined();
+        expect(scope.value).toBeUndefined();
+        expect(element.val()).toBe('2');
+
+        defer.reject();
+        $rootScope.$digest();
+        expect(scope.form.select.$pending).toBeUndefined();
+        expect(scope.value).toBeUndefined();
+        expect(element.val()).toBe('2');
+      }));
+
+      it('should pass validation when $asyncValidators pass', inject(function($q, $rootScope) {
+        var defer;
+        createSelect({
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+        });
+
+        scope.form.select.$asyncValidators.async = function() {
+          defer = $q.defer();
+          return defer.promise;
+        };
+
+        element.val('2');
+        browserTrigger(element, 'change');
+        expect(scope.form.select.$pending).toBeDefined();
+        expect(scope.value).toBeUndefined();
+        expect(element.val()).toBe('2');
+
+        defer.resolve();
+        $rootScope.$digest();
+        expect(scope.form.select.$pending).toBeUndefined();
+        expect(scope.value).toBe('third');
+        expect(element.val()).toBe('2');
+      }));
+    });
   });
 
 
