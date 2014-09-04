@@ -415,10 +415,19 @@ LocationHashbangInHtml5Url.prototype =
    * @param {(string|number)=} path New path
    * @return {string} path
    */
-  path: locationGetterSetter('$$path', function(path) {
-    path = path ? path.toString() : '';
-    return path.charAt(0) == '/' ? path : '/' + path;
-  }),
+  path: function(newPath) {
+    if (isUndefined(newPath))
+      return this['$$path'];
+	var index = newPath.indexOf(this.appBase);
+	if ( index >= 0 ) {
+		this.$$parse(newPath);
+		return this;
+	}
+	newPath = newPath ? newPath.toString() : '';
+    this['$$path'] =  newPath.charAt(0) == '/' ? newPath : '/' + newPath;
+    this.$$compose();
+    return this;
+  },
 
   /**
    * @ngdoc method

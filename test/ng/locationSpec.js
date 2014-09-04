@@ -652,6 +652,16 @@ describe('$location', function() {
       expect($browser.url()).toBe('http://new.com/a/b#!/new/path');
     }));
 
+    it('should update browser when $location path is set using full url', inject(function($rootScope, $browser, $location) {
+      var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+      $location.path('http://new.com/a/b#!/new/path');
+      expect($browserUrl).not.toHaveBeenCalled();
+      $rootScope.$apply();
+
+      expect($browserUrl).toHaveBeenCalledOnce();
+      expect($browser.url()).toBe('http://new.com/a/b#!/new/path');
+      expect($location.path()).toBe('/new/path');
+    }));
 
     it('should update browser only once per $apply cycle', inject(function($rootScope, $browser, $location) {
       var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
