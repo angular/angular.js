@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Data Binding
+@sortOrder 210
 @description
 
 Data-binding in Angular apps is the automatic synchronization of data between the model and view

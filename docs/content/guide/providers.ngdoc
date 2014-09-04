@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Providers
+@sortOrder 340
 @description
 
 # Providers

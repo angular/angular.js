@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Templates
+@sortOrder 260
 @description
 
 In Angular, templates are written with HTML that contains Angular-specific elements and attributes.

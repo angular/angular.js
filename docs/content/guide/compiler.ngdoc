@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  HTML Compiler
+@sortOrder 330
 @description
 
 <div class="alert alert-warning">
