@@ -136,6 +136,11 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/new/path?search=a&b=c&d#hash');
     });
 
+    it('path() should not break on numeric values', function() {
+      url.path(1);
+      expect(url.path()).toBe('/1');
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/1?search=a&b=c&d#hash');
+    });
 
     it('search() should accept string', function() {
       url.search('x=y&c');

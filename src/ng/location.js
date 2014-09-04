@@ -417,6 +417,7 @@ LocationHashbangInHtml5Url.prototype =
    * @return {string} path
    */
   path: locationGetterSetter('$$path', function(path) {
+    path = isString(path) ?  path : '' + path;
     return path.charAt(0) == '/' ? path : '/' + path;
   }),
 
