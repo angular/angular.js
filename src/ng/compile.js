@@ -847,6 +847,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
           : $compileNodes;
 
+        if ( $linkNode.length === 0 && parentBoundTranscludeFn ) {
+          $linkNode = parentBoundTranscludeFn(scope);
+        }
+
         forEach(transcludeControllers, function(instance, name) {
           $linkNode.data('$' + name + 'Controller', instance);
         });
