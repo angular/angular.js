@@ -559,7 +559,11 @@ Parser.prototype = {
 
   filter: function() {
     var token = this.expect();
-    var fn = this.$filter(token.text);
+    var filterName = token.text;
+    var expression = this.text;
+    var filterCacheKeyInput = '$$filterCache_i_' + filterName + '_' + expression;
+    var filterCacheKeyResult = '$$filterCache_r_' + filterName + '_' + expression;
+    var fn = this.$filter(filterName);
     var argsFn;
     var args;
 
@@ -572,6 +576,8 @@ Parser.prototype = {
     }
 
     return valueFn(function $parseFilter(self, locals, input) {
+      var result;
+
       if (args) {
         args[0] = input;
 
@@ -580,10 +586,42 @@ Parser.prototype = {
           args[i + 1] = argsFn[i](self, locals);
         }
 
-        return fn.apply(undefined, args);
+        var primitiveInputs = true;
+        i = args.length;
+        while (primitiveInputs && i--) {
+          primitiveInputs = primitiveInputs && isPrimitive(args[i]);
+        }
+
+        if (primitiveInputs) {
+          if (hasOwnProperty.call(self, filterCacheKeyInput) &&
+              equals(self[filterCacheKeyInput], args)) {
+            result = self[filterCacheKeyResult];
+          } else {
+            result = fn.apply(undefined, args);
+            self[filterCacheKeyInput] = shallowCopy(args, []);
+            self[filterCacheKeyResult] = result;
+          }
+        } else {
+          result = fn.apply(undefined, args);
+        }
+
+        return result;
       }
 
-      return fn(input);
+      if (isPrimitive(input)) {
+        if (hasOwnProperty.call(self, filterCacheKeyInput) &&
+            self[filterCacheKeyInput] === input) {
+          result = self[filterCacheKeyResult];
+        } else {
+          result = fn(input);
+          self[filterCacheKeyInput] = input;
+          self[filterCacheKeyResult] = result;
+        }
+      } else {
+        result = fn(input);
+      }
+
+      return result;
     });
   },
 
