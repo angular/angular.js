@@ -417,7 +417,14 @@ LocationHashbangInHtml5Url.prototype =
    * @return {string} path
    */
   path: locationGetterSetter('$$path', function(path) {
-    return path.charAt(0) == '/' ? path : '/' + path;
+    // fixed: path like '/.'
+    if ( !path || !path.replace(/^\s+|\s+$/g, '') ) path = '/';
+    var hashPart = path.match(/#.*/);
+    var match = urlResolve(path);
+    var pathname = match.pathname + ( hashPart && hashPart[0] || '' );
+    path = decodeURIComponent(pathname.charAt(0) === '/' ?
+      pathname.substring(1) : pathname);
+    return '/' + path;
   }),
 
   /**
@@ -670,7 +677,7 @@ function $LocationProvider(){
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (event.ctrlKey || event.metaKey || event.which == 2) return;
+      if (event.ctrlKey || event.metaKey || event.which == 2 || event.which ==3) return;
 
       var elm = jqLite(event.target);
 
