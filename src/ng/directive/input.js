@@ -282,7 +282,13 @@ var inputType = {
     */
   'datetime-local': createDateInputType('datetimelocal', DATETIMELOCAL_REGEXP,
       createDateParser(DATETIMELOCAL_REGEXP, ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss', 'sss']),
-      'yyyy-MM-ddTHH:mm:ss.sss'),
+      function(value, step) {
+        if (value.getMilliseconds() || (step && parseFloat(step) < 1)) {
+          return 'yyyy-MM-ddTHH:mm:ss.sss';
+        } else {
+          return 'yyyy-MM-ddTHH:mm:ss';
+        }
+      }),
 
   /**
    * @ngdoc input
@@ -371,7 +377,13 @@ var inputType = {
    */
   'time': createDateInputType('time', TIME_REGEXP,
       createDateParser(TIME_REGEXP, ['HH', 'mm', 'ss', 'sss']),
-     'HH:mm:ss.sss'),
+      function(value, step) {
+        if (value.getMilliseconds() || (step && parseFloat(step) < 1)) {
+          return 'HH:mm:ss.sss';
+        } else {
+          return 'HH:mm:ss';
+        }
+      }),
 
    /**
     * @ngdoc input
@@ -1110,9 +1122,10 @@ function createDateInputType(type, regexp, parseDate, format) {
       return undefined;
     });
 
+    var invokeFormat = isFunction(format);
     ctrl.$formatters.push(function(value) {
       if (isDate(value)) {
-        return $filter('date')(value, format, timezone);
+        return $filter('date')(value, invokeFormat ? format(value, attr.step) : format, timezone);
       }
       return '';
     });
