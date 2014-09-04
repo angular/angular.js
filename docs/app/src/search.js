@@ -74,6 +74,7 @@ angular.module('search', [])
   var index = lunrSearch(function() {
     this.ref('id');
     this.field('title', {boost: 50});
+    this.field('members', { boost: 40});
     this.field('keywords', { boost : 20 });
   });
 
@@ -82,7 +83,8 @@ angular.module('search', [])
       index.store({
         id : key,
         title : page.searchTerms.titleWords,
-        keywords : page.searchTerms.keywords
+        keywords : page.searchTerms.keywords,
+        members : page.searchTerms.members
       });
     };
   });
