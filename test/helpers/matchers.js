@@ -25,13 +25,6 @@ beforeEach(function() {
     };
   }
 
-  function indexOf(array, obj) {
-    for ( var i = 0; i < array.length; i++) {
-      if (obj === array[i]) return i;
-    }
-    return -1;
-  }
-
   function isNgElementHidden(element) {
     // we need to check element.getAttribute for SVG nodes
     var hidden = true;
