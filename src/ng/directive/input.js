@@ -1490,19 +1490,20 @@ var VALID_CLASS = 'ng-valid',
  * @name ngModel.NgModelController
  *
  * @property {string} $viewValue Actual string value in the view.
- * @property {*} $modelValue The value in the model, that the control is bound to.
+ * @property {*} $modelValue The value in the model that the control is bound to.
  * @property {Array.<Function>} $parsers Array of functions to execute, as a pipeline, whenever
-       the control reads value from the DOM.  Each function is called, in turn, passing the value
-       through to the next. The last return value is used to populate the model.
-       Used to sanitize / convert the value as well as validation. For validation,
-       the parsers should update the validity state using
-       {@link ngModel.NgModelController#$setValidity $setValidity()},
-       and return `undefined` for invalid values.
+       the control reads value from the DOM. The functions are called in array order, each passing the value
+       through to the next. The last return value is forwarded to the $validators collection.
+       Used to sanitize / convert the value.
+       Returning undefined from a parser means a parse error occurred. No $validators will
+       run and the 'ngModel' will not be updated until the parse error is resolved. The parse error is stored
+       in 'ngModel.$error.parse'.
 
  *
  * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
-       the model value changes. Each function is called, in turn, passing the value through to the
-       next. Used to format / convert values for display in the control and validation.
+       the model value changes. The functions are called in reverse array order, each passing the value through to the
+       next. The last return value is used as the actual DOM value.
+       Used to format / convert values for display in the control.
  * ```js
  * function formatter(value) {
  *   if (value) {
@@ -1779,12 +1780,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @description
    * Change the validity state, and notifies the form.
    *
-   * This method can be called within $parsers/$formatters. However, if possible, please use the
-   *        `ngModel.$validators` pipeline which is designed to call this method automatically.
+   * This method can be called within $parsers/$formatters or a custom validation implementation.
+   * However, in most cases it should be sufficient to use the `ngModel.$validators` and
+   * `ngModel.$asyncValidators` collections which will call `$setValidity` automatically.
    *
-   * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
-   *        to `$error[validationErrorKey]` and `$pending[validationErrorKey]`
-   *        so that it is available for data-binding.
+   * @param {string} validationErrorKey Name of the validator. The `validationErrorKey` will be assigned
+   *        to either `$error[validationErrorKey]` or `$pending[validationErrorKey]`
+   *        (for unfulfilled `$asyncValidators`), so that it is available for data-binding.
    *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
    *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
    *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
