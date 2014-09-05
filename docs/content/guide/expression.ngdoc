@@ -39,7 +39,9 @@ the method from your view. If you want to `eval()` an Angular expression yoursel
 ## Example
 <example>
   <file name="index.html">
-    1+2={{1+2}}
+    <span>
+      1+2={{1+2}}
+    </span>
   </file>
 
   <file name="protractor.js" type="protractor">
