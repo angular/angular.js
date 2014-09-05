@@ -3,11 +3,13 @@
 describe('Filter: limitTo', function() {
   var items;
   var str;
+  var number;
   var limitTo;
 
   beforeEach(inject(function($filter) {
     items = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     str = "tuvwxyz";
+    number = 100.045;
     limitTo = $filter('limitTo');
   }));
 
@@ -17,6 +19,8 @@ describe('Filter: limitTo', function() {
     expect(limitTo(items, '3')).toEqual(['a', 'b', 'c']);
     expect(limitTo(str, 3)).toEqual("tuv");
     expect(limitTo(str, '3')).toEqual("tuv");
+    expect(limitTo(number, 3)).toEqual("100");
+    expect(limitTo(number, '3')).toEqual("100");
   });
 
 
@@ -25,6 +29,8 @@ describe('Filter: limitTo', function() {
     expect(limitTo(items, '-3')).toEqual(['f', 'g', 'h']);
     expect(limitTo(str, -3)).toEqual("xyz");
     expect(limitTo(str, '-3')).toEqual("xyz");
+    expect(limitTo(number, -3)).toEqual("045");
+    expect(limitTo(number, '-3')).toEqual("045");
   });
 
 
@@ -45,8 +51,7 @@ describe('Filter: limitTo', function() {
   });
 
 
-  it('should return input if not String or Array', function() {
-    expect(limitTo(1,1)).toEqual(1);
+  it('should return input if not String or Array or Number', function() {
     expect(limitTo(null, 1)).toEqual(null);
     expect(limitTo(undefined, 1)).toEqual(undefined);
     expect(limitTo({}, 1)).toEqual({});
@@ -67,6 +72,8 @@ describe('Filter: limitTo', function() {
     expect(limitTo(str, '9')).toEqual(str);
     expect(limitTo(str, -9)).toEqual(str);
     expect(limitTo(str, '-9')).toEqual(str);
+    expect(limitTo(number, 9)).toEqual(number.toString());
+    expect(limitTo(number, '-9')).toEqual(number.toString());
   });
 
   it('should return entire input array when limited by Infinity', function() {
