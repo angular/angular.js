@@ -1015,6 +1015,20 @@ angular.module('ngAnimate', ['ng'])
           }
 
           return cache.promise = runAnimationPostDigest(function(done) {
+            var parentElement;
+
+            //any ancestor elements past $rootElement's are not apart of the
+            //app therefore there is no need to examine the parent element
+            if (!isMatchingElement(element, $rootElement)) {
+              parentElement = element.parent();
+              var elementNode = extractElementNode(element);
+              var parentNode = extractElementNode(parentElement);
+              if (!parentNode || parentNode['$$NG_REMOVED'] || elementNode['$$NG_REMOVED']) {
+                done();
+                return;
+              }
+            }
+
             var cache = element.data(STORAGE_KEY);
             element.removeData(STORAGE_KEY);
 
@@ -1022,7 +1036,7 @@ angular.module('ngAnimate', ['ng'])
             var classes = resolveElementClasses(element, cache, state.active);
             return !classes
               ? done()
-              : performAnimation('setClass', classes, element, null, null, function() {
+              : performAnimation('setClass', classes, element, parentElement, null, function() {
                   $delegate.setClass(element, classes[0], classes[1]);
                 }, done);
           });
