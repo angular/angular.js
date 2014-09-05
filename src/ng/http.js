@@ -1048,7 +1048,7 @@ function $HttpProvider() {
           if (isObject(v)) {
             if (isDate(v)){
               v = v.toISOString();
-            } else if (isObject(v)) {
+            } else {
               v = toJson(v);
             }
           }
