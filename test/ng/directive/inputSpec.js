@@ -52,32 +52,66 @@ describe('NgModelController', function() {
 
   describe('setValidity', function() {
 
-    it('should propagate invalid to the parent form only when valid', function() {
+    function expectOneError() {
+      expect(ctrl.$error).toEqual({someError: true});
+      expect(ctrl.$$success).toEqual({});
+      expect(ctrl.$pending).toBeUndefined();
+    }
+
+    function expectOneSuccess() {
+      expect(ctrl.$error).toEqual({});
+      expect(ctrl.$$success).toEqual({someError: true});
+      expect(ctrl.$pending).toBeUndefined();
+    }
+
+    function expectOnePending() {
+      expect(ctrl.$error).toEqual({});
+      expect(ctrl.$$success).toEqual({});
+      expect(ctrl.$pending).toEqual({someError: true});
+    }
+
+    function expectCleared() {
+      expect(ctrl.$error).toEqual({});
+      expect(ctrl.$$success).toEqual({});
+      expect(ctrl.$pending).toBeUndefined();
+    }
+
+    it('should propagate validity to the parent form', function() {
       expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
       ctrl.$setValidity('ERROR', false);
       expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
-
-      parentFormCtrl.$setValidity.reset();
-      ctrl.$setValidity('ERROR', false);
-      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
     });
 
+    it('should transition from states correctly', function() {
+      expectCleared();
 
-    it('should set and unset the error', function() {
-      ctrl.$setValidity('required', false);
-      expect(ctrl.$error.required).toBe(true);
+      ctrl.$setValidity('someError', false);
+      expectOneError();
 
-      ctrl.$setValidity('required', true);
-      expect(ctrl.$error.required).toBe(false);
+      ctrl.$setValidity('someError', undefined);
+      expectOnePending();
+
+      ctrl.$setValidity('someError', true);
+      expectOneSuccess();
+
+      ctrl.$setValidity('someError', null);
+      expectCleared();
     });
 
-
-    it('should set valid/invalid', function() {
+    it('should set valid/invalid with multiple errors', function() {
       ctrl.$setValidity('first', false);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
       ctrl.$setValidity('second', false);
+      expect(ctrl.$valid).toBe(false);
+      expect(ctrl.$invalid).toBe(true);
+
+      ctrl.$setValidity('third', undefined);
+      expect(ctrl.$valid).toBe(undefined);
+      expect(ctrl.$invalid).toBe(undefined);
+
+      ctrl.$setValidity('third', null);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
@@ -90,18 +124,6 @@ describe('NgModelController', function() {
       expect(ctrl.$invalid).toBe(false);
     });
 
-
-    it('should emit $valid only when $invalid', function() {
-      ctrl.$setValidity('error', true);
-      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', true, ctrl);
-      parentFormCtrl.$setValidity.reset();
-
-      ctrl.$setValidity('error', false);
-      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', false, ctrl);
-      parentFormCtrl.$setValidity.reset();
-      ctrl.$setValidity('error', true);
-      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', true, ctrl);
-    });
   });
 
   describe('setPristine', function() {
@@ -225,10 +247,10 @@ describe('NgModelController', function() {
       a = b = true;
 
       ctrl.$setViewValue('3');
-      expect(ctrl.$error).toEqual({ parse: false, high : true, even : true });
+      expect(ctrl.$error).toEqual({ high : true, even : true });
 
       ctrl.$setViewValue('10');
-      expect(ctrl.$error).toEqual({ parse: false, high : false, even : false });
+      expect(ctrl.$error).toEqual({});
 
       a = undefined;
 
@@ -250,7 +272,7 @@ describe('NgModelController', function() {
       a = b = false; //not undefined
 
       ctrl.$setViewValue('2');
-      expect(ctrl.$error).toEqual({ parse: false, high : true, even : false });
+      expect(ctrl.$error).toEqual({ high : true });
     });
 
     it('should remove all non-parse-related CSS classes from the form when a parser fails',
@@ -274,13 +296,15 @@ describe('NgModelController', function() {
       ctrl.$setViewValue('123');
       scope.$digest();
 
-      expect(element).not.toHaveClass('ng-valid-parse');
+      expect(element).toHaveClass('ng-valid-parse');
+      expect(element).not.toHaveClass('ng-invalid-parse');
       expect(element).toHaveClass('ng-invalid-always-fail');
 
       parserIsFailing = true;
       ctrl.$setViewValue('12345');
       scope.$digest();
 
+      expect(element).not.toHaveClass('ng-valid-parse');
       expect(element).toHaveClass('ng-invalid-parse');
       expect(element).not.toHaveClass('ng-invalid-always-fail');
 
@@ -602,9 +626,7 @@ describe('NgModelController', function() {
     }));
 
     it('should clear and ignore all pending promises when the input values changes', inject(function($q) {
-      var isPending = false;
       ctrl.$validators.sync = function(value) {
-        isPending = isObject(ctrl.$pending);
         return true;
       };
 
@@ -616,14 +638,14 @@ describe('NgModelController', function() {
       };
 
       scope.$apply('value = "123"');
-      expect(isPending).toBe(false);
+      expect(ctrl.$pending).toEqual({async: true});
       expect(ctrl.$valid).toBe(undefined);
       expect(ctrl.$invalid).toBe(undefined);
       expect(defers.length).toBe(1);
       expect(isObject(ctrl.$pending)).toBe(true);
 
       scope.$apply('value = "456"');
-      expect(isPending).toBe(false);
+      expect(ctrl.$pending).toEqual({async: true});
       expect(ctrl.$valid).toBe(undefined);
       expect(ctrl.$invalid).toBe(undefined);
       expect(defers.length).toBe(2);
@@ -734,6 +756,7 @@ describe('NgModelController', function() {
 });
 
 describe('ngModel', function() {
+  var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
   it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
       inject(function($compile, $rootScope, $sniffer) {
@@ -3443,7 +3466,7 @@ describe('input', function() {
 
       expect(scope.email).toBe('vojta@google.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.email).toBe(false);
+      expect(widget.$error.email).toBeFalsy();
 
       changeInputValueTo('invalid@');
       expect(scope.email).toBeUndefined();
@@ -3477,7 +3500,7 @@ describe('input', function() {
       changeInputValueTo('http://www.something.com');
       expect(scope.url).toBe('http://www.something.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.url).toBe(false);
+      expect(widget.$error.url).toBeFalsy();
 
       changeInputValueTo('invalid.com');
       expect(scope.url).toBeUndefined();
@@ -4094,8 +4117,7 @@ describe('NgModel animations', function() {
     var animations = findElementAnimations(input, $animate.queue);
     assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
     assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
-    assertValidAnimation(animations[2], 'removeClass', 'ng-valid-required');
-    assertValidAnimation(animations[3], 'addClass', 'ng-invalid-required');
+    assertValidAnimation(animations[2], 'addClass', 'ng-invalid-required');
   }));
 
   it('should trigger an animation when valid', inject(function($animate) {
@@ -4106,10 +4128,10 @@ describe('NgModel animations', function() {
     model.$setValidity('required', true);
 
     var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'removeClass', 'ng-invalid');
-    assertValidAnimation(animations[1], 'addClass', 'ng-valid');
-    assertValidAnimation(animations[2], 'removeClass', 'ng-invalid-required');
-    assertValidAnimation(animations[3], 'addClass', 'ng-valid-required');
+    assertValidAnimation(animations[0], 'addClass', 'ng-valid');
+    assertValidAnimation(animations[1], 'removeClass', 'ng-invalid');
+    assertValidAnimation(animations[2], 'addClass', 'ng-valid-required');
+    assertValidAnimation(animations[3], 'removeClass', 'ng-invalid-required');
   }));
 
   it('should trigger an animation when dirty', inject(function($animate) {
@@ -4150,16 +4172,15 @@ describe('NgModel animations', function() {
     var animations = findElementAnimations(input, $animate.queue);
     assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
     assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
-    assertValidAnimation(animations[2], 'removeClass', 'ng-valid-custom-error');
-    assertValidAnimation(animations[3], 'addClass', 'ng-invalid-custom-error');
+    assertValidAnimation(animations[2], 'addClass', 'ng-invalid-custom-error');
 
     $animate.queue = [];
     model.$setValidity('custom-error', true);
 
     animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'removeClass', 'ng-invalid');
-    assertValidAnimation(animations[1], 'addClass', 'ng-valid');
-    assertValidAnimation(animations[2], 'removeClass', 'ng-invalid-custom-error');
-    assertValidAnimation(animations[3], 'addClass', 'ng-valid-custom-error');
+    assertValidAnimation(animations[0], 'addClass', 'ng-valid');
+    assertValidAnimation(animations[1], 'removeClass', 'ng-invalid');
+    assertValidAnimation(animations[2], 'addClass', 'ng-valid-custom-error');
+    assertValidAnimation(animations[3], 'removeClass', 'ng-invalid-custom-error');
   }));
 });
