@@ -21,6 +21,7 @@ var TIME_REGEXP = /^(\d\d):(\d\d)(?::(\d\d))?$/;
 var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 var $ngModelMinErr = new minErr('ngModel');
+
 var inputType = {
 
   /**
@@ -1121,7 +1122,11 @@ function badInputChecker(scope, element, attr, ctrl) {
   if (nativeValidation) {
     ctrl.$parsers.push(function(value) {
       var validity = element.prop(VALIDITY_STATE_PROPERTY) || {};
-      return validity.badInput || validity.typeMismatch ? undefined : value;
+      // Detect bug in FF35 for input[email] (https://bugzilla.mozilla.org/show_bug.cgi?id=1064430):
+      // - also sets validity.badInput (should only be validity.typeMismatch).
+      // - see http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-(type=email)
+      // - can ignore this case as we can still read out the erroneous email...
+      return validity.badInput && !validity.typeMismatch ? undefined : value;
     });
   }
 }
@@ -1181,7 +1186,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 }
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  badInputChecker(scope, element, attr, ctrl);
+  // Note: no badInputChecker here by purpose as `url` is only a validation
+  // in browsers, i.e. we can always read out input.value even if it is not valid!
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
   stringBasedInputType(ctrl);
 
@@ -1193,7 +1199,8 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 }
 
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  badInputChecker(scope, element, attr, ctrl);
+  // Note: no badInputChecker here by purpose as `url` is only a validation
+  // in browsers, i.e. we can always read out input.value even if it is not valid!
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
   stringBasedInputType(ctrl);
 
@@ -1512,7 +1519,8 @@ var VALID_CLASS = 'ng-valid',
  *     view value has changed. It is called with no arguments, and its return value is ignored.
  *     This can be used in place of additional $watches against the model value.
  *
- * @property {Object} $error An object hash with all errors as keys.
+ * @property {Object} $error An object hash with all failing validator ids as keys.
+ * @property {Object} $pending An object hash with all pending validator ids as keys.
  *
  * @property {boolean} $untouched True if control has not lost focus yet.
  * @property {boolean} $touched True if control has lost focus.
@@ -1520,7 +1528,6 @@ var VALID_CLASS = 'ng-valid',
  * @property {boolean} $dirty True if user has already interacted with the control.
  * @property {boolean} $valid True if there is no error.
  * @property {boolean} $invalid True if at least one error on the control.
- * @property {Object.<string, boolean>} $pending True if one or more asynchronous validators is still yet to be delivered.
  *
  * @description
  *
@@ -1623,13 +1630,12 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope', '$q',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope, $q) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$validators = {};
   this.$asyncValidators = {};
-  this.$validators = {};
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
@@ -1639,6 +1645,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
+  this.$error = {}; // keep invalid keys here
+  this.$$success = {}; // keep valid keys here
+  this.$pending = undefined; // keep pending keys here
   this.$name = $attr.name;
 
 
@@ -1700,131 +1709,44 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
-      invalidCount = 0, // used to easily determine if we are valid
-      pendingCount = 0, // used to easily determine if there are any pending validations
-      $error = this.$error = {}; // keep invalid keys here
-
+      currentValidationRunId = 0;
 
   // Setup initial state of the control
   $element
     .addClass(PRISTINE_CLASS)
     .addClass(UNTOUCHED_CLASS);
-  toggleValidCss(true);
-
-  // convenience method for easy toggling of classes
-  function toggleValidCss(isValid, validationErrorKey) {
-    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $animate.removeClass($element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
-    $animate.addClass($element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
-  }
-
-  this.$$clearValidity = function() {
-    $animate.removeClass($element, PENDING_CLASS);
-    forEach(ctrl.$error, function(val, key) {
-      var validationKey = snake_case(key, '-');
-      $animate.removeClass($element, VALID_CLASS + validationKey);
-      $animate.removeClass($element, INVALID_CLASS + validationKey);
-    });
-
-    // just incase an asnyc validator is still running while
-    // the parser fails
-    if (ctrl.$pending) {
-      ctrl.$$clearPending();
-    }
-
-    invalidCount = 0;
-    $error = ctrl.$error = {};
-
-    parentForm.$$clearControlValidity(ctrl);
-  };
-
-  this.$$clearPending = function() {
-    pendingCount = 0;
-    ctrl.$pending = undefined;
-    $animate.removeClass($element, PENDING_CLASS);
-  };
-
-  this.$$setPending = function(validationErrorKey, promise, currentValue) {
-    ctrl.$pending = ctrl.$pending || {};
-    if (angular.isUndefined(ctrl.$pending[validationErrorKey])) {
-      ctrl.$pending[validationErrorKey] = true;
-      pendingCount++;
-    }
-
-    ctrl.$valid = ctrl.$invalid = undefined;
-    parentForm.$$setPending(validationErrorKey, ctrl);
-
-    $animate.addClass($element, PENDING_CLASS);
-    $animate.removeClass($element, INVALID_CLASS);
-    $animate.removeClass($element, VALID_CLASS);
-
-    //Special-case for (undefined|null|false|NaN) values to avoid
-    //having to compare each of them with each other
-    currentValue = currentValue || '';
-    promise.then(resolve(true), resolve(false));
-
-    function resolve(bool) {
-      return function() {
-        var value = ctrl.$viewValue || '';
-        if (ctrl.$pending && ctrl.$pending[validationErrorKey] && currentValue === value) {
-          pendingCount--;
-          delete ctrl.$pending[validationErrorKey];
-          ctrl.$setValidity(validationErrorKey, bool);
-          if (pendingCount === 0) {
-            ctrl.$$clearPending();
-            ctrl.$$updateValidModelValue(value);
-            ctrl.$$writeModelToScope();
-          }
-        }
-      };
-    }
-  };
 
   /**
    * @ngdoc method
    * @name ngModel.NgModelController#$setValidity
    *
    * @description
-   * Change the validity state, and notifies the form when the control changes validity. (i.e. it
-   * does not notify form if given validator is already marked as invalid).
+   * Change the validity state, and notifies the form.
    *
    * This method can be called within $parsers/$formatters. However, if possible, please use the
-   *        `ngModel.$validators` pipeline which is designed to handle validations with true/false values.
+   *        `ngModel.$validators` pipeline which is designed to call this method automatically.
    *
    * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
-   *        to `$error[validationErrorKey]=!isValid` so that it is available for data-binding.
+   *        to `$error[validationErrorKey]` and `$pending[validationErrorKey]`
+   *        so that it is available for data-binding.
    *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
    *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
    *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
-   * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
+   * @param {boolean} isValid Whether the current state is valid (true), invalid (false), pending (undefined),
+   *                          or skipped (null).
    */
-  this.$setValidity = function(validationErrorKey, isValid) {
-
-    // avoid doing anything if the validation value has not changed
-    // jshint -W018
-    if (!ctrl.$pending && $error[validationErrorKey] === !isValid) return;
-    // jshint +W018
-
-    if (isValid) {
-      if ($error[validationErrorKey]) invalidCount--;
-      if (!invalidCount && !pendingCount) {
-        toggleValidCss(true);
-        ctrl.$valid = true;
-        ctrl.$invalid = false;
-      }
-    } else if (!$error[validationErrorKey]) {
-      invalidCount++;
-      if (!pendingCount) {
-        toggleValidCss(false);
-        ctrl.$invalid = true;
-        ctrl.$valid = false;
-      }
-    }
-
-    $error[validationErrorKey] = !isValid;
-    toggleValidCss(isValid, validationErrorKey);
-    parentForm.$setValidity(validationErrorKey, isValid, ctrl);
-  };
+  addSetValidityMethod({
+    ctrl: this,
+    $element: $element,
+    set: function(object, property) {
+      object[property] = true;
+    },
+    unset: function(object, property) {
+      delete object[property];
+    },
+    parentForm: parentForm,
+    $animate: $animate
+  });
 
   /**
    * @ngdoc method
@@ -1959,49 +1881,102 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
 
     var prev = ctrl.$modelValue;
-    ctrl.$$runValidators(ctrl.$$invalidModelValue || ctrl.$modelValue, ctrl.$viewValue);
-    if (prev !== ctrl.$modelValue) {
-      ctrl.$$writeModelToScope();
-    }
-  };
-
-  this.$$runValidators = function(modelValue, viewValue) {
-    // this is called in the event if incase the input value changes
-    // while a former asynchronous validator is still doing its thing
-    if (ctrl.$pending) {
-      ctrl.$$clearPending();
-    }
-
-    var continueValidation = validate(ctrl.$validators, function(validator, result) {
-      ctrl.$setValidity(validator, result);
+    ctrl.$$runValidators(undefined, ctrl.$$invalidModelValue || ctrl.$modelValue, ctrl.$viewValue, function() {
+      if (prev !== ctrl.$modelValue) {
+        ctrl.$$writeModelToScope();
+      }
     });
-
-    if (continueValidation) {
-      validate(ctrl.$asyncValidators, function(validator, result) {
-        if (!isPromiseLike(result)) {
-          throw $ngModelMinErr("$asyncValidators",
-            "Expected asynchronous validator to return a promise but got '{0}' instead.", result);
-        }
-        ctrl.$$setPending(validator, result, modelValue);
-      });
-    }
-
-    ctrl.$$updateValidModelValue(modelValue);
-
-    function validate(validators, callback) {
-      var status = true;
-      forEach(validators, function(fn, name) {
-        var result = fn(modelValue, viewValue);
-        callback(name, result);
-        status = status && result;
-      });
-      return status;
-    }
   };
 
-  this.$$updateValidModelValue = function(modelValue) {
-    ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
-    ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+  this.$$runValidators = function(parseValid, modelValue, viewValue, doneCallback) {
+    currentValidationRunId++;
+    var localValidationRunId = currentValidationRunId;
+
+    // We can update the $$invalidModelValue immediately as we don't have to wait for validators!
+    ctrl.$$invalidModelValue = modelValue;
+
+    // check parser error
+    if (!processParseErrors(parseValid)) {
+      return;
+    }
+    if (!processSyncValidators()) {
+      return;
+    }
+    processAsyncValidators();
+
+    function processParseErrors(parseValid) {
+      var errorKey = ctrl.$$parserName || 'parse';
+      if (parseValid === undefined) {
+        setValidity(errorKey, null);
+      } else {
+        setValidity(errorKey, parseValid);
+        if (!parseValid) {
+          forEach(ctrl.$validators, function(v, name) {
+            setValidity(name, null);
+          });
+          forEach(ctrl.$asyncValidators, function(v, name) {
+            setValidity(name, null);
+          });
+          validationDone();
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function processSyncValidators() {
+      var syncValidatorsValid = true;
+      forEach(ctrl.$validators, function(validator, name) {
+        var result = validator(modelValue, viewValue);
+        syncValidatorsValid = syncValidatorsValid && result;
+        setValidity(name, result);
+      });
+      if (!syncValidatorsValid) {
+        forEach(ctrl.$asyncValidators, function(v, name) {
+          setValidity(name, null);
+        });
+        validationDone();
+        return false;
+      }
+      return true;
+    }
+
+    function processAsyncValidators() {
+      var validatorPromises = [];
+      forEach(ctrl.$asyncValidators, function(validator, name) {
+        var promise = validator(modelValue, viewValue);
+        if (!isPromiseLike(promise)) {
+          throw $ngModelMinErr("$asyncValidators",
+            "Expected asynchronous validator to return a promise but got '{0}' instead.", promise);
+        }
+        setValidity(name, undefined);
+        validatorPromises.push(promise.then(function() {
+          setValidity(name, true);
+        }, function(error) {
+          setValidity(name, false);
+        }));
+      });
+      if (!validatorPromises.length) {
+        validationDone();
+      } else {
+        $q.all(validatorPromises).then(validationDone);
+      }
+    }
+
+    function setValidity(name, isValid) {
+      if (localValidationRunId === currentValidationRunId) {
+        ctrl.$setValidity(name, isValid);
+      }
+    }
+
+    function validationDone() {
+      if (localValidationRunId === currentValidationRunId) {
+        // set the validated model value
+        ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
+
+        doneCallback();
+      }
+    }
   };
 
   /**
@@ -2037,27 +2012,18 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       parentForm.$setDirty();
     }
 
-    var hasBadInput, modelValue = viewValue;
+    var parserValid = true, modelValue = viewValue;
     for(var i = 0; i < ctrl.$parsers.length; i++) {
       modelValue = ctrl.$parsers[i](modelValue);
       if (isUndefined(modelValue)) {
-        hasBadInput = true;
+        parserValid = false;
         break;
       }
     }
 
-    var parserName = ctrl.$$parserName || 'parse';
-    if (hasBadInput) {
-      ctrl.$$invalidModelValue = ctrl.$modelValue = undefined;
-      ctrl.$$clearValidity();
-      ctrl.$setValidity(parserName, false);
+    ctrl.$$runValidators(parserValid, modelValue, viewValue, function() {
       ctrl.$$writeModelToScope();
-    } else if (ctrl.$modelValue !== modelValue &&
-                (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
-      ctrl.$setValidity(parserName, true);
-      ctrl.$$runValidators(modelValue, viewValue);
-      ctrl.$$writeModelToScope();
-    }
+    });
   };
 
   this.$$writeModelToScope = function() {
@@ -2175,12 +2141,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       while(idx--) {
         viewValue = formatters[idx](viewValue);
       }
-
-      ctrl.$$runValidators(modelValue, viewValue);
-
-      if (ctrl.$viewValue !== viewValue) {
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
-        ctrl.$render();
+      var lastViewValue = ctrl.$viewValue;
+      if (lastViewValue !== viewValue) {
+        ctrl.$$runValidators(undefined, modelValue, viewValue, function() {
+          ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+          ctrl.$render();
+        });
       }
     }
 
@@ -2920,3 +2886,106 @@ var ngModelOptionsDirective = function() {
     }]
   };
 };
+
+// helper methods
+function addSetValidityMethod(context) {
+  var ctrl = context.ctrl,
+      $element = context.$element,
+      classCache = {},
+      set = context.set,
+      unset = context.unset,
+      parentForm = context.parentForm,
+      $animate = context.$animate;
+
+  ctrl.$setValidity = setValidity;
+  toggleValidationCss('', true);
+
+  function setValidity(validationErrorKey, state, options) {
+    if (state === undefined) {
+      createAndSet('$pending', validationErrorKey, options);
+    } else {
+      unsetAndCleanup('$pending', validationErrorKey, options);
+    }
+    if (!isBoolean(state)) {
+      unset(ctrl.$error, validationErrorKey, options);
+      unset(ctrl.$$success, validationErrorKey, options);
+    } else {
+      if (state) {
+        unset(ctrl.$error, validationErrorKey, options);
+        set(ctrl.$$success, validationErrorKey, options);
+      } else {
+        set(ctrl.$error, validationErrorKey, options);
+        unset(ctrl.$$success, validationErrorKey, options);
+      }
+    }
+    if (ctrl.$pending) {
+      cachedToggleClass(PENDING_CLASS, true);
+      ctrl.$valid = ctrl.$invalid = undefined;
+      toggleValidationCss('', null);
+    } else {
+      cachedToggleClass(PENDING_CLASS, false);
+      ctrl.$valid = isObjectEmpty(ctrl.$error);
+      ctrl.$invalid = !ctrl.$valid;
+      toggleValidationCss('', ctrl.$valid);
+    }
+
+    // re-read the state as the set/unset methods could have
+    // combined state in ctrl.$error[validationError] (used for forms),
+    // where setting/unsetting only increments/decrements the value,
+    // and does not replace it.
+    var combinedState;
+    if (ctrl.$pending && ctrl.$pending[validationErrorKey]) {
+      combinedState = undefined;
+    } else if (ctrl.$error[validationErrorKey]) {
+      combinedState = false;
+    } else if (ctrl.$$success[validationErrorKey]) {
+      combinedState = true;
+    } else {
+      combinedState = null;
+    }
+    toggleValidationCss(validationErrorKey, combinedState);
+    parentForm.$setValidity(validationErrorKey, combinedState, ctrl);
+  }
+
+  function createAndSet(name, value, options) {
+    if (!ctrl[name]) {
+      ctrl[name] = {};
+    }
+    set(ctrl[name], value, options);
+  }
+
+  function unsetAndCleanup(name, value, options) {
+    if (ctrl[name]) {
+      unset(ctrl[name], value, options);
+    }
+    if (isObjectEmpty(ctrl[name])) {
+      ctrl[name] = undefined;
+    }
+  }
+
+  function cachedToggleClass(className, switchValue) {
+    if (switchValue && !classCache[className]) {
+      $animate.addClass($element, className);
+      classCache[className] = true;
+    } else if (!switchValue && classCache[className]) {
+      $animate.removeClass($element, className);
+      classCache[className] = false;
+    }
+  }
+
+  function toggleValidationCss(validationErrorKey, isValid) {
+    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+
+    cachedToggleClass(VALID_CLASS + validationErrorKey, isValid === true);
+    cachedToggleClass(INVALID_CLASS + validationErrorKey, isValid === false);
+  }
+}
+
+function isObjectEmpty(obj) {
+  if (obj) {
+    for (var prop in obj) {
+      return false;
+    }
+  }
+  return true;
+}

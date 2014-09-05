@@ -1,6 +1,7 @@
 'use strict';
 
-/* global -nullFormCtrl, -SUBMITTED_CLASS */
+/* global -nullFormCtrl, -SUBMITTED_CLASS, addSetValidityMethod: true
+ */
 var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,
@@ -23,12 +24,11 @@ SUBMITTED_CLASS = 'ng-submitted';
  * @property {boolean} $invalid True if at least one containing control or form is invalid.
  * @property {boolean} $submitted True if user has submitted the form even if its invalid.
  *
- * @property {Object} $error Is an object hash, containing references to all invalid controls or
- *  forms, where:
+ * @property {Object} $error Is an object hash, containing references to controls or
+ *  forms with failing validators, where:
  *
  *  - keys are validation tokens (error names),
- *  - values are arrays of controls or forms that are invalid for given error name.
- *
+ *  - values are arrays of controls or forms that have a failing validator for given error name.
  *
  *  Built-in validation tokens:
  *
@@ -55,12 +55,12 @@ FormController.$inject = ['$element', '$attrs', '$scope', '$animate'];
 function FormController(element, attrs, $scope, $animate) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
-      invalidCount = 0, // used to easily determine if we are valid
-      pendingCount = 0,
-      controls = [],
-      errors = form.$error = {};
+      controls = [];
 
   // init state
+  form.$error = {};
+  form.$$success = {};
+  form.$pending = undefined;
   form.$name = attrs.name || attrs.ngForm;
   form.$dirty = false;
   form.$pristine = true;
@@ -72,14 +72,6 @@ function FormController(element, attrs, $scope, $animate) {
 
   // Setup initial state of the control
   element.addClass(PRISTINE_CLASS);
-  toggleValidCss(true);
-
-  // convenience method for easy toggling of classes
-  function toggleValidCss(isValid, validationErrorKey) {
-    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $animate.removeClass(element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
-    $animate.addClass(element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
-  }
 
   /**
    * @ngdoc method
@@ -148,34 +140,16 @@ function FormController(element, attrs, $scope, $animate) {
     if (control.$name && form[control.$name] === control) {
       delete form[control.$name];
     }
+    forEach(form.$pending, function(value, name) {
+      form.$setValidity(name, null, control);
+    });
+    forEach(form.$error, function(value, name) {
+      form.$setValidity(name, null, control);
+    });
 
-    form.$$clearControlValidity(control);
     arrayRemove(controls, control);
   };
 
-  form.$$clearControlValidity = function(control) {
-    forEach(form.$pending, clear);
-    forEach(errors, clear);
-
-    function clear(queue, validationToken) {
-      form.$setValidity(validationToken, true, control);
-    }
-  };
-
-  form.$$setPending = function(validationToken, control) {
-    var pending = form.$pending && form.$pending[validationToken];
-
-    if (!pending || !includes(pending, control)) {
-      pendingCount++;
-      form.$valid = form.$invalid = undefined;
-      form.$pending = form.$pending || {};
-      if (!pending) {
-        pending = form.$pending[validationToken] = [];
-      }
-      pending.push(control);
-      parentForm.$$setPending(validationToken, form);
-    }
-  };
 
   /**
    * @ngdoc method
@@ -186,72 +160,33 @@ function FormController(element, attrs, $scope, $animate) {
    *
    * This method will also propagate to parent forms.
    */
-  form.$setValidity = function(validationToken, isValid, control) {
-    var queue = errors[validationToken];
-    var pendingChange, pending = form.$pending && form.$pending[validationToken];
-
-    if (pending) {
-      pendingChange = pending.indexOf(control) >= 0;
-      if (pendingChange) {
-        arrayRemove(pending, control);
-        pendingCount--;
-
-        if (pending.length === 0) {
-          delete form.$pending[validationToken];
-        }
-      }
-    }
-
-    var pendingNoMore = form.$pending && pendingCount === 0;
-    if (pendingNoMore) {
-      form.$pending = undefined;
-    }
-
-    if (isValid) {
-      if (queue || pendingChange) {
-        if (queue) {
-          arrayRemove(queue, control);
-        }
-        if (!queue || !queue.length) {
-          if (errors[validationToken]) {
-            invalidCount--;
-          }
-          if (!invalidCount) {
-            if (!form.$pending) {
-              toggleValidCss(isValid);
-              form.$valid = true;
-              form.$invalid = false;
-            }
-          } else if(pendingNoMore) {
-            toggleValidCss(false);
-            form.$valid = false;
-            form.$invalid = true;
-          }
-          errors[validationToken] = false;
-          toggleValidCss(true, validationToken);
-          parentForm.$setValidity(validationToken, true, form);
-        }
-      }
-    } else {
-      if (!form.$pending) {
-        form.$valid = false;
-        form.$invalid = true;
-      }
-
-      if (!invalidCount) {
-        toggleValidCss(isValid);
-      }
-      if (queue) {
-        if (includes(queue, control)) return;
+  addSetValidityMethod({
+    ctrl: this,
+    $element: element,
+    set: function(object, property, control) {
+      var list = object[property];
+      if (!list) {
+        object[property] = [control];
       } else {
-        errors[validationToken] = queue = [];
-        invalidCount++;
-        toggleValidCss(false, validationToken);
-        parentForm.$setValidity(validationToken, false, form);
+        var index = list.indexOf(control);
+        if (index === -1) {
+          list.push(control);
+        }
       }
-      queue.push(control);
-    }
-  };
+    },
+    unset: function(object, property, control) {
+      var list = object[property];
+      if (!list) {
+        return;
+      }
+      arrayRemove(list, control);
+      if (list.length === 0) {
+        delete object[property];
+      }
+    },
+    parentForm: parentForm,
+    $animate: $animate
+  });
 
   /**
    * @ngdoc method
