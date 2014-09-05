@@ -18,7 +18,7 @@ function parsePattern(pattern) {
   var p = {
             minInt: 1,
             minFrac: 0,
-            macFrac: 0,
+            maxFrac: 0,
             posPre: '',
             posSuf: '',
             negPre: '',
