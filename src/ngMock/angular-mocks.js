@@ -2227,7 +2227,7 @@ if(window.jasmine || window.mocha) {
         }
         try {
           /* jshint -W040 *//* Jasmine explicitly provides a `this` object when calling functions */
-          injector.invoke(blockFns[i] || angular.noop, this);
+          return injector.invoke(blockFns[i] || angular.noop, this);
           /* jshint +W040 */
         } catch (e) {
           if (e.stack && errorForStack) {
