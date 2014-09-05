@@ -17,6 +17,19 @@ describe('Filter: orderBy', function() {
     expect(orderBy([{a:15}, {a:2}], 'a', "reverse")).toEqualData([{a:15}, {a:2}]);
   });
 
+  it('should sort inherited from array', function(){
+    function BaseCollection(){}
+    BaseCollection.prototype = Array.prototype;
+    var child = new BaseCollection();
+    child.push({a:2});
+    child.push({a:15});
+
+    expect(Array.isArray(child)).toBe(false);
+    expect(child instanceof Array).toBe(true);
+
+    expect(orderBy(child, 'a', true)).toEqualData([{a:15}, {a:2}]);
+  });
+
   it('should sort array by predicate', function() {
     expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['a', 'b'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
     expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['b', 'a'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
