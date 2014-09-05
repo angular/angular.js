@@ -141,9 +141,9 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
         html.push(target);
         html.push('" ');
       }
-      html.push('href="');
-      html.push(url);
-      html.push('">');
+      html.push('href="',
+                url.replace('"', '&quot;'),
+                '">');
       addText(text);
       html.push('</a>');
     }
