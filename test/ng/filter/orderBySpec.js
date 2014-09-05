@@ -18,7 +18,7 @@ describe('Filter: orderBy', function() {
   });
 
   it('should sort inherited from array', function(){
-    function BaseCollection(){};
+    function BaseCollection(){}
     BaseCollection.prototype = Array.prototype;
     var child = new BaseCollection();
     child.push({a:2});
