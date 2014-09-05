@@ -1015,6 +1015,15 @@ angular.module('ngAnimate', ['ng'])
           }
 
           return cache.promise = runAnimationPostDigest(function(done) {
+            var parentElement = element.parent();
+            var elementNode = extractElementNode(element);
+            var parentNode = elementNode.parentNode;
+            // TODO(matsko): move this code into the animationsDisabled() function once #8092 is fixed
+            if (!parentNode || parentNode['$$NG_REMOVED'] || elementNode['$$NG_REMOVED']) {
+              done();
+              return;
+            }
+
             var cache = element.data(STORAGE_KEY);
             element.removeData(STORAGE_KEY);
 
@@ -1022,7 +1031,7 @@ angular.module('ngAnimate', ['ng'])
             var classes = resolveElementClasses(element, cache, state.active);
             return !classes
               ? done()
-              : performAnimation('setClass', classes, element, null, null, function() {
+              : performAnimation('setClass', classes, element, parentElement, null, function() {
                   $delegate.setClass(element, classes[0], classes[1]);
                 }, done);
           });

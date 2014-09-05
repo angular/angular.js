@@ -3413,6 +3413,101 @@ describe("ngAnimate", function() {
       });
     });
 
+    it('should skip class-based animations if the element is removed before the digest occurs', function() {
+      var spy = jasmine.createSpy();
+      module(function($animateProvider) {
+        $animateProvider.register('.animated', function() {
+          return {
+            beforeAddClass : spy,
+            beforeRemoveClass : spy,
+            beforeSetClass : spy
+          };
+        });
+      });
+      inject(function($rootScope, $animate, $compile, $rootElement, $document) {
+        $animate.enabled(true);
+
+        var one = $compile('<div class="animated"></div>')($rootScope);
+        var two = $compile('<div class="animated"></div>')($rootScope);
+        var three = $compile('<div class="animated three"></div>')($rootScope);
+
+        $rootElement.append(one);
+        $rootElement.append(two);
+        angular.element($document[0].body).append($rootElement);
+
+        $animate.addClass(one, 'active-class');
+        one.remove();
+
+        $rootScope.$digest();
+        expect(spy).not.toHaveBeenCalled();
+
+        $animate.addClass(two, 'active-class');
+
+        $rootScope.$digest();
+        expect(spy).toHaveBeenCalled();
+
+        spy.reset();
+        $animate.removeClass(two, 'active-class');
+        two.remove();
+
+        $rootScope.$digest();
+        expect(spy).not.toHaveBeenCalled();
+
+        $animate.setClass(three, 'active-class', 'three');
+        three.remove();
+
+        $rootScope.$digest();
+        expect(spy).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should skip class-based animations if ngRepeat has marked the element or its parent for removal', function() {
+      var spy = jasmine.createSpy();
+      module(function($animateProvider) {
+        $animateProvider.register('.animated', function() {
+          return {
+            beforeAddClass : spy,
+            beforeRemoveClass : spy,
+            beforeSetClass : spy
+          };
+        });
+      });
+      inject(function($rootScope, $animate, $compile, $rootElement, $document) {
+        $animate.enabled(true);
+
+        var element = $compile(
+          '<div>' +
+          '  <div ng-repeat="item in items" class="animated">' +
+          '    <span>{{ $index }}</span>' +
+          '  </div>' +
+          '</div>'
+        )($rootScope);
+
+        $rootElement.append(element);
+        angular.element($document[0].body).append($rootElement);
+
+        $rootScope.items = [1,2,3];
+        $rootScope.$digest();
+
+        var child = element.find('div');
+
+        $animate.addClass(child, 'start-animation');
+        $rootScope.items = [2,3];
+        $rootScope.$digest();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        var innerChild = element.find('span');
+
+        $animate.addClass(innerChild, 'start-animation');
+        $rootScope.items = [3];
+        $rootScope.$digest();
+
+        expect(spy).not.toHaveBeenCalled();
+        dealoc(element);
+      });
+    });
+
     it('should call class-based animation callbacks in the correct order when animations are skipped', function() {
       var continueAnimation;
       module(function($animateProvider) {
