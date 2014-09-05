@@ -30,6 +30,9 @@
  * The controller instance can be published into a scope property by specifying
  * `ng-controller="as propertyName"`.
  *
+ * You can also provide injection locals for the controller by specifying a `locals` attribute, e.g.
+ * `ng-controller="ChildController" locals="{settingsCtrl: settings}"`.
+ *
  * If the current `$controllerProvider` is configured to use globals (via
  * {@link ng.$controllerProvider#allowGlobals `$controllerProvider.allowGlobals()` }), this may
  * also be the name of a globally accessible constructor function (not recommended).

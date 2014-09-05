@@ -37,6 +37,10 @@ describe('ngController', function() {
       this.mark = 'works';
     });
 
+    $controllerProvider.register('Locals', function($scope, mark) {
+      $scope.mark = mark;
+    });
+
   }));
 
   afterEach(function() {
@@ -60,6 +64,13 @@ describe('ngController', function() {
 
   it('should publish controller into scope from module', inject(function($compile, $rootScope) {
     element = $compile('<div ng-controller="PublicModule as p">{{p.mark}}</div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.text()).toBe('works');
+  }));
+
+
+  it('should evaluate and inject controller with locals', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-controller="Locals" locals="{mark: \'works\'}">{{mark}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('works');
   }));
