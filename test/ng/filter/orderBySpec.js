@@ -24,9 +24,6 @@ describe('Filter: orderBy', function() {
     child.push({a:2});
     child.push({a:15});
 
-    expect(Array.isArray(child)).toBe(false);
-    expect(child instanceof Array).toBe(true);
-
     expect(orderBy(child, 'a', true)).toEqualData([{a:15}, {a:2}]);
   });
 
