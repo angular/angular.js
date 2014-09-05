@@ -142,7 +142,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
         html.push('" ');
       }
       html.push('href="');
-      html.push(url);
+      html.push(url.replace('"', '&quot;'));
       html.push('">');
       addText(text);
       html.push('</a>');
