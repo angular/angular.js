@@ -171,6 +171,9 @@ Let's see how we can get the current value of the `query` model to appear in the
         });
     
         it('should display the current filter value in the title bar', function() {
+          
+          var query = element(by.model('query'));
+          
           query.clear();
           expect(browser.getTitle()).toMatch(/Google Phone Gallery:\s*$/);
     
