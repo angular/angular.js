@@ -561,8 +561,8 @@ Parser.prototype = {
     var token = this.expect();
     var filterName = token.text;
     var expression = this.text;
-    var filterCacheKeyInput = '$$filterCache_i_' + filterName + '_' + expression;
-    var filterCacheKeyResult = '$$filterCache_r_' + filterName + '_' + expression;
+    var filterCacheKeyInput = filterName + '_i_' + expression;
+    var filterCacheKeyResult = filterName + '_r_' + expression;
     var fn = this.$filter(filterName);
     var argsFn;
     var args;
@@ -577,6 +577,7 @@ Parser.prototype = {
 
     return valueFn(function $parseFilter(self, locals, input) {
       var result;
+      var filterCache = self.$$filterCache;
 
       if (args) {
         args[0] = input;
@@ -593,13 +594,13 @@ Parser.prototype = {
         }
 
         if (primitiveInputs) {
-          if (hasOwnProperty.call(self, filterCacheKeyInput) &&
-              equals(self[filterCacheKeyInput], args)) {
-            result = self[filterCacheKeyResult];
+          if (filterCacheKeyInput in filterCache &&
+              equals(filterCache[filterCacheKeyInput], args)) {
+            result = filterCache[filterCacheKeyResult];
           } else {
             result = fn.apply(undefined, args);
-            self[filterCacheKeyInput] = shallowCopy(args, []);
-            self[filterCacheKeyResult] = result;
+            filterCache[filterCacheKeyInput] = shallowCopy(args, []);
+            filterCache[filterCacheKeyResult] = result;
           }
         } else {
           result = fn.apply(undefined, args);
@@ -609,13 +610,12 @@ Parser.prototype = {
       }
 
       if (isPrimitive(input)) {
-        if (hasOwnProperty.call(self, filterCacheKeyInput) &&
-            self[filterCacheKeyInput] === input) {
-          result = self[filterCacheKeyResult];
+        if (filterCache[filterCacheKeyInput] === input && (input === undefined || filterCacheKeyInput in filterCache)) {
+          result = filterCache[filterCacheKeyResult];
         } else {
           result = fn(input);
-          self[filterCacheKeyInput] = input;
-          self[filterCacheKeyResult] = result;
+          filterCache[filterCacheKeyInput] = input;
+          filterCache[filterCacheKeyResult] = result;
         }
       } else {
         result = fn(input);

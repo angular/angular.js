@@ -575,7 +575,7 @@ function isPromiseLike(obj) {
 
 function isPrimitive(value) {
   var valueType;
-  return (value == null || (valueType = typeof value) === 'number' ||  valueType === 'string');
+  return (value == null || (valueType = typeof value) === 'string' ||  valueType === 'number');
 }
 
 
