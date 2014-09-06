@@ -150,6 +150,14 @@ Lexer.prototype = {
         this.readNumber();
       } else if (this.isIdent(this.ch)) {
         this.readIdent();
+      } else if (this.is('.') && this.peek() === '.') {
+        if (this.peek(2) === '.') {
+          this.tokens.push({index: this.index, text: '...'});
+          this.index += 3;
+        } else {
+          this.tokens.push({index: this.index, text: '..'});
+          this.index += 2;
+        }
       } else if (this.is('(){}[].,;:?')) {
         this.tokens.push({
           index: this.index,
@@ -228,7 +236,7 @@ Lexer.prototype = {
     var start = this.index;
     while (this.index < this.text.length) {
       var ch = lowercase(this.text.charAt(this.index));
-      if (ch == '.' || this.isNumber(ch)) {
+      if (ch == '.' && this.peek() !== '.' || this.isNumber(ch)) {
         number += ch;
       } else {
         var peekCh = this.peek();
@@ -267,7 +275,7 @@ Lexer.prototype = {
 
     while (this.index < this.text.length) {
       ch = this.text.charAt(this.index);
-      if (ch === '.' || this.isIdent(ch) || this.isNumber(ch)) {
+      if (ch === '.' && this.peek() !== '.' || this.isIdent(ch) || this.isNumber(ch)) {
         if (ch === '.') lastDot = this.index;
         ident += ch;
       } else {
@@ -775,7 +783,9 @@ Parser.prototype = {
   // This is used with json array declaration
   arrayDeclaration: function () {
     var elementFns = [];
+    var rangeOp;
     var allConstant = true;
+
     if (this.peekToken().text !== ']') {
       do {
         if (this.peek(']')) {
@@ -783,9 +793,17 @@ Parser.prototype = {
           break;
         }
         var elementFn = this.expression();
-        elementFns.push(elementFn);
         if (!elementFn.constant) {
           allConstant = false;
+        }
+        if ((rangeOp = this.expect('..', '...'))) {
+          var rangeEndFn = this.expression();
+          if (!rangeEndFn.constant) {
+            allConstant = false;
+          }
+          elementFns.push({left: elementFn, right: rangeEndFn, range: rangeOp.text});
+        } else {
+          elementFns.push(elementFn);
         }
       } while (this.expect(','));
     }
@@ -794,7 +812,12 @@ Parser.prototype = {
     return extend(function(self, locals) {
       var array = [];
       for (var i = 0; i < elementFns.length; i++) {
-        array.push(elementFns[i](self, locals));
+        if (elementFns[i].range) {
+          array.push.apply(array,
+              range(elementFns[i].left(self, locals), elementFns[i].right(self, locals), elementFns[i].range));
+        } else {
+          array.push(elementFns[i](self, locals));
+        }
       }
       return array;
     }, {
@@ -837,6 +860,26 @@ Parser.prototype = {
     });
   }
 };
+
+
+function range(left, right, op) {
+  var result = [];
+  var reverse = (left > right);
+  var cmp = (op === '..' ? function (lhs, rhs) { return lhs <= rhs; } : function (lhs, rhs) { return lhs < rhs; });
+  var comparator;
+  var i;
+
+  if (reverse) {
+    comparator = function(lhs, rhs) { return cmp(rhs, lhs); };
+  } else {
+    comparator = cmp;
+  }
+  if (isNumber(left) && isNumber(right)) {
+    var next = reverse ? function() { --i; } : function() { ++i; };
+    for (i = left; comparator(i, right); next()) result.push(i);
+  }
+  return result;
+}
 
 
 //////////////////////////////////////////////////
