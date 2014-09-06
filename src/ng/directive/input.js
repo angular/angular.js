@@ -1629,7 +1629,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$modelValue = Number.NaN;
   this.$validators = {};
   this.$asyncValidators = {};
-  this.$validators = {};
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
