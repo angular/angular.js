@@ -80,12 +80,21 @@ function ensureSafeFunction(obj, fullExpression) {
   }
 }
 
+//Keyword constants
+var CONSTANTS = createMap();
+forEach({
+  'null':function(){return null;},
+  'true':function(){return true;},
+  'false':function(){return false;},
+  'undefined':function(){}
+}, function(constFunc, name) {
+  constFunc.constant = constFunc.literal = constFunc.$$parseShared = true;
+  CONSTANTS[name] = constFunc;
+});
+
+//Operators - will be wrapped by binaryFn/unaryFn/assignment/filter
 var OPERATORS = extend(createMap(), {
     /* jshint bitwise : false */
-    'null':function(){return null;},
-    'true':function(){return true;},
-    'false':function(){return false;},
-    undefined:noop,
     '+':function(self, locals, a,b){
       a=a(self, locals); b=b(self, locals);
       if (isDefined(a)) {
@@ -258,7 +267,7 @@ Lexer.prototype = {
   },
 
   readIdent: function() {
-    var parser = this;
+    var parserText = this.text;
 
     var ident = '';
     var start = this.index;
@@ -305,30 +314,11 @@ Lexer.prototype = {
       }
     }
 
-
-    var token = {
+    this.tokens.push({
       index: start,
-      text: ident
-    };
-
-    var fn = OPERATORS[ident];
-
-    if (fn) {
-      token.fn = fn;
-      token.constant = true;
-    } else {
-      var getter = getterFn(ident, this.options, this.text);
-      // TODO(perf): consider exposing the getter reference
-      token.fn = extend(function $parsePathGetter(self, locals) {
-        return getter(self, locals);
-      }, {
-        assign: function(self, value) {
-          return setter(self, ident, value, parser.text);
-        }
-      });
-    }
-
-    this.tokens.push(token);
+      text: ident,
+      fn: CONSTANTS[ident] || getterFn(ident, this.options, parserText)
+    });
 
     if (methodName) {
       this.tokens.push({
@@ -397,6 +387,7 @@ var Parser = function (lexer, $filter, options) {
 Parser.ZERO = extend(function () {
   return 0;
 }, {
+  $$parseShared: true,
   constant: true
 });
 
@@ -686,9 +677,9 @@ Parser.prototype = {
   },
 
   fieldAccess: function(object) {
-    var parser = this;
+    var parserText = this.text;
     var field = this.expect().text;
-    var getter = getterFn(field, this.options, this.text);
+    var getter = getterFn(field, this.options, parserText);
 
     return extend(function $parseFieldAccess(scope, locals, self) {
       return getter(self || object(scope, locals));
@@ -696,13 +687,13 @@ Parser.prototype = {
       assign: function(scope, value, locals) {
         var o = object(scope, locals);
         if (!o) object.assign(scope, o = {});
-        return setter(o, field, value, parser.text);
+        return setter(o, field, value, parserText);
       }
     });
   },
 
   objectIndex: function(obj) {
-    var parser = this;
+    var parserText = this.text;
 
     var indexFn = this.expression();
     this.consume(']');
@@ -712,15 +703,15 @@ Parser.prototype = {
           i = indexFn(self, locals),
           v;
 
-      ensureSafeMemberName(i, parser.text);
+      ensureSafeMemberName(i, parserText);
       if (!o) return undefined;
-      v = ensureSafeObject(o[i], parser.text);
+      v = ensureSafeObject(o[i], parserText);
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
+        var key = ensureSafeMemberName(indexFn(self, locals), parserText);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
-        var o = ensureSafeObject(obj(self, locals), parser.text);
+        var o = ensureSafeObject(obj(self, locals), parserText);
         if (!o) obj.assign(self, o = {});
         return o[key] = value;
       }
@@ -935,9 +926,14 @@ function getterFn(path, options, fullExp) {
     var evaledFnGetter = new Function('s', 'l', code); // s=scope, l=locals
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
+    evaledFnGetter.assign = function(self, value) {
+      return setter(self, path, value, path);
+    };
+
     fn = evaledFnGetter;
   }
 
+  fn.$$parseShared = true;
   getterFnCache[path] = fn;
   return fn;
 }
@@ -1004,6 +1000,21 @@ function $ParseProvider() {
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     $parseOptions.csp = $sniffer.csp;
 
+    function wrapSharedExpression(exp) {
+      var wrapped = exp;
+
+      if (exp.$$parseShared) {
+        wrapped = function $parseWrapper(self, locals) {
+          return exp(self, locals);
+        };
+        wrapped.literal = exp.literal;
+        wrapped.constant = exp.constant;
+        wrapped.assign = exp.assign;
+      }
+
+      return wrapped;
+    }
+
     return function $parse(exp, interceptorFn) {
       var parsedExpression, oneTime, cacheKey;
 
@@ -1026,6 +1037,9 @@ function $ParseProvider() {
             if (parsedExpression.constant) {
               parsedExpression.$$watchDelegate = constantWatchDelegate;
             } else if (oneTime) {
+              //oneTime is not part of the exp passed to the Parser so we may have to
+              //wrap the parsedExpression before adding a $$watchDelegate
+              parsedExpression = wrapSharedExpression(parsedExpression);
               parsedExpression.$$watchDelegate = parsedExpression.literal ?
                 oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
             }
