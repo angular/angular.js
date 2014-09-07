@@ -3623,7 +3623,7 @@ describe('input', function() {
 
 
     it('should be required if false', function() {
-      compileInput('<input type="checkbox" ng:model="value" required />');
+      compileInput('<input type="checkbox" ng-model="value" required />');
 
       browserTrigger(inputElm, 'click');
       expect(inputElm[0].checked).toBe(true);
@@ -3632,6 +3632,16 @@ describe('input', function() {
       browserTrigger(inputElm, 'click');
       expect(inputElm[0].checked).toBe(false);
       expect(inputElm).toBeInvalid();
+    });
+
+    it('should set the ngTrueValue when required directive is present', function() {
+      compileInput('<input type="checkbox" ng-model="value" required ng-true-value="\'yes\'" />');
+
+      expect(inputElm).toBeInvalid();
+
+      browserTrigger(inputElm, 'click');
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm).toBeValid();
     });
   });
 
