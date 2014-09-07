@@ -131,7 +131,7 @@ following bindings to `index.html`:
   the following to index.html:
 
   ```html
-  <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+  <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}</input>
   ```
 
 
