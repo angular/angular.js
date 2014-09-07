@@ -43,11 +43,11 @@
     "karma-ng-scenario": "0.1.0",
     "karma-sauce-launcher": "0.2.0",
     "karma-script-launcher": "0.1.0",
-    "load-grunt-tasks": "^0.6.0",
+    "load-grunt-tasks": "~0.3.0",
     "lodash": "~2.1.0",
     "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
-    "promises-aplus-tests": "~1.3.2",
+    "promises-aplus-tests": "~2.0.4",
     "protractor": "1.2.0",
     "q": "~1.0.0",
     "q-io": "^1.10.9",
@@ -57,6 +57,7 @@
     "shelljs": "~0.2.6",
     "sorted-object": "^1.0.0",
     "stringmap": "^0.2.2",
+    "winston": "~0.7.2",
     "yaml-js": "~0.0.8"
   },
   "licenses": [
