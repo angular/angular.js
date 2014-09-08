@@ -490,7 +490,7 @@ describe('ngInclude', function() {
   });
 });
 
-ddescribe('ngInclude and transcludes', function() {
+describe('ngInclude and transcludes', function() {
   var element, directive;
 
   beforeEach(module(function($compileProvider) {
@@ -592,7 +592,7 @@ ddescribe('ngInclude and transcludes', function() {
   });
 
 
-  it('should correctly work with SVG content', function() {
+  it('should construct SVG template elements with correct namespace', function() {
     if (!window.SVGRectElement) return;
     module(function() {
       directive('test', valueFn({

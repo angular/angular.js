@@ -979,7 +979,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var lastCompileNode;
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn, futureParentElement){
         assertArg(scope, 'scope');
+        var shouldReplace = false;
         if (!namespace) {
+          // If there's no namespace, and no futureParentElement, then we're probably compiling
+          // nodes in-place, so we should use the $compileNode's parent element in order to figure
+          // out the namespace.
+          if (!futureParentElement && !cloneConnectFn) {
+            if ((futureParentElement = $compileNodes.parent())[0])
+              shouldReplace = true;
+          }
           namespace = detectNamespaceForChildElements(futureParentElement);
         }
         if (namespace !== 'html' && $compileNodes[0] !== lastCompileNode) {
@@ -1008,7 +1016,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         compile.$$addScopeInfo($linkNode, scope);
-
+        // If we need to replace $compileNodes due to in-place compilation which resulted in
+        // namespace adaptation, then append them to the parent node. (For whatever reason, the
+        // $compileNodes are no longer children of the parent, so replacing is not possible)
+        if (shouldReplace && namespace !== 'html')
+          futureParentElement.append($linkNode);
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
         if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode, parentBoundTranscludeFn);
         return $linkNode;
