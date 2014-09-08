@@ -31,6 +31,7 @@
     "gulp": "~3.8.0",
     "gulp-concat": "~2.1.7",
     "gulp-jshint": "~1.4.2",
+    "gulp-util": "^3.0.1",
     "jasmine-node": "~1.11.0",
     "jasmine-reporters": "~0.2.1",
     "jshint-stylish": "~0.1.5",
