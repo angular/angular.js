@@ -884,9 +884,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         nodeName = nodeName_(this.$$element);
 
         // sanitize a[href] and img[src] values
-        if ((nodeName === 'a' && key === 'href') ||
-            (nodeName === 'img' && key === 'src')) {
-          this[key] = value = $$sanitizeUri(value, key === 'src');
+        var isImage = nodeName === 'img' && (key === 'src' || key === 'srcset');
+        if ((nodeName === 'a' && key === 'href') || isImage) {
+          this[key] = value = $$sanitizeUri(value, isImage);
         }
 
         if (writeAttr !== false) {
