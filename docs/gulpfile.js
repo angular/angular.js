@@ -1,4 +1,7 @@
+"use strict";
+
 var gulp = require('gulp');
+var log = require('gulp-util').log;
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var bower = require('bower');
@@ -12,7 +15,7 @@ var path = require('canonical-path');
 // See clean and bower for async tasks, and see assets and doc-gen for dependent tasks below
 
 var outputFolder = '../build/docs';
-var bowerFolder = '../bower_components';
+var bowerFolder = 'bower_components';
 
 
 var copyComponent = function(component, pattern, sourceFolder, packageFile) {
@@ -26,7 +29,14 @@ var copyComponent = function(component, pattern, sourceFolder, packageFile) {
 };
 
 gulp.task('bower', function() {
-  return bower.commands.install();
+  var bowerTask = bower.commands.install();
+  bowerTask.on('log', function (result) {
+    log('bower:', result.id, result.data.endpoint.name);
+  });
+  bowerTask.on('error', function(error) {
+    log(error);
+  });
+  return bowerTask;
 });
 
 gulp.task('build-app', function() {
@@ -48,7 +58,7 @@ gulp.task('assets', ['bower'], function() {
 });
 
 
-gulp.task('doc-gen', function() {
+gulp.task('doc-gen', ['bower'], function() {
   var generateDocs = dgeni.generator('docs.config.js');
   return generateDocs()
     .catch(function(error) {

@@ -1,3 +1,5 @@
+"use strict";
+
 var path = require('canonical-path');
 var versionInfo = require('../lib/versions/version-info');
 var basePath = __dirname;
@@ -9,9 +11,10 @@ module.exports = function(config) {
   var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.cdnVersion;
 
   var getVersion = function(component, sourceFolder, packageFile) {
-    sourceFolder = sourceFolder || '../bower_components';
+    sourceFolder = sourceFolder || './bower_components';
     packageFile = packageFile || 'bower.json';
-    return require(path.join(sourceFolder,component,packageFile)).version;
+
+    return require(path.resolve(sourceFolder,component,packageFile)).version;
   };
 
 

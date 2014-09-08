@@ -2931,6 +2931,180 @@
         }
       }
     },
+    "gulp-util": {
+      "version": "3.0.1",
+      "dependencies": {
+        "chalk": {
+          "version": "0.5.1",
+          "dependencies": {
+            "ansi-styles": {
+              "version": "1.1.0"
+            },
+            "escape-string-regexp": {
+              "version": "1.0.1"
+            },
+            "has-ansi": {
+              "version": "0.1.0",
+              "dependencies": {
+                "ansi-regex": {
+                  "version": "0.2.1"
+                }
+              }
+            },
+            "strip-ansi": {
+              "version": "0.3.0",
+              "dependencies": {
+                "ansi-regex": {
+                  "version": "0.2.1"
+                }
+              }
+            },
+            "supports-color": {
+              "version": "0.2.0"
+            }
+          }
+        },
+        "dateformat": {
+          "version": "1.0.8-1.2.3"
+        },
+        "lodash": {
+          "version": "2.4.1"
+        },
+        "lodash._reinterpolate": {
+          "version": "2.4.1"
+        },
+        "lodash.template": {
+          "version": "2.4.1",
+          "dependencies": {
+            "lodash.defaults": {
+              "version": "2.4.1",
+              "dependencies": {
+                "lodash._objecttypes": {
+                  "version": "2.4.1"
+                }
+              }
+            },
+            "lodash.escape": {
+              "version": "2.4.1",
+              "dependencies": {
+                "lodash._escapehtmlchar": {
+                  "version": "2.4.1",
+                  "dependencies": {
+                    "lodash._htmlescapes": {
+                      "version": "2.4.1"
+                    }
+                  }
+                },
+                "lodash._reunescapedhtml": {
+                  "version": "2.4.1",
+                  "dependencies": {
+                    "lodash._htmlescapes": {
+                      "version": "2.4.1"
+                    }
+                  }
+                }
+              }
+            },
+            "lodash._escapestringchar": {
+              "version": "2.4.1"
+            },
+            "lodash.keys": {
+              "version": "2.4.1",
+              "dependencies": {
+                "lodash._isnative": {
+                  "version": "2.4.1"
+                },
+                "lodash.isobject": {
+                  "version": "2.4.1",
+                  "dependencies": {
+                    "lodash._objecttypes": {
+                      "version": "2.4.1"
+                    }
+                  }
+                },
+                "lodash._shimkeys": {
+                  "version": "2.4.1",
+                  "dependencies": {
+                    "lodash._objecttypes": {
+                      "version": "2.4.1"
+                    }
+                  }
+                }
+              }
+            },
+            "lodash.templatesettings": {
+              "version": "2.4.1"
+            },
+            "lodash.values": {
+              "version": "2.4.1"
+            }
+          }
+        },
+        "minimist": {
+          "version": "1.1.0"
+        },
+        "multipipe": {
+          "version": "0.1.1",
+          "dependencies": {
+            "duplexer2": {
+              "version": "0.0.2",
+              "dependencies": {
+                "readable-stream": {
+                  "version": "1.1.13",
+                  "dependencies": {
+                    "core-util-is": {
+                      "version": "1.0.1"
+                    },
+                    "isarray": {
+                      "version": "0.0.1"
+                    },
+                    "string_decoder": {
+                      "version": "0.10.31"
+                    },
+                    "inherits": {
+                      "version": "2.0.1"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "through2": {
+          "version": "0.6.1",
+          "dependencies": {
+            "readable-stream": {
+              "version": "1.0.31",
+              "dependencies": {
+                "core-util-is": {
+                  "version": "1.0.1"
+                },
+                "isarray": {
+                  "version": "0.0.1"
+                },
+                "string_decoder": {
+                  "version": "0.10.31"
+                },
+                "inherits": {
+                  "version": "2.0.1"
+                }
+              }
+            },
+            "xtend": {
+              "version": "4.0.0"
+            }
+          }
+        },
+        "vinyl": {
+          "version": "0.4.3",
+          "dependencies": {
+            "clone-stats": {
+              "version": "0.0.1"
+            }
+          }
+        }
+      }
+    },
     "jasmine-node": {
       "version": "1.11.0",
       "dependencies": {
