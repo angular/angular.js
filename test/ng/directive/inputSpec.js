@@ -667,6 +667,16 @@ describe('NgModelController', function() {
       expect(isObject(ctrl.$pending)).toBe(false);
     }));
 
+    it('should not run validators in case view value is not re-rendered', function() {
+      ctrl.$formatters.push(function(value) {
+        return 'nochange';
+      });
+      ctrl.$validators.spyValidator = jasmine.createSpy('spyValidator');
+      scope.$apply('value = "first"');
+      scope.$apply('value = "second"');
+      expect(ctrl.$validators.spyValidator).toHaveBeenCalledOnce();
+    });
+
     it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
       inject(function($compile, $rootScope, $q) {
 
@@ -730,6 +740,31 @@ describe('NgModelController', function() {
       dealoc(element);
     }));
 
+    it('should re-evaluate the form validity state against a parsed view value',
+      inject(function($compile, $rootScope, $q) {
+      var element = $compile('<form name="myForm">' +
+                               '<input type="number" name="curiousnumber" ng-model="curiousnumber" />' +
+                             '</form>')($rootScope);
+      var inputElm = element.find('input');
+
+      var formCtrl = $rootScope.myForm;
+      var curiousnumberCtrl = formCtrl.curiousnumber;
+      var curiousnumberDefer;
+      curiousnumberCtrl.$asyncValidators.isCurious = function() {
+        curiousnumberDefer = $q.defer();
+        return curiousnumberDefer.promise;
+      };
+
+      curiousnumberCtrl.$setViewValue("22");
+      $rootScope.$digest();
+      expect(curiousnumberCtrl.$pending.isCurious).toBe(true);
+
+      curiousnumberDefer.resolve();
+      $rootScope.$digest();
+      expect(curiousnumberCtrl.$pending).toBeUndefined();
+
+      dealoc(element);
+    }));
   });
 });
 

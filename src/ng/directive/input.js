@@ -1744,7 +1744,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     $animate.removeClass($element, PENDING_CLASS);
   };
 
-  this.$$setPending = function(validationErrorKey, promise, currentValue) {
+  this.$$setPending = function(validationErrorKey, promise, modelValue, viewValue) {
     ctrl.$pending = ctrl.$pending || {};
     if (angular.isUndefined(ctrl.$pending[validationErrorKey])) {
       ctrl.$pending[validationErrorKey] = true;
@@ -1760,19 +1760,19 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     //Special-case for (undefined|null|false|NaN) values to avoid
     //having to compare each of them with each other
-    currentValue = currentValue || '';
+    viewValue = viewValue || '';
     promise.then(resolve(true), resolve(false));
 
     function resolve(bool) {
       return function() {
         var value = ctrl.$viewValue || '';
-        if (ctrl.$pending && ctrl.$pending[validationErrorKey] && currentValue === value) {
+        if (ctrl.$pending && ctrl.$pending[validationErrorKey] && viewValue === value) {
           pendingCount--;
           delete ctrl.$pending[validationErrorKey];
           ctrl.$setValidity(validationErrorKey, bool);
           if (pendingCount === 0) {
             ctrl.$$clearPending();
-            ctrl.$$updateValidModelValue(value);
+            ctrl.$$updateValidModelValue(modelValue);
             ctrl.$$writeModelToScope();
           }
         }
@@ -1982,7 +1982,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           throw $ngModelMinErr("$asyncValidators",
             "Expected asynchronous validator to return a promise but got '{0}' instead.", result);
         }
-        ctrl.$$setPending(validator, result, modelValue);
+        ctrl.$$setPending(validator, result, modelValue, viewValue);
       });
     }
 
@@ -2176,10 +2176,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         viewValue = formatters[idx](viewValue);
       }
 
-      ctrl.$$runValidators(modelValue, viewValue);
 
       if (ctrl.$viewValue !== viewValue) {
         ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+        ctrl.$$runValidators(modelValue, viewValue);
         ctrl.$render();
       }
     }
