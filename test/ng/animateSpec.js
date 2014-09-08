@@ -103,6 +103,56 @@ describe("$animate", function() {
       });
       inject();
     });
+
+    it("should apply and retain inline styles on the element that is animated", inject(function($animate, $rootScope) {
+      var element = jqLite('<div></div>');
+      var parent = jqLite('<div></div>');
+      var other = jqLite('<div></div>');
+      parent.append(other);
+      $animate.enabled(true);
+
+      $animate.enter(element, parent, null, { color : 'red' });
+      assertColor('red');
+
+      $animate.move(element, null, other, { color : 'yellow' });
+      assertColor('yellow');
+
+      $animate.addClass(element, 'on', { color : 'green' });
+      $rootScope.$digest();
+      assertColor('green');
+
+      $animate.setClass(element, 'off', 'on', { color : 'black' });
+      $rootScope.$digest();
+      assertColor('black');
+
+      $animate.removeClass(element, 'off', { color : 'blue' });
+      $rootScope.$digest();
+      assertColor('blue');
+
+      $animate.leave(element, 'off', { color : 'blue' });
+      assertColor('blue'); //nothing should happen the element is gone anyway
+
+      function assertColor(color) {
+        expect(element[0].style.color).toBe(color);
+      }
+    }));
+
+    it("should merge the from and to styles that are provided",
+      inject(function($animate, $rootScope) {
+
+      var element = jqLite('<div></div>');
+
+      element.css('color', 'red');
+      $animate.addClass(element, 'on', {
+        from : { color : 'green' },
+        to : { borderColor : 'purple' }
+      });
+      $rootScope.$digest();
+
+      var style = element[0].style;
+      expect(style.color).toBe('green');
+      expect(style.borderColor).toBe('purple');
+    }));
   });
 
   describe('CSS class DOM manipulation', function() {
