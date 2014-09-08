@@ -1,3 +1,4 @@
+/*jshint scripturl:true*/
 'use strict';
 
 describe('ngSrcset', function() {
