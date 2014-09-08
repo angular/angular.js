@@ -167,7 +167,9 @@ var ngShowDirective = ['$animate', function($animate) {
         // we can control when the element is actually displayed on screen without having
         // to have a global/greedy CSS selector that breaks when other animations are run.
         // Read: https://github.com/angular/angular.js/issues/9103#issuecomment-58335845
-        $animate[value ? 'removeClass' : 'addClass'](element, NG_HIDE_CLASS, NG_HIDE_IN_PROGRESS_CLASS);
+        $animate[value ? 'removeClass' : 'addClass'](element, NG_HIDE_CLASS, {
+          tempClasses : NG_HIDE_IN_PROGRESS_CLASS
+        });
       });
     }
   };
@@ -324,7 +326,9 @@ var ngHideDirective = ['$animate', function($animate) {
       scope.$watch(attr.ngHide, function ngHideWatchAction(value){
         // The comment inside of the ngShowDirective explains why we add and
         // remove a temporary class for the show/hide animation
-        $animate[value ? 'addClass' : 'removeClass'](element,NG_HIDE_CLASS, NG_HIDE_IN_PROGRESS_CLASS);
+        $animate[value ? 'addClass' : 'removeClass'](element,NG_HIDE_CLASS, {
+          tempClasses : NG_HIDE_IN_PROGRESS_CLASS
+        });
       });
     }
   };

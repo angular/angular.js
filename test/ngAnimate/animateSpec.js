@@ -292,7 +292,7 @@ describe("ngAnimate", function() {
             });
             $animateProvider.register('.custom-delay', function($timeout) {
               function animate(element, done) {
-                done = arguments.length == 3 ? arguments[2] : done;
+                done = arguments.length == 4 ? arguments[2] : done;
                 $timeout(done, 2000, false);
                 return function() {
                   element.addClass('animation-cancelled');
@@ -306,7 +306,7 @@ describe("ngAnimate", function() {
             });
             $animateProvider.register('.custom-long-delay', function($timeout) {
               function animate(element, done) {
-                done = arguments.length == 3 ? arguments[2] : done;
+                done = arguments.length == 4 ? arguments[2] : done;
                 $timeout(done, 20000, false);
                 return function(cancelled) {
                   element.addClass(cancelled ? 'animation-cancelled' : 'animation-ended');
@@ -1037,8 +1037,124 @@ describe("ngAnimate", function() {
           expect(element.hasClass('custom-long-delay-add')).toBe(false);
           expect(element.hasClass('custom-long-delay-add-active')).toBe(false);
         }));
+
+        it('should apply directive styles and provide the style collection to the animation function', function() {
+          var animationDone;
+          var animationStyles;
+          var proxyAnimation = function() {
+            var limit = arguments.length-1;
+            animationStyles = arguments[limit];
+            animationDone = arguments[limit-1];
+          };
+          module(function($animateProvider) {
+            $animateProvider.register('.capture', function() {
+              return {
+                enter : proxyAnimation,
+                leave : proxyAnimation,
+                move : proxyAnimation,
+                addClass : proxyAnimation,
+                removeClass : proxyAnimation,
+                setClass : proxyAnimation
+              };
+            });
+          });
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout, _$rootElement_) {
+            $rootElement = _$rootElement_;
+
+            $animate.enabled(true);
+
+            element = $compile(html('<div></div>'))($rootScope);
+            var otherParent = $compile('<div></div>')($rootScope);
+            var child = $compile('<div class="capture" style="transition: 0s!important; -webkit-transition: 0s!important;"></div>')($rootScope);
+
+            $rootElement.append(otherParent);
+            $rootScope.$digest();
+
+            var styles = {
+              from: { backgroundColor: 'blue' },
+              to: { backgroundColor: 'red' }
+            };
+
+            //enter
+            $animate.enter(child, element, null, styles);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(animationStyles).toEqual(styles);
+            animationDone();
+            animationDone = animationStyles = null;
+            $animate.triggerCallbacks();
+
+            //move
+            $animate.move(child, null, otherParent, styles);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(animationStyles).toEqual(styles);
+            animationDone();
+            animationDone = animationStyles = null;
+            $animate.triggerCallbacks();
+
+            //addClass
+            $animate.addClass(child, 'on', styles);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(animationStyles).toEqual(styles);
+            animationDone();
+            animationDone = animationStyles = null;
+            $animate.triggerCallbacks();
+
+            //setClass
+            $animate.setClass(child, 'off', 'on', styles);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(animationStyles).toEqual(styles);
+            animationDone();
+            animationDone = animationStyles = null;
+            $animate.triggerCallbacks();
+
+            //removeClass
+            $animate.removeClass(child, 'off', styles);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(animationStyles).toEqual(styles);
+            animationDone();
+            animationDone = animationStyles = null;
+            $animate.triggerCallbacks();
+
+            //leave
+            $animate.leave(child, styles);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(animationStyles).toEqual(styles);
+            animationDone();
+            animationDone = animationStyles = null;
+            $animate.triggerCallbacks();
+
+            dealoc(otherParent);
+          });
+        });
       });
 
+      it("should apply animated styles even if there are no detected animations",
+        inject(function($compile, $animate, $rootScope, $sniffer, $rootElement, $document) {
+
+        $animate.enabled(true);
+        jqLite($document[0].body).append($rootElement);
+
+        element = $compile('<div class="fake-animation"></div>')($rootScope);
+
+        $animate.enter(element, $rootElement, null, {
+          to : {borderColor: 'red'}
+        });
+
+        $rootScope.$digest();
+        expect(element).toHaveClass('ng-animate');
+
+        $animate.triggerReflow();
+        $animate.triggerCallbacks();
+
+        expect(element).not.toHaveClass('ng-animate');
+        expect(element.attr('style')).toMatch(/border-color: red/);
+      }));
 
       describe("with CSS3", function() {
 
@@ -1218,6 +1334,28 @@ describe("ngAnimate", function() {
             })
           );
 
+          it("should piggy-back-transition the styles with the max keyframe duration if provided by the directive",
+            inject(function($compile, $animate, $rootScope, $sniffer) {
+
+            $animate.enabled(true);
+            ss.addRule('.on', '-webkit-animation: 1s keyframeanimation; animation: 1s keyframeanimation;');
+
+            element = $compile(html('<div>1</div>'))($rootScope);
+
+            $animate.addClass(element, 'on', {
+              to: {borderColor: 'blue'}
+            });
+
+            $rootScope.$digest();
+            if ($sniffer.transitions) {
+              $animate.triggerReflow();
+              expect(element.attr('style')).toContain('border-color: blue');
+              expect(element.attr('style')).toMatch(/transition:.*1s/);
+              browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+            }
+
+            expect(element.attr('style')).toContain('border-color: blue');
+          }));
 
           it("should pause the playstate when performing a stagger animation",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
@@ -1372,6 +1510,86 @@ describe("ngAnimate", function() {
             }
           }));
 
+          it("should stagger items and apply the transition + directive styles the right time when piggy-back styles are used",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement, $window) {
+
+            if(!$sniffer.transitions) return;
+
+            $animate.enabled(true);
+
+            ss.addRule('.stagger-animation.ng-enter, .stagger-animation.ng-leave',
+              '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' +
+              'animation:my_animation 1s 1s, your_animation 1s 2s;');
+
+            ss.addRule('.stagger-animation.ng-enter-stagger, .stagger-animation.ng-leave-stagger',
+              '-webkit-animation-delay:0.1s;' +
+              'animation-delay:0.1s;');
+
+            var styles = {
+              from : { left : '50px' },
+              to : { left : '100px' }
+            };
+            var container = $compile(html('<div></div>'))($rootScope);
+
+            var elements = [];
+            for(var i = 0; i < 4; i++) {
+              var newScope = $rootScope.$new();
+              var element = $compile('<div class="stagger-animation"></div>')(newScope);
+              $animate.enter(element, container, null, styles);
+              elements.push(element);
+            }
+
+            $rootScope.$digest();
+
+            for(i = 0; i < 4; i++) {
+              expect(elements[i]).toHaveClass('ng-enter');
+              assertTransitionDuration(elements[i], '2', true);
+              assertLeftStyle(elements[i], '50');
+            }
+
+            $animate.triggerReflow();
+
+            expect(elements[0]).toHaveClass('ng-enter-active');
+            assertLeftStyle(elements[0], '100');
+            assertTransitionDuration(elements[0], '1');
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).not.toHaveClass('ng-enter-active');
+              assertTransitionDuration(elements[i], '1', true);
+              assertLeftStyle(elements[i], '100', true);
+            }
+
+            $timeout.flush(300);
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).toHaveClass('ng-enter-active');
+              assertTransitionDuration(elements[i], '1');
+              assertLeftStyle(elements[i], '100');
+            }
+
+            $timeout.flush();
+
+            for(i = 0; i < 4; i++) {
+              expect(elements[i]).not.toHaveClass('ng-enter');
+              expect(elements[i]).not.toHaveClass('ng-enter-active');
+              assertTransitionDuration(elements[i], '1', true);
+              assertLeftStyle(elements[i], '100');
+            }
+
+            function assertLeftStyle(element, val, not) {
+              var regex = new RegExp('left: ' + val + 'px');
+              var style = element.attr('style');
+              not ? expect(style).not.toMatch(regex)
+                  : expect(style).toMatch(regex);
+            }
+
+            function assertTransitionDuration(element, val, not) {
+              var regex = new RegExp('transition:.*' + val + 's');
+              var style = element.attr('style');
+              not ? expect(style).not.toMatch(regex)
+                  : expect(style).toMatch(regex);
+            }
+          }));
         });
 
 
@@ -1741,6 +1959,82 @@ describe("ngAnimate", function() {
             }
           }));
 
+          it("should stagger items, apply directive styles but not apply a transition style when the stagger step kicks in",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement, $window) {
+
+            if(!$sniffer.transitions) return;
+
+            $animate.enabled(true);
+
+            ss.addRule('.stagger-animation.ng-enter, .ani.ng-leave',
+              '-webkit-transition:1s linear color 2s, 3s linear font-size 4s;' +
+              'transition:1s linear color 2s, 3s linear font-size 4s;');
+
+            ss.addRule('.stagger-animation.ng-enter-stagger, .ani.ng-leave-stagger',
+              '-webkit-transition-delay:0.1s;' +
+              'transition-delay:0.1s;');
+
+            var styles = {
+              from : { left : '155px' },
+              to : { left : '255px' }
+            };
+            var container = $compile(html('<div></div>'))($rootScope);
+
+            var elements = [];
+            for(var i = 0; i < 4; i++) {
+              var newScope = $rootScope.$new();
+              var element = $compile('<div class="stagger-animation"></div>')(newScope);
+              $animate.enter(element, container, null, styles);
+              elements.push(element);
+            }
+
+            $rootScope.$digest();
+
+            for(i = 0; i < 4; i++) {
+              expect(elements[i]).toHaveClass('ng-enter');
+              assertLeftStyle(elements[i], '155');
+            }
+
+            $animate.triggerReflow();
+
+            expect(elements[0]).toHaveClass('ng-enter-active');
+            assertLeftStyle(elements[0], '255');
+            assertNoTransitionDuration(elements[0]);
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).not.toHaveClass('ng-enter-active');
+              assertLeftStyle(elements[i], '255', true);
+            }
+
+            $timeout.flush(300);
+
+            for(i = 1; i < 4; i++) {
+              expect(elements[i]).toHaveClass('ng-enter-active');
+              assertNoTransitionDuration(elements[i]);
+              assertLeftStyle(elements[i], '255');
+            }
+
+            $timeout.flush();
+
+            for(i = 0; i < 4; i++) {
+              expect(elements[i]).not.toHaveClass('ng-enter');
+              expect(elements[i]).not.toHaveClass('ng-enter-active');
+              assertNoTransitionDuration(elements[i]);
+              assertLeftStyle(elements[i], '255');
+            }
+
+            function assertLeftStyle(element, val, not) {
+              var regex = new RegExp('left: ' + val + 'px');
+              var style = element.attr('style');
+              not ? expect(style).not.toMatch(regex)
+                  : expect(style).toMatch(regex);
+            }
+
+            function assertNoTransitionDuration(element) {
+              var style = element.attr('style');
+              expect(style).not.toMatch(/transition/);
+            }
+          }));
 
           it("should apply a closing timeout to close all pending transitions",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
@@ -2041,6 +2335,29 @@ describe("ngAnimate", function() {
             browserTrigger(elements[i],'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22000 });
             expect(elements[i].attr('style')).toBeFalsy();
           }
+        }));
+
+        it("should create a piggy-back-transition which has a duration the same as the max keyframe duration if any directive styles are provided",
+          inject(function($compile, $animate, $rootScope, $sniffer) {
+
+          $animate.enabled(true);
+          ss.addRule('.on', '-webkit-transition: 1s linear all; transition: 1s linear all;');
+
+          element = $compile(html('<div>1</div>'))($rootScope);
+
+          $animate.addClass(element, 'on', {
+            to: {color: 'red'}
+          });
+
+          $rootScope.$digest();
+          if ($sniffer.transitions) {
+            $animate.triggerReflow();
+            expect(element.attr('style')).toContain('color: red');
+            expect(element.attr('style')).not.toContain('transition');
+            browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          }
+
+          expect(element.attr('style')).toContain('color: red');
         }));
       });
 
@@ -2472,9 +2789,9 @@ describe("ngAnimate", function() {
               };
 
               function capture(event) {
-                return function(element, add, remove, done) {
+                return function(element, add, remove, styles, done) {
                   //some animations only have one extra param
-                  done = done || remove || add;
+                  done = arguments[arguments.length-2]; //the last one is the styles array
                   captures[event]=done;
                 };
               }
@@ -2491,28 +2808,40 @@ describe("ngAnimate", function() {
             $compile(element)($rootScope);
 
             assertTempClass('enter', 'temp-enter', function() {
-              $animate.enter(element, container, null, 'temp-enter');
+              $animate.enter(element, container, null, {
+                tempClasses: 'temp-enter'
+              });
             });
 
             assertTempClass('move', 'temp-move', function() {
-              $animate.move(element, null, container2, 'temp-move');
+              $animate.move(element, null, container2, {
+                tempClasses: 'temp-move'
+              });
             });
 
             assertTempClass('addClass', 'temp-add', function() {
-              $animate.addClass(element, 'add', 'temp-add');
+              $animate.addClass(element, 'add', {
+                tempClasses: 'temp-add'
+              });
             });
 
             assertTempClass('removeClass', 'temp-remove', function() {
-              $animate.removeClass(element, 'add', 'temp-remove');
+              $animate.removeClass(element, 'add', {
+                tempClasses: 'temp-remove'
+              });
             });
 
             element.addClass('remove');
             assertTempClass('setClass', 'temp-set', function() {
-              $animate.setClass(element, 'add', 'remove', 'temp-set');
+              $animate.setClass(element, 'add', 'remove', {
+                tempClasses: 'temp-set'
+              });
             });
 
             assertTempClass('leave', 'temp-leave', function() {
-              $animate.leave(element, 'temp-leave');
+              $animate.leave(element, {
+                tempClasses: 'temp-leave'
+              });
             });
 
             function assertTempClass(event, className, animationOperation) {

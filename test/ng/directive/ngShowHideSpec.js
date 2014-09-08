@@ -170,13 +170,13 @@ describe('ngShow / ngHide animations', function() {
 
       item = $animate.queue.shift();
       expect(item.event).toEqual('addClass');
-      expect(item.options).toEqual('ng-hide-animate');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
 
       $scope.on = true;
       $scope.$digest();
       item = $animate.queue.shift();
       expect(item.event).toEqual('removeClass');
-      expect(item.options).toEqual('ng-hide-animate');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
     }));
   });
 
@@ -217,13 +217,13 @@ describe('ngShow / ngHide animations', function() {
 
       item = $animate.queue.shift();
       expect(item.event).toEqual('removeClass');
-      expect(item.options).toEqual('ng-hide-animate');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
 
       $scope.on = true;
       $scope.$digest();
       item = $animate.queue.shift();
       expect(item.event).toEqual('addClass');
-      expect(item.options).toEqual('ng-hide-animate');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
     }));
   });
 });
