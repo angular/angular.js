@@ -1,0 +1,10 @@
+{
+  "name": "AngularJS-docs-app",
+  "dependencies": {
+    "jquery": "2.1.1",
+    "lunr.js": "0.4.3",
+    "open-sans-fontface": "1.0.4",
+    "google-code-prettify": "1.0.1",
+    "bootstrap": "3.1.1"
+  }
+}

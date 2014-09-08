@@ -10,8 +10,7 @@ performance/temp*.html
 *.swp
 angular.js.tmproj
 /node_modules/
-/components/
-/bower_components/
+bower_components/
 angular.xcodeproj
 .idea
 .agignore
