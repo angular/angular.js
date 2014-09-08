@@ -1744,7 +1744,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     $animate.removeClass($element, PENDING_CLASS);
   };
 
-  this.$$setPending = function(validationErrorKey, promise, currentValue) {
+  this.$$setPending = function(validationErrorKey, promise, modelValue) {
     ctrl.$pending = ctrl.$pending || {};
     if (angular.isUndefined(ctrl.$pending[validationErrorKey])) {
       ctrl.$pending[validationErrorKey] = true;
@@ -1760,7 +1760,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     //Special-case for (undefined|null|false|NaN) values to avoid
     //having to compare each of them with each other
-    currentValue = currentValue || '';
+    var currentValue = ctrl.$viewValue || '';
     promise.then(resolve(true), resolve(false));
 
     function resolve(bool) {
@@ -1772,7 +1772,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           ctrl.$setValidity(validationErrorKey, bool);
           if (pendingCount === 0) {
             ctrl.$$clearPending();
-            ctrl.$$updateValidModelValue(value);
+            ctrl.$$updateValidModelValue(modelValue);
             ctrl.$$writeModelToScope();
           }
         }
@@ -1959,14 +1959,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
 
     var prev = ctrl.$modelValue;
-    ctrl.$$runValidators(ctrl.$$invalidModelValue || ctrl.$modelValue, ctrl.$viewValue);
+    ctrl.$$runValidators(ctrl.$$invalidModelValue || ctrl.$modelValue);
     if (prev !== ctrl.$modelValue) {
       ctrl.$$writeModelToScope();
     }
   };
 
-  this.$$runValidators = function(modelValue, viewValue) {
-    // this is called in the event if incase the input value changes
+  this.$$runValidators = function(modelValue) {
+    // this is called in the event if in case the input value changes
     // while a former asynchronous validator is still doing its thing
     if (ctrl.$pending) {
       ctrl.$$clearPending();
@@ -1991,7 +1991,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     function validate(validators, callback) {
       var status = true;
       forEach(validators, function(fn, name) {
-        var result = fn(modelValue, viewValue);
+        var result = fn(modelValue, ctrl.$viewValue);
         callback(name, result);
         status = status && result;
       });
@@ -2055,7 +2055,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     } else if (ctrl.$modelValue !== modelValue &&
                 (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
       ctrl.$setValidity(parserName, true);
-      ctrl.$$runValidators(modelValue, viewValue);
+      ctrl.$$runValidators(modelValue);
       ctrl.$$writeModelToScope();
     }
   };
@@ -2176,10 +2176,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         viewValue = formatters[idx](viewValue);
       }
 
-      ctrl.$$runValidators(modelValue, viewValue);
-
       if (ctrl.$viewValue !== viewValue) {
         ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+        ctrl.$$runValidators(modelValue);
         ctrl.$render();
       }
     }

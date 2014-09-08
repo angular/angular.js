@@ -516,6 +516,42 @@ describe('NgModelController', function() {
       expect(ctrl.$pending).toBeUndefined();
     }));
 
+    it('should not run validators in case view value is not re-rendered', function() {
+      ctrl.$formatters.push(function(value) {
+        return 'nochange';
+      });
+
+      ctrl.$validators.spyValidator = jasmine.createSpy('spyValidator');
+      scope.$apply('value = "first"');
+      scope.$apply('value = "second"');
+      expect(ctrl.$validators.spyValidator).toHaveBeenCalledOnce();
+    });
+
+    it('should render a validator asynchronously when parser is defined', inject(function($q) {
+      var defer;
+      ctrl.$asyncValidators.promiseValidator = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+      ctrl.$parsers.push(function(value) {
+        return value + '-a';
+      });
+
+      ctrl.$setViewValue('');
+
+      expect(ctrl.$valid).toBeUndefined();
+      expect(ctrl.$invalid).toBeUndefined();
+      expect(ctrl.$pending.promiseValidator).toBe(true);
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$valid).toBe(true);
+      expect(ctrl.$invalid).toBe(false);
+      expect(ctrl.$pending).toBeUndefined();
+      expect(ctrl.$modelValue).toBe('-a');
+    }));
+
     it('should throw an error when a promise is not returned for an asynchronous validator', inject(function($q) {
       ctrl.$asyncValidators.async = function(value) {
         return true;
