@@ -725,6 +725,43 @@ describe('parser', function() {
                     'Expression: a.toString.constructor = 1');
           });
 
+          it('should disallow traversing the Function object in a setter: E02', function() {
+            expect(function() {
+              // This expression by itself isn't dangerous.  However, one can use this to
+              // automatically call an object (e.g. a Function object) when it is automatically
+              // toString'd/valueOf'd by setting the RHS to Function.prototype.call.
+              scope.$eval('hasOwnProperty.constructor.prototype.valueOf = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: hasOwnProperty.constructor.prototype.valueOf = 1');
+          });
+
+          it('should disallow passing the Function object as a parameter: E03', function() {
+            expect(function() {
+              // This expression constructs a function but does not execute it.  It does lead the
+              // way to execute it if one can get the toString/valueOf of it to call the function.
+              scope.$eval('["a", "alert(1)"].sort(hasOwnProperty.constructor)');
+            }).toThrow();
+          });
+
+          it('should prevent exploit E01', function() {
+            // This is a tracking exploit.  The two individual tests, it('should … : E02') and
+            // it('should … : E03') test for two parts to block this exploit.  This exploit works
+            // as follows:
+            //
+            // • Array.sort takes a comparison function and passes it 2 parameters to compare.  If
+            //   the result is non-primitive, sort then invokes valueOf() on the result.
+            // • The Function object conveniently accepts two string arguments so we can use this
+            //   to construct a function.  However, this doesn't do much unless we can execute it.
+            // • We set the valueOf property on Function.prototype to Function.prototype.call.
+            //   This causes the function that we constructed to be executed when sort calls
+            //   .valueOf() on the result of the comparison.
+            expect(function() {
+              scope.$eval('' +
+                'hasOwnProperty.constructor.prototype.valueOf=valueOf.call;' +
+                '["a","alert(1)"].sort(hasOwnProperty.constructor)');
+            }).toThrow();
+          });
 
           it('should NOT allow access to Function constructor that has been aliased', function() {
             scope.foo = { "bar": Function };
