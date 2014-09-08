@@ -414,20 +414,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         ctrl.$render = render;
 
-        scope.$watchCollection(valuesFn, function () {
-          if (!renderScheduled) {
-            scope.$$postDigest(render);
-            renderScheduled = true;
-          }
-        });
-        if ( multiple ) {
-          scope.$watchCollection(function() { return ctrl.$modelValue; }, function () {
-            if (!renderScheduled) {
-              scope.$$postDigest(render);
-              renderScheduled = true;
-            }
-          });
+        scope.$watchCollection(valuesFn, scheduleRendering);
+
+        if (multiple) {
+          scope.$watchCollection(function() { return ctrl.$modelValue; }, scheduleRendering);
         }
+
 
         function getSelectedSet() {
           var selectedSet = false;
@@ -445,6 +437,14 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             }
           }
           return selectedSet;
+        }
+
+
+        function scheduleRendering() {
+          if (!renderScheduled) {
+            scope.$$postDigest(render);
+            renderScheduled = true;
+          }
         }
 
 
