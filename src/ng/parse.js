@@ -747,7 +747,7 @@ Parser.prototype = {
       if (args) {
         var i = argsFn.length;
         while (i--) {
-          args[i] = argsFn[i](scope, locals);
+          args[i] = ensureSafeObject(argsFn[i](scope, locals), expressionText);
         }
       }
 
@@ -835,11 +835,12 @@ Parser.prototype = {
 //////////////////////////////////////////////////
 
 function setter(obj, path, setValue, fullExp) {
+  ensureSafeObject(obj, fullExp);
 
   var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
     key = ensureSafeMemberName(element.shift(), fullExp);
-    var propertyObj = obj[key];
+    var propertyObj = ensureSafeObject(obj[key], fullExp);
     if (!propertyObj) {
       propertyObj = {};
       obj[key] = propertyObj;
@@ -847,7 +848,6 @@ function setter(obj, path, setValue, fullExp) {
     obj = propertyObj;
   }
   key = ensureSafeMemberName(element.shift(), fullExp);
-  ensureSafeObject(obj, fullExp);
   ensureSafeObject(obj[key], fullExp);
   obj[key] = setValue;
   return setValue;
