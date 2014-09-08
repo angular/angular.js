@@ -395,9 +395,6 @@ function FormController(element, attrs, $scope, $animate) {
  * submitted. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
  * to have access to the updated model.
  *
- * @param {string=} name Name of the form. If specified, the form controller will be published into
- *                       related scope, under this name.
- *
  * ## Animation Hooks
  *
  * Animations in ngForm are triggered when any of the associated CSS classes are added and removed.
@@ -474,6 +471,8 @@ function FormController(element, attrs, $scope, $animate) {
       </file>
     </example>
  *
+ * @param {string=} name Name of the form. If specified, the form controller will be published into
+ *                       related scope, under this name.
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {
