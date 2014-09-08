@@ -267,8 +267,10 @@ var ngIncludeFillContentDirective = ['$compile',
       priority: -400,
       require: 'ngInclude',
       link: function(scope, $element, $attr, ctrl) {
-        $element.html(ctrl.template);
-        $compile($element.contents())(scope);
+        $element.empty();
+        $compile(ctrl.template)(scope, function namespaceAdaptedClone(clone) {
+          $element.append(clone);
+        }, undefined, undefined, $element);
       }
     };
   }];

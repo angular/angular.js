@@ -490,7 +490,7 @@ describe('ngInclude', function() {
   });
 });
 
-describe('ngInclude and transcludes', function() {
+ddescribe('ngInclude and transcludes', function() {
   var element, directive;
 
   beforeEach(module(function($compileProvider) {
@@ -588,6 +588,27 @@ describe('ngInclude and transcludes', function() {
       $rootScope.$apply();
       $httpBackend.flush();
       expect(root[0]).toBe(element[0]);
+    });
+  });
+
+
+  it('should correctly work with SVG content', function() {
+    if (!window.SVGRectElement) return;
+    module(function() {
+      directive('test', valueFn({
+        templateNamespace: 'svg',
+        templateUrl: 'my-rect.html',
+        replace: true
+      }));
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('my-rect.html').respond('<g ng-include="\'include.svg\'"></g>');
+      $httpBackend.expectGET('include.svg').respond('<rect></rect>');
+      element = $compile('<svg><test></test></svg>')($rootScope);
+      $httpBackend.flush();
+      var child = element.find('rect');
+      expect(child.length).toBe(1);
+      expect(child[0] instanceof SVGRectElement).toBe(true);
     });
   });
 });
