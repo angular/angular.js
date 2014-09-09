@@ -67,6 +67,7 @@ goog.provide('goog.i18n.DateTimeSymbols_fi');
 goog.provide('goog.i18n.DateTimeSymbols_fil');
 goog.provide('goog.i18n.DateTimeSymbols_fr');
 goog.provide('goog.i18n.DateTimeSymbols_fr_CA');
+goog.provide('goog.i18n.DateTimeSymbols_ga');
 goog.provide('goog.i18n.DateTimeSymbols_gl');
 goog.provide('goog.i18n.DateTimeSymbols_gsw');
 goog.provide('goog.i18n.DateTimeSymbols_gu');
@@ -1406,6 +1407,46 @@ goog.i18n.DateTimeSymbols_fr_CA = {
   FIRSTDAYOFWEEK: 6,
   WEEKENDRANGE: [5, 6],
   FIRSTWEEKCUTOFFDAY: 5
+};
+
+
+/**
+ * Date/time formatting symbols for locale ga.
+ */
+goog.i18n.DateTimeSymbols_ga = {
+  ERAS: ['RC', 'AD'],
+  ERANAMES: ['Roimh Chríost', 'Anno Domini'],
+  NARROWMONTHS: ['E', 'F', 'M', 'A', 'B', 'M', 'I', 'L', 'M', 'D', 'S', 'N'],
+  STANDALONENARROWMONTHS: ['E', 'F', 'M', 'A', 'B', 'M', 'I', 'L', 'M', 'D',
+    'S', 'N'],
+  MONTHS: ['Eanáir', 'Feabhra', 'Márta', 'Aibreán', 'Bealtaine', 'Meitheamh',
+    'Iúil', 'Lúnasa', 'Meán Fómhair', 'Deireadh Fómhair', 'Samhain',
+    'Nollaig'],
+  STANDALONEMONTHS: ['Eanáir', 'Feabhra', 'Márta', 'Aibreán', 'Bealtaine',
+    'Meitheamh', 'Iúil', 'Lúnasa', 'Meán Fómhair', 'Deireadh Fómhair',
+    'Samhain', 'Nollaig'],
+  SHORTMONTHS: ['Ean', 'Feabh', 'Márta', 'Aib', 'Beal', 'Meith', 'Iúil',
+    'Lún', 'MFómh', 'DFómh', 'Samh', 'Noll'],
+  STANDALONESHORTMONTHS: ['Ean', 'Feabh', 'Márta', 'Aib', 'Beal', 'Meith',
+    'Iúil', 'Lún', 'MFómh', 'DFómh', 'Samh', 'Noll'],
+  WEEKDAYS: ['Dé Domhnaigh', 'Dé Luain', 'Dé Máirt', 'Dé Céadaoin',
+    'Déardaoin', 'Dé hAoine', 'Dé Sathairn'],
+  STANDALONEWEEKDAYS: ['Dé Domhnaigh', 'Dé Luain', 'Dé Máirt',
+    'Dé Céadaoin', 'Déardaoin', 'Dé hAoine', 'Dé Sathairn'],
+  SHORTWEEKDAYS: ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
+  STANDALONESHORTWEEKDAYS: ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine',
+    'Sath'],
+  NARROWWEEKDAYS: ['D', 'L', 'M', 'C', 'D', 'A', 'S'],
+  STANDALONENARROWWEEKDAYS: ['D', 'L', 'M', 'C', 'D', 'A', 'S'],
+  SHORTQUARTERS: ['R1', 'R2', 'R3', 'R4'],
+  QUARTERS: ['1ú ráithe', '2ú ráithe', '3ú ráithe', '4ú ráithe'],
+  AMPMS: ['a.m.', 'p.m.'],
+  DATEFORMATS: ['EEEE d MMMM y', 'd MMMM y', 'd MMM y', 'dd/MM/y'],
+  TIMEFORMATS: ['HH:mm:ss zzzz', 'HH:mm:ss z', 'HH:mm:ss', 'HH:mm'],
+  DATETIMEFORMATS: ['{1} {0}', '{1} {0}', '{1} {0}', '{1} {0}'],
+  FIRSTDAYOFWEEK: 6,
+  WEEKENDRANGE: [5, 6],
+  FIRSTWEEKCUTOFFDAY: 2
 };
 
 
@@ -4307,6 +4348,8 @@ if (goog.LOCALE == 'af') {
   goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_fr;
 } else if (goog.LOCALE == 'fr_CA' || goog.LOCALE == 'fr-CA') {
   goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_fr_CA;
+} else if (goog.LOCALE == 'ga') {
+  goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_ga;
 } else if (goog.LOCALE == 'gl') {
   goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_gl;
 } else if (goog.LOCALE == 'gsw') {
