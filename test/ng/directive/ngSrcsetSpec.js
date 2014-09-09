@@ -15,10 +15,17 @@ describe('ngSrcset', function() {
     expect(element.attr('srcset')).toBeUndefined();
   }));
 
-  it('should sanitize url', inject(function($rootScope, $compile) {
-    $rootScope.imageUrl = 'javascript:alert(1);';
+  it('should sanitize good urls', inject(function($rootScope, $compile) {
+    $rootScope.imageUrl = 'http://example.com/image1.png 1x, http://example.com/image2.png 2x';
     element = $compile('<img ng-srcset="{{imageUrl}}">')($rootScope);
     $rootScope.$digest();
-    expect(element.attr('srcset')).toBe('unsafe:javascript:alert(1);');
+    expect(element.attr('srcset')).toBe('http://example.com/image1.png 1x,http://example.com/image2.png 2x');
+  }));  
+
+  it('should sanitize evil url', inject(function($rootScope, $compile) {
+    $rootScope.imageUrl = 'http://example.com/image1.png 1x, javascript:doEvilStuff() 2x';
+    element = $compile('<img ng-srcset="{{imageUrl}}">')($rootScope);
+    $rootScope.$digest();
+    expect(element.attr('srcset')).toBe('http://example.com/image1.png 1x,unsafe:javascript:doEvilStuff() 2x');
   }));
 });
