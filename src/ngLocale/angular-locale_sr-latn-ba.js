@@ -81,7 +81,7 @@ $provide.value("$locale", {
     "shortTime": "HH.mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "din",
+    "CURRENCY_SYM": "KM",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
