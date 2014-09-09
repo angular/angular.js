@@ -1364,6 +1364,7 @@ describe('ngRepeat animations', function() {
     return element;
   }
 
+  beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
 
   beforeEach(module(function() {
@@ -1376,8 +1377,7 @@ describe('ngRepeat animations', function() {
   }));
 
   afterEach(function(){
-    dealoc(body);
-    dealoc(element);
+    body.empty();
   });
 
   it('should fire off the enter animation',
@@ -1444,6 +1444,42 @@ describe('ngRepeat animations', function() {
     expect(item.event).toBe('leave');
     expect(item.element.text()).toBe('2');
   }));
+
+  it('should not change the position of the block that is being animated away via a leave animation',
+    inject(function($compile, $rootScope, $animate, $document, $window, $sniffer, $timeout) {
+      if (!$sniffer.transitions) return;
+
+      var item;
+      var ss = createMockStyleSheet($document, $window);
+
+      try {
+
+        $animate.enabled(true);
+
+        ss.addRule('.animate-me div',
+                      '-webkit-transition:1s linear all; transition:1s linear all;');
+
+        element = $compile(html('<div class="animate-me">' +
+                                  '<div ng-repeat="item in items">{{ item }}</div>' +
+                                '</div>'))($rootScope);
+
+        $rootScope.items = ['1','2','3'];
+        $rootScope.$digest();
+        expect(element.text()).toBe('123');
+
+        $rootScope.items = ['1','3'];
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('123'); // the original order should be preserved
+        $animate.triggerReflow();
+        $timeout.flush(1500); // 1s * 1.5 closing buffer
+        expect(element.text()).toBe('13');
+
+      } finally {
+        ss.destroy();
+      }
+    })
+  );
 
   it('should fire off the move animation',
     inject(function($compile, $rootScope, $animate) {
