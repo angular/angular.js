@@ -3765,6 +3765,32 @@ describe('input', function() {
       expect(widget.$error.email).toBeTruthy();
     });
 
+    it('should validate multiple e-mail', function() {
+      compileInput('<input type="email" multiple ng-model="email" name="alias" />');
+
+      var widget = scope.form.alias;
+
+      changeInputValueTo('vojta@google.com,someone@somewhere.com');
+      expect(scope.email).toEqual(['vojta@google.com', 'someone@somewhere.com']);
+      expect(inputElm).toBeValid();
+      expect(widget.$error.email).toBeFalsy();
+
+      changeInputValueTo('someone@somewhere.com,invalid@');
+      expect(scope.email).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(widget.$error.email).toBeTruthy();
+    });
+
+    it('should mark required multiple e-mail as invalid', function() {
+      compileInput('<input type="email" multiple required ng-model="email" name="alias" />');
+
+      var widget = scope.form.alias;
+
+      changeInputValueTo('');
+      expect(scope.email).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(widget.$error.required).toBeTruthy();
+    });
 
     describe('EMAIL_REGEXP', function() {
       /* global EMAIL_REGEXP: false */
