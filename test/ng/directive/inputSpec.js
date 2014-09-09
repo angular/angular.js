@@ -356,6 +356,40 @@ describe('NgModelController', function() {
       expect(input).not.toHaveClass('ng-valid-parse');
       expect(input).toHaveClass('ng-invalid-parse');
     });
+
+    it('should update the model after all async validators resolve', inject(function($q) {
+      var defer;
+      ctrl.$asyncValidators.promiseValidator = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+
+      // set view value on first digest
+      ctrl.$setViewValue('b');
+
+      expect(ctrl.$modelValue).toBeUndefined();
+      expect(scope.value).toBeUndefined();
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$modelValue).toBe('b');
+      expect(scope.value).toBe('b');
+
+      // set view value on further digests
+      ctrl.$setViewValue('c');
+
+      expect(ctrl.$modelValue).toBe('b');
+      expect(scope.value).toBe('b');
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$modelValue).toBe('c');
+      expect(scope.value).toBe('c');
+
+    }));
+
   });
 
 
