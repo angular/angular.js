@@ -379,7 +379,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             block = lastBlockMap[blockKey];
             elementsToRemove = getBlockNodes(block.clone);
             $animate.leave(elementsToRemove);
-            if (elementsToRemove[0].parent) {
+            if (elementsToRemove[0].parentNode) {
               // if the element was not removed yet because of pending animation, mark it as deleted
               // so that we can ignore it later
               for (index = 0, length = elementsToRemove.length; index < length; index++) {
