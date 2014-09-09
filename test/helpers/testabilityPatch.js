@@ -323,14 +323,17 @@ function provideLog($provide) {
 }
 
 function pending() {
-  dump('PENDING');
+  window.dump('PENDING');
 }
 
 function trace(name) {
-  dump(new Error(name).stack);
+  window.dump(new Error(name).stack);
 }
 
-var karmaDump = dump;
+var karmaDump = window.dump || function() {
+  window.console.log.apply(window.console, arguments);
+};
+
 window.dump = function () {
   karmaDump.apply(undefined, map(arguments, function(arg) {
     return angular.mock.dump(arg);
