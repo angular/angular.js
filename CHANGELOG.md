@@ -4,9 +4,6 @@
 
 ## Bug Fixes
 
-- **$compile:** render nested transclusion at the root of a template
-  ([6d1e7cdc](https://github.com/angular/angular.js/commit/6d1e7cdc51c074139639e870b66997fb0df4523f),
-   [#8914](https://github.com/angular/angular.js/issues/8914), [#8925](https://github.com/angular/angular.js/issues/8925))
 - **$location:**
   - don't call toString on null values
   ([c3a58a9f](https://github.com/angular/angular.js/commit/c3a58a9f34919f121587540e03ecbd51b25198d4))
@@ -99,7 +96,7 @@
 
 - **ngModelController,formController:** due to [6046e14b](https://github.com/angular/angular.js/commit/6046e14bd22491168116e61ffdf5fd3fed5f135c),
 
-- `ctrl.$error` does no more contain entries for validators that were
+- `ctrl.$error` no longer contains entries for validators that were
   successful.
 - `ctrl.$setValidity` now differentiates between `true`, `false`,
   `undefined` and `null`, instead of previously only truthy vs falsy.
@@ -451,7 +448,7 @@ $rootScope.$digest();
 
 
 - **$compile/ngBind:** due to [3660fd09](https://github.com/angular/angular.js/commit/3660fd0912d3ccf6def8c9f02d8d4c0621c8d91f),
- 
+
 The value of `$binding` data property on an element is always an array now
 and the expressions do not include the curly braces `{{ ... }}`.
 
@@ -493,7 +490,7 @@ Closes #8811
 
 - **input:**
   - due to [29f0b568](https://github.com/angular/angular.js/commit/29f0b568debab7810752969d363d337099e96cdc),
- 
+
 
 According to the HTML5 spec `input[time]` should create dates
 based on the year 1970 (used to be based on the year 1900).
@@ -512,7 +509,7 @@ error is gone. The error will be stored on `ngModel.$error`.
 
 
 - **ngEventDirs:** due to [719c747c](https://github.com/angular/angular.js/commit/719c747cd892ee933e7e414a7dc97e657b88317d),
- 
+
 The `blur` and `focus` event fire synchronously, also during DOM operations
 that remove elements. This lead to errors as the Angular model was not
 in a consistent state. See this [fiddle](http://jsfiddle.net/fq1dq5yb/) for a demo.
