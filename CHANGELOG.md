@@ -1,3 +1,21 @@
+# NOTICE: Pending Breaking Change
+
+The next 1.3.0 release candidate (1.3.0-rc.2) will contain a perf-related change that is likely to
+introduce breakages in some applications. The change will affect filters and function call
+expressions, and will not call the function if the variables passed to the function are primitive
+values and have not changed since the last digest loop.
+
+Example:
+
+```html
+//date filter would only be called if the 'timeCreated' property has changed
+<span ng-bind="timeCreated|date"></span>
+
+//custom filter would break if depends on data changed by user other than 'cost'
+<span ng-bind="cost|i18nLocalizer">
+```
+
+
 <a name="1.3.0-rc.1"></a>
 # 1.3.0-rc.1 backyard-atomicity (2014-09-09)
 
