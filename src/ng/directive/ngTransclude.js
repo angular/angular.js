@@ -8,6 +8,7 @@
  * @description
  * Directive that marks the insertion point for the transcluded DOM of the nearest parent directive that uses transclusion.
  *
+* @param {boolean=} ngTransclude If set to false Angular will use default scope.
  * Any existing content of the element that this directive is placed on will be removed before the transcluded content is inserted.
  *
  * @element ANY
@@ -65,9 +66,14 @@ var ngTranscludeDirective = ngDirective({
        startingTag($element));
     }
 
-    $transclude(function(clone) {
+    var transcludeArgs = [];
+    if (toBoolean($attrs['ngTransclude'] || 'true') == false) {
+      transcludeArgs.push($scope);
+    }
+    transcludeArgs.push(function(clone) {
       $element.empty();
       $element.append(clone);
     });
+    $transclude.apply(this, transcludeArgs);
   }
 });
