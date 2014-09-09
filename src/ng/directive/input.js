@@ -2032,6 +2032,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         break;
       }
     }
+    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+      // ctrl.$modelValue has not been touched yet...
+      ctrl.$modelValue = ngModelGet();
+    }
     var prevModelValue = ctrl.$modelValue;
     ctrl.$$runValidators(parserValid, modelValue, viewValue, function() {
       ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
