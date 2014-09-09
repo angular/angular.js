@@ -241,7 +241,7 @@ $rootScope.$digest();
 
 
 - **$compile/ngBind:** due to [3660fd09](https://github.com/angular/angular.js/commit/3660fd0912d3ccf6def8c9f02d8d4c0621c8d91f),
- 
+
 The value of `$binding` data property on an element is always an array now
 and the expressions do not include the curly braces `{{ ... }}`.
 
@@ -283,7 +283,7 @@ Closes #8811
 
 - **input:**
   - due to [29f0b568](https://github.com/angular/angular.js/commit/29f0b568debab7810752969d363d337099e96cdc),
- 
+
 
 According to the HTML5 spec `input[time]` should create dates
 based on the year 1970 (used to be based on the year 1900).
@@ -302,7 +302,7 @@ error is gone. The error will be stored on `ngModel.$error`.
 
 
 - **ngEventDirs:** due to [719c747c](https://github.com/angular/angular.js/commit/719c747cd892ee933e7e414a7dc97e657b88317d),
- 
+
 The `blur` and `focus` event fire synchronously, also during DOM operations
 that remove elements. This lead to errors as the Angular model was not
 in a consistent state. See this [fiddle](http://jsfiddle.net/fq1dq5yb/) for a demo.
@@ -1645,6 +1645,15 @@ this limitation, use a regular expression object as the value for the expression
 
     //after
     $scope.exp = /abc/i;
+
+- **NgModel:** due to [f3cb2741161353f387d02725637ce4ba062a9bc0](https://github.com/angular/angular.js/commit/f3cb2741161353f387d02725637ce4ba062a9bc0),
+
+#### since 1.3.0-beta.11
+
+If the user enters a value and a parser or validator fails, the model will be set to `undefined`.
+This is the same behavior as in 1.2.x, but different to 1.3.0-beta.11, as there only invalid parsers
+would set the model to `undefined`, but invalid validators would not change the model.
+
 - **Scope:** due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
   Scope#$id is now of time number rather than string. Since the
 id is primarily being used for debugging purposes this change should not affect
