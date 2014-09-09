@@ -1880,9 +1880,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       return;
     }
 
-    var prev = ctrl.$modelValue;
-    ctrl.$$runValidators(undefined, ctrl.$$invalidModelValue || ctrl.$modelValue, ctrl.$viewValue, function() {
-      if (prev !== ctrl.$modelValue) {
+    var prev = ctrl.$valid;
+    ctrl.$$runValidators(undefined, ctrl.$modelValue, ctrl.$viewValue, function() {
+      if (prev !== ctrl.$valid) {
         ctrl.$$writeModelToScope();
       }
     });
@@ -1892,8 +1892,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     currentValidationRunId++;
     var localValidationRunId = currentValidationRunId;
 
-    // We can update the $$invalidModelValue immediately as we don't have to wait for validators!
-    ctrl.$$invalidModelValue = modelValue;
+    // We can update the $modelValue immediately as we don't have to wait for validators!
+    ctrl.$modelValue = modelValue;
 
     // check parser error
     if (!processParseErrors(parseValid)) {
@@ -1902,6 +1902,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     if (!processSyncValidators()) {
       return;
     }
+
     processAsyncValidators();
 
     function processParseErrors(parseValid) {
@@ -1971,9 +1972,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     function validationDone() {
       if (localValidationRunId === currentValidationRunId) {
-        // set the validated model value
-        ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
-
         doneCallback();
       }
     }
@@ -2028,13 +2026,15 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   this.$$writeModelToScope = function() {
     var getterSetter;
+    // Only write model to scope if it is valid
+    var updateValue = ctrl.$valid ? ctrl.$modelValue : undefined;
 
     if (ctrl.$options && ctrl.$options.getterSetter &&
         isFunction(getterSetter = ngModelGet($scope))) {
 
-      getterSetter(ctrl.$modelValue);
+      getterSetter(updateValue);
     } else {
-      ngModelSet($scope, ctrl.$modelValue);
+      ngModelSet($scope, updateValue);
     }
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
@@ -2129,10 +2129,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     if (ctrl.$options && ctrl.$options.getterSetter && isFunction(modelValue)) {
       modelValue = modelValue();
     }
-
-    // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== modelValue &&
-        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
+    // isDefined check to prevent a rerun after the ctrl was set invalid
+    if (ctrl.$modelValue !== modelValue && (ctrl.$valid || isDefined(modelValue))) {
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
