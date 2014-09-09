@@ -4,9 +4,6 @@
 
 ## Bug Fixes
 
-- **$compile:** render nested transclusion at the root of a template
-  ([6d1e7cdc](https://github.com/angular/angular.js/commit/6d1e7cdc51c074139639e870b66997fb0df4523f),
-   [#8914](https://github.com/angular/angular.js/issues/8914), [#8925](https://github.com/angular/angular.js/issues/8925))
 - **$location:**
   - don't call toString on null values
   ([c3a58a9f](https://github.com/angular/angular.js/commit/c3a58a9f34919f121587540e03ecbd51b25198d4))
@@ -99,7 +96,7 @@
 
 - **ngModelController,formController:** due to [6046e14b](https://github.com/angular/angular.js/commit/6046e14bd22491168116e61ffdf5fd3fed5f135c),
 
-- `ctrl.$error` does no more contain entries for validators that were
+- `ctrl.$error` no longer contains entries for validators that were
   successful.
 - `ctrl.$setValidity` now differentiates between `true`, `false`,
   `undefined` and `null`, instead of previously only truthy vs falsy.
