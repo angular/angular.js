@@ -407,6 +407,31 @@ describe('NgModelController', function() {
       scope.$apply('value = 5');
       expect(ctrl.$render).toHaveBeenCalledOnce();
     });
+
+    it('should render immediately even if there are async validators', inject(function($q) {
+      spyOn(ctrl, '$render');
+      ctrl.$asyncValidators.someValidator = function() {
+        return $q.defer().promise;
+      };
+
+      scope.$apply('value = 5');
+      expect(ctrl.$viewValue).toBe(5);
+      expect(ctrl.$render).toHaveBeenCalledOnce();
+    }));
+
+    it('should not rerender nor validate in case view value is not changed', function() {
+      ctrl.$formatters.push(function(value) {
+        return 'nochange';
+      });
+
+      spyOn(ctrl, '$render');
+      ctrl.$validators.spyValidator = jasmine.createSpy('spyValidator');
+      scope.$apply('value = "first"');
+      scope.$apply('value = "second"');
+      expect(ctrl.$validators.spyValidator).toHaveBeenCalledOnce();
+      expect(ctrl.$render).toHaveBeenCalledOnce();
+    });
+
   });
 
   describe('validations pipeline', function() {
