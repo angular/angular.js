@@ -214,6 +214,33 @@ describe('NgModelController', function() {
       expect(ctrl.$modelValue).toBeUndefined();
     });
 
+    it('should not reset the view when the view is invalid', function() {
+      // this test fails when the view changes the model and
+      // then the model listener in ngModel picks up the change and
+      // tries to update the view again.
+
+      // add a validator that will make any input invalid
+      ctrl.$parsers.push(function() {return undefined;});
+      spyOn(ctrl, '$render');
+
+      // first digest
+      ctrl.$setViewValue('bbbb');
+      expect(ctrl.$modelValue).toBeUndefined();
+      expect(ctrl.$viewValue).toBe('bbbb');
+      expect(ctrl.$render).not.toHaveBeenCalled();
+      expect(scope.value).toBeUndefined();
+
+      // further digests
+      scope.$apply('value = "aaa"');
+      expect(ctrl.$viewValue).toBe('aaa');
+      ctrl.$render.reset();
+
+      ctrl.$setViewValue('cccc');
+      expect(ctrl.$modelValue).toBeUndefined();
+      expect(ctrl.$viewValue).toBe('cccc');
+      expect(ctrl.$render).not.toHaveBeenCalled();
+      expect(scope.value).toBeUndefined();
+    });
 
     it('should call parentForm.$setDirty only when pristine', function() {
       ctrl.$setViewValue('');
@@ -385,18 +412,18 @@ describe('NgModelController', function() {
   describe('validations pipeline', function() {
 
     it('should perform validations when $validate() is called', function() {
-      ctrl.$validators.uppercase = function(value) {
-        return (/^[A-Z]+$/).test(value);
+      scope.$apply('value = ""');
+
+      var validatorResult = false;
+      ctrl.$validators.someValidator = function(value) {
+        return validatorResult;
       };
 
-      ctrl.$modelValue = 'test';
-      ctrl.$$invalidModelValue = undefined;
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(false);
 
-      ctrl.$modelValue = 'TEST';
-      ctrl.$$invalidModelValue = undefined;
+      validatorResult = true;
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(true);
@@ -3935,6 +3962,13 @@ describe('input', function() {
 
       browserTrigger(inputElm, 'click');
       expect(scope.changeFn).toHaveBeenCalledOnce();
+    });
+
+    it('should be able to change the model and via that also update the view', function() {
+      compileInput('<input type="text" ng-model="value" ng-change="value=\'b\'" />');
+
+      changeInputValueTo('a');
+      expect(inputElm.val()).toBe('b');
     });
   });
 
