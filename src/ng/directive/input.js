@@ -2152,12 +2152,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       while(idx--) {
         viewValue = formatters[idx](viewValue);
       }
-      var lastViewValue = ctrl.$viewValue;
-      if (lastViewValue !== viewValue) {
-        ctrl.$$runValidators(undefined, modelValue, viewValue, function() {
-          ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
-          ctrl.$render();
-        });
+      if (ctrl.$viewValue !== viewValue) {
+        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+        ctrl.$render();
+
+        ctrl.$$runValidators(undefined, modelValue, viewValue, noop);
       }
     }
 
