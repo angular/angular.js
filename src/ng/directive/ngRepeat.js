@@ -419,6 +419,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // http://jsperf.com/clone-vs-createcomment
                 var endNode = ngRepeatEndComment.cloneNode(false);
                 clone[clone.length++] = endNode;
+
+                // TODO(perf): support naked previousNode in `enter` to avoid creation of jqLite wrapper?
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = endNode;
                 // Note: We only need the first/last node of the cloned nodes.

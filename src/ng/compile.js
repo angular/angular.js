@@ -2195,6 +2195,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       if (parent) {
         parent.replaceChild(newNode, firstElementToRemove);
       }
+
+      // TODO(perf): what's this document fragment for? is it needed? can we at least reuse it?
       var fragment = document.createDocumentFragment();
       fragment.appendChild(firstElementToRemove);
 
