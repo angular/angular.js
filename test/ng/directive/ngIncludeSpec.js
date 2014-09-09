@@ -362,6 +362,46 @@ describe('ngInclude', function() {
   }));
 
 
+  it('should construct SVG template elements with correct namespace', function() {
+    if (!window.SVGRectElement) return;
+    module(function($compileProvider) {
+      $compileProvider.directive('test', valueFn({
+        templateNamespace: 'svg',
+        templateUrl: 'my-rect.html',
+        replace: true
+      }));
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('my-rect.html').respond('<g ng-include="\'include.svg\'"></g>');
+      $httpBackend.expectGET('include.svg').respond('<rect></rect><rect></rect>');
+      element = $compile('<svg><test></test></svg>')($rootScope);
+      $httpBackend.flush();
+      var child = element.find('rect');
+      expect(child.length).toBe(2);
+      expect(child[0] instanceof SVGRectElement).toBe(true);
+    });
+  });
+
+
+  it('should compile only the template content of an SVG template', function() {
+    if (!window.SVGRectElement) return;
+    module(function($compileProvider) {
+      $compileProvider.directive('test', valueFn({
+        templateNamespace: 'svg',
+        templateUrl: 'my-rect.html',
+        replace: true
+      }));
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('my-rect.html').respond('<g ng-include="\'include.svg\'"><a></a></g>');
+      $httpBackend.expectGET('include.svg').respond('<rect></rect><rect></rect>');
+      element = $compile('<svg><test></test></svg>')($rootScope);
+      $httpBackend.flush();
+      expect(element.find('a').length).toBe(0);
+    });
+  });
+
+
   describe('autoscroll', function() {
     var autoScrollSpy;
 
@@ -588,27 +628,6 @@ describe('ngInclude and transcludes', function() {
       $rootScope.$apply();
       $httpBackend.flush();
       expect(root[0]).toBe(element[0]);
-    });
-  });
-
-
-  it('should construct SVG template elements with correct namespace', function() {
-    if (!window.SVGRectElement) return;
-    module(function() {
-      directive('test', valueFn({
-        templateNamespace: 'svg',
-        templateUrl: 'my-rect.html',
-        replace: true
-      }));
-    });
-    inject(function($compile, $rootScope, $httpBackend) {
-      $httpBackend.expectGET('my-rect.html').respond('<g ng-include="\'include.svg\'"></g>');
-      $httpBackend.expectGET('include.svg').respond('<rect></rect><rect></rect>');
-      element = $compile('<svg><test></test></svg>')($rootScope);
-      $httpBackend.flush();
-      var child = element.find('rect');
-      expect(child.length).toBe(2);
-      expect(child[0] instanceof SVGRectElement).toBe(true);
     });
   });
 });
