@@ -1,3 +1,213 @@
+<a name="1.3.0-rc.1"></a>
+# 1.3.0-rc.1 backyard-atomicity (2014-09-09)
+
+
+## Bug Fixes
+
+- **$compile:** render nested transclusion at the root of a template
+  ([6d1e7cdc](https://github.com/angular/angular.js/commit/6d1e7cdc51c074139639e870b66997fb0df4523f),
+   [#8914](https://github.com/angular/angular.js/issues/8914), [#8925](https://github.com/angular/angular.js/issues/8925))
+- **$location:**
+  - don't call toString on null values
+  ([c3a58a9f](https://github.com/angular/angular.js/commit/c3a58a9f34919f121587540e03ecbd51b25198d4))
+  - remove an unused parameter of $location.url
+  ([99d95f16](https://github.com/angular/angular.js/commit/99d95f1639b64c39231448d77209676b54e6f0be))
+  - allow numeric location setter arguments
+  ([adb5c6d6](https://github.com/angular/angular.js/commit/adb5c6d6cc76b928436743707727ab0974d6810b),
+   [#7054](https://github.com/angular/angular.js/issues/7054))
+  - set `baseHref` in mock browser to `/`
+  ([fc706d13](https://github.com/angular/angular.js/commit/fc706d13d80bb40eb3dade58ea4b92dca33ce4e7),
+   [#8866](https://github.com/angular/angular.js/issues/8866), [#8889](https://github.com/angular/angular.js/issues/8889))
+- **$parse:** disallow passing Function to Array.sort
+  ([bd8ad0fb](https://github.com/angular/angular.js/commit/bd8ad0fbe81f6c280baa26a596d78e58fc7842e6))
+- **input:** check `scope.$$phase` only on `$rootScope`
+  ([bf59d727](https://github.com/angular/angular.js/commit/bf59d7274f4a667c5b19e6d4ba5ed2730ca2fe42))
+- **ngAnimate:** support removing classes from SVG elements when using jQuery
+  ([b3b67213](https://github.com/angular/angular.js/commit/b3b672130d4d1c6f13bdf7e58be76b2aafea2497),
+   [#8872](https://github.com/angular/angular.js/issues/8872), [#8893](https://github.com/angular/angular.js/issues/8893))
+- **ngEventDirs:** check `scope.$$phase` only on `$rootScope`
+  ([203ea10f](https://github.com/angular/angular.js/commit/203ea10f9ea49d7e29569a4232d3b2a666307cd8),
+   [#8891](https://github.com/angular/angular.js/issues/8891))
+- **ngForm:** don't clear validity of whole form when removing control
+  ([953ee22f](https://github.com/angular/angular.js/commit/953ee22f76f8c1137949ed07f36fafc5bbfeb7fe),
+   [#8863](https://github.com/angular/angular.js/issues/8863))
+- **ngInclude:** correctly add svg-namespaced template content
+  ([6639ca9d](https://github.com/angular/angular.js/commit/6639ca9d6bc00a6e3a31e54c50474361ae3561c6),
+   [#7538](https://github.com/angular/angular.js/issues/7538), [#8981](https://github.com/angular/angular.js/issues/8981), [#8997](https://github.com/angular/angular.js/issues/8997))
+- **ngModel:**
+  - update model value with async validators correctly
+  ([64c3b745](https://github.com/angular/angular.js/commit/64c3b745fba0792166f30e057f9251f263d80dac))
+  - render immediately also with async validators
+  ([f94d5515](https://github.com/angular/angular.js/commit/f94d551529b7c970c38b29e3073cec4e7f6b0e00))
+  - properly parse min/max date values as strings for date inputs
+  ([088545c1](https://github.com/angular/angular.js/commit/088545c1856ce1c3ec3416965dff65077a6e0523),
+   [#6755](https://github.com/angular/angular.js/issues/6755))
+  - revalidate the model when min/max expression values change for date inputs
+  ([b3502835](https://github.com/angular/angular.js/commit/b3502835039178296b730b7526e5666b66ba9156),
+   [#6755](https://github.com/angular/angular.js/issues/6755))
+  - consider ngMin/ngMax values when validating number input types
+  ([25541c1f](https://github.com/angular/angular.js/commit/25541c1f876a16c892d71faae11727bec7bba98c))
+  - revalidate the model when min/max expression values change for number inputs
+  ([7b273a2c](https://github.com/angular/angular.js/commit/7b273a2c978d5f5ef374f5335afab0ca7d8cfd4d),
+   [#2404](https://github.com/angular/angular.js/issues/2404))
+- **ngModelOptions:** do not trigger digest on `setViewValue` if debouncing
+  ([e322cd9b](https://github.com/angular/angular.js/commit/e322cd9b3b8b47b95c9de3edf631bb46f919c492),
+   [#8814](https://github.com/angular/angular.js/issues/8814), [#8850](https://github.com/angular/angular.js/issues/8850), [#8911](https://github.com/angular/angular.js/issues/8911))
+- **ngRepeat:** preserve original position of elements that are being animated away
+  ([ed637330](https://github.com/angular/angular.js/commit/ed6373300028deda9a0878b3975699d183c1f75c),
+   [#8918](https://github.com/angular/angular.js/issues/8918), [#8994](https://github.com/angular/angular.js/issues/8994))
+- **ngSwitch:** ensure correct iterator is passed to async function
+  ([712299c2](https://github.com/angular/angular.js/commit/712299c2a24390e74cd5c20f51cb1d78f0233b6f),
+   [#8833](https://github.com/angular/angular.js/issues/8833))
+- **numberFilter:** format numbers that round to zero as nonnegative
+  ([ae952fbf](https://github.com/angular/angular.js/commit/ae952fbf0be925a48743d1c925ffe4e31a42c280),
+   [#8489](https://github.com/angular/angular.js/issues/8489))
+- **orderBy:** allow arrayLike objects to be ordered
+  ([cbdaabfb](https://github.com/angular/angular.js/commit/cbdaabfb59bf3348588d5b581f2754e0f9f034a4),
+   [#8944](https://github.com/angular/angular.js/issues/8944))
+
+
+## Features
+
+- **angular.forEach:** add the array/object as the 3rd param like the native array forEach
+  ([df9e60c8](https://github.com/angular/angular.js/commit/df9e60c8e7453cdca2cb5a4fa48f3981ecc23a7d),
+   [#7902](https://github.com/angular/angular.js/issues/7902))
+- **ngModelOptions:** add allowInvalid option
+  ([3c538c1d](https://github.com/angular/angular.js/commit/3c538c1d21c43422c7b4cd9b69cb67981bce2b87),
+   [#8290](https://github.com/angular/angular.js/issues/8290), [#8313](https://github.com/angular/angular.js/issues/8313))
+
+
+## Performance Improvements
+
+- **$parse:**
+  - remove getterFn wrapper for internal use
+  ([b3b476db](https://github.com/angular/angular.js/commit/b3b476db7d34bc2f8b099ab5b993b1e899b9cffd),
+   [#8901](https://github.com/angular/angular.js/issues/8901))
+  - removing references to Parser/Lexer from parsed expressions
+  ([43c67ccd](https://github.com/angular/angular.js/commit/43c67ccd167aecc3549e1b7f7d100956204e3ed4))
+  - calculate array lengths once at start of loop
+  ([907b8c16](https://github.com/angular/angular.js/commit/907b8c1675865ac38dd055f3f304272e68b233d0))
+- **extend:** remove use of forEach to remove calls/closures/passing arguments
+  ([9bedeb33](https://github.com/angular/angular.js/commit/9bedeb3353969fba631ad9164edea3c38059fbda),
+   [#8898](https://github.com/angular/angular.js/issues/8898))
+- **jQuery:** only trigger $destroy if a handler exists
+  ([f6aa1c55](https://github.com/angular/angular.js/commit/f6aa1c55616b34215f562e0445e436210860ef04),
+   [#8859](https://github.com/angular/angular.js/issues/8859))
+
+
+## Breaking Changes
+
+- **ngModelController,formController:** due to [6046e14b](https://github.com/angular/angular.js/commit/6046e14bd22491168116e61ffdf5fd3fed5f135c),
+
+- `ctrl.$error` does no more contain entries for validators that were
+  successful.
+- `ctrl.$setValidity` now differentiates between `true`, `false`,
+  `undefined` and `null`, instead of previously only truthy vs falsy.
+
+Closes #8941- **ngSwitch:** due to [0f806d96](https://github.com/angular/angular.js/commit/0f806d9659b5b89a4bd9493364bc36398677e939),
+
+
+Ever since 0df93fd, tagged in v1.0.0rc1, the ngSwitch directive has had an undocumented `change`
+attribute, used for evaluating a scope expression when the switch value changes.
+
+While it's unlikely, applications which may be using this feature should work around the removal
+by adding a custom directive which will perform the eval instead. Directive controllers are
+re-instantiated when being transcluded, so by putting the attribute on each item that you want
+to be notified of a change to, you can more or less emulate the old behaviour.
+
+Example:
+
+```js
+angular.module("switchChangeWorkaround", []).
+  directive("onSwitchChanged", function() {
+    return {
+      linke: function($scope, $attrs) {
+        $scope.$parent.$eval($attrs.change);
+      }
+    };
+  });
+```
+
+```html
+<div ng-switch="switcher">
+  <div ng-switch-when="a" on-switch-changed="doSomethingInParentScope()"></div>
+  <div ng-switch-when="b" on-switch-changed="doSomethingInParentScope()"></div>
+</div>
+```
+
+Closes #8858
+Closes #8822
+
+
+<a name="1.2.24"></a>
+# 1.2.24 static-levitation (2014-09-09)
+
+
+## Bug Fixes
+
+- **$browser:** detect changes to the browser url that happened in sync
+  ([2ece4d03](https://github.com/angular/angular.js/commit/2ece4d0347a8a18d4d35993bb882ed6b5b24266c),
+   [#6976](https://github.com/angular/angular.js/issues/6976))
+- **$compile:**
+  - render nested transclusion at the root of a template
+  ([9d9cdfb5](https://github.com/angular/angular.js/commit/9d9cdfb575b89e96ae957c986734a49995e2b511),
+   [#8914](https://github.com/angular/angular.js/issues/8914), [#8925](https://github.com/angular/angular.js/issues/8925))
+  - render nested transclusion at the root of a template
+  ([466320f6](https://github.com/angular/angular.js/commit/466320f6911698048bae5406e341d25af7efafa0),
+   [#8914](https://github.com/angular/angular.js/issues/8914), [#8925](https://github.com/angular/angular.js/issues/8925))
+- **$location:**
+  - don't call toString on null values
+  ([c12e8d46](https://github.com/angular/angular.js/commit/c12e8d4665b635ba6b09d12802efb88d38b7ad5c))
+  - remove an unused parameter of $location.url
+  ([c65796d4](https://github.com/angular/angular.js/commit/c65796d496038554861e70da8012f9d0e2521e6d))
+  - allow numeric location setter arguments
+  ([68a09ba7](https://github.com/angular/angular.js/commit/68a09ba74d10a1490feca1d248f85b0023aa399b),
+   [#7054](https://github.com/angular/angular.js/issues/7054))
+- **$parse:** disallow passing Function to Array.sort
+  ([b39e1d47](https://github.com/angular/angular.js/commit/b39e1d47b9a1b39a9fe34c847a81f589fba522f8))
+- **form:** ensure concurrent animations use setClass
+  ([d7548fdf](https://github.com/angular/angular.js/commit/d7548fdf1ce6f543bf55d330985a83ef09d0cb83),
+   [#8166](https://github.com/angular/angular.js/issues/8166))
+- **input:** check `scope.$$phase` only on `$rootScope`
+  ([36e6de1d](https://github.com/angular/angular.js/commit/36e6de1d91937d73e900ac115ae366fbefcdf6da))
+- **ngEventDirs:**
+  - check `scope.$$phase` only on `$rootScope`
+  ([2712c2f1](https://github.com/angular/angular.js/commit/2712c2f1979db23eeb53be8a519b9f79bd75e217),
+   [#8891](https://github.com/angular/angular.js/issues/8891))
+  - execute `blur` and `focus` expression using `scope.$evalAsync`
+  ([54f0bc0f](https://github.com/angular/angular.js/commit/54f0bc0fe0c6b6d974d23f2c5ef07359dd93eb99),
+   [#4979](https://github.com/angular/angular.js/issues/4979), [#5945](https://github.com/angular/angular.js/issues/5945), [#8803](https://github.com/angular/angular.js/issues/8803), [#6910](https://github.com/angular/angular.js/issues/6910), [#5402](https://github.com/angular/angular.js/issues/5402))
+- **ngRepeat:** improve errors for duplicate items
+  ([1812af58](https://github.com/angular/angular.js/commit/1812af58c2d470d586c2a543c9a7db3f0baca04f))
+- **numberFilter:** format numbers that round to zero as nonnegative
+  ([7e02fa07](https://github.com/angular/angular.js/commit/7e02fa07eb5b02e75b1db0058d638af3d1074942),
+   [#8489](https://github.com/angular/angular.js/issues/8489))
+- **orderBy:** allow arrayLike objects to be ordered
+  ([94b0f2d3](https://github.com/angular/angular.js/commit/94b0f2d35de601ded3d93ea4fa78a4d9b139c0a0),
+   [#8944](https://github.com/angular/angular.js/issues/8944))
+
+
+## Breaking Changes
+
+- **ngEventDirs:** due to [54f0bc0f](https://github.com/angular/angular.js/commit/54f0bc0fe0c6b6d974d23f2c5ef07359dd93eb99),
+
+The `blur` and `focus` event fire synchronously, also during DOM operations
+that remove elements. This lead to errors as the Angular model was not
+in a consistent state. See this [fiddle](http://jsfiddle.net/fq1dq5yb/) for a demo.
+
+This change executes the expression of those events using
+`scope.$evalAsync` if an `$apply` is in progress, otherwise
+keeps the old behavior.
+
+Fixes #4979
+Fixes #5945
+Closes #8803
+Closes #6910
+Closes #5402
+
+
+
+
 <a name="1.3.0-RC.0"></a>
 # 1.3.0-RC.0 sonic-boltification (2014-08-29)
 
