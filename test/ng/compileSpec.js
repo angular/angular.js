@@ -5658,7 +5658,7 @@ describe('$compile', function() {
         'http://example.com/image1.png 1x,javascript:doEvilStuff() 2x':'http://example.com/image1.png 1x,unsafe:javascript:doEvilStuff() 2x',
         'http://example.com/image1.jpg?x=a,b 1x,http://example.com/ima,ge2.jpg 2x':'http://example.com/image1.jpg?x=a,b 1x,http://example.com/ima,ge2.jpg 2x'
       };
-      
+
       forEach( testSet, function( ref, url) {
         $rootScope.testUrl = url;
         $rootScope.$digest();
