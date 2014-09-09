@@ -2131,6 +2131,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
 
     // if scope model value and ngModel value are out of sync
+    // TODO(perf): why not move this to the action fn?
     if (ctrl.$modelValue !== modelValue &&
         (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
 
