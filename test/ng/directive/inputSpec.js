@@ -214,6 +214,33 @@ describe('NgModelController', function() {
       expect(ctrl.$modelValue).toBeUndefined();
     });
 
+    it('should not reset the view when the view is invalid', function() {
+      // this test fails when the view changes the model and
+      // then the model listener in ngModel picks up the change and
+      // tries to update the view again.
+
+      // add a validator that will make any input invalid
+      ctrl.$parsers.push(function() {return undefined;});
+      spyOn(ctrl, '$render');
+
+      // first digest
+      ctrl.$setViewValue('bbbb');
+      expect(ctrl.$modelValue).toBeUndefined();
+      expect(ctrl.$viewValue).toBe('bbbb');
+      expect(ctrl.$render).not.toHaveBeenCalled();
+      expect(scope.value).toBeUndefined();
+
+      // further digests
+      scope.$apply('value = "aaa"');
+      expect(ctrl.$viewValue).toBe('aaa');
+      ctrl.$render.reset();
+
+      ctrl.$setViewValue('cccc');
+      expect(ctrl.$modelValue).toBeUndefined();
+      expect(ctrl.$viewValue).toBe('cccc');
+      expect(ctrl.$render).not.toHaveBeenCalled();
+      expect(scope.value).toBeUndefined();
+    });
 
     it('should call parentForm.$setDirty only when pristine', function() {
       ctrl.$setViewValue('');
@@ -329,6 +356,40 @@ describe('NgModelController', function() {
       expect(input).not.toHaveClass('ng-valid-parse');
       expect(input).toHaveClass('ng-invalid-parse');
     });
+
+    it('should update the model after all async validators resolve', inject(function($q) {
+      var defer;
+      ctrl.$asyncValidators.promiseValidator = function(value) {
+        defer = $q.defer();
+        return defer.promise;
+      };
+
+      // set view value on first digest
+      ctrl.$setViewValue('b');
+
+      expect(ctrl.$modelValue).toBeUndefined();
+      expect(scope.value).toBeUndefined();
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$modelValue).toBe('b');
+      expect(scope.value).toBe('b');
+
+      // set view value on further digests
+      ctrl.$setViewValue('c');
+
+      expect(ctrl.$modelValue).toBe('b');
+      expect(scope.value).toBe('b');
+
+      defer.resolve();
+      scope.$digest();
+
+      expect(ctrl.$modelValue).toBe('c');
+      expect(scope.value).toBe('c');
+
+    }));
+
   });
 
 
@@ -380,23 +441,48 @@ describe('NgModelController', function() {
       scope.$apply('value = 5');
       expect(ctrl.$render).toHaveBeenCalledOnce();
     });
+
+    it('should render immediately even if there are async validators', inject(function($q) {
+      spyOn(ctrl, '$render');
+      ctrl.$asyncValidators.someValidator = function() {
+        return $q.defer().promise;
+      };
+
+      scope.$apply('value = 5');
+      expect(ctrl.$viewValue).toBe(5);
+      expect(ctrl.$render).toHaveBeenCalledOnce();
+    }));
+
+    it('should not rerender nor validate in case view value is not changed', function() {
+      ctrl.$formatters.push(function(value) {
+        return 'nochange';
+      });
+
+      spyOn(ctrl, '$render');
+      ctrl.$validators.spyValidator = jasmine.createSpy('spyValidator');
+      scope.$apply('value = "first"');
+      scope.$apply('value = "second"');
+      expect(ctrl.$validators.spyValidator).toHaveBeenCalledOnce();
+      expect(ctrl.$render).toHaveBeenCalledOnce();
+    });
+
   });
 
   describe('validations pipeline', function() {
 
     it('should perform validations when $validate() is called', function() {
-      ctrl.$validators.uppercase = function(value) {
-        return (/^[A-Z]+$/).test(value);
+      scope.$apply('value = ""');
+
+      var validatorResult = false;
+      ctrl.$validators.someValidator = function(value) {
+        return validatorResult;
       };
 
-      ctrl.$modelValue = 'test';
-      ctrl.$$invalidModelValue = undefined;
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(false);
 
-      ctrl.$modelValue = 'TEST';
-      ctrl.$$invalidModelValue = undefined;
+      validatorResult = true;
       ctrl.$validate();
 
       expect(ctrl.$valid).toBe(true);
@@ -3935,6 +4021,13 @@ describe('input', function() {
 
       browserTrigger(inputElm, 'click');
       expect(scope.changeFn).toHaveBeenCalledOnce();
+    });
+
+    it('should be able to change the model and via that also update the view', function() {
+      compileInput('<input type="text" ng-model="value" ng-change="value=\'b\'" />');
+
+      changeInputValueTo('a');
+      expect(inputElm.val()).toBe('b');
     });
   });
 
