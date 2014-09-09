@@ -603,11 +603,11 @@ describe('ngInclude and transcludes', function() {
     });
     inject(function($compile, $rootScope, $httpBackend) {
       $httpBackend.expectGET('my-rect.html').respond('<g ng-include="\'include.svg\'"></g>');
-      $httpBackend.expectGET('include.svg').respond('<rect></rect>');
+      $httpBackend.expectGET('include.svg').respond('<rect></rect><rect></rect>');
       element = $compile('<svg><test></test></svg>')($rootScope);
       $httpBackend.flush();
       var child = element.find('rect');
-      expect(child.length).toBe(1);
+      expect(child.length).toBe(2);
       expect(child[0] instanceof SVGRectElement).toBe(true);
     });
   });

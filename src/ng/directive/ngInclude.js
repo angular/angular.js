@@ -267,19 +267,17 @@ var ngIncludeFillContentDirective = ['$compile',
       priority: -400,
       require: 'ngInclude',
       link: function(scope, $element, $attr, ctrl) {
-        var isSVGElement = /SVG/.test($element[0].toString());
-
-        if (isSVGElement) {
+        if (/SVG/.test($element[0].toString()) && nodeName_($element[0]) !== 'foreignobject') {
           // WebKit: https://bugs.webkit.org/show_bug.cgi?id=135698 --- SVG elements do not
           // support innerHTML, so detect this here and try to generate the contents
           // specially.
-          $element.empty();
-          $element.append(jqLiteBuildFragment(ctrl.template, document).childNodes);
-          $compile($element.contents())(scope, function namespaceAdaptedClone(clone) {
+          $compile(jqLiteBuildFragment(ctrl.template, document).childNodes)(scope,
+              function namespaceAdaptedClone(clone) {
             $element.append(clone);
           }, undefined, undefined, $element);
           return;
         }
+
         $element.html(ctrl.template);
         $compile($element.contents())(scope);
       }
