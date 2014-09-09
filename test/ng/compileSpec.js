@@ -4927,37 +4927,6 @@ describe('$compile', function() {
       });
 
 
-      describe('collocated nested transcludes', function() {
-
-        beforeEach(module(function($compileProvider) {
-
-          $compileProvider.directive('inner', valueFn({
-            restrict: 'E',
-            transclude: true,
-            template: '<u ng-transclude></u>'
-          }));
-
-          $compileProvider.directive('outer', valueFn({
-            restrict: 'E',
-            transclude: true,
-            template: '<a href="#"><inner ng-transclude></inner></a>'
-          }));
-
-        }));
-
-
-        // Issue #8914
-        it('should render nested transclusion at the root of a template', inject(function($compile, $rootScope) {
-
-          element = $compile('<div><outer>transcluded content</outer></div>')($rootScope);
-          $rootScope.$digest();
-          expect(element.text()).toEqual('transcluded content');
-
-        }));
-
-      });
-
-
       describe('nested transcludes', function() {
 
         beforeEach(module(function($compileProvider) {
