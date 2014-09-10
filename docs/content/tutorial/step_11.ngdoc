@@ -49,8 +49,15 @@ and install this dependency. We can do this by running:
 npm install
 ```
 
+<div class="alert alert-warning">
+  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then you may have a
+  problem with the `bower install` due to a conflict between the versions of angular.js that need to
+  be installed.  If you get this then simply delete your `app/bower_components` folder before running
+  `npm install`.
+</div>
+
 <div class="alert alert-info">
-  If you have bower installed globally then you can run `bower install` but for this project we have
+  **Note:** If you have bower installed globally then you can run `bower install` but for this project we have
   preconfigured `npm install` to run bower for us.
 </div>
 
