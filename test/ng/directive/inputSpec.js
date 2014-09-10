@@ -3815,6 +3815,37 @@ describe('input', function() {
       expect(inputElm[0].checked).toBe(false);
       expect(inputElm).toBeInvalid();
     });
+
+    it('should allow custom enumaration even if it is required', function() {
+      compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
+          'ng-false-value="n" ng-required="true">');
+
+      scope.$apply(function() {
+        scope.name = 'y';
+      });
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm).toBeValid();
+
+      scope.$apply(function() {
+        scope.name = 'n';
+      });
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.name = 'something else';
+      });
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm).toBeInvalid();
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.name).toEqual('y');
+      expect(inputElm).toBeValid();
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.name).toEqual('n');
+      expect(inputElm).toBeInvalid();
+    });
   });
 
 

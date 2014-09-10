@@ -1262,7 +1262,7 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
 
   // Override the standard `$isEmpty` because a value of `false` means empty in a checkbox.
   ctrl.$isEmpty = function(value) {
-    return value !== trueValue;
+    return value !== true;
   };
 
   ctrl.$formatters.push(function(value) {
