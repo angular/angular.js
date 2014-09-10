@@ -32,6 +32,11 @@
         </li>
 
         <li>
+          <input type="radio" ng-model="expressionType" value="shortCircuitingOperators" id="shortCircuitingOperators">
+          <label for="shortCircuitingOperators">AND/OR short-circuiting operators</label>
+        </li>
+
+        <li>
           <input type="radio" ng-model="expressionType" value="filters" id="filters">
           <label for="filters">Filters</label>
         </li>
@@ -132,6 +137,17 @@
           <span bm-pe-watch="rowIdx % 2 === 0"></span>
           <span bm-pe-watch="rowIdx / 1"></span>
           <span bm-pe-watch="-rowIdx * 2 * rowIdx + rowIdx / rowIdx + 1"></span>
+        </li>
+
+        <li ng-switch-when="shortCircuitingOperators" ng-repeat="(rowIdx, row) in ::data">
+          <span bm-pe-watch="rowIdx && row.odd"></span>
+          <span bm-pe-watch="row.odd && row.even"></span>
+          <span bm-pe-watch="row.odd && !row.even"></span>
+          <span bm-pe-watch="row.odd || row.even"></span>
+          <span bm-pe-watch="row.odd || row.even || row.index"></span>
+          <span bm-pe-watch="row.index === 1 || row.index === 2"></span>
+          <span bm-pe-watch="row.num0 < row.num1 && row.num1 < row.num2"></span>
+          <span bm-pe-watch="row.num0 < row.num1 || row.num1 < row.num2"></span>
         </li>
 
         <li ng-switch-when="filters" ng-repeat="(rowIdx, row) in ::data">

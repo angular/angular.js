@@ -867,12 +867,15 @@ describe('ngRepeat', function() {
       // This creates one item, but it has no parent so we can't get to it
       $rootScope.items = [1, 2];
       $rootScope.$apply();
+      expect(logs).toContain(1);
+      expect(logs).toContain(2);
+      logs.length = 0;
 
       // This cleans up to prevent memory leak
       $rootScope.items = [];
       $rootScope.$apply();
       expect(angular.mock.dump(element)).toBe('<!-- ngRepeat: i in items -->');
-      expect(logs).toEqual([1, 2, 1, 2]);
+      expect(logs.length).toBe(0);
     }));
 
 
@@ -894,12 +897,15 @@ describe('ngRepeat', function() {
       // This creates one item, but it has no parent so we can't get to it
       $rootScope.items = [1, 2];
       $rootScope.$apply();
+      expect(logs).toContain(1);
+      expect(logs).toContain(2);
+      logs.length = 0;
 
       // This cleans up to prevent memory leak
       $rootScope.items = [];
       $rootScope.$apply();
       expect(sortedHtml(element)).toBe('<span>-</span><!-- ngRepeat: i in items --><span>-</span>');
-      expect(logs).toEqual([1, 2, 1, 2]);
+      expect(logs.length).toBe(0);
     }));
 
 

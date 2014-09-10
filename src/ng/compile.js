@@ -1725,7 +1725,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                       attrs[attrName], newIsolateScopeDirective.name);
                 };
                 lastValue = isolateBindingContext[scopeName] = parentGet(scope);
-                var unwatch = scope.$watch($parse(attrs[attrName], function parentValueWatch(parentValue) {
+                var parentValueWatch = function parentValueWatch(parentValue) {
                   if (!compare(parentValue, isolateBindingContext[scopeName])) {
                     // we are out of sync and need to copy
                     if (!compare(parentValue, lastValue)) {
@@ -1737,7 +1737,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     }
                   }
                   return lastValue = parentValue;
-                }), null, parentGet.literal);
+                };
+                parentValueWatch.$stateful = true;
+                var unwatch = scope.$watch($parse(attrs[attrName], parentValueWatch), null, parentGet.literal);
                 isolateScope.$on('$destroy', unwatch);
                 break;
 
