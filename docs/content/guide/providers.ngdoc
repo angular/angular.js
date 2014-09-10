@@ -409,7 +409,15 @@ To wrap it up, let's summarize the most important points:
   <td class="success">yes\*\*</td>
 </tr>
 <tr>
-  <td>can create functions/primitives</td>
+  <td>can create functions</td>
+  <td class="success">yes</td>
+  <td class="success">yes</td>
+  <td class="success">yes</td>
+  <td class="success">yes</td>
+  <td class="success">yes</td>
+</tr>
+<tr>
+  <td>can create primitives</td>
   <td class="success">yes</td>
   <td class="error">no</td>
   <td class="success">yes</td>
