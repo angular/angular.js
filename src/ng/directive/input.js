@@ -1906,9 +1906,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     // check parser error
     if (!processParseErrors(parseValid)) {
+      validationDone(false);
       return;
     }
     if (!processSyncValidators()) {
+      validationDone(false);
       return;
     }
     processAsyncValidators();
@@ -1926,7 +1928,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           forEach(ctrl.$asyncValidators, function(v, name) {
             setValidity(name, null);
           });
-          validationDone();
           return false;
         }
       }
@@ -1944,7 +1945,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         forEach(ctrl.$asyncValidators, function(v, name) {
           setValidity(name, null);
         });
-        validationDone();
         return false;
       }
       return true;
@@ -1952,6 +1952,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     function processAsyncValidators() {
       var validatorPromises = [];
+      var allValid = true;
       forEach(ctrl.$asyncValidators, function(validator, name) {
         var promise = validator(modelValue, viewValue);
         if (!isPromiseLike(promise)) {
@@ -1962,13 +1963,16 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         validatorPromises.push(promise.then(function() {
           setValidity(name, true);
         }, function(error) {
+          allValid = false;
           setValidity(name, false);
         }));
       });
       if (!validatorPromises.length) {
-        validationDone();
+        validationDone(true);
       } else {
-        $q.all(validatorPromises).then(validationDone);
+        $q.all(validatorPromises).then(function() {
+          validationDone(allValid);
+        }, noop);
       }
     }
 
@@ -1978,10 +1982,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       }
     }
 
-    function validationDone() {
+    function validationDone(allValid) {
       if (localValidationRunId === currentValidationRunId) {
 
-        doneCallback();
+        doneCallback(allValid);
       }
     }
   };
@@ -2042,9 +2046,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ctrl.$modelValue = modelValue;
       writeToModelIfNeeded();
     }
-    ctrl.$$runValidators(parserValid, modelValue, viewValue, function() {
+    ctrl.$$runValidators(parserValid, modelValue, viewValue, function(allValid) {
       if (!allowInvalid) {
-        ctrl.$modelValue = ctrl.$valid ? modelValue : undefined;
+        // Note: Don't check ctrl.$valid here, as we could have
+        // external validators (e.g. calculated on the server),
+        // that just call $setValidity and need the model value
+        // to calculate their validity.
+        ctrl.$modelValue = allValid ? modelValue : undefined;
         writeToModelIfNeeded();
       }
     });
