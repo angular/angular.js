@@ -9,14 +9,14 @@ The documentation is organized into **{@link guide/module modules}** which conta
 These components are {@link guide/directive directives}, {@link guide/services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates templates}, global APIs, and testing mocks.
 
 <div class="alert alert-info">
-**Angular Namespaces `$` and `$$`**
+**Angular Prefixes `$` and `$$`**:
 
 To prevent accidental name collisions with your code,
 Angular prefixes names of public objects with `$` and names of private objects with `$$`.
 Please do not use the `$` or `$$` prefix in your code.
 </div>
 
-## Angular Namespace
+## Angular Modules
 
 
 ## {@link ng ng (core module)}
