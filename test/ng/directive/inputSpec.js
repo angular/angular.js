@@ -214,6 +214,15 @@ describe('NgModelController', function() {
       expect(ctrl.$modelValue).toBeUndefined();
     });
 
+    it('should not reset the model when the view is invalid due to an external validator', function() {
+      ctrl.$setViewValue('aaaa');
+      expect(ctrl.$modelValue).toBe('aaaa');
+
+      ctrl.$setValidity('someExternalError', false);
+      ctrl.$setViewValue('bbbb');
+      expect(ctrl.$modelValue).toBe('bbbb');
+    });
+
     it('should not reset the view when the view is invalid', function() {
       // this test fails when the view changes the model and
       // then the model listener in ngModel picks up the change and
@@ -300,6 +309,13 @@ describe('NgModelController', function() {
 
       ctrl.$setViewValue('2');
       expect(ctrl.$error).toEqual({ high : true });
+    });
+
+    it('should not remove external validators when a parser failed', function() {
+      ctrl.$parsers.push(function(v) { return undefined; });
+      ctrl.$setValidity('externalError', false);
+      ctrl.$setViewValue('someValue');
+      expect(ctrl.$error).toEqual({ externalError : true, parse: true });
     });
 
     it('should remove all non-parse-related CSS classes from the form when a parser fails',
@@ -711,7 +727,7 @@ describe('NgModelController', function() {
       expect(ctrl.$pending).toBeUndefined();
     }));
 
-    it('should clear and ignore all pending promises when the input values changes', inject(function($q) {
+    it('should clear and ignore all pending promises when the model value changes', inject(function($q) {
       ctrl.$validators.sync = function(value) {
         return true;
       };
@@ -773,6 +789,44 @@ describe('NgModelController', function() {
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
       expect(isObject(ctrl.$pending)).toBe(false);
+    }));
+
+    it('should clear all errors from async validators if a parser fails', inject(function($q) {
+      var failParser = false;
+      ctrl.$parsers.push(function(value) {
+        return failParser ? undefined : value;
+      });
+
+      ctrl.$asyncValidators.async = function(value) {
+        return $q.reject();
+      };
+
+      ctrl.$setViewValue('x..y..z');
+      expect(ctrl.$error).toEqual({async: true});
+
+      failParser = true;
+
+      ctrl.$setViewValue('1..2..3');
+      expect(ctrl.$error).toEqual({parse: true});
+    }));
+
+    it('should clear all errors from async validators if a sync validator fails', inject(function($q) {
+      var failValidator = false;
+      ctrl.$validators.sync = function(value) {
+        return !failValidator;
+      };
+
+      ctrl.$asyncValidators.async = function(value) {
+        return $q.reject();
+      };
+
+      ctrl.$setViewValue('x..y..z');
+      expect(ctrl.$error).toEqual({async: true});
+
+      failValidator = true;
+
+      ctrl.$setViewValue('1..2..3');
+      expect(ctrl.$error).toEqual({sync: true});
     }));
 
     it('should re-evaluate the form validity state once the asynchronous promise has been delivered',

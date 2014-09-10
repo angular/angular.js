@@ -1871,14 +1871,6 @@ this limitation, use a regular expression object as the value for the expression
     //after
     $scope.exp = /abc/i;
 
-- **NgModel:** due to [f3cb2741161353f387d02725637ce4ba062a9bc0](https://github.com/angular/angular.js/commit/f3cb2741161353f387d02725637ce4ba062a9bc0),
-
-#### since 1.3.0-beta.11
-
-If the user enters a value and a parser or validator fails, the model will be set to `undefined`.
-This is the same behavior as in 1.2.x, but different to 1.3.0-beta.11, as there only invalid parsers
-would set the model to `undefined`, but invalid validators would not change the model.
-
 - **Scope:** due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
   Scope#$id is now of time number rather than string. Since the
 id is primarily being used for debugging purposes this change should not affect
