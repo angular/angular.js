@@ -28,5 +28,4 @@ describe('ngSrcset', function() {
     $rootScope.$digest();
     expect(element.attr('srcset')).toBe('http://example.com/image1.png 1x,unsafe:javascript:doEvilStuff() 2x');
   }));
-  
 });
