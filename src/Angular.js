@@ -1455,7 +1455,6 @@ function reloadWithDebugInfo() {
 }
 
 /**
- * @ngdoc function
  * @name angular.getTestability
  * @module ng
  * @description
