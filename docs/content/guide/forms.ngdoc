@@ -286,7 +286,7 @@ In the following example we create two directives.
   * The first one is `integer` and it validates whether the input is a valid integer.
     For example `1.23` is an invalid value, since it contains a fraction.
     Note that we unshift the array instead of pushing.
-    This is because we want to be first parser and consume the control string value, as we need to execute the validation function before a conversion to number occurs.
+    This is because we want it to be the first parser and consume the control string value, as we need to execute the validation function before a conversion to number occurs.
 
   * The second directive is a `smart-float`.
     It parses both `1.2` and `1,2` into a valid float number `1.2`.
