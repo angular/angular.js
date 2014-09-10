@@ -23,6 +23,9 @@ function readSymbols() {
       var currencySymbols = closureI18nExtractor.extractCurrencySymbols(content);
       return qfs.read(__dirname + '/../closure/numberSymbols.js', 'b').then(function(content) {
           closureI18nExtractor.extractNumberSymbols(content, localeInfo, currencySymbols);
+          return qfs.read(__dirname + '/../closure/numberSymbolsExt.js', 'b').then(function(content) {
+              closureI18nExtractor.extractNumberSymbols(content, localeInfo, currencySymbols);
+          });
         });
       });
 
