@@ -377,6 +377,10 @@ Lexer.prototype = {
 };
 
 
+function isConstant(exp) {
+  return exp.constant;
+}
+
 /**
  * @constructor
  */
@@ -494,7 +498,8 @@ Parser.prototype = {
     return extend(function(self, locals) {
       return fn(self, locals, right);
     }, {
-      constant:right.constant
+      constant:right.constant,
+      inputs: [right]
     });
   },
 
@@ -502,7 +507,8 @@ Parser.prototype = {
     return extend(function(self, locals){
       return left(self, locals) ? middle(self, locals) : right(self, locals);
     }, {
-      constant: left.constant && middle.constant && right.constant
+      constant: left.constant && middle.constant && right.constant,
+      inputs: [left, middle, right]
     });
   },
 
@@ -510,7 +516,8 @@ Parser.prototype = {
     return extend(function(self, locals) {
       return fn(self, locals, left, right);
     }, {
-      constant:left.constant && right.constant
+      constant:left.constant && right.constant,
+      inputs: [left, right]
     });
   },
 
@@ -558,7 +565,9 @@ Parser.prototype = {
       }
     }
 
-    return function $parseFilter(self, locals) {
+    var inputs = !fn.externalInput && [inputFn].concat(argsFn || []);
+
+    return extend(function $parseFilter(self, locals) {
       var input = inputFn(self, locals);
       if (args) {
         args[0] = input;
@@ -572,7 +581,10 @@ Parser.prototype = {
       }
 
       return fn(input);
-    };
+    }, {
+      constant: inputs && inputs.every(isConstant),
+      inputs: inputs
+    });
   },
 
   expression: function() {
@@ -589,9 +601,11 @@ Parser.prototype = {
             this.text.substring(0, token.index) + '] can not be assigned to', token);
       }
       right = this.ternary();
-      return function $parseAssignment(scope, locals) {
+      return extend(function $parseAssignment(scope, locals) {
         return left.assign(scope, right(scope, locals), locals);
-      };
+      }, {
+        inputs: [left, right]
+      });
     }
     return left;
   },
@@ -760,7 +774,6 @@ Parser.prototype = {
   // This is used with json array declaration
   arrayDeclaration: function () {
     var elementFns = [];
-    var allConstant = true;
     if (this.peekToken().text !== ']') {
       do {
         if (this.peek(']')) {
@@ -769,9 +782,6 @@ Parser.prototype = {
         }
         var elementFn = this.expression();
         elementFns.push(elementFn);
-        if (!elementFn.constant) {
-          allConstant = false;
-        }
       } while (this.expect(','));
     }
     this.consume(']');
@@ -784,13 +794,13 @@ Parser.prototype = {
       return array;
     }, {
       literal: true,
-      constant: allConstant
+      constant: elementFns.every(isConstant),
+      inputs: elementFns
     });
   },
 
   object: function () {
     var keys = [], values = [];
-    var allConstant = true;
     if (this.peekToken().text !== '}') {
       do {
         if (this.peek('}')) {
@@ -802,9 +812,6 @@ Parser.prototype = {
         this.consume(':');
         var value = this.expression();
         values.push(value);
-        if (!value.constant) {
-          allConstant = false;
-        }
       } while (this.expect(','));
     }
     this.consume('}');
@@ -817,7 +824,8 @@ Parser.prototype = {
       return object;
     }, {
       literal: true,
-      constant: allConstant
+      constant: values.every(isConstant),
+      inputs: values
     });
   }
 };
@@ -1045,6 +1053,9 @@ function $ParseProvider() {
               parsedExpression.$$watchDelegate = parsedExpression.literal ?
                 oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
             }
+            else if (parsedExpression.inputs) {
+              parsedExpression.$$watchDelegate = inputsWatchDelegate;
+            }
 
             cache[cacheKey] = parsedExpression;
           }
@@ -1057,6 +1068,87 @@ function $ParseProvider() {
           return addInterceptor(noop, interceptorFn);
       }
     };
+
+    function collectExpressionInputs(inputs, list) {
+      for (var i = 0, ii = inputs.length; i < ii; i++) {
+        var input = inputs[i];
+        if (!input.constant) {
+          if (input.inputs) {
+            collectExpressionInputs(input.inputs, list);
+          }
+          else if (-1 === list.indexOf(input)) {
+            list.push(input);
+          }
+        }
+      }
+
+      return list;
+    }
+
+    function simpleEquals(o1, o2) {
+      if (o1 == null || o2 == null) return o1 === o2; // null/undefined
+
+      if (typeof o1 === "object") {
+        //The same object is not supported because it may have been mutated
+        if (o1 === o2) return false;
+
+        if (typeof o2 !== "object") return false;
+
+        //Dates
+        if (isDate(o1) && isDate(o2)) {
+          o1 = o1.getTime();
+          o2 = o2.getTime();
+
+          //Fallthru to the primitive equality check
+        }
+
+        //Otherwise objects are not supported - recursing over arrays/object would be too expensive
+        else {
+          return false;
+        }
+      }
+
+      //Primitive or NaN
+      return o1 === o2 || (o1 !== o1 && o2 !== o2);
+    }
+
+    function inputsWatchDelegate(scope, listener, objectEquality, parsedExpression) {
+      var inputExpressions = parsedExpression.$$inputs ||
+                    (parsedExpression.$$inputs = collectExpressionInputs(parsedExpression.inputs, []));
+
+      var inputs = [simpleEquals/*=something that will never equal an evaluated input*/];
+      var lastResult;
+
+      if (1 === inputExpressions.length) {
+        inputs = inputs[0];
+        inputExpressions = inputExpressions[0];
+        return scope.$watch(function expressionInputWatch(scope) {
+          var newVal = inputExpressions(scope);
+          if (!simpleEquals(newVal, inputs)) {
+            lastResult = parsedExpression(scope);
+            inputs = newVal;
+          }
+          return lastResult;
+        }, listener, objectEquality);
+      }
+
+      return scope.$watch(function expressionInputsWatch(scope) {
+        var changed = false;
+
+        for (var i=0, ii=inputExpressions.length; i<ii; i++) {
+          var valI = inputExpressions[i](scope);
+          if (changed || (changed = !simpleEquals(valI, inputs[i]))) {
+            inputs[i] = valI;
+          }
+        }
+
+        if (changed) {
+          lastResult = parsedExpression(scope);
+        }
+
+        return lastResult;
+      }, listener, objectEquality);
+    }
 
     function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch, lastValue;
@@ -1123,7 +1215,14 @@ function $ParseProvider() {
         // initial value is defined (for bind-once)
         return isDefined(value) ? result : value;
       };
-      fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+
+      if (parsedExpression.$$watchDelegate) {
+        //Only transfer the inputsWatchDelegate for interceptors not marked as having externalInput
+        if (!(parsedExpression.$$watchDelegate === inputsWatchDelegate && interceptorFn.externalInput)) {
+          fn.inputs = parsedExpression.inputs;
+          fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+        }
+      }
       return fn;
     }
   }];

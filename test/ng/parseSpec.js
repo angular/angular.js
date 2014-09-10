@@ -1281,6 +1281,26 @@ describe('parser', function() {
             expect(log.empty()).toEqual([]);
           }));
 
+          it('should calculate the literal every single time', inject(function($parse) {
+            var filterCalls = 0;
+            $filterProvider.register('foo', valueFn(function(input) {
+              filterCalls++;
+              return input;
+            }));
+
+            var watcherCalls = 0;
+            scope.$watch($parse('{x: 1} | foo'), function(input) {
+              expect(input).toEqual({x:1});
+              watcherCalls++;
+            });
+            scope.$digest();
+            expect(filterCalls).toBe(1);
+            expect(watcherCalls).toBe(1);
+            scope.$digest();
+            expect(filterCalls).toBe(1);
+            expect(watcherCalls).toBe(1);
+          }));
+
           it('should only become stable when all the elements of an array have defined values', inject(function ($parse, $rootScope, log){
             var fn = $parse('::[foo,bar]');
             $rootScope.$watch(fn, function(value) { log(value); }, true);
