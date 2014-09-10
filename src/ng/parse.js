@@ -112,7 +112,6 @@ var OPERATORS = extend(createMap(), {
     '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
     '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
     '^':function(self, locals, a,b){return a(self, locals)^b(self, locals);},
-    '=':noop,
     '===':function(self, locals, a, b){return a(self, locals)===b(self, locals);},
     '!==':function(self, locals, a, b){return a(self, locals)!==b(self, locals);},
     '==':function(self, locals, a,b){return a(self, locals)==b(self, locals);},
@@ -125,8 +124,11 @@ var OPERATORS = extend(createMap(), {
     '||':function(self, locals, a,b){return a(self, locals)||b(self, locals);},
     '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
 //    '|':function(self, locals, a,b){return a|b;},
-    '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
-    '!':function(self, locals, a){return !a(self, locals);}
+    '!':function(self, locals, a){return !a(self, locals);},
+
+    //Tokenized as operators but parsed as assignment/filters
+    '=':true,
+    '|':true
 });
 /* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
@@ -537,12 +539,12 @@ Parser.prototype = {
     var left = this.expression();
     var token;
     while ((token = this.expect('|'))) {
-      left = this.binaryFn(left, token.fn, this.filter());
+      left = this.filter(left);
     }
     return left;
   },
 
-  filter: function() {
+  filter: function(inputFn) {
     var token = this.expect();
     var fn = this.$filter(token.text);
     var argsFn;
@@ -556,7 +558,8 @@ Parser.prototype = {
       }
     }
 
-    return valueFn(function $parseFilter(self, locals, input) {
+    return function $parseFilter(self, locals) {
+      var input = inputFn(self, locals);
       if (args) {
         args[0] = input;
 
@@ -569,7 +572,7 @@ Parser.prototype = {
       }
 
       return fn(input);
-    });
+    };
   },
 
   expression: function() {
