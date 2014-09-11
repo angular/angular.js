@@ -49,14 +49,13 @@ var forceAsyncEvents = {
 };
 forEach(
   'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
-  function(name) {
-    var directiveName = directiveNormalize('ng-' + name);
+  function(eventName) {
+    var directiveName = directiveNormalize('ng-' + eventName);
     ngEventDirectives[directiveName] = ['$parse', '$rootScope', function($parse, $rootScope) {
       return {
         compile: function($element, attr) {
           var fn = $parse(attr[directiveName]);
           return function ngEventHandler(scope, element) {
-            var eventName = lowercase(name);
             element.on(eventName, function(event) {
               var callback = function() {
                 fn(scope, {$event:event});
