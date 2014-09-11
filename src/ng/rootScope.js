@@ -136,6 +136,7 @@ function $RootScopeProvider(){
       this.$$listenerCount = {};
       this.$$isolateBindings = null;
       this.$$applyAsyncQueue = [];
+      this.$$filterCache = createMap();
     }
 
     /**
@@ -207,6 +208,7 @@ function $RootScopeProvider(){
               this.$$listenerCount = {};
               this.$id = nextUid();
               this.$$ChildScope = null;
+              this.$$filterCache = createMap();
             };
             this.$$ChildScope.prototype = this;
           }

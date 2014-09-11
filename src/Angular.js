@@ -577,6 +577,12 @@ function isPromiseLike(obj) {
 }
 
 
+function isPrimitive(value) {
+  var valueType;
+  return (value == null || (valueType = typeof value) === 'string' ||  valueType === 'number');
+}
+
+
 var trim = function(value) {
   return isString(value) ? value.trim() : value;
 };

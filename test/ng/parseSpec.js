@@ -334,20 +334,6 @@ describe('parser', function() {
         expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
       });
 
-      it('should parse filters', function() {
-        $filterProvider.register('substring', valueFn(function(input, start, end) {
-          return input.substring(start, end);
-        }));
-
-        expect(function() {
-          scope.$eval("1|nonexistent");
-        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter');
-
-        scope.offset =  3;
-        expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
-        expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
-      });
-
       it('should access scope', function() {
         scope.a =  123;
         scope.b = {c: 456};
@@ -585,15 +571,8 @@ describe('parser', function() {
 
         expect(scope.$eval('items[1] = "abc"')).toEqual("abc");
         expect(scope.$eval('items[1]')).toEqual("abc");
-    //    Dont know how to make this work....
-    //    expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
-    //    expect(scope.$eval('books[1]')).toEqual("moby");
-      });
-
-      it('should evaluate grouped filters', function() {
-        scope.name = 'MISKO';
-        expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
-        expect(scope.$eval('n')).toEqual('misko');
+        expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
+        expect(scope.$eval('books[1]')).toEqual("moby");
       });
 
       it('should evaluate remainder', function() {
@@ -676,6 +655,196 @@ describe('parser', function() {
         scope.b = {c: "bc"};
         expect(scope.$eval('a + \n b.c + \r "\td" + \t \r\n\r "\r\n\n"')).toEqual("abc\td\r\n\n");
       });
+
+
+      describe('filters', function() {
+
+        var log;
+
+        beforeEach(inject(function (_log_) {
+          log = _log_;
+        }));
+
+
+        it('should parse filters', function() {
+          registerFilter(substring);
+
+          expect(function() {
+            scope.$eval("1|nonexistent");
+          }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter');
+
+          scope.offset =  3;
+          expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
+          expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
+        });
+
+
+        it('should evaluate grouped filters', function() {
+          scope.name = 'MISKO';
+          expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
+          expect(scope.$eval('n')).toEqual('misko');
+        });
+
+
+        describe('caching', function() {
+
+          it("should cache the last value and not re-execute filters if inputs don't change", function() {
+            registerFilter(starlog);
+
+            scope.message = 'harder';
+            expect(scope.$eval('message | starlog')).toBe('*harder*');
+            expect(log.empty()).toEqual(['*harder*']);
+
+            expect(scope.$eval('message | starlog')).toBe('*harder*');
+            expect(log.empty()).toEqual([]);
+
+            scope.message = 'better';
+            expect(scope.$eval('message | starlog')).toBe('*better*');
+            expect(log.empty()).toEqual(['*better*']);
+          });
+
+
+          it("should associate the cache with the evaluation scope", function() {
+            registerFilter(starlog);
+
+            var childScope1 = scope.$new();
+            var childScope2 = scope.$new();
+
+            childScope1.message = 'harder';
+            childScope2.message = 'harder';
+
+            expect(childScope1.$eval('message | starlog')).toBe('*harder*');
+            expect(log.empty()).toEqual(['*harder*']);
+            expect(childScope2.$eval('message | starlog')).toBe('*harder*');
+            expect(log.empty()).toEqual(['*harder*']);
+          });
+
+
+          it("should cache just the last value", function() {
+            registerFilter(starlog);
+
+            scope.message = 'harder';
+            expect(scope.$eval('message | starlog')).toBe('*harder*');
+            expect(log.empty()).toEqual(['*harder*']);
+
+            scope.message = 'better';
+            expect(scope.$eval('message | starlog')).toBe('*better*');
+            expect(log.empty()).toEqual(['*better*']);
+
+            scope.message = 'harder';
+            expect(scope.$eval('message | starlog')).toBe('*harder*');
+            expect(log.empty()).toEqual(['*harder*']);
+          });
+
+
+          it("should not cache results for object inputs", function() {
+            registerFilter(starlog);
+
+            scope.obj = {};
+            expect(scope.$eval('obj | starlog')).toBe('*{}*');
+            expect(log.empty()).toEqual(['*{}*']);
+
+            expect(scope.$eval('obj | starlog')).toBe('*{}*');
+            expect(log.empty()).toEqual(['*{}*']);
+          });
+
+
+          it("should not cache results for array inputs", function() {
+            registerFilter(starlog);
+
+            scope.array = [];
+            expect(scope.$eval('array | starlog')).toBe('*[]*');
+            expect(log.empty()).toEqual(['*[]*']);
+
+            expect(scope.$eval('array | starlog')).toBe('*[]*');
+            expect(log.empty()).toEqual(['*[]*']);
+          });
+
+
+          it("should cache filters with extra params", function() {
+            registerFilter(starlog);
+
+            scope.message = 'harder';
+            scope.stardate = '333';
+            expect(scope.$eval('message | starlog:stardate')).toBe('*harder [333] *');
+            expect(log.empty()).toEqual(['*harder [333] *']);
+
+            expect(scope.$eval('message | starlog:stardate')).toBe('*harder [333] *');
+            expect(log.empty()).toEqual([]);
+          });
+
+
+          it('should recalc the result if extra param changes', function() {
+            registerFilter(starlog);
+
+            scope.message = 'harder';
+            scope.stardate = '333';
+            expect(scope.$eval('message | starlog:stardate')).toBe('*harder [333] *');
+            expect(log.empty()).toEqual(['*harder [333] *']);
+
+            scope.stardate = '111';
+            expect(scope.$eval('message | starlog:stardate')).toBe('*harder [111] *');
+            expect(log.empty()).toEqual(['*harder [111] *']);
+
+            expect(scope.$eval('message | starlog:stardate')).toBe('*harder [111] *');
+            expect(log.empty()).toEqual([]);
+          });
+
+
+          it("should not cache results for object params", function() {
+            registerFilter(starlog);
+
+            scope.obj = {};
+            expect(scope.$eval('1 | starlog:obj')).toBe('*1 [{}] *');
+            expect(log.empty()).toEqual(['*1 [{}] *']);
+
+            expect(scope.$eval('1 | starlog:obj')).toBe('*1 [{}] *');
+            expect(log.empty()).toEqual(['*1 [{}] *']);
+          });
+
+
+          it("should not cache results for array params", function() {
+            registerFilter(starlog);
+
+            scope.array = [];
+            expect(scope.$eval('1 | starlog:array')).toBe('*1 [[]] *');
+            expect(log.empty()).toEqual(['*1 [[]] *']);
+
+            expect(scope.$eval('1 | starlog:array')).toBe('*1 [[]] *');
+            expect(log.empty()).toEqual(['*1 [[]] *']);
+          });
+        });
+
+
+        function registerFilter(filter) {
+          $filterProvider.register(filter.name, valueFn(filter));
+        }
+
+        function substring(input, start, end) {
+          return input.substring(start, end);
+        }
+
+        function starlog(input, param) {
+          input = isString(input) ? input : toJson(input);
+
+          if (param) {
+            param = ' [' + (isString(param) ? param : toJson(param)) + '] ';
+          } else {
+            param = '';
+          }
+
+          var result = '*' + input + param + '*';
+          log(result);
+          return result;
+        }
+
+        function dashlog(input) {
+          var result = '-' + input + '-';
+          log(result);
+          return result;
+        }
+      });
+
 
       describe('sandboxing', function() {
         describe('Function constructor', function() {

@@ -544,7 +544,11 @@ Parser.prototype = {
 
   filter: function() {
     var token = this.expect();
-    var fn = this.$filter(token.text);
+    var filterName = token.text;
+    var expression = this.text;
+    var filterCacheKeyInput = filterName + '_i_' + expression;
+    var filterCacheKeyResult = filterName + '_r_' + expression;
+    var fn = this.$filter(filterName);
     var argsFn;
     var args;
 
@@ -557,6 +561,9 @@ Parser.prototype = {
     }
 
     return valueFn(function $parseFilter(self, locals, input) {
+      var result;
+      var filterCache = self.$$filterCache;
+
       if (args) {
         args[0] = input;
 
@@ -565,10 +572,41 @@ Parser.prototype = {
           args[i + 1] = argsFn[i](self, locals);
         }
 
-        return fn.apply(undefined, args);
+        var primitiveInputs = true;
+        i = args.length;
+        while (primitiveInputs && i--) {
+          primitiveInputs = primitiveInputs && isPrimitive(args[i]);
+        }
+
+        if (primitiveInputs) {
+          if (filterCacheKeyInput in filterCache &&
+              equals(filterCache[filterCacheKeyInput], args)) {
+            result = filterCache[filterCacheKeyResult];
+          } else {
+            result = fn.apply(undefined, args);
+            filterCache[filterCacheKeyInput] = shallowCopy(args, []);
+            filterCache[filterCacheKeyResult] = result;
+          }
+        } else {
+          result = fn.apply(undefined, args);
+        }
+
+        return result;
       }
 
-      return fn(input);
+      if (isPrimitive(input)) {
+        if (filterCache[filterCacheKeyInput] === input && (input === undefined || filterCacheKeyInput in filterCache)) {
+          result = filterCache[filterCacheKeyResult];
+        } else {
+          result = fn(input);
+          filterCache[filterCacheKeyInput] = input;
+          filterCache[filterCacheKeyResult] = result;
+        }
+      } else {
+        result = fn(input);
+      }
+
+      return result;
     });
   },
 
