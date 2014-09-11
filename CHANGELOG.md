@@ -134,10 +134,10 @@ Example:
 
 ```js
 angular.module("switchChangeWorkaround", []).
-  directive("onSwitchChanged", function() {
+  directive("onSwitchChanged", function () {
     return {
-      linke: function($scope, $attrs) {
-        $scope.$parent.$eval($attrs.change);
+      link: function (scope, elem, attrs) {
+        scope.$parent.$eval(attrs.onSwitchChanged);
       }
     };
   });
