@@ -5,8 +5,8 @@
  * Private service to sanitize uris for links and images. Used by $compile and $sanitize.
  */
 function $$SanitizeUriProvider() {
-  var aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file):/,
-    imgSrcSanitizationWhitelist = /^\s*((https?|ftp|file|blob):|data:image\/)/;
+  var aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file|local):/,
+    imgSrcSanitizationWhitelist = /^\s*((https?|ftp|file|blob|local):|data:image\/)/;
 
   /**
    * @description
