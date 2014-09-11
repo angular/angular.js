@@ -58,6 +58,47 @@ describe('form', function() {
     expect(form.alias).toBeUndefined();
   });
 
+  it('should not be affected by input controls that were removed from the form', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<input name="alias" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
+
+    var form = scope.myForm;
+    form.$removeControl(control);
+
+    control.$setValidity('required', false);
+    expect(form.$error.required).toBeFalsy();
+  });
+
+  it('should not be affected by form controls that were removed from the form', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<div ng-form="nestedForm">' +
+          '<input type="text" name="alias" ng-model="value" store-model-ctrl/>' +
+        '</div>' +
+      '</form>')(scope);
+
+    var form = scope.myForm;
+    form.$removeControl(form.nestedForm);
+
+    control.$setValidity('required', false);
+    expect(form.$error.required).toBeFalsy();
+  });
+
+  it('should be affected by input controls that were re-added to the form', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<input name="alias" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
+
+    var form = scope.myForm;
+    form.$removeControl(control);
+    form.$addControl(control);
+
+    control.$setValidity('required', false);
+    expect(form.$error.required).toEqual([control]);
+  });
 
   it('should use ngForm value as form name', function() {
     doc = $compile(
