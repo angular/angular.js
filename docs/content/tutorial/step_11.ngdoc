@@ -187,7 +187,7 @@ __`test/karma.conf.js`:__
     ],
 ```
 
-We have modified our unit tests to verify that our new service is issuing HTTP requests and
+We have modified our unit tests to verify that our new service is using HTTP requests and
 processing them as expected. The tests also check that our controllers are interacting with the
 service correctly.
 
