@@ -871,6 +871,26 @@ describe('select', function() {
         expect(element.val()).toEqual('1');
       });
 
+      it('should update options in the DOM', function() {
+        compile(
+          '<select ng-model="selected" ng-options="item.id as item.name for item in values"></select>'
+        );
+
+        scope.$apply(function() {
+          scope.values = [{id: 10, name: 'A'}, {id: 20, name: 'B'}];
+          scope.selected = scope.values[0].id;
+        });
+
+        scope.$apply(function() {
+          scope.values[0].name = 'C';
+        });
+
+        var options = element.find('option');
+        expect(options.length).toEqual(2);
+        expect(sortedHtml(options[0])).toEqual('<option value="0">C</option>');
+        expect(sortedHtml(options[1])).toEqual('<option value="1">B</option>');
+      });
+
 
       it('should bind to object key', function() {
         createSelect({
