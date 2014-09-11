@@ -63,14 +63,13 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20b9",
-    "DECIMAL_SEP": ".",
+    "CURRENCY_SYM": "Rs",
+    "DECIMAL_SEP": "\u066b",
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
