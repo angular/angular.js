@@ -1352,6 +1352,24 @@ describe('$http', function() {
       }));
 
 
+      it('should not share the pending cached headers object instance', inject(function($rootScope) {
+        var firstResult;
+        callback.andCallFake(function(result) {
+          expect(result.headers()).toEqual(firstResult.headers());
+          expect(result.headers()).not.toBe(firstResult.headers());
+        });
+
+        $httpBackend.expect('GET', '/url').respond(200, 'content', {'content-encoding': 'gzip', 'server': 'Apache'});
+        $http({method: 'GET', url: '/url', cache: cache}).then(function(result) {
+          firstResult = result;
+        });
+        $http({method: 'GET', url: '/url', cache: cache}).then(callback);
+        $httpBackend.flush();
+
+        expect(callback).toHaveBeenCalledOnce();
+      }));
+
+
       it('should cache status code as well', inject(function($rootScope) {
         doFirstCacheRequest('GET', 201);
         callback.andCallFake(function(r, status, h) {
@@ -1378,6 +1396,40 @@ describe('$http', function() {
         $httpBackend.flush();
         expect(callback).toHaveBeenCalled();
         expect(callback.callCount).toBe(2);
+      });
+
+
+      it('should preserve config object when resolving from cache', function() {
+        $httpBackend.expect('GET', '/url').respond(200, 'content');
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'bar'}});
+        $httpBackend.flush();
+
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).then(callback);
+        $rootScope.$digest();
+
+        expect(callback.mostRecentCall.args[0].config.headers.foo).toBe('baz');
+      });
+
+
+      it('should preserve config object when resolving from pending cache', function() {
+        $httpBackend.expect('GET', '/url').respond(200, 'content');
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'bar'}});
+
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).then(callback);
+        $httpBackend.flush();
+
+        expect(callback.mostRecentCall.args[0].config.headers.foo).toBe('baz');
+      });
+
+
+      it('should preserve config object when rejecting from pending cache', function() {
+        $httpBackend.expect('GET', '/url').respond(404, 'content');
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'bar'}});
+
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).catch(callback);
+        $httpBackend.flush();
+
+        expect(callback.mostRecentCall.args[0].config.headers.foo).toBe('baz');
       });
 
 
