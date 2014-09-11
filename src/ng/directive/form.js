@@ -7,11 +7,9 @@ var nullFormCtrl = {
   $$renameControl: nullFormRenameControl,
   $removeControl: noop,
   $setValidity: noop,
-  $$setPending: noop,
   $setDirty: noop,
   $setPristine: noop,
-  $setSubmitted: noop,
-  $$clearControlValidity: noop
+  $setSubmitted: noop
 },
 SUBMITTED_CLASS = 'ng-submitted';
 
