@@ -48,7 +48,7 @@ var forceAsyncEvents = {
   'focus': true
 };
 forEach(
-  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste error'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
     ngEventDirectives[directiveName] = ['$parse', '$rootScope', function($parse, $rootScope) {
@@ -482,3 +482,28 @@ forEach(
      </file>
    </example>
  */
+ 
+ /**
+ * @ngdoc directive
+ * @name ng.directive:ngError
+ *
+ * @description
+ * Specify custom behavior on error event.
+ *
+ * @element img
+ * @param {expression} ngError {@link guide/expression Expression} to evaluate upon
+ * error. (Event object is available as `$event`)
+ *
+ * @example
+   <doc:example>
+     <doc:source>
+       <img src="some-url-that-should-404" ng-error="ngErrorString = 'error occurred.'" />
+     </doc:source>
+     <doc:scenario>
+       it('should check ng-error', function() {
+         expect(binding('ngErrorString')).toMatch(/error occurred\./);
+       });
+     </doc:scenario>
+   </doc:example>
+ */
+
