@@ -136,8 +136,8 @@ Example:
 angular.module("switchChangeWorkaround", []).
   directive("onSwitchChanged", function() {
     return {
-      linke: function($scope, $attrs) {
-        $scope.$parent.$eval($attrs.change);
+      link: function($scope, $element, $attrs) {
+        $scope.$parent.$eval($attrs.onSwitchChanged);
       }
     };
   });
