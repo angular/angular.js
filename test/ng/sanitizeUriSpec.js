@@ -110,6 +110,9 @@ describe('sanitizeUri', function() {
 
       testUrl = "file:///foo/bar.html";
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
+
+      testUrl = "local:///foo/bar.html";
+      expect(sanitizeImg(testUrl)).toBe('local:///foo/bar.html');
     });
 
     it('should not sanitize blob urls', function() {
@@ -220,6 +223,9 @@ describe('sanitizeUri', function() {
 
       testUrl = "file:///foo/bar.html";
       expect(sanitizeHref(testUrl)).toBe('file:///foo/bar.html');
+
+      testUrl = "local:///foo/bar.html";
+      expect(sanitizeHref(testUrl)).toBe('local:///foo/bar.html');
     }));
 
     it('should allow reconfiguration of the href whitelist', function() {
