@@ -1027,8 +1027,7 @@ function $HttpProvider() {
         if (isDefined(cachedResp)) {
           if (isPromiseLike(cachedResp)) {
             // cached request has already been sent, but there is no response yet
-            cachedResp.then(removePendingReq, removePendingReq);
-            return cachedResp;
+            cachedResp.then(resolvePromiseWithResult, resolvePromiseWithResult);
           } else {
             // serving from cache
             if (isArray(cachedResp)) {
@@ -1106,6 +1105,9 @@ function $HttpProvider() {
         });
       }
 
+      function resolvePromiseWithResult(result) {
+        resolvePromise(result.data, result.status, shallowCopy(result.headers()), result.statusText);
+      }
 
       function removePendingReq() {
         var idx = $http.pendingRequests.indexOf(config);
