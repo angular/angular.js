@@ -404,6 +404,19 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         ctrl.$render = render;
 
         scope.$watchCollection(valuesFn, render);
+        scope.$watchCollection(function () {
+          var locals = {},
+              values = valuesFn(scope);
+          if (values) {
+            var toDisplay = new Array(values.length);
+            for (var i = 0, ii = values.length; i < ii; i++) {
+              locals[valueName] = values[i];
+              toDisplay[i] = displayFn(scope, locals);
+            }
+            return toDisplay;
+          }
+        }, render);
+
         if ( multiple ) {
           scope.$watchCollection(function() { return ctrl.$modelValue; }, render);
         }
