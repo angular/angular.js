@@ -92,10 +92,6 @@ ddescribe('svgAttrs', function() {
 
 
   it('should make hash relative to appBase in html5mode', function() {
-    module(function($locationProvider, $provide) {
-      $locationProvider.html5Mode(false);
-    });
-
     inject(function($compile, $rootScope, $location, $browser) {
       var basePath = urlResolve('').href;
       var element;
@@ -107,10 +103,41 @@ ddescribe('svgAttrs', function() {
       ].join('');
       element = $compile(template)($rootScope);
       $rootScope.$digest();
-      expect(element.children(0).attr('clip-path')).toBe('url('+ basePath +'#my-clip)');
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/mypath#my-clip)');
     });
   });
 
 
-  it('should update url on $locationChangeSuccess event')
+  it('should update url on $locationChangeSuccess event in html5mode', function() {
+    //This test uses $location's fake base: http://server, since urlResolve is not being used
+    module(function($locationProvider, $provide) {
+      $locationProvider.html5Mode(true);
+    });
+
+    inject(function($compile, $rootScope, $location, $browser) {
+      var element;
+
+      var template = [
+        '<svg>',
+          '<ellipse clip-path="url(#my-clip)"></ellipse>',
+        '</svg>'
+      ].join('');
+      element = $compile(template)($rootScope);
+      $location.path('/mypath');
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/mypath#my-clip)');
+      $location.path('/newpath');
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/newpath#my-clip)');
+
+    });
+  });
+
+  it('should NOT update url on $locationChangeSuccess event when not in html5mode', function() {
+    //browser just cares about appBase in non-html5 mode
+  });
+
+
+  it('should support expressions');
+  it('should do nothing with urls of different origins');
 });

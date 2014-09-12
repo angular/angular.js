@@ -1,6 +1,28 @@
 var ngSvgDirectives = {};
 var svgAttrUrlMatcher = /^url\((.*)\)$/;
 var svgElementMatcher = /\[object SVG[a-z]*Element/i;
+
+function computeSVGAttrValue (url, $loc) {
+  var match, fullUrl = url;
+  if (match = svgAttrUrlMatcher.exec(url)) {
+    //hash in html5Mode, forces to be relative to current url instead of base
+    if (match[1].indexOf('#') === 0 && $loc.$$html5) {
+      fullUrl = $loc.absUrl() + match[1];
+    }
+    else if (match[1].indexOf('#') === 0) {
+      // fullUrl = $loc.absUrl().replace(/#.*/, matc)
+      fullUrl = $loc.protocol() + '://' + $loc.host() + ($loc.port() !== 80 ? ':' + $loc.port() : '') + $loc.path() + match[1];
+    }
+    else {
+      //supports relative urls and hash in non-html5Mode
+      fullUrl = urlResolve(match[1]).href;
+    }
+
+  }
+
+  return 'url(' + fullUrl + ')';
+}
+
 forEach([
     'clipPath',
     'colorProfile',
@@ -15,32 +37,26 @@ forEach([
     'mask',
     'stroke'
   ], function(attr) {
-  ngSvgDirectives[attr] = ['$location', '$interpolate', function($location, $interpolate) {
+  ngSvgDirectives[attr] = ['$rootScope', '$location', '$interpolate', function($rootScope, $location, $interpolate) {
     return {
     restrict: 'A',
     link: function(scope, element, attrs) {
+      var initialUrl;
       //TODO: verify whether or not attribute must end with )
-
       //TODO: support expressions
+
       //Only apply to svg elements to avoid observing
       if (!svgElementMatcher.test(element[0])) return;
-      attrs.$observe(attr, function(val) {
-        var match, newVal;
-        if (match = svgAttrUrlMatcher.exec(attrs[attr])) {
-          //hash in html5Mode, forces to be relative to current url instead of base
-          if (match[1].indexOf('#') === 0 && $location.$$html5) {
-            newVal = 'url(' + $location.absUrl() + match[1] + ')';
-          }
-          else {
-            //supports relative urls and hash in non-html5Mode
-            newVal = 'url(' + urlResolve(match[1]).href + ')';
-          }
+      initialUrl = attrs[attr];
+      attrs.$observe(attr, updateValue);
+      $rootScope.$on('$locationChangeSuccess', updateValue);
 
-          //Prevent recursive updating
-          if (val !== newVal) attrs.$set(attr, newVal);
-        }
-      });
 
+      function updateValue () {
+        var newVal = computeSVGAttrValue(initialUrl, $location);
+        //Prevent recursive updating
+        if (attrs[attr] !== newVal) attrs.$set(attr, newVal);
+      }
     }
   }}];
 });
