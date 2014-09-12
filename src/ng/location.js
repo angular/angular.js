@@ -416,7 +416,7 @@ LocationHashbangInHtml5Url.prototype =
    * @return {string} path
    */
   path: locationGetterSetter('$$path', function(path) {
-    path = path ? path.toString() : '';
+    path = path !== null ? path.toString() : '';
     return path.charAt(0) == '/' ? path : '/' + path;
   }),
 
@@ -513,7 +513,7 @@ LocationHashbangInHtml5Url.prototype =
    * @return {string} hash
    */
   hash: locationGetterSetter('$$hash', function(hash) {
-    return hash ? hash.toString() : '';
+    return hash !== null ? hash.toString() : '';
   }),
 
   /**
