@@ -789,7 +789,7 @@ Parser.prototype = {
   },
 
   object: function () {
-    var keyValues = [];
+    var keys = [], valueFns = [];
     var allConstant = true;
     if (this.peekToken().text !== '}') {
       do {
@@ -797,11 +797,11 @@ Parser.prototype = {
           // Support trailing commas per ES5.1.
           break;
         }
-        var token = this.expect(),
-        key = token.string || token.text;
+        var token = this.expect();
+        keys.push(token.string || token.text);
         this.consume(':');
         var value = this.expression();
-        keyValues.push({key: key, value: value});
+        valueFns.push(value);
         if (!value.constant) {
           allConstant = false;
         }
@@ -811,9 +811,8 @@ Parser.prototype = {
 
     return extend(function $parseObjectLiteral(self, locals) {
       var object = {};
-      for (var i = 0, ii = keyValues.length; i < ii; i++) {
-        var keyValue = keyValues[i];
-        object[keyValue.key] = keyValue.value(self, locals);
+      for (var i = 0, ii = valueFns.length; i < ii; i++) {
+        object[keys[i]] = valueFns[i](self, locals);
       }
       return object;
     }, {
