@@ -142,6 +142,11 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/1?search=a&b=c&d#hash');
     });
 
+    it('path() should allow using 0 as path', function() {
+      url.path(0);
+      expect(url.path()).toBe('/0');
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/0?search=a&b=c&d#hash');
+    });
 
     it('path() should set to empty path on null value', function () {
       url.path('/foo');
@@ -240,6 +245,11 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#5');
     });
 
+    it('hash() should allow using 0', function() {
+      url.hash(0);
+      expect(url.hash()).toBe('0');
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#0');
+    });
 
     it('hash() should accept null parameter', function() {
       url.hash(null);
