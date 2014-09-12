@@ -210,19 +210,12 @@ describe('parser', function() {
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
 
-      var originalSecurityPolicy;
-
-
-      beforeEach(function() {
-        originalSecurityPolicy = window.document.securityPolicy;
-        window.document.securityPolicy = {isActive : cspEnabled};
-      });
-
-      afterEach(function() {
-        window.document.securityPolicy = originalSecurityPolicy;
-      });
-
-      beforeEach(module(provideLog));
+      beforeEach(module(function($provide) {
+        $provide.decorator('$sniffer', function($delegate) {
+          $delegate.csp = cspEnabled;
+          return $delegate;
+        });
+      }, provideLog));
 
       beforeEach(inject(function ($rootScope) {
         scope = $rootScope;
