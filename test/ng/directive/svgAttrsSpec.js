@@ -155,5 +155,24 @@ ddescribe('svgAttrs', function() {
   });
 
 
-  it('should do nothing with urls of different origins');
+  it('should do nothing with urls of different origins', inject(function($compile, $rootScope, $location) {
+    var element = $compile(
+        '<svg><ellipse clip-path="url(http://google.com/logo.svg)"></ellipse></svg>')($rootScope);
+    $rootScope.$digest();
+    expect(element.children(0).attr('clip-path')).toBe('url(http://google.com/logo.svg)');
+  }));
+
+
+  it('should do nothing with urls of different origins also in html5Mode', function() {
+    module(function($locationProvider) {
+      $locationProvider.html5Mode(true);
+    })
+
+    inject(function($compile, $rootScope, $location) {
+      var element = $compile(
+          '<svg><ellipse clip-path="url(http://google.com/logo.svg)"></ellipse></svg>')($rootScope);
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://google.com/logo.svg)');
+    });
+  });
 });
