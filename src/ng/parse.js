@@ -112,7 +112,6 @@ var OPERATORS = extend(createMap(), {
     '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
     '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
     '^':function(self, locals, a,b){return a(self, locals)^b(self, locals);},
-    '=':noop,
     '===':function(self, locals, a, b){return a(self, locals)===b(self, locals);},
     '!==':function(self, locals, a, b){return a(self, locals)!==b(self, locals);},
     '==':function(self, locals, a,b){return a(self, locals)==b(self, locals);},
@@ -124,9 +123,11 @@ var OPERATORS = extend(createMap(), {
     '&&':function(self, locals, a,b){return a(self, locals)&&b(self, locals);},
     '||':function(self, locals, a,b){return a(self, locals)||b(self, locals);},
     '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
-//    '|':function(self, locals, a,b){return a|b;},
-    '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
-    '!':function(self, locals, a){return !a(self, locals);}
+    '!':function(self, locals, a){return !a(self, locals);},
+
+    //Tokenized as operators but parsed as assignment/filters
+    '=':true,
+    '|':true
 });
 /* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
@@ -537,12 +538,12 @@ Parser.prototype = {
     var left = this.expression();
     var token;
     while ((token = this.expect('|'))) {
-      left = this.binaryFn(left, token.fn, this.filter());
+      left = this.filter(left);
     }
     return left;
   },
 
-  filter: function() {
+  filter: function(inputFn) {
     var token = this.expect();
     var fn = this.$filter(token.text);
     var argsFn;
@@ -556,7 +557,8 @@ Parser.prototype = {
       }
     }
 
-    return valueFn(function $parseFilter(self, locals, input) {
+    return function $parseFilter(self, locals) {
+      var input = inputFn(self, locals);
       if (args) {
         args[0] = input;
 
@@ -569,7 +571,7 @@ Parser.prototype = {
       }
 
       return fn(input);
-    });
+    };
   },
 
   expression: function() {
@@ -786,7 +788,7 @@ Parser.prototype = {
   },
 
   object: function () {
-    var keyValues = [];
+    var keys = [], valueFns = [];
     var allConstant = true;
     if (this.peekToken().text !== '}') {
       do {
@@ -794,11 +796,11 @@ Parser.prototype = {
           // Support trailing commas per ES5.1.
           break;
         }
-        var token = this.expect(),
-        key = token.string || token.text;
+        var token = this.expect();
+        keys.push(token.string || token.text);
         this.consume(':');
         var value = this.expression();
-        keyValues.push({key: key, value: value});
+        valueFns.push(value);
         if (!value.constant) {
           allConstant = false;
         }
@@ -808,9 +810,8 @@ Parser.prototype = {
 
     return extend(function $parseObjectLiteral(self, locals) {
       var object = {};
-      for (var i = 0, ii = keyValues.length; i < ii; i++) {
-        var keyValue = keyValues[i];
-        object[keyValue.key] = keyValue.value(self, locals);
+      for (var i = 0, ii = valueFns.length; i < ii; i++) {
+        object[keys[i]] = valueFns[i](self, locals);
       }
       return object;
     }, {
