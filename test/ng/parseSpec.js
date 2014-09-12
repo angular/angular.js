@@ -202,8 +202,9 @@ describe('parser', function() {
 
 
   forEach([true, false], function(cspEnabled) {
+    forEach([true, false], function(unwrapPromisesEnabled) {
 
-      describe('csp: ' + cspEnabled, function() {
+      describe('csp: ' + cspEnabled + ", unwrapPromises: " + unwrapPromisesEnabled, function() {
 
         beforeEach(module(function($provide) {
           $provide.decorator('$sniffer', function($delegate) {
@@ -212,15 +213,6 @@ describe('parser', function() {
           });
         }, provideLog));
 
-
-        beforeEach(function() {
-          originalSecurityPolicy = window.document.securityPolicy;
-          window.document.securityPolicy = {isActive : cspEnabled};
-        });
-
-        afterEach(function() {
-          window.document.securityPolicy = originalSecurityPolicy;
-        });
 
         beforeEach(module(function ($parseProvider, $provide) {
           $parseProvider.unwrapPromises(unwrapPromisesEnabled);
