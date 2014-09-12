@@ -232,6 +232,25 @@ function FormController(element, attrs, $scope, $animate) {
 
   /**
    * @ngdoc method
+   * @name form.FormController#$setUntouched
+   *
+   * @description
+   * Sets the form to its untouched state.
+   *
+   * This method can be called to remove the 'ng-touched' class and set the form controls to their
+   * untouched state (ng-untouched class).
+   *
+   * Setting a form controls back to their untouched state is often useful when setting the form
+   * back to its pristine state.
+   */
+  form.$setUntouched = function () {
+    forEach(controls, function(control) {
+      control.$setUntouched();
+    });
+  };
+
+  /**
+   * @ngdoc method
    * @name form.FormController#$setSubmitted
    *
    * @description
