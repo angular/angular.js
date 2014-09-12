@@ -34,7 +34,7 @@
   ngRepeatDirective,
   ngShowDirective,
   ngStyleDirective,
-  ngSvgDirectives,
+  svgDirectives,
   ngSwitchDirective,
   ngSwitchWhenDirective,
   ngSwitchDefaultDirective,
@@ -210,7 +210,7 @@ function publishExternalAPI(angular){
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives).
-        directive(ngSvgDirectives);
+        directive(svgDirectives);
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $animate: $AnimateProvider,

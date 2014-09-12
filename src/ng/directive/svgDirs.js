@@ -1,6 +1,6 @@
 'use strict';
 
-var ngSvgDirectives = {};
+var svgDirectives = {};
 var svgAttrUrlMatcher = /^url\((.*)\)$/;
 var svgElementMatcher = /\[object SVG[a-z]*Element/i;
 var svgUrlHashMatchExp = /#.*/;
@@ -40,7 +40,7 @@ forEach([
     'stroke'
   ],
   function(attr) {
-    ngSvgDirectives[attr] = [
+    svgDirectives[attr] = [
         '$rootScope', '$location', '$interpolate',
         function($rootScope, $location, $interpolate) {
           return {
