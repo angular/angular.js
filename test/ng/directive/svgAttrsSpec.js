@@ -134,6 +134,26 @@ ddescribe('svgAttrs', function() {
 
   it('should NOT update url on $locationChangeSuccess event when not in html5mode', function() {
     //browser just cares about appBase in non-html5 mode
+    module(function($locationProvider, $provide) {
+      $locationProvider.html5Mode(false);
+    });
+
+    inject(function($compile, $rootScope, $location, $browser) {
+      var element;
+
+      var template = [
+        '<svg>',
+          '<ellipse clip-path="url(#my-clip)"></ellipse>',
+        '</svg>'
+      ].join('');
+      element = $compile(template)($rootScope);
+      $location.path('/mypath');
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
+      $location.path('/newpath');
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
+    });
   });
 
 

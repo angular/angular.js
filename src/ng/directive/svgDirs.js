@@ -46,10 +46,10 @@ forEach([
 
       //Only apply to svg elements to avoid observing
       if (!svgElementMatcher.test(element[0])) return;
+
       initialUrl = attrs[attr];
       attrs.$observe(attr, updateValue);
-      $rootScope.$on('$locationChangeSuccess', updateValue);
-
+      if ($location.$$html5) $rootScope.$on('$locationChangeSuccess', updateValue);
 
       function updateValue () {
         var newVal = computeSVGAttrValue(initialUrl, $location);
