@@ -2,7 +2,7 @@
 
 var svgDirectives = {};
 var svgAttrUrlMatcher = /^url\((.*)\)$/;
-var svgElementMatcher = /\[object SVG[a-z]*Element/i;
+var svgElementMatcher = /SVG[a-z]*Element/i;
 var svgUrlHashMatchExp = /#.*/;
 
 function computeSVGAttrValue (url, $loc) {
