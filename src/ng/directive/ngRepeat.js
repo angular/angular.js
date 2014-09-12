@@ -71,7 +71,7 @@
  * 
  * 
  * To use animations with ngRepeat you basically just need to write your css transitions appended to
- * an class that will be attached to your repeated element.
+ * a class that will be attached to your repeated element.
  * ```
  *     .my-animation {
  *       line-height:40px;
