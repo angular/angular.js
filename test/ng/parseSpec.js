@@ -206,17 +206,13 @@ describe('parser', function() {
 
       describe('csp: ' + cspEnabled + ", unwrapPromises: " + unwrapPromisesEnabled, function() {
 
-        var originalSecurityPolicy;
+        beforeEach(module(function($provide) {
+          $provide.decorator('$sniffer', function($delegate) {
+            $delegate.csp = cspEnabled;
+            return $delegate;
+          });
+        }, provideLog));
 
-
-        beforeEach(function() {
-          originalSecurityPolicy = window.document.securityPolicy;
-          window.document.securityPolicy = {isActive : cspEnabled};
-        });
-
-        afterEach(function() {
-          window.document.securityPolicy = originalSecurityPolicy;
-        });
 
         beforeEach(module(function ($parseProvider, $provide) {
           $parseProvider.unwrapPromises(unwrapPromisesEnabled);
