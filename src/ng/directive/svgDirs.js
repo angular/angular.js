@@ -14,7 +14,7 @@ function computeSVGAttrValue (url, $loc) {
     }
     //Hash in non-html5Mode
     else if (match[1].indexOf('#') === 0) {
-      fullUrl = $loc.absUrl().replace(svgUrlHashMatchExp, match[1]);
+      fullUrl = $loc.absUrl().replace(svgUrlHashMatchExp, '') + match[1];
     }
     //Non-hash URLs in any mode
     else {
@@ -22,7 +22,7 @@ function computeSVGAttrValue (url, $loc) {
     }
   }
 
-  return 'url(' + fullUrl + ')';
+  return fullUrl ? 'url(' + fullUrl + ')' : null;
 }
 
 forEach([
@@ -60,7 +60,7 @@ forEach([
               function updateValue () {
                 var newVal = computeSVGAttrValue(initialUrl, $location);
                 //Prevent recursive updating
-                if (attrs[attr] !== newVal) attrs.$set(attr, newVal);
+                if (newVal && attrs[attr] !== newVal) attrs.$set(attr, newVal);
               }
             }
           };

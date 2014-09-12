@@ -1,6 +1,6 @@
 'use strict';
 
-describe('svgAttrs', function() {
+ddescribe('svgAttrs', function() {
   var basePath;
 
   it('should load resources relative to app base url if attribute matches url(...)',
@@ -86,13 +86,15 @@ describe('svgAttrs', function() {
 
   it('should make hash relative to appBase when not in html5mode', function() {
     inject(function($compile, $rootScope, $location, $browser) {
-      $location.path('/mypath');
       var template = [
         '<svg>',
           '<ellipse clip-path="url(#my-clip)"></ellipse>',
         '</svg>'
       ].join('');
       var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
+      $location.path('/mypath');
       $rootScope.$digest();
       expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
     });
