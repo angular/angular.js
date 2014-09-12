@@ -226,6 +226,7 @@ function $HttpProvider() {
      * with two $http specific methods: `success` and `error`.
      *
      * ```js
+     *   //Simple GET request example : 
      *   $http({method: 'GET', url: '/someUrl'}).
      *     success(function(data, status, headers, config) {
      *       // this callback will be called asynchronously
@@ -236,7 +237,18 @@ function $HttpProvider() {
      *       // or server returns response with an error status.
      *     });
      * ```
-     *
+     *   //Simple POST request example (passing data) : 
+     *   $http({method: 'POST', data:{msg:'hello word!'}, url: '/someUrl'}).
+     *     success(function(data, status, headers, config) {
+     *       // this callback will be called asynchronously
+     *       // when the response is available
+     *     }).
+     *     error(function(data, status, headers, config) {
+     *       // called asynchronously if an error occurs
+     *       // or server returns response with an error status.
+     *     });
+     * 
+     * 
      * Since the returned value of calling the $http function is a `promise`, you can also use
      * the `then` method to register callbacks, and these callbacks will receive a single argument –
      * an object representing the response. See the API signature and type info below for more
