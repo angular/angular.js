@@ -123,7 +123,6 @@ var OPERATORS = extend(createMap(), {
     '&&':function(self, locals, a,b){return a(self, locals)&&b(self, locals);},
     '||':function(self, locals, a,b){return a(self, locals)||b(self, locals);},
     '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
-//    '|':function(self, locals, a,b){return a|b;},
     '!':function(self, locals, a){return !a(self, locals);},
 
     //Tokenized as operators but parsed as assignment/filters
