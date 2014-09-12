@@ -1,6 +1,9 @@
+'use strict';
+
 var ngSvgDirectives = {};
 var svgAttrUrlMatcher = /^url\((.*)\)$/;
 var svgElementMatcher = /\[object SVG[a-z]*Element/i;
+var svgUrlHashMatchExp = /#.*/;
 
 function computeSVGAttrValue (url, $loc) {
   var match, fullUrl;
@@ -11,7 +14,7 @@ function computeSVGAttrValue (url, $loc) {
     }
     //Hash in non-html5Mode
     else if (match[1].indexOf('#') === 0) {
-      fullUrl = $loc.absUrl().replace(/#.*/, match[1]);
+      fullUrl = $loc.absUrl().replace(svgUrlHashMatchExp, match[1]);
     }
     //Non-hash URLs in any mode
     else {
@@ -47,7 +50,7 @@ forEach([
               //TODO: verify whether or not attribute must end with )
               //TODO: support expressions
 
-              //Only apply to svg elements to avoid observing
+              //Only apply to svg elements to avoid unnecessary observing
               if (!svgElementMatcher.test(element[0])) return;
 
               initialUrl = attrs[attr];
@@ -60,6 +63,6 @@ forEach([
                 if (attrs[attr] !== newVal) attrs.$set(attr, newVal);
               }
             }
-          }
+          };
         }];
 });
