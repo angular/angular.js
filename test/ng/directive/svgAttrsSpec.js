@@ -61,6 +61,19 @@ ddescribe('svgAttrs', function() {
 
   it('should work with hashes')
   it('should do nothing if no url()')
-  it('should support expressions with allOrNothing');
-  it('should only apply to svg elements');
+
+
+  it('should not apply to non-svg elements', inject(function($rootScope, $compile) {
+    var basePath = urlResolve('/resources').href;
+    template = '<div><span clip-path="url(foo)"></span></div>';
+    element = $compile(template)($rootScope);
+    $rootScope.$digest();
+    console.log(element.html());
+    expect(element.html()).toContain('url(foo)');
+    expect(element.html()).not.toContain(basePath);
+  }));
+
+
+  it('should work in html5mode');
+  it('should work in non-html5 mode');
 });
