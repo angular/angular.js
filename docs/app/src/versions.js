@@ -5,10 +5,10 @@ angular.module('versions', [])
   $scope.docs_version  = NG_VERSIONS[0];
 
   $scope.jumpToDocsVersion = function(version) {
-    var currentPagePath = $location.path();
+    var currentPagePath = $location.path().replace(/\/$/, '');
 
     // TODO: We need to do some munging of the path for different versions of the API...
-    
+
 
     $window.location = version.docsUrl + currentPagePath;
   };
