@@ -68,6 +68,42 @@
  * as **data-ng-repeat-start**, **x-ng-repeat-start** and **ng:repeat-start**).
  *
  * @animations
+ * 
+ * 
+ * To use animations with ngRepeat you basically just need to write your css transitions appended to
+ * an class that will be attached to your repeated element.
+ * ```
+ *     .my-animation {
+ *       line-height:40px;
+ *       list-style:none;
+ *     }
+ *
+ *     .my-animation.ng-move,
+ *     .my-animation.ng-enter,
+ *     .my-animation.ng-leave {
+ *       -webkit-transition:all linear 0.5s;
+ *       transition:all linear 0.5s;
+ *     }
+ *
+ *     .my-animation.ng-leave.ng-leave-active,
+ *     .my-animation.ng-move,
+ *     .my-animation.ng-enter {
+ *       opacity:0;
+ *       max-height:0;
+ *     }
+ *
+ *     .my-animation.ng-leave,
+ *     .my-animation.ng-move.ng-move-active,
+ *     .my-animation.ng-enter.ng-enter-active {
+ *       opacity:1;
+ *       max-height:40px;
+ *     }
+ * ```
+ * In the above example, your repeated element just need to have
+ * the my-animation class and angular will take care of the rest.
+ * 
+ *There are three basic transitions involved in this process :
+ * 
  * **.enter** - when a new item is added to the list or when an item is revealed after a filter
  *
  * **.leave** - when an item is removed from the list or when an item is filtered out
