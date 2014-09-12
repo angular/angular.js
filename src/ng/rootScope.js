@@ -532,6 +532,7 @@ function $RootScopeProvider(){
         var initRun = true;
         var oldLength = 0;
 
+        $watchCollectionInterceptor.externalInput = true;
         function $watchCollectionInterceptor(_value) {
           newValue = _value;
           var newLength, key, bothNaN, newItem, oldItem;
