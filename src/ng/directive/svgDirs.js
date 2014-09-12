@@ -9,14 +9,14 @@ function computeSVGAttrValue (url, $loc) {
     if (match[1].indexOf('#') === 0 && $loc.$$html5) {
       fullUrl = $loc.absUrl() + match[1];
     }
+    //Hash in non-html5Mode
     else if (match[1].indexOf('#') === 0) {
       fullUrl = $loc.absUrl().replace(/#.*/, match[1])
     }
+    //Non-hash URLs in any mode
     else {
-      //supports relative urls and hash in non-html5Mode
       fullUrl = urlResolve(match[1]).href;
     }
-
   }
 
   return 'url(' + fullUrl + ')';
