@@ -11,9 +11,9 @@ if [ $JOB = "unit" ]; then
   grunt tests:docs --browsers SL_Chrome,SL_Safari,SL_Firefox,SL_IE_9,SL_IE_10,SL_IE_11 --reporters dots
   grunt test:travis-protractor --specs "docs/app/e2e/docsAppE2E.js"
 elif [ $JOB = "e2e" ]; then
-  export TARGET_SPECS="build/docs/ptore2e/**/*jqlite_test.js"
+  export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
   if [ $TEST_TARGET = "jquery" ]; then
-    TARGET_SPECS="build/docs/ptore2e/**/*jquery_test.js"
+    TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
   fi
   grunt test:travis-protractor --specs "$TARGET_SPECS"
 else

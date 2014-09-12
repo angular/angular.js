@@ -2,15 +2,16 @@
    is HTML and wrap each line in a <p> - thus breaking the HTML #}
 
 <div>
-  <a ng-click="openPlunkr('{$ doc.example.outputFolder $}')" class="btn pull-right">
+  <a ng-click="openPlunkr('{$ doc.path $}')" class="btn pull-right">
     <i class="glyphicon glyphicon-edit">&nbsp;</i>
     Edit in Plunker</a>
+
   <div class="runnable-example"
-      path="{$ doc.example.outputFolder $}"
+      path="{$ doc.example.deployments.default.path $}"
       {%- for attrName, attrValue in doc.example.attributes %}
       {$ attrName $}="{$ attrValue $}"{% endfor %}>
 
-   {% for fileName, file in doc.example.files %}
+  {% for fileName, file in doc.example.files %}
     <div class="runnable-example-file" {% for attrName, attrValue in file.attributes %}
       {$ attrName $}="{$ attrValue $}"{% endfor %}>
       {% code -%}
@@ -19,7 +20,7 @@
     </div>
   {% endfor %}
 
-    <iframe class="runnable-example-frame" src="{$ doc.example.outputFolder $}/index.html" name="{$ doc.example.id $}"></iframe>
+    <iframe class="runnable-example-frame" src="{$ doc.example.deployments.default.outputPath $}" name="{$ doc.example.id $}"></iframe>
   </div>
 </div>
 
