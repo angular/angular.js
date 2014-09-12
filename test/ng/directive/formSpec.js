@@ -750,6 +750,38 @@ describe('form', function() {
     });
   });
 
+  describe('$setUntouched', function () {
+    it('should trigger setUntouched on form controls', function() {
+      var form = $compile(
+          '<form name="myForm">' +
+            '<input name="alias" type="text" ng-model="name" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      scope.myForm.alias.$setTouched();
+      expect(scope.myForm.alias.$touched).toBe(true);
+      scope.myForm.$setUntouched();
+      expect(scope.myForm.alias.$touched).toBe(false);
+      dealoc(form);
+    });
+
+    it('should trigger setUntouched on form controls with nested forms', function() {
+      var form = $compile(
+          '<form name="myForm">' +
+            '<div class="ng-form" name="childForm">' +
+              '<input name="alias" type="text" ng-model="name" />' +
+            '</div>' +
+          '</form>')(scope);
+      scope.$digest();
+
+      scope.myForm.childForm.alias.$setTouched();
+      expect(scope.myForm.childForm.alias.$touched).toBe(true);
+      scope.myForm.$setUntouched();
+      expect(scope.myForm.childForm.alias.$touched).toBe(false);
+      dealoc(form);
+    });
+  });
+
   describe('$setSubmitted', function() {
     beforeEach(function() {
       doc = $compile(
