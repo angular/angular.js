@@ -1,17 +1,6 @@
 ddescribe('svgAttrs', function() {
   var basePath;
 
-  beforeEach(function() {
-    module(function($locationProvider) {
-
-    });
-  });
-
-  afterEach(inject(function() {
-
-  }));
-
-
   it('should load resources relative to app base url if attribute matches url(...)', inject(function ($rootScope, $compile, $httpBackend, $location, $document) {
     var urlAttrTest = /^url\(http\:\/\/[a-z]*\:[0-9]{3,5}\/resources\/[a-z\-]*\.svg\)/i,
         basePath = urlResolve('/resources').href,
@@ -135,6 +124,7 @@ ddescribe('svgAttrs', function() {
     });
   });
 
+
   it('should NOT update url on $locationChangeSuccess event when not in html5mode', function() {
     //browser just cares about appBase in non-html5 mode
     module(function($locationProvider, $provide) {
@@ -160,6 +150,10 @@ ddescribe('svgAttrs', function() {
   });
 
 
-  it('should support expressions');
+  it('should support expressions', function() {
+
+  });
+
+
   it('should do nothing with urls of different origins');
 });
