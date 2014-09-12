@@ -27,11 +27,12 @@ forEach([
       attrs.$observe(attr, function(val) {
         var match, newVal;
         if (match = svgAttrUrlMatcher.exec(attrs[attr])) {
-          if (match[1].indexOf('#') === 0) {
-            //Only works in html5Mode
+          //hash in html5Mode, forces to be relative to current url instead of base
+          if (match[1].indexOf('#') === 0 && $location.$$html5) {
             newVal = 'url(' + $location.absUrl() + match[1] + ')';
           }
           else {
+            //supports relative urls and hash in non-html5Mode
             newVal = 'url(' + urlResolve(match[1]).href + ')';
           }
 

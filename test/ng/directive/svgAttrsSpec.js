@@ -54,26 +54,63 @@ ddescribe('svgAttrs', function() {
       expect(element.children(0).attr(attr)).toMatch(urlAttrTest);
       expect(element.children(0).attr(attr)).toContain(attr + '.svg');
     });
-
-    dump(urlResolve('#foo'));
   }));
 
 
-  it('should work with hashes')
   it('should do nothing if no url()')
 
 
-  it('should not apply to non-svg elements', inject(function($rootScope, $compile) {
+  it('should only apply to svg elements', inject(function($rootScope, $compile) {
     var basePath = urlResolve('/resources').href;
     template = '<div><span clip-path="url(foo)"></span></div>';
     element = $compile(template)($rootScope);
     $rootScope.$digest();
-    console.log(element.html());
     expect(element.html()).toContain('url(foo)');
     expect(element.html()).not.toContain(basePath);
   }));
 
 
-  it('should work in html5mode');
-  it('should work in non-html5 mode');
+  it('should make hash relative to current path in html5mode', function() {
+    //This test uses $location's fake base: http://server, since urlResolve is not being used
+    module(function($locationProvider, $provide) {
+      $locationProvider.html5Mode(true);
+    });
+
+    inject(function($compile, $rootScope, $location, $browser) {
+      var element;
+      $location.path('/mypath');
+      var template = [
+        '<svg>',
+          '<ellipse clip-path="url(#my-clip)"></ellipse>',
+        '</svg>'
+      ].join('');
+      element = $compile(template)($rootScope);
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/mypath#my-clip)');
+    });
+  });
+
+
+  it('should make hash relative to appBase in html5mode', function() {
+    module(function($locationProvider, $provide) {
+      $locationProvider.html5Mode(false);
+    });
+
+    inject(function($compile, $rootScope, $location, $browser) {
+      var basePath = urlResolve('').href;
+      var element;
+      $location.path('/mypath');
+      var template = [
+        '<svg>',
+          '<ellipse clip-path="url(#my-clip)"></ellipse>',
+        '</svg>'
+      ].join('');
+      element = $compile(template)($rootScope);
+      $rootScope.$digest();
+      expect(element.children(0).attr('clip-path')).toBe('url('+ basePath +'#my-clip)');
+    });
+  });
+
+
+  it('should update url on $locationChangeSuccess event')
 });
