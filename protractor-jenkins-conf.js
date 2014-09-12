@@ -5,7 +5,7 @@ exports.config = {
 
   specs: [
     'build/docs/ptore2e/**/*.js',
-    'docs/app/e2e/docsAppE2E.js'
+    'docs/app/e2e/*.scenario.js'
   ],
 
   capabilities: {
