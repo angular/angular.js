@@ -91,9 +91,8 @@ ddescribe('svgAttrs', function() {
   });
 
 
-  it('should make hash relative to appBase in html5mode', function() {
+  it('should make hash relative to appBase when not in html5mode', function() {
     inject(function($compile, $rootScope, $location, $browser) {
-      var basePath = urlResolve('').href;
       var element;
       $location.path('/mypath');
       var template = [
@@ -103,7 +102,7 @@ ddescribe('svgAttrs', function() {
       ].join('');
       element = $compile(template)($rootScope);
       $rootScope.$digest();
-      expect(element.children(0).attr('clip-path')).toBe('url(http://server/mypath#my-clip)');
+      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
     });
   });
 

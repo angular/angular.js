@@ -10,8 +10,7 @@ function computeSVGAttrValue (url, $loc) {
       fullUrl = $loc.absUrl() + match[1];
     }
     else if (match[1].indexOf('#') === 0) {
-      // fullUrl = $loc.absUrl().replace(/#.*/, matc)
-      fullUrl = $loc.protocol() + '://' + $loc.host() + ($loc.port() !== 80 ? ':' + $loc.port() : '') + $loc.path() + match[1];
+      fullUrl = $loc.absUrl().replace(/#.*/, match[1])
     }
     else {
       //supports relative urls and hash in non-html5Mode
