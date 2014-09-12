@@ -100,6 +100,20 @@ describe('form', function() {
     expect(form.$error.required).toEqual([control]);
   });
 
+  it('should be affected by invalid input controls that were re-added to the form', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<input name="alias" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
+
+    var form = scope.myForm;
+    form.$removeControl(control);
+    control.$setValidity('required', false);
+
+    form.$addControl(control);
+    expect(form.$error.required).toEqual([control]);
+  });
+
   it('should use ngForm value as form name', function() {
     doc = $compile(
       '<div ng-form="myForm">' +
