@@ -36,7 +36,9 @@ run `npm start` to start the web server. Now, open a browser window for the app 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
 The HTML page that displays "Nothing here yet!" was constructed with the HTML code shown below.
-The code contains some key Angular elements that we will need as we progress.
+The code contains some key Angular elements that we will need as we progress. If you don't see "Nothing here yet!"
+you should delete your cache.
+
 
 __`app/index.html`:__
 
