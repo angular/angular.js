@@ -1091,7 +1091,10 @@ describe('jqLite', function() {
     });
 
     it('should have event.isDefaultPrevented method', function() {
-      jqLite(a).on('click', function(e) {
+      var element = jqLite(a),
+          clickSpy = jasmine.createSpy('clickSpy');
+
+      clickSpy.andCallFake(function(e) {
         expect(function() {
           expect(e.isDefaultPrevented()).toBe(false);
           e.preventDefault();
@@ -1099,7 +1102,62 @@ describe('jqLite', function() {
         }).not.toThrow();
       });
 
+      element.on('click', clickSpy);
+
       browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalled();
+    });
+
+    it('should stop triggering handlers when stopImmediatePropagation is called', function() {
+      var element = jqLite(a),
+          clickSpy1 = jasmine.createSpy('clickSpy1'),
+          clickSpy2 = jasmine.createSpy('clickSpy2').andCallFake(function(event) { event.stopImmediatePropagation(); }),
+          clickSpy3 = jasmine.createSpy('clickSpy3'),
+          clickSpy4 = jasmine.createSpy('clickSpy4');
+
+      element.on('click', clickSpy1);
+      element.on('click', clickSpy2);
+      element.on('click', clickSpy3);
+      element[0].addEventListener('click', clickSpy4);
+
+      browserTrigger(element, 'click');
+
+      expect(clickSpy1).toHaveBeenCalled();
+      expect(clickSpy2).toHaveBeenCalled();
+      expect(clickSpy3).not.toHaveBeenCalled();
+      expect(clickSpy4).not.toHaveBeenCalled();
+    });
+
+    it('should execute stopPropagation when stopImmediatePropagation is called', function() {
+      var element = jqLite(a),
+          clickSpy = jasmine.createSpy('clickSpy');
+
+      clickSpy.andCallFake(function(event) {
+          spyOn(event, 'stopPropagation');
+          event.stopImmediatePropagation();
+          expect(event.stopPropagation).toHaveBeenCalled();
+      });
+
+      element.on('click', clickSpy);
+
+      browserTrigger(element, 'click');
+      expect(clickSpy).toHaveBeenCalled();
+    });
+
+    it('should have event.isImmediatePropagationStopped method', function() {
+      var element = jqLite(a),
+          clickSpy = jasmine.createSpy('clickSpy');
+
+      clickSpy.andCallFake(function(event) {
+          expect(event.isImmediatePropagationStopped()).toBe(false);
+          event.stopImmediatePropagation();
+          expect(event.isImmediatePropagationStopped()).toBe(true);
+      });
+
+      element.on('click', clickSpy);
+
+      browserTrigger(element, 'click');
+      expect(clickSpy).toHaveBeenCalled();
     });
 
     describe('mouseenter-mouseleave', function() {
@@ -1784,7 +1842,6 @@ describe('jqLite', function() {
       expect(event.isDefaultPrevented()).toBe(true);
     });
 
-
     it('should support handlers that deregister themselves', function() {
       var element = jqLite('<a>poke</a>'),
           clickSpy = jasmine.createSpy('click'),
@@ -1820,6 +1877,37 @@ describe('jqLite', function() {
       expect(actualEvent.someProp).toEqual('someValue');
       expect(actualEvent.target).toEqual(element[0]);
       expect(actualEvent.type).toEqual('click');
+    });
+
+    it('should stop triggering handlers when stopImmediatePropagation is called', function () {
+      var element = jqLite(a),
+          clickSpy1 = jasmine.createSpy('clickSpy1'),
+          clickSpy2 = jasmine.createSpy('clickSpy2').andCallFake(function(event) { event.stopImmediatePropagation(); }),
+          clickSpy3 = jasmine.createSpy('clickSpy3');
+
+      element.on('click', clickSpy1);
+      element.on('click', clickSpy2);
+      element.on('click', clickSpy3);
+
+      element.triggerHandler('click');
+
+      expect(clickSpy1).toHaveBeenCalled();
+      expect(clickSpy2).toHaveBeenCalled();
+    expect(clickSpy3).not.toHaveBeenCalled();
+    });
+
+    it('should have event.isImmediatePropagationStopped method', function() {
+      var element = jqLite(a),
+          clickSpy = jasmine.createSpy('clickSpy'),
+          event;
+
+      element.on('click', clickSpy);
+      element.triggerHandler('click');
+      event = clickSpy.mostRecentCall.args[0];
+
+      expect(event.isImmediatePropagationStopped()).toBe(false);
+      event.stopImmediatePropagation();
+      expect(event.isImmediatePropagationStopped()).toBe(true);
     });
   });
 
