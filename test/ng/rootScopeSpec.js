@@ -1064,6 +1064,33 @@ describe('Scope', function() {
       expect(fn).toBe(noop);
     }));
 
+    it("should do nothing when $apply()ing after parent's destruction", inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+
+      var called = false;
+      function applyFunc() { called = true; }
+      child.$apply(applyFunc);
+
+      expect(called).toBe(false);
+    }));
+
+    it("should do nothing when $evalAsync()ing after parent's destruction", inject(function($rootScope, $timeout) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+
+      var called = false;
+      function applyFunc() { called = true; }
+      child.$evalAsync(applyFunc);
+
+      $timeout.verifyNoPendingTasks();
+      expect(called).toBe(false);
+    }));
+
 
     it("should preserve all (own and inherited) model properties on a destroyed scope",
         inject(function($rootScope) {
@@ -1230,7 +1257,7 @@ describe('Scope', function() {
       isolateScope.$evalAsync('isolateExpression');
 
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
-      expect(isolateScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
+      expect(isolateScope.$$asyncQueue).toBeUndefined();
       expect($rootScope.$$asyncQueue).toEqual([
         {scope: $rootScope, expression: 'rootExpression'},
         {scope: childScope, expression: 'childExpression'},
