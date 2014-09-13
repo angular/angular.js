@@ -51,8 +51,25 @@ describe('Scope', function() {
 
 
   describe('this', function() {
-    it('should have a \'this\'', inject(function($rootScope) {
-      expect($rootScope['this']).toEqual($rootScope);
+    it('should evaluate \'this\' to be the scope', inject(function($rootScope) {
+      var child = $rootScope.$new();
+      expect($rootScope.$eval('this')).toEqual($rootScope);
+      expect(child.$eval('this')).toEqual(child);
+    }));
+
+    it('\'this\' should not be recursive', inject(function($rootScope) {
+      expect($rootScope.$eval('this.this')).toBeUndefined();
+      expect($rootScope.$eval('$parent.this')).toBeUndefined();
+    }));
+
+    it('should not be able to overwrite the \'this\' keyword', inject(function($rootScope) {
+      $rootScope['this'] = 123;
+      expect($rootScope.$eval('this')).toEqual($rootScope);
+    }));
+
+    it('should be able to access a variable named \'this\'', inject(function($rootScope) {
+      $rootScope['this'] = 42;
+      expect($rootScope.$eval('this[\'this\']')).toBe(42);
     }));
   });
 
