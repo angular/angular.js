@@ -128,7 +128,7 @@ function $RootScopeProvider(){
       this.$$phase = this.$parent = this.$$watchers =
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
-      this['this'] = this.$root =  this;
+      this.$root = this;
       this.$$destroyed = false;
       this.$$asyncQueue = [];
       this.$$postDigestQueue = [];
@@ -220,7 +220,6 @@ function $RootScopeProvider(){
           }
           child = new this.$$ChildScope();
         }
-        child['this'] = child;
         child.$parent = parent;
         child.$$prevSibling = parent.$$childTail;
         if (parent.$$childHead) {
