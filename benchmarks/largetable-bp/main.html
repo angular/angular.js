@@ -8,15 +8,16 @@
       Large table rendered with AngularJS
       </p>
 
-      <div>none: <input type=radio ng-model="benchmarkType" value="none"></div>
-      <div>baseline binding: <input type=radio ng-model="benchmarkType" value="baselineBinding"></div>
-      <div>baseline interpolation: <input type=radio ng-model="benchmarkType" value="baselineInterpolation"></div>
-      <div>ngBind: <input type=radio ng-model="benchmarkType" value="ngBind"></div>
-      <div>interpolation: <input type=radio ng-model="benchmarkType" value="interpolation"></div>
-      <div>ngBind + fnInvocation: <input type=radio ng-model="benchmarkType" value="ngBindFn"></div>
-      <div>interpolation + fnInvocation: <input type=radio ng-model="benchmarkType" value="interpolationFn"></div>
-      <div>ngBind + filter: <input type=radio ng-model="benchmarkType" value="ngBindFilter"></div>
-      <div>interpolation + filter: <input type=radio ng-model="benchmarkType" value="interpolationFilter"></div>
+      <div>none: <input type="radio" ng-model="benchmarkType" value="none"></div>
+      <div>baseline binding: <input type="radio" ng-model="benchmarkType" value="baselineBinding"></div>
+      <div>baseline interpolation: <input type="radio" ng-model="benchmarkType" value="baselineInterpolation"></div>
+      <div>ngBind: <input type="radio" ng-model="benchmarkType" value="ngBind"></div>
+      <div>ngBindOnce: <input type="radio" ng-model="benchmarkType" value="ngBindOnce"></div>
+      <div>interpolation: <input type="radio" ng-model="benchmarkType" value="interpolation"></div>
+      <div>ngBind + fnInvocation: <input type="radio" ng-model="benchmarkType" value="ngBindFn"></div>
+      <div>interpolation + fnInvocation: <input type="radio" ng-model="benchmarkType" value="interpolationFn"></div>
+      <div>ngBind + filter: <input type="radio" ng-model="benchmarkType" value="ngBindFilter"></div>
+      <div>interpolation + filter: <input type="radio" ng-model="benchmarkType" value="interpolationFilter"></div>
 
       <ng-switch on="benchmarkType">
         <baseline-binding-table ng-switch-when="baselineBinding">
@@ -26,7 +27,17 @@
         <div ng-switch-when="ngBind">
           <h2>baseline binding</h2>
           <div ng-repeat="row in data">
-            <span ng-repeat="column in row"><span ng-bind="column.i"></span>:<span ng-bind="column.j"></span>|</span>
+            <span ng-repeat="column in row">
+              <span ng-bind="column.i"></span>:<span ng-bind="column.j"></span>|
+            </span>
+          </div>
+        </div>
+        <div ng-switch-when="ngBindOnce">
+          <h2>baseline binding once</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in ::row">
+              <span ng-bind="::column.i"></span>:<span ng-bind="::column.j"></span>|
+            </span>
           </div>
         </div>
         <div ng-switch-when="interpolation">
