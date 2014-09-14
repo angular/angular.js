@@ -35,6 +35,7 @@ Following is a sample of the file:
 ]
 ```
 
+Note: We suggest that you copy and paste the contents of the JSON file that you prepare into [JSONLint](http://jsonlint.com/) (or similar equivalent). JSONLint will validate its contents and report parse errors.
 
 ## Controller
 
