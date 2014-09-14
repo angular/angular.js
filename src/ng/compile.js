@@ -1697,7 +1697,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
               case '@':
                 attrs.$observe(attrName, function(value) {
-                  isolateScope[scopeName] = value;
+                  isolateBindingContext[scopeName] = value;
                 });
                 attrs.$$observers[attrName].$$scope = scope;
                 if( attrs[attrName] ) {
