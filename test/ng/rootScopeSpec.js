@@ -1020,6 +1020,13 @@ describe('Scope', function() {
       expect(log).toBe('123');
     }));
 
+    it('should broadcast the $destroy only once', inject(function($rootScope, log) {
+      var isolateScope = first.$new(true);
+      isolateScope.$on('$destroy', log.fn('event'));
+      first.$destroy();
+      isolateScope.$destroy();
+      expect(log).toEqual('event');
+    }));
 
     it('should decrement ancestor $$listenerCount entries', inject(function($rootScope) {
       var EVENT = 'fooEvent',

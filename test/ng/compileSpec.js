@@ -4971,17 +4971,17 @@ describe('$compile', function() {
           return [$rootScope].concat(
             getChildScopes($rootScope)
           ).length;
+        }
 
-          function getChildScopes(scope) {
-            var children = [];
-            if (!scope.$$childHead) { return children; }
-            var childScope = scope.$$childHead;
-            do {
-              children.push(childScope);
-              children = children.concat(getChildScopes(childScope));
-            } while ((childScope = childScope.$$nextSibling));
-            return children;
-          }
+        function getChildScopes(scope) {
+          var children = [];
+          if (!scope.$$childHead) { return children; }
+          var childScope = scope.$$childHead;
+          do {
+            children.push(childScope);
+            children = children.concat(getChildScopes(childScope));
+          } while ((childScope = childScope.$$nextSibling));
+          return children;
         }
 
         beforeEach(module(function() {
@@ -5117,6 +5117,23 @@ describe('$compile', function() {
           expect(countScopes($rootScope)).toEqual(1);
         }));
 
+        it('should destroy mark as destroyed all sub scopes of the scope being destroyed',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat="msg in [\'msg-1\']">{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          var childScopes = getChildScopes($rootScope);
+
+          $rootScope.$apply('t = false');
+          for (var i = 0; i < childScopes.length; ++i) {
+            expect(childScopes[i].$$destroyed).toBe(true);
+          }
+        }));
       });
 
 
