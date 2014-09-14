@@ -222,7 +222,15 @@ function $RootScopeProvider(){
         } else {
           parent.$$childHead = parent.$$childTail = child;
         }
+
+        // The listener needs to be added after the parent is set
+        if (isolate || parent != this) child.$on('$destroy', destroyChild);
+
         return child;
+
+        function destroyChild() {
+          child.$$destroyed = true;
+        }
       },
 
       /**
