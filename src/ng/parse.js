@@ -502,14 +502,6 @@ Parser.prototype = {
     });
   },
 
-  ternaryFn: function(left, middle, right){
-    return extend(function $parseTernaryFn(self, locals){
-      return left(self, locals) ? middle(self, locals) : right(self, locals);
-    }, {
-      constant: left.constant && middle.constant && right.constant
-    });
-  },
-
   binaryFn: function(left, fn, right, isBranching) {
     return extend(function $parseBinaryFn(self, locals) {
       return fn(self, locals, left, right);
@@ -615,13 +607,20 @@ Parser.prototype = {
     if ((token = this.expect('?'))) {
       middle = this.assignment();
       if ((token = this.expect(':'))) {
-        return this.ternaryFn(left, middle, this.assignment());
+        var right = this.assignment();
+
+        return extend(function $parseTernary(self, locals){
+          return left(self, locals) ? middle(self, locals) : right(self, locals);
+        }, {
+          constant: left.constant && middle.constant && right.constant
+        });
+
       } else {
         this.throwError('expected :', token);
       }
-    } else {
-      return left;
     }
+
+    return left;
   },
 
   logicalOR: function() {
