@@ -3567,6 +3567,32 @@ describe('$compile', function() {
     });
 
 
+    it('should update @-bindings on controller when bindToController and attribute change observed', function(){
+      module(function($compileProvider) {
+        $compileProvider.directive('atBinding', valueFn({
+          template: '<p>{{At.text}}</p>',
+          scope: {
+            text: '@atBinding'
+          },
+          controller: function($scope) {},
+          bindToController: true,
+          controllerAs: 'At'
+        }));
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div at-binding="Test: {{text}}"></div>')($rootScope);
+        var p = element.find('p');
+        $rootScope.$digest();
+        expect(p.text()).toBe('Test: ');
+
+        $rootScope.text = 'Kittens';
+        $rootScope.$digest();
+        expect(p.text()).toBe('Test: Kittens');
+      });
+    });
+
+
     it('should expose isolate scope variables on controller with controllerAs when bindToController is true', function() {
       var controllerCalled = false;
       module(function($compileProvider) {
