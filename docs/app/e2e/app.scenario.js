@@ -26,21 +26,6 @@ describe('docs.angularjs.org', function () {
     });
 
 
-    it('should show the functioning input directive example', function () {
-      browser.get('index-debug.html#!/api/ng/directive/input');
-
-      // Ensure that the page is loaded before trying to switch frames.
-      browser.waitForAngular();
-
-      browser.switchTo().frame('example-input-directive');
-
-      var nameInput = element(by.model('user.name'));
-      nameInput.sendKeys('!!!');
-
-      var code = element.all(by.css('tt')).first();
-      expect(code.getText()).toContain('guest!!!');
-    });
-
 
     it('should be resilient to trailing slashes', function() {
       browser.get('index-debug.html#!/api/ng/function/angular.noop/');
@@ -67,6 +52,12 @@ describe('docs.angularjs.org', function () {
       browser.get('index-debug.html#!error/ng/areq?p0=Missing&p1=not%20a%20function,%20got%20undefined');
       expect(element(by.css('.minerr-errmsg')).getText()).toEqual("Argument 'Missing' is not a function, got undefined");
     });
+
+
+    it("should display an error if the page does not exist", function() {
+      browser.get('index-debug.html#!/api/does/not/exist');
+      expect(element(by.css('h1')).getText()).toBe('Oops!');
+    });
   });
 
   describe("templates", function() {
@@ -76,13 +67,4 @@ describe('docs.angularjs.org', function () {
     });
   });
 
-  describe("API pages", function() {
-    it("should display links to code on GitHub", function() {
-      browser.get('index-debug.html#!/api/ng/service/$http');
-      expect(element(by.css('.improve-docs')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/edit\/.+\/src\/ng\/http\.js/);
-
-      browser.get('index-debug.html#!/api/ng/service/$http');
-      expect(element(by.css('.view-source')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/tree\/.+\/src\/ng\/http\.js#L\d+/);
-    });
-  });
 });
