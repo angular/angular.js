@@ -160,7 +160,7 @@ restrictions, you cannot simply write `cx="{{cx}}"`.
 With `ng-attr-cx` you can work around this problem.
 
 If an attribute with a binding is prefixed with the `ngAttr` prefix (denormalized as `ng-attr-`)
-then during the binding will be applied to the corresponding unprefixed attribute. This allows
+then during the binding it will be applied to the corresponding unprefixed attribute. This allows
 you to bind to attributes that would otherwise be eagerly processed by browsers
 (e.g. an SVG element's `circle[cx]` attributes). When using `ngAttr`, the `allOrNothing` flag of
 {@link ng.$interpolate $interpolate} is used, so if any expression in the interpolated string
