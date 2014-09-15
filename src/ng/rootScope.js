@@ -101,16 +101,16 @@ function $RootScopeProvider(){
      * # Inheritance
      * A scope can inherit from a parent scope, as in this example:
      * ```js
-         var parent = $rootScope;
-         var child = parent.$new();
+var parent = $rootScope;
+var child = parent.$new();
 
-         parent.salutation = "Hello";
-         child.name = "World";
-         expect(child.salutation).toEqual('Hello');
+parent.salutation = "Hello";
+child.name = "World";
+expect(child.salutation).toEqual('Hello');
 
-         child.salutation = "Welcome";
-         expect(child.salutation).toEqual('Welcome');
-         expect(parent.salutation).toEqual('Hello');
+child.salutation = "Welcome";
+expect(child.salutation).toEqual('Welcome');
+expect(parent.salutation).toEqual('Hello');
      * ```
      *
      *
@@ -268,58 +268,57 @@ function $RootScopeProvider(){
        *
        * # Example
        * ```js
-           // let's assume that scope was dependency injected as the $rootScope
-           var scope = $rootScope;
-           scope.name = 'misko';
-           scope.counter = 0;
+// let's assume that scope was dependency injected as the $rootScope
+var scope = $rootScope;
+scope.name = 'misko';
+scope.counter = 0;
 
-           expect(scope.counter).toEqual(0);
-           scope.$watch('name', function(newValue, oldValue) {
-             scope.counter = scope.counter + 1;
-           });
-           expect(scope.counter).toEqual(0);
+expect(scope.counter).toEqual(0);
+scope.$watch('name', function(newValue, oldValue) {
+  scope.counter = scope.counter + 1;
+});
+expect(scope.counter).toEqual(0);
 
-           scope.$digest();
-           // the listener is always called during the first $digest loop after it was registered
-           expect(scope.counter).toEqual(1);
+scope.$digest();
+// the listener is always called during the first $digest loop after it was registered
+expect(scope.counter).toEqual(1);
 
-           scope.$digest();
-           // but now it will not be called unless the value changes
-           expect(scope.counter).toEqual(1);
+scope.$digest();
+// but now it will not be called unless the value changes
+expect(scope.counter).toEqual(1);
 
-           scope.name = 'adam';
-           scope.$digest();
-           expect(scope.counter).toEqual(2);
+scope.name = 'adam';
+scope.$digest();
+expect(scope.counter).toEqual(2);
 
 
 
-           // Using a function as a watchExpression
-           var food;
-           scope.foodCounter = 0;
-           expect(scope.foodCounter).toEqual(0);
-           scope.$watch(
-             // This function returns the value being watched. It is called for each turn of the $digest loop
-             function() { return food; },
-             // This is the change listener, called when the value returned from the above function changes
-             function(newValue, oldValue) {
-               if ( newValue !== oldValue ) {
-                 // Only increment the counter if the value changed
-                 scope.foodCounter = scope.foodCounter + 1;
-               }
-             }
-           );
-           // No digest has been run so the counter will be zero
-           expect(scope.foodCounter).toEqual(0);
+// Using a function as a watchExpression
+var food;
+scope.foodCounter = 0;
+expect(scope.foodCounter).toEqual(0);
+scope.$watch(
+  // This function returns the value being watched. It is called for each turn of the $digest loop
+  function() { return food; },
+  // This is the change listener, called when the value returned from the above function changes
+  function(newValue, oldValue) {
+    if ( newValue !== oldValue ) {
+      // Only increment the counter if the value changed
+      scope.foodCounter = scope.foodCounter + 1;
+    }
+  }
+);
+// No digest has been run so the counter will be zero
+expect(scope.foodCounter).toEqual(0);
 
-           // Run the digest but since food has not changed count will still be zero
-           scope.$digest();
-           expect(scope.foodCounter).toEqual(0);
+// Run the digest but since food has not changed count will still be zero
+scope.$digest();
+expect(scope.foodCounter).toEqual(0);
 
-           // Update food and run digest.  Now the counter will increment
-           food = 'cheeseburger';
-           scope.$digest();
-           expect(scope.foodCounter).toEqual(1);
-
+// Update food and run digest.  Now the counter will increment
+food = 'cheeseburger';
+scope.$digest();
+expect(scope.foodCounter).toEqual(1);
        * ```
        *
        *
@@ -477,24 +476,24 @@ function $RootScopeProvider(){
        *
        * # Example
        * ```js
-          $scope.names = ['igor', 'matias', 'misko', 'james'];
-          $scope.dataCount = 4;
+$scope.names = ['igor', 'matias', 'misko', 'james'];
+$scope.dataCount = 4;
 
-          $scope.$watchCollection('names', function(newNames, oldNames) {
-            $scope.dataCount = newNames.length;
-          });
+$scope.$watchCollection('names', function(newNames, oldNames) {
+  $scope.dataCount = newNames.length;
+});
 
-          expect($scope.dataCount).toEqual(4);
-          $scope.$digest();
+expect($scope.dataCount).toEqual(4);
+$scope.$digest();
 
-          //still at 4 ... no changes
-          expect($scope.dataCount).toEqual(4);
+//still at 4 ... no changes
+expect($scope.dataCount).toEqual(4);
 
-          $scope.names.pop();
-          $scope.$digest();
+$scope.names.pop();
+$scope.$digest();
 
-          //now there's been a change
-          expect($scope.dataCount).toEqual(3);
+//now there's been a change
+expect($scope.dataCount).toEqual(3);
        * ```
        *
        *
@@ -668,27 +667,27 @@ function $RootScopeProvider(){
        *
        * # Example
        * ```js
-           var scope = ...;
-           scope.name = 'misko';
-           scope.counter = 0;
+var scope = ...;
+scope.name = 'misko';
+scope.counter = 0;
 
-           expect(scope.counter).toEqual(0);
-           scope.$watch('name', function(newValue, oldValue) {
-             scope.counter = scope.counter + 1;
-           });
-           expect(scope.counter).toEqual(0);
+expect(scope.counter).toEqual(0);
+scope.$watch('name', function(newValue, oldValue) {
+  scope.counter = scope.counter + 1;
+});
+expect(scope.counter).toEqual(0);
 
-           scope.$digest();
-           // the listener is always called during the first $digest loop after it was registered
-           expect(scope.counter).toEqual(1);
+scope.$digest();
+// the listener is always called during the first $digest loop after it was registered
+expect(scope.counter).toEqual(1);
 
-           scope.$digest();
-           // but now it will not be called unless the value changes
-           expect(scope.counter).toEqual(1);
+scope.$digest();
+// but now it will not be called unless the value changes
+expect(scope.counter).toEqual(1);
 
-           scope.name = 'adam';
-           scope.$digest();
-           expect(scope.counter).toEqual(2);
+scope.name = 'adam';
+scope.$digest();
+expect(scope.counter).toEqual(2);
        * ```
        *
        */
@@ -894,12 +893,12 @@ function $RootScopeProvider(){
        *
        * # Example
        * ```js
-           var scope = ng.$rootScope.Scope();
-           scope.a = 1;
-           scope.b = 2;
+var scope = ng.$rootScope.Scope();
+scope.a = 1;
+scope.b = 2;
 
-           expect(scope.$eval('a+b')).toEqual(3);
-           expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
+expect(scope.$eval('a+b')).toEqual(3);
+expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
        * ```
        *
        * @param {(string|function())=} expression An angular expression to be executed.
@@ -977,15 +976,15 @@ function $RootScopeProvider(){
        *
        * # Pseudo-Code of `$apply()`
        * ```js
-           function $apply(expr) {
-             try {
-               return $eval(expr);
-             } catch (e) {
-               $exceptionHandler(e);
-             } finally {
-               $root.$digest();
-             }
-           }
+function $apply(expr) {
+  try {
+    return $eval(expr);
+  } catch (e) {
+    $exceptionHandler(e);
+  } finally {
+    $root.$digest();
+  }
+}
        * ```
        *
        *
