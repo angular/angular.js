@@ -5,7 +5,7 @@ var log = require('gulp-util').log;
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var bower = require('bower');
-var dgeni = require('dgeni');
+var Dgeni = require('dgeni');
 var merge = require('event-stream').merge;
 var path = require('canonical-path');
 
@@ -59,11 +59,10 @@ gulp.task('assets', ['bower'], function() {
 
 
 gulp.task('doc-gen', ['bower'], function() {
-  var generateDocs = dgeni.generator('docs.config.js');
-  return generateDocs()
-    .catch(function(error) {
-      process.exit(1);
-    });
+  var dgeni = new Dgeni([require('./config')]);
+  return dgeni.generate().catch(function(error) {
+    process.exit(1);
+  });
 });
 
 // JSHint the example and protractor test files

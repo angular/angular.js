@@ -1,38 +1,34 @@
+"use strict";
+
 var _ = require('lodash');
 
-module.exports = {
-  name: 'versions-data',
-  description: 'This plugin will create a new doc that will be rendered as an angularjs module ' +
-               'which will contain meta information about the versions of angular',
-  runAfter: ['adding-extra-docs', 'pages-data'],
-  runBefore: ['extra-docs-added'],
-  process: function(docs, gitData) {
+/**
+ * @dgProcessor generateVersionDocProcessor
+ * @description
+ * This processor will create a new doc that will be rendered as a JavaScript file
+ * containing meta information about the current versions of AngularJS
+ */
+module.exports = function generateVersionDocProcessor(gitData) {
+  return {
+    $runAfter: ['generatePagesDataProcessor'],
+    $runBefore: ['rendering-docs'],
+    $process: function(docs) {
 
-    var version = gitData.version;
-    var versions = gitData.versions;
+      var versionDoc = {
+        docType: 'versions-data',
+        id: 'versions-data',
+        template: 'versions-data.template.js',
+        outputPath: 'js/versions-data.js',
+        currentVersion: gitData.version
+      };
 
-    if ( !version ) {
-      throw new Error('Invalid configuration.  Please provide a valid `source.currentVersion` property');
+      versionDoc.versions = _(gitData.versions)
+        .filter(function(version) { return version.major > 0; })
+        .push(gitData.version)
+        .reverse()
+        .value();
+
+      docs.push(versionDoc);
     }
-    if ( !versions ) {
-      throw new Error('Invalid configuration.  Please provide a valid `source.previousVersions` property');
-    }
-
-    var versionDoc = {
-      docType: 'versions-data',
-      id: 'versions-data',
-      template: 'versions-data.template.js',
-      outputPath: 'js/versions-data.js',
-    };
-
-    versionDoc.currentVersion = version;
-
-    versionDoc.versions = _(versions)
-      .filter(function(version) { return version.major > 0; })
-      .push(version)
-      .reverse()
-      .value();
-
-    docs.push(versionDoc);
-  }
+  };
 };
