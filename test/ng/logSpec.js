@@ -1,11 +1,16 @@
 /* global $LogProvider: false */
 'use strict';
 
-function initService(debugEnabled) {
+function initService(enableDict) {
     return module(function($logProvider){
-      $logProvider.debugEnabled(debugEnabled);
+      $logProvider.logEnabled(enableDict.log);
+      $logProvider.infoEnabled(enableDict.info);
+      $logProvider.warnEnabled(enableDict.warn);
+      $logProvider.errorEnabled(enableDict.error);
+      $logProvider.debugEnabled(enableDict.debug);
     });
   }
+
 
 describe('$log', function() {
   var $window, logger, log, warn, info, error, debug;
@@ -119,7 +124,9 @@ describe('$log', function() {
 
   describe("$log.debug", function () {
 
-    beforeEach(initService(false));
+    beforeEach(initService({
+      debug: false
+    }));
 
     it("should skip debugging output if disabled", inject(
       function(){
@@ -156,6 +163,31 @@ describe('$log', function() {
       }}});
     });
 
+    it('should skip error output if disabled', function(){
+
+      initService({
+        error: false
+      });
+
+      inject(
+        function(){
+          $window.console = {log: log,
+                             warn: warn,
+                             info: info,
+                             error: error,
+                             debug: debug};
+        },
+        function($log){
+          $log.log();
+          $log.warn();
+          $log.info();
+          $log.error();
+          $log.debug();
+          expect(logger).toEqual('log;warn;info;debug;');
+        }
+      );
+    });
+
 
     it('should pass error if does not have trace', function() {
       $log.error('abc', e);
@@ -177,5 +209,80 @@ describe('$log', function() {
       $log.error('abc', e);
       expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
     });
+  });
+  describe("$log.warn", function () {
+
+    beforeEach(initService({
+      warn: false
+    }));
+
+    it("should skip debugging output if disabled", inject(
+      function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;info;error;debug;');
+      }
+    ));
+
+  });
+  describe("$log.info", function () {
+
+    beforeEach(initService({
+      info: false
+    }));
+
+    it("should skip debugging output if disabled", inject(
+      function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;warn;error;debug;');
+      }
+    ));
+
+  });
+  describe("$log.log", function () {
+
+    beforeEach(initService({
+      log: false
+    }));
+
+    it("should skip debugging output if disabled", inject(
+      function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('warn;info;error;debug;');
+      }
+    ));
+
   });
 });
