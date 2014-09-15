@@ -167,7 +167,9 @@ expression, delegate to a JavaScript method instead.
 ## `$event`
 
 Directives like {@link ng.directive:ngClick `ngClick`} and {@link ng.directive:ngFocus `ngFocus`}
-expose a `$event` object within the scope of that expression.
+expose a `$event` object within the scope of that expression. The object is an instance of a [jQuery
+Event Object](http://api.jquery.com/category/events/event-object/) when jQuery is present or a
+similar jqLite object.
 
 <example module="eventExampleApp">
   <file name="index.html">
