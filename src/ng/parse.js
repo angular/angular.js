@@ -494,7 +494,7 @@ Parser.prototype = {
   },
 
   unaryFn: function(fn, right) {
-    return extend(function(self, locals) {
+    return extend(function $parseUnaryFn(self, locals) {
       return fn(self, locals, right);
     }, {
       constant:right.constant,
@@ -503,7 +503,7 @@ Parser.prototype = {
   },
 
   ternaryFn: function(left, middle, right){
-    return extend(function(self, locals){
+    return extend(function $parseTernaryFn(self, locals){
       return left(self, locals) ? middle(self, locals) : right(self, locals);
     }, {
       constant: left.constant && middle.constant && right.constant
@@ -511,7 +511,7 @@ Parser.prototype = {
   },
 
   binaryFn: function(left, fn, right, isBranching) {
-    return extend(function(self, locals) {
+    return extend(function $parseBinaryFn(self, locals) {
       return fn(self, locals, left, right);
     }, {
       constant: left.constant && right.constant,
