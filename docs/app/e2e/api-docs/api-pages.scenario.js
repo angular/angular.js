@@ -37,5 +37,15 @@ describe("doc.angularjs.org", function() {
       var code = element.all(by.css('tt')).first();
       expect(code.getText()).toContain('guest!!!');
     });
+
+    it("should trim indentation from code blocks", function() {
+      browser.get('index-debug.html#!/api/ng/type/$rootScope.Scope');
+
+      var codeBlocks = element.all(by.css('pre > code.lang-js'));
+      codeBlocks.each(function(codeBlock) {
+        var firstSpan = codeBlock.all(by.css('span')).first();
+        expect(firstSpan.getText()).not.toMatch(/^\W+$/);
+      });
+    });
   });
 });

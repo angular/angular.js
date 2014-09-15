@@ -1142,7 +1142,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.0-rc.3",
+      "version": "0.10.0-rc.5",
       "dependencies": {
         "catharsis": {
           "version": "0.7.1"
@@ -1197,41 +1197,11 @@
             }
           }
         },
-        "dgeni": {
-          "version": "0.4.0-rc.2",
-          "dependencies": {
-            "dependency-graph": {
-              "version": "0.1.0",
-              "dependencies": {
-                "underscore": {
-                  "version": "1.4.4"
-                }
-              }
-            },
-            "di": {
-              "version": "0.0.1"
-            },
-            "optimist": {
-              "version": "0.6.1",
-              "dependencies": {
-                "wordwrap": {
-                  "version": "0.0.2"
-                },
-                "minimist": {
-                  "version": "0.0.10"
-                }
-              }
-            },
-            "q": {
-              "version": "0.9.7"
-            },
-            "validate.js": {
-              "version": "0.2.0"
-            }
-          }
-        },
         "esprima": {
           "version": "1.2.2"
+        },
+        "estraverse": {
+          "version": "1.5.1"
         },
         "glob": {
           "version": "3.2.11",
@@ -1243,9 +1213,6 @@
         },
         "lodash": {
           "version": "2.4.1"
-        },
-        "marked": {
-          "version": "0.2.10"
         },
         "minimatch": {
           "version": "0.3.0",
@@ -1725,7 +1692,7 @@
     },
     "grunt-jasmine-node": {
       "version": "0.1.0",
-      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
+      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs-checker": {
