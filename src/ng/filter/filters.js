@@ -523,7 +523,9 @@ function jsonFilter() {
  * Converts string to lowercase.
  * @see angular.lowercase
  */
-var lowercaseFilter = valueFn(lowercase);
+var lowercaseFilter = function(){
+  return lowercase;
+};
 
 
 /**
@@ -534,4 +536,6 @@ var lowercaseFilter = valueFn(lowercase);
  * Converts string to uppercase.
  * @see angular.uppercase
  */
-var uppercaseFilter = valueFn(uppercase);
+var uppercaseFilter = function(){
+  return uppercase;
+};
