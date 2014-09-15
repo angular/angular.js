@@ -6,12 +6,12 @@ describe("service pages", function() {
     browser.get('index-debug.html#!/api/ng/service/$compile');
     var providerLink = element.all(by.css('ol.api-profile-header-structure li a')).first();
     expect(providerLink.getText()).toEqual('- $compileProvider');
-    expect(providerLink.getAttribute('href')).toMatch('api/ng/provider/$compileProvider');
+    expect(providerLink.getAttribute('href')).toMatch(/api\/ng\/provider\/\$compileProvider/);
 
     browser.get('index-debug.html#!/api/ng/service/$q');
     providerLink = element.all(by.css('ol.api-profile-header-structure li a')).first();
     expect(providerLink.getText()).not.toEqual('- $qProvider');
-    expect(providerLink.getAttribute('href')).not.toMatch('api/ng/provider/$compileProvider');
+    expect(providerLink.getAttribute('href')).not.toMatch(/api\/ng\/provider\/\$compileProvider/);
   });
 
   it("should show parameter defaults", function() {

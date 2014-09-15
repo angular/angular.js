@@ -6,7 +6,7 @@ describe("provider pages", function() {
     browser.get('index-debug.html#!/api/ng/provider/$compileProvider');
     var serviceLink = element.all(by.css('ol.api-profile-header-structure li a')).first();
     expect(serviceLink.getText()).toEqual('- $compile');
-    expect(serviceLink.getAttribute('href')).toMatch('api/ng/service/$compile');
+    expect(serviceLink.getAttribute('href')).toMatch(/api\/ng\/service\/\$compile/);
   });
 
 });
