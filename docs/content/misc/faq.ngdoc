@@ -205,7 +205,7 @@ If you want to apply a directive to each inner piece of the repeat, put it on a 
 
 ### `$rootScope` exists, but it can be used for evil
 
-Scopes in Angular form a hierarchy, prototypically inheriting from a root scope at the top of the tree.
+Scopes in Angular form a hierarchy, prototypally inheriting from a root scope at the top of the tree.
 Usually this can be ignored, since most views have a controller, and therefore a scope, of their own.
 
 Occasionally there are pieces of data that you want to make global to the whole app.
