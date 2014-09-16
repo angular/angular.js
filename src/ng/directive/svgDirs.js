@@ -12,10 +12,6 @@ function computeSVGAttrValue (url, $loc) {
     if (match[1].indexOf('#') === 0 && $loc.$$html5) {
       fullUrl = $loc.absUrl() + match[1];
     }
-    //Hash in non-html5Mode
-    else if (match[1].indexOf('#') === 0) {
-      fullUrl = $loc.absUrl().replace(svgUrlHashMatchExp, '') + match[1];
-    }
     //Non-hash URLs in any mode
     else {
       fullUrl = urlResolve(match[1]).href;
@@ -51,8 +47,10 @@ forEach([
               //TODO: support expressions
 
               //Only apply to svg elements to avoid unnecessary observing
-              if (!svgElementMatcher.test(element[0])) return;
+              if (!svgElementMatcher.test(element[0]) || !$location.$$html5) return;
 
+
+              //Assumes no expressions, since svg is unforgiving of xml violations
               initialUrl = attrs[attr];
               attrs.$observe(attr, updateValue);
               if ($location.$$html5) $rootScope.$on('$locationChangeSuccess', updateValue);

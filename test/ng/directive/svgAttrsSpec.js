@@ -3,49 +3,54 @@
 ddescribe('svgAttrs', function() {
   var basePath;
 
-  it('should load resources relative to app base url if attribute matches url(...)',
-      inject(function ($rootScope, $compile, $httpBackend, $location, $document) {
-        var urlAttrTest = /^url\(http\:\/\/[a-z]*\:[0-9]{3,5}\/resources\/[a-z\-]*\.svg\)/i,
-            basePath = urlResolve('/resources').href,
-            directives = [
-              'clip-path',
-              'color-profile',
-              'src',
-              'cursor',
-              'fill',
-              'filter',
-              'marker',
-              'marker-start',
-              'marker-mid',
-              'marker-end',
-              'mask',
-              'stroke'];
+  it('should load resources relative to app base url if attribute matches url(...)', function() {
+    module(function($locationProvider) {
+      $locationProvider.html5Mode(true);
+    });
 
-        var template = [
-          '<svg>',
-            '<ellipse ',
-              'clip-path="url(/resources/clip-path.svg)" ',
-              'color-profile="url(/resources/color-profile.svg)" ',
-              'src="url(/resources/src.svg)" ',
-              'cursor="url(/resources/cursor.svg)" ',
-              'fill="url(/resources/fill.svg)" ',
-              'filter="url(/resources/filter.svg)" ',
-              'marker="url(/resources/marker.svg)" ',
-              'marker-start="url(/resources/marker-start.svg)" ',
-              'marker-mid="url(/resources/marker-mid.svg)" ',
-              'marker-end="url(/resources/marker-end.svg)" ',
-              'mask="url(/resources/mask.svg)" ',
-              'stroke="url(/resources/stroke.svg)">',
-            '</ellipse>',
-          '</svg>'].join('');
-        var element = $compile(template)($rootScope);
-        $rootScope.$digest();
+    inject(function ($rootScope, $compile, $httpBackend, $location) {
+      var urlAttrTest = /^url\(http\:\/\/[a-z]*\:[0-9]{3,5}\/resources\/[a-z\-]*\.svg\)/i,
+          basePath = urlResolve('/resources').href,
+          directives = [
+            'clip-path',
+            'color-profile',
+            'src',
+            'cursor',
+            'fill',
+            'filter',
+            'marker',
+            'marker-start',
+            'marker-mid',
+            'marker-end',
+            'mask',
+            'stroke'];
 
-        forEach(directives, function(attr) {
-          expect(element.children(0).attr(attr)).toMatch(urlAttrTest);
-          expect(element.children(0).attr(attr)).toContain(attr + '.svg');
-        });
-      }));
+      var template = [
+        '<svg>',
+          '<ellipse ',
+            'clip-path="url(/resources/clip-path.svg)" ',
+            'color-profile="url(/resources/color-profile.svg)" ',
+            'src="url(/resources/src.svg)" ',
+            'cursor="url(/resources/cursor.svg)" ',
+            'fill="url(/resources/fill.svg)" ',
+            'filter="url(/resources/filter.svg)" ',
+            'marker="url(/resources/marker.svg)" ',
+            'marker-start="url(/resources/marker-start.svg)" ',
+            'marker-mid="url(/resources/marker-mid.svg)" ',
+            'marker-end="url(/resources/marker-end.svg)" ',
+            'mask="url(/resources/mask.svg)" ',
+            'stroke="url(/resources/stroke.svg)">',
+          '</ellipse>',
+        '</svg>'].join('');
+      var element = $compile(template)($rootScope);
+      $rootScope.$digest();
+
+      forEach(directives, function(attr) {
+        expect(element.children(0).attr(attr)).toMatch(urlAttrTest);
+        expect(element.children(0).attr(attr)).toContain(attr + '.svg');
+      });
+    });
+  });
 
 
   it('should do nothing if no url()', inject(function($compile, $rootScope) {
@@ -70,7 +75,7 @@ ddescribe('svgAttrs', function() {
       $locationProvider.html5Mode(true);
     });
 
-    inject(function($compile, $rootScope, $location, $browser) {
+    inject(function($compile, $rootScope, $location) {
       $location.path('/mypath');
       var template = [
         '<svg>',
@@ -84,30 +89,13 @@ ddescribe('svgAttrs', function() {
   });
 
 
-  it('should make hash relative to appBase when not in html5mode', function() {
-    inject(function($compile, $rootScope, $location, $browser) {
-      var template = [
-        '<svg>',
-          '<ellipse clip-path="url(#my-clip)"></ellipse>',
-        '</svg>'
-      ].join('');
-      var element = $compile(template)($rootScope);
-      $rootScope.$digest();
-      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
-      $location.path('/mypath');
-      $rootScope.$digest();
-      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
-    });
-  });
-
-
   it('should update url on $locationChangeSuccess event in html5mode', function() {
     //This test uses $location's fake base: http://server, since urlResolve is not being used
-    module(function($locationProvider, $provide) {
+    module(function($locationProvider) {
       $locationProvider.html5Mode(true);
     });
 
-    inject(function($compile, $rootScope, $location, $browser) {
+    inject(function($compile, $rootScope, $location) {
       var element;
 
       var template = [
@@ -127,13 +115,13 @@ ddescribe('svgAttrs', function() {
   });
 
 
-  it('should NOT update url on $locationChangeSuccess event when not in html5mode', function() {
+  it('should ignore attributes when not in html5mode', function() {
     //browser just cares about appBase in non-html5 mode
     module(function($locationProvider, $provide) {
       $locationProvider.html5Mode(false);
     });
 
-    inject(function($compile, $rootScope, $location, $browser) {
+    inject(function($compile, $rootScope, $location) {
       var element;
 
       var template = [
@@ -144,10 +132,10 @@ ddescribe('svgAttrs', function() {
       element = $compile(template)($rootScope);
       $location.path('/mypath');
       $rootScope.$digest();
-      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
+      expect(element.children(0).attr('clip-path')).toBe('url(#my-clip)');
       $location.path('/newpath');
       $rootScope.$digest();
-      expect(element.children(0).attr('clip-path')).toBe('url(http://server/#my-clip)');
+      expect(element.children(0).attr('clip-path')).toBe('url(#my-clip)');
     });
   });
 
