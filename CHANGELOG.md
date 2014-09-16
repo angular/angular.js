@@ -1,3 +1,19 @@
+<a name="1.2.25"></a>
+# 1.2.25 hypnotic-gesticulation (2014-09-16)
+
+
+## Bug Fixes
+
+- **i18n:** fix typo at i18n generation code
+  ([1b6d74cc](https://github.com/angular/angular.js/commit/1b6d74cc9f7f7b7bd529abe6ce612de3ae661601))
+- **ngLocale:** Regenerate Locale Files
+  ([06c76694](https://github.com/angular/angular.js/commit/06c76694ac9b2280594712e6a4b46a1d5987d098))
+- **select:** update option labels when model changes
+  ([d89d59f4](https://github.com/angular/angular.js/commit/d89d59f453d4e28be4f595fea7e2c4ff2338351f),
+   [#9025](https://github.com/angular/angular.js/issues/9025))
+
+
+
 <a name="1.3.0-rc.2"></a>
 # 1.3.0-rc.2 tactile-perception (2014-09-16)
 
