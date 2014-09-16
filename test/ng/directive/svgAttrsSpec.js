@@ -1,6 +1,6 @@
 'use strict';
 
-ddescribe('svgAttrs', function() {
+describe('svgAttrs', function() {
   var basePath;
 
   it('should load resources relative to app base url if attribute matches url(...)', function() {
