@@ -1,11 +1,29 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+function getDecimals(n) {
+  n = n + '';
+  var i = n.indexOf('.');
+  return (i == -1) ? 0 : n.length - i - 1;
+}
+
+function getVF(n, opt_precision) {
+  var v = opt_precision;
+
+  if (undefined === v) {
+    v = Math.min(getDecimals(n), 3);
+  }
+
+  var base = Math.pow(10, v);
+  var f = ((n * base) | 0) % base;
+  return {v: v, f: f};
+}
+
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a.m.",
-      "p.m."
+      "a. m.",
+      "p. m."
     ],
     "DAY": [
       "diumenge",
@@ -17,18 +35,18 @@ $provide.value("$locale", {
       "dissabte"
     ],
     "MONTH": [
-      "de gener",
-      "de febrer",
-      "de mar\u00e7",
-      "d\u2019abril",
-      "de maig",
-      "de juny",
-      "de juliol",
-      "d\u2019agost",
-      "de setembre",
-      "d\u2019octubre",
-      "de novembre",
-      "de desembre"
+      "gener",
+      "febrer",
+      "mar\u00e7",
+      "abril",
+      "maig",
+      "juny",
+      "juliol",
+      "agost",
+      "setembre",
+      "octubre",
+      "novembre",
+      "desembre"
     ],
     "SHORTDAY": [
       "dg.",
@@ -40,26 +58,26 @@ $provide.value("$locale", {
       "ds."
     ],
     "SHORTMONTH": [
-      "de gen.",
-      "de febr.",
-      "de mar\u00e7",
-      "d\u2019abr.",
-      "de maig",
-      "de juny",
-      "de jul.",
-      "d\u2019ag.",
-      "de set.",
-      "d\u2019oct.",
-      "de nov.",
-      "de des."
+      "gen.",
+      "feb.",
+      "mar\u00e7",
+      "abr.",
+      "maig",
+      "juny",
+      "jul.",
+      "ag.",
+      "set.",
+      "oct.",
+      "nov.",
+      "des."
     ],
-    "fullDate": "EEEE d MMMM 'de' y",
+    "fullDate": "EEEE, d MMMM 'de' y",
     "longDate": "d MMMM 'de' y",
-    "medium": "dd/MM/yyyy H:mm:ss",
-    "mediumDate": "dd/MM/yyyy",
+    "medium": "dd/MM/y H:mm:ss",
+    "mediumDate": "dd/MM/y",
     "mediumTime": "H:mm:ss",
-    "short": "dd/MM/yy H:mm",
-    "shortDate": "dd/MM/yy",
+    "short": "d/M/yy H:mm",
+    "shortDate": "d/M/yy",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
@@ -70,7 +88,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +99,17 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
-        "posPre": "\u00a4",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "ca-es",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

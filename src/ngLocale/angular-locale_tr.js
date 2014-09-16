@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "\u00d6\u00d6",
+      "\u00d6S"
     ],
     "DAY": [
       "Pazar",
@@ -58,8 +58,8 @@ $provide.value("$locale", {
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
-    "short": "dd MM yyyy HH:mm",
-    "shortDate": "dd MM yyyy",
+    "short": "d MM y HH:mm",
+    "shortDate": "d MM y",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +81,17 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(",
-        "negSuf": "\u00a0\u00a4)",
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
         "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "tr",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -33,18 +33,18 @@ $provide.value("$locale", {
     "SHORTDAY": [
       "\u039a\u03c5\u03c1",
       "\u0394\u03b5\u03c5",
-      "\u03a4\u03c1\u03b9",
+      "\u03a4\u03c1\u03af",
       "\u03a4\u03b5\u03c4",
-      "\u03a0\u03b5\u03bc",
+      "\u03a0\u03ad\u03bc",
       "\u03a0\u03b1\u03c1",
-      "\u03a3\u03b1\u03b2"
+      "\u03a3\u03ac\u03b2"
     ],
     "SHORTMONTH": [
       "\u0399\u03b1\u03bd",
       "\u03a6\u03b5\u03b2",
       "\u039c\u03b1\u03c1",
       "\u0391\u03c0\u03c1",
-      "\u039c\u03b1\u03ca",
+      "\u039c\u03b1\u0390",
       "\u0399\u03bf\u03c5\u03bd",
       "\u0399\u03bf\u03c5\u03bb",
       "\u0391\u03c5\u03b3",
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +81,17 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-",
-        "negSuf": "\u00a0\u00a4",
-        "posPre": "",
-        "posSuf": "\u00a0\u00a4"
+        "negPre": "\u00a4-",
+        "negSuf": "",
+        "posPre": "\u00a4",
+        "posSuf": ""
       }
     ]
   },
   "id": "el-cy",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

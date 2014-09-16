@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "am",
-      "pm"
+      "\u0bae\u0bc1\u0bb1\u0bcd\u0baa\u0b95\u0bb2\u0bcd",
+      "\u0baa\u0bbf\u0bb1\u0bcd\u0baa\u0b95\u0bb2\u0bcd"
     ],
     "DAY": [
       "\u0b9e\u0bbe\u0baf\u0bbf\u0bb1\u0bc1",
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "ta-in",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

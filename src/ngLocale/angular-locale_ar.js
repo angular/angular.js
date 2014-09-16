@@ -55,11 +55,11 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE\u060c d MMMM\u060c y",
     "longDate": "d MMMM\u060c y",
-    "medium": "dd\u200f/MM\u200f/yyyy h:mm:ss a",
-    "mediumDate": "dd\u200f/MM\u200f/yyyy",
+    "medium": "dd\u200f/MM\u200f/y h:mm:ss a",
+    "mediumDate": "dd\u200f/MM\u200f/y",
     "mediumTime": "h:mm:ss a",
-    "short": "d\u200f/M\u200f/yyyy h:mm a",
-    "shortDate": "d\u200f/M\u200f/yyyy",
+    "short": "d\u200f/M\u200f/y h:mm a",
+    "shortDate": "d\u200f/M\u200f/y",
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
@@ -68,32 +68,30 @@ $provide.value("$locale", {
     "GROUP_SEP": "\u066c",
     "PATTERNS": [
       {
-        "gSize": 0,
-        "lgSize": 0,
-        "macFrac": 0,
+        "gSize": 3,
+        "lgSize": 3,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
-        "negPre": "",
-        "negSuf": "-",
+        "negPre": "-",
+        "negSuf": "",
         "posPre": "",
         "posSuf": ""
       },
       {
-        "gSize": 0,
-        "lgSize": 0,
-        "macFrac": 0,
+        "gSize": 3,
+        "lgSize": 3,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0",
-        "negSuf": "-",
+        "negPre": "\u00a4\u00a0-",
+        "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
       }
     ]
   },
   "id": "ar",
-  "pluralCat": function (n) {  if (n == 0) {   return PLURAL_CATEGORY.ZERO;  }  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  if (n == 2) {   return PLURAL_CATEGORY.TWO;  }  if (n == (n | 0) && n % 100 >= 3 && n % 100 <= 10) {   return PLURAL_CATEGORY.FEW;  }  if (n == (n | 0) && n % 100 >= 11 && n % 100 <= 99) {   return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 0) {    return PLURAL_CATEGORY.ZERO;  }  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  if (n == 2) {    return PLURAL_CATEGORY.TWO;  }  if (n % 100 >= 3 && n % 100 <= 10) {    return PLURAL_CATEGORY.FEW;  }  if (n % 100 >= 11 && n % 100 <= 99) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

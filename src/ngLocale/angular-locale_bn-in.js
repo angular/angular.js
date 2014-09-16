@@ -63,14 +63,13 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u09f3",
+    "CURRENCY_SYM": "\u20b9",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +81,17 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(",
-        "negSuf": "\u00a4)",
+        "negPre": "-",
+        "negSuf": "\u00a4",
         "posPre": "",
         "posSuf": "\u00a4"
       }
     ]
   },
   "id": "bn-in",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -58,19 +58,18 @@ $provide.value("$locale", {
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
-    "short": "d/M/yyyy HH:mm",
-    "shortDate": "d/M/yyyy",
+    "short": "d/M/y HH:mm",
+    "shortDate": "d/M/y",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "FrCD",
+    "CURRENCY_SYM": "FCFA",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "ln-cg",
-  "pluralCat": function (n) {  if (n == 0 || n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n >= 0 && n <= 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

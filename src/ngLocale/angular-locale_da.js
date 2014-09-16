@@ -1,11 +1,42 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+function getDecimals(n) {
+  n = n + '';
+  var i = n.indexOf('.');
+  return (i == -1) ? 0 : n.length - i - 1;
+}
+
+function getVF(n, opt_precision) {
+  var v = opt_precision;
+
+  if (undefined === v) {
+    v = Math.min(getDecimals(n), 3);
+  }
+
+  var base = Math.pow(10, v);
+  var f = ((n * base) | 0) % base;
+  return {v: v, f: f};
+}
+
+function getWT(v, f) {
+  if (f === 0) {
+    return {w: 0, t: 0};
+  }
+
+  while ((f % 10) === 0) {
+    f /= 10;
+    v--;
+  }
+
+  return {w: v, t: f};
+}
+
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "f.m.",
-      "e.m."
+      "AM",
+      "PM"
     ],
     "DAY": [
       "s\u00f8ndag",
@@ -31,13 +62,13 @@ $provide.value("$locale", {
       "december"
     ],
     "SHORTDAY": [
-      "s\u00f8n",
-      "man",
-      "tir",
-      "ons",
-      "tor",
-      "fre",
-      "l\u00f8r"
+      "s\u00f8n.",
+      "man.",
+      "tir.",
+      "ons.",
+      "tor.",
+      "fre.",
+      "l\u00f8r."
     ],
     "SHORTMONTH": [
       "jan.",
@@ -55,8 +86,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE 'den' d. MMMM y",
     "longDate": "d. MMM y",
-    "medium": "dd/MM/yyyy HH.mm.ss",
-    "mediumDate": "dd/MM/yyyy",
+    "medium": "dd/MM/y HH.mm.ss",
+    "mediumDate": "dd/MM/y",
     "mediumTime": "HH.mm.ss",
     "short": "dd/MM/yy HH.mm",
     "shortDate": "dd/MM/yy",
@@ -70,7 +101,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +112,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +123,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "da",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  var wt = getWT(vf.v, vf.f);  if (n == 1 || wt.t != 0 && (i == 0 || i == 1)) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

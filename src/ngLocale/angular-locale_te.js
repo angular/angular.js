@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "am",
-      "pm"
+      "AM",
+      "PM"
     ],
     "DAY": [
       "\u0c06\u0c26\u0c3f\u0c35\u0c3e\u0c30\u0c02",
@@ -23,7 +23,7 @@ $provide.value("$locale", {
       "\u0c0e\u0c2a\u0c4d\u0c30\u0c3f\u0c32\u0c4d",
       "\u0c2e\u0c47",
       "\u0c1c\u0c42\u0c28\u0c4d",
-      "\u0c1c\u0c42\u0c32\u0c48",
+      "\u0c1c\u0c41\u0c32\u0c48",
       "\u0c06\u0c17\u0c38\u0c4d\u0c1f\u0c41",
       "\u0c38\u0c46\u0c2a\u0c4d\u0c1f\u0c46\u0c02\u0c2c\u0c30\u0c4d",
       "\u0c05\u0c15\u0c4d\u0c1f\u0c4b\u0c2c\u0c30\u0c4d",
@@ -46,14 +46,14 @@ $provide.value("$locale", {
       "\u0c0f\u0c2a\u0c4d\u0c30\u0c3f",
       "\u0c2e\u0c47",
       "\u0c1c\u0c42\u0c28\u0c4d",
-      "\u0c1c\u0c42\u0c32\u0c48",
-      "\u0c06\u0c17\u0c38\u0c4d\u0c1f\u0c41",
-      "\u0c38\u0c46\u0c2a\u0c4d\u0c1f\u0c46\u0c02\u0c2c\u0c30\u0c4d",
-      "\u0c05\u0c15\u0c4d\u0c1f\u0c4b\u0c2c\u0c30\u0c4d",
-      "\u0c28\u0c35\u0c02\u0c2c\u0c30\u0c4d",
-      "\u0c21\u0c3f\u0c38\u0c46\u0c02\u0c2c\u0c30\u0c4d"
+      "\u0c1c\u0c41\u0c32\u0c48",
+      "\u0c06\u0c17",
+      "\u0c38\u0c46\u0c2a\u0c4d\u0c1f\u0c46\u0c02",
+      "\u0c05\u0c15\u0c4d\u0c1f\u0c4b",
+      "\u0c28\u0c35\u0c02",
+      "\u0c21\u0c3f\u0c38\u0c46\u0c02"
     ],
-    "fullDate": "EEEE d MMMM y",
+    "fullDate": "d MMMM y EEEE",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
     "mediumDate": "d MMM y",
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +81,17 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
+        "negPre": "\u00a4-",
+        "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
       }
     ]
   },
   "id": "te",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);
