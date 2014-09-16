@@ -1,19 +1,87 @@
-# NOTICE: Pending Breaking Change
+<a name="1.3.0-rc.2"></a>
+# 1.3.0-rc.2 tactile-perception (2014-09-16)
 
-The next 1.3.0 release candidate (1.3.0-rc.2) will contain a perf-related change that is likely to
-introduce breakages in some applications. The change will affect filters and function call
-expressions, and will not call the function if the variables passed to the function are primitive
-values and have not changed since the last digest loop.
 
-Example:
+## Bug Fixes
 
-```html
-//date filter would only be called if the 'timeCreated' property has changed
-<span ng-bind="timeCreated|date"></span>
+- **$compile:** update `'@'`-bindings in controller when `bindToController` is `true`
+  ([e7ac08a0](https://github.com/angular/angular.js/commit/e7ac08a0619d2bdc91c125d341772b4fbc0d5a78),
+   [#9052](https://github.com/angular/angular.js/issues/9052), [#9077](https://github.com/angular/angular.js/issues/9077))
+- **$parse:** ensure CSP assignable expressions have `assign()`
+  ([d13b4bd1](https://github.com/angular/angular.js/commit/d13b4bd1f5f2abaad00f5d1bf81f79549a8d0e46),
+   [#9048](https://github.com/angular/angular.js/issues/9048))
+- **i18n:** fix typo at i18n generation code
+  ([eb4afd45](https://github.com/angular/angular.js/commit/eb4afd45f77d7d67744e01ce63a831c13c2b22e8))
+- **input:** always pass in the model value to `ctrl.$isEmpty`
+  ([3e51b84b](https://github.com/angular/angular.js/commit/3e51b84bc19f7e6acc61cb536ddcdbfed307c831),
+   [#5164](https://github.com/angular/angular.js/issues/5164), [#9017](https://github.com/angular/angular.js/issues/9017))
+- **jqLite:** fix `event.stopImmediatePropagation()` so it works as expected
+  ([30354c58](https://github.com/angular/angular.js/commit/30354c58fe2bd371df364f7a3f55b270692a4051),
+   [#4833](https://github.com/angular/angular.js/issues/4833))
+- **ngLocale:** Regenerate Locale Files
+  ([6a96a820](https://github.com/angular/angular.js/commit/6a96a8200aff4749bc84c44a1e8018b09d9ebdb4),
+   [#8931](https://github.com/angular/angular.js/issues/8931), [#8583](https://github.com/angular/angular.js/issues/8583), [#7799](https://github.com/angular/angular.js/issues/7799))
+- **ngModel:**
+  - do not reset bound date objects
+  ([1a1ef629](https://github.com/angular/angular.js/commit/1a1ef62903c8fdf4ceb81277d966a8eff67f0a96),
+   [#6666](https://github.com/angular/angular.js/issues/6666))
+  - don’t clear the model when an external validator failed
+  ([9314719d](https://github.com/angular/angular.js/commit/9314719d1eb5f480b877f5513f6e0e474edcb67d),
+   [#8357](https://github.com/angular/angular.js/issues/8357), [#8080](https://github.com/angular/angular.js/issues/8080))
+- **ngResource:** make badcfg error message more helpful
+  ([a3962f0d](https://github.com/angular/angular.js/commit/a3962f0df3f9b8382b47952f9e4fcb48a4cc098b),
+   [#9005](https://github.com/angular/angular.js/issues/9005), [#9010](https://github.com/angular/angular.js/issues/9010))
+- **select:** update option labels when model changes
+  ([46274102](https://github.com/angular/angular.js/commit/46274102454038ee7fd4543a32166e9bbbc98904),
+   [#9025](https://github.com/angular/angular.js/issues/9025))
 
-//custom filter would break if depends on data changed by user other than 'cost'
-<span ng-bind="cost|i18nLocalizer">
+
+## Features
+
+- **limitTo:** support numeric input to limitTo
+  ([1c8a7459](https://github.com/angular/angular.js/commit/1c8a7459c90efc77b1a0987f976e3bddab4565fe),
+   [#8926](https://github.com/angular/angular.js/issues/8926))
+- **ngInclude:** add template url parameter to events
+  ([fd2d6c02](https://github.com/angular/angular.js/commit/fd2d6c02f9654e753d3655a3377a9534f7a54de3),
+   [#8453](https://github.com/angular/angular.js/issues/8453), [#8454](https://github.com/angular/angular.js/issues/8454))
+
+
+## Performance Improvements
+
+- **$compile:** move `$$isolateBinding` creation to directive factory instead of on each link
+  ([56f09f0b](https://github.com/angular/angular.js/commit/56f09f0b44048b62f964d29db4d3d2630662f6ea))
+- **$parse:**
+  - execute watched expressions only when the inputs change
+  ([fca6be71](https://github.com/angular/angular.js/commit/fca6be71274e537c7df86ae9e27a3bd1597e9ffa),
+   [#9006](https://github.com/angular/angular.js/issues/9006), [#9082](https://github.com/angular/angular.js/issues/9082))
+  - remove `binaryFn` and `valueFn` wrappers from filter expressions
+  ([67919c80](https://github.com/angular/angular.js/commit/67919c808771a9b185a9d552cd32a90748d36666))
+
+
+## Breaking Changes
+
+- **$parse:** due to [fca6be71](https://github.com/angular/angular.js/commit/fca6be71274e537c7df86ae9e27a3bd1597e9ffa),
+  all filters are assumed to be stateless functions
+
+Previously it was just a good practice to make all filters stateless. Now
+it's a requirement in order for the model change-observation to pick up
+all changes.
+
+If an existing filter is statefull, it can be flagged as such but keep in
+mind that this will result in a significant performance-penalty (or rather
+lost opportunity to benefit from a major perf improvement) that will
+affect the `$digest` duration.
+
+To flag a filter as stateful do the following:
+
+```javascript
+myApp.filter('myFilter', function() {
+  function myFilter(input) { ... };
+  myFilter.$stateful = true;
+  return myFilter;
+});
 ```
+
 
 
 <a name="1.3.0-rc.1"></a>
