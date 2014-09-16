@@ -143,7 +143,7 @@ means that it will be executed one or more times during the each `$digest` cycle
       Input: <input ng-model="greeting" type="text"><br>
       Decoration: <input ng-model="decoration.symbol" type="text"><br>
       No filter: {{greeting}}<br>
-      Reverse: {{greeting | decorate}}<br>
+      Decorated: {{greeting | decorate}}<br>
     </div>
   </file>
 
