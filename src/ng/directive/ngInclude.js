@@ -159,6 +159,9 @@
  * @eventType emit on the current ngInclude scope
  * @description
  * Emitted every time the ngInclude content is reloaded.
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src Source URL.
  */
 
 
@@ -236,7 +239,7 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
               currentScope = newScope;
               currentElement = clone;
 
-              currentScope.$emit('$includeContentLoaded');
+              currentScope.$emit('$includeContentLoaded', src);
               scope.$eval(onloadExp);
             }, function() {
               if (thisChangeId === changeCounter) {

@@ -361,6 +361,14 @@ describe('ngInclude', function() {
     } catch (e) {}
   }));
 
+  it('should fire $includeContentLoaded with the template url as the second parameter', inject(function($rootScope, $compile, $templateCache) {
+    var handlerSpy = jasmine.createSpy('handler');
+    $templateCache.put('/some/template.html', [200, '', {}]);
+    $rootScope.$on('$includeContentLoaded', handlerSpy);
+    element = $compile('<div><ng:include src="\'/some/template.html\'"></ng:include></div>')($rootScope);
+    $rootScope.$digest();
+    expect(handlerSpy).toHaveBeenCalledWith(jasmine.any(Object), '/some/template.html');
+  }));
 
   it('should construct SVG template elements with correct namespace', function() {
     if (!window.SVGRectElement) return;
