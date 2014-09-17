@@ -1309,7 +1309,7 @@ describe('$location', function() {
     });
 
 
-    it('should replace current hash fragment when link begins with "#" history disabled', function() {
+    it('should replace current hash fragment when link begins with "#" and history enabled on old browser', function() {
       configureService('#link', true, false, true);
       inject(
         initBrowser(),
