@@ -47,8 +47,7 @@ module.exports = function(grunt) {
           keepalive: true,
           middleware: function(connect, options){
             return [
-              //uncomment to enable CSP
-              // util.csp(),
+              util.conditionalCsp(),
               util.rewrite(),
               connect.favicon('images/favicon.ico'),
               connect.static(options.base),
@@ -74,6 +73,7 @@ module.exports = function(grunt) {
 
                 next();
               },
+              util.conditionalCsp(),
               connect.favicon('images/favicon.ico'),
               connect.static(options.base)
             ];
