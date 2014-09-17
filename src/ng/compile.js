@@ -575,7 +575,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
 
   function parseIsolateBindings(scope, directiveName) {
-    var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
+    var LOCAL_REGEXP = /^\s*([@=&]|interpolate:|bind:|eval:)(\?|optional:)?\s*(\w*)\s*$/;
+    var modeMap = {
+      '@': '@',
+      '=': '=',
+      '&': '&',
+      'interpolate:': '@',
+      'bind:': '=',
+      'eval:': '&'
+    };
 
     var bindings = {};
 
@@ -591,8 +599,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       bindings[scopeName] = {
         attrName: match[3] || scopeName,
-        mode: match[1],
-        optional: match[2] === '?'
+        mode: modeMap[match[1]],
+        optional: match[2] !== undefined
       };
     });
 

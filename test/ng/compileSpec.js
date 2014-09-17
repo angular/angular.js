@@ -3006,14 +3006,21 @@ describe('$compile', function() {
           scope: {
             attr: '@',
             attrAlias: '@attr',
+            attrVerbose: 'interpolate:',
+            attrAliasVerbose: 'interpolate:attr',
             ref: '=',
             refAlias: '= ref',
+            refVerbose: 'bind:',
+            refAliasVerbose: 'bind: ref',
             reference: '=',
             optref: '=?',
             optrefAlias: '=? optref',
-            optreference: '=?',
+            optrefVerbose: 'bind:optional:',
+            optrefAliasVerbose: 'bind:optional: optref',
             expr: '&',
-            exprAlias: '&expr'
+            exprAlias: '&expr',
+            exprVerbose: 'eval:',
+            exprAliasVerbose: 'eval:expr'
           },
           link: function(scope) {
             componentScope = scope;
@@ -3277,37 +3284,44 @@ describe('$compile', function() {
 
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
-        compile('<div><span my-component attr="some text">');
+        compile('<div><span my-component attr="some text" attr-verbose="some text">');
 
         expect(componentScope.attr).toEqual('some text');
         expect(componentScope.attrAlias).toEqual('some text');
-        expect(componentScope.attrAlias).toEqual(componentScope.attr);
+        expect(componentScope.attrVerbose).toEqual('some text');
+        expect(componentScope.attrAliasVerbose).toEqual('some text');
       }));
 
       it('should set up the interpolation before it reaches the link function', inject(function() {
         $rootScope.name = 'misko';
-        compile('<div><span my-component attr="hello {{name}}">');
+        compile('<div><span my-component attr="hello {{name}}" attr-verbose="hello {{name}}">');
         expect(componentScope.attr).toEqual('hello misko');
         expect(componentScope.attrAlias).toEqual('hello misko');
+        expect(componentScope.attrVerbose).toEqual('hello misko');
+        expect(componentScope.attrAliasVerbose).toEqual('hello misko');
       }));
 
       it('should update when interpolated attribute updates', inject(function() {
-        compile('<div><span my-component attr="hello {{name}}">');
+        compile('<div><span my-component attr="hello {{name}}" attr-verbose="hello {{name}}">');
 
         $rootScope.name = 'igor';
         $rootScope.$apply();
 
         expect(componentScope.attr).toEqual('hello igor');
         expect(componentScope.attrAlias).toEqual('hello igor');
+        expect(componentScope.attrVerbose).toEqual('hello igor');
+        expect(componentScope.attrAliasVerbose).toEqual('hello igor');
       }));
     });
 
 
     describe('object reference', function() {
       it('should update local when origin changes', inject(function() {
-        compile('<div><span my-component ref="name">');
+        compile('<div><span my-component ref="name" ref-verbose="name">');
         expect(componentScope.ref).toBe(undefined);
-        expect(componentScope.refAlias).toBe(componentScope.ref);
+        expect(componentScope.refAlias).toBe(undefined);
+        expect(componentScope.refVerbose).toBe(undefined);
+        expect(componentScope.refAliasVerbose).toBe(undefined);
 
         $rootScope.name = 'misko';
         $rootScope.$apply();
@@ -3315,16 +3329,20 @@ describe('$compile', function() {
         expect($rootScope.name).toBe('misko');
         expect(componentScope.ref).toBe('misko');
         expect(componentScope.refAlias).toBe('misko');
+        expect(componentScope.refVerbose).toBe('misko');
+        expect(componentScope.refAliasVerbose).toBe('misko');
 
         $rootScope.name = {};
         $rootScope.$apply();
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
+        expect(componentScope.refVerbose).toBe($rootScope.name);
+        expect(componentScope.refAliasVerbose).toBe($rootScope.name);
       }));
 
 
       it('should update local when both change', inject(function() {
-        compile('<div><span my-component ref="name">');
+        compile('<div><span my-component ref="name" ref-verbose="name">');
         $rootScope.name = {mark:123};
         componentScope.ref = 'misko';
 
@@ -3332,6 +3350,8 @@ describe('$compile', function() {
         expect($rootScope.name).toEqual({mark:123});
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
+        expect(componentScope.refVerbose).toBe($rootScope.name);
+        expect(componentScope.refAliasVerbose).toBe($rootScope.name);
 
         $rootScope.name = 'igor';
         componentScope.ref = {};
@@ -3339,6 +3359,8 @@ describe('$compile', function() {
         expect($rootScope.name).toEqual('igor');
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
+        expect(componentScope.refVerbose).toBe($rootScope.name);
+        expect(componentScope.refAliasVerbose).toBe($rootScope.name);
       }));
 
       it('should not break if local and origin both change to the same value', inject(function() {
@@ -3455,19 +3477,25 @@ describe('$compile', function() {
 
     describe('optional object reference', function() {
       it('should update local when origin changes', inject(function() {
-        compile('<div><span my-component optref="name">');
-        expect(componentScope.optRef).toBe(undefined);
-        expect(componentScope.optRefAlias).toBe(componentScope.optRef);
+        compile('<div><span my-component optref="name" optref-verbose="name">');
+        expect(componentScope.optref).toBe(undefined);
+        expect(componentScope.optrefAlias).toBe(undefined);
+        expect(componentScope.optrefVerbose).toBe(undefined);
+        expect(componentScope.optrefAliasVerbose).toBe(undefined);
 
         $rootScope.name = 'misko';
         $rootScope.$apply();
         expect(componentScope.optref).toBe($rootScope.name);
         expect(componentScope.optrefAlias).toBe($rootScope.name);
+        expect(componentScope.optrefVerbose).toBe($rootScope.name);
+        expect(componentScope.optrefAliasVerbose).toBe($rootScope.name);
 
         $rootScope.name = {};
         $rootScope.$apply();
         expect(componentScope.optref).toBe($rootScope.name);
         expect(componentScope.optrefAlias).toBe($rootScope.name);
+        expect(componentScope.optrefVerbose).toBe($rootScope.name);
+        expect(componentScope.optrefAliasVerbose).toBe($rootScope.name);
       }));
 
       it('should not throw exception when reference does not exist', inject(function() {
@@ -3475,24 +3503,34 @@ describe('$compile', function() {
 
         expect(componentScope.optref).toBe(undefined);
         expect(componentScope.optrefAlias).toBe(undefined);
-        expect(componentScope.optreference).toBe(undefined);
+        expect(componentScope.optrefVerbose).toBe(undefined);
+        expect(componentScope.optrefAliasVerbose).toBe(undefined);
       }));
     });
 
 
     describe('executable expression', function() {
       it('should allow expression execution with locals', inject(function() {
-        compile('<div><span my-component expr="count = count + offset">');
+        compile('<div><span my-component expr="count = count + offset" ' +
+                'expr-verbose="count = count + offset">');
         $rootScope.count = 2;
 
         expect(typeof componentScope.expr).toBe('function');
         expect(typeof componentScope.exprAlias).toBe('function');
+        expect(typeof componentScope.exprVerbose).toBe('function');
+        expect(typeof componentScope.exprAliasVerbose).toBe('function');
 
         expect(componentScope.expr({offset: 1})).toEqual(3);
         expect($rootScope.count).toEqual(3);
 
         expect(componentScope.exprAlias({offset: 10})).toEqual(13);
         expect($rootScope.count).toEqual(13);
+
+        expect(componentScope.exprVerbose({offset: 1})).toEqual(14);
+        expect($rootScope.count).toEqual(14);
+
+        expect(componentScope.exprAliasVerbose({offset: 10})).toEqual(24);
+        expect($rootScope.count).toEqual(24);
       }));
     });
 
@@ -3510,14 +3548,20 @@ describe('$compile', function() {
       expect(componentScope.$$isolateBindings.attr.mode).toBe('@');
       expect(componentScope.$$isolateBindings.attr.attrName).toBe('attr');
       expect(componentScope.$$isolateBindings.attrAlias.attrName).toBe('attr');
+      expect(componentScope.$$isolateBindings.attrVerbose.attrName).toBe('attrVerbose');
+      expect(componentScope.$$isolateBindings.attrAliasVerbose.attrName).toBe('attr');
       expect(componentScope.$$isolateBindings.ref.mode).toBe('=');
       expect(componentScope.$$isolateBindings.ref.attrName).toBe('ref');
       expect(componentScope.$$isolateBindings.refAlias.attrName).toBe('ref');
+      expect(componentScope.$$isolateBindings.refVerbose.attrName).toBe('refVerbose');
+      expect(componentScope.$$isolateBindings.refAliasVerbose.attrName).toBe('ref');
       expect(componentScope.$$isolateBindings.reference.mode).toBe('=');
       expect(componentScope.$$isolateBindings.reference.attrName).toBe('reference');
       expect(componentScope.$$isolateBindings.expr.mode).toBe('&');
       expect(componentScope.$$isolateBindings.expr.attrName).toBe('expr');
       expect(componentScope.$$isolateBindings.exprAlias.attrName).toBe('expr');
+      expect(componentScope.$$isolateBindings.exprVerbose.attrName).toBe('exprVerbose');
+      expect(componentScope.$$isolateBindings.exprAliasVerbose.attrName).toBe('expr');
 
       var firstComponentScope = componentScope,
           first$$isolateBindings = componentScope.$$isolateBindings;
