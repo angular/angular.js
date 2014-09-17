@@ -87,7 +87,9 @@ Here is an example of manually initializing Angular:
 <!doctype html>
 <html>
 <body>
-  Hello {{greetMe}}!
+  <div ng-controller="MyController">
+    Hello {{greetMe}}!
+  </div>
   <script src="http://code.angularjs.org/snapshot/angular.js"></script>
 
   <script>
