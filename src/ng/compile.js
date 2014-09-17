@@ -1177,7 +1177,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var clone = transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn, futureParentElement);
         if (scopeCreated && !elementTransclusion) {
-          clone.on('$destroy', function() { transcludedScope.$destroy(); });
+          futureParentElement.on('$destroy', function() { transcludedScope.$destroy(); });
         }
         return clone;
       };

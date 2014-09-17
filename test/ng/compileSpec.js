@@ -5551,6 +5551,64 @@ describe('$compile', function() {
       });
 
     });
+
+    it('should not leak memory when a directive removes the element containing the transclude directive', function() {
+
+      module(function() {
+        directive('toggle', function() {
+          return {
+            transclude: true,
+            template:
+              '<section class="toggle">' +
+                '<div ng:if="t">' +
+                  '<div ng:transclude></div>' +
+                '</div>' +
+              '</section>'
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+
+        function getAllScopes() {
+          return [$rootScope].concat(
+            getChildScopes($rootScope)
+          );
+
+          function getChildScopes(scope) {
+            var children = [];
+            if (!scope.$$childHead) { return children; }
+            var childScope = scope.$$childHead;
+            do {
+              children.push(childScope);
+              children = children.concat(getChildScopes(childScope));
+            } while ((childScope = childScope.$$nextSibling));
+            return children;
+          }
+        }
+
+        $rootScope.messages = ['message 0'];
+
+        element = $compile(
+          '<div toggle>' +
+          '  <div ng:repeat="message in messages">{{ message }}</div>' +
+          '</div>'
+        )($rootScope);
+
+        $rootScope.$apply('t = true');
+        expect(element.text()).toContain('message 0');
+        expect(getAllScopes().length).toEqual(4);
+        $rootScope.$apply('t = false');
+        expect(element.text()).not.toContain('message 0');
+        expect(getAllScopes().length).toEqual(1);
+        $rootScope.$apply('t = true');
+        expect(element.text()).toContain('message 0');
+        expect(getAllScopes().length).toEqual(4);
+        $rootScope.$apply('t = false');
+        expect(element.text()).not.toContain('message 0');
+        expect(getAllScopes().length).toEqual(1);
+      });
+    });
   });
 
 
