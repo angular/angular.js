@@ -879,14 +879,10 @@ describe('$location', function() {
       return function($browser){
         if (atRoot) {
           $browser.url('http://host.com/');
-          if (!noBase) {
-            $browser.$$baseHref = '/index.html';
-          }
+          $browser.$$baseHref = noBase ? '' : '/index.html';
         } else {
           $browser.url('http://host.com/base');
-          if (!noBase) {
-            $browser.$$baseHref = '/base/index.html';
-          }
+          $browser.$$baseHref = noBase ? '' : '/base/index.html';
         }
       };
     }
@@ -1201,7 +1197,22 @@ describe('$location', function() {
     });
 
 
-    it('should rewrite relative links relative to current path when history disabled', function() {
+    it('should rewrite relative links relative to current path when no base and history enabled on old browser', function() {
+      configureService('link', true, false, true);
+      inject(
+        initBrowser(false, true),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          expect($browser.url(), 'http://host.com/#!/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/#!/some/link');
+        }
+      );
+    });
+
+
+    it('should rewrite relative links relative to base href when history enabled on old browser', function() {
       configureService('link', true, false, true);
       inject(
         initBrowser(),
@@ -1209,7 +1220,7 @@ describe('$location', function() {
         function($browser, $location) {
           $location.path('/some');
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some/link');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
         }
       );
     });
@@ -1238,6 +1249,20 @@ describe('$location', function() {
           $location.path('/some');
           browserTrigger(link, 'click');
           expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should rewrite relative hashbang links when history enabled on old browser', function() {
+      configureService('#!link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some/link');
         }
       );
     });

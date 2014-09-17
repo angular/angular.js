@@ -682,13 +682,18 @@ function $LocationProvider(){
             var hrefNoBase = baseHrefNoFile ? href.substr(baseHrefNoFile.length - 1) : href;
             absHref = appBase + prefix + hrefNoBase;
           } else if (href[0] != '/') { // Ignore absolute path outside of base
+            var beginsWithPrefix = beginsWith(prefix, href);
             if (beginsWith(prefix + '/', href)) {
               // local anchor with absolute path
               absHref = appBase + href;
-            } else if (href[0] == '#') {
+            } else if (!beginsWithPrefix && href[0] == '#') {
               // local anchor
               absHref = appBase + prefix + ($location.path() || '/') + href;
+            } else if (!beginsWithPrefix && baseHref) {
+              // local anchor and base[href] exists
+              absHref = appBase + prefix + '/' + href;
             } else {
+              href = beginsWithPrefix ? href.substr(prefix.length) : href;
               // relative path - join with current path
               var stack = $location.path().split("/"),
                 parts = href.split("/");
