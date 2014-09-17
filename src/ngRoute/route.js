@@ -40,6 +40,7 @@ function $RouteProvider(){
   }
 
   var routes = {};
+  var self = this;
 
   /**
    * @ngdoc method
@@ -141,6 +142,12 @@ function $RouteProvider(){
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
+    if (path instanceof Array) {
+      for(var i = 0; i < path.length; i++) {
+        self.when(path[i], route);
+      }
+      return this;
+    }
     routes[path] = angular.extend(
       {reloadOnSearch: true},
       route,
