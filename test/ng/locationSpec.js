@@ -875,10 +875,19 @@ describe('$location', function() {
       });
     }
 
-    function initBrowser() {
+    function initBrowser(atRoot, noBase) {
       return function($browser){
-        $browser.url('http://host.com/base');
-        $browser.$$baseHref = '/base/index.html';
+        if (atRoot) {
+          $browser.url('http://host.com/');
+          if (!noBase) {
+            $browser.$$baseHref = '/index.html';
+          }
+        } else {
+          $browser.url('http://host.com/base');
+          if (!noBase) {
+            $browser.$$baseHref = '/base/index.html';
+          }
+        }
       };
     }
 
@@ -1206,8 +1215,22 @@ describe('$location', function() {
     });
 
 
-    it('should replace current path when link begins with "/" and history disabled', function() {
+    it('should replace current path when link begins with "/" and app is on root and history enabled on old browser', function() {
       configureService('/link', true, false, true);
+      inject(
+        initBrowser(true),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should replace current path when relative link begins with "/base/" and history enabled on old browser', function() {
+      configureService('/base/link', true, false, true);
       inject(
         initBrowser(),
         initLocation(),
@@ -1215,6 +1238,47 @@ describe('$location', function() {
           $location.path('/some');
           browserTrigger(link, 'click');
           expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should replace current path when link begins with "#!/" and history enabled on old browser', function() {
+      configureService('#!/link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should rewrite when relative link begins with "/" and app is on the root and there is no base tag and history enabled on old browser', function() {
+      configureService('/link', true, false, true);
+      inject(
+        initBrowser(true, true),
+        initLocation(),
+        function($browser, $location) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/#!/link');
+        }
+      );
+    });
+
+
+    it('should not rewrite when relative link begins with "/" and history enabled on old browser', function() {
+      configureService('/other_base/link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some');
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
         }
       );
     });

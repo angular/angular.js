@@ -636,7 +636,7 @@ function $LocationProvider(){
       LocationMode = LocationHashbangUrl;
     }
     $location = new LocationMode(appBase, '#' + hashPrefix);
-    $location.$$parse($location.$$rewrite(initialUrl));
+    $location.$$parse($location.$$rewrite(initialUrl) || appBase);
 
     var IGNORE_URI_REGEXP = /^\s*(javascript|mailto):/i;
 
@@ -675,26 +675,34 @@ function $LocationProvider(){
 
         if (href && href.indexOf('://') < 0) {         // Ignore absolute URLs
           var prefix = '#' + hashPrefix;
-          if (href[0] == '/') {
-            // absolute path - replace old path
-            absHref = appBase + prefix + href;
-          } else if (href[0] == '#') {
-            // local anchor
-            absHref = appBase + prefix + ($location.path() || '/') + href;
-          } else {
-            // relative path - join with current path
-            var stack = $location.path().split("/"),
-              parts = href.split("/");
-            if (stack.length === 2 && !stack[1]) stack.length = 1;
-            for (var i=0; i<parts.length; i++) {
-              if (parts[i] == ".")
-                continue;
-              else if (parts[i] == "..")
-                stack.pop();
-              else if (parts[i].length)
-                stack.push(parts[i]);
+          var baseHrefNoFile = stripFile(baseHref);
+          var appOnRoot = stripFile(appBase) == (serverBase(appBase) + '/');
+          if (href[0] == '/' && (appOnRoot || (baseHref && beginsWith(baseHrefNoFile, href)))) {
+            // absolute path - within base or when the app is on the root
+            var hrefNoBase = baseHrefNoFile ? href.substr(baseHrefNoFile.length - 1) : href;
+            absHref = appBase + prefix + hrefNoBase;
+          } else if (href[0] != '/') { // Ignore absolute path outside of base
+            if (beginsWith(prefix + '/', href)) {
+              // local anchor with absolute path
+              absHref = appBase + href;
+            } else if (href[0] == '#') {
+              // local anchor
+              absHref = appBase + prefix + ($location.path() || '/') + href;
+            } else {
+              // relative path - join with current path
+              var stack = $location.path().split("/"),
+                parts = href.split("/");
+              if (stack.length === 2 && !stack[1]) stack.length = 1;
+              for (var i=0; i<parts.length; i++) {
+                if (parts[i] == ".")
+                  continue;
+                else if (parts[i] == "..")
+                  stack.pop();
+                else if (parts[i].length)
+                  stack.push(parts[i]);
+              }
+              absHref = appBase + prefix + stack.join('/');
             }
-            absHref = appBase + prefix + stack.join('/');
           }
         }
       }
