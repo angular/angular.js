@@ -218,6 +218,12 @@ describe('sanitizeUri', function() {
       testUrl = "mailto:foo@bar.com";
       expect(sanitizeHref(testUrl)).toBe('mailto:foo@bar.com');
 
+      testUrl = "tel:123456789";
+      expect(sanitizeHref(testUrl)).toBe('tel:123456789');
+
+      testUrl = "geo:37.422,-122.084058";
+      expect(sanitizeHref(testUrl)).toBe('geo:37.422,-122.084058');
+
       testUrl = "file:///foo/bar.html";
       expect(sanitizeHref(testUrl)).toBe('file:///foo/bar.html');
     }));
