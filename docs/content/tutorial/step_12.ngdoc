@@ -339,8 +339,8 @@ a cross fade animation in between. So as the previous page is just about to be r
 while the new page fades in right on top of it.
 
 Once the leave animation is over then element is removed and once the enter animation is complete
-then the `ng-enter` and `ng-enter-active` CSS classes are removed from the element rendering it to
-be position itself with its default CSS code (so no more absolute positioning once the animation is
+then the `ng-enter` and `ng-enter-active` CSS classes are removed from the element, causing it to rerender and
+reposition itself with its default CSS code (so no more absolute positioning once the animation is
 over). This works fluidly so that pages flow naturally between route changes without anything
 jumping around.
 
