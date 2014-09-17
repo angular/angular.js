@@ -21,7 +21,7 @@ animations on top of the template code we created before.
 ## Dependencies
 
 The animation functionality is provided by Angular in the `ngAnimate` module, which is distributed
-separately from the core Angular framework.  In addition we will use `JQuery` in this project to do
+separately from the core Angular framework.  In addition we will use `jQuery` in this project to do
 extra JavaScript animations.
 
 We are using [Bower][bower] to install client side dependencies.  This step updates the
