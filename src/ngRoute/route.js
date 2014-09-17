@@ -40,7 +40,6 @@ function $RouteProvider(){
   }
 
   var routes = {};
-  var self = this;
 
   /**
    * @ngdoc method
@@ -65,6 +64,11 @@ function $RouteProvider(){
    *    * `color: brown`
    *    * `largecode: code/with/slashes`.
    *
+   *    * `path` can also be an array of paths, when you need to:
+   *        1. merge paths to one controller: e.g.`['/home', '/']`
+   *        2. merge alias urls into one controller: e.g.`['/user/search, '/user/find', '/user/query']`
+   *        3. merge url and its abbreviation into one controller: e.g.`['/user/login, '/login'']
+   *        4. map one deprecated url to another into one controller: e.g. `['/old/url, '/new/url']
    *
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
    *    match.
@@ -142,9 +146,9 @@ function $RouteProvider(){
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    if (path instanceof Array) {
+    if (angular.isArray(path)) {
       for(var i = 0; i < path.length; i++) {
-        self.when(path[i], route);
+        this.when(path[i], route);
       }
       return this;
     }

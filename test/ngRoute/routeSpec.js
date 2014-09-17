@@ -375,6 +375,25 @@ describe('$route', function() {
   });
 
 
+  it('should accept an array as a path', function() {
+    module(function($routeProvider) {
+      $routeProvider.when(['/foo', '/foo1', '/foo2'], {templateUrl: 'foo.html'});
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $location.url('/foo');
+      $rootScope.$digest();
+      expect($route.current.templateUrl).toBe('foo.html');
+      $location.url('/foo1');
+      $rootScope.$digest();
+      expect($route.current.templateUrl).toBe('foo.html');
+      $location.url('/foo2');
+      $rootScope.$digest();
+      expect($route.current.templateUrl).toBe('foo.html');
+    });
+  });
+
+
   describe('otherwise', function() {
 
     it('should handle unknown routes with "otherwise" route definition', function() {
