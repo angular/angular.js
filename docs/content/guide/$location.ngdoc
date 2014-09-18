@@ -245,7 +245,7 @@ it('should show example', inject(
 ## HTML5 mode
 
 In HTML5 mode, the `$location` service getters and setters interact with the browser URL address
-through the HTML5 history API, which allows for use of regular URL path and search segments,
+through the HTML5 history API. This allows for use of regular URL path and search segments,
 instead of their hashbang equivalents. If the HTML5 History API is not supported by a browser, the
 `$location` service will fall back to using the hashbang URLs automatically. This frees you from
 having to worry about whether the browser displaying your app supports the history API  or not; the
