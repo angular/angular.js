@@ -217,6 +217,8 @@ function isArrayLike(obj) {
  * It is worth noting that `.forEach` does not iterate over inherited properties because it filters
  * using the `hasOwnProperty` method.
  *
+ * Providing 'undefined' or 'null' values for `obj` will not invoke the `iterator` function and will return the value provided.
+ *
    ```js
      var values = {name: 'misko', gender: 'male'};
      var log = [];
