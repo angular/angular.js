@@ -235,7 +235,7 @@ angular.module('ngMessages', [])
 
     return {
       restrict: 'AE',
-      controller: ['$scope', function($scope) {
+      controller: function() {
         this.$renderNgMessageClasses = angular.noop;
 
         var messages = [];
@@ -276,7 +276,7 @@ angular.module('ngMessages', [])
             return value !== null && value !== false && value;
           }
         };
-      }],
+      },
       require: 'ngMessages',
       link: function($scope, element, $attrs, ctrl) {
         ctrl.renderElementClasses = function(bool) {
