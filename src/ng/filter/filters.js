@@ -50,8 +50,8 @@
  */
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
   return function(amount, currencySymbol){
+	var formats = $locale.NUMBER_FORMATS;
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
 
     // if null or undefined pass it through
@@ -115,8 +115,8 @@ function currencyFilter($locale) {
 
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
   return function(number, fractionSize) {
+	var formats = $locale.NUMBER_FORMATS;
 
     // if null or undefined pass it through
     return (number == null)
