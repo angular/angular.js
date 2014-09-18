@@ -96,7 +96,7 @@ this limitation, use a regular expression object as the value for the expression
     //after
     $scope.exp = /abc/i;
 - **Scope:** due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
-  Scope#$id is now of time number rather than string. Since the
+  Scope#$id is now of type number rather than string. Since the
 id is primarily being used for debugging purposes this change should not affect
 anyone.
 - **forEach:** due to [55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5),
