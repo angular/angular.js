@@ -21,7 +21,7 @@ animations on top of the template code we created before.
 ## Dependencies
 
 The animation functionality is provided by Angular in the `ngAnimate` module, which is distributed
-separately from the core Angular framework.  In addition we will use `JQuery` in this project to do
+separately from the core Angular framework.  In addition we will use `jQuery` in this project to do
 extra JavaScript animations.
 
 We are using [Bower][bower] to install client side dependencies.  This step updates the
@@ -49,8 +49,8 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
 
 * `"angular-animate": "~1.2.x"` tells bower to install a version of the
 angular-animate component that is compatible with version 1.2.x.
-* `"jquery": "1.10.2"` tells bower to install the 1.10.2 version of JQuery.  Note that this is not an
-Angular library, it is the standard JQuery library.  We can use bower to install a wide range of 3rd
+* `"jquery": "1.10.2"` tells bower to install the 1.10.2 version of jQuery.  Note that this is not an
+Angular library, it is the standard jQuery library.  We can use bower to install a wide range of 3rd
 party libraries.
 
 We must ask bower to download and install this dependency. We can do this by running:
@@ -255,7 +255,7 @@ which are described in detail below.
 Next let's add an animation for transitions between route changes in {@link api/ngRoute.directive:ngView `ngView`}.
 
 To start, let's add a new CSS class to our HTML like we did in the example above.
-This time, instead of the `ng-repeat` element, let's add it to the element containing the ng-view directive.
+This time, instead of the `ng-repeat` element, let's add it to the element containing the `ng-view` directive.
 In order to do this, we'll have to make some small changes to the HTML code so that we can have more control over our
 animations between view changes.
 
@@ -346,7 +346,7 @@ over). This works fluidly so that pages flow naturally between route changes wit
 jumping around.
 
 The CSS classes applied (the start and end classes) are much the same as with `ng-repeat`. Each time
-a new page is loaded the ng-view directive will create a copy of itself, download the template and
+a new page is loaded the `ng-view` directive will create a copy of itself, download the template and
 append the contents. This ensures that all views are contained within a single HTML element which
 allows for easy animation control.
 
