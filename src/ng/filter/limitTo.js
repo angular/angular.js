@@ -1,6 +1,6 @@
 'use strict';
 
-/**
+*
  * @ngdoc filter
  * @name limitTo
  * @kind function
@@ -60,17 +60,17 @@
        });
 
        // There is a bug in safari and protractor that doesn't like the minus key
-       xit('should update the output when -3 is entered', function() {
-         numLimitInput.clear();
-         numLimitInput.sendKeys('-3');
-         letterLimitInput.clear();
-         letterLimitInput.sendKeys('-3');
-         longNumberLimitInput.clear();
-         longNumberLimitInput.sendKeys('-3');
-         expect(limitedNumbers.getText()).toEqual('Output numbers: [7,8,9]');
-         expect(limitedLetters.getText()).toEqual('Output letters: ghi');
-         expect(limitedLongNumber.getText()).toEqual('Output long number: 342');
-       });
+       // it('should update the output when -3 is entered', function() {
+       //   numLimitInput.clear();
+       //   numLimitInput.sendKeys('-3');
+       //   letterLimitInput.clear();
+       //   letterLimitInput.sendKeys('-3');
+       //   longNumberLimitInput.clear();
+       //   longNumberLimitInput.sendKeys('-3');
+       //   expect(limitedNumbers.getText()).toEqual('Output numbers: [7,8,9]');
+       //   expect(limitedLetters.getText()).toEqual('Output letters: ghi');
+       //   expect(limitedLongNumber.getText()).toEqual('Output long number: 342');
+       // });
 
        it('should not exceed the maximum size of input array', function() {
          numLimitInput.clear();
@@ -85,7 +85,7 @@
        });
      </file>
    </example>
- */
+
 function limitToFilter(){
   return function(input, limit) {
     if (isNumber(input)) input = input.toString();
