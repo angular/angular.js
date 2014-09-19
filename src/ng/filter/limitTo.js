@@ -51,14 +51,14 @@
        });
 
        // There is a bug in safari and protractor that doesn't like the minus key
-       xit('should update the output when -3 is entered', function() {
-         numLimitInput.clear();
-         numLimitInput.sendKeys('-3');
-         letterLimitInput.clear();
-         letterLimitInput.sendKeys('-3');
-         expect(limitedNumbers.getText()).toEqual('Output numbers: [7,8,9]');
-         expect(limitedLetters.getText()).toEqual('Output letters: ghi');
-       });
+       // it('should update the output when -3 is entered', function() {
+       //   numLimitInput.clear();
+       //   numLimitInput.sendKeys('-3');
+       //   letterLimitInput.clear();
+       //   letterLimitInput.sendKeys('-3');
+       //   expect(limitedNumbers.getText()).toEqual('Output numbers: [7,8,9]');
+       //   expect(limitedLetters.getText()).toEqual('Output letters: ghi');
+       // });
 
        it('should not exceed the maximum size of input array', function() {
          numLimitInput.clear();
