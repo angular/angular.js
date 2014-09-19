@@ -7,7 +7,7 @@ syntax to express your application’s components clearly and succinctly.  It au
 synchronizes data from your UI (view) with your JavaScript objects (model) through 2-way data
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
 the browser how to do dependency injection and inversion of control. Oh yeah and it also helps with
-server-side communication, taming async callbacks with promises and deferreds; and makes client-side
+server-side communication, taming async callbacks with promises and deferreds, and makes client-side
 navigation and deeplinking with hashbang urls or HTML5 pushState a piece of cake. The best of all:
 it makes development fun!
 
