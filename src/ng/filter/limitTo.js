@@ -1,6 +1,6 @@
 'use strict';
 
-/*
+/**
  * @ngdoc filter
  * @name limitTo
  * @kind function
