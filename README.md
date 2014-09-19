@@ -6,10 +6,11 @@ use good old HTML (or HAML, Jade and friends!) as your template language and let
 syntax to express your application’s components clearly and succinctly.  It automatically
 synchronizes data from your UI (view) with your JavaScript objects (model) through 2-way data
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
-the browser how to do dependency injection and inversion of control. Oh yeah and it also helps with
-server-side communication, taming async callbacks with promises and deferreds; and makes client-side
-navigation and deeplinking with hashbang urls or HTML5 pushState a piece of cake. The best of all:
-it makes development fun!
+the browser how to do dependency injection and inversion of control.
+
+Oh yeah and it helps with server-side communication, taming async callbacks with promises and 
+deferreds. It also makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
+piece of cake. The best of all: it makes development fun!
 
 * Web site: http://angularjs.org
 * Tutorial: http://docs.angularjs.org/tutorial
