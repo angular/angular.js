@@ -102,7 +102,7 @@ your callback handler to always run asynchronously by using the `$timeout` servi
 ```
 function MyController($scope, thirdPartyComponent) {
   thirdPartyComponent.getData(function(someData) {
-    $timeout(function() {
+    $timeout(function() {}).then(function(){
       $scope.someData = someData;
     }, 0);
   });
@@ -170,7 +170,7 @@ myApp.directive('setFocusIf', function($timeout) {
     link: function($scope, $element, $attr) {
       $scope.$watch($attr.setFocusIf, function(value) {
         if ( value ) {
-          $timeout(function() {
+          $timeout(function() {}).then(function(){
             // We must reevaluate the value in case it was changed by a subsequent
             // watch handler in the digest.
             if ( $scope.$eval($attr.setFocusIf) ) {
