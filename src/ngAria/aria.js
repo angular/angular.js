@@ -87,19 +87,6 @@ function $AriaProvider() {
     });
   }
 
-  function watchAttr(attrName, ariaName) {
-    var ariaDashName = dashCase(ariaName);
-    return function(scope, elem, attr) {
-      if (!config[ariaName] || elem.attr(ariaDashName)) {
-        return;
-      }
-      var destroyWatcher = attr.$observe(attrName, function(newVal) {
-        elem.attr(ariaDashName, !angular.isUndefined(newVal));
-      });
-      scope.$on('$destroy', destroyWatcher);
-    };
-  }
-
   function watchExpr(attrName, ariaName, negate) {
     var ariaDashName = dashCase(ariaName);
     return function(scope, elem, attr) {
@@ -114,150 +101,118 @@ function $AriaProvider() {
     };
   }
 
-  function watchNgModelProperty (prop, watchFn) {
-    var ariaAttrName = 'aria-' + prop,
-        configName = 'aria' + prop[0].toUpperCase() + prop.substr(1);
-    return function watchNgModelPropertyLinkFn(scope, elem, attr, ngModel) {
-      if (!config[configName] || elem.attr(ariaAttrName) || !ngModel) {
-        return;
-      }
-      scope.$watch(watchFn(ngModel), function(newVal) {
-        elem.attr(ariaAttrName, !!newVal);
-      });
-    };
-  }
-
   this.$get = function() {
     return {
-      watchExpr: watchExpr,
-      ariaChecked: watchExpr('ngModel', 'ariaChecked'),
-      ariaDisabled: watchExpr('ngDisabled', 'ariaDisabled'),
-      ariaRequired: watchNgModelProperty('required', function(ngModel) {
-        return function ngAriaModelWatch() {
-          return ngModel.$error.required;
-        };
-      }),
-      ariaInvalid: watchNgModelProperty('invalid', function(ngModel) {
-        return function ngAriaModelWatch() {
-          return ngModel.$invalid;
-        };
-      }),
-      ariaValue: function(scope, elem, attr, ngModel) {
-        if (config.ariaValue) {
-          if (attr.min && !elem.attr('aria-valuemin')) {
-            elem.attr('aria-valuemin', attr.min);
-          }
-          if (attr.max && !elem.attr('aria-valuemax')) {
-            elem.attr('aria-valuemax', attr.max);
-          }
-          if (ngModel && !elem.attr('aria-valuenow')) {
-            scope.$watch(function ngAriaModelWatch() {
-              return ngModel.$modelValue;
-            }, function ngAriaValueNowReaction(newVal) {
-              elem.attr('aria-valuenow', newVal);
-            });
-          }
-        }
+      config: function (key) {
+        return config[key];
       },
-      radio: function(scope, elem, attr, ngModel) {
-        if (config.ariaChecked && ngModel && !elem.attr('aria-checked')) {
-          var needsTabIndex = config.tabindex && !elem.attr('tabindex');
-          scope.$watch(function() {
-            return ngModel.$modelValue;
-          }, function(newVal) {
-            elem.attr('aria-checked', newVal === attr.value);
-            if (needsTabIndex) {
-              elem.attr('tabindex', 0 - (newVal !== attr.value));
-            }
-          });
-        }
-      },
-      multiline: function(scope, elem, attr) {
-        if (config.ariaMultiline && !elem.attr('aria-multiline')) {
-          elem.attr('aria-multiline', true);
-        }
-      },
-      roleChecked: function(scope, elem, attr) {
-        if (config.ariaChecked && attr.checked && !elem.attr('aria-checked')) {
-          elem.attr('aria-checked', true);
-        }
-      },
-      tabindex: function(scope, elem, attr) {
-        if (config.tabindex && !elem.attr('tabindex')) {
-          elem.attr('tabindex', 0);
-        }
-      }
+      $$watchExpr: watchExpr
     };
   };
 }
 
-var ngAriaRequired = ['$aria', function($aria) {
-  return {
-    require: '?ngModel',
-    link: $aria.ariaRequired
-  };
-}];
-
 var ngAriaTabindex = ['$aria', function($aria) {
-  return $aria.tabindex;
+  return function(scope, elem, attr) {
+    if ($aria.config('tabindex') && !elem.attr('tabindex')) {
+      elem.attr('tabindex', 0);
+    }
+  };
 }];
 
 ngAriaModule.directive('ngShow', ['$aria', function($aria) {
-  return $aria.watchExpr('ngShow', 'ariaHidden', true);
+  return $aria.$$watchExpr('ngShow', 'ariaHidden', true);
 }])
 .directive('ngHide', ['$aria', function($aria) {
-  return $aria.watchExpr('ngHide', 'ariaHidden', false);
+  return $aria.$$watchExpr('ngHide', 'ariaHidden', false);
 }])
-.directive('input', ['$aria', function($aria) {
-  return {
-    restrict: 'E',
-    require: '?ngModel',
-    link: function(scope, elem, attr, ngModel) {
-      if (attr.type === 'checkbox') {
-        $aria.ariaChecked(scope, elem, attr);
-      } else if (attr.type === 'radio') {
-        $aria.radio(scope, elem, attr, ngModel);
-      } else if (attr.type === 'range') {
-        $aria.ariaValue(scope, elem, attr, ngModel);
-      }
-      $aria.ariaInvalid(scope, elem, attr, ngModel);
-    }
-  };
-}])
-.directive('textarea', ['$aria', function($aria) {
-  return {
-    restrict: 'E',
-    require: '?ngModel',
-    link: function(scope, elem, attr, ngModel) {
-      $aria.ariaInvalid(scope, elem, attr, ngModel);
-      $aria.multiline(scope, elem, attr);
-    }
-  };
-}])
-.directive('ngRequired', ngAriaRequired)
-.directive('required', ngAriaRequired)
-.directive('ngDisabled', ['$aria', function($aria) {
-  return $aria.ariaDisabled;
-}])
-.directive('role', ['$aria', function($aria) {
+.directive('ngModel', ['$aria', function($aria) {
   return {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elem, attr, ngModel) {
-      if (attr.role === 'textbox') {
-        $aria.multiline(scope, elem, attr);
-      } else if (attr.role === 'progressbar' || attr.role === 'slider') {
-        $aria.ariaValue(scope, elem, attr, ngModel);
-      } else if (attr.role === 'checkbox' || attr.role === 'menuitemcheckbox') {
-        $aria.roleChecked(scope, elem, attr);
-        $aria.tabindex(scope, elem, attr);
-      } else if (attr.role === 'radio' || attr.role === 'menuitemradio') {
-        $aria.radio(scope, elem, attr, ngModel);
-      } else if (attr.role === 'button') {
-        $aria.tabindex(scope, elem, attr);
+      var type = attr.type,
+          role = attr.role;
+
+      var checkboxLike  = (type || role) === 'checkbox' || role === 'menuitemcheckbox',
+          radioLike     = (type || role) === 'radio'    || role === 'menuitemradio',
+          rangeLike     = type === 'range'              || role === 'progressbar' || role === 'slider',
+          multilineLike = (type || role) === 'textbox'  || elem[0].nodeName === 'TEXTAREA';
+
+      function shouldAttachAriaAttr(name) {
+        return $aria.config('aria' + name[0].toUpperCase() + name.substr(1)) && !elem.attr('aria-' + name);
+      }
+
+      var needsTabIndex = $aria.config('tabindex') && !elem.attr('tabindex');
+
+      if ((checkboxLike || radioLike) && shouldAttachAriaAttr('checked')) {
+
+        var checkboxReaction;
+
+        if (radioLike) {
+          if (needsTabIndex) {
+            checkboxReaction = function(newVal) {
+              var boolVal = newVal === attr.value;
+              elem.attr('aria-checked', boolVal);
+              elem.attr('tabindex', 0 - !boolVal);
+            };
+            needsTabIndex = false;
+          } else {
+            checkboxReaction = function(newVal) {
+              elem.attr('aria-checked', newVal === attr.value);
+            };
+          }
+        } else {
+          checkboxReaction = function(newVal) {
+            elem.attr('aria-checked', !!newVal);
+          };
+        }
+
+        scope.$watch(function() {
+          return ngModel.$modelValue;
+        }, checkboxReaction);
+
+      } else if (rangeLike && $aria.config('ariaValue')) {
+        if (attr.min && !elem.attr('aria-valuemin')) {
+          elem.attr('aria-valuemin', attr.min);
+        }
+        if (attr.max && !elem.attr('aria-valuemax')) {
+          elem.attr('aria-valuemax', attr.max);
+        }
+        if (!elem.attr('aria-valuenow')) {
+          scope.$watch(function ngAriaModelWatch() {
+            return ngModel.$modelValue;
+          }, function ngAriaValueNowReaction(newVal) {
+            elem.attr('aria-valuenow', newVal);
+          });
+        }
+      } else if (multilineLike && shouldAttachAriaAttr('multiline')) {
+        elem.attr('aria-multiline', true);
+      }
+
+      if (needsTabIndex) {
+        elem.attr('tabindex', 0);
+      }
+
+      if (ngModel.$validators.required && shouldAttachAriaAttr('required')) {
+        scope.$watch(function ngAriaRequiredWatch() {
+          return ngModel.$error.required;
+        }, function(newVal) {
+          elem.attr('aria-required', !!newVal);
+        });
+      }
+
+      if (shouldAttachAriaAttr('invalid')) {
+        scope.$watch(function ngAriaInvalidWatch() {
+          return ngModel.$invalid;
+        }, function(newVal) {
+          elem.attr('aria-invalid', !!newVal);
+        });
       }
     }
   };
+}])
+.directive('ngDisabled', ['$aria', function($aria) {
+  return $aria.$$watchExpr('ngDisabled', 'ariaDisabled');
 }])
 .directive('ngClick', ngAriaTabindex)
 .directive('ngDblclick', ngAriaTabindex);
