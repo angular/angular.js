@@ -276,7 +276,6 @@ function $HttpProvider() {
      * - {@link ng.$http#put $http.put}
      * - {@link ng.$http#delete $http.delete}
      * - {@link ng.$http#jsonp $http.jsonp}
-     * - {@link ng.$http#patch $http.patch}
      *
      *
      * ## Setting HTTP Headers
@@ -878,18 +877,6 @@ function $HttpProvider() {
      * @returns {HttpPromise} Future object
      */
 
-     /**
-      * @ngdoc method
-      * @name $http#patch
-      *
-      * @description
-      * Shortcut method to perform `PATCH` request.
-      *
-      * @param {string} url Relative or absolute URL specifying the destination of the request
-      * @param {*} data Request content
-      * @param {Object=} config Optional configuration object
-      * @returns {HttpPromise} Future object
-      */
     createShortMethodsWithData('post', 'put', 'patch');
 
         /**
