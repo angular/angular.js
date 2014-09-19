@@ -1,6 +1,6 @@
 'use strict';
 
-*
+/*
  * @ngdoc filter
  * @name limitTo
  * @kind function
@@ -85,7 +85,7 @@
        });
      </file>
    </example>
-
+*/
 function limitToFilter(){
   return function(input, limit) {
     if (isNumber(input)) input = input.toString();
