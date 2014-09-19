@@ -105,18 +105,20 @@ describe('$aria', function() {
     });
 
     it('should attach itself to role="checkbox"', function() {
-      compileInput('<div role="checkbox" checked="checked"></div>');
+      scope.val = true;
+      compileInput('<div role="checkbox" ng-model="val"></div>');
       expect(element.attr('aria-checked')).toBe('true');
     });
 
     it('should attach itself to role="menuitemradio"', function() {
-      scope.$apply("val = 'one'");
+      scope.val = 'one';
       compileInput('<div role="menuitemradio" ng-model="val" value="{{val}}"></div>');
       expect(element.attr('aria-checked')).toBe('true');
     });
 
     it('should attach itself to role="menuitemcheckbox"', function() {
-      compileInput('<div role="menuitemcheckbox" checked="checked"></div>');
+      scope.val = true;
+      compileInput('<div role="menuitemcheckbox" ng-model="val"></div>');
       expect(element.attr('aria-checked')).toBe('true');
     });
 
@@ -330,12 +332,12 @@ describe('$aria', function() {
     beforeEach(injectScopeAndCompiler);
 
     it('should attach itself to textarea', function() {
-      compileInput('<textarea></textarea>');
+      compileInput('<textarea ng-model="val"></textarea>');
       expect(element.attr('aria-multiline')).toBe('true');
     });
 
     it('should attach itself role="textbox"', function() {
-      compileInput('<div role="textbox"></div>');
+      compileInput('<div role="textbox" ng-model="val"></div>');
       expect(element.attr('aria-multiline')).toBe('true');
     });
 
@@ -423,11 +425,8 @@ describe('$aria', function() {
   describe('tabindex', function() {
     beforeEach(injectScopeAndCompiler);
 
-    it('should attach tabindex to role=button, role=checkbox, ng-click and ng-dblclick', function() {
-      compileInput('<div role="button"></div>');
-      expect(element.attr('tabindex')).toBe('0');
-
-      compileInput('<div role="checkbox"></div>');
+    it('should attach tabindex to role="checkbox", ng-click, and ng-dblclick', function() {
+      compileInput('<div role="checkbox" ng-model="val"></div>');
       expect(element.attr('tabindex')).toBe('0');
 
       compileInput('<div ng-click="someAction()"></div>');
