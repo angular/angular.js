@@ -45,7 +45,7 @@ var ngAriaModule = angular.module('ngAria', ['ng']).
  * Used for configuring aria attributes.
  *
  * ## Dependencies
- * Requires the {@link ngAria `ngAria`} module to be installed.
+ * Requires the {@link ngAria} module to be installed.
  */
 function $AriaProvider() {
   var config = {
@@ -127,6 +127,17 @@ function $AriaProvider() {
     };
   }
 
+  /**
+   * @ngdoc service
+   * @name $aria
+   *
+   * @description
+   *
+   * Contains helper methods for applying aria tags to HTML
+   *
+   * ## Dependencies
+   * Requires the {@link ngAria} module to be installed.
+   */
   this.$get = function() {
     return {
       watchExpr: watchExpr,
