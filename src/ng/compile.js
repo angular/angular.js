@@ -884,41 +884,41 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         nodeName = nodeName_(this.$$element);
 
         if ((nodeName === 'a' && key === 'href') ||
-						(nodeName === 'img' && key === 'src')) {
-  	      // sanitize a[href] and img[src] values
-				  this[key] = value = $$sanitizeUri(value, key === 'src');
+            (nodeName === 'img' && key === 'src')) {
+          // sanitize a[href] and img[src] values
+          this[key] = value = $$sanitizeUri(value, key === 'src');
         } else if (nodeName === 'img' && key === 'srcset') {
-        	// sanitize img[srcset] values
-					var result = "";
+          // sanitize img[srcset] values
+          var result = "";
 
-					// first check if there are spaces because it's not the same pattern
-					var trimedSrcset = trim(value);
-					var pattern = /\s/.test( trimedSrcset) ? /(\d+x\s*,|\d+w\s*,|\s+,|,\s+)/ : /(,)/;
+          // first check if there are spaces because it's not the same pattern
+          var trimedSrcset = trim(value);
+          var pattern = /\s/.test( trimedSrcset) ? /(\d+x\s*,|\d+w\s*,|\s+,|,\s+)/ : /(,)/;
 
-					// split srcset into tupple of uri and descriptor except for the last item
-					var rawUris = trimedSrcset.split(pattern);
+          // split srcset into tupple of uri and descriptor except for the last item
+          var rawUris = trimedSrcset.split(pattern);
 
-					// for each tupples
-					var nbrUrisWith2parts = Math.floor(rawUris.length / 2);
-					for (var i=0; i<nbrUrisWith2parts; i++) {
-						var innerIdx = i*2;
-						// sanitize the uri
-						result += $$sanitizeUri(trim( rawUris[innerIdx]), true);
-						// add the descriptor
-						result += ( " " + trim(rawUris[innerIdx+1]));
-					}
+          // for each tupples
+          var nbrUrisWith2parts = Math.floor(rawUris.length / 2);
+          for (var i=0; i<nbrUrisWith2parts; i++) {
+            var innerIdx = i*2;
+            // sanitize the uri
+            result += $$sanitizeUri(trim( rawUris[innerIdx]), true);
+            // add the descriptor
+            result += ( " " + trim(rawUris[innerIdx+1]));
+          }
 
-					// split the last item into uri and descriptor
-					var lastTupple = trim(rawUris[i*2]).split(/\s/);
+          // split the last item into uri and descriptor
+          var lastTupple = trim(rawUris[i*2]).split(/\s/);
 
-					// sanitize the last uri
-					result += $$sanitizeUri(trim(lastTupple[0]), true);
+          // sanitize the last uri
+          result += $$sanitizeUri(trim(lastTupple[0]), true);
 
-					// and add the last descriptor if any
-					if( lastTupple.length === 2) {
-						result += (" " + trim(lastTupple[1]));
-					}
-					this[key] = value = result;
+          // and add the last descriptor if any
+          if( lastTupple.length === 2) {
+            result += (" " + trim(lastTupple[1]));
+          }
+          this[key] = value = result;
         }
 
         if (writeAttr !== false) {
