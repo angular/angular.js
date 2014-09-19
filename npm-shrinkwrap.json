@@ -3055,7 +3055,7 @@
       }
     },
     "karma": {
-      "version": "0.12.23",
+      "version": "0.12.13",
       "dependencies": {
         "di": {
           "version": "0.0.1"
@@ -3324,8 +3324,7 @@
           }
         }
       }
-    },
-    "karma-browserstack-launcher": {
+    },    "karma-browserstack-launcher": {
       "version": "0.0.7",
       "dependencies": {
         "browserstack": {
