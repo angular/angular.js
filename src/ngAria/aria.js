@@ -5,7 +5,7 @@
  * @name ngAria
  * @description
  *
- * The `ngAria` module provides support for to embed aria tags that convey state or semantic information
+ * The `ngAria` module provides support for adding aria tags that convey state or semantic information
  * about the application in order to allow assistive technologies to convey appropriate information to
  * persons with disabilities.
  *
