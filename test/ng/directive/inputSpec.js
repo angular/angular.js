@@ -3689,15 +3689,6 @@ describe('input', function() {
           expect(scope.form.alias.$error.required).toBeTruthy();
         });
 
-        it('should be invalid when the user enters an invalid value', function() {
-          compileInput('<input type="number" ng-model="value" name="alias" ng-required="true" />');
-
-          changeInputValueTo('Hello, world !');
-          expect(inputElm.val()).toBe('');
-          expect(inputElm).toBeInvalid();
-          expect(scope.form.alias.$error.required).toBeTruthy();
-        });
-
         it('should change from invalid to valid when the value is empty and the ngRequired expression changes to false', function() {
           compileInput('<input type="number" ng-model="value" name="alias" ng-required="ngRequiredExpr" />');
 
@@ -3732,15 +3723,6 @@ describe('input', function() {
           changeInputValueTo('42');
           expect(inputElm).toBeValid();
           expect(scope.value).toBe(42);
-          expect(scope.form.alias.$error.required).toBeFalsy();
-        });
-
-        it('should not have the "required" error flag set even if the value is not a number', function() {
-          compileInput('<input type="number" ng-model="value" name="alias" ng-required="false" />');
-
-          changeInputValueTo('Hello, world !');
-          expect(inputElm.val()).toBe('');
-          expect(inputElm).toBeValid();
           expect(scope.form.alias.$error.required).toBeFalsy();
         });
 
