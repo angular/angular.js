@@ -3514,6 +3514,17 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+
+    it('should validate with undefined viewValue when $validate() called', function() {
+      compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      scope.form.alias.$validate();
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.alias.$error.number).toBeUndefined();
+    });
+
+
     it('should throw if the model value is not a number', function() {
       expect(function() {
         scope.value = 'one';
