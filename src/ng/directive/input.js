@@ -903,10 +903,16 @@ function testFlags(validity, flags) {
 }
 
 function multipleBasedInputType(ctrl, attr) {
-  if (attr.multiple) {
-    addListParserFormatter(ctrl, ', ', true);
-    ctrl.$$multiple = true;
-  }
+  var removeParserFormatter = angular.noop;
+  attr.$observe('multiple', function(val) {
+    if (val) {
+      removeParserFormatter = addListParserFormatter(ctrl, ', ', true);
+    } else {
+      removeParserFormatter();
+    }
+    ctrl.$$multiple = !!val;
+    ctrl.$validate();
+  });
 }
 
 function stringBasedInputType(ctrl) {
@@ -2615,14 +2621,21 @@ function addListParserFormatter(ctrl, separator, trimValues) {
     return list;
   };
 
-  ctrl.$parsers.push(parse);
-  ctrl.$formatters.push(function(value) {
+  var format = function(value) {
     if (isArray(value)) {
       return value.join(separator);
     }
 
     return undefined;
-  });
+  };
+
+  ctrl.$parsers.push(parse);
+  ctrl.$formatters.push(format);
+
+  return function() {
+    arrayRemove(ctrl.$parsers, parse);
+    arrayRemove(ctrl.$formatters, format);
+  };
 }
 
 /**

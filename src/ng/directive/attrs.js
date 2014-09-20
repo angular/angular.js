@@ -345,15 +345,17 @@ var ngAttributeAliasDirectives = {};
 
 // boolean attrs are evaluated
 forEach(BOOLEAN_ATTR, function(propName, attrName) {
-  // binding to multiple is not supported
-  if (propName == "multiple") return;
-
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
       restrict: 'A',
       priority: 100,
       link: function(scope, element, attr) {
+        // binding to multiple is not supported for select
+        if (propName === 'multiple' && nodeName_(element) === 'select') {
+          return;
+        }
+
         scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
           attr.$set(attrName, !!value);
         });

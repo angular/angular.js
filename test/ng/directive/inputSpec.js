@@ -3792,6 +3792,25 @@ describe('input', function() {
       expect(widget.$error.required).toBeTruthy();
     });
 
+    it('should observe multiple attribute', function() {
+      compileInput('<input type="email" ng-multiple="multiple" ng-model="email" name="alias" />');
+
+      var widget = scope.form.alias;
+
+      changeInputValueTo('vojta@google.com');
+      expect(scope.email).toEqual('vojta@google.com');
+
+      scope.$apply('multiple = true');
+      expect(scope.email).toEqual(['vojta@google.com']);
+
+      changeInputValueTo('vojta@google.com,someone@somewhere.com');
+      expect(inputElm).toBeValid();
+
+      scope.$apply('multiple = false');
+      expect(inputElm).toBeInvalid();
+      expect(widget.$error.email).toBeTruthy();
+    });
+
     describe('EMAIL_REGEXP', function() {
       /* global EMAIL_REGEXP: false */
       it('should validate email', function() {
