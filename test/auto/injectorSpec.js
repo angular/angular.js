@@ -182,6 +182,10 @@ describe('injector', function() {
       expect(annotate(beforeEachFn)).toEqual(['foo']);
     });
 
+    it('should not strip service names with a single underscore', function() {
+      function beforeEachFn(_) { /* _ = _ */ }
+      expect(annotate(beforeEachFn)).toEqual(['_']);
+    });
 
     it('should handle no arg functions', function() {
       function $f_n0() {}

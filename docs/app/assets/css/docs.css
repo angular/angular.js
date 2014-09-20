@@ -391,7 +391,6 @@ iframe.example {
   position:fixed;
   top:120px;
   bottom:0;
-  padding-bottom:120px;
   overflow:auto;
 }
 
@@ -412,6 +411,7 @@ iframe.example {
 
 .main-body-grid .side-navigation {
   position:relative;
+  padding-bottom:120px;
 }
 
 .main-body-grid .side-navigation.ng-hide {

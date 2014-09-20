@@ -95,7 +95,7 @@ describe('PhoneCat App', function() {
     });
 
 
-    it('should filter the phone list as user types into the search box', function() {
+    it('should filter the phone list as a user types into the search box', function() {
 
       var phoneList = element.all(by.repeater('phone in phones'));
       var query = element(by.model('query'));
@@ -159,7 +159,7 @@ Let's see how we can get the current value of the `query` model to appear in the
         var phoneList = element.all(by.repeater('phone in phones'));
         var query = element(by.model('query'));
     
-        it('should filter the phone list as user types into the search box', function() {
+        it('should filter the phone list as a user types into the search box', function() {
           expect(phoneList.count()).toBe(3);
     
           query.sendKeys('nexus');
