@@ -35,7 +35,9 @@ Following is a sample of the file:
 ]
 ```
 
-Note: We suggest that you copy and paste the contents of the JSON file that you prepare into [JSONLint](http://jsonlint.com/) (or similar equivalent). JSONLint will validate its contents and report parse errors.
+<div class="alert alert-info">
+  **Note:** Validating your JSON data with a JSON validator will ensure that it can be parsed correctly.
+</div>
 
 ## Controller
 
