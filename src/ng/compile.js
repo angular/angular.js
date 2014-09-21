@@ -1067,10 +1067,21 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective,
                             previousCompileContext) {
       var linkFns = [],
-          attrs, directives, nodeLinkFn, childNodes, childLinkFn, linkFnFound, nodeLinkFnFound;
+          attrs, directives, nodeLinkFn, childNodes, childLinkFn, linkFnFound, nodeLinkFnFound,
+          i, canary = '' + Math.random();
 
-      for (var i = 0; i < nodeList.length; i++) {
+      // While doing the main loop, there is the possibility that the element that we just compiled
+      // is removed from `nodeList` and not just replaced with a comment or another element.
+      // To detect this, we put a canary on all elements and remove it once the element is processed
+      // https://github.com/angular/angular.js/issues/9198
+      for (i = 0; i < nodeList.length; ++i) {
+        nodeList[i].ngCanary = canary;
+      }
+
+      i = 0;
+      while (i < nodeList.length) {
         attrs = new Attributes();
+        nodeList[i].ngCanary = undefined;
 
         // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
         directives = collectDirectives(nodeList[i], [], attrs, i === 0 ? maxPriority : undefined,
@@ -1102,6 +1113,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         //use the previous context only for the first element in the virtual group
         previousCompileContext = null;
+
+        // nodeList is a *live* list of elements, so there is a chance that the node we just compile
+        // was removed from nodeList (not just replaced with something else), and the node at
+        // nodeList[i] is a node that was not processed
+        if (nodeList[i].ngCanary != canary) i++;
       }
 
       // return a linking function if we have found anything, null otherwise

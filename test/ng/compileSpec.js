@@ -6337,6 +6337,27 @@ describe('$compile', function() {
       });
     });
 
+    it('should collect all directives even when a directive compilation removes a node', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('foo', function() {
+          return {
+            restrict: 'A',
+            compile: function(tElement){
+              tElement.detach();
+            },
+            multiElement: true
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<div><div foo=""></div>{{"Hello world"}}</div>')($rootScope);
+        $rootScope.$digest();
+        expect(element.text()).toBe('Hello world');
+        element = $compile('<div><div foo-start=""></div><div foo-end></div>{{"Hello world"}}</div>')($rootScope);
+        $rootScope.$digest();
+        expect(element.text()).toBe('Hello world');
+      });
+    });
 
     it('should throw error if unterminated (containing termination as a child)', function () {
       module(function($compileProvider) {
