@@ -6,6 +6,7 @@ angular.module('docsApp', [
   'DocsController',
   'versionsData',
   'pagesData',
+  'navData',
   'directives',
   'errors',
   'examples',

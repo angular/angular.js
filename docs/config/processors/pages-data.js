@@ -209,17 +209,20 @@ module.exports = function generatePagesDataProcessor(log) {
         .indexBy('path')
         .value();
 
-      var docData = {
+      docs.push({
         docType: 'pages-data',
         id: 'pages-data',
         template: 'pages-data.template.js',
         outputPath: 'js/pages-data.js',
-
-        areas: areas,
         pages: pages
-      };
-
-      docs.push(docData);
+      });
+      docs.push({
+        docType: 'nav-data',
+        id: 'nav-data',
+        template: 'nav-data.template.js',
+        outputPath: 'js/nav-data.js',
+        areas: areas
+      });
     }
-  }
+  };
 };
