@@ -50,26 +50,11 @@ angular.module('search', [])
 }])
 
 .factory('lunrSearch', function() {
-  return function(properties) {
-    if (window.RUNNING_IN_NG_TEST_RUNNER) return null;
-
-    var engine = lunr(properties);
-    return {
-      store : function(values) {
-        engine.add(values);
-      },
-      search : function(q) {
-        return engine.search(q);
-      }
-    };
-  };
+  return lunr;
 })
 
-.factory('docsSearch', ['$rootScope','lunrSearch', 'NG_PAGES',
-    function($rootScope, lunrSearch, NG_PAGES) {
-  if (window.RUNNING_IN_NG_TEST_RUNNER) {
-    return null;
-  }
+.factory('docsSearch', ['$rootScope','lunrSearch', 'NG_PAGES', '$timeout',
+    function($rootScope, lunrSearch, NG_PAGES, $timeout) {
 
   var index = lunrSearch(function() {
     this.ref('id');
@@ -78,16 +63,19 @@ angular.module('search', [])
     this.field('keywords', { boost : 20 });
   });
 
-  angular.forEach(NG_PAGES, function(page, key) {
-    if(page.searchTerms) {
-      index.store({
-        id : key,
-        title : page.searchTerms.titleWords,
-        keywords : page.searchTerms.keywords,
-        members : page.searchTerms.members
-      });
-    };
-  });
+  // Delay building the index for one second to allow the page to render
+  $timeout(function() {
+    angular.forEach(NG_PAGES, function(page, key) {
+      if(page.searchTerms) {
+        index.add({
+          id : key,
+          title : page.searchTerms.titleWords,
+          keywords : page.searchTerms.keywords,
+          members : page.searchTerms.members
+        });
+      };
+    });
+  }, 1000);
 
   return function(q) {
     var results = {
