@@ -618,11 +618,15 @@ function nodeName_(element) {
 
 
 function map(obj, iterator, context) {
-  var results = [];
-  forEach(obj, function(value, index, list) {
-    results.push(iterator.call(context, value, index, list));
-  });
-  return results;
+  if (obj.map && obj.map !== map) {
+    return obj.map(iterator, context);
+  } else {
+    var results = [];
+    forEach(obj, function(value, index, list) {
+      results.push(iterator.call(context, value, index, list));
+    });
+    return results;
+  }
 }
 
 
