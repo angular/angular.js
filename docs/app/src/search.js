@@ -10,22 +10,35 @@ angular.module('search', [])
   $scope.search = function(q) {
     var MIN_SEARCH_LENGTH = 2;
     if(q.length >= MIN_SEARCH_LENGTH) {
-      var results = docsSearch(q);
-      var totalAreas = 0;
-      for(var i in results) {
-        ++totalAreas;
-      }
-      if(totalAreas > 0) {
-        $scope.colClassName = 'cols-' + totalAreas;
-      }
-      $scope.hasResults = totalAreas > 0;
-      $scope.results = results;
+      docsSearch(q).then(function(hits) {
+        var results = {};
+        angular.forEach(hits, function(hit) {
+          var area = hit.area;
+
+          var limit = (area == 'api') ? 40 : 14;
+          results[area] = results[area] || [];
+          if(results[area].length < limit) {
+            results[area].push(hit);
+          }
+        });
+
+        var totalAreas = 0;
+        for(var i in results) {
+          ++totalAreas;
+        }
+        if(totalAreas > 0) {
+          $scope.colClassName = 'cols-' + totalAreas;
+        }
+        $scope.hasResults = totalAreas > 0;
+        $scope.results = results;
+      });
     }
     else {
       clearResults();
     }
     if(!$scope.$$phase) $scope.$apply();
   };
+
   $scope.submit = function() {
     var result;
     for(var i in $scope.results) {
@@ -39,6 +52,7 @@ angular.module('search', [])
       $scope.hideResults();
     }
   };
+
   $scope.hideResults = function() {
     clearResults();
     $scope.q = '';
@@ -49,55 +63,90 @@ angular.module('search', [])
   $scope.results = docsSearch($location.path().split(/[\/\.:]/).pop());
 }])
 
+.provider('docsSearch', function() {
 
-.factory('docsSearch', ['$http', '$timeout', function($http, $timeout) {
+  // This version of the service builds the index in the current thread,
+  // which blocks rendering and other browser activities.
+  // It should only be used where the browser does not support WebWorkers
+  function localSearchFactory($http, $timeout, $q) {
 
-  var index = lunr(function() {
-    this.ref('id');
-    this.field('title', {boost: 50});
-    this.field('members', { boost: 40});
-    this.field('keywords', { boost : 20 });
-  });
+    console.log('Using Local Search Index');
 
-  var pagesData = {};
-
-  console.time('getting pages data');
-  // Delay building the index by loading the data asynchronously
-  $http.get('js/pages-data.json').then(function(response) {
-    console.timeEnd('getting pages data');
-    pagesData = response.data;
-    console.time('building index');
-    // Delay building the index for 500ms to allow the page to render
-    $timeout(function() {
-      angular.forEach(pagesData, function(page, key) {
-        if(page.searchTerms) {
-          index.add({
-            id : key,
-            title : page.searchTerms.titleWords,
-            keywords : page.searchTerms.keywords,
-            members : page.searchTerms.members
-          });
-        };
-      });
-      console.timeEnd('building index');
-    }, 500);
-  });
-
-  return function(q) {
-    var results = {};
-    angular.forEach(index.search(q), function(result) {
-      var item = pagesData[result.ref];
-      var area = item.area;
-
-      var limit = area == 'api' ? 40 : 14;
-      results[area] = results[area] || [];
-      if(results[area].length < limit) {
-        results[area].push(item);
-      }
+    // Create the lunr index
+    var index = lunr(function() {
+      this.ref('id');
+      this.field('title', {boost: 50});
+      this.field('members', { boost: 40});
+      this.field('keywords', { boost : 20 });
     });
-    return results;
+
+    var pagesData = {};
+
+    // Delay building the index by loading the data asynchronously
+    $http.get('js/pages-data.json').then(function(response) {
+      pagesData = response.data;
+      // Delay building the index for 500ms to allow the page to render
+      $timeout(function() {
+        // load the page data into the index
+        angular.forEach(pagesData, function(page, key) {
+          if(page.searchTerms) {
+            index.add({
+              id : key,
+              title : page.searchTerms.titleWords,
+              keywords : page.searchTerms.keywords,
+              members : page.searchTerms.members
+            });
+          };
+        });
+      }, 500);
+    });
+    localSearchFactory.$inject = ['$http', '$timeout', '$q'];
+
+    // The actual service is a function that takes a query string and
+    // returns a promise to the search results
+    // (In this case we just resolve the promise immediately as it is not
+    // inherently an async process)
+    return function(q) {
+      var hits = index.search(q);
+      var results = [];
+      angular.forEach(hits, function(hit) {
+        results.push(pagesData[hit.ref]);
+      });
+      return $q.when(results);
+    };
+  }
+
+  // This version of the service builds the index in a WebWorker,
+  // which does not block rendering and other browser activities.
+  // It should only be used where the browser does support WebWorkers
+  function webWorkerSearchFactory($q) {
+
+    console.log('Using WebWorker Search Index')
+
+    var results;
+
+    var worker = new Worker('js/search.js');
+
+    // The worker will send us a message when it has completed a
+    // search query and has the result available
+    worker.onmessage = function(oEvent) {
+      results.resolve(oEvent.data);
+    };
+
+    // The actual service is a function that takes a query string and
+    // returns a promise to the search results
+    return function(q) {
+      results = $q.defer();
+      worker.postMessage({ q: q });
+      return results.promise;
+    };
+  }
+  webWorkerSearchFactory.$inject = ['$q'];
+
+  return {
+    $get: window.Worker ? webWorkerSearchFactory : localSearchFactory
   };
-}])
+})
 
 .directive('focused', function($timeout) {
   return function(scope, element, attrs) {
