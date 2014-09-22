@@ -896,7 +896,7 @@ describe('NgModelController', function() {
 });
 
 describe('ngModel', function() {
-  var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+  var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 
   it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
       inject(function($compile, $rootScope, $sniffer) {
@@ -916,6 +916,13 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('invalid-again');
+    browserTrigger(element, ($sniffer.hasEvent('input')) ? 'input' : 'change');
+    expect(element).toBeInvalid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
+
+    element.val('evilaliv3@withoutdot');
     browserTrigger(element, ($sniffer.hasEvent('input')) ? 'input' : 'change');
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
