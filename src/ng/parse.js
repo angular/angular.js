@@ -1079,7 +1079,7 @@ function $ParseProvider() {
           return addInterceptor(exp, interceptorFn);
 
         default:
-          return addInterceptor(noop, interceptorFn);
+          return noop;
       }
     };
 
