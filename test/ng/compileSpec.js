@@ -3084,7 +3084,9 @@ describe('$compile', function() {
             colref: '=*',
             colrefAlias: '=* colref',
             expr: '&',
-            exprAlias: '&expr'
+            optExpr: '&?',
+            exprAlias: '&expr',
+            constructor: '&?'
           },
           link: function(scope) {
             componentScope = scope;
@@ -3222,6 +3224,38 @@ describe('$compile', function() {
         expect($rootScope.value).toBe(true);
       });
     });
+
+
+    it('should not initialize scope value if optional expression binding is not passed', inject(function($compile) {
+      compile('<div my-component></div>');
+      var isolateScope = element.isolateScope();
+      expect(isolateScope.optExpr).toBeUndefined();
+    }));
+
+
+    it('should not initialize scope value if optional expression binding with Object.prototype name is not passed', inject(function($compile) {
+      compile('<div my-component></div>');
+      var isolateScope = element.isolateScope();
+      expect(isolateScope.constructor).toBe($rootScope.constructor);
+    }));
+
+
+    it('should initialize scope value if optional expression binding is passed', inject(function($compile) {
+      compile('<div my-component opt-expr="value = \'did!\'"></div>');
+      var isolateScope = element.isolateScope();
+      expect(typeof isolateScope.optExpr).toBe('function');
+      expect(isolateScope.optExpr()).toBe('did!');
+      expect($rootScope.value).toBe('did!');
+    }));
+
+
+    it('should initialize scope value if optional expression binding with Object.prototype name is passed', inject(function($compile) {
+      compile('<div my-component constructor="value = \'did!\'"></div>');
+      var isolateScope = element.isolateScope();
+      expect(typeof isolateScope.constructor).toBe('function');
+      expect(isolateScope.constructor()).toBe('did!');
+      expect($rootScope.value).toBe('did!');
+    }));
 
 
     describe('bind-once', function() {

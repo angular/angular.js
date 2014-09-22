@@ -2576,7 +2576,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             break;
 
           case '&':
+            // Don't assign Object.prototype method to scope
+            if (!attrs.hasOwnProperty(attrName) && optional) break;
+
             parentGet = $parse(attrs[attrName]);
+
+            // Don't assign noop to destination if expression is not valid
+            if (parentGet === noop && optional) break;
+
             destination[scopeName] = function(locals) {
               return parentGet(scope, locals);
             };
