@@ -223,6 +223,10 @@ function $RootScopeProvider(){
           parent.$$childHead = parent.$$childTail = child;
         }
 
+        // When the new scope is not isolated or we inherit from `this`, and
+        // the parent scope is destroyed, the property `$$destroyed` is inherited
+        // prototypically. In all other cases, this property needs to be set
+        // when the parent scope is destroyed.
         // The listener needs to be added after the parent is set
         if (isolate || parent != this) child.$on('$destroy', destroyChild);
 
