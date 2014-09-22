@@ -45,12 +45,12 @@ describe('injector', function() {
 //   s6
 
 
-    providers('s1', function() { log.push('s1'); }, {$inject: ['s2', 's5', 's6']});
-    providers('s2', function() { log.push('s2'); }, {$inject: ['s3', 's4', 's5']});
-    providers('s3', function() { log.push('s3'); }, {$inject: ['s6']});
-    providers('s4', function() { log.push('s4'); }, {$inject: ['s3', 's5']});
-    providers('s5', function() { log.push('s5'); });
-    providers('s6', function() { log.push('s6'); });
+    providers('s1', function() { log.push('s1'); return {}; }, {$inject: ['s2', 's5', 's6']});
+    providers('s2', function() { log.push('s2'); return {}; }, {$inject: ['s3', 's4', 's5']});
+    providers('s3', function() { log.push('s3'); return {}; }, {$inject: ['s6']});
+    providers('s4', function() { log.push('s4'); return {}; }, {$inject: ['s3', 's5']});
+    providers('s5', function() { log.push('s5'); return {}; });
+    providers('s6', function() { log.push('s6'); return {}; });
 
     injector.get('s1');
 
@@ -982,5 +982,15 @@ describe('strict-di injector', function() {
         $injector.invoke(['$test', function(test) {}]);
       }).toThrowMinErr('$injector', 'strictdi');
     });
+  });
+
+
+  it('should throw if factory does not return a value', function() {
+    module(function($provide) {
+      $provide.factory('$test', function() {});
+    });
+    expect(function() {
+      inject(function($test) {});
+    }).toThrowMinErr('$injector', 'undef');
   });
 });
