@@ -4537,6 +4537,65 @@ describe('$compile', function() {
         });
       });
 
+      it('should not leak when continuing the compilation of elements on a scope that was destroyed', function() {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
+        var linkFn = jasmine.createSpy('linkFn');
+
+        module(function($controllerProvider, $compileProvider) {
+          $controllerProvider.register('Leak', function ($scope, $timeout) {
+            $scope.code = 'red';
+            $timeout(function () {
+              $scope.code = 'blue';
+            });
+          });
+          $compileProvider.directive('isolateRed', function() {
+            return {
+              restrict: 'A',
+              scope: {},
+              template: '<div red></div>'
+            };
+          });
+          $compileProvider.directive('red', function() {
+            return {
+              restrict: 'A',
+              templateUrl: 'red.html',
+              scope: {},
+              link: linkFn
+            };
+          });
+        });
+
+        inject(function($compile, $rootScope, $httpBackend, $timeout, $templateCache) {
+          $httpBackend.whenGET('red.html').respond('<p>red.html</p>');
+          var template = $compile(
+            '<div ng-controller="Leak">' +
+              '<div ng-switch="code">' +
+                '<div ng-switch-when="red">' +
+                  '<div isolate-red></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>');
+          element = template($rootScope);
+          $rootScope.$digest();
+          $timeout.flush();
+          $httpBackend.flush();
+          expect(linkFn).not.toHaveBeenCalled();
+          expect(jqLiteCacheSize()).toEqual(2);
+
+          $templateCache.removeAll();
+          var destroyedScope = $rootScope.$new();
+          destroyedScope.$destroy();
+          var clone = template(destroyedScope);
+          $rootScope.$digest();
+          $timeout.flush();
+          expect(linkFn).not.toHaveBeenCalled();
+        });
+      });
+
       if (jQuery) {
         describe('cleaning up after a replaced element', function () {
           var $compile, xs;
@@ -5117,7 +5176,7 @@ describe('$compile', function() {
           expect(countScopes($rootScope)).toEqual(1);
         }));
 
-        it('should destroy mark as destroyed all sub scopes of the scope being destroyed',
+        it('should mark as destroyed all sub scopes of the scope being destroyed',
               inject(function($compile, $rootScope) {
 
           element = $compile(
