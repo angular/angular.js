@@ -91,10 +91,11 @@ To configure the `$location` service, retrieve the
 {@link ng.$locationProvider $locationProvider} and set the parameters as follows:
 
 
-- **html5Mode(mode)**: {boolean}<br />
-  `true` - see HTML5 mode<br />
-  `false` - see Hashbang mode<br />
-  default: `false`
+- **html5Mode(mode)**: {boolean|Object}<br />
+  `true` or `enabled:true` - see HTML5 mode<br />
+  `false` or `enabled:false` - see Hashbang mode<br />
+  `requireBase:true` - see Relative links<br />
+  default: `enabled:false`
 
 - **hashPrefix(prefix)**: {string}<br />
   prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
@@ -328,9 +329,11 @@ reload to the original link.
 
 ### Relative links
 
-Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url base in
-the head of your main html file (`<base href="/my-base">`). With that, relative urls will
-always be resolved to this base url, event if the initial url of the document was different.
+Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url
+base in the head of your main html file (`<base href="/my-base">`) unless `html5Mode.requireBase` is
+set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
+that, relative urls will always be resolved to this base url, event if the initial url of the
+document was different.
 
 There is one exception: Links that only contain a hash fragment (e.g. `<a href="#target">`)
 will only change `$location.hash()` and not modify the url otherwise. This is useful for scrolling

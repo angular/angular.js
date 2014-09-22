@@ -1639,6 +1639,77 @@ describe('$location', function() {
     return undefined;
   }
 
+
+  describe('html5Mode', function() {
+    it('should set enabled and requireBase when called with object', function() {
+      module(function($locationProvider) {
+        expect($locationProvider.html5Mode()).toEqual({
+          enabled: false,
+          requireBase: true
+        });
+      });
+
+      inject(function(){});
+    });
+
+
+    it('should only overwrite existing properties if values are boolean', function() {
+      module(function($locationProvider) {
+        $locationProvider.html5Mode({
+          enabled: 'duh',
+          requireBase: 'probably'
+        });
+
+        expect($locationProvider.html5Mode()).toEqual({
+          enabled: false,
+          requireBase: true
+        });
+      });
+
+      inject(function(){});
+    });
+
+
+    it('should not set unknown input properties to html5Mode object', function() {
+      module(function($locationProvider) {
+        $locationProvider.html5Mode({
+          someProp: 'foo'
+        });
+
+        expect($locationProvider.html5Mode()).toEqual({
+          enabled: false,
+          requireBase: true
+        });
+      });
+
+      inject(function(){});
+    });
+
+
+    it('should default to enabled:false and requireBase:true', function() {
+      module(function($locationProvider) {
+        expect($locationProvider.html5Mode()).toEqual({
+          enabled: false,
+          requireBase: true
+        });
+      });
+
+      inject(function(){});
+    });
+
+
+    it('should return html5Mode object when called without value', function() {
+      module(function($locationProvider) {
+        expect($locationProvider.html5Mode()).toEqual({
+          enabled: false,
+          requireBase: true
+        });
+      });
+
+      inject(function(){});
+    });
+  });
+
   describe('LocationHtml5Url', function() {
     var location, locationIndex;
 
@@ -1660,6 +1731,39 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationIndex, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(location, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
+    });
+
+
+    it('should complain if no base tag present', function() {
+      module(function($locationProvider) {
+        $locationProvider.html5Mode(true);
+      });
+
+      inject(function($browser, $injector) {
+        $browser.$$baseHref = undefined;
+        expect(function() {
+          $injector.get('$location');
+        }).toThrowMinErr('$location', 'nobase',
+          "$location in HTML5 mode requires a <base> tag to be present!");
+      });
+    });
+
+
+    it('should not complain if baseOptOut set to true in html5Mode', function() {
+      module(function($locationProvider) {
+        $locationProvider.html5Mode({
+          enabled: true,
+          requireBase: false
+        });
+      });
+
+      inject(function($browser, $injector) {
+        $browser.$$baseHref = undefined;
+        expect(function() {
+          $injector.get('$location');
+        }).not.toThrowMinErr('$location', 'nobase',
+          "$location in HTML5 mode requires a <base> tag to be present!");
+      });
     });
   });
 
