@@ -17,6 +17,7 @@ function init {
   REPOS=(
     angular
     angular-animate
+    angular-aria
     angular-cookies
     angular-i18n
     angular-loader
