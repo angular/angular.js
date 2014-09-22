@@ -662,7 +662,21 @@ function createInjector(modulesToLoad, strictDi) {
     return providerCache[name + providerSuffix] = provider_;
   }
 
-  function factory(name, factoryFn) { return provider(name, { $get: factoryFn }); }
+  function enforceReturnValue(name, factory) {
+    return function enforcedReturnValue() {
+      var result = instanceInjector.invoke(factory);
+      if (isUndefined(result)) {
+        throw $injectorMinErr('undef', "Provider '{0}' must return a value from $get factory method.", name);
+      }
+      return result;
+    };
+  }
+
+  function factory(name, factoryFn, enforce) {
+    return provider(name, {
+      $get: enforce !== false ? enforceReturnValue(name, factoryFn) : factoryFn
+    });
+  }
 
   function service(name, constructor) {
     return factory(name, ['$injector', function($injector) {
@@ -670,7 +684,7 @@ function createInjector(modulesToLoad, strictDi) {
     }]);
   }
 
-  function value(name, val) { return factory(name, valueFn(val)); }
+  function value(name, val) { return factory(name, valueFn(val), false); }
 
   function constant(name, value) {
     assertNotHasOwnProperty(name, 'constant');
