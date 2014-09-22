@@ -49,49 +49,48 @@ angular.module('search', [])
   $scope.results = docsSearch($location.path().split(/[\/\.:]/).pop());
 }])
 
-.factory('lunrSearch', function() {
-  return lunr;
-})
 
-.factory('docsSearch', ['$rootScope','lunrSearch', 'NG_PAGES', '$timeout',
-    function($rootScope, lunrSearch, NG_PAGES, $timeout) {
+.factory('docsSearch', ['$http', '$timeout', function($http, $timeout) {
 
-  var index = lunrSearch(function() {
+  var index = lunr(function() {
     this.ref('id');
     this.field('title', {boost: 50});
     this.field('members', { boost: 40});
     this.field('keywords', { boost : 20 });
   });
 
-  // Delay building the index for one second to allow the page to render
-  $timeout(function() {
-    angular.forEach(NG_PAGES, function(page, key) {
-      if(page.searchTerms) {
-        index.add({
-          id : key,
-          title : page.searchTerms.titleWords,
-          keywords : page.searchTerms.keywords,
-          members : page.searchTerms.members
-        });
-      };
-    });
-  }, 1000);
+  var pagesData = {};
+
+  console.time('getting pages data');
+  // Delay building the index by loading the data asynchronously
+  $http.get('js/pages-data.json').then(function(response) {
+    console.timeEnd('getting pages data');
+    pagesData = response.data;
+    console.time('building index');
+    // Delay building the index for 500ms to allow the page to render
+    $timeout(function() {
+      angular.forEach(pagesData, function(page, key) {
+        if(page.searchTerms) {
+          index.add({
+            id : key,
+            title : page.searchTerms.titleWords,
+            keywords : page.searchTerms.keywords,
+            members : page.searchTerms.members
+          });
+        };
+      });
+      console.timeEnd('building index');
+    }, 500);
+  });
 
   return function(q) {
-    var results = {
-      api : [],
-      tutorial : [],
-      guide : [],
-      error : [],
-      misc : []
-    };
+    var results = {};
     angular.forEach(index.search(q), function(result) {
-      var key = result.ref;
-      var item = NG_PAGES[key];
+      var item = pagesData[result.ref];
       var area = item.area;
-      item.path = key;
 
       var limit = area == 'api' ? 40 : 14;
+      results[area] = results[area] || [];
       if(results[area].length < limit) {
         results[area].push(item);
       }

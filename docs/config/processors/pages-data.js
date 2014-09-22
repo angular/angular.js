@@ -216,6 +216,15 @@ module.exports = function generatePagesDataProcessor(log) {
         outputPath: 'js/pages-data.js',
         pages: pages
       });
+
+      docs.push({
+        docType: 'json-doc',
+        id: 'pages-data-json',
+        template: 'json-doc.template.json',
+        outputPath: 'js/pages-data.json',
+        data: pages
+      });
+
       docs.push({
         docType: 'nav-data',
         id: 'nav-data',
