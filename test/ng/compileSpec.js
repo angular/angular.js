@@ -1078,6 +1078,22 @@ describe('$compile', function() {
             });
           });
         }
+
+        it('should ignore comment nodes when replacing with a template', function() {
+          module(function() {
+            directive('replaceWithComments', valueFn({
+              replace: true,
+              template: '<!-- ignored comment --><p>Hello, world!</p><!-- ignored comment-->'
+            }));
+          });
+          inject(function($compile, $rootScope) {
+            expect(function() {
+              element = $compile('<div><div replace-with-comments></div></div>')($rootScope);
+            }).not.toThrow();
+            expect(element.find('p').length).toBe(1);
+            expect(element.find('p').text()).toBe('Hello, world!');
+          });
+        });
       });
 
 
@@ -1977,6 +1993,26 @@ describe('$compile', function() {
             });
           });
         }
+
+        it('should ignore comment nodes when replacing with a templateUrl', function() {
+          module(function() {
+            directive('replaceWithComments', valueFn({
+              replace: true,
+              templateUrl: 'templateWithComments.html'
+            }));
+          });
+          inject(function($compile, $rootScope, $httpBackend) {
+            $httpBackend.whenGET('templateWithComments.html').
+              respond('<!-- ignored comment --><p>Hello, world!</p><!-- ignored comment-->');
+            expect(function() {
+              element = $compile('<div><div replace-with-comments></div></div>')($rootScope);
+            }).not.toThrow();
+            $httpBackend.flush();
+            expect(element.find('p').length).toBe(1);
+            expect(element.find('p').text()).toBe('Hello, world!');
+          });
+        });
+
       });
 
 
