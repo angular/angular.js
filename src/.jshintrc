@@ -11,6 +11,7 @@
     "jqLite": false,
     "jQuery": false,
     "slice": false,
+    "splice": false,
     "push": false,
     "toString": false,
     "ngMinErr": false,

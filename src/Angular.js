@@ -6,6 +6,7 @@
   jqLite: true,
   jQuery: true,
   slice: true,
+  splice: true,
   push: true,
   toString: true,
   ngMinErr: true,
@@ -161,6 +162,7 @@ var /** holds major version number for IE or NaN for real browsers */
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
+    splice            = [].splice,
     push              = [].push,
     toString          = Object.prototype.toString,
     ngMinErr          = minErr('ng'),
