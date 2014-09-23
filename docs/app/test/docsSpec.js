@@ -19,7 +19,7 @@ describe("DocsController", function() {
     it("should update the Google Analytics with currentPage path if currentPage exists", inject(function($window) {
       $window._gaq = [];
       $scope.currentPage = { path: 'a/b/c' };
-      $scope.afterPartialLoaded();
+      $scope.$broadcast('$includeContentLoaded');
       expect($window._gaq.pop()).toEqual(['_trackPageview', 'a/b/c']);
     }));
 
@@ -27,7 +27,7 @@ describe("DocsController", function() {
     it("should update the Google Analytics with $location.path if currentPage is missing", inject(function($window, $location) {
       $window._gaq = [];
       spyOn($location, 'path').andReturn('x/y/z');
-      $scope.afterPartialLoaded();
+      $scope.$broadcast('$includeContentLoaded');
       expect($window._gaq.pop()).toEqual(['_trackPageview', 'x/y/z']);
     }));
   });
