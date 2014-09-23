@@ -1,3 +1,17 @@
+<a name="1.2.26"></a>
+# 1.2.26 zucchini-expansion (2014-10-01)
+
+
+## Bug Fixes
+
+- **$compile:** Resolve leak with asynchronous compilation
+  ([5c9c1973](https://github.com/angular/angular.js/commit/5c9c19730526d5df6f16c523e578e5305f3796d0),
+   [#9199](https://github.com/angular/angular.js/issues/9199), [#9079](https://github.com/angular/angular.js/issues/9079), [#8504](https://github.com/angular/angular.js/issues/8504), [#9197](https://github.com/angular/angular.js/issues/9197))
+- **select:** make ctrl.hasOption method consistent
+  ([11d2242d](https://github.com/angular/angular.js/commit/11d2242df65b2ade0dabe366a0c42963b6d37df5),
+   [#8761](https://github.com/angular/angular.js/issues/8761))
+
+
 <a name="1.3.0-rc.3"></a>
 # 1.3.0-rc.3 aggressive-pacification (2014-09-23)
 
