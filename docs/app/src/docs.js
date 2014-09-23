@@ -25,10 +25,18 @@ angular.module('DocsController', [])
     };
   };
 
-  $scope.afterPartialLoaded = function() {
+  $scope.$on('$includeContentLoaded', function() {
     var pagePath = $scope.currentPage ? $scope.currentPage.path : $location.path();
     $window._gaq.push(['_trackPageview', pagePath]);
-  };
+  });
+
+  $scope.$on('$includeContentError', function() {
+    $scope.partialPath = 'Error404.html';
+  });
+
+  $scope.$watch(function() { return $location.path(); }, function(path) {
+    $scope.partialPath = 'partials' + path + '.html';
+  });
 
 
   /**********************************
@@ -38,28 +46,11 @@ angular.module('DocsController', [])
 
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
 
-    var currentPage = $scope.currentPage = NG_PAGES[path];
-    if ( !currentPage && path.charAt(0)==='/' ) {
-      // Strip off leading slash
-      path = path.substr(1);
-    }
-
-    currentPage = $scope.currentPage = NG_PAGES[path];
-    if ( !currentPage && path.charAt(path.length-1) === '/' && path.length > 1 ) {
-      // Strip off trailing slash
-      path = path.substr(0, path.length-1);
-    }
-
-    currentPage = $scope.currentPage = NG_PAGES[path];
-    if ( !currentPage && /\/index$/.test(path) ) {
-      // Strip off index from the end
-      path = path.substr(0, path.length - 6);
-    }
-
+    path = path.replace(/^\/?(.+?)\/?$/, '$1');
     currentPage = $scope.currentPage = NG_PAGES[path];
 
     if ( currentPage ) {
-      $scope.currentArea = currentPage && NG_NAVIGATION[currentPage.area];
+      $scope.currentArea = NG_NAVIGATION[currentPage.area];
       var pathParts = currentPage.path.split('/');
       var breadcrumb = $scope.breadcrumb = [];
       var breadcrumbPath = '';

@@ -59,89 +59,112 @@ angular.module('search', [])
   };
 }])
 
-.controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
-  $scope.results = docsSearch($location.path().split(/[\/\.:]/).pop());
+
+.controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch',
+        function($scope, $location, docsSearch) {
+  docsSearch($location.path().split(/[\/\.:]/).pop()).then(function(results) {
+    $scope.results = {};
+    angular.forEach(results, function(result) {
+      var area = $scope.results[result.area] || [];
+      area.push(result);
+      $scope.results[result.area] = area;
+    });
+  });
 }])
+
 
 .provider('docsSearch', function() {
 
   // This version of the service builds the index in the current thread,
   // which blocks rendering and other browser activities.
   // It should only be used where the browser does not support WebWorkers
-  function localSearchFactory($http, $timeout, $q) {
+  function localSearchFactory($http, $timeout, NG_PAGES) {
 
     console.log('Using Local Search Index');
 
     // Create the lunr index
     var index = lunr(function() {
-      this.ref('id');
-      this.field('title', {boost: 50});
+      this.ref('path');
+      this.field('titleWords', {boost: 50});
       this.field('members', { boost: 40});
       this.field('keywords', { boost : 20 });
     });
 
-    var pagesData = {};
-
     // Delay building the index by loading the data asynchronously
-    $http.get('js/pages-data.json').then(function(response) {
-      pagesData = response.data;
+    var indexReadyPromise = $http.get('js/search-data.json').then(function(response) {
+      var searchData = response.data;
       // Delay building the index for 500ms to allow the page to render
-      $timeout(function() {
+      return $timeout(function() {
         // load the page data into the index
-        angular.forEach(pagesData, function(page, key) {
-          if(page.searchTerms) {
-            index.add({
-              id : key,
-              title : page.searchTerms.titleWords,
-              keywords : page.searchTerms.keywords,
-              members : page.searchTerms.members
-            });
-          };
+        angular.forEach(searchData, function(page) {
+          index.add(page);
         });
       }, 500);
     });
-    localSearchFactory.$inject = ['$http', '$timeout', '$q'];
 
     // The actual service is a function that takes a query string and
     // returns a promise to the search results
     // (In this case we just resolve the promise immediately as it is not
     // inherently an async process)
     return function(q) {
-      var hits = index.search(q);
-      var results = [];
-      angular.forEach(hits, function(hit) {
-        results.push(pagesData[hit.ref]);
+      return indexReadyPromise.then(function() {
+        var hits = index.search(q);
+        var results = [];
+        angular.forEach(hits, function(hit) {
+          results.push(NG_PAGES[hit.ref]);
+        });
+        return results;
       });
-      return $q.when(results);
     };
   }
+  localSearchFactory.$inject = ['$http', '$timeout', 'NG_PAGES'];
 
   // This version of the service builds the index in a WebWorker,
   // which does not block rendering and other browser activities.
   // It should only be used where the browser does support WebWorkers
-  function webWorkerSearchFactory($q) {
+  function webWorkerSearchFactory($q, $rootScope, NG_PAGES) {
 
     console.log('Using WebWorker Search Index')
 
+    var searchIndex = $q.defer();
     var results;
 
-    var worker = new Worker('js/search.js');
+    var worker = new Worker('js/search-worker.js');
 
-    // The worker will send us a message when it has completed a
-    // search query and has the result available
+    // The worker will send us a message in two situations:
+    // - when the index has been built, ready to run a query
+    // - when it has completed a search query and the results are available
     worker.onmessage = function(oEvent) {
-      results.resolve(oEvent.data);
+      $rootScope.$apply(function() {
+
+        switch(oEvent.data.e) {
+          case 'index-ready':
+            searchIndex.resolve();
+            break;
+          case 'query-ready':
+            var pages = oEvent.data.d.map(function(path) {
+              return NG_PAGES[path];
+            });
+            results.resolve(pages);
+            break;
+        }
+      });
     };
 
     // The actual service is a function that takes a query string and
     // returns a promise to the search results
     return function(q) {
-      results = $q.defer();
-      worker.postMessage({ q: q });
-      return results.promise;
+
+      // We only run the query once the index is ready
+      return searchIndex.promise.then(function() {
+
+        results = $q.defer();
+        worker.postMessage({ q: q });
+        return results.promise;
+      });
     };
   }
-  webWorkerSearchFactory.$inject = ['$q'];
+  webWorkerSearchFactory.$inject = ['$q', '$rootScope', 'NG_PAGES'];
 
   return {
     $get: window.Worker ? webWorkerSearchFactory : localSearchFactory
