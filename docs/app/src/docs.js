@@ -24,20 +24,14 @@ angular.module('DocsController', [])
     $window._gaq.push(['_trackPageview', pagePath]);
   });
 
-  $scope.$on('$includeContentError', function() {
-    $scope.partialPath = 'Error404.html';
-  });
-
-
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
 
     path = path.replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
 
-    $scope.partialPath = 'partials/' + path + '.html';
-
     currentPage = $scope.currentPage = NG_PAGES[path];
 
     if ( currentPage ) {
+      $scope.partialPath = 'partials/' + path + '.html';
       $scope.currentArea = NG_NAVIGATION[currentPage.area];
       var pathParts = currentPage.path.split('/');
       var breadcrumb = $scope.breadcrumb = [];
@@ -50,6 +44,7 @@ angular.module('DocsController', [])
     } else {
       $scope.currentArea = NG_NAVIGATION['api'];
       $scope.breadcrumb = [];
+      $scope.partialPath = 'Error404.html';
     }
   });
 
