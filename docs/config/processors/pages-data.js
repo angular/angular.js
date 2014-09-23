@@ -147,24 +147,18 @@ module.exports = function generatePagesDataProcessor(log) {
   };
 
   return {
-    $runAfter: ['paths-computed'],
+    $runAfter: ['paths-computed', 'generateKeywordsProcessor'],
     $runBefore: ['rendering-docs'],
     $process: function(docs) {
 
-      _(docs)
-      .filter(function(doc) { return doc.area === 'api' && doc.docType === 'module'; })
-      .forEach(function(doc) { if ( !doc.path ) {
-        log.warn('Missing path property for ', doc.id);
-      }})
-      .map(function(doc) { return _.pick(doc, ['id', 'module', 'docType', 'area']); })
-      .tap(function(docs) {
-        log.debug(docs);
+      // We are only interested in docs that are in an area
+      var pages = _.filter(docs, function(doc) {
+        return doc.area;
       });
 
-
-      // We are only interested in docs that are in an area and are not landing pages
-      var navPages = _.filter(docs, function(page) {
-        return page.area && page.docType != 'componentGroup';
+      // We are only interested in pages that are not landing pages
+      var navPages = _.filter(pages, function(page) {
+        return page.docType != 'componentGroup';
       });
 
       // Generate an object collection of pages that is grouped by area e.g.
@@ -198,28 +192,48 @@ module.exports = function generatePagesDataProcessor(log) {
           area.navGroups = navGroupMapper(pages, area);
         });
 
+      docs.push({
+        docType: 'nav-data',
+        id: 'nav-data',
+        template: 'nav-data.template.js',
+        outputPath: 'js/nav-data.js',
+        areas: areas
+      });
+
+
+
+      var searchData = _(pages)
+        .filter(function(page) {
+            return page.searchTerms;
+        })
+        .map(function(page) {
+          return _.extend({ path: page.path }, page.searchTerms);
+        })
+        .value();
+
+      docs.push({
+        docType: 'json-doc',
+        id: 'search-data-json',
+        template: 'json-doc.template.json',
+        outputPath: 'js/search-data.json',
+        data: searchData
+      });
+
       // Extract a list of basic page information for mapping paths to partials and for client side searching
-      var pages = _(docs)
+      var pageData = _(docs)
         .map(function(doc) {
-          var page = _.pick(doc, [
-            'docType', 'id', 'name', 'area', 'outputPath', 'path', 'searchTerms'
-          ]);
-          return page;
+          return _.pick(doc, ['name', 'area', 'path']);
         })
         .indexBy('path')
         .value();
 
-      var docData = {
+      docs.push({
         docType: 'pages-data',
         id: 'pages-data',
         template: 'pages-data.template.js',
         outputPath: 'js/pages-data.js',
-
-        areas: areas,
-        pages: pages
-      };
-
-      docs.push(docData);
+        pages: pageData
+      });
     }
-  }
+  };
 };
