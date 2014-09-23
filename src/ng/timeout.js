@@ -67,7 +67,7 @@ function $TimeoutProvider() {
       * Cancels a task associated with the `promise`. As a result of this, the promise will be
       * resolved with a rejection.
       *
-      * @param {Promise=} promise Promise returned by the `$timeout` function.
+      * @param {?Promise} promise Promise returned by the `$timeout` function.
       * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfully
       *   canceled.
       */
