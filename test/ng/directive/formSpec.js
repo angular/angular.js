@@ -782,6 +782,57 @@ describe('form', function() {
     });
   });
 
+
+  it('should rename nested form controls when interpolated name changes', function() {
+    scope.idA = 'A';
+    scope.idB = 'X';
+
+    doc = $compile(
+      '<form name="form">' +
+        '<div ng-form="nested{{idA}}">' +
+          '<div ng-form name="nested{{idB}}"' +
+          '</div>' +
+        '</div>' +
+      '</form'
+    )(scope);
+
+    scope.$digest();
+    var formA = scope.form.nestedA;
+    expect(formA).toBeDefined();
+    expect(formA.$name).toBe('nestedA');
+
+    var formX = formA.nestedX;
+    expect(formX).toBeDefined();
+    expect(formX.$name).toBe('nestedX');
+
+    scope.idA = 'B';
+    scope.idB = 'Y';
+    scope.$digest();
+
+    expect(scope.form.nestedA).toBeUndefined();
+    expect(scope.form.nestedB).toBe(formA);
+    expect(formA.nestedX).toBeUndefined();
+    expect(formA.nestedY).toBe(formX);
+  });
+
+
+  it('should rename forms with no parent when interpolated name changes', function() {
+    var element = $compile('<form name="name{{nameID}}"></form>')(scope);
+    var element2 = $compile('<div ng-form="name{{nameID}}"></div>')(scope);
+    scope.nameID = "A";
+    scope.$digest();
+    var form = element.controller('form');
+    var form2 = element2.controller('form');
+    expect(form.$name).toBe('nameA');
+    expect(form2.$name).toBe('nameA');
+
+    scope.nameID = "B";
+    scope.$digest();
+    expect(form.$name).toBe('nameB');
+    expect(form2.$name).toBe('nameB');
+  });
+
+
   describe('$setSubmitted', function() {
     beforeEach(function() {
       doc = $compile(
