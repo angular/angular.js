@@ -316,10 +316,10 @@ iframe.example {
 }
 
 .search-results-group.col-group-api { width:30%; }
-.search-results-group.col-group-guide { width:30%; }
-.search-results-group.col-group-tutorial { width:25%; }
+.search-results-group.col-group-guide,
+.search-results-group.col-group-tutorial { width:20%; }
 .search-results-group.col-group-misc,
-.search-results-group.col-group-error { float:right; clear:both; width:15% }
+.search-results-group.col-group-error { width:15%; float: right; }
 
 
 .search-results-group.col-group-api .search-result {
