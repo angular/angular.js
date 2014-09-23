@@ -1203,10 +1203,15 @@ describe('$location', function() {
         initBrowser(false, true),
         initLocation(),
         function($browser, $location) {
+          $location.path('/some/');
+          expect($browser.url(), 'http://host.com/#!/some/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/#!/some/link');
+
           $location.path('/some');
           expect($browser.url(), 'http://host.com/#!/some');
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/#!/some/link');
+          expectRewriteTo($browser, 'http://host.com/#!/link');
         }
       );
     });
@@ -1254,15 +1259,42 @@ describe('$location', function() {
     });
 
 
-    it('should rewrite relative hashbang links when history enabled on old browser', function() {
-      configureService('#!link', true, false, true);
+    it('should replace current path when relative link leads to base and history enabled on old browser', function() {
+      configureService('../base/link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should replace current path when relative link begins with "/base/" and history enabled on old browser', function() {
+      configureService('/base/#!/link', true, false, true);
       inject(
         initBrowser(),
         initLocation(),
         function($browser, $location) {
           $location.path('/some');
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/some/link');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
+        }
+      );
+    });
+
+
+    it('should rewrite relative hashbang links with respect to base when history enabled on old browser', function() {
+      configureService('#!link', true, false, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser, $location) {
+          $location.path('/some/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link');
         }
       );
     });
