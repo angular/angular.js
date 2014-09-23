@@ -6,17 +6,9 @@ angular.module('DocsController', [])
   function($scope, $rootScope, $location, $window, $cookies, openPlunkr,
               NG_PAGES, NG_NAVIGATION, NG_VERSION) {
 
-
   $scope.openPlunkr = openPlunkr;
 
   $scope.docsVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.version;
-
-  var INDEX_PATH = /^(\/|\/index[^\.]*.html)$/;
-
-
-  /**********************************
-   Publish methods
-   ***********************************/
 
   $scope.navClass = function(navItem) {
     return {
@@ -24,6 +16,8 @@ angular.module('DocsController', [])
       'nav-index-section': navItem.type === 'section'
     };
   };
+
+
 
   $scope.$on('$includeContentLoaded', function() {
     var pagePath = $scope.currentPage ? $scope.currentPage.path : $location.path();
@@ -34,19 +28,13 @@ angular.module('DocsController', [])
     $scope.partialPath = 'Error404.html';
   });
 
-  $scope.$watch(function() { return $location.path(); }, function(path) {
-    $scope.partialPath = 'partials' + path + '.html';
-  });
-
-
-  /**********************************
-   Watches
-   ***********************************/
-
 
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
 
-    path = path.replace(/^\/?(.+?)\/?$/, '$1');
+    path = path.replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
+
+    $scope.partialPath = 'partials/' + path + '.html';
+
     currentPage = $scope.currentPage = NG_PAGES[path];
 
     if ( currentPage ) {
@@ -74,6 +62,7 @@ angular.module('DocsController', [])
   $scope.loading = 0;
 
 
+  var INDEX_PATH = /^(\/|\/index[^\.]*.html)$/;
   if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
   }
