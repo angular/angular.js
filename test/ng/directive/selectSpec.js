@@ -148,6 +148,33 @@ describe('select', function() {
     });
 
 
+    it('should interpolate select names', function() {
+      scope.robots = ['c3p0', 'r2d2'];
+      scope.name = 'r2d2';
+      scope.nameID = 47;
+      compile('<select ng-model="name" name="name{{nameID}}">' +
+                '<option ng-repeat="r in robots">{{r}}</option>' +
+              '</select>');
+      expect(scope.form.name47.$pristine).toBeTruthy();
+      browserTrigger(element.find('option').eq(0));
+      expect(scope.form.name47.$dirty).toBeTruthy();
+      expect(scope.name).toBe('c3p0');
+    });
+
+
+    it('should rename select controls in form when interpolated name changes', function() {
+      scope.nameID = "A";
+      compile('<select ng-model="name" name="name{{nameID}}"></select>');
+      expect(scope.form.nameA.$name).toBe('nameA');
+      var oldModel = scope.form.nameA;
+      scope.nameID = "B";
+      scope.$digest();
+      expect(scope.form.nameA).toBeUndefined();
+      expect(scope.form.nameB).toBe(oldModel);
+      expect(scope.form.nameB.$name).toBe('nameB');
+    });
+
+
     describe('empty option', function() {
 
       it('should select the empty option when model is undefined', function() {

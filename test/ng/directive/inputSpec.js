@@ -1289,6 +1289,42 @@ describe('input', function() {
     }
   }));
 
+
+  it('should interpolate input names', function() {
+    scope.nameID = '47';
+    compileInput('<input type="text" ng-model="name" name="name{{nameID}}" />');
+    expect(scope.form.name47.$pristine).toBeTruthy();
+    changeInputValueTo('caitp');
+    expect(scope.form.name47.$dirty).toBeTruthy();
+  });
+
+
+  it('should rename form controls in form when interpolated name changes', function() {
+    scope.nameID = "A";
+    compileInput('<input type="text" ng-model="name" name="name{{nameID}}" />');
+    expect(scope.form.nameA.$name).toBe('nameA');
+    var oldModel = scope.form.nameA;
+    scope.nameID = "B";
+    scope.$digest();
+    expect(scope.form.nameA).toBeUndefined();
+    expect(scope.form.nameB).toBe(oldModel);
+    expect(scope.form.nameB.$name).toBe('nameB');
+  });
+
+
+  it('should rename form controls in null form when interpolated name changes', function() {
+    var element = $compile('<input type="text" ng-model="name" name="name{{nameID}}" />')(scope);
+    scope.nameID = "A";
+    scope.$digest();
+    var model = element.controller('ngModel');
+    expect(model.$name).toBe('nameA');
+
+    scope.nameID = "B";
+    scope.$digest();
+    expect(model.$name).toBe('nameB');
+  });
+
+
   describe('"change" event', function() {
     function assertBrowserSupportsChangeEvent(inputEventSupported) {
       // Force browser to report a lack of an 'input' event
