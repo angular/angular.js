@@ -1657,8 +1657,8 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope', '$q',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope, $q) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope', '$q', '$interpolate',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope, $q, $interpolate) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$validators = {};
@@ -1675,7 +1675,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$error = {}; // keep invalid keys here
   this.$$success = {}; // keep valid keys here
   this.$pending = undefined; // keep pending keys here
-  this.$name = $attr.name;
+  this.$name = $interpolate($attr.name || '', false)($scope);
 
 
   var parsedNgModel = $parse($attr.ngModel),
@@ -2386,6 +2386,12 @@ var ngModelDirective = function() {
 
         // notify others, especially parent forms
         formCtrl.$addControl(modelCtrl);
+
+        attr.$observe('name', function(newValue) {
+          if (modelCtrl.$name !== newValue) {
+            formCtrl.$$renameControl(modelCtrl, newValue);
+          }
+        });
 
         scope.$on('$destroy', function() {
           formCtrl.$removeControl(modelCtrl);
