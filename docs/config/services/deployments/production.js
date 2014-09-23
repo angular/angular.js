@@ -29,6 +29,7 @@ module.exports = function productionDeployment(getVersion) {
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/lang-css.js',
       'js/versions-data.js',
       'js/pages-data.js',
+      'js/nav-data.js',
       'js/docs.js'
     ],
     stylesheets: [

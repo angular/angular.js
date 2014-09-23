@@ -56,15 +56,6 @@
       }
     })();
 
-
-    // force page reload when new update is available
-    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
-      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-        window.applicationCache.swapCache();
-        window.location.reload();
-      }
-    }, false);
-
     // GA asynchronous tracker
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8594346-3']);
@@ -219,7 +210,7 @@
         </div>
         <div class="grid-right">
           <div id="loading" ng-show="loading">Loading...</div>
-          <div ng-hide="loading" ng-include="currentPage.outputPath || 'Error404.html'" onload="afterPartialLoaded()"  autoscroll></div>
+          <div ng-hide="loading" ng-include="partialPath" autoscroll></div>
         </div>
       </div>
     </section>
