@@ -318,7 +318,11 @@ Lexer.prototype = {
     this.tokens.push({
       index: start,
       text: ident,
-      fn: CONSTANTS[ident] || getterFn(ident, this.options, expression)
+      // An indent may reference a primary, a filter or an object literal property
+      // If the indent is not a constant then we create a lazy getter, this can be turned
+      // into a real getter if it turns out to be a primary
+      fn: CONSTANTS[ident],
+      lazyFn: CONSTANTS[ident] ? undefined : lazyGetterFn(ident, this.options, expression)
     });
 
     if (methodName) {
@@ -426,7 +430,7 @@ Parser.prototype = {
       primary = this.object();
     } else {
       var token = this.expect();
-      primary = token.fn;
+      primary = token.fn || token.lazyFn && token.lazyFn();
       if (!primary) {
         this.throwError('not a primary expression', token);
       }
@@ -943,6 +947,12 @@ function getterFn(path, options, fullExp) {
   };
   getterFnCache[path] = fn;
   return fn;
+}
+
+function lazyGetterFn(ident, options, expression) {
+  return function() {
+    return getterFn(ident, options, expression);
+  };
 }
 
 ///////////////////////////////////
