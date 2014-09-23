@@ -17,6 +17,8 @@ var path = require('canonical-path');
 var outputFolder = '../build/docs';
 var bowerFolder = 'bower_components';
 
+var src = 'app/src/**/*.js';
+var assets = 'app/assets/**/*';
 
 var copyComponent = function(component, pattern, sourceFolder, packageFile) {
   pattern = pattern || '/**/*';
@@ -40,14 +42,14 @@ gulp.task('bower', function() {
 });
 
 gulp.task('build-app', function() {
-  gulp.src('app/src/**/*.js')
+  gulp.src(src)
     .pipe(concat('docs.js'))
     .pipe(gulp.dest(outputFolder + '/js/'));
 });
 
 gulp.task('assets', ['bower'], function() {
   return merge(
-    gulp.src(['app/assets/**/*']).pipe(gulp.dest(outputFolder)),
+    gulp.src([assets]).pipe(gulp.dest(outputFolder)),
     copyComponent('bootstrap', '/dist/**/*'),
     copyComponent('open-sans-fontface'),
     copyComponent('lunr.js','/*.js'),
@@ -77,3 +79,6 @@ gulp.task('jshint', ['doc-gen'], function() {
 // The default task that will be run if no task is supplied
 gulp.task('default', ['assets', 'doc-gen', 'build-app', 'jshint']);
 
+gulp.task('watch', function() {
+  gulp.watch([src, assets], ['assets', 'build-app']);
+});

@@ -92,10 +92,7 @@ module.exports = new Package('angularjs', [
       }
       return docPath;
     },
-    getOutputPath: function(doc) {
-      return 'partials/' + doc.path +
-          ( doc.fileInfo.baseName === 'index' ? '/index.html' : '.html');
-    }
+    outputPathTemplate: 'partials/${path}.html'
   });
 
   computePathsProcessor.pathTemplates.push({
@@ -110,6 +107,16 @@ module.exports = new Package('angularjs', [
     outputPathTemplate: '${id}.html'
   });
 
+  computePathsProcessor.pathTemplates.push({
+    docTypes: ['module' ],
+    pathTemplate: '${area}/${name}',
+    outputPathTemplate: 'partials/${area}/${name}.html'
+  });
+  computePathsProcessor.pathTemplates.push({
+    docTypes: ['componentGroup' ],
+    pathTemplate: '${area}/${moduleName}/${groupType}',
+    outputPathTemplate: 'partials/${area}/${moduleName}/${groupType}.html'
+  });
 
   computeIdsProcessor.idTemplates.push({
     docTypes: ['overview', 'tutorial', 'e2e-test', 'indexPage'],
