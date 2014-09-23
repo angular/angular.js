@@ -283,7 +283,7 @@ describe('browser', function() {
         expect(oldVal).not.toBeDefined();
       });
 
-      it('should escape both name and value', function() {
+      it('should encode both name and value', function() {
         browser.cookies('cookie1=', 'val;ue');
         browser.cookies('cookie2=bar;baz', 'val=ue');
 
@@ -359,7 +359,7 @@ describe('browser', function() {
         expect(browser.cookies()['foo']).toBe('"first"');
       });
 
-      it ('should unescape cookie values that were escaped by puts', function() {
+      it ('should decode cookie values that were encoded by puts', function() {
         document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
         expect(browser.cookies()['cookie2=bar;baz']).toEqual('val=ue');
       });
@@ -371,9 +371,15 @@ describe('browser', function() {
         expect(browser.cookies()['cookie name']).not.toBeDefined();
       });
 
-      it('should unscape special characters in cookie values', function() {
+      it('should decode special characters in cookie values', function() {
         document.cookie = 'cookie_name=cookie_value_%E2%82%AC';
         expect(browser.cookies()['cookie_name']).toEqual('cookie_value_€');
+      });
+
+      it('should not decode cookie values that do not appear to be encoded', function() {
+        // see #9211 - sometimes cookies contain a value that causes decodeURIComponent to throw
+        document.cookie = 'cookie_name=cookie_value_%XX';
+        expect(browser.cookies()['cookie_name']).toEqual('cookie_value_%XX');
       });
     });
 

@@ -297,6 +297,14 @@ function Browser(window, document, $log, $sniffer) {
   var lastCookieString = '';
   var cookiePath = self.baseHref();
 
+  function safeDecodeURIComponent(str) {
+    try {
+      return decodeURIComponent(str);
+    } catch (e) {
+      return str;
+    }
+  }
+
   /**
    * @name $browser#cookies
    *
@@ -350,12 +358,12 @@ function Browser(window, document, $log, $sniffer) {
           cookie = cookieArray[i];
           index = cookie.indexOf('=');
           if (index > 0) { //ignore nameless cookies
-            name = decodeURIComponent(cookie.substring(0, index));
+            name = safeDecodeURIComponent(cookie.substring(0, index));
             // the first value that is seen for a cookie is the most
             // specific one.  values for the same cookie name that
             // follow are for less specific paths.
             if (lastCookies[name] === undefined) {
-              lastCookies[name] = decodeURIComponent(cookie.substring(index + 1));
+              lastCookies[name] = safeDecodeURIComponent(cookie.substring(index + 1));
             }
           }
         }
