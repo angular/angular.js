@@ -1,6 +1,6 @@
 angular.module('tutorials', [])
 
-.directive('docTutorialNav', function(templateMerge) {
+.directive('docTutorialNav', ['templateMerge' ,function(templateMerge) {
   var pages = [
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
@@ -27,7 +27,7 @@ angular.module('tutorials', [])
         '<a href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="glyphicon glyphicon-step-forward"></i></li></a>', props));
     }
   };
-})
+}])
 
 
 .directive('docTutorialReset', function() {
@@ -47,4 +47,46 @@ angular.module('tutorials', [])
         '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{step ? (step - 1): \'0~1\'}}...step-{{step}}">GitHub</a>\n' +
       '</p>'
   };
-});
+})
+
+.service('reindentCode', function() {
+  return function (text, spaces) {
+    if (!text) return text;
+    var lines = text.split(/\r?\n/);
+    var prefix = '      '.substr(0, spaces || 0);
+    var i;
+
+    // remove any leading blank lines
+    while (lines.length && lines[0].match(/^\s*$/)) lines.shift();
+    // remove any trailing blank lines
+    while (lines.length && lines[lines.length - 1].match(/^\s*$/)) lines.pop();
+    var minIndent = 999;
+    for (i = 0; i < lines.length; i++) {
+      var line = lines[0];
+      var reindentCode = line.match(/^\s*/)[0];
+      if (reindentCode !== line && reindentCode.length < minIndent) {
+        minIndent = reindentCode.length;
+      }
+    }
+
+    for (i = 0; i < lines.length; i++) {
+      lines[i] = prefix + lines[i].substring(minIndent);
+    }
+    lines.push('');
+    return lines.join('\n');
+  }
+})
+
+.service('templateMerge', ['reindentCode', function(indentCode) {
+  return function(template, properties) {
+    return template.replace(/\{\{(\w+)(?:\:(\d+))?\}\}/g, function(_, key, indent) {
+      var value = properties[key];
+
+      if (indent) {
+        value = indentCode(value, indent);
+      }
+
+      return value == undefined ? '' : value;
+    });
+  };
+}]);

@@ -14,11 +14,10 @@ angular.module('docsApp', [
   'tutorials',
   'versions',
   'bootstrap',
-  'bootstrapPrettify',
   'ui.bootstrap.dropdown'
 ])
 
 
-.config(function($locationProvider) {
+.config(['$locationProvider', function($locationProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
-});
+}]);
