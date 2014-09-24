@@ -378,6 +378,39 @@ describe('select', function() {
           expect(element).toEqualSelect(['? string:r2d2 ?']);
           expect(scope.robot).toBe('r2d2');
         });
+
+        describe('selectController.hasOption', function() {
+          it('should return true for options added via ngOptions', function() {
+            scope.robots = [
+              {key: 1, value: 'c3p0'},
+              {key: 2, value: 'r2d2'}
+            ];
+            scope.robot = 'r2d2';
+
+            compile('<select ng-model="robot" ' +
+                      'ng-options="item.key as item.value for item in robots">' +
+                    '</select>');
+
+            var selectCtrl = element.data().$selectController;
+
+            expect(selectCtrl.hasOption('c3p0')).toBe(true);
+            expect(selectCtrl.hasOption('r2d2')).toBe(true);
+
+            scope.$apply(function() {
+              scope.robots.pop();
+            });
+
+            expect(selectCtrl.hasOption('c3p0')).toBe(true);
+            expect(selectCtrl.hasOption('r2d2')).toBe(false);
+
+            scope.$apply(function() {
+              scope.robots.push({key: 2, value: 'r2d2'});
+            });
+
+            expect(selectCtrl.hasOption('c3p0')).toBe(true);
+            expect(selectCtrl.hasOption('r2d2')).toBe(true);
+          });
+        });
       });
     });
   });
@@ -453,6 +486,39 @@ describe('select', function() {
       browserTrigger(element, 'change');
       expect(element).toBeValid();
       expect(element).toBeDirty();
+    });
+
+    describe('selectController.hasOption', function() {
+      it('should return true for options added via ngOptions', function() {
+        scope.robots = [
+          {key: 1, value: 'c3p0'},
+          {key: 2, value: 'r2d2'}
+        ];
+        scope.robot = 'r2d2';
+
+        compile('<select ng-model="robot" multiple ' +
+                  'ng-options="item.key as item.value for item in robots">' +
+                '</select>');
+
+        var selectCtrl = element.data().$selectController;
+
+        expect(selectCtrl.hasOption('c3p0')).toBe(true);
+        expect(selectCtrl.hasOption('r2d2')).toBe(true);
+
+        scope.$apply(function() {
+          scope.robots.pop();
+        });
+
+        expect(selectCtrl.hasOption('c3p0')).toBe(true);
+        expect(selectCtrl.hasOption('r2d2')).toBe(false);
+
+        scope.$apply(function() {
+          scope.robots.push({key: 2, value: 'r2d2'});
+        });
+
+        expect(selectCtrl.hasOption('c3p0')).toBe(true);
+        expect(selectCtrl.hasOption('r2d2')).toBe(true);
+      });
     });
   });
 
