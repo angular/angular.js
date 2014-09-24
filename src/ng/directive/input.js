@@ -475,7 +475,6 @@ function addNativeHtml5Validators(ctrl, validatorName, badFlags, ignoreFlags, va
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop(VALIDITY_STATE_PROPERTY);
-  var placeholder = element[0].placeholder, noevent = {};
   ctrl.$$validityState = validity;
 
   // In composition mode, users are still inputing intermediate text buffer,
@@ -494,18 +493,33 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
   }
 
+  // IE (11 and under) seem to emit an 'input' event if the placeholder value changes or when
+  // an input with a placeholder gains or loses focus. These issues do not happen if the input
+  // has a value at the time.
+  if (msie && ('placeholder' in element[0]) && $sniffer.hasEvent('input')) {
+    var ignoreNextInput;
+
+    // Changing placeholders triggers an input if there is no value
+    attr.$observe("placeholder", function ieIgnoreNextInputPlaceholder() {
+      ignoreNextInput = !element[0].value;
+    });
+
+    // Focus in/out triggers an input if there is no value but there is a placeholder
+    // Event orders:
+    //  focus: focusin focus input
+    //  blur:  focusout input blur
+    element.on("focusin focusout", function ieIgnoreNextInputFocus() {
+      ignoreNextInput = this.placeholder && !this.value;
+    });
+  }
+
   var listener = function(ev) {
     if (composing) return;
-    var value = element.val();
-
-    // IE (11 and under) seem to emit an 'input' event if the placeholder value changes.
-    // We don't want to dirty the value when this happens, so we abort here. Unfortunately,
-    // IE also sends input events for other non-input-related things, (such as focusing on a
-    // form control), so this change is not entirely enough to solve this.
-    if (msie && (ev || noevent).type === 'input' && element[0].placeholder !== placeholder) {
-      placeholder = element[0].placeholder;
+    if (ignoreNextInput && ev && ev.type === 'input') {
+      ignoreNextInput = false;
       return;
     }
+    var value = element.val();
 
     // By default we will trim the value
     // If the attribute ng-trim exists we will avoid trimming
