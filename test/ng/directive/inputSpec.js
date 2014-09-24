@@ -3717,6 +3717,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect(scope.form.alias.$error.required).toBeTruthy();
       });
+
+      it('should not invalidate number if ng-required=false and model is undefined', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" ng-required="required">');
+
+        scope.$apply("required = false");
+
+        expect(inputElm).toBeValid();
+      });
     });
 
     describe('minlength', function() {
