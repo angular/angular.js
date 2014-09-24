@@ -40,7 +40,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
   var ABORTED = -1;
 
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, notify) {
     var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
@@ -103,6 +103,8 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
               response,
               responseHeaders,
               statusText);
+        } else if (xhr && xhr.readyState == 3 && notify) {
+          notify(xhr);
         }
       };
 
