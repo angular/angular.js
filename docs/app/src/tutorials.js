@@ -1,6 +1,6 @@
 angular.module('tutorials', [])
 
-.directive('docTutorialNav', function(templateMerge) {
+.directive('docTutorialNav', ['templateMerge' ,function(templateMerge) {
   var pages = [
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
@@ -27,7 +27,7 @@ angular.module('tutorials', [])
         '<a href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="glyphicon glyphicon-step-forward"></i></li></a>', props));
     }
   };
-})
+}])
 
 
 .directive('docTutorialReset', function() {
