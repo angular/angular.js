@@ -14,7 +14,6 @@ angular.module('docsApp', [
   'tutorials',
   'versions',
   'bootstrap',
-  'bootstrapPrettify',
   'ui.bootstrap.dropdown'
 ])
 
