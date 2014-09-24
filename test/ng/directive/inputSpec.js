@@ -3718,7 +3718,7 @@ describe('input', function() {
         expect(scope.form.alias.$error.required).toBeTruthy();
       });
 
-      it('should not invalidate number if ng-required=false and model is undefined', function() {
+      it('should not invalidate number if ng-required=false and viewValue has not been committed', function() {
         compileInput('<input type="number" ng-model="value" name="alias" ng-required="required">');
 
         scope.$apply("required = false");
