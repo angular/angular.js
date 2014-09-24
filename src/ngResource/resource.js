@@ -106,7 +106,7 @@ function shallowClearAndCopy(src, dst) {
  *   Given a template `/path/:verb` and parameter `{verb:'greet', salutation:'Hello'}` results in
  *   URL `/path/greet?salutation=Hello`.
  *
- *   If the parameter value is prefixed with `@` then the value for that parameter will be extracted
+ *   If the parameter value is prefixed with `@` then for non-GET operations the value for that parameter will be extracted
  *   from the corresponding property on the `data` object (provided when calling an action method).  For
  *   example, if the `defaultParam` object is `{someParam: '@someProp'}` then the value of `someParam`
  *   will be `data.someProp`.
