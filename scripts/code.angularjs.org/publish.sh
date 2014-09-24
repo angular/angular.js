@@ -3,7 +3,7 @@
 # Script for updating code.angularjs.org repo from current local build.
 
 echo "#################################"
-echo "## Update code.angular.js.org ###"
+echo "## Update code.angularjs.org ###"
 echo "#################################"
 
 ARG_DEFS=(
