@@ -641,6 +641,29 @@ describe('browser', function() {
         expect($location.path()).toBe('/someTestHash');
       });
     });
+
+  });
+
+  describe('integration test with $rootScope', function() {
+
+    beforeEach(module(function($provide, $locationProvider) {
+      $provide.value('$browser', browser);
+      browser.pollFns = [];
+    }));
+
+    it('should not interfere with legacy browser url replace behavior', function() {
+      inject(function($rootScope) {
+        var current = fakeWindow.location.href;
+        var newUrl = 'notyet';
+        sniffer.history = false;
+        browser.url(newUrl, true);
+        expect(browser.url()).toBe(newUrl);
+        $rootScope.$digest();
+        expect(browser.url()).toBe(newUrl);
+        expect(fakeWindow.location.href).toBe(current);
+      });
+    });
+
   });
 
 });
