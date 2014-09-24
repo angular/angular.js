@@ -284,7 +284,7 @@ function shallowClearAndCopy(src, dst) {
 
    ```js
      var User = $resource('/user/:userId', {userId:'@id'});
-     User.get({userId:123}, function(user) {
+     User.get({id:123}, function(user) {
        user.abc = true;
        user.$save();
      });
