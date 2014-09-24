@@ -8,7 +8,7 @@
 
 In this step, you will change the way our app fetches data.
 
-* We defined a custom service that represents a [RESTful][restful] client. Using this client we
+* We define a custom service that represents a [RESTful][restful] client. Using this client we
 can make requests to the server for data in an easier way, without having to deal with the
 lower-level {@link ng.$http $http} API, HTTP methods and URLs.
 
@@ -281,7 +281,7 @@ You should now see the following output in the Karma tab:
 
 # Summary
 
-With the phone image swapper in place, we're ready for {@link step_12 step 12} (the last step!) to
+Now that we've seen how to build a custom service as a RESTful client, we're ready for {@link step_12 step 12} (the last step!) to
 learn how to improve this application with animations.
 
 
