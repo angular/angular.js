@@ -1,3 +1,56 @@
+<a name="1.3.0-rc.3"></a>
+# 1.3.0-rc.3 aggressive-pacification (2014-09-23)
+
+
+## Bug Fixes
+
+- **ngModel:** support milliseconds in time and datetime
+  ([4b83f6ca](https://github.com/angular/angular.js/commit/4b83f6ca2c15bd65fe2b3894a02c04f9967fbff4),
+   [#8874](https://github.com/angular/angular.js/issues/8874))
+
+
+## Features
+
+- **$location:** add ability to opt-out of <base/> tag requirement in html5Mode
+  ([dc3de7fb](https://github.com/angular/angular.js/commit/dc3de7fb7a14c38b5c3dc7decfafb0b51d422dd1),
+   [#8934](https://github.com/angular/angular.js/issues/8934))
+- **formController:** add $setUntouched to propagate untouched state
+  ([fd899755](https://github.com/angular/angular.js/commit/fd8997551f9ed4431f5e99d61f637139485076b9),
+   [#9050](https://github.com/angular/angular.js/issues/9050))
+- **input:** support dynamic element validation
+  ([729c238e](https://github.com/angular/angular.js/commit/729c238e19ab27deff01448d79342ea53721bfed),
+   [#4791](https://github.com/angular/angular.js/issues/4791), [#1404](https://github.com/angular/angular.js/issues/1404))
+- **ngAria:** add an ngAria module to make a11y easier
+  ([d1434c99](https://github.com/angular/angular.js/commit/d1434c999a66c6bb915ee1a8b091e497d288d940),
+   [#5486](https://github.com/angular/angular.js/issues/5486))
+
+
+## Performance Improvements
+
+- **map:** use Array.prototype.map
+  ([a591e8b8](https://github.com/angular/angular.js/commit/a591e8b8d302efefd67bf0d5c4bad300a5f3aded))
+
+
+## Breaking Changes
+
+- **$location:** due to [dc3de7fb](https://github.com/angular/angular.js/commit/dc3de7fb7a14c38b5c3dc7decfafb0b51d422dd1),
+  The $location.html5Mode API has changed to allow enabling html5Mode by
+    passing an object (as well as still supporting passing a boolean). Symmetrically, the
+    method now returns an object instead of a boolean value.
+
+    To migrate, follow the code example below:
+
+    Before:
+
+    var mode = $locationProvider.html5Mode();
+
+    After:
+
+    var mode = $locationProvider.html5Mode().enabled;
+
+Fixes #8934
+
+
 <a name="1.2.25"></a>
 # 1.2.25 hypnotic-gesticulation (2014-09-16)
 
