@@ -19,7 +19,6 @@ module.exports = function debugDeployment(getVersion) {
       '../angular-animate.js',
       'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
       'js/angular-bootstrap/bootstrap.js',
-      'js/angular-bootstrap/bootstrap-prettify.js',
       'js/angular-bootstrap/dropdown-toggle.js',
       'components/lunr.js-' + getVersion('lunr.js') + '/lunr.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
