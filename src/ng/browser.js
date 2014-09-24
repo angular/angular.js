@@ -182,6 +182,10 @@ function Browser(window, document, $log, $sniffer) {
 
   function fireUrlChange() {
     newLocation = null;
+    checkUrlChange();
+  }
+
+  function checkUrlChange() {
     if (lastBrowserUrl == self.url()) return;
 
     lastBrowserUrl = self.url();
@@ -237,7 +241,7 @@ function Browser(window, document, $log, $sniffer) {
    * Needs to be exported to be able to check for changes that have been done in sync,
    * as hashchange/popstate events fire in async.
    */
-  self.$$checkUrlChange = fireUrlChange;
+  self.$$checkUrlChange = checkUrlChange;
 
   //////////////////////////////////////////////////////////////
   // Misc API
