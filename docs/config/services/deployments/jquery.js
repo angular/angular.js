@@ -22,16 +22,16 @@ module.exports = function jqueryDeployment(getVersion) {
       '../angular-touch.min.js',
       '../angular-animate.min.js',
       'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
-      'js/angular-bootstrap/bootstrap.js',
-      'js/angular-bootstrap/bootstrap-prettify.js',
-      'js/angular-bootstrap/dropdown-toggle.js',
+      'js/angular-bootstrap/bootstrap.min.js',
+      'js/angular-bootstrap/bootstrap-prettify.min.js',
+      'js/angular-bootstrap/dropdown-toggle.min.js',
       'components/lunr.js-' + getVersion('lunr.js') + '/lunr.min.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/lang-css.js',
       'js/versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
-      'js/docs.js'
+      'js/docs.min.js'
     ],
     stylesheets: [
       'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
