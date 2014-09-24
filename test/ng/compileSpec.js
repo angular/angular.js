@@ -2547,6 +2547,24 @@ describe('$compile', function() {
       });
     });
 
+    it('should allow the attribute to be removed before the attribute interpolation', function () {
+       module(function() {
+         directive('removeAttr', function () {
+           return {
+             restrict:'A',
+             compile: function (tElement, tAttr) {
+               tAttr.$set('removeAttr', null);
+             }
+           };
+         });
+       });
+       inject(function ($rootScope, $compile) {
+         expect(function () {
+           element = $compile('<div remove-attr="{{ toBeRemoved }}"></div>')($rootScope);
+         }).not.toThrow();
+         expect(element.attr('remove-attr')).toBeUndefined();
+       });
+     });
 
     describe('SCE values', function() {
       it('should resolve compile and link both attribute and text bindings', inject(
