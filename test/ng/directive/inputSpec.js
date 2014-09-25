@@ -1140,9 +1140,7 @@ describe('ngModel', function() {
 
     dealoc(element);
   }));
-
 });
-
 
 describe('input', function() {
   var formElm, inputElm, scope, $compile, $sniffer, $browser, changeInputValueTo, currentSpec;
@@ -2245,7 +2243,6 @@ describe('input', function() {
       compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
       expect(scope.value).toBe('12345');
     });
-
   });
 
 
@@ -3451,7 +3448,6 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
     });
 
-
     it('should render as blank if null', function() {
       compileInput('<input type="number" ng-model="age" />');
 
@@ -3472,7 +3468,6 @@ describe('input', function() {
       expect(inputElm.val()).toBe('');
     });
 
-
     it('should parse empty string to null', function() {
       compileInput('<input type="number" ng-model="age" />');
 
@@ -3482,7 +3477,6 @@ describe('input', function() {
       expect(scope.age).toBeNull();
       expect(inputElm).toBeValid();
     });
-
 
     it('should only invalidate the model if suffering from bad input when the data is parsed', function() {
       compileInput('<input type="number" ng-model="age" />', {
@@ -3499,7 +3493,6 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
     });
 
-
     it('should validate number if transition from bad input to empty string', function() {
       var validity = {
         valid: false,
@@ -3514,13 +3507,24 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should be valid when no value has been set even if it is validated', function() {
+      // This situation isn't common, but it does arise, when other directives
+      // on the same element observe an attribute (e.g. ngRequired, min, max etc).
+
+      compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      scope.form.alias.$validate();
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.alias.$error.number).toBeFalsy();
+    });
+
     it('should throw if the model value is not a number', function() {
       expect(function() {
         scope.value = 'one';
         compileInput('<input type="number" ng-model="value" />');
       }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
     });
-
 
     describe('min', function() {
 
@@ -3604,7 +3608,6 @@ describe('input', function() {
       });
     });
 
-
     describe('max', function() {
 
       it('should validate', function() {
@@ -3687,7 +3690,6 @@ describe('input', function() {
       });
     });
 
-
     describe('required', function() {
 
       it('should be valid even if value is 0', function() {
@@ -3724,6 +3726,102 @@ describe('input', function() {
         scope.$apply("required = false");
 
         expect(inputElm).toBeValid();
+      });
+    });
+
+    describe('ngRequired', function() {
+
+      describe('when the ngRequired expression initially evaluates to true', function() {
+
+        it('should be valid even if value is 0', function() {
+          compileInput('<input type="number" ng-model="value" name="alias" ng-required="true" />');
+
+          changeInputValueTo('0');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(scope.form.alias.$error.required).toBeFalsy();
+        });
+
+        it('should be valid even if value 0 is set from model', function() {
+          compileInput('<input type="number" ng-model="value" name="alias" ng-required="true" />');
+
+          scope.$apply('value = 0');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('0');
+          expect(scope.form.alias.$error.required).toBeFalsy();
+        });
+
+        it('should register required on non boolean elements', function() {
+          compileInput('<div ng-model="value" name="alias" ng-required="true">');
+
+          scope.$apply("value = ''");
+
+          expect(inputElm).toBeInvalid();
+          expect(scope.form.alias.$error.required).toBeTruthy();
+        });
+
+        it('should change from invalid to valid when the value is empty and the ngRequired expression changes to false', function() {
+          compileInput('<input type="number" ng-model="value" name="alias" ng-required="ngRequiredExpr" />');
+
+          scope.$apply('ngRequiredExpr = true');
+
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.alias.$error.required).toBeTruthy();
+
+          scope.$apply('ngRequiredExpr = false');
+
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBeNull();
+          expect(scope.form.alias.$error.required).toBeFalsy();
+        });
+      });
+
+      describe('when the ngRequired expression initially evaluates to false', function() {
+
+        it('should be valid even if value is empty', function() {
+          compileInput('<input type="number" ng-model="value" name="alias" ng-required="false" />');
+
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBeNull();
+          expect(scope.form.alias.$error.required).toBeFalsy();
+          expect(scope.form.alias.$error.number).toBeFalsy();
+        });
+
+        it('should be valid if value is non-empty', function() {
+          compileInput('<input type="number" ng-model="value" name="alias" ng-required="false" />');
+
+          changeInputValueTo('42');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(42);
+          expect(scope.form.alias.$error.required).toBeFalsy();
+        });
+
+        it('should not register required on non boolean elements', function() {
+          compileInput('<div ng-model="value" name="alias" ng-required="false">');
+
+          scope.$apply("value = ''");
+
+          expect(inputElm).toBeValid();
+          expect(scope.form.alias.$error.required).toBeFalsy();
+        });
+
+        it('should change from valid to invalid when the value is empty and the ngRequired expression changes to true', function() {
+          compileInput('<input type="number" ng-model="value" name="alias" ng-required="ngRequiredExpr" />');
+
+          scope.$apply('ngRequiredExpr = false');
+
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBeNull();
+          expect(scope.form.alias.$error.required).toBeFalsy();
+
+          scope.$apply('ngRequiredExpr = true');
+
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.alias.$error.required).toBeTruthy();
+        });
       });
     });
 
@@ -3771,7 +3869,6 @@ describe('input', function() {
         expect(scope.form.input.$error.minlength).not.toBe(true);
       });
     });
-
 
     describe('maxlength', function() {
 
