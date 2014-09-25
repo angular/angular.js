@@ -4368,17 +4368,21 @@ describe('$compile', function() {
             return {
               transclude: 'content',
               replace: true,
-              scope: true,
-              template: '<ul><li>W:{{$parent.$id}}-{{$id}};</li><li ng-transclude></li></ul>'
+              scope: {},
+              link: function(scope) {
+                scope.x='iso';
+              },
+              template: '<ul><li>W:{{x}}-{{$parent.$id}}-{{$id}};</li><li ng-transclude></li></ul>'
             };
           });
         });
         inject(function(log, $rootScope, $compile) {
-          element = $compile('<div><div trans>T:{{$parent.$id}}-{{$id}}<span>;</span></div></div>')
+          element = $compile('<div><div trans>T:{{x}}-{{$parent.$id}}-{{$id}}<span>;</span></div></div>')
               ($rootScope);
+          $rootScope.x = 'root';
           $rootScope.$apply();
-          expect(element.text()).toEqual('W:1-2;T:1-3;');
-          expect(jqLite(element.find('span')[0]).text()).toEqual('T:1-3');
+          expect(element.text()).toEqual('W:iso-1-2;T:root-2-3;');
+          expect(jqLite(element.find('span')[0]).text()).toEqual('T:root-2-3');
           expect(jqLite(element.find('span')[1]).text()).toEqual(';');
         });
       });
@@ -4586,47 +4590,6 @@ describe('$compile', function() {
           });
         });
       }
-
-
-      it('should remove transclusion scope, when the DOM is destroyed', function() {
-        module(function() {
-          directive('box', valueFn({
-            transclude: true,
-            scope: { name: '=', show: '=' },
-            template: '<div><h1>Hello: {{name}}!</h1><div ng-transclude></div></div>',
-            link: function(scope, element) {
-              scope.$watch(
-                  'show',
-                  function(show) {
-                    if (!show) {
-                      element.find('div').find('div').remove();
-                    }
-                  }
-              );
-            }
-          }));
-        });
-        inject(function($compile, $rootScope) {
-          $rootScope.username = 'Misko';
-          $rootScope.select = true;
-          element = $compile(
-              '<div><div box name="username" show="select">user: {{username}}</div></div>')
-              ($rootScope);
-          $rootScope.$apply();
-          expect(element.text()).toEqual('Hello: Misko!user: Misko');
-
-          var widgetScope = $rootScope.$$childHead;
-          var transcludeScope = widgetScope.$$nextSibling;
-          expect(widgetScope.name).toEqual('Misko');
-          expect(widgetScope.$parent).toEqual($rootScope);
-          expect(transcludeScope.$parent).toEqual($rootScope);
-
-          $rootScope.select = false;
-          $rootScope.$apply();
-          expect(element.text()).toEqual('Hello: Misko!');
-          expect(widgetScope.$$nextSibling).toEqual(null);
-        });
-      });
 
 
       it('should add a $$transcluded property onto the transcluded scope', function() {
@@ -4997,6 +4960,162 @@ describe('$compile', function() {
           element = $compile('<div transclude><div child></div></div>')($rootScope);
           expect(capturedChildCtrl).toBeTruthy();
         });
+
+      });
+
+
+      // see issue https://github.com/angular/angular.js/issues/9095
+      describe('removing a transcluded element', function() {
+
+        function countScopes($rootScope) {
+          return [$rootScope].concat(
+            getChildScopes($rootScope)
+          ).length;
+
+          function getChildScopes(scope) {
+            var children = [];
+            if (!scope.$$childHead) { return children; }
+            var childScope = scope.$$childHead;
+            do {
+              children.push(childScope);
+              children = children.concat(getChildScopes(childScope));
+            } while ((childScope = childScope.$$nextSibling));
+            return children;
+          }
+        }
+
+        beforeEach(module(function() {
+          directive('toggle', function() {
+            return {
+              transclude: true,
+              template: '<div ng:if="t"><div ng:transclude></div></div>'
+            };
+          });
+        }));
+
+
+        it('should not leak the transclude scope when the transcluded content is an element transclusion directive',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat="msg in [\'msg-1\']">{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+
+        it('should not leak the transclude scope when the transcluded content is an multi-element transclusion directive',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat-start="msg in [\'msg-1\']">{{ msg }}</div>' +
+              '<div ng:repeat-end>{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+
+        it('should not leak the transclude scope if the transcluded contains only comments',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<!-- some comment -->' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some comment');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some comment');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some comment');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some comment');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+        it('should not leak the transclude scope if the transcluded contains only text nodes',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              'some text' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some text');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some text');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some text');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some text');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
 
       });
 
