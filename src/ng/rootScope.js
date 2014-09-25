@@ -184,11 +184,19 @@ function $RootScopeProvider(){
        *         When creating widgets, it is useful for the widget to not accidentally read parent
        *         state.
        *
+       * @param {Scope} [parent=this] The {@link ng.$rootScope.Scope `Scope`} that will be the `$parent`
+       *                              of the newly created scope. Defaults to `this` scope if not provided.
+       *                              This is used when creating a transclude scope to correctly place it
+       *                              in the scope hierarchy while maintaining the correct prototypical
+       *                              inheritance.
+       *
        * @returns {Object} The newly created child scope.
        *
        */
-      $new: function(isolate) {
+      $new: function(isolate, parent) {
         var child;
+
+        parent = parent || this;
 
         if (isolate) {
           child = new Scope();
@@ -213,13 +221,13 @@ function $RootScopeProvider(){
           child = new this.$$ChildScope();
         }
         child['this'] = child;
-        child.$parent = this;
-        child.$$prevSibling = this.$$childTail;
-        if (this.$$childHead) {
-          this.$$childTail.$$nextSibling = child;
-          this.$$childTail = child;
+        child.$parent = parent;
+        child.$$prevSibling = parent.$$childTail;
+        if (parent.$$childHead) {
+          parent.$$childTail.$$nextSibling = child;
+          parent.$$childTail = child;
         } else {
-          this.$$childHead = this.$$childTail = child;
+          parent.$$childHead = parent.$$childTail = child;
         }
         return child;
       },
