@@ -100,4 +100,243 @@ describe("$animate", function() {
       inject();
     });
   });
+
+  describe('class API', function() {
+    var element;
+    var addClass;
+    var removeClass;
+
+    beforeEach(module(provideLog));
+
+    afterEach(function() {
+      dealoc(element);
+    });
+
+    function setupClassManipulationSpies() {
+      inject(function($animate) {
+        addClass = spyOn($animate, '$$addClassImmediately').andCallThrough();
+        removeClass = spyOn($animate, '$$removeClassImmediately').andCallThrough();
+      });
+    }
+
+    function setupClassManipulationLogger(log) {
+      inject(function($animate) {
+        var addClassImmediately = $animate.$$addClassImmediately;
+        var removeClassImmediately = $animate.$$removeClassImmediately;
+        addClass = spyOn($animate, '$$addClassImmediately').andCallFake(function(element, classes) {
+          var names = classes;
+          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join( ' ');
+          log('addClass(' + names + ')');
+          return addClassImmediately.call($animate, element, classes);
+        });
+        removeClass = spyOn($animate, '$$removeClassImmediately').andCallFake(function(element, classes) {
+          var names = classes;
+          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join( ' ');
+          log('removeClass(' + names + ')');
+          return removeClassImmediately.call($animate, element, classes);
+        });
+      });
+    }
+
+    it('should defer class manipulation until end of digest', inject(function($rootScope, $animate) {
+      setupClassManipulationSpies();
+      element = jqLite('<p>test</p>');
+
+      $rootScope.$apply(function() {
+        $animate.addClass(element, 'test-class1');
+        expect(element).not.toHaveClass('test-class1');
+
+        $animate.removeClass(element, 'test-class1');
+
+        $animate.addClass(element, 'test-class2');
+        expect(element).not.toHaveClass('test-class2');
+
+        $animate.setClass(element, 'test-class3', 'test-class4');
+        expect(element).not.toHaveClass('test-class3');
+        expect(element).not.toHaveClass('test-class4');
+      });
+
+      expect(element).not.toHaveClass('test-class1');
+      expect(element).not.toHaveClass('test-class4');
+      expect(element).toHaveClass('test-class2');
+      expect(element).toHaveClass('test-class3');
+      expect(addClass.callCount).toBe(1);
+      expect(removeClass.callCount).toBe(0);
+    }));
+
+
+    it('should perform class manipulation immediately outside of digest', inject(function($rootScope, $animate) {
+      setupClassManipulationSpies();
+      element = jqLite('<p>test</p>');
+
+      $animate.addClass(element, 'test-class1');
+      expect(element).toHaveClass('test-class1');
+
+      $animate.removeClass(element, 'test-class1');
+      expect(element).not.toHaveClass('test-class1');
+
+      $animate.addClass(element, 'test-class2');
+      expect(element).toHaveClass('test-class2');
+
+      $animate.setClass(element, 'test-class3', 'test-class4');
+      expect(element).toHaveClass('test-class3');
+      expect(element).not.toHaveClass('test-class4');
+
+      expect(element).not.toHaveClass('test-class1');
+      expect(element).toHaveClass('test-class2');
+      expect(addClass.callCount).toBe(3);
+      expect(removeClass.callCount).toBe(1);
+    }));
+
+
+    it('should perform class manipulation in expected order at end of digest', inject(function($rootScope, $animate, log) {
+      element = jqLite('<p class="test-class3">test</p>');
+
+      setupClassManipulationLogger(log);
+
+      $rootScope.$apply(function() {
+        $animate.addClass(element, 'test-class1');
+        $animate.addClass(element, 'test-class2');
+        $animate.removeClass(element, 'test-class1');
+        $animate.removeClass(element, 'test-class3');
+        $animate.addClass(element, 'test-class3');
+      });
+      expect(log).toEqual(['addClass(test-class2)']);
+    }));
+
+
+    it('should perform class manipulation in expected order outside of digest', inject(function($rootScope, $animate, log) {
+      element = jqLite('<p class="test-class3">test</p>');
+
+      setupClassManipulationLogger(log);
+
+      $animate.addClass(element, 'test-class1');
+      $animate.addClass(element, 'test-class2');
+      $animate.removeClass(element, 'test-class1');
+      $animate.removeClass(element, 'test-class3');
+      $animate.addClass(element, 'test-class3');
+
+      expect(log).toEqual([
+          'addClass(test-class1)',
+          'addClass(test-class2)',
+          'removeClass(test-class1)',
+          'removeClass(test-class3)',
+          'addClass(test-class3)']);
+    }));
+
+
+    it('should return a promise which is resolved on a different turn', inject(function(log, $animate, $browser, $rootScope) {
+      element = jqLite('<p class="test2">test</p>');
+
+      $animate.addClass(element, 'test1').then(log.fn('addClass(test1)'));
+      $animate.removeClass(element, 'test2').then(log.fn('removeClass(test2)'));
+
+      $browser.defer.flush();
+      expect(log).toEqual(['addClass(test1)', 'removeClass(test2)']);
+
+      log.reset();
+      element = jqLite('<p class="test4">test</p>');
+
+      $rootScope.$apply(function() {
+        $animate.addClass(element, 'test3').then(log.fn('addClass(test3)'));
+        $animate.removeClass(element, 'test4').then(log.fn('removeClass(test4)'));
+      });
+
+      $browser.defer.flush();
+      expect(log).toEqual(['addClass(test3)', 'removeClass(test4)']);
+    }));
+
+
+    it('should defer class manipulation until end of digest for SVG', inject(function($rootScope, $animate) {
+      if (!window.SVGElement) return;
+      setupClassManipulationSpies();
+      element = jqLite('<svg><g></g></svg>');
+      var target = element.children().eq(0);
+
+      $rootScope.$apply(function() {
+        $animate.addClass(target, 'test-class1');
+        expect(target).not.toHaveClass('test-class1');
+
+        $animate.removeClass(target, 'test-class1');
+
+        $animate.addClass(target, 'test-class2');
+        expect(target).not.toHaveClass('test-class2');
+
+        $animate.setClass(target, 'test-class3', 'test-class4');
+        expect(target).not.toHaveClass('test-class3');
+        expect(target).not.toHaveClass('test-class4');
+      });
+
+      expect(target).not.toHaveClass('test-class1');
+      expect(target).toHaveClass('test-class2');
+      expect(addClass.callCount).toBe(1);
+      expect(removeClass.callCount).toBe(0);
+    }));
+
+
+    it('should perform class manipulation immediately outside of digest for SVG', inject(function($rootScope, $animate) {
+      if (!window.SVGElement) return;
+      setupClassManipulationSpies();
+      element = jqLite('<svg><g></g></svg>');
+      var target = element.children().eq(0);
+
+      $animate.addClass(target, 'test-class1');
+      expect(target).toHaveClass('test-class1');
+
+      $animate.removeClass(target, 'test-class1');
+      expect(target).not.toHaveClass('test-class1');
+
+      $animate.addClass(target, 'test-class2');
+      expect(target).toHaveClass('test-class2');
+
+      $animate.setClass(target, 'test-class3', 'test-class4');
+      expect(target).toHaveClass('test-class3');
+      expect(target).not.toHaveClass('test-class4');
+
+      expect(target).not.toHaveClass('test-class1');
+      expect(target).toHaveClass('test-class2');
+      expect(addClass.callCount).toBe(3);
+      expect(removeClass.callCount).toBe(1);
+    }));
+
+
+    it('should perform class manipulation in expected order at end of digest for SVG', inject(function($rootScope, $animate, log) {
+      if (!window.SVGElement) return;
+      element = jqLite('<svg><g class="test-class3"></g></svg>');
+      var target = element.children().eq(0);
+
+      setupClassManipulationLogger(log);
+
+      $rootScope.$apply(function() {
+        $animate.addClass(target, 'test-class1');
+        $animate.addClass(target, 'test-class2');
+        $animate.removeClass(target, 'test-class1');
+        $animate.removeClass(target, 'test-class3');
+        $animate.addClass(target, 'test-class3');
+      });
+      expect(log).toEqual(['addClass(test-class2)']);
+    }));
+
+
+    it('should perform class manipulation in expected order outside of digest for SVG', inject(function($rootScope, $animate, log) {
+      if (!window.SVGElement) return;
+      element = jqLite('<svg><g class="test-class3"></g></svg>');
+      var target = element.children().eq(0);
+
+      setupClassManipulationLogger(log);
+
+      $animate.addClass(target, 'test-class1');
+      $animate.addClass(target, 'test-class2');
+      $animate.removeClass(target, 'test-class1');
+      $animate.removeClass(target, 'test-class3');
+      $animate.addClass(target, 'test-class3');
+
+      expect(log).toEqual([
+          'addClass(test-class1)',
+          'addClass(test-class2)',
+          'removeClass(test-class1)',
+          'removeClass(test-class3)',
+          'addClass(test-class3)']);
+    }));
+  });
 });

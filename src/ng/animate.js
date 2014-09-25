@@ -81,9 +81,69 @@ var $AnimateProvider = ['$provide', function($provide) {
     return this.$$classNameFilter;
   };
 
-  this.$get = ['$$q', '$$asyncCallback', function($$q, $$asyncCallback) {
+  this.$get = ['$$q', '$$asyncCallback', '$rootScope', function($$q, $$asyncCallback, $rootScope) {
 
     var currentDefer;
+    var ELEMENT_NODE = 1;
+
+    function extractElementNodes(element) {
+      var elements = new Array(element.length);
+      var count = 0;
+      for(var i = 0; i < element.length; i++) {
+        var elm = element[i];
+        if (elm.nodeType == ELEMENT_NODE) {
+          elements[count++] = elm;
+        }
+      }
+      elements.length = count;
+      return jqLite(elements);
+    }
+
+    function runAnimationPostDigest(fn) {
+      var cancelFn, defer = $$q.defer();
+      if (!$rootScope.$$phase) {
+        fn(noop);
+        defer.resolve();
+      }
+      defer.promise.$$cancelFn = function ngAnimateMaybeCancel() {
+        cancelFn && cancelFn();
+      };
+      $rootScope.$$postDigest(function ngAnimatePostDigest() {
+        cancelFn = fn(function ngAnimateNotifyComplete() {
+          defer.resolve();
+        });
+      });
+      return defer.promise;
+    }
+
+    function resolveElementClasses(element, cache) {
+      var map = {};
+
+      forEach(cache.add, function(className) {
+        if (className && className.length) {
+          map[className] = map[className] || 0;
+          map[className]++;
+        }
+      });
+
+      forEach(cache.remove, function(className) {
+        if (className && className.length) {
+          map[className] = map[className] || 0;
+          map[className]--;
+        }
+      });
+
+      var toAdd = [], toRemove = [];
+      forEach(map, function(status, className) {
+        var hasClass = jqLiteHasClass(element[0], className);
+
+        if (status < 0 && hasClass) toRemove.push(className);
+        else if (status > 0 && !hasClass) toAdd.push(className);
+      });
+
+      return (toAdd.length + toRemove.length) > 0 && [toAdd.join(' '), toRemove.join(' ')];
+    }
+
     function asyncPromise() {
       // only serve one instance of a promise in order to save CPU cycles
       if (!currentDefer) {
@@ -187,6 +247,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       addClass : function(element, className) {
+        return this.setClass(element, className, []);
+      },
+
+      $$addClassImmediately : function addClassImmediately(element, className) {
+        element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
                         : className;
@@ -209,6 +274,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       removeClass : function(element, className) {
+        return this.setClass(element, [], className);
+      },
+
+      $$removeClassImmediately : function removeClassImmediately(element, className) {
+        element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
                         : className;
@@ -232,9 +302,39 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       setClass : function(element, add, remove) {
-        this.addClass(element, add);
-        this.removeClass(element, remove);
-        return asyncPromise();
+        var self = this;
+        var STORAGE_KEY = '$$animateClasses';
+        element = extractElementNodes(jqLite(element));
+
+        add = isArray(add) ? add : add.split(' ');
+        remove = isArray(remove) ? remove : remove.split(' ');
+
+        var cache = element.data(STORAGE_KEY);
+        if (cache) {
+          cache.add = cache.add.concat(add);
+          cache.remove = cache.remove.concat(remove);
+          //the digest cycle will combine all the animations into one function
+          return cache.promise;
+        } else {
+          element.data(STORAGE_KEY, cache = {
+            add : add,
+            remove : remove
+          });
+        }
+
+        return cache.promise = runAnimationPostDigest(function(done) {
+          var cache = element.data(STORAGE_KEY);
+          element.removeData(STORAGE_KEY);
+
+          var classes = cache && resolveElementClasses(element, cache);
+
+          if (classes) {
+            if (classes[0].length) self.$$addClassImmediately(element, classes[0]);
+            if (classes[1].length) self.$$removeClassImmediately(element, classes[1]);
+          }
+
+          done();
+        });
       },
 
       enabled : noop,
