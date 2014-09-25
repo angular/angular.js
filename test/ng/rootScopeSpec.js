@@ -72,6 +72,15 @@ describe('Scope', function() {
       expect(child.$new).toBe($rootScope.$new);
       expect(child.$root).toBe($rootScope);
     }));
+
+    it("should attach the child scope to a specified parent", inject(function($rootScope) {
+      var isolated = $rootScope.$new(true);
+      var trans = $rootScope.$new(false, isolated);
+      $rootScope.a = 123;
+      expect(isolated.a).toBeUndefined();
+      expect(trans.a).toEqual(123);
+      expect(trans.$parent).toBe(isolated);
+    }));
   });
 
 
