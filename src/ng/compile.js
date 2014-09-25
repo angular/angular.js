@@ -1174,7 +1174,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn, elementTransclusion) {
 
       var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, futureParentElement, containingScope) {
-        var scopeCreated = false;
 
         if (!transcludedScope) {
           transcludedScope = scope.$new(false, containingScope);
