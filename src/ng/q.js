@@ -487,10 +487,10 @@ function qFactory(nextTick, exceptionHandler) {
    */
 
 
-  var when = function(value, callback, errback, progressBack) {
+  var when = function(value) {
     var result = new Deferred();
     result.resolve(value);
-    return result.promise.then(callback, errback, progressBack);
+    return result.promise;
   };
 
   /**
