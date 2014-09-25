@@ -4968,18 +4968,22 @@ describe('$compile', function() {
 
           $rootScope.$apply('t = true');
           expect(element.text()).toContain('msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
           expect(countScopes($rootScope)).toEqual(4);
 
           $rootScope.$apply('t = false');
           expect(element.text()).not.toContain('msg-1');
+          // Expected scopes: $rootScope
           expect(countScopes($rootScope)).toEqual(1);
 
           $rootScope.$apply('t = true');
           expect(element.text()).toContain('msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
           expect(countScopes($rootScope)).toEqual(4);
 
           $rootScope.$apply('t = false');
           expect(element.text()).not.toContain('msg-1');
+          // Expected scopes: $rootScope
           expect(countScopes($rootScope)).toEqual(1);
         }));
 
@@ -4995,18 +4999,22 @@ describe('$compile', function() {
 
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some comment');
+          // Expected scopes: $rootScope, ngIf, transclusion
           expect(countScopes($rootScope)).toEqual(3);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some comment');
+          // Expected scopes: $rootScope
           expect(countScopes($rootScope)).toEqual(1);
 
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some comment');
+          // Expected scopes: $rootScope, ngIf, transclusion
           expect(countScopes($rootScope)).toEqual(3);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some comment');
+          // Expected scopes: $rootScope
           expect(countScopes($rootScope)).toEqual(1);
         }));
 
@@ -5021,18 +5029,22 @@ describe('$compile', function() {
 
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some text');
+          // Expected scopes: $rootScope, ngIf, transclusion
           expect(countScopes($rootScope)).toEqual(3);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some text');
+          // Expected scopes: $rootScope
           expect(countScopes($rootScope)).toEqual(1);
 
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some text');
+          // Expected scopes: $rootScope, ngIf, transclusion
           expect(countScopes($rootScope)).toEqual(3);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some text');
+          // Expected scopes: $rootScope
           expect(countScopes($rootScope)).toEqual(1);
         }));
 
