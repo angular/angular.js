@@ -81,9 +81,65 @@ var $AnimateProvider = ['$provide', function($provide) {
     return this.$$classNameFilter;
   };
 
-  this.$get = ['$$q', '$$asyncCallback', function($$q, $$asyncCallback) {
+  this.$get = ['$$q', '$$asyncCallback', '$rootScope', function($$q, $$asyncCallback, $rootScope) {
 
     var currentDefer;
+    var ELEMENT_NODE = 1;
+
+    function extractElementNodes(element) {
+      var elements = new Array(element.length);
+      var count = 0;
+      for(var i = 0; i < element.length; i++) {
+        var elm = element[i];
+        if (elm.nodeType == ELEMENT_NODE) {
+          elements[count++] = elm;
+        }
+      }
+      elements.length = count;
+      return jqLite(elements);
+    }
+
+    function runAnimationPostDigest(fn) {
+      var cancelFn, defer = $$q.defer();
+      defer.promise.$$cancelFn = function ngAnimateMaybeCancel() {
+        cancelFn && cancelFn();
+      };
+
+      $rootScope.$$postDigest(function ngAnimatePostDigest() {
+        cancelFn = fn(function ngAnimateNotifyComplete() {
+          defer.resolve();
+        });
+      });
+
+      return defer.promise;
+    }
+
+    function resolveElementClasses(element, cache) {
+      var toAdd = [], toRemove = [];
+      forEach(cache.classes, function(status, className) {
+        var hasClass = jqLiteHasClass(element[0], className);
+
+        // If the most recent class manipulation (via $animate) was to remove the class, and the
+        // element currently has the class, the class is scheduled for removal. Otherwise, if
+        // the most recent class manipulation (via $animate) was to add the class, and the
+        // element does not currently have the class, the class is scheduled to be added.
+        if (status === false && hasClass) {
+          toRemove.push(className);
+        } else if (status === true && !hasClass) {
+          toAdd.push(className);
+        }
+      });
+
+      return (toAdd.length + toRemove.length) > 0 && [toAdd.join(' '), toRemove.join(' ')];
+    }
+
+    function cachedClassManipulation(cache, classes, op) {
+      for (var i=0, ii = classes.length; i < ii; ++i) {
+        var className = classes[i];
+        cache[className] = op;
+      }
+    }
+
     function asyncPromise() {
       // only serve one instance of a promise in order to save CPU cycles
       if (!currentDefer) {
@@ -187,13 +243,17 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       addClass : function(element, className) {
+        return this.setClass(element, className, []);
+      },
+
+      $$addClassImmediately : function addClassImmediately(element, className) {
+        element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
                         : className;
         forEach(element, function (element) {
           jqLiteAddClass(element, className);
         });
-        return asyncPromise();
       },
 
       /**
@@ -209,6 +269,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       removeClass : function(element, className) {
+        return this.setClass(element, [], className);
+      },
+
+      $$removeClassImmediately : function removeClassImmediately(element, className) {
+        element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
                         : className;
@@ -231,10 +296,50 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {string} remove the CSS class which will be removed from the element
        * @return {Promise} the animation callback promise
        */
-      setClass : function(element, add, remove) {
-        this.addClass(element, add);
-        this.removeClass(element, remove);
-        return asyncPromise();
+      setClass : function(element, add, remove, runSynchronously) {
+        var self = this;
+        var STORAGE_KEY = '$$animateClasses';
+        element = extractElementNodes(jqLite(element));
+
+        if (runSynchronously) {
+          self.$$addClassImmediately(element, add);
+          self.$$removeClassImmediately(element, remove);
+          return asyncPromise();
+        }
+
+        var cache = element.data(STORAGE_KEY);
+        if (!cache) {
+          cache = {
+            classes: {}
+          };
+          var createdCache = true;
+        }
+
+        var classes = cache.classes;
+
+        add = isArray(add) ? add : add.split(' ');
+        remove = isArray(remove) ? remove : remove.split(' ');
+        cachedClassManipulation(classes, add, true);
+        cachedClassManipulation(classes, remove, false);
+
+        if (createdCache) {
+          cache.promise = runAnimationPostDigest(function(done) {
+            var cache = element.data(STORAGE_KEY);
+            element.removeData(STORAGE_KEY);
+
+            var classes = cache && resolveElementClasses(element, cache);
+
+            if (classes) {
+              if (classes[0]) self.$$addClassImmediately(element, classes[0]);
+              if (classes[1]) self.$$removeClassImmediately(element, classes[1]);
+            }
+
+            done();
+          });
+          element.data(STORAGE_KEY, cache);
+        }
+
+        return cache.promise;
       },
 
       enabled : noop,

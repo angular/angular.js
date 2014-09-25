@@ -554,17 +554,20 @@ describe('form', function() {
       expect(doc).toBeValid();
 
       control.$setValidity('error', false);
+      scope.$digest();
       expect(doc).toBeInvalid();
       expect(doc.hasClass('ng-valid-error')).toBe(false);
       expect(doc.hasClass('ng-invalid-error')).toBe(true);
 
       control.$setValidity('another', false);
+      scope.$digest();
       expect(doc.hasClass('ng-valid-error')).toBe(false);
       expect(doc.hasClass('ng-invalid-error')).toBe(true);
       expect(doc.hasClass('ng-valid-another')).toBe(false);
       expect(doc.hasClass('ng-invalid-another')).toBe(true);
 
       control.$setValidity('error', true);
+      scope.$digest();
       expect(doc).toBeInvalid();
       expect(doc.hasClass('ng-valid-error')).toBe(true);
       expect(doc.hasClass('ng-invalid-error')).toBe(false);
@@ -572,6 +575,7 @@ describe('form', function() {
       expect(doc.hasClass('ng-invalid-another')).toBe(true);
 
       control.$setValidity('another', true);
+      scope.$digest();
       expect(doc).toBeValid();
       expect(doc.hasClass('ng-valid-error')).toBe(true);
       expect(doc.hasClass('ng-invalid-error')).toBe(false);
@@ -581,6 +585,7 @@ describe('form', function() {
       // validators are skipped, e.g. becuase of a parser error
       control.$setValidity('error', null);
       control.$setValidity('another', null);
+      scope.$digest();
       expect(doc.hasClass('ng-valid-error')).toBe(false);
       expect(doc.hasClass('ng-invalid-error')).toBe(false);
       expect(doc.hasClass('ng-valid-another')).toBe(false);
@@ -652,7 +657,9 @@ describe('form', function() {
       expect(input1).toBeDirty();
       expect(input2).toBeDirty();
 
+
       formCtrl.$setPristine();
+      scope.$digest();
       expect(form).toBePristine();
       expect(formCtrl.$pristine).toBe(true);
       expect(formCtrl.$dirty).toBe(false);
@@ -685,6 +692,7 @@ describe('form', function() {
       expect(input).toBeDirty();
 
       formCtrl.$setPristine();
+      scope.$digest();
       expect(form).toBePristine();
       expect(formCtrl.$pristine).toBe(true);
       expect(formCtrl.$dirty).toBe(false);
@@ -719,7 +727,9 @@ describe('form', function() {
       expect(nestedInput).toBeDirty();
 
       formCtrl.$setPristine();
+      scope.$digest();
       expect(form).toBePristine();
+      scope.$digest();
       expect(formCtrl.$pristine).toBe(true);
       expect(formCtrl.$dirty).toBe(false);
       expect(nestedForm).toBePristine();
