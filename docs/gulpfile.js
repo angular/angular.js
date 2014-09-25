@@ -8,7 +8,10 @@ var bower = require('bower');
 var Dgeni = require('dgeni');
 var merge = require('event-stream').merge;
 var path = require('canonical-path');
-
+var foreach = require('gulp-foreach');
+var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
+var rename = require('gulp-rename');
 
 // We indicate to gulp that tasks are async by returning the stream.
 // Gulp can then wait for the stream to close before starting dependent tasks.
@@ -19,6 +22,7 @@ var bowerFolder = 'bower_components';
 
 var src = 'app/src/**/*.js';
 var assets = 'app/assets/**/*';
+
 
 var copyComponent = function(component, pattern, sourceFolder, packageFile) {
   pattern = pattern || '/**/*';
@@ -42,14 +46,37 @@ gulp.task('bower', function() {
 });
 
 gulp.task('build-app', function() {
-  gulp.src(src)
-    .pipe(concat('docs.js'))
-    .pipe(gulp.dest(outputFolder + '/js/'));
+  var file = 'docs.js';
+  var minFile = 'docs.min.js';
+  var folder = outputFolder + '/js/';
+
+  return gulp.src(src)
+    .pipe(sourcemaps.init())
+    .pipe(concat(file))
+    .pipe(gulp.dest(folder))
+    .pipe(rename(minFile))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(folder));
 });
 
 gulp.task('assets', ['bower'], function() {
+  var JS_EXT = /\.js$/;
   return merge(
-    gulp.src([assets]).pipe(gulp.dest(outputFolder)),
+    gulp.src([assets])
+      .pipe(gulp.dest(outputFolder)),
+    gulp.src([assets])
+      .pipe(foreach(function(stream, file) {
+        if (JS_EXT.test(file.relative)) {
+          var minFile = file.relative.replace(JS_EXT, '.min.js');
+          return stream
+            .pipe(sourcemaps.init())
+            .pipe(concat(minFile))
+            .pipe(uglify())
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest(outputFolder));
+        }
+      })),
     copyComponent('bootstrap', '/dist/**/*'),
     copyComponent('open-sans-fontface'),
     copyComponent('lunr.js','/*.js'),

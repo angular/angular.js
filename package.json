@@ -13,7 +13,6 @@
     "canonical-path": "0.0.2",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.10.0",
-    "es6-shim": "^0.14.0",
     "event-stream": "~3.1.0",
     "grunt": "~0.4.2",
     "grunt-bump": "~0.0.13",
@@ -29,8 +28,12 @@
     "grunt-parallel": "~0.3.1",
     "grunt-shell": "~0.4.0",
     "gulp": "~3.8.0",
-    "gulp-concat": "~2.1.7",
+    "gulp-concat": "^2.4.1",
+    "gulp-foreach": "0.0.1",
     "gulp-jshint": "~1.4.2",
+    "gulp-rename": "^1.2.0",
+    "gulp-sourcemaps": "^1.2.2",
+    "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
     "jasmine-node": "~1.11.0",
     "jasmine-reporters": "~0.2.1",
@@ -57,9 +60,7 @@
     "semver": "~2.1.0",
     "shelljs": "~0.2.6",
     "sorted-object": "^1.0.0",
-    "stringmap": "^0.2.2",
-    "winston": "~0.7.2",
-    "yaml-js": "~0.0.8"
+    "stringmap": "^0.2.2"
   },
   "licenses": [
     {
