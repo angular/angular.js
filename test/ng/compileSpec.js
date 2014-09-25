@@ -4988,6 +4988,38 @@ describe('$compile', function() {
         }));
 
 
+        it('should not leak the transclude scope when the transcluded content is an multi-element transclusion directive',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat-start="msg in [\'msg-1\']">{{ msg }}</div>' +
+              '<div ng:repeat-end>{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+
         it('should not leak the transclude scope if the transcluded contains only comments',
               inject(function($compile, $rootScope) {
 
