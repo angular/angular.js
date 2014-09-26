@@ -851,6 +851,19 @@ describe('select', function() {
         expect(spy).not.toHaveBeenCalled();
       });
 
+      it('should remove listeners on scope.$destroy', function(){
+        createSingleSelect();
+
+        var
+          ctrl = element.controller('select');
+
+        ctrl.$optionChangeListeners.push(function(){});
+
+        scope.$destroy();
+
+        expect(ctrl.$optionChangeListeners.length).toEqual(0);
+      });
+
     });
 
     describe('binding', function() {
