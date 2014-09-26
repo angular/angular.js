@@ -180,7 +180,7 @@ function shallowClearAndCopy(src, dst) {
  *     'delete': {method:'DELETE'} };
  *   ```
  *
- *   Calling these methods invoke an {@link ng.$http} with the specified http method,
+ *   Calling these methods invoke a {@link ng.$http} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
  *   instance of the resource class. The actions `save`, `remove` and `delete` are available on it
  *   as  methods with the `$` prefix. This allows you to easily perform CRUD operations (create,
