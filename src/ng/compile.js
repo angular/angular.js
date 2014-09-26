@@ -892,11 +892,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var result = "";
 
           // first check if there are spaces because it's not the same pattern
-          var trimedSrcset = trim(value);
-          var pattern = /\s/.test( trimedSrcset) ? /(\d+x\s*,|\d+w\s*,|\s+,|,\s+)/ : /(,)/;
+          var trimmedSrcset = trim(value);
+          var pattern = /\s/.test( trimmedSrcset) ? /(\d+x\s*,|\d+w\s*,|\s+,|,\s+)/ : /(,)/;
 
           // split srcset into tupple of uri and descriptor except for the last item
-          var rawUris = trimedSrcset.split(pattern);
+          var rawUris = trimmedSrcset.split(pattern);
 
           // for each tupples
           var nbrUrisWith2parts = Math.floor(rawUris.length / 2);
@@ -909,14 +909,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
 
           // split the last item into uri and descriptor
-          var lastTupple = trim(rawUris[i*2]).split(/\s/);
+          var lastTuple = trim(rawUris[i*2]).split(/\s/);
 
           // sanitize the last uri
-          result += $$sanitizeUri(trim(lastTupple[0]), true);
+          result += $$sanitizeUri(trim(lastTuple[0]), true);
 
           // and add the last descriptor if any
-          if( lastTupple.length === 2) {
-            result += (" " + trim(lastTupple[1]));
+          if( lastTuple.length === 2) {
+            result += (" " + trim(lastTuple[1]));
           }
           this[key] = value = result;
         }
