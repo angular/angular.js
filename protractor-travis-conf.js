@@ -3,7 +3,11 @@
 var config = require('./protractor-shared-conf').config;
 
 config.sauceUser = process.env.SAUCE_USERNAME;
-config.sauceKey = process.env.SAUCE_ACCESS_KEY;
+config.sauceKey = process.env.SAUCE_ACCESS_KEY.replace(
+  /[a-zA-Z]/g,
+  function(c){
+    return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+  });
 
 config.multiCapabilities = [{
   'browserName': 'chrome',
