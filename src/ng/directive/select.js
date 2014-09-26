@@ -260,6 +260,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       ////////////////////////////
 
 
+      function notifyListeners(values) {
+        var index, length;
+
+        if (!(length = selectCtrl.$optionChangeListeners.length)) return;
+
+        for(index = 0; index < length; index++) {
+          selectCtrl.$optionChangeListeners[index](values || []);
+        }
+      }
 
       function setupAsSingle(scope, selectElement, ngModelCtrl, selectCtrl) {
         ngModelCtrl.$render = function() {
@@ -282,6 +291,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           scope.$apply(function() {
             if (unknownOption.parent()) unknownOption.remove();
             ngModelCtrl.$setViewValue(selectElement.val());
+            notifyListeners();
           });
         });
       }
@@ -313,6 +323,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               }
             });
             ctrl.$setViewValue(array);
+            notifyListeners();
           });
         });
       }
@@ -460,16 +471,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           if (!renderScheduled) {
             scope.$$postDigest(render);
             renderScheduled = true;
-          }
-        }
-
-        function notifyListeners(values) {
-          var index, length;
-
-          if (!(length = selectCtrl.$optionChangeListeners.length)) return;
-
-          for(index = 0; index < length; index++) {
-            selectCtrl.$optionChangeListeners[index](values);
           }
         }
 

@@ -832,7 +832,7 @@ describe('select', function() {
         expect(spy.mostRecentCall.args[0]).toEqual([values[2]]);
       });
 
-      it('should not trigger when there\'s no ng-options', function(){
+      it('should trigger when there\'s no ng-options with empty value list on single', function(){
         createSelect({
           'ng-model': 'selected'
         });
@@ -843,12 +843,24 @@ describe('select', function() {
 
         ctrl.$optionChangeListeners.push(spy);
 
-        scope.$apply(function(){
-          scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
-          scope.selected = scope.values[0];
+        browserTrigger(element, 'change');
+        expect(spy.callCount).toEqual(1);
+      });
+
+      it('should trigger when there\'s no ng-options with empty value list on multiple', function(){
+        createSelect({
+          'ng-model': 'selected',
+          'multiple': true
         });
 
-        expect(spy).not.toHaveBeenCalled();
+        var
+          ctrl = element.controller('select'),
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        browserTrigger(element, 'change');
+        expect(spy.callCount).toEqual(1);
       });
 
       it('should remove listeners on scope.$destroy', function(){
