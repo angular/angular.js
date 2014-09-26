@@ -151,14 +151,15 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
 
   function removePatch(param) {
     // jshint -W040
-    var list = filterElems && param ? [this.filter(param)] : [this],
+    var list = filterElems && param ? [this.filter(param)] : [this], listIndex,
         fireEvent = dispatchThis,
         set, setIndex, setLength,
         element, childIndex, childLength, children;
 
     if (!getterIfNoArguments || param != null) {
-      while(list.length) {
-        set = list.shift();
+      for(listIndex = 0; listIndex < list.length;) {
+        set = list[listIndex];
+		list[listIndex++] = null; // Allow GC
         for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
           element = jqLite(set[setIndex]);
           if (fireEvent) {
