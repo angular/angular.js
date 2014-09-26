@@ -208,9 +208,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         return optionsMap.hasOwnProperty(value);
       };
 
+      self.$optionChangeListeners = [];
+
       $scope.$on('$destroy', function() {
         // disable unknown option so that we don't do work when the whole select is being destroyed
         self.renderUnknownOption = noop;
+        // clear the listeners array for the same reason
+        self.$optionChangeListeners.length = 0;
       });
     }],
 
@@ -459,6 +463,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         }
 
+        function notifyListeners(values) {
+          var index, length;
+
+          if (!(length = selectCtrl.$optionChangeListeners.length)) return;
+
+          for(index = 0; index < length; index++) {
+            selectCtrl.$optionChangeListeners[index](values);
+          }
+        }
 
         function render() {
           renderScheduled = false;
@@ -482,7 +495,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               lastElement,
               element,
               label;
-
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
@@ -629,6 +641,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           while(optionGroupsCache.length > groupIndex) {
             optionGroupsCache.pop()[0].element.remove();
           }
+
+          // Rendering of options are done, call the listeners if any
+          notifyListeners(values);
         }
       }
     }

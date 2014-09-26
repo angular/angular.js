@@ -788,6 +788,71 @@ describe('select', function() {
       expect(scope.selected).toBe(scope.values[0]);
     });
 
+    describe('$optionChangeListeners', function(){
+
+      it('should pass the reference objects from ng-options item list', function(){
+        createSingleSelect();
+        var
+          options = [{name: 'A'}, {name: 'B'}, {name: 'C'}],
+          ctrl = element.controller('select'),
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        scope.$apply(function(){
+          scope.values = options;
+          scope.selected = scope.values[0];
+        });
+
+        expect(spy).toHaveBeenCalledWith(options);
+      });
+
+      it('should pass the filtered items to the listeners', function(){
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'value.id as value.name for value in values | filter:{id:3}'
+        });
+
+        var
+          ctrl = element.controller('select'),
+          values = [{name: 'A', id: 1}, {name: 'B', id: 2}, {name: 'C', id: 3}],
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        scope.$apply(function(){
+          scope.values = values;
+          scope.selected = scope.values[0];
+        });
+
+        // it's a subset of our values, but retaining references
+        // first call = when the element is compiled
+        // second call = when the options are filtered
+        expect(spy.callCount).toEqual(2);
+        expect(spy.mostRecentCall.args[0]).toEqual([values[2]]);
+      });
+
+      it('should not trigger when there\'s no ng-options', function(){
+        createSelect({
+          'ng-model': 'selected'
+        });
+
+        var
+          ctrl = element.controller('select'),
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        scope.$apply(function(){
+          scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
+          scope.selected = scope.values[0];
+        });
+
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+    });
+
     describe('binding', function() {
 
       it('should bind to scope value', function() {
