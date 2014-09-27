@@ -87,27 +87,7 @@ describe('$httpBackend', function() {
     $backend('GET', '/some-url', null, callback);
     xhr = MockXhr.$$lastInstance;
     xhr.statusText = 'OK';
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
-    expect(callback).toHaveBeenCalledOnce();
-  });
-
-  it('should not touch xhr.statusText when request is aborted on IE9 or lower', function() {
-    callback.andCallFake(function(status, response, headers, statusText) {
-      expect(statusText).toBe((!msie || msie >= 10) ? 'OK' : '');
-    });
-
-    $backend('GET', '/url', null, callback, {}, 2000);
-    xhr = MockXhr.$$lastInstance;
-    spyOn(xhr, 'abort');
-
-    fakeTimeout.flush();
-    expect(xhr.abort).toHaveBeenCalledOnce();
-
-    xhr.status = 0;
-    xhr.readyState = 4;
-    xhr.statusText = 'OK';
-    xhr.onreadystatechange();
+    xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
   });
 
@@ -118,8 +98,7 @@ describe('$httpBackend', function() {
 
     $backend('GET', '/some-url', null, callback);
     xhr = MockXhr.$$lastInstance;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
+    xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
   });
 
@@ -133,23 +112,7 @@ describe('$httpBackend', function() {
     xhr = MockXhr.$$lastInstance;
 
     xhr.status = 1223;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
-
-    expect(callback).toHaveBeenCalledOnce();
-  });
-
-  // onreadystatechange might by called multiple times
-  // with readyState === 4 on mobile webkit caused by
-  // xhrs that are resolved while the app is in the background (see #5426).
-  it('should not process onreadystatechange callback with readyState == 4 more than once', function() {
-    $backend('GET', 'URL', null, callback);
-    xhr = MockXhr.$$lastInstance;
-
-    xhr.status = 200;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
-    xhr.onreadystatechange();
+    xhr.onload();
 
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -195,8 +158,7 @@ describe('$httpBackend', function() {
     expect(xhr.abort).toHaveBeenCalledOnce();
 
     xhr.status = 0;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
+    xhr.onabort();
     expect(callback).toHaveBeenCalledOnce();
   });
 
@@ -215,8 +177,7 @@ describe('$httpBackend', function() {
     expect(xhr.abort).toHaveBeenCalledOnce();
 
     xhr.status = 0;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
+    xhr.onabort();
     expect(callback).toHaveBeenCalledOnce();
   });
 
@@ -234,8 +195,7 @@ describe('$httpBackend', function() {
     expect(xhr.abort).toHaveBeenCalledOnce();
 
     xhr.status = 0;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
+    xhr.onabort();
     expect(callback).toHaveBeenCalledOnce();
   }));
 
@@ -250,8 +210,7 @@ describe('$httpBackend', function() {
     spyOn(xhr, 'abort');
 
     xhr.status = 200;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
+    xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
 
     $timeout.flush();
@@ -271,39 +230,11 @@ describe('$httpBackend', function() {
     expect(fakeTimeout.delays[0]).toBe(2000);
 
     xhr.status = 200;
-    xhr.readyState = 4;
-    xhr.onreadystatechange();
+    xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
 
     expect(fakeTimeout.delays.length).toBe(0);
     expect(xhr.abort).not.toHaveBeenCalled();
-  });
-
-
-  it('should register onreadystatechange callback before sending', function() {
-    // send() in IE6, IE7 is sync when serving from cache
-    function SyncXhr() {
-      xhr = this;
-      this.open = this.setRequestHeader = noop;
-
-      this.send = function() {
-        this.status = 200;
-        this.responseText = 'response';
-        this.readyState = 4;
-        this.onreadystatechange();
-      };
-
-      this.getAllResponseHeaders = valueFn('');
-    }
-
-    callback.andCallFake(function(status, response) {
-      expect(status).toBe(200);
-      expect(response).toBe('response');
-    });
-
-    $backend = createHttpBackend($browser, function() { return new SyncXhr(); });
-    $backend('GET', '/url', null, callback);
-    expect(callback).toHaveBeenCalledOnce();
   });
 
 
@@ -326,8 +257,7 @@ describe('$httpBackend', function() {
       });
 
       xhrInstance.response = {some: 'object'};
-      xhrInstance.readyState = 4;
-      xhrInstance.onreadystatechange();
+      xhrInstance.onload();
 
       expect(callback).toHaveBeenCalledOnce();
     });
@@ -347,8 +277,7 @@ describe('$httpBackend', function() {
       });
 
       xhrInstance.responseText = responseText;
-      xhrInstance.readyState = 4;
-      xhrInstance.onreadystatechange();
+      xhrInstance.onload();
 
       expect(callback).toHaveBeenCalledOnce();
     });
@@ -436,8 +365,7 @@ describe('$httpBackend', function() {
       xhr = MockXhr.$$lastInstance;
       xhr.status = status;
       xhr.responseText = content;
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
+      xhr.onload();
     }
 
 
