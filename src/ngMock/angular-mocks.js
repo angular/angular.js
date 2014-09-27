@@ -194,7 +194,7 @@ angular.mock.$Browser.prototype = {
  *
  * @description
  * Configures the mock implementation of {@link ng.$exceptionHandler} to rethrow or to log errors
- * passed into the `$exceptionHandler`.
+ * passed to the `$exceptionHandler`.
  */
 
 /**
@@ -203,7 +203,7 @@ angular.mock.$Browser.prototype = {
  *
  * @description
  * Mock implementation of {@link ng.$exceptionHandler} that rethrows or logs errors passed
- * into it. See {@link ngMock.$exceptionHandlerProvider $exceptionHandlerProvider} for configuration
+ * to it. See {@link ngMock.$exceptionHandlerProvider $exceptionHandlerProvider} for configuration
  * information.
  *
  *
@@ -243,9 +243,8 @@ angular.mock.$ExceptionHandlerProvider = function() {
    *
    * @param {string} mode Mode of operation, defaults to `rethrow`.
    *
-   *   - `rethrow`: If any errors are passed into the handler in tests, it typically
-   *                means that there is a bug in the application or test, so this mock will
-   *                make these tests fail.
+   *   - `rethrow`: If any errors are passed to the handler in tests, it typically means that there
+   *                is a bug in the application or test, so this mock will make these tests fail.
    *   - `log`: Sometimes it is desirable to test that an error is thrown, for this case the `log`
    *            mode stores an array of errors in `$exceptionHandler.errors`, to allow later
    *            assertion of them. See {@link ngMock.$log#assertEmpty assertEmpty()} and
@@ -336,7 +335,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#log.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#log}.
+       * Array of messages logged using {@link ng.$log#log log()}.
        *
        * @example
        * ```js
@@ -350,7 +349,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#info.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#info}.
+       * Array of messages logged using {@link ng.$log#info info()}.
        *
        * @example
        * ```js
@@ -364,7 +363,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#warn.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#warn}.
+       * Array of messages logged using {@link ng.$log#warn warn()}.
        *
        * @example
        * ```js
@@ -378,7 +377,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#error.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#error}.
+       * Array of messages logged using {@link ng.$log#error error()}.
        *
        * @example
        * ```js
@@ -392,7 +391,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#debug.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#debug}.
+       * Array of messages logged using {@link ng.$log#debug debug()}.
        *
        * @example
        * ```js
@@ -408,8 +407,8 @@ angular.mock.$LogProvider = function() {
      * @name $log#assertEmpty
      *
      * @description
-     * Assert that the all of the logging methods have no logged messages. If messages present, an
-     * exception is thrown.
+     * Assert that all of the logging methods have no logged messages. If any messages are present,
+     * an exception is thrown.
      */
     $log.assertEmpty = function() {
       var errors = [];
