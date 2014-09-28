@@ -10,7 +10,6 @@
  * This is quite useful for creating a loop without actually having a corresponding array in the $scope
  */
 
-rangeFilter.$inject = ['$parse'];
 function rangeFilter() {
     return function(start, end, step) {
         var result = [];
