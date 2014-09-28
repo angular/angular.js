@@ -58,6 +58,26 @@ describe('form', function() {
     expect(form.alias).toBeUndefined();
   });
 
+  it('should remove scope reference when form with no parent form is removed from the DOM', function() {
+    var formController;
+    scope.ctrl = {};
+    doc = $compile(
+      '<div><form name="ctrl.myForm" ng-if="formPresent">' +
+        '<input name="alias" ng-model="value" />' +
+      '</form></div>')(scope);
+
+    scope.$digest();
+    expect(scope.ctrl.myForm).toBeUndefined();
+
+    scope.$apply('formPresent = true');
+    expect(scope.ctrl.myForm).toBeDefined();
+
+    formController = doc.find('form').controller('form');
+    expect(scope.ctrl.myForm).toBe(formController);
+
+    scope.$apply('formPresent = false');
+    expect(scope.ctrl.myForm).toBeUndefined();
+  });
 
   it('should use ngForm value as form name', function() {
     doc = $compile(
