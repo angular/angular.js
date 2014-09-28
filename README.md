@@ -8,8 +8,8 @@ synchronizes data from your UI (view) with your JavaScript objects (model) throu
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
 the browser how to do dependency injection and inversion of control.
 
-Oh yeah and it helps with server-side communication, taming async callbacks with promises and 
-deferreds. It also makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
+It also helps with server-side communication and taming async callbacks with promises and 
+deferreds. AngularJS makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
 piece of cake. The best of all: it makes development fun!
 
 * Web site: http://angularjs.org
