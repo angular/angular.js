@@ -3849,6 +3849,102 @@ describe('input', function() {
       });
     });
 
+    describe('ngRequired', function() {
+
+      describe('when the ngRequired expression initially evaluates to true', function() {
+
+        it('should be valid even if value is 0', function() {
+          compileInput('<input type="number" ng-model="value" name="numberInput" ng-required="true" />');
+
+          changeInputValueTo('0');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+        });
+
+        it('should be valid even if value 0 is set from model', function() {
+          compileInput('<input type="number" ng-model="value" name="numberInput" ng-required="true" />');
+
+          scope.$apply('value = 0');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('0');
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+        });
+
+        it('should register required on non boolean elements', function() {
+          compileInput('<div ng-model="value" name="numberInput" ng-required="true">');
+
+          scope.$apply("value = ''");
+
+          expect(inputElm).toBeInvalid();
+          expect(scope.form.numberInput.$error.required).toBeTruthy();
+        });
+
+        it('should change from invalid to valid when the value is empty and the ngRequired expression changes to false', function() {
+          compileInput('<input type="number" ng-model="value" name="numberInput" ng-required="ngRequiredExpr" />');
+
+          scope.$apply('ngRequiredExpr = true');
+
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.numberInput.$error.required).toBeTruthy();
+
+          scope.$apply('ngRequiredExpr = false');
+
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+        });
+      });
+
+      describe('when the ngRequired expression initially evaluates to false', function() {
+
+        it('should be valid even if value is empty', function() {
+          compileInput('<input type="number" ng-model="value" name="numberInput" ng-required="false" />');
+
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+          expect(scope.form.numberInput.$error.number).toBeFalsy();
+        });
+
+        it('should be valid if value is non-empty', function() {
+          compileInput('<input type="number" ng-model="value" name="numberInput" ng-required="false" />');
+
+          changeInputValueTo('42');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(42);
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+        });
+
+        it('should not register required on non boolean elements', function() {
+          compileInput('<div ng-model="value" name="numberInput" ng-required="false">');
+
+          scope.$apply("value = ''");
+
+          expect(inputElm).toBeValid();
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+        });
+
+        it('should change from valid to invalid when the value is empty and the ngRequired expression changes to true', function() {
+          compileInput('<input type="number" ng-model="value" name="numberInput" ng-required="ngRequiredExpr" />');
+
+          scope.$apply('ngRequiredExpr = false');
+
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.numberInput.$error.required).toBeFalsy();
+
+          scope.$apply('ngRequiredExpr = true');
+
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.numberInput.$error.required).toBeTruthy();
+        });
+      });
+    });
+
     describe('minlength', function() {
 
       it('should invalidate values that are shorter than the given minlength', function() {
