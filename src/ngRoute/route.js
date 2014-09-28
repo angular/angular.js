@@ -548,25 +548,25 @@ function $RouteProvider(){
           }).
           then(function(locals) {
            if(next) {
-            var template, templateUrl;
-            
-            if (angular.isDefined(template = next.template)) {
-                if (angular.isFunction(template)) {
-                  template = template(next.params);
-                }
-              } else if (angular.isDefined(templateUrl = next.templateUrl)) {
-                if (angular.isFunction(templateUrl)) {
-                  templateUrl = templateUrl(next.params);
-                }
-                templateUrl = $sce.getTrustedResourceUrl(templateUrl);
-                if (angular.isDefined(templateUrl)) {
-                  next.loadedTemplateUrl = templateUrl;
-                  template = $templateRequest(templateUrl);
-                }
-              }
-              if (angular.isDefined(template)) {
-                locals['$template'] = template;
-              }
+             var template, templateUrl;
+
+             if (angular.isDefined(template = next.template)) {
+               if (angular.isFunction(template)) {
+                 template = template(next.params);
+               }
+             } else if (angular.isDefined(templateUrl = next.templateUrl)) {
+               if (angular.isFunction(templateUrl)) {
+                 templateUrl = templateUrl(next.params);
+               }
+               templateUrl = $sce.getTrustedResourceUrl(templateUrl);
+               if (angular.isDefined(templateUrl)) {
+                 next.loadedTemplateUrl = templateUrl;
+                 template = $templateRequest(templateUrl);
+               }
+             }
+             if (angular.isDefined(template)) {
+               locals['$template'] = template;
+             }
 
              return $q.all(locals);
            }
