@@ -536,15 +536,21 @@ function $RouteProvider(){
         $q.when(next).
           then(function() {
             if (next) {
-              var locals = angular.extend({}, next.resolve),
-                  template, templateUrl;
+              var locals = angular.extend({}, next.resolve);
 
               angular.forEach(locals, function(value, key) {
                 locals[key] = angular.isString(value) ?
                     $injector.get(value) : $injector.invoke(value, null, null, key);
               });
 
-              if (angular.isDefined(template = next.template)) {
+              return $q.all(locals);
+            }
+          }).
+          then(function(locals) {
+           if(next) {
+            var template, templateUrl;
+            
+            if (angular.isDefined(template = next.template)) {
                 if (angular.isFunction(template)) {
                   template = template(next.params);
                 }
@@ -561,8 +567,9 @@ function $RouteProvider(){
               if (angular.isDefined(template)) {
                 locals['$template'] = template;
               }
-              return $q.all(locals);
-            }
+
+             return $q.all(locals);
+           }
           }).
           // after route change
           then(function(locals) {
