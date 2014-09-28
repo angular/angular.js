@@ -495,15 +495,13 @@ var formDirectiveFactory = function(isNgForm) {
                 parentFormCtrl.$$renameControl(controller, alias);
               });
             }
-            if (parentFormCtrl !== nullFormCtrl) {
-              formElement.on('$destroy', function() {
-                parentFormCtrl.$removeControl(controller);
-                if (alias) {
-                  setter(scope, alias, undefined, alias);
-                }
-                extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
-              });
-            }
+            formElement.on('$destroy', function() {
+              parentFormCtrl.$removeControl(controller);
+              if (alias) {
+                setter(scope, alias, undefined, alias);
+              }
+              extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+            });
           }
         };
       }
