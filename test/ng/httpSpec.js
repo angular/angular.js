@@ -985,6 +985,18 @@ describe('$http', function() {
       });
 
 
+      it('should have patch()', function() {
+        $httpBackend.expect('PATCH', '/url', 'some-data').respond('');
+        $http.patch('/url', 'some-data');
+      });
+
+
+      it('patch() should allow config param', function() {
+        $httpBackend.expect('PATCH', '/url', 'some-data', checkHeader('Custom', 'Header')).respond('');
+        $http.patch('/url', 'some-data', {headers: {'Custom': 'Header'}});
+      });
+
+
       it('should have jsonp()', function() {
         $httpBackend.expect('JSONP', '/url').respond('');
         $http.jsonp('/url');
