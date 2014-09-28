@@ -1528,7 +1528,7 @@ describe('$http', function() {
 });
 
 
-describe('$http with $applyAapply', function() {
+describe('$http with $applyAsync', function() {
   var $http, $httpBackend, $rootScope, $browser, log;
   beforeEach(module(function($httpProvider) {
     $httpProvider.useApplyAsync(true);
