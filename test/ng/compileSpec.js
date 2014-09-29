@@ -3740,6 +3740,119 @@ describe('$compile', function() {
         });
       });
 
+      it('should not leak when continuing the compilation of elements on a scope that was destroyed', function() {
+        if (jQuery) {
+          // jQuery 2.x doesn't expose the cache storage.
+          return;
+        }
+
+        var linkFn = jasmine.createSpy('linkFn');
+
+        module(function($controllerProvider, $compileProvider) {
+          $controllerProvider.register('Leak', function ($scope, $timeout) {
+            $scope.code = 'red';
+            $timeout(function () {
+              $scope.code = 'blue';
+            });
+          });
+          $compileProvider.directive('isolateRed', function() {
+            return {
+              restrict: 'A',
+              scope: {},
+              template: '<div red></div>'
+            };
+          });
+          $compileProvider.directive('red', function() {
+            return {
+              restrict: 'A',
+              templateUrl: 'red.html',
+              scope: {},
+              link: linkFn
+            };
+          });
+        });
+
+        inject(function($compile, $rootScope, $httpBackend, $timeout, $templateCache) {
+          $httpBackend.whenGET('red.html').respond('<p>red.html</p>');
+          var template = $compile(
+            '<div ng-controller="Leak">' +
+              '<div ng-switch="code">' +
+                '<div ng-switch-when="red">' +
+                  '<div isolate-red></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>');
+          element = template($rootScope);
+          $rootScope.$digest();
+          $timeout.flush();
+          $httpBackend.flush();
+          expect(linkFn).not.toHaveBeenCalled();
+          expect(jqLiteCacheSize()).toEqual(2);
+
+          $templateCache.removeAll();
+          var destroyedScope = $rootScope.$new();
+          destroyedScope.$destroy();
+          var clone = template(destroyedScope);
+          $rootScope.$digest();
+          $timeout.flush();
+          expect(linkFn).not.toHaveBeenCalled();
+        });
+      });
+
+      if (jQuery) {
+        describe('cleaning up after a replaced element', function () {
+          var $compile, xs;
+          beforeEach(inject(function (_$compile_) {
+            $compile = _$compile_;
+            xs = [0, 1];
+          }));
+
+          function testCleanup() {
+            var privateData, firstRepeatedElem;
+
+            element = $compile('<div><div ng-repeat="x in xs" ng-click="noop()">{{x}}</div></div>')($rootScope);
+
+            $rootScope.$apply('xs = [' + xs + ']');
+            firstRepeatedElem = element.children('.ng-scope').eq(0);
+
+            expect(firstRepeatedElem.data('$scope')).toBeDefined();
+            privateData = jQuery._data(firstRepeatedElem[0]);
+            expect(privateData.events).toBeDefined();
+            expect(privateData.events.click).toBeDefined();
+            expect(privateData.events.click[0]).toBeDefined();
+
+            $rootScope.$apply('xs = null');
+
+            expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
+            privateData = jQuery._data(firstRepeatedElem[0]);
+            expect(privateData && privateData.events).not.toBeDefined();
+          }
+
+          it('should work without external libraries (except jQuery)', testCleanup);
+
+          it('should work with another library patching jQuery.cleanData after Angular', function () {
+            var cleanedCount = 0;
+            var currentCleanData = jQuery.cleanData;
+            jQuery.cleanData = function (elems) {
+              cleanedCount += elems.length;
+              // Don't return the output and expicitly pass only the first parameter
+              // so that we're sure we're not relying on either of them. jQuery UI patch
+              // behaves in this way.
+              currentCleanData(elems);
+            };
+
+            testCleanup();
+
+            // The initial ng-repeat div is dumped after parsing hence we expect cleanData
+            // count to be one larger than size of the iterated array.
+            expect(cleanedCount).toBe(xs.length + 1);
+
+            // Restore the previous jQuery.cleanData.
+            jQuery.cleanData = currentCleanData;
+          });
+        });
+      }
+
 
       it('should add a $$transcluded property onto the transcluded scope', function() {
         module(function() {
@@ -4097,6 +4210,179 @@ describe('$compile', function() {
       });
 
 
+      // see issue https://github.com/angular/angular.js/issues/9095
+      describe('removing a transcluded element', function() {
+
+        function countScopes($rootScope) {
+          return [$rootScope].concat(
+            getChildScopes($rootScope)
+          ).length;
+        }
+
+        function getChildScopes(scope) {
+          var children = [];
+          if (!scope.$$childHead) { return children; }
+          var childScope = scope.$$childHead;
+          do {
+            children.push(childScope);
+            children = children.concat(getChildScopes(childScope));
+          } while ((childScope = childScope.$$nextSibling));
+          return children;
+        }
+
+        beforeEach(module(function() {
+          directive('toggle', function() {
+            return {
+              transclude: true,
+              template: '<div ng:if="t"><div ng:transclude></div></div>'
+            };
+          });
+        }));
+
+
+        it('should not leak the transclude scope when the transcluded content is an element transclusion directive',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat="msg in [\'msg-1\']">{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+
+        it('should not leak the transclude scope when the transcluded content is an multi-element transclusion directive',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat-start="msg in [\'msg-1\']">{{ msg }}</div>' +
+              '<div ng:repeat-end>{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.text()).toContain('msg-1msg-1');
+          // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
+          expect(countScopes($rootScope)).toEqual(4);
+
+          $rootScope.$apply('t = false');
+          expect(element.text()).not.toContain('msg-1msg-1');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+
+        it('should not leak the transclude scope if the transcluded contains only comments',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<!-- some comment -->' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some comment');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some comment');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some comment');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some comment');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+        it('should not leak the transclude scope if the transcluded contains only text nodes',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              'some text' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some text');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some text');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+
+          $rootScope.$apply('t = true');
+          expect(element.html()).toContain('some text');
+          // Expected scopes: $rootScope, ngIf, transclusion
+          expect(countScopes($rootScope)).toEqual(3);
+
+          $rootScope.$apply('t = false');
+          expect(element.html()).not.toContain('some text');
+          // Expected scopes: $rootScope
+          expect(countScopes($rootScope)).toEqual(1);
+        }));
+
+        it('should mark as destroyed all sub scopes of the scope being destroyed',
+              inject(function($compile, $rootScope) {
+
+          element = $compile(
+            '<div toggle>' +
+              '<div ng:repeat="msg in [\'msg-1\']">{{ msg }}</div>' +
+            '</div>'
+          )($rootScope);
+
+          $rootScope.$apply('t = true');
+          var childScopes = getChildScopes($rootScope);
+
+          $rootScope.$apply('t = false');
+          for (var i = 0; i < childScopes.length; ++i) {
+            expect(childScopes[i].$$destroyed).toBe(true);
+          }
+        }));
+      });
+
+
       describe('nested transcludes', function() {
 
         beforeEach(module(function($compileProvider) {
@@ -4165,6 +4451,29 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(element.text()).toEqual('transcluded content');
         }));
+
+
+        it('should not leak memory with nested transclusion', function() {
+          inject(function($compile, $rootScope) {
+            var size;
+
+            expect(jqLiteCacheSize()).toEqual(0);
+
+            element = jqLite('<div><ul><li ng-repeat="n in nums">{{n}} => <i ng-if="0 === n%2">Even</i><i ng-if="1 === n%2">Odd</i></li></ul></div>');
+            $compile(element)($rootScope.$new());
+
+            $rootScope.nums = [0,1,2];
+            $rootScope.$apply();
+            size = jqLiteCacheSize();
+
+            $rootScope.nums = [3,4,5];
+            $rootScope.$apply();
+            expect(jqLiteCacheSize()).toEqual(size);
+
+            element.remove();
+            expect(jqLiteCacheSize()).toEqual(0);
+          });
+        });
       });
 
 
