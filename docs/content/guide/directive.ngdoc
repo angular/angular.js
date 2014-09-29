@@ -87,8 +87,13 @@ Here are some equivalent examples of elements that match `ngBind`:
   </file>
   <file name="protractor.js" type="protractor">
     it('should show off bindings', function() {
-      expect(element(by.css('div[ng-controller="Controller"] span[ng-bind]')).getText())
-          .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      var containerElm = element(by.css('div[ng-controller="Controller"]'));
+      var nameBindings = containerElm.all(by.binding('name'));
+
+      expect(nameBindings.count()).toBe(5);
+      nameBindings.each(function(elem) {
+        expect(elem.getText()).toEqual('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      });
     });
   </file>
 </example>
