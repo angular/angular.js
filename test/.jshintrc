@@ -162,6 +162,7 @@
     "provideLog": false,
     "spyOnlyCallsWithArgs": false,
     "createMockStyleSheet": false,
-    "browserTrigger": false
+    "browserTrigger": false,
+    "jqLiteCacheSize": false
   }
 }

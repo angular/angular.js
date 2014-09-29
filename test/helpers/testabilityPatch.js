@@ -118,6 +118,15 @@ function dealoc(obj) {
   }
 }
 
+
+function jqLiteCacheSize() {
+  var size = 0;
+  forEach(jqLite.cache, function() { size++; });
+  return size - jqLiteCacheSize.initSize;
+}
+jqLiteCacheSize.initSize = 0;
+
+
 /**
  * @param {DOMElement} element
  * @param {boolean=} showNgClass
