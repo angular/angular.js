@@ -190,6 +190,96 @@ describe('$compile', function() {
       });
       inject(function($compile) {});
     });
+
+    it('should preserve context within declaration', function() {
+      module(function() {
+        directive('ff', function(log) {
+          var declaration = {
+            restrict: 'E',
+            template: function(){
+              log('ff template: ' + (this === declaration));
+            },
+            compile: function(){
+              log('ff compile: ' + (this === declaration));
+              return function(){
+                log('ff post: ' + (this === declaration));
+              };
+            }
+          };
+          return declaration;
+        });
+
+        directive('fff', function(log) {
+          var declaration = {
+            restrict: 'E',
+            link: {
+              pre: function(){
+                log('fff pre: ' + (this === declaration));
+              },
+              post: function(){
+                log('fff post: ' + (this === declaration));
+              }
+            }
+          };
+          return declaration;
+        });
+
+        directive('ffff', function(log) {
+          var declaration = {
+            restrict: 'E',
+            compile: function(){
+              return {
+                pre: function(){
+                  log('ffff pre: ' + (this === declaration));
+                },
+                post: function(){
+                  log('ffff post: ' + (this === declaration));
+                }
+              };
+            }
+          };
+          return declaration;
+        });
+
+        directive('fffff', function(log) {
+          var declaration = {
+            restrict: 'E',
+            templateUrl: function(){
+              log('fffff: ' + (this === declaration));
+            }
+          };
+          return declaration;
+        });
+
+        directive('ffffff', function(log) {
+          var declaration = {
+            restrict: 'E',
+            link: function(){
+              log('ffffff: ' + (this === declaration));
+            }
+          };
+          return declaration;
+        });
+      });
+      inject(function($compile, $rootScope, log) {
+        $compile('<ff></ff>')($rootScope);
+        $compile('<fff></fff>')($rootScope);
+        $compile('<ffff></ffff>')($rootScope);
+        $compile('<fffff></fffff>')($rootScope);
+        $compile('<ffffff></ffffff>')($rootScope);
+        expect(log).toEqual(
+          'ff template: true; '+
+          'ff compile: true; '+
+          'ff post: true; '+
+          'fff pre: true; '+
+          'fff post: true; '+
+          'ffff pre: true; '+
+          'ffff post: true; '+
+          'fffff: true; '+
+          'ffffff: true'
+        );
+      });
+    });
   });
 
 
