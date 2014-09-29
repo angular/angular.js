@@ -218,6 +218,7 @@ describe('q', function() {
       var promise = q(noop);
       expect(typeof promise.then).toBe('function');
       expect(typeof promise.catch).toBe('function');
+      expect(typeof promise.always).toBe('function');
       expect(typeof promise.finally).toBe('function');
     });
 
@@ -790,6 +791,40 @@ describe('q', function() {
           expect(logStr()).toBe('error1(foo)->reject(foo); error2(foo)->reject(foo)');
         });
       });
+
+      describe('always', function() {
+        it('should be not effect reject reason', function() {
+          var promise = createPromise();
+          promise.always(error(1, 'bar')).then(null, error(2));
+          reject('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('error1(foo)->bar; error2(foo)->reject(foo)');
+        });
+
+        it('should be not effect reject reason if exception thrown', function() {
+          var promise = createPromise();
+          promise.always(error(1, 'bar', true)).then(null, error(2));
+          reject('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('error1(foo)->throw(bar); error2(foo)->reject(foo)');
+        });
+
+        it('should be not effect fulfillment value', function() {
+          var promise = createPromise();
+          promise.always(success(1, 'bar')).then(success(2));
+          resolve('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('success1(foo)->bar; success2(foo)->foo');
+        });
+
+        it('should be not effect fulfillment value if exception thrown', function() {
+          var promise = createPromise();
+          promise.always(success(1, 'bar', true)).then(success(2));
+          resolve('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('success1(foo)->throw(bar); success2(foo)->foo');
+        });
+      });
     });
   });
 
@@ -1130,6 +1165,10 @@ describe('q', function() {
 
       it('should have a catch method', function() {
         expect(typeof promise['catch']).toBe('function');
+      });
+
+      it('should have an always method', function() {
+        expect(typeof promise.always).toBe('function');
       });
 
       it('should have a finally method', function() {
@@ -1533,6 +1572,32 @@ describe('q', function() {
           promise['catch'](error(1)).then(null, error(2));
           syncReject(deferred, 'foo');
           expect(logStr()).toBe('error1(foo)->reject(foo); error2(foo)->reject(foo)');
+        });
+      });
+
+      describe('always', function() {
+        it('should be not effect reject reason', function() {
+          promise.always(error(1, 'bar')).then(null, error(2));
+          syncReject(deferred, 'foo');
+          expect(logStr()).toBe('error1(foo)->bar; error2(foo)->reject(foo)');
+        });
+
+        it('should be not effect reject reason if exception thrown', function() {
+          promise.always(error(1, 'bar', true)).then(null, error(2));
+          syncReject(deferred, 'foo');
+          expect(logStr()).toBe('error1(foo)->throw(bar); error2(foo)->reject(foo)');
+        });
+
+        it('should be not effect fulfillment value', function() {
+          promise.always(success(1, 'bar')).then(success(2));
+          syncResolve(deferred, 'foo');
+          expect(logStr()).toBe('success1(foo)->bar; success2(foo)->foo');
+        });
+
+        it('should be not effect fulfillment value if exception thrown', function() {
+          promise.always(success(1, 'bar', true)).then(success(2));
+          syncResolve(deferred, 'foo');
+          expect(logStr()).toBe('success1(foo)->throw(bar); success2(foo)->foo');
         });
       });
     });
