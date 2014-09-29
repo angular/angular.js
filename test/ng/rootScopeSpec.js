@@ -51,8 +51,25 @@ describe('Scope', function() {
 
 
   describe('this', function() {
-    it('should have a \'this\'', inject(function($rootScope) {
-      expect($rootScope['this']).toEqual($rootScope);
+    it('should evaluate \'this\' to be the scope', inject(function($rootScope) {
+      var child = $rootScope.$new();
+      expect($rootScope.$eval('this')).toEqual($rootScope);
+      expect(child.$eval('this')).toEqual(child);
+    }));
+
+    it('\'this\' should not be recursive', inject(function($rootScope) {
+      expect($rootScope.$eval('this.this')).toBeUndefined();
+      expect($rootScope.$eval('$parent.this')).toBeUndefined();
+    }));
+
+    it('should not be able to overwrite the \'this\' keyword', inject(function($rootScope) {
+      $rootScope['this'] = 123;
+      expect($rootScope.$eval('this')).toEqual($rootScope);
+    }));
+
+    it('should be able to access a variable named \'this\'', inject(function($rootScope) {
+      $rootScope['this'] = 42;
+      expect($rootScope.$eval('this[\'this\']')).toBe(42);
     }));
   });
 
@@ -71,6 +88,15 @@ describe('Scope', function() {
       expect(child.$parent).toEqual($rootScope);
       expect(child.$new).toBe($rootScope.$new);
       expect(child.$root).toBe($rootScope);
+    }));
+
+    it("should attach the child scope to a specified parent", inject(function($rootScope) {
+      var isolated = $rootScope.$new(true);
+      var trans = $rootScope.$new(false, isolated);
+      $rootScope.a = 123;
+      expect(isolated.a).toBeUndefined();
+      expect(trans.a).toEqual(123);
+      expect(trans.$parent).toBe(isolated);
     }));
   });
 
@@ -994,6 +1020,13 @@ describe('Scope', function() {
       expect(log).toBe('123');
     }));
 
+    it('should broadcast the $destroy only once', inject(function($rootScope, log) {
+      var isolateScope = first.$new(true);
+      isolateScope.$on('$destroy', log.fn('event'));
+      first.$destroy();
+      isolateScope.$destroy();
+      expect(log).toEqual('event');
+    }));
 
     it('should decrement ancestor $$listenerCount entries', inject(function($rootScope) {
       var EVENT = 'fooEvent',
@@ -1036,6 +1069,33 @@ describe('Scope', function() {
       parent.$destroy();
       var fn = child.$watch('somePath', function() {});
       expect(fn).toBe(noop);
+    }));
+
+    it("should do nothing when $apply()ing after parent's destruction", inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+
+      var called = false;
+      function applyFunc() { called = true; }
+      child.$apply(applyFunc);
+
+      expect(called).toBe(false);
+    }));
+
+    it("should do nothing when $evalAsync()ing after parent's destruction", inject(function($rootScope, $timeout) {
+      var parent = $rootScope.$new(),
+          child = parent.$new();
+
+      parent.$destroy();
+
+      var called = false;
+      function applyFunc() { called = true; }
+      child.$evalAsync(applyFunc);
+
+      $timeout.verifyNoPendingTasks();
+      expect(called).toBe(false);
     }));
 
 
@@ -1204,7 +1264,7 @@ describe('Scope', function() {
       isolateScope.$evalAsync('isolateExpression');
 
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
-      expect(isolateScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
+      expect(isolateScope.$$asyncQueue).toBeUndefined();
       expect($rootScope.$$asyncQueue).toEqual([
         {scope: $rootScope, expression: 'rootExpression'},
         {scope: childScope, expression: 'childExpression'},

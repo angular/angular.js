@@ -160,13 +160,13 @@ describe('ngBind*', function() {
       it('should NOT set html for untrusted values', inject(function($rootScope, $compile) {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
-        expect($rootScope.$digest).toThrow();
+        expect(function() { $rootScope.$digest(); }).toThrow();
       }));
 
       it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
-        expect($rootScope.$digest).toThrow();
+        expect(function() { $rootScope.$digest(); }).toThrow();
       }));
 
       it('should set html for trusted values', inject(function($rootScope, $compile, $sce) {
