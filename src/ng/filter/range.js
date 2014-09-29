@@ -12,25 +12,29 @@
 
 function rangeFilter() {
     return function(start, end, step) {
-        var result = [];
-        if (isUndefined(end)) {
-            end = start;
+        var result = [], i;
+        if (angular.isUndefined(start)) {
             start = 0;
         }
-        if (isUndefined(step)) {
-            step = min < max ? 1 : -1;
+        if (angular.isUndefined(end)) {
+            if ( start > 0) {
+                end = start;
+                start = 0;
+            } else {
+                end = 0;
+            }
         }
-        if ( step < 0 ) {
-            if (start < end) {
-                return result;
+        if (angular.isUndefined(step)) {
+            step = start < end ? 1 : -1;
+        }
+        if ( 0 < step ) {
+            for (i = start; i < end; i += step) {
+                result.push(i);
             }
         } else {
-            if (end < start) {
-                return result;
+            for (i = start; i > end; i += step) {
+                result.push(i);
             }
-        }
-        for (var i = start; i <= end; i += step) {
-            result.push(i);
         }
         return result;
     };

@@ -147,6 +147,6 @@ function $FilterProvider($provide) {
   register('lowercase', lowercaseFilter);
   register('number', numberFilter);
   register('orderBy', orderByFilter);
-  register('range', range);
+  register('range', rangeFilter);
   register('uppercase', uppercaseFilter);
 }
