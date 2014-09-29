@@ -182,17 +182,12 @@ function $RootScopeProvider(){
        *         When creating widgets, it is useful for the widget to not accidentally read parent
        *         state.
        *
-       * @param {Scope} [parent=this] The {@link ng.$rootScope.Scope `Scope`} that will contain this
-       *                              the newly created scope. Defaults to `this` scope if not provided.
-       *                              This is used to ensure that $destroy events are handled correctly.
-       *
        * @returns {Object} The newly created child scope.
        *
        */
-      $new: function(isolate, parent) {
-        var child;
-
-        parent = parent || this;
+      $new: function(isolate) {
+        var ChildScope,
+            child;
 
         if (isolate) {
           child = new Scope();
@@ -225,19 +220,6 @@ function $RootScopeProvider(){
         } else {
           this.$$childHead = this.$$childTail = child;
         }
-
-        // When the new scope is not isolated or we inherit from `this`, and
-        // the parent scope is destroyed, the property `$$destroyed` is inherited
-        // prototypically. In all other cases, this property needs to be set
-        // when the parent scope is destroyed.
-        // The listener needs to be added after the parent is set
-        if (isolate || parent != this) child.$on('$destroy', destroyChild);
-
-
-        function destroyChild() {
-          child.$$destroyed = true;
-        }
-
         return child;
       },
 
