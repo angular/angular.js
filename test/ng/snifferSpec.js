@@ -143,8 +143,7 @@ describe('$sniffer', function() {
           body: {
             style: {
               WebkitAnimation: animationStyle,
-              MozAnimation: animationStyle,
-              OAnimation: animationStyle
+              MozAnimation: animationStyle
             }
           }
         };
@@ -240,8 +239,7 @@ describe('$sniffer', function() {
           body: {
             style: {
               WebkitTransition: transitionStyle,
-              MozTransition: transitionStyle,
-              OTransition: transitionStyle
+              MozTransition: transitionStyle
             }
           }
         };
