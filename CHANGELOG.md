@@ -11,7 +11,7 @@
 
 ## Features
 
-- **$location:** add ability to opt-out of <base/> tag requirement in html5Mode
+- **$location:** add ability to opt-out of `<base>` tag requirement in html5Mode
   ([dc3de7fb](https://github.com/angular/angular.js/commit/dc3de7fb7a14c38b5c3dc7decfafb0b51d422dd1),
    [#8934](https://github.com/angular/angular.js/issues/8934))
 - **formController:** add $setUntouched to propagate untouched state
