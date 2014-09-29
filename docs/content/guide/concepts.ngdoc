@@ -67,8 +67,8 @@ element that adds extra behavior to the element. The {@link ng.directive:ngModel
 stores/updates the value of the input field into/from a variable.
 
 <div class="alert alert-info">
-**Custom directives to access the DOM**: In Angular, the only place where an application touches the DOM is
- within directives. This is good as artifacts that access the DOM are hard to test.
+**Custom directives to access the DOM**: In Angular, the only place where an application should access the DOM is
+ within directives. This is important because artifacts that access the DOM are hard to test.
  If you need to access the DOM directly you should write a custom directive for this. The
  {@link directive directives guide} explains how to do this.
 </div>
