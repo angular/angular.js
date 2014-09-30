@@ -70,6 +70,13 @@ var ngOptionsMinErr = minErr('ngOptions');
  *   * `trackexpr`: Used when working with an array of objects. The result of this expression will be
  *      used to identify the objects in the array. The `trackexpr` will most likely refer to the
  *     `value` variable (e.g. `value.propertyName`).
+ *   <div class="alert alert-warning>
+ *   Do not use `track by` when you have a complex `select` expression that is different from `value`.
+ *   Use `track by` if you want to assign complex objects to the model. Use a complex `select`
+ *   expression like `item.value as item.label for item in items` if your items are objects but your
+ *   model values correspond to properties of these objects.
+ *   See an example [in this jsfiddle](http://jsfiddle.net/0vpsv1wa/1/).
+ *   </div>
  *
  * @example
     <example module="selectExample">
@@ -337,6 +344,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             // - optionGroupsCache[0] is the options with no option group
             // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
             optionGroupsCache = [[{element: selectElement, label:''}]];
+
+        if (track && match[2] && valueName !== match[1]) {
+          throw ngOptionsMinErr('trackSelect',
+            "Do not use 'track by' when your select ('{0}') is different from your value ('{1}')",
+            match[1], valueName);
+        }
 
         if (nullOption) {
           // compile the element since there might be bindings in it
