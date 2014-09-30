@@ -893,7 +893,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           // first check if there are spaces because it's not the same pattern
           var trimmedSrcset = trim(value);
-          var pattern = /\s/.test( trimmedSrcset) ? /(\d+x\s*,|\d+w\s*,|\s+,|,\s+)/ : /(,)/;
+          //                (   999x   ,|   999w   ,|   ,|,   )
+          var srcPattern = /(\s+\d+x\s*,|\s+\d+w\s*,|\s+,|,\s+)/;
+          var pattern = /\s/.test(trimmedSrcset) ? srcPattern : /(,)/;
 
           // split srcset into tupple of uri and descriptor except for the last item
           var rawUris = trimmedSrcset.split(pattern);
