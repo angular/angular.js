@@ -338,6 +338,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
             optionGroupsCache = [[{element: selectElement, label:''}]];
 
+        if (track && match[2] && valueName !== match[1]) {
+          throw ngOptionsMinErr('trackSelect',
+            "Do not use 'track by' when your select ('{0}') is different from your value ('{1}')",
+            match[1], valueName);
+        }
+
         if (nullOption) {
           // compile the element since there might be bindings in it
           $compile(nullOption)(scope);
