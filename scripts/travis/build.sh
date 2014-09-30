@@ -2,7 +2,7 @@
 
 set -e
 
-export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
+export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev | tr 'A-Za-z' 'N-ZA-Mn-za-m'`
 
 if [ $JOB = "unit" ]; then
   grunt ci-checks

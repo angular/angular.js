@@ -13,7 +13,7 @@ env:
     - JOB=e2e TEST_TARGET=jquery
   global:
     - SAUCE_USERNAME=angular-ci
-    - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+    - SAUCE_ACCESS_KEY=9o988s434ss8-sopn-8nn4-4nr3-35442987
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
 
