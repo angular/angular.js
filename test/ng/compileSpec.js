@@ -3124,6 +3124,35 @@ describe('$compile', function() {
     }));
 
 
+    it('should be able to bind attribute names which are present in Object.prototype', function() {
+      module(function() {
+        directive('inProtoAttr', valueFn({
+          scope: {
+            'constructor': '@',
+            'toString': '&',
+
+            // Spidermonkey extension, may be obsolete in the future
+            'watch': '=',
+          }
+        }));
+      });
+      inject(function($rootScope) {
+        expect(function() {
+          compile('<div in-proto-attr constructor="hello, world" watch="[]" ' +
+                     'to-string="value = !value"></div>');
+        }).not.toThrow();
+        var isolateScope = element.isolateScope();
+
+        expect(typeof isolateScope.constructor).toBe('string');
+        expect(isArray(isolateScope.watch)).toBe(true);
+        expect(typeof isolateScope.toString).toBe('function');
+        expect($rootScope.value).toBeUndefined();
+        isolateScope.toString();
+        expect($rootScope.value).toBe(true);
+      });
+    });
+
+
     describe('bind-once', function () {
 
       function countWatches(scope) {
