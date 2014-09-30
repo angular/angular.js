@@ -475,18 +475,7 @@ function addNativeHtml5Validators(ctrl, validatorName, badFlags, ignoreFlags, va
   }
 }
 
-function stringBasedInputType(ctrl) {
-  ctrl.$formatters.push(function stringifier(value) {
-    return ctrl.$isEmpty(value) ? value : value.toString();
-  });
-}
-
-function textInputType(scope, element, attr,ctrl, $sniffer, $browser) {
-  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
-  stringBasedInputType(ctrl);
-}
-
-function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var validity = element.prop(VALIDITY_STATE_PROPERTY);
   var placeholder = element[0].placeholder, noevent = {};
   var type = lowercase(element[0].type);
@@ -1546,8 +1535,6 @@ var requiredDirective = function() {
  */
 var ngListDirective = function() {
   return {
-    restrict: 'A',
-    priority: 100,
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
       var match = /\/(.*)\//.exec(attr.ngList),
