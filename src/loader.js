@@ -146,7 +146,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#provider $provide.provider()}.
            */
-          provider: invokeLater('$provide', 'provider'),
+          provider: invokeLater('$provide', 'provider', 'unshift'),
 
           /**
            * @ngdoc method
