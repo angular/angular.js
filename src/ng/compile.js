@@ -414,7 +414,6 @@
  * It is safe to do DOM transformation in the post-linking function on elements that are not waiting
  * for their async templates to be resolved.
  *
- * <a name="Attributes"></a>
  * ### Attributes
  *
  * The {@link ng.$compile.directive.Attributes Attributes} object - passed as a parameter in the
@@ -924,7 +923,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string} key Normalized key. (ie ngAttribute) .
        * @param {function(interpolatedValue)} fn Function that will be called whenever
                 the interpolated value of the attribute changes.
-       *        See the {@link guide/directive#Attributes Directives} guide for more info.
+       *        See {@link ng.$compile#attributes $compile} for more info.
        * @returns {function()} Returns a deregistration function for this observer.
        */
       $observe: function(key, fn) {
