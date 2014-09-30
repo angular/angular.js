@@ -60,14 +60,12 @@ function $$SanitizeUriProvider() {
   this.$get = function() {
     return function sanitizeUri(uri, isImage) {
       var regex = isImage ? imgSrcSanitizationWhitelist : aHrefSanitizationWhitelist;
-      var normalizedVal;
-      // NOTE: urlResolve() doesn't support IE < 8 so we don't sanitize for that case.
-      if (!msie || msie >= 8 ) {
-        normalizedVal = urlResolve(uri).href;
-        if (normalizedVal !== '' && !normalizedVal.match(regex)) {
-          return 'unsafe:'+normalizedVal;
-        }
+      var normalizedVal = urlResolve(uri).href;
+
+      if (normalizedVal !== '' && !normalizedVal.match(regex)) {
+        return 'unsafe:'+normalizedVal;
       }
+
       return uri;
     };
   };

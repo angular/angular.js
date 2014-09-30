@@ -26,62 +26,6 @@ describe('SCE', function() {
     }));
   });
 
-  describe('IE8 quirks mode', function() {
-    function runTest(enabled, documentMode, expectException) {
-      module(function($provide) {
-        $provide.value('$sniffer', {
-          msie: documentMode,
-          msieDocumentMode: documentMode
-        });
-        $provide.value('$sceDelegate', {trustAs: null, valueOf: null, getTrusted: null});
-      });
-
-      inject(function($window, $injector) {
-        function constructSce() {
-          /* global $SceProvider: false */
-          var sceProvider = new $SceProvider();
-          sceProvider.enabled(enabled);
-          return $injector.invoke(sceProvider.$get, sceProvider);
-        }
-
-        if (expectException) {
-          expect(constructSce).toThrowMinErr(
-            '$sce', 'iequirks', 'Strict Contextual Escaping does not support Internet Explorer ' +
-              'version < 9 in quirks mode.  You can fix this by adding the text <!doctype html> to ' +
-              'the top of your HTML document.  See http://docs.angularjs.org/api/ng.$sce for more ' +
-              'information.');
-        } else {
-          // no exception.
-          constructSce();
-        }
-      });
-    }
-
-    it('should throw an exception when sce is enabled in quirks mode', function() {
-      runTest(true, 7, true);
-    });
-
-    it('should NOT throw an exception when sce is enabled and in standards mode', function() {
-      runTest(true, 8, false);
-    });
-
-    it('should NOT throw an exception when sce is enabled and documentMode is undefined', function() {
-      runTest(true, undefined, false);
-    });
-
-    it('should NOT throw an exception when sce is disabled even when in quirks mode', function() {
-      runTest(false, 7, false);
-    });
-
-    it('should NOT throw an exception when sce is disabled and in standards mode', function() {
-      runTest(false, 8, false);
-    });
-
-    it('should NOT throw an exception when sce is disabled and documentMode is undefined', function() {
-      runTest(false, undefined, false);
-    });
-  });
-
   describe('when enabled', function() {
     it('should wrap string values with TrustedValueHolder', inject(function($sce) {
       var originalValue = 'original_value';

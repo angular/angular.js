@@ -1,17 +1,8 @@
 'use strict';
 
-function createXhr(method) {
-    //if IE and the method is not RFC2616 compliant, or if XMLHttpRequest
-    //is not available, try getting an ActiveXObject. Otherwise, use XMLHttpRequest
-    //if it is available
-    if (msie <= 8 && (!method.match(/^(get|post|head|put|delete|options)$/i) ||
-      !window.XMLHttpRequest)) {
-      return new window.ActiveXObject("Microsoft.XMLHTTP");
-    } else if (window.XMLHttpRequest) {
-      return new window.XMLHttpRequest();
-    }
-
-    throw minErr('$httpBackend')('noxhr', "This browser does not support XMLHttpRequest.");
+// TODO: inline the constructor call and remove this helper method
+function createXhr() {
+  return new window.XMLHttpRequest();
 }
 
 /**
@@ -59,7 +50,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       });
     } else {
 
-      var xhr = createXhr(method);
+      var xhr = createXhr();
 
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
