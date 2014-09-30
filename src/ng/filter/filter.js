@@ -154,17 +154,17 @@ function filterFilter() {
     }
 
     var search = function(obj, text){
-      if (typeof text == 'string' && text.charAt(0) === '!') {
+      if (typeof text === 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
       }
       switch (typeof obj) {
-        case "boolean":
-        case "number":
-        case "string":
+        case 'boolean':
+        case 'number':
+        case 'string':
           return comparator(obj, text);
-        case "object":
+        case 'object':
           switch (typeof text) {
-            case "object":
+            case 'object':
               return comparator(obj, text);
             default:
               for ( var objKey in obj) {
@@ -175,7 +175,7 @@ function filterFilter() {
               break;
           }
           return false;
-        case "array":
+        case 'array':
           for ( var i = 0; i < obj.length; i++) {
             if (search(obj[i], text)) {
               return true;
@@ -187,13 +187,13 @@ function filterFilter() {
       }
     };
     switch (typeof expression) {
-      case "boolean":
-      case "number":
-      case "string":
+      case 'boolean':
+      case 'number':
+      case 'string':
         // Set up expression object and fall through
         expression = {$:expression};
         // jshint -W086
-      case "object":
+      case 'object':
         // jshint +W086
         for (var key in expression) {
           (function(path) {
