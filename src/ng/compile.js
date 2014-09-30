@@ -794,7 +794,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       $observe: function(key, fn) {
         var attrs = this,
             $$observers = (attrs.$$observers || (attrs.$$observers = {})),
-            listeners = ($$observers[key] || ($$observers[key] = []));
+            listeners = (($$observers.hasOwnProperty(key) && isArray($$observers[key]) &&
+                $$observers[key]) || ($$observers[key] = []));
 
         listeners.push(fn);
         $rootScope.$evalAsync(function() {

@@ -2693,6 +2693,34 @@ describe('$compile', function() {
     }));
 
 
+    it('should be able to bind attribute names which are present in Object.prototype', function() {
+      module(function() {
+        directive('inProtoAttr', valueFn({
+          scope: {
+            'constructor': '@',
+            // Spidermonkey extension, may be obsolete in the future
+            'watch': '=',
+            'unwatch': '&'
+          }
+        }));
+      });
+      inject(function($rootScope) {
+        expect(function() {
+          compile('<div in-proto-attr constructor="hello, world" watch="[]" ' +
+                     'unwatch="value = !value"></div>');
+        }).not.toThrow();
+        var isolateScope = element.isolateScope();
+
+        expect(typeof isolateScope.constructor).toBe('string');
+        expect(isArray(isolateScope.watch)).toBe(true);
+        expect(typeof isolateScope.unwatch).toBe('function');
+        expect($rootScope.value).toBeUndefined();
+        isolateScope.unwatch();
+        expect($rootScope.value).toBe(true);
+      });
+    });
+
+
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
         compile('<div><span my-component attr="some text">');
