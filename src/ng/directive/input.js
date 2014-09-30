@@ -2056,6 +2056,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     var viewValue = ctrl.$$lastCommittedViewValue;
     var modelValue = viewValue;
     var parserValid = isUndefined(modelValue) ? undefined : true;
+    var flushPendingClassChanges = schedulePendingClassChanges($scope, ctrl, $element, $animate);
 
     if (parserValid) {
       for(var i = 0; i < ctrl.$parsers.length; i++) {
@@ -2092,6 +2093,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$$writeModelToScope();
       }
     }
+
+    flushPendingClassChanges();
   };
 
   this.$$writeModelToScope = function() {
@@ -2197,7 +2200,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     // TODO(perf): why not move this to the action fn?
     if (modelValue !== ctrl.$modelValue) {
       ctrl.$modelValue = modelValue;
-
+      var flushPendingClassChanges = schedulePendingClassChanges($scope, ctrl, $element, $animate);
       var formatters = ctrl.$formatters,
           idx = formatters.length;
 
@@ -2211,11 +2214,43 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
         ctrl.$$runValidators(undefined, modelValue, viewValue, noop);
       }
+      flushPendingClassChanges();
     }
 
     return modelValue;
   });
 }];
+
+
+function schedulePendingClassChanges(scope, ctrl, element, animate) {
+  if (!ctrl.$$pendingClassChanges) {
+    ctrl.$$pendingClassChanges = {};
+
+    if (scope.$$phase || scope.$root.$$phase) {
+      scope.$$postDigest(flushPendingClassChangesImmediately);
+    } else {
+      return flushPendingClassChangesImmediately;
+    }
+  }
+  return noop;
+
+  function flushPendingClassChangesImmediately() {
+    flushPendingClassChanges(animate, element, ctrl.$$pendingClassChanges);
+    ctrl.$$pendingClassChanges = null;
+  }
+}
+
+
+function flushPendingClassChanges($animate, element, pendingChanges) {
+  var keys = Object.keys(pendingChanges);
+
+  for (var i=0, ii = keys.length; i < ii; ++i) {
+    var key = keys[i];
+    var value = pendingChanges[key];
+    if (value < 0) $animate.removeClass(element, key);
+    else if (value > 0) $animate.addClass(element, key);
+  }
+}
 
 
 /**
@@ -3037,6 +3072,18 @@ function addSetValidityMethod(context) {
   }
 
   function cachedToggleClass(className, switchValue) {
+    var pendingChanges = ctrl.$$pendingClassChanges;
+    if (pendingChanges) {
+      if (switchValue) {
+        pendingChanges[className] = 1;
+        classCache[className] = true;
+      } else {
+        pendingChanges[className] = -1;
+        classCache[className] = false;
+      }
+      return;
+    }
+
     if (switchValue && !classCache[className]) {
       $animate.addClass($element, className);
       classCache[className] = true;
