@@ -897,10 +897,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var srcPattern = /(\s+\d+x\s*,|\s+\d+w\s*,|\s+,|,\s+)/;
           var pattern = /\s/.test(trimmedSrcset) ? srcPattern : /(,)/;
 
-          // split srcset into tupple of uri and descriptor except for the last item
+          // split srcset into tuple of uri and descriptor except for the last item
           var rawUris = trimmedSrcset.split(pattern);
 
-          // for each tupples
+          // for each tuples
           var nbrUrisWith2parts = Math.floor(rawUris.length / 2);
           for (var i=0; i<nbrUrisWith2parts; i++) {
             var innerIdx = i*2;
