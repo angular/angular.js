@@ -167,9 +167,13 @@ beforeEach(function() {
       this.message = function() {
         return "Expected '" + angular.mock.dump(this.actual) + "' to have class '" + clazz + "'.";
       };
-      return this.actual.hasClass ?
-              this.actual.hasClass(clazz) :
-              angular.element(this.actual).hasClass(clazz);
+      var classes = clazz.trim().split(/\s+/);
+      for (var i=0; i<classes.length; ++i) {
+        if (!jqLiteHasClass(this.actual[0], classes[i])) {
+          return false;
+        }
+      }
+      return true;
     },
 
     toThrowMatching: function(expected) {
