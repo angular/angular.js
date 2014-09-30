@@ -85,7 +85,9 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
            position: 'relative',
            border: '1px solid red',
            backgroundColor: 'lightgrey',
-           cursor: 'pointer'
+           cursor: 'pointer',
+           display: 'block',
+           width: '65px'
           });
           element.on('mousedown', function(event) {
             // Prevent default dragging of selected content
