@@ -929,7 +929,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        */
       $observe: function(key, fn) {
         var attrs = this,
-            $$observers = (attrs.$$observers || (attrs.$$observers = {})),
+            $$observers = (attrs.$$observers || (attrs.$$observers = Object.create(null))),
             listeners = ($$observers[key] || ($$observers[key] = []));
 
         listeners.push(fn);
