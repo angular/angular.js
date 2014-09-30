@@ -854,6 +854,96 @@ describe('select', function() {
       expect(scope.selected).toBe(scope.values[0]);
     });
 
+    describe('$optionChangeListeners', function(){
+
+      it('should pass the reference objects from ng-options item list', function(){
+        createSingleSelect();
+        var
+          options = [{name: 'A'}, {name: 'B'}, {name: 'C'}],
+          ctrl = element.controller('select'),
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        scope.$apply(function(){
+          scope.values = options;
+          scope.selected = scope.values[0];
+        });
+
+        expect(spy).toHaveBeenCalledWith(options);
+      });
+
+      it('should pass the filtered items to the listeners', function(){
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'value.id as value.name for value in values | filter:{id:3}'
+        });
+
+        var
+          ctrl = element.controller('select'),
+          values = [{name: 'A', id: 1}, {name: 'B', id: 2}, {name: 'C', id: 3}],
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        scope.$apply(function(){
+          scope.values = values;
+          scope.selected = scope.values[0];
+        });
+
+        // it's a subset of our values, but retaining references
+        // first call = when the element is compiled
+        // second call = when the options are filtered
+        expect(spy.callCount).toEqual(2);
+        expect(spy.mostRecentCall.args[0]).toEqual([values[2]]);
+      });
+
+      it('should trigger when there\'s no ng-options with empty value list on single', function(){
+        createSelect({
+          'ng-model': 'selected'
+        });
+
+        var
+          ctrl = element.controller('select'),
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        browserTrigger(element, 'change');
+        expect(spy.callCount).toEqual(1);
+      });
+
+      it('should trigger when there\'s no ng-options with empty value list on multiple', function(){
+        createSelect({
+          'ng-model': 'selected',
+          'multiple': true
+        });
+
+        var
+          ctrl = element.controller('select'),
+          spy = jasmine.createSpy('optionChangeListener');
+
+        ctrl.$optionChangeListeners.push(spy);
+
+        browserTrigger(element, 'change');
+        expect(spy.callCount).toEqual(1);
+      });
+
+      it('should remove listeners on scope.$destroy', function(){
+        createSingleSelect();
+
+        var
+          ctrl = element.controller('select');
+
+        ctrl.$optionChangeListeners.push(function(){});
+
+        scope.$destroy();
+
+        expect(ctrl.$optionChangeListeners.length).toEqual(0);
+      });
+
+    });
+
     describe('binding', function() {
 
       it('should bind to scope value', function() {
