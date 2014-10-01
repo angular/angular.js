@@ -845,18 +845,8 @@ describe('ngView animations', function() {
       });
     });
 
-    it('should destroy the previous leave animation if a new one takes place', function() {
-      module(function($provide) {
-        $provide.decorator('$animate', function($delegate, $$q) {
-          var emptyPromise = $$q.defer().promise;
-          $delegate.leave = function() {
-            return emptyPromise;
-          };
-          return $delegate;
-        });
-      });
-      inject(function ($compile, $rootScope, $animate, $location) {
-        var item;
+    it('should destroy the previous leave animation if a new one takes place',
+      inject(function ($compile, $rootScope, $animate, $location, $timeout) {
         var $scope = $rootScope.$new();
         element = $compile(html(
           '<div>' +
@@ -884,8 +874,8 @@ describe('ngView animations', function() {
         $rootScope.$digest();
 
         expect(destroyed).toBe(true);
-      });
-    });
+      })
+    );
   });
 
 
