@@ -326,7 +326,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#log.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#log}.
+       * Array of messages logged using {@link ng.$log#log}.
        *
        * @example
        * ```js
@@ -340,7 +340,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#info.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#info}.
+       * Array of messages logged using {@link ng.$log#info}.
        *
        * @example
        * ```js
@@ -354,7 +354,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#warn.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#warn}.
+       * Array of messages logged using {@link ng.$log#warn}.
        *
        * @example
        * ```js
@@ -368,7 +368,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#error.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#error}.
+       * Array of messages logged using {@link ng.$log#error}.
        *
        * @example
        * ```js
@@ -382,7 +382,7 @@ angular.mock.$LogProvider = function() {
        * @name $log#debug.logs
        *
        * @description
-       * Array of messages logged using {@link ngMock.$log#debug}.
+       * Array of messages logged using {@link ng.$log#debug}.
        *
        * @example
        * ```js

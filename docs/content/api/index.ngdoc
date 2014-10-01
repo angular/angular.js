@@ -242,7 +242,7 @@ Use ngSanitize to securely parse and manipulate HTML data in your application.
   </tr>
   <tr>
     <td>
-      {@link ngTouch#filter Filters}
+      {@link ngSanitize#filter Filters}
     </td>
     <td>
       The {@link ngSanitize.filter:linky linky filter} is used to turn URLs into HTML links within the provided string.

@@ -180,7 +180,7 @@ For example, we could fix the example above by instead writing:
 First let's talk about the {@link ng.$compileProvider#directive API for registering directives}. Much like
 controllers, directives are registered on modules. To register a directive, you use the
 `module.directive` API. `module.directive` takes the
-{@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
+{@link guide/directive#matching-directives normalized} directive name
 followed by a **factory function.** This factory function should return an object with the different
 options to tell `$compile` how the directive should behave when matched.
 
@@ -243,7 +243,7 @@ Let's create a directive that simply replaces its contents with a static templat
 Notice that we have bindings in this directive. After `$compile` compiles and links
 `<div my-customer></div>`, it will try to match directives on the element's children. This means you
 can compose directives of other directives. We'll see how to do that in
-{@link guide/directive#creating-custom-directives_demo_creating-directives-that-communicate an example}
+{@link guide/directive#creating-directives-that-communicate an example}
 below.
 
 In the example above we in-lined the value of the `template` option, but this will become annoying
@@ -328,9 +328,9 @@ Let's change our directive to use `restrict: 'E'`:
 </example>
 
 For more on the
-{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
+{@link ng.$compile#directive-definition-object `restrict`}
 property, see the
-{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
+{@link ng.$compile#directive-definition-object API docs}.
 
 <div class="alert alert-info">
 **When should I use an attribute versus an element?**
@@ -509,7 +509,7 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-See the {@link api/ng/service/$compile#directive-definition-object
+See the {@link $compile#directive-definition-object
 "Directive Definition Object - scope"} section for more information about isolate scopes.
 </div>
 

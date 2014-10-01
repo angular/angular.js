@@ -76,7 +76,7 @@ filter the list of items.
 
 ## Example
 See the [angular-seed](https://github.com/angular/angular-seed) project for more examples, or look
-at the embedded examples in the Angular documentation (For example, [$http](http://docs.angularjs.org/api/ng/service/$http)
+at the embedded examples in the Angular documentation (For example, {@link $http $http}
 has an end to end test in the example under the `protractor.js` tag).
 
 ## Caveats
