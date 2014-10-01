@@ -1,0 +1,11 @@
+{
+  "browser": true,
+  "globals": {
+    "angular": false,
+    "module": false,
+    "inject": false,
+    "describe": false,
+    "it": false,
+    "beforeEach": false
+  }
+}

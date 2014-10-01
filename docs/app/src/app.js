@@ -14,10 +14,16 @@ angular.module('docsApp', [
   'tutorials',
   'versions',
   'bootstrap',
-  'ui.bootstrap.dropdown'
+  'ui.bootstrap.dropdown',
+  'heading-offset'
 ])
 
 
 .config(['$locationProvider', function($locationProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
+}])
+
+.run(['headingOffset', function(headingOffset) {
+  // Provide the initial offset for heading anchors
+  headingOffset.value = '120px';
 }]);
