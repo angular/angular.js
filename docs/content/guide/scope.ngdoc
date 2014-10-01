@@ -23,7 +23,7 @@ watch {@link guide/expression expressions} and propagate events.
     access to shared model properties. Nested scopes are either "child scopes" or "isolate scopes".
     A "child scope" (prototypically) inherits properties from its parent scope. An "isolate scope"
     does not. See {@link
-    guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive isolated
+    guide/directive#isolating-the-scope-of-a-directive isolated
     scopes} for more information.
 
   - Scopes provide context against which {@link guide/expression expressions} are evaluated. For
@@ -313,7 +313,7 @@ ng.directive:ngController ng-controller} and {@link
 ng.directive:ngRepeat ng-repeat}, create new child scopes
 and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
 element by using an `angular.element(aDomElement).scope()` method call.
-See the {@link guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive
+See the {@link guide/directive#isolating-the-scope-of-a-directive
 directives guide} for more information about isolate scopes.
 
 ### Controllers and Scopes

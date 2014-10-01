@@ -116,8 +116,8 @@
  * When this property is set to true, the HTML compiler will collect DOM nodes between
  * nodes with the attributes `directive-name-start` and `directive-name-end`, and group them
  * together as the directive elements. It is recomended that this feature be used on directives
- * which are not strictly behavioural (such as {@link api/ng.directive:ngClick ngClick}), and which
- * do not manipulate or replace child nodes (such as {@link api/ng.directive:ngInclude ngInclude}).
+ * which are not strictly behavioural (such as {@link ngClick}), and which
+ * do not manipulate or replace child nodes (such as {@link ngInclude}).
  *
  * #### `priority`
  * When there are multiple directives defined on a single DOM element, sometimes it
@@ -278,7 +278,7 @@
  * You can specify `templateUrl` as a string representing the URL or as a function which takes two
  * arguments `tElement` and `tAttrs` (described in the `compile` function api below) and returns
  * a string value representing the url.  In either case, the template URL is passed through {@link
- * api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
+ * $sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
  * #### `replace` ([*DEPRECATED*!], will be removed in next major release - i.e. v2.0)
@@ -288,7 +288,7 @@
  * * `false` - the template will replace the contents of the directive's element.
  *
  * The replacement process migrates all of the attributes / classes from the old element to the new
- * one. See the {@link guide/directive#creating-custom-directives_creating-directives_template-expanding-directive
+ * one. See the {@link guide/directive#template-expanding-directive
  * Directives Guide} for an example.
  *
  * There are very few scenarios where element replacement is required for the application function,
@@ -1063,7 +1063,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string} key Normalized key. (ie ngAttribute) .
        * @param {function(interpolatedValue)} fn Function that will be called whenever
                 the interpolated value of the attribute changes.
-       *        See {@link ng.$compile#attributes $compile} for more info.
+       *        See the {@link guide/directive#text-and-attribute-bindings Directives} guide for more info.
        * @returns {function()} Returns a deregistration function for this observer.
        */
       $observe: function(key, fn) {

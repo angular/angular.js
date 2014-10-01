@@ -4,7 +4,7 @@
 @description
 
 If you configure {@link ng.$location `$location`} to use
-{@link api/ng.provider.$locationProvider `html5Mode`} (`history.pushState`), you need to specify the base URL for the application with a [`<base href="">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) tag or configure
+{@link $locationProvider `html5Mode`} (`history.pushState`), you need to specify the base URL for the application with a [`<base href="">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) tag or configure
 `$locationProvider` to not require a base tag by passing a definition object with
 `requireBase:false` to `$locationProvider.html5Mode()`:
 

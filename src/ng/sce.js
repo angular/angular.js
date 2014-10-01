@@ -457,7 +457,7 @@ function $SceDelegateProvider() {
  *
  * In privileged contexts, directives and code will bind to the result of {@link ng.$sce#getTrusted
  * $sce.getTrusted(context, value)} rather than to the value directly.  Directives use {@link
- * ng.$sce#parse $sce.parseAs} rather than `$parse` to watch attribute bindings, which performs the
+ * ng.$sce#parseAs $sce.parseAs} rather than `$parse` to watch attribute bindings, which performs the
  * {@link ng.$sce#getTrusted $sce.getTrusted} behind the scenes on non-constant literals.
  *
  * As an example, {@link ng.directive:ngBindHtml ngBindHtml} uses {@link
@@ -956,7 +956,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsHtml(expression string)` →
-     *     {@link ng.$sce#parse `$sce.parseAs($sce.HTML, value)`}
+     *     {@link ng.$sce#parseAs `$sce.parseAs($sce.HTML, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -973,7 +973,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsCss(value)` →
-     *     {@link ng.$sce#parse `$sce.parseAs($sce.CSS, value)`}
+     *     {@link ng.$sce#parseAs `$sce.parseAs($sce.CSS, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -990,7 +990,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsUrl(value)` →
-     *     {@link ng.$sce#parse `$sce.parseAs($sce.URL, value)`}
+     *     {@link ng.$sce#parseAs `$sce.parseAs($sce.URL, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -1007,7 +1007,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsResourceUrl(value)` →
-     *     {@link ng.$sce#parse `$sce.parseAs($sce.RESOURCE_URL, value)`}
+     *     {@link ng.$sce#parseAs `$sce.parseAs($sce.RESOURCE_URL, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
@@ -1024,7 +1024,7 @@ function $SceProvider() {
      *
      * @description
      * Shorthand method.  `$sce.parseAsJs(value)` →
-     *     {@link ng.$sce#parse `$sce.parseAs($sce.JS, value)`}
+     *     {@link ng.$sce#parseAs `$sce.parseAs($sce.JS, value)`}
      *
      * @param {string} expression String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:

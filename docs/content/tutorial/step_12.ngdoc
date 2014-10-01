@@ -13,8 +13,8 @@ animations on top of the template code we created before.
 * Common `ng` directives automatically trigger hooks for animations to tap into.
 * When an animation is found then the animation will run in between the standard DOM operation that
   is being issued on the element at the given time (e.g. inserting and removing nodes on
-  {@link api/ng.directive:ngRepeat `ngRepeat`} or adding and removing classes on
-  {@link api/ng.directive:ngClass `ngClass`}).
+  {@link ngRepeat `ngRepeat`} or adding and removing classes on
+  {@link ngClass `ngClass`}).
 
 <div doc-tutorial-reset="12"></div>
 
@@ -81,7 +81,7 @@ To get an idea of how animations work with AngularJS, please read the
 ## Template
 
 The changes required within the HTML template code is to link the asset files which define the animations as
-well as the `angular-animate.js` file. The animation module, known as {@link api/ngAnimate `ngAnimate`}, is
+well as the `angular-animate.js` file. The animation module, known as {@link module:ngAnimate `ngAnimate`}, is
 defined within `angular-animate.js` and contains the code necessary to make your application become animation
 aware.
 
@@ -252,7 +252,7 @@ which are described in detail below.
 
 ## Animating `ngView` with CSS Keyframe Animations
 
-Next let's add an animation for transitions between route changes in {@link api/ngRoute.directive:ngView `ngView`}.
+Next let's add an animation for transitions between route changes in {@link ngRoute.directive:ngView `ngView`}.
 
 To start, let's add a new CSS class to our HTML like we did in the example above.
 This time, instead of the `ng-repeat` element, let's add it to the element containing the `ng-view` directive.

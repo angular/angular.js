@@ -51,4 +51,4 @@ angular.module("myApp", [])
 ```
 
 For more information about strict-di mode, see {@link ng.directive:ngApp ngApp}
-and {@link api/angular.bootstrap angular.bootstrap}.
+and {@link angular.bootstrap angular.bootstrap}.

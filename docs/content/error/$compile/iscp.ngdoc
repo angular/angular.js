@@ -21,5 +21,5 @@ myModule.directive('directiveName', function factory() {
 });
 ```
 
-Please refer to the {@link ng.$compile#description_comprehensive-directive-api_directive-definition-object
+Please refer to the {@link ng.$compile#directive-definition-object
 `scope` option} of the directive definition documentation to learn more about the API.

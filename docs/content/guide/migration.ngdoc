@@ -194,7 +194,7 @@ $httpProvider.interceptors.push('myHttpInterceptor');
 ```
 
 More details on the new interceptors API (which has been around as of v1.1.4) can be found at
-https://docs.angularjs.org/api/ng/service/$http#interceptors
+{@link $http#interceptors interceptors}
 
 
 - **injector:** due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
@@ -401,16 +401,16 @@ below should still apply, but you may want to consult the
   <li class="nav-header">Summary of Breaking Changes</li>
   <li>{@link guide/migration#ngroute-has-been-moved-into-its-own-module ngRoute has been moved into its own module}</li>
   <li>{@link guide/migration#templates-no-longer-automatically-unwrap-promises Templates no longer automatically unwrap promises}</li>
-  <li>{@link guide/migration#syntax-for-named-wildcard-parameters-changed-in Syntax for named wildcard parameters changed in <code>$route</code>}</li>
-  <li>{@link guide/migration#you-can-only-bind-one-expression-to You can only bind one expression to <code>*[src]</code>, <code>*[ng-src]</code> or <code>action</code>}</li>
+  <li>{@link guide/migration#syntax-for-named-wildcard-parameters-changed-in-route- Syntax for named wildcard parameters changed in <code>$route</code>}</li>
+  <li>{@link guide/migration#you-can-only-bind-one-expression-to-src-ng-src-or-action- You can only bind one expression to <code>*[src]</code>, <code>*[ng-src]</code> or <code>action</code>}</li>
   <li>{@link guide/migration#interpolations-inside-dom-event-handlers-are-now-disallowed Interpolations inside DOM event handlers are now disallowed}</li>
-  <li>{@link guide/migration#directives-cannot-end-with--start-or--end Directives cannot end with -start or -end}</li>
-  <li>{@link guide/migration#in-$q,-promisealways-has-been-renamed-promisefinally In $q, promise.always has been renamed promise.finally}</li>
+  <li>{@link guide/migration#directives-cannot-end-with-start-or-end Directives cannot end with -start or -end}</li>
+  <li>{@link guide/migration#in-q-promise-always-has-been-renamed-promise-finally In $q, promise.always has been renamed promise.finally}</li>
   <li>{@link guide/migration#ngmobile-is-now-ngtouch ngMobile is now ngTouch}</li>
-  <li>{@link guide/migration#resource$then-has-been-removed resource.$then has been removed}</li>
+  <li>{@link guide/migration#resource-then-has-been-removed resource.$then has been removed}</li>
   <li>{@link guide/migration#resource-methods-return-the-promise Resource methods return the promise}</li>
   <li>{@link guide/migration#resource-promises-are-resolved-with-the-resource-instance Resource promises are resolved with the resource instance}</li>
-  <li>{@link guide/migration#$locationsearch-supports-multiple-keys $location.search supports multiple keys}</li>
+  <li>{@link guide/migration#-location-search-supports-multiple-keys $location.search supports multiple keys}</li>
   <li>{@link guide/migration#ngbindhtmlunsafe-has-been-removed-and-replaced-by-ngbindhtml ngBindHtmlUnsafe has been removed and replaced by ngBindHtml}</li>
   <li>{@link guide/migration#form-names-that-are-expressions-are-evaluated Form names that are expressions are evaluated}</li>
   <li>{@link guide/migration#hasownproperty-disallowed-as-an-input-name hasOwnProperty disallowed as an input name}</li>
@@ -421,8 +421,8 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#urls-are-now-sanitized-against-a-whitelist URLs are now sanitized against a whitelist}</li>
   <li>{@link guide/migration#isolate-scope-only-exposed-to-directives-with-scope-property Isolate scope only exposed to directives with <code>scope</code> property}</li>
   <li>{@link guide/migration#change-to-interpolation-priority Change to interpolation priority}</li>
-  <li>{@link guide/migration#underscore-prefixed/suffixed-properties-are-non-bindable Underscore-prefixed/suffixed properties are non-bindable}</li>
-  <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
+  <li>{@link guide/migration#underscore-prefixed-suffixed-properties-are-non-bindable Underscore-prefixed/suffixed properties are non-bindable}</li>
+  <li>{@link guide/migration#you-cannot-bind-to-select-multiple- You cannot bind to select[multiple]}</li>
   <li>{@link guide/migration#uncommon-region-specific-local-files-were-removed-from-i18n Uncommon region-specific local files were removed from i18n}</li>
   <li>{@link guide/migration#services-can-now-return-functions Services can now return functions}</li>
 </ul>
