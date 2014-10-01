@@ -1,9 +1,43 @@
+(function() {
+
+
+function createPostLinkFn(element, attrs, headingOffset, $compile) {
+
+  return function postLink(scope) {
+
+    // Create an anchor for this heading
+    var anchor = $compile('<div></div>')(scope);
+
+    // Move the id from the original heading element to the div
+    anchor.attr('id', attrs.id);
+    element.removeAttr('id');
+
+    // Insert this anchor as the first child of the heading
+    element.prepend(anchor);
+
+    var updateStyle = function(offset) {
+      offset = offset || headingOffset.value;
+      anchor.css('margin-top', '-'+offset);
+      anchor.css('height', offset);
+    };
+
+    // Work out whether we are using a specific offset or getting the global default
+    if ( angular.isDefined(element.attr(attrs.$attr.ngOffset)) ) {
+      attrs.$observe('ngOffset', updateStyle);
+    } else {
+      scope.$watch(function() { return headingOffset.value; }, updateStyle);
+    }
+  };
+
+}
+
+
 angular.module('heading-offset', [])
 
 /**
  * @ngdoc service
  * @description
- * The offset to use for heading anchors if not specific offset is given using ngOffSet.
+ * The offset to use for heading anchors if not specific offset is given using ngOffset.
  * You can set this in a `run` block or update it dynamically based on changing sizes of
  * static header.
  */
@@ -11,6 +45,7 @@ angular.module('heading-offset', [])
 
 /**
  * @ngdoc directive
+ * @name id / ngOffset
  * @description
  * A directive that matches id attributes on headings (h1, h2, etc) and anchors (a).
  * When matched this directive injects a new element that acts as a buffer to ensure that
@@ -48,40 +83,32 @@ angular.module('heading-offset', [])
  * CSS if you are relying on ids in your styles (which you shouldn't).
  *
  */
-.directive('id', ['headingOffset', '$compile', '$anchorScroll', function(headingOffset, $compile, $anchorScroll) {
+.directive('id', ['headingOffset', '$compile', function(headingOffset, $compile) {
+
+  var ELEMENTS_TO_MATCH = /^(h\d+|a)$/i;
 
   return {
     restrict: 'A',
     compile: function(element, attrs) {
-      if ( /^(h\d+)|(a)$/i.test(element[0].nodeName || attrs.ngOffset ) ) {
 
-        console.log('processing anchor for', element[0].nodeName, attrs.id);
-
-        return function postLink(scope) {
-
-          // Create an anchor for this heading
-          var anchor = $compile('<span style="display: block"></span>')(scope);
-
-          // Move the id from the original heading element to the span
-          anchor.attr('id', attrs.id);
-          element.removeAttr('id');
-
-          // Insert this anchor as the first child of the heading
-          element.prepend(anchor);
-
-          var updateStyle = function(offset) {
-            anchor.css('margin-top', '-'+offset);
-            anchor.css('height', offset);
-          };
-
-          // Work out whether we are using a specific offset or getting the global default
-          if ( attrs.ngOffset ) {
-            scope.$observe('ngOffset', updateStyle);
-          } else {
-            scope.$watch(function() { return headingOffset.value; }, updateStyle);
-          }
-        };
+      // This directive only looks for headings and anchors with id attributes
+      // It doesn't handle the case where ngOffset is defined as that is handled by the other
+      // directive below
+      if ( ELEMENTS_TO_MATCH.test(element[0].nodeName) && angular.isUndefined(attrs.ngOffset)) {
+        return createPostLinkFn(element, attrs, headingOffset, $compile);
       }
     }
   };
+}])
+
+.directive('ngOffset', ['headingOffset', '$compile', function(headingOffset, $compile) {
+  return {
+    restrict: 'A',
+    compile: function(element, attrs) {
+      // This directive handles the case where ngOffset is defined as an attribute
+      return createPostLinkFn(element, attrs, headingOffset, $compile);
+    }
+  };
 }]);
+
+})();
