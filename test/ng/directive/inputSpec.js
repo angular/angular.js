@@ -946,6 +946,69 @@ describe('ngModel', function() {
     dealoc(element);
   }));
 
+  describe('custom formatter and parser that are added by a directive in post linking', function() {
+    var inputElm, scope;
+    beforeEach(module(function($compileProvider) {
+      $compileProvider.directive('customFormat', function() {
+        return {
+          require: 'ngModel',
+          link: function(scope, element, attrs, ngModelCtrl) {
+            ngModelCtrl.$formatters.push(function(value) {
+              return value.part;
+            });
+            ngModelCtrl.$parsers.push(function(value) {
+              return {part: value};
+            });
+          }
+        };
+      });
+    }));
+
+    afterEach(function() {
+      dealoc(inputElm);
+    });
+
+    function createInput(type) {
+      inject(function($compile, $rootScope) {
+        scope = $rootScope;
+        inputElm = $compile('<input type="'+type+'" ng-model="val" custom-format/>')($rootScope);
+      });
+    }
+
+    it('should use them after the builtin ones for text inputs', function() {
+      createInput('text');
+      scope.$apply('val = {part: "a"}');
+      expect(inputElm.val()).toBe('a');
+
+      inputElm.val('b');
+      browserTrigger(inputElm, 'change');
+      expect(scope.val).toEqual({part: 'b'});
+    });
+
+    it('should use them after the builtin ones for number inputs', function() {
+      createInput('number');
+      scope.$apply('val = {part: 1}');
+      expect(inputElm.val()).toBe('1');
+
+      inputElm.val('2');
+      browserTrigger(inputElm, 'change');
+      expect(scope.val).toEqual({part: 2});
+    });
+
+    it('should use them after the builtin ones for date inputs', function() {
+      createInput('date');
+      scope.$apply(function() {
+        scope.val = {part: new Date(2000, 10, 8)};
+      });
+      expect(inputElm.val()).toBe('2000-11-08');
+
+      inputElm.val('2001-12-09');
+      browserTrigger(inputElm, 'change');
+      expect(scope.val).toEqual({part: new Date(2001, 11, 9)});
+    });
+  });
+
+
   it('should always format the viewValue as a string for a blank input type when the value is present',
     inject(function($compile, $rootScope, $sniffer) {
 
