@@ -15,6 +15,11 @@ function $ControllerProvider() {
       globals = false,
       CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
 
+  function fnName(fn) {
+    var nameMatch = fn.toString().match(/function ([^\(]+)/);
+    return nameMatch && nameMatch[1] || '';
+  }
+
 
   /**
    * @ngdoc method
@@ -26,7 +31,12 @@ function $ControllerProvider() {
    */
   this.register = function(name, constructor) {
     assertNotHasOwnProperty(name, 'controller');
-    if (isObject(name)) {
+    if (isArray(name)) {
+      var fn = name[name.length - 1];
+      controllers[fn.name || fnName(fn)] = name;
+    } else if (isFunction(name)) {
+      controllers[name.name || fnName(name)] = name;
+    } else if (isObject(name)) {
       extend(controllers, name);
     } else {
       controllers[name] = constructor;
