@@ -86,33 +86,18 @@ var $AnimateProvider = ['$provide', function($provide) {
     var currentDefer;
     var ELEMENT_NODE = 1;
 
-    function extractElementNodes(element) {
-      var elements = new Array(element.length);
-      var count = 0;
-      for(var i = 0; i < element.length; i++) {
-        var elm = element[i];
-        if (elm.nodeType == ELEMENT_NODE) {
-          elements[count++] = elm;
-        }
-      }
-      elements.length = count;
-      return jqLite(elements);
-    }
-
     function runAnimationPostDigest(fn) {
       var cancelFn, defer = $$q.defer();
-      if (!$rootScope.$$phase) {
-        fn(noop);
-        defer.resolve();
-      }
       defer.promise.$$cancelFn = function ngAnimateMaybeCancel() {
         cancelFn && cancelFn();
       };
+
       $rootScope.$$postDigest(function ngAnimatePostDigest() {
         cancelFn = fn(function ngAnimateNotifyComplete() {
           defer.resolve();
         });
       });
+
       return defer.promise;
     }
 
@@ -258,7 +243,6 @@ var $AnimateProvider = ['$provide', function($provide) {
         forEach(element, function (element) {
           jqLiteAddClass(element, className);
         });
-        return asyncPromise();
       },
 
       /**
@@ -304,7 +288,7 @@ var $AnimateProvider = ['$provide', function($provide) {
       setClass : function(element, add, remove) {
         var self = this;
         var STORAGE_KEY = '$$animateClasses';
-        element = extractElementNodes(jqLite(element));
+        element = jqLite(element);
 
         add = isArray(add) ? add : add.split(' ');
         remove = isArray(remove) ? remove : remove.split(' ');
@@ -329,8 +313,8 @@ var $AnimateProvider = ['$provide', function($provide) {
           var classes = cache && resolveElementClasses(element, cache);
 
           if (classes) {
-            if (classes[0].length) self.$$addClassImmediately(element, classes[0]);
-            if (classes[1].length) self.$$removeClassImmediately(element, classes[1]);
+            if (classes[0]) self.$$addClassImmediately(element, classes[0]);
+            if (classes[1]) self.$$removeClassImmediately(element, classes[1]);
           }
 
           done();

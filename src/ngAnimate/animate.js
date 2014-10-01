@@ -979,8 +979,8 @@ angular.module('ngAnimate', ['ng'])
           element = stripCommentsFromElement(element);
 
           if (classBasedAnimationsBlocked(element)) {
-            if (add) $delegate.$$addClassImmediately(element, add);
-            if (remove) $delegate.$$removeClassImmediately(element, remove);
+            $delegate.$$addClassImmediately(element, add);
+            $delegate.$$removeClassImmediately(element, remove);
             return;
           }
 
