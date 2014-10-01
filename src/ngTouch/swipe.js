@@ -121,8 +121,8 @@ ngTouch.factory('$swipe', [function() {
       var startCoords;
       // Last event's position.
       var lastPos;
-      // Whether an swipe is still being determined to be a scroll.
-      var active = false;
+      // Whether a swipe is still being determined to be a scroll.
+      var scrollActive = false;
       // Whether a swipe is active.
       var swipeActive = false;
 
@@ -143,7 +143,7 @@ ngTouch.factory('$swipe', [function() {
       pointerTypes = pointerTypes || config.pointerTypes;
       element.on(getEvents(pointerTypes, 'start'), function(event) {
         startCoords = getCoordinates(event);
-        active = true;
+        scrollActive = true;
         totalX = 0;
         totalY = 0;
         lastPos = startCoords;
@@ -152,13 +152,13 @@ ngTouch.factory('$swipe', [function() {
       var events = getEvents(pointerTypes, 'cancel');
       if (events) {
         element.on(events, function(event) {
-          active = false;
+          scrollActive = false;
           eventHandlers['cancel'] && eventHandlers['cancel'](event);
         });
       }
 
       element.on(getEvents(pointerTypes, 'move'), function(event) {
-        if (!active) return;
+        if (!scrollActive) return;
 
         // Android will send a touchcancel if it thinks we're starting to scroll.
         // So when the total distance (+ or - or both) exceeds 10px in either direction,
@@ -188,7 +188,7 @@ ngTouch.factory('$swipe', [function() {
         // One of absTotalX or absTotalY has exceeded the threshold, so decide on swipe vs. scroll.
         if (!swipeActive && absTotalY > absTotalX && absTotalY > config.scrollThreshold) {
           // Allow native scrolling to take over.
-          active = false;
+          scrollActive = false;
           swipeActive = false;
           eventHandlers['cancel'] && eventHandlers['cancel'](event);
           return;
@@ -201,8 +201,8 @@ ngTouch.factory('$swipe', [function() {
       });
 
       element.on(getEvents(pointerTypes, 'end'), function(event) {
-        if (!active) return;
-        active = false;
+        if (!scrollActive) return;
+        scrollActive = false;
         swipeActive = false;
         eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
       });
