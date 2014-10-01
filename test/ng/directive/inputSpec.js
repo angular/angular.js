@@ -2251,14 +2251,14 @@ describe('input', function() {
 
   // INPUT TYPES
   describe('month', function (){
-    it('should render blank if model is not a Date object', function() {
+    it('should throw if model is not a Date object', function() {
       compileInput('<input type="month" ng-model="january"/>');
 
-      scope.$apply(function(){
-        scope.january = '2013-01';
-      });
-
-      expect(inputElm.val()).toBe('');
+      expect(function() {
+        scope.$apply(function(){
+          scope.january = '2013-01';
+        });
+      }).toThrowMinErr('ngModel', 'datefmt', 'Expected `2013-01` to be a date');
     });
 
     it('should set the view if the model is a valid Date object', function (){
@@ -2433,14 +2433,14 @@ describe('input', function() {
   });
 
   describe('week', function (){
-    it('should set render blank if model is not a Date object', function() {
+    it('should throw if model is not a Date object', function() {
       compileInput('<input type="week" ng-model="secondWeek"/>');
 
-      scope.$apply(function(){
-        scope.secondWeek = '2013-W02';
-      });
-
-      expect(inputElm.val()).toBe('');
+      expect(function() {
+        scope.$apply(function(){
+          scope.secondWeek = '2013-W02';
+        });
+      }).toThrowMinErr('ngModel', 'datefmt', 'Expected `2013-W02` to be a date');
     });
 
     it('should set the view if the model is a valid Date object', function (){
@@ -2615,14 +2615,14 @@ describe('input', function() {
   });
 
   describe('datetime-local', function () {
-    it('should render blank if model is not a Date object', function() {
+    it('should throw if model is not a Date object', function() {
       compileInput('<input type="datetime-local" ng-model="lunchtime"/>');
 
-      scope.$apply(function(){
-        scope.lunchtime = '2013-12-16T11:30:00';
-      });
-
-      expect(inputElm.val()).toBe('');
+      expect(function() {
+        scope.$apply(function(){
+          scope.lunchtime = '2013-12-16T11:30:00';
+        });
+      }).toThrowMinErr('ngModel', 'datefmt', 'Expected `2013-12-16T11:30:00` to be a date');
     });
 
     it('should set the view if the model if a valid Date object.', function(){
@@ -2890,14 +2890,14 @@ describe('input', function() {
   });
 
   describe('time', function () {
-    it('should render blank if model is not a Date object', function() {
+    it('should throw if model is not a Date object', function() {
       compileInput('<input type="time" ng-model="lunchtime"/>');
 
-      scope.$apply(function(){
-        scope.lunchtime = '11:30:00';
-      });
-
-      expect(inputElm.val()).toBe('');
+      expect(function() {
+        scope.$apply(function(){
+          scope.lunchtime = '11:30:00';
+        });
+      }).toThrowMinErr('ngModel', 'datefmt', 'Expected `11:30:00` to be a date');
     });
 
     it('should set the view if the model if a valid Date object.', function(){
@@ -3141,11 +3141,24 @@ describe('input', function() {
   });
 
   describe('date', function () {
-    it('should render blank if model is not a Date object.', function() {
+    it('should throw if model is not a Date object.', function() {
       compileInput('<input type="date" ng-model="birthday"/>');
 
-      scope.$apply(function(){
-        scope.birthday = '1977-10-22';
+      expect(function() {
+        scope.$apply(function(){
+          scope.birthday = '1977-10-22';
+        });
+      }).toThrowMinErr('ngModel', 'datefmt', 'Expected `1977-10-22` to be a date');
+    });
+
+    it('should set the view to empty when the model is an InvalidDate', function() {
+      compileInput('<input type="date" ng-model="val"/>');
+      // reset the element type to text otherwise newer browsers
+      // would always set the input.value to empty for invalid dates...
+      inputElm.attr('type', 'text');
+
+      scope.$apply(function (){
+        scope.val = new Date('a');
       });
 
       expect(inputElm.val()).toBe('');

@@ -1,0 +1,11 @@
+@ngdoc error
+@name ngModel:datefmt
+@fullName Model is not a date object
+@description
+
+All date-related inputs like `<input type="date">` require the model to be a `Date` object.
+If the model is something else, this error will be thrown.
+Angular does not set validation errors on the `<input>` in this case
+as those errors are shown to the user, but the erroneous state was
+caused by incorrect application logic and not by the user.
+
