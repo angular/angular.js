@@ -20,7 +20,7 @@ Where the compiler has created a new scope, the scope and either `ng-scope` or `
 CSS class are attached to the corresponding element. These scope references can then be accessed via
 `element.scope()` and `element.isolateScope()`.
 
-Tools like [Protractor](github.com/angular/protractor) and
+Tools like [Protractor](https://github.com/angular/protractor) and
 [Batarang](https://github.com/angular/angularjs-batarang) need this information to run,
 but you can disable this in production for a significant performance boost with:
 
@@ -40,4 +40,4 @@ angular.reloadWithDebugInfo();
 The page should reload and the debug information should now be available.
 
 For more see the docs pages on {@link ng.$compileProvider#debugInfoEnabled `$compileProvider`}
-and {@link ng/function/angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
+and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.

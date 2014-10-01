@@ -276,11 +276,11 @@ To get a hold of the controller the directive specifies a dependency as shown in
 The validation can occur in two places:
 
   * **Model to View update** -
-    Whenever the bound model changes, all functions in {@link ngModel.NgModelController#properties_$formatters NgModelController#$formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
+    Whenever the bound model changes, all functions in {@link ngModel.NgModelController#$formatters NgModelController#$formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
 
   * **View to Model update** -
     In a similar way, whenever a user interacts with a control it calls {@link ngModel.NgModelController#$setViewValue NgModelController#$setViewValue}.
-This in turn pipelines all functions in the {@link ngModel.NgModelController#properties_$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
+This in turn pipelines all functions in the {@link ngModel.NgModelController#$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
 
 In the following example we create two directives.
 
@@ -366,7 +366,7 @@ However, if you need more flexibility, you can write your own form control as a 
 
 In order for custom control to work with `ngModel` and to achieve two-way data-binding it needs to:
 
-  - implement `$render` method, which is responsible for rendering the data after it passed the {@link   api/ng.directive:ngModel.NgModelController#properties_$formatters NgModelController#$formatters},
+  - implement `$render` method, which is responsible for rendering the data after it passed the {@link ngModel.NgModelController#$formatters NgModelController#$formatters},
   - call `$setViewValue` method, whenever the user interacts with the control and model needs to be updated. This is usually done inside a DOM Event listener.
 
 See {@link guide/directive $compileProvider.directive} for more info.

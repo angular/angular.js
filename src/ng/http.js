@@ -154,7 +154,7 @@ function $HttpProvider() {
    * @description
    *
    * Configure $http service to combine processing of multiple http responses received at around
-   * the same time via {@link ng.$rootScope#applyAsync $rootScope.$applyAsync}. This can result in
+   * the same time via {@link ng.$rootScope.Scope#$applyAsync $rootScope.$applyAsync}. This can result in
    * significant performance improvement for bigger applications that make many HTTP requests
    * concurrently (common during application bootstrap).
    *
@@ -408,7 +408,7 @@ function $HttpProvider() {
      *
      * You can change the default cache to a new object (built with
      * {@link ng.$cacheFactory `$cacheFactory`}) by updating the
-     * {@link ng.$http#properties_defaults `$http.defaults.cache`} property. All requests who set
+     * {@link ng.$http#defaults `$http.defaults.cache`} property. All requests who set
      * their `cache` property to `true` will now use this cache object.
      *
      * If you set the default cache to `false` then only requests that specify their own custom

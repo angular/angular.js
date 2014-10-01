@@ -698,7 +698,7 @@ function $LocationProvider(){
    * This change can be prevented by calling
    * `preventDefault` method of the event. See {@link ng.$rootScope.Scope#$on} for more
    * details about event object. Upon successful change
-   * {@link ng.$location#events_$locationChangeSuccess $locationChangeSuccess} is fired.
+   * {@link ng.$location#$locationChangeSuccess $locationChangeSuccess} is fired.
    *
    * The `newState` and `oldState` parameters may be defined only in HTML5 mode and when
    * the browser supports the HTML5 History API.
