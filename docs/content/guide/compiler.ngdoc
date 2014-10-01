@@ -3,6 +3,8 @@
 @sortOrder 330
 @description
 
+# HTML Compiler
+
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 
@@ -12,7 +14,7 @@ If you want a deeper look into Angular's compilation process, you're in the righ
 </div>
 
 
-# Overview
+## Overview
 
 Angular's {@link ng.$compile HTML compiler} allows the developer to teach the
 browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
