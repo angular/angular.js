@@ -29,4 +29,3 @@ angular.module('directives', [])
     }
   };
 });
-
