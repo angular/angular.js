@@ -13,7 +13,6 @@ angular.module('docsApp', [
   'search',
   'tutorials',
   'versions',
-  'scrollOffset',
   'bootstrap',
   'ui.bootstrap.dropdown'
 ])

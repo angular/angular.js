@@ -116,21 +116,10 @@ function $AnchorScrollProvider() {
 // TODO(gkalpak): The $anchorScrollProvider should be documented as well
 //                (under the providers section).
 
-  var DEFAULT_OFFSET = 0;
-
   var autoScrollingEnabled = true;
-  var scrollOffsetGetter = function() { return DEFAULT_OFFSET; };
 
   this.disableAutoScrolling = function() {
     autoScrollingEnabled = false;
-  };
-
-  this.setScrollOffset = function(newScrollOffset) {
-    if (isFunction(newScrollOffset)) {
-      scrollOffsetGetter = function() { return newScrollOffset(); };
-    } else if (isNumber(newScrollOffset)) {
-      scrollOffsetGetter = function() { return newScrollOffset; };
-    }
   };
 
   this.$get = ['$window', '$location', '$rootScope', function($window, $location, $rootScope) {
@@ -150,14 +139,33 @@ function $AnchorScrollProvider() {
       return result;
     }
 
+    function getYOffset() {
+
+      var offset = scroll.yOffset;
+
+      if (isElement(offset)) {
+
+        var style = $window.getComputedStyle(scroll.yOffset[0]);
+        var top = parseInt(style.top,10);
+        var height = parseInt(style.height,10);
+        return style.position === 'fixed' ? (top + height) : 0;
+
+      } else if (isFunction(offset)) {
+        return offset();
+
+      } else if (isNumber(offset)) {
+        return offset;
+
+      } else {
+        return 0;
+      }
+
+    }
+
     function scrollTo(elem) {
       if (elem) {
         elem.scrollIntoView();
-        var offset = scrollOffsetGetter();
-        var actualOffset = offset && (offset - (elem.offsetTop - document.body.scrollTop));
-        if (actualOffset) {
-          $window.scrollBy(0, -1 * actualOffset);
-        }
+        $window.scrollBy(0, -1 * getYOffset());
       } else {
         $window.scrollTo(0, 0);
       }

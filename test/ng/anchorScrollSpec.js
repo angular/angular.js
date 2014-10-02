@@ -52,6 +52,7 @@ describe('$anchorScroll', function() {
     elmSpy = {};
     $provide.value('$window', {
       scrollTo: jasmine.createSpy('$window.scrollTo'),
+      scrollBy: jasmine.createSpy('$window.scrollBy'),
       document: document,
       navigator: {}
     });
