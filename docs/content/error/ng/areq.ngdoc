@@ -6,3 +6,23 @@
 AngularJS often asserts that certain values will be present and truthy using a
 helper function. If the assertion fails, this error is thrown. To fix this problem,
 make sure that the value the assertion expects is defined and truthy.
+
+
+<h4>Possible causes:</h4>
+<p>
+<ul>
+<ol> There are more than 1 modules created in Angular with the same name 
+e.g.,
+<pre>
+  someFile.js
+  var module=angular.module("myApp",[]);
+  ...
+  
+  someOtherFile.js
+  var module1=angular.module("myApp",[]);
+  
+  </pre>
+  </ol>
+  </ul>
+  </p>
+  
