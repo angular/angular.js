@@ -3720,6 +3720,25 @@ describe('$compile', function() {
     });
 
 
+    it('should get required parent controller when the question mark precedes the ^^', function() {
+      module(function() {
+        directive('nested', function(log) {
+          return {
+            require: '?^^nested',
+            controller: function($scope) {},
+            link: function(scope, element, attrs, controller) {
+              log(!!controller);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div nested><div nested></div></div>')($rootScope);
+        expect(log).toEqual('true; false');
+      });
+    });
+
+
     it('should throw if required parent is not found', function() {
       module(function() {
         directive('nested', function() {
