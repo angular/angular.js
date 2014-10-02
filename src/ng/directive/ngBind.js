@@ -57,12 +57,13 @@ var ngBindDirective = ['$compile', function($compile) {
     compile: function ngBindCompile(templateElement) {
       $compile.$$addBindingClass(templateElement);
       return function ngBindLink(scope, element, attr) {
+        var element = element[0];
         $compile.$$addBindingInfo(element, attr.ngBind);
         scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
           // We are purposefully using == here rather than === because we want to
           // catch when value is "null or undefined"
           // jshint -W041
-          element[0].textContent = value == undefined ? '' : value;
+          element.textContent = value == undefined ? '' : value;
         });
       };
     }
@@ -126,10 +127,11 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
     compile: function ngBindTemplateCompile(templateElement) {
       $compile.$$addBindingClass(templateElement);
       return function ngBindTemplateLink(scope, element, attr) {
-        var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
+        var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate)),
+            element = element[0];
         $compile.$$addBindingInfo(element, interpolateFn.expressions);
         attr.$observe('ngBindTemplate', function(value) {
-          element.text(value);
+          element.textContent = value;
         });
       };
     }
