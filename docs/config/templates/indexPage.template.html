@@ -146,9 +146,6 @@
         </div>
         <div class="search-results-container" ng-show="hasResults">
           <div class="container">
-            <a href="" ng-click="hideResults()" class="search-close">
-              <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
-            </a>
             <div class="search-results-frame">
               <div ng-repeat="(key, value) in results" class="search-results-group" ng-class="colClassName + ' col-group-' + key">
                 <h4 class="search-results-group-heading">{{ key }}</h4>
@@ -159,6 +156,9 @@
                 </div>
               </div>
             </div>
+            <a href="" ng-click="hideResults()" class="search-close">
+              <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
+            </a>
           </div>
         </div>
       </section>
