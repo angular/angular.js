@@ -110,7 +110,7 @@ as those errors are shown to the user, but the erroneous state was
 caused by incorrect application logic and not by the user.
 
 <a name="1.2.26"></a>
-# 1.2.26 zucchini-expansion (2014-10-01)
+# 1.2.26 captivating-disinterest (2014-10-01)
 
 ## Bug Fixes
 
