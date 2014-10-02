@@ -4,14 +4,6 @@ describe('$swipe', function() {
   var element;
   var events;
 
-  // Skip tests on IE < 9. These versions of IE don't support createEvent(), and so
-  // we cannot control the (x,y) position of events.
-  // It works fine in IE 8 under manual testing.
-  var msie = +((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
-  if (msie < 9) {
-    return;
-  }
-
   beforeEach(function() {
     module('ngTouch');
     inject(function($compile, $rootScope) {
