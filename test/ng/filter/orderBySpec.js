@@ -6,9 +6,18 @@ describe('Filter: orderBy', function() {
     orderBy = $filter('orderBy');
   }));
 
-  it('should return same array if predicate is falsy', function() {
-    var array = [1, 2, 3];
-    expect(orderBy(array)).toBe(array);
+  it('should return sorted array if predicate is not provided', function() {
+    expect(orderBy([2, 1, 3])).toEqual([1, 2, 3]);
+
+    expect(orderBy([2, 1, 3], '')).toEqual([1, 2, 3]);
+    expect(orderBy([2, 1, 3], [])).toEqual([1, 2, 3]);
+    expect(orderBy([2, 1, 3], [''])).toEqual([1, 2, 3]);
+
+    expect(orderBy([2, 1, 3], '+')).toEqual([1, 2, 3]);
+    expect(orderBy([2, 1, 3], ['+'])).toEqual([1, 2, 3]);
+
+    expect(orderBy([2, 1, 3], '-')).toEqual([3, 2, 1]);
+    expect(orderBy([2, 1, 3], ['-'])).toEqual([3, 2, 1]);
   });
 
   it('shouldSortArrayInReverse', function() {
