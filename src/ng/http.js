@@ -89,7 +89,8 @@ function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
       PROTECTION_PREFIX = /^\)\]\}',?\n/,
-      CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json;charset=utf-8'};
+      APPLICATION_JSON = 'application/json',
+      CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': APPLICATION_JSON + ';charset=utf-8'};
 
   /**
    * @ngdoc property
@@ -114,12 +115,15 @@ function $HttpProvider() {
    **/
   var defaults = this.defaults = {
     // transform incoming response data
-    transformResponse: [function(data) {
+    transformResponse: [function defaultHttpResponseTransform(data, headers) {
       if (isString(data)) {
         // strip json vulnerability protection prefix
         data = data.replace(PROTECTION_PREFIX, '');
-        if (JSON_START.test(data) && JSON_END.test(data))
+        var contentType = headers('Content-Type');
+        if ((contentType && contentType.indexOf(APPLICATION_JSON) === 0) ||
+            (JSON_START.test(data) && JSON_END.test(data))) {
           data = fromJson(data);
+        }
       }
       return data;
     }],
