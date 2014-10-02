@@ -3757,6 +3757,64 @@ describe("ngAnimate", function() {
       expect(inner.hasClass('on-add-active')).toBe(false);
     }));
 
+    it("should reset the getComputedStyle lookup cache even when no animation is found",
+      inject(function($compile, $rootScope, $animate, $sniffer, $document) {
+
+      if (!$sniffer.transitions) return;
+
+      $animate.enabled();
+
+      var html = '<div>' +
+                 '  <div class="toggle" ng-if="onOff">On or Off</div>' +
+                 '</div>';
+
+      ss.addRule('.activated .toggle', '-webkit-transition:1s linear all;' +
+                                               'transition:1s linear all;');
+
+      var child, element = $compile(html)($rootScope);
+
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $rootScope.onOff = true;
+      $rootScope.$digest();
+
+      child = element.find('div');
+      expect(child).not.toHaveClass('ng-enter');
+      expect(child.parent()[0]).toEqual(element[0]);
+      $animate.triggerReflow();
+
+      $rootScope.onOff = false;
+      $rootScope.$digest();
+
+      child = element.find('div');
+      expect(child.parent().length).toBe(0);
+      $animate.triggerReflow();
+
+      element.addClass('activated');
+      $rootScope.$digest();
+      $animate.triggerReflow();
+
+      $rootScope.onOff = true;
+      $rootScope.$digest();
+
+      child = element.find('div');
+      expect(child).toHaveClass('ng-enter');
+      $animate.triggerReflow();
+      expect(child).toHaveClass('ng-enter-active');
+
+      browserTrigger(child, 'transitionend',
+        { timeStamp: Date.now() + 1000, elapsedTime: 2000 });
+
+      $animate.triggerCallbacks();
+
+      $rootScope.onOff = false;
+      $rootScope.$digest();
+
+      expect(child).toHaveClass('ng-leave');
+      $animate.triggerReflow();
+      expect(child).toHaveClass('ng-leave-active');
+    }));
 
     it("should cancel and perform the dom operation only after the reflow has run",
       inject(function($compile, $rootScope, $animate, $sniffer) {
