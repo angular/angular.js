@@ -1767,7 +1767,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 "Controller '{0}', required by directive '{1}', can't be found!",
                 require, directiveName);
           }
-          return value;
+          return value || null;
         } else if (isArray(require)) {
           value = [];
           forEach(require, function(require) {
