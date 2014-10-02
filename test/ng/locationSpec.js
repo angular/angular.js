@@ -1858,5 +1858,50 @@ describe('$location', function() {
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(locationIndex, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/index.html#!/otherPath#test');
     });
+
+    it('search() should parse query parameters preceding hash prefix', function() {
+      url = new LocationHashbangInHtml5Url('http://server/base', '#!');
+      url.$$parse(url.$$rewrite('http://server/base?a=b#!?c=d#foo'));
+      expect(url.search()).toEqual({
+        'a': 'b',
+        'c': 'd'
+      });
+      expect(url.hash()).toBe('foo');
+    });
+
+
+    it('search() should parse query parameters without hash prefix', function() {
+      url = new LocationHashbangInHtml5Url('http://server/base', '#!');
+      url.$$parse(url.$$rewrite('http://server/base?a=b&c=d#foo'));
+      expect(url.search()).toEqual({
+        'a': 'b',
+        'c': 'd'
+      });
+      expect(url.hash()).toBe('foo');
+    });
+
+
+    // A question mark following the hash fragment is just part of the hash fragment, and
+    // should behave this way.
+    it('search() should ignore parse query parameters following hash fragment', function() {
+      url = new LocationHashbangInHtml5Url('http://server/base', '#!');
+      url.$$parse(url.$$rewrite('http://server/base?a=b&c=d#foo?!biz'));
+      expect(url.search()).toEqual({
+        'a': 'b',
+        'c': 'd'
+      });
+      expect(url.hash()).toBe('foo?!biz');
+    });
+
+
+    it('should keep query parameters without hash from initial url', function() {
+      url = new LocationHashbangInHtml5Url('http://server/base?a=b&c=d', '#!');
+      url.$$parse(url.$$rewrite('http://server/base?a=b&c=d#foo'));
+      expect(url.search()).toEqual({
+        'a': 'b',
+        'c': 'd'
+      });
+      expect(url.hash()).toBe('foo');
+    });
   });
 });
