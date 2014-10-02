@@ -1,8 +1,119 @@
-<a name="1.2.26"></a>
-# 1.2.26 zucchini-expansion (2014-10-01)
+<a name="1.3.0-rc.4"></a>
+# 1.3.0-rc.4 unicorn-hydrafication (2014-10-01)
 
 
 ## Bug Fixes
+
+- **$compile:**
+  - get $$observe listeners array as own property
+  ([a27d827c](https://github.com/angular/angular.js/commit/a27d827c22b0b6b3ba6b7495cf4fc338c6934b37),
+   [#9343](https://github.com/angular/angular.js/issues/9343), [#9345](https://github.com/angular/angular.js/issues/9345))
+  - Resolve leak with asynchronous compilation
+  ([6303c3dc](https://github.com/angular/angular.js/commit/6303c3dcf64685458fc84aa12289f5c9d57f4e47),
+   [#9199](https://github.com/angular/angular.js/issues/9199), [#9079](https://github.com/angular/angular.js/issues/9079), [#8504](https://github.com/angular/angular.js/issues/8504), [#9197](https://github.com/angular/angular.js/issues/9197))
+  - connect transclude scopes to their containing scope to prevent memory leaks
+  ([fb0c77f0](https://github.com/angular/angular.js/commit/fb0c77f0b66ed757a56af13f81b943419fdcbd7f),
+   [#9095](https://github.com/angular/angular.js/issues/9095), [#9281](https://github.com/angular/angular.js/issues/9281))
+  - sanitize srcset attribute
+  ([ab80cd90](https://github.com/angular/angular.js/commit/ab80cd90661396dbb1c94c5f4dd2d11ee8f6b6af))
+- **input:**
+  - register builtin parsers/formatters before anyone else
+  ([10644432](https://github.com/angular/angular.js/commit/10644432ca9d5da69ce790a8d9e691640f333711),
+   [#9218](https://github.com/angular/angular.js/issues/9218), [#9358](https://github.com/angular/angular.js/issues/9358))
+  - correctly handle invalid model values for `input[date/time/…]`
+  ([a0bfdd0d](https://github.com/angular/angular.js/commit/a0bfdd0d60882125f614a91c321f12f730735e7b),
+   [#8949](https://github.com/angular/angular.js/issues/8949), [#9375](https://github.com/angular/angular.js/issues/9375))
+- **ngModel:** do not parse undefined viewValue when validating
+  ([92f05e5a](https://github.com/angular/angular.js/commit/92f05e5a5900713301e64373d7b7daa45a88278b),
+   [#9106](https://github.com/angular/angular.js/issues/9106), [#9260](https://github.com/angular/angular.js/issues/9260))
+- **ngView:** use animation promises ensure that only one leave animation occurs at a time
+  ([3624e380](https://github.com/angular/angular.js/commit/3624e3800fb3ccd2e9ea361a763e20131fd42c29),
+   [#9355](https://github.com/angular/angular.js/issues/9355), [#7606](https://github.com/angular/angular.js/issues/7606), [#9374](https://github.com/angular/angular.js/issues/9374))
+- **select:** make ctrl.hasOption method consistent
+  ([2bcd02dc](https://github.com/angular/angular.js/commit/2bcd02dc1a6b28b357d47c83be3bed5c9a38417c),
+   [#8761](https://github.com/angular/angular.js/issues/8761))
+
+
+## Features
+
+- **$compile:** optionally get controllers from ancestors only
+  ([07e3abc7](https://github.com/angular/angular.js/commit/07e3abc7dda872adc3fb25cb3e133f86f494b35d),
+   [#4518](https://github.com/angular/angular.js/issues/4518), [#4540](https://github.com/angular/angular.js/issues/4540), [#8240](https://github.com/angular/angular.js/issues/8240), [#8511](https://github.com/angular/angular.js/issues/8511))
+- **Scope:** allow the parent of a new scope to be specified on creation
+  ([6417a3e9](https://github.com/angular/angular.js/commit/6417a3e9eb7ab0011cefada8db855aa929a64ff8))
+
+
+## Performance Improvements
+
+- **$rootScope:** moving internal queues out of the Scope instances
+  ([b1192518](https://github.com/angular/angular.js/commit/b119251827cea670051198e1b48af7ee0c9f2a1b),
+   [#9071](https://github.com/angular/angular.js/issues/9071))
+- **benchmark:** add ngBindOnce benchmarks to largetable-bp
+  ([2c8b4648](https://github.com/angular/angular.js/commit/2c8b4648526acf5c2645de8408a6d9ace2144b5f))
+- **ngForm,ngModel:** move initial addClass to the compile phase
+  ([b1ee5386](https://github.com/angular/angular.js/commit/b1ee5386d584f208bce6d3b613afdb3bae9df76a),
+   [#8268](https://github.com/angular/angular.js/issues/8268))
+
+
+## Breaking Changes
+
+- **$compile:** due to [fb0c77f0](https://github.com/angular/angular.js/commit/fb0c77f0b66ed757a56af13f81b943419fdcbd7f),
+
+
+`$transclude` functions no longer attach `$destroy` event handlers to the
+transcluded content, and so the associated transclude scope will not automatically
+be destroyed if you remove a transcluded element from the DOM using direct DOM
+manipulation such as the jquery `remove()` method.
+
+If you want to explicitly remove DOM elements inside your directive that have
+been compiled, and so potentially contain child (and transcluded) scopes, then
+it is your responsibility to get hold of the scope and destroy it at the same time.
+
+The suggested approach is to create a new child scope of your own around any DOM
+elements that you wish to manipulate in this way and destroy those scopes if you
+remove their contents - any child scopes will then be destroyed and cleaned up
+automatically.
+
+Note that all the built-in directives that manipulate the DOM (ngIf, ngRepeat,
+ngSwitch, etc) already follow this best practice, so if you only use these for
+manipulating the DOM then you do not have to worry about this change.
+
+Closes #9095
+Closes #9281
+
+- **$parse:** due to [5572b40b](https://github.com/angular/angular.js/commit/5572b40b15ed06969c8e0e92866c5afd088484b4),
+
+- $scope['this'] no longer exits on the $scope object
+- $parse-ed expressions no longer allow chaining 'this' such as this['this'] or $parent['this']
+- 'this' in $parse-ed expressions can no longer be overriden, if a variable named 'this' is put on the scope it must be accessed using this['this']
+
+Closes #9105
+
+- **input:** due to [1eda1836](https://github.com/angular/angular.js/commit/1eda18365a348c9597aafba9d195d345e4f13d1e),
+
+(Note: this change landed in 1.3.0-rc.3, but was not considered a breaking change at the time).
+
+For text based inputs (text, email, url), the `$viewValue` will now always be converted to a string,
+regardless of what type the value is on the model.
+
+To migrate, any code or expressions that expect the `$viewValue` to be anything other than string
+should be updated to expect a string.
+
+
+- **input:** due to a0bfdd0d60882125f614a91c321f12f730735e7b (see #8949),
+
+Similar to `input[number]` Angular will now throw if the model value
+for a `input[date]` is not a `Date` object. Previously, Angular only
+showed an empty string instead.
+Angular does not set validation errors on the `<input>` in this case
+as those errors are shown to the user, but the erroneous state was
+caused by incorrect application logic and not by the user.
+
+<a name="1.2.26"></a>
+# 1.2.26 zucchini-expansion (2014-10-01)
+
+## Bug Fixes
+
 
 - **$compile:** Resolve leak with asynchronous compilation
   ([5c9c1973](https://github.com/angular/angular.js/commit/5c9c19730526d5df6f16c523e578e5305f3796d0),
