@@ -35,6 +35,12 @@ var ngOptionsMinErr = minErr('ngOptions');
  * be bound to string values at present.
  * </div>
  *
+ * <div class="alert alert-info">
+ * **Note:** Using `selectAs` will bind the result of the `selectAs` expression to the model, but
+ * the value of the `select` and `option` elements will be either the index (for array data sources)
+ * or property name (for object data sources) of the value  within the collection.
+ * </div>
+ *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required The control is considered valid only if value is entered.
@@ -69,7 +75,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  *      DOM element.
  *   * `trackexpr`: Used when working with an array of objects. The result of this expression will be
  *      used to identify the objects in the array. The `trackexpr` will most likely refer to the
- *     `value` variable (e.g. `value.propertyName`).
+ *     `value` variable (e.g. `value.propertyName`). With this the selection is preserved
+ *      even when the options are recreated (e.g. reloaded from the server).
  *
  * @example
     <example module="selectExample">
@@ -326,6 +333,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         var displayFn = $parse(match[2] || match[1]),
             valueName = match[4] || match[6],
+            selectAs = / as /.test(match[0]) && match[1],
+            selectAsFn = selectAs ? $parse(selectAs) : null,
             keyName = match[5],
             groupByFn = $parse(match[3] || ''),
             valueFn = $parse(match[2] ? match[1] : valueName),
@@ -371,41 +380,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
                 for(index = 1, length = optionGroup.length; index < length; index++) {
                   if ((optionElement = optionGroup[index].element)[0].selected) {
-                    key = optionElement.val();
-                    if (keyName) locals[keyName] = key;
-                    if (trackFn) {
-                      for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
-                        locals[valueName] = collection[trackIndex];
-                        if (trackFn(scope, locals) == key) break;
-                      }
-                    } else {
-                      locals[valueName] = collection[key];
-                    }
-                    value.push(valueFn(scope, locals));
+                    value.push(getViewValue(optionElement, locals, collection));
                   }
                 }
               }
             } else {
-              key = selectElement.val();
-              if (key == '?') {
-                value = undefined;
-              } else if (key === ''){
-                value = null;
-              } else {
-                if (trackFn) {
-                  for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
-                    locals[valueName] = collection[trackIndex];
-                    if (trackFn(scope, locals) == key) {
-                      value = valueFn(scope, locals);
-                      break;
-                    }
-                  }
-                } else {
-                  locals[valueName] = collection[key];
-                  if (keyName) locals[keyName] = key;
-                  value = valueFn(scope, locals);
-                }
-              }
+              value = getViewValue(selectElement, locals, collection);
             }
             ctrl.$setViewValue(value);
             render();
@@ -437,7 +417,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           var selectedSet = false;
           if (multiple) {
             var viewValue = ctrl.$viewValue;
-            if (trackFn && isArray(viewValue)) {
+            if (trackFn && isArray(viewValue) && !selectAs) {
               selectedSet = new HashMap([]);
               var locals = {};
               for (var trackIndex = 0; trackIndex < viewValue.length; trackIndex++) {
@@ -451,6 +431,79 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           return selectedSet;
         }
 
+        function getViewValue (el, locals, collection) {
+          var key = el.val();
+          var value;
+          var calculateViewValue;
+
+          if (selectAsFn || trackFn) {
+            calculateViewValue = function () {
+              var getterFn = selectAsFn || trackFn;
+              var wrappedCollectionValue = {};
+              wrappedCollectionValue[valueName] = collection[key];
+              wrappedCollectionValue[keyName] = key;
+
+              for (var i in collection) {
+                if (collection.hasOwnProperty(i)) {
+                  locals[valueName] = collection[i];
+                  if (keyName) locals[keyName] = i;
+                  if (getterFn(scope, locals) ==
+                      getterFn(scope, wrappedCollectionValue)) {
+                    /*
+                     * trackBy should not be used for final calculation, because it doesn't
+                     * necessarily return the expected value.
+                     */
+                    return (selectAsFn||valueFn)(scope, locals);
+                  }
+                }
+              }
+            };
+          } else {
+            calculateViewValue = function() {
+              locals[valueName] = collection[key];
+              if (keyName) locals[keyName] = key;
+              return valueFn(scope, locals);
+            };
+          }
+
+          if (multiple) {
+            if (keyName) locals[keyName] = key;
+            calculateViewValue();
+            return (selectAsFn || valueFn)(scope, locals);
+          }
+
+          if (key == '?') {
+            value = undefined;
+          } else if (key === ''){
+            value = null;
+          } else {
+            value = calculateViewValue();
+          }
+
+          return value;
+        }
+
+        function isSelected(viewValue, locals, selectedSet) {
+          var compareValueFn;
+          if (selectAsFn) {
+            compareValueFn = selectAsFn;
+          } else if (trackFn) {
+            var withValueName = {};
+            withValueName[valueName] = viewValue;
+            compareValueFn = trackFn;
+
+            viewValue = trackFn(withValueName);
+          } else {
+            compareValueFn = valueFn;
+          }
+
+          var optionValue = compareValueFn(scope, locals);
+
+          if (multiple) {
+            return isDefined(selectedSet.remove(optionValue));
+          }
+          return viewValue === optionValue;
+        }
 
         function scheduleRendering() {
           if (!renderScheduled) {
@@ -483,10 +536,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               element,
               label;
 
-
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
-
             key = index;
             if (keyName) {
               key = keys[index];
@@ -501,27 +552,20 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroup = optionGroups[optionGroupName] = [];
               optionGroupNames.push(optionGroupName);
             }
-            if (multiple) {
-              selected = isDefined(
-                selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals))
-              );
-            } else {
-              if (trackFn) {
-                var modelCast = {};
-                modelCast[valueName] = viewValue;
-                selected = trackFn(scope, modelCast) === trackFn(scope, locals);
-              } else {
-                selected = viewValue === valueFn(scope, locals);
-              }
-              selectedSet = selectedSet || selected; // see if at least one item is selected
-            }
+
+            selected = isSelected(
+                viewValue,
+                locals,
+                selectedSet);
+            selectedSet = selectedSet || selected;
+
             label = displayFn(scope, locals); // what will be seen by the user
 
             // doing displayFn(scope, locals) || '' overwrites zero values
             label = isDefined(label) ? label : '';
             optionGroup.push({
               // either the index into array or key from object
-              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),
+              id: (keyName ? keys[index] : index),
               label: label,
               selected: selected                   // determine if we should be selected
             });
