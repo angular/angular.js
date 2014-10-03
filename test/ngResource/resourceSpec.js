@@ -1065,6 +1065,49 @@ describe("resource", function() {
     expect(person.id).toEqual(456);
   });
 
+  it('data should include all params', function() {
+    var Person = $resource('/Person/:id/card/:cardId', {}, {
+      fetch: {
+          method: 'GET',
+          params: {id: 123, cardId: '@cardId'},
+          transformParams: function(data) {
+            expect(data).toEqualData({id: 123, cardId: 321});
+            return data;
+          }
+      }
+    });
+    $httpBackend.expect('GET', '/Person/123/card/321').respond(null);
+    Person.fetch({cardId: 321});
+  });
+
+  it('should transform param', function() {
+    var Person = $resource('/Person/:id', {}, {
+      fetch: {
+          method: 'GET',
+          params: {id: '@id'},
+          transformParams: function(data) {
+            return {id: 321};
+          }
+      }
+    });
+
+    $httpBackend.expect('GET', '/Person/321').respond(null);
+    Person.fetch({id: 123});
+    $httpBackend.flush();
+  });
+
+  it('should fail from transformParams being an object, when it expects an lambda', function() {
+    expect(function() {
+      var Person = $resource('/Person/:id', {}, {
+        badTransform: {
+          method: 'POST',
+          transformParams: {}
+        }
+      });
+      Person.badTransform();
+    }).toThrowMinErr('$resource','badcfg', '[$resource:badcfg] Error in transformParams. Expected function but got an object');
+  });
+
   describe('suffix parameter', function() {
 
     describe('query', function() {
