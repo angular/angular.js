@@ -153,8 +153,11 @@ function Browser(window, document, $log, $sniffer) {
     // setter
     if (url) {
       if (lastBrowserUrl == url) return;
+      var sameBase = lastBrowserUrl && stripHash(lastBrowserUrl) === stripHash(url);
       lastBrowserUrl = url;
-      if ($sniffer.history) {
+      // Don't use history API if only the hash changed
+      // due to a bug in IE10/IE11 (see #9143)
+      if (!sameBase && $sniffer.history) {
         if (replace) history.replaceState(null, '', url);
         else {
           history.pushState(null, '', url);
@@ -188,6 +191,10 @@ function Browser(window, document, $log, $sniffer) {
     forEach(urlChangeListeners, function(listener) {
       listener(self.url());
     });
+  }
+
+  function stripHash(url) {
+    return url.replace(/#.*/, '');
   }
 
   /**

@@ -445,11 +445,33 @@ describe('browser', function() {
       expect(locationReplace).not.toHaveBeenCalled();
     });
 
+    it('should set location.href when the url only changed in the hash fragment', function() {
+      sniffer.history = true;
+      browser.url('http://server/#123');
+
+      expect(fakeWindow.location.href).toEqual('http://server/#123');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+    });
+
     it('should use location.replace when history.replaceState not available', function() {
       sniffer.history = false;
       browser.url('http://new.org', true);
 
       expect(locationReplace).toHaveBeenCalledWith('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server/');
+    });
+
+    it('should use location.replace when the url only changed in the hash fragment', function() {
+      sniffer.history = true;
+      browser.url('http://server/#123', true);
+
+      expect(locationReplace).toHaveBeenCalledWith('http://server/#123');
 
       expect(pushState).not.toHaveBeenCalled();
       expect(replaceState).not.toHaveBeenCalled();

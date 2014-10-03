@@ -720,6 +720,9 @@ function $LocationProvider(){
 
       if (absHref && !elm.attr('target') && !event.isDefaultPrevented()) {
         if ($location.$$parseLinkUrl(absHref, relHref)) {
+          // We do a preventDefault for all urls that are part of the angular application,
+          // in html5mode and also without, so that we are able to abort navigation without
+          // getting double entries in the location history.
           event.preventDefault();
           // update location manually
           if ($location.absUrl() != $browser.url()) {
