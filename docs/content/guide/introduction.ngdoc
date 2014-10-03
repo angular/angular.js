@@ -103,7 +103,7 @@ Angular frees you from the following pains:
   * **Writing tons of initialization code just to get started:** Typically you need to write a lot
     of plumbing just to get a basic "Hello World" AJAX app working. With Angular you can bootstrap
     your app easily using services, which are auto-injected into your application in a
-    [Guice](http://code.google.com/p/google-guice/)-like dependency-injection style. This allows you
+    [Guice](https://github.com/google/guice)-like dependency-injection style. This allows you
     to get started developing features quickly. As a bonus, you get full control over the
     initialization process in automated tests.
 
