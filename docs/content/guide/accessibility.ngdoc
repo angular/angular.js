@@ -6,8 +6,26 @@
 
 # Accessibility with ngAria
 
-You can use the `ngAria` module to have certain ARIA attributes automatically applied when you
-use certain directives.
+You can use the `ngAria` module to have common ARIA attributes automatically applied when you
+use certain directives. To enable `ngAria`, just require the module into your application and 
+the code will hook into your ng-show/ng-hide, input, textarea, button, select and 
+ng-required directives and add the appropriate ARIA states and properties.
+
+Currently, the following attributes are implemented:
+ * aria-hidden
+ * aria-checked
+ * aria-disabled
+ * aria-required
+ * aria-invalid
+ * aria-multiline
+ * aria-valuenow
+ * aria-valuemin
+ * aria-valuemax
+ * tabindex
+
+You can disable individual attributes by using the `{@link ngAria.$ariaProvider#config config}` method.
+
+###Example
 
 ```js
 angular.module('myApp', ['ngAria'])...
@@ -39,3 +57,4 @@ Accessibility best practices that apply to web apps in general also apply to Ang
 
 * [WebAim](http://webaim.org/)
 * [Using WAI-ARIA in HTML](http://www.w3.org/TR/2014/WD-aria-in-html-20140626/)
+* [Apps For All: Coding Accessible Web Applications](https://shop.smashingmagazine.com/apps-for-all-coding-accessible-web-applications.html)
