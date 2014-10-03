@@ -1,129 +1,174 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name $anchorScroll
- * @kind function
- * @requires $window
- * @requires $location
- * @requires $rootScope
+ * @ngdoc provider
+ * @name $anchorScrollProvider
  *
  * @description
- * When called, it checks current value of `$location.hash()` and scrolls to the related element,
- * according to rules specified in
- * [Html5 spec](http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document).
- *
- * It also watches the `$location.hash()` and scrolls whenever it changes to match any anchor.
- * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
- *
- * Additionally, you can specify a scroll offset (in pixels) during the configuration phase by
- * calling `$anchorScrollProvider.setScrollOffset(<valueOrGetter>)`. The offset can be either a
- * fixed value or a getter function that returns a value dynamically.
- *
- * @example
-   <example module="anchorScrollExample">
-     <file name="index.html">
-       <div id="scrollArea" ng-controller="ScrollController">
-         <a ng-click="gotoBottom()">Go to bottom</a>
-         <a id="bottom"></a> You're at the bottom!
-       </div>
-     </file>
-     <file name="script.js">
-       angular.module('anchorScrollExample', [])
-         .controller('ScrollController', ['$scope', '$location', '$anchorScroll',
-           function ($scope, $location, $anchorScroll) {
-             $scope.gotoBottom = function() {
-               // set the location.hash to the id of
-               // the element you wish to scroll to.
-               $location.hash('bottom');
-
-               // call $anchorScroll()
-               $anchorScroll();
-             };
-           }]);
-     </file>
-     <file name="style.css">
-       #scrollArea {
-         height: 350px;
-         overflow: auto;
-       }
-
-       #bottom {
-         display: block;
-         margin-top: 2000px;
-       }
-     </file>
-   </example>
- *
- * <hr />
- * The example below illustrates the use of scroll offset (specified as a fixed value).
- *
- * @example
-   <example module="anchorScrollOffsetExample">
-     <file name="index.html">
-       <div class="fixed-header" ng-controller="headerCtrl">
-         <a href="" ng-click="gotoAnchor(x)" ng-repeat="x in [1,2,3,4,5]">
-           Go to anchor {{x}}
-         </a>
-       </div>
-       <div id="anchor{{x}}" class="anchor" ng-repeat="x in [1,2,3,4,5]">
-         Anchor {{x}} of 5
-       </div>
-     </file>
-     <file name="script.js">
-       angular.module('anchorScrollOffsetExample', [])
-         .config(['$anchorScrollProvider', function($anchorScrollProvider) {
-           $anchorScrollProvider.setScrollOffset(50);   // always scroll by 50 extra pixels
-         }])
-         .controller('headerCtrl', ['$anchorScroll', '$location', '$scope',
-           function ($anchorScroll, $location, $scope) {
-             $scope.gotoAnchor = function(x) {
-               // Set the location.hash to the id of
-               // the element you wish to scroll to.
-               $location.hash('anchor' + x);
-
-               // Call $anchorScroll()
-               $anchorScroll();
-             };
-           }
-         ]);
-     </file>
-     <file name="style.css">
-       body {
-         padding-top: 50px;
-       }
-
-       .anchor {
-         border: 2px dashed DarkOrchid;
-         padding: 10px 10px 200px 10px;
-       }
-
-       .fixed-header {
-         background-color: rgba(0, 0, 0, 0.2);
-         height: 50px;
-         position: fixed;
-         top: 0; left: 0; right: 0;
-       }
-
-       .fixed-header > a {
-         display: inline-block;
-         margin: 5px 15px;
-       }
-     </file>
-   </example>
+ * Use `$anchorScrollProvider` to disable automatic scrolling whenever
+ * {@link ng.$location#hash $location.hash()} changes.
  */
 function $AnchorScrollProvider() {
-// TODO(gkalpak): The $anchorScrollProvider should be documented as well
-//                (under the providers section).
 
   var autoScrollingEnabled = true;
 
+  /**
+   * @ngdoc method
+   * @name $anchorScrollProvider#disableAutoScrolling
+   *
+   * @description
+   * By default, {@link ng.$anchorScroll $anchorScroll()} will automatically will detect changes to
+   * {@link ng.$location#hash $location.hash()} and scroll to the element matching the new hash.<br />
+   * Use this method to disable automatic scrolling.
+   *
+   * If automatic scrolling is disabled, one must explicitly call
+   * {@link ng.$anchorScroll $anchorScroll()} in order to scroll to the element related to the
+   * current hash.
+   */
   this.disableAutoScrolling = function() {
     autoScrollingEnabled = false;
   };
 
+  /**
+   * @ngdoc service
+   * @name $anchorScroll
+   * @kind function
+   * @requires $window
+   * @requires $location
+   * @requires $rootScope
+   *
+   * @description
+   * When called, it checks the current value of {@link ng.$location#hash $location.hash()} and
+   * scrolls to the related element, according to the rules specified in the
+   * [Html5 spec](http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document).
+   *
+   * It also watches the {@link ng.$location#hash $location.hash()} and automatically scrolls to
+   * match any anchor whenever it changes. This can be disabled by calling
+   * {@link ng.$anchorScrollProvider#disableAutoScrolling $anchorScrollProvider.disableAutoScrolling()}.
+   *
+   * Additionally, you can use its {@link ng.$anchorScroll#yOffset yOffset} property to specify a
+   * vertical scroll-offset (either fixed or dynamic).
+   *
+   * @property {(number|function|jqLite)} yOffset
+   * If set, specifies a vertical scroll-offset. This is often useful when there are fixed
+   * positioned elements at the top of the page, such as navbars, headers etc.
+   *
+   * `yOffset` can be specified in various ways:
+   * - **number**: A fixed number of pixels to be used as offset.<br /><br />
+   * - **function**: A getter function called everytime `$anchorScroll()` is executed. Must return
+   *   a number representing the offset (in pixels).<br /><br />
+   * - **jqLite**: A jqLite/jQuery element to be used for specifying the offset. The sum of the
+   *   element's height and its distance from the top of the page will be used as offset.<br />
+   *   **Note**: The element will be taken into account only as long as its `position` is set to
+   *   `fixed`. This option is useful, when dealing with responsive navbars/headers that adjust
+   *   their height and/or positioning according to the viewport's size.
+   *
+   * <br />
+   * <div class="alert alert-warning">
+   * In order for `yOffset` to work properly, scrolling should take place on the document's root and
+   * not some child element.
+   * </div>
+   *
+   * @example
+     <example module="anchorScrollExample">
+       <file name="index.html">
+         <div id="scrollArea" ng-controller="ScrollController">
+           <a ng-click="gotoBottom()">Go to bottom</a>
+           <a id="bottom"></a> You're at the bottom!
+         </div>
+       </file>
+       <file name="script.js">
+         angular.module('anchorScrollExample', [])
+           .controller('ScrollController', ['$scope', '$location', '$anchorScroll',
+             function ($scope, $location, $anchorScroll) {
+               $scope.gotoBottom = function() {
+                 // set the location.hash to the id of
+                 // the element you wish to scroll to.
+                 $location.hash('bottom');
+
+                 // call $anchorScroll()
+                 $anchorScroll();
+               };
+             }]);
+       </file>
+       <file name="style.css">
+         #scrollArea {
+           height: 280px;
+           overflow: auto;
+         }
+
+         #bottom {
+           display: block;
+           margin-top: 2000px;
+         }
+       </file>
+     </example>
+   *
+   * <hr />
+   * The example below illustrates the use of a vertical scroll-offset (specified as a fixed value).
+   * See {@link ng.$anchorScroll#yOffset $anchorScroll.yOffset} for more details.
+   *
+   * @example
+     <example module="anchorScrollOffsetExample">
+       <file name="index.html">
+         <div class="fixed-header" ng-controller="headerCtrl">
+           <a href="" ng-click="gotoAnchor(x)" ng-repeat="x in [1,2,3,4,5]">
+             Go to anchor {{x}}
+           </a>
+         </div>
+         <div id="anchor{{x}}" class="anchor" ng-repeat="x in [1,2,3,4,5]">
+           Anchor {{x}} of 5
+         </div>
+       </file>
+       <file name="script.js">
+         angular.module('anchorScrollOffsetExample', [])
+           .run(['$anchorScroll', function($anchorScroll) {
+             $anchorScroll.yOffset = 50;   // always scroll by 50 extra pixels
+           }])
+           .controller('headerCtrl', ['$anchorScroll', '$location', '$scope',
+             function ($anchorScroll, $location, $scope) {
+               $scope.gotoAnchor = function(x) {
+                 var newHash = 'anchor' + x;
+                 if ($location.hash() !== newHash) {
+                   // set the $location.hash to `newHash` and
+                   // $anchorScroll will automatically scroll to it
+                   $location.hash('anchor' + x);
+                 } else {
+                   // call $anchorScroll() explicitly,
+                   // since $location.hash hasn't changed
+                   $anchorScroll();
+                 }
+               };
+             }
+           ]);
+       </file>
+       <file name="style.css">
+         body {
+           padding-top: 50px;
+         }
+
+         .anchor {
+           border: 2px dashed DarkOrchid;
+           padding: 10px 10px 200px 10px;
+         }
+
+         .fixed-header {
+           background-color: rgba(0, 0, 0, 0.2);
+           height: 50px;
+           position: fixed;
+           top: 0; left: 0; right: 0;
+         }
+
+         .fixed-header > a {
+           display: inline-block;
+           margin: 5px 15px;
+         }
+       </file>
+     </example>
+   */
   this.$get = ['$window', '$location', '$rootScope', function($window, $location, $rootScope) {
     var document = $window.document;
+    var scrollScheduled = false;
 
     // Helper function to get first anchor from a NodeList
     // (using `Array#some()` instead of `angular#forEach()` since it's more performant
@@ -143,31 +188,69 @@ function $AnchorScrollProvider() {
 
       var offset = scroll.yOffset;
 
-      if (isElement(offset)) {
-
-        var style = $window.getComputedStyle(scroll.yOffset[0]);
-        var top = parseInt(style.top,10);
-        var height = parseInt(style.height,10);
-        return style.position === 'fixed' ? (top + height) : 0;
-
-      } else if (isFunction(offset)) {
-        return offset();
-
-      } else if (isNumber(offset)) {
-        return offset;
-
-      } else {
-        return 0;
+      if (isFunction(offset)) {
+        offset = offset();
+      } else if (isElement(offset)) {
+        var elem = offset[0];
+        var style = $window.getComputedStyle(elem);
+        if (style.position !== 'fixed') {
+          offset = 0;
+        } else {
+          var rect = elem.getBoundingClientRect();
+          var top = rect.top;
+          var height = rect.height;
+          offset = top + height;
+        }
+      } else if (!isNumber(offset)) {
+        offset = 0;
       }
 
+      return offset;
     }
 
     function scrollTo(elem) {
       if (elem) {
         elem.scrollIntoView();
-        $window.scrollBy(0, -1 * getYOffset());
+
+        var offset = getYOffset();
+
+        if (offset) {
+          // `offset` is the number of pixels we should scroll up in order to align `elem` properly.
+          // This is true ONLY if the call to `elem.scrollIntoView()` initially aligns `elem` at the
+          // top of the viewport. IF the number of pixels from the top of `elem` to the end of the
+          // page's content is less than the height of the viewport, then `elem.scrollIntoView()`
+          // will NOT align the top of `elem` at the top of the viewport (but further down). This is
+          // often the case for elements near the bottom of the page.
+          // In such cases we do not need to scroll the whole `offset` up, just the fraction of the
+          // offset that is necessary to align the top of `elem` at the desired position.
+          var elemTop = elem.getBoundingClientRect().top;
+          var bodyTop = document.body.getBoundingClientRect().top;
+          var scrollTop = $window.pageYOffset;
+          var necessaryOffset = offset - (elemTop - (bodyTop + scrollTop));
+
+          $window.scrollBy(0, -1 * necessaryOffset);
+        }
       } else {
         $window.scrollTo(0, 0);
+      }
+    }
+
+    function scrollWhenReady() {
+      if (document.readyState === 'complete') {
+        $rootScope.$evalAsync(scroll);
+      } else if (!scrollScheduled) {
+        scrollScheduled = true;
+        document.addEventListener('readystatechange', function unbindAndScroll() {
+          // When navigating to a page with a URL including a hash,
+          // Firefox overwrites our `yOffset` if `$apply()` is used instead.
+          $rootScope.$evalAsync(function() {
+            if (document.readyState === 'complete') {
+              scrollScheduled = false;
+              document.removeEventListener('readystatechange', unbindAndScroll);
+              scroll();
+            }
+          });
+        });
       }
     }
 
@@ -195,7 +278,7 @@ function $AnchorScrollProvider() {
           // skip the initial scroll if $location.hash is empty
           if (newVal === oldVal && newVal === '') return;
 
-          $rootScope.$evalAsync(scroll);
+          scrollWhenReady();
         });
     }
 
