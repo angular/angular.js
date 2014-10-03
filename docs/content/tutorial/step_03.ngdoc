@@ -181,6 +181,7 @@ Let's see how we can get the current value of the `query` model to appear in the
     });
   ```
 
+  Be careful to move the "phonelist" and "query" vars out of the first it declaration, for accessibility.
   Run protractor (`npm run protractor`) to see this test fail.
 
 
