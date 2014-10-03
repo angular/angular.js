@@ -259,6 +259,8 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
 
     if ( appBase == stripHash(url) ) {
       return url;
+    } else if ( (appUrl = beginsWith(appBaseNoFile + hashPrefix + '/', url)) ) {
+      return appBase + hashPrefix + appUrl;
     } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
       return appBase + hashPrefix + appUrl;
     } else if ( appBaseNoFile === url + '/') {
@@ -636,7 +638,7 @@ function $LocationProvider(){
       LocationMode = LocationHashbangUrl;
     }
     $location = new LocationMode(appBase, '#' + hashPrefix);
-    $location.$$parse($location.$$rewrite(initialUrl));
+    $location.$$parse($location.$$rewrite(initialUrl) || appBase);
 
     var IGNORE_URI_REGEXP = /^\s*(javascript|mailto):/i;
 
@@ -675,26 +677,22 @@ function $LocationProvider(){
 
         if (href && href.indexOf('://') < 0) {         // Ignore absolute URLs
           var prefix = '#' + hashPrefix;
-          if (href[0] == '/') {
-            // absolute path - replace old path
-            absHref = appBase + prefix + href;
+          var appBaseNoFile = stripFile(appBase);
+          var html5Url = appBase + $location.url().substr(1);
+          var baseUri = baseHref ? urlResolveShim(baseHref, appBase) : html5Url;
+          var appUrl;
+          if (appUrl = beginsWith(prefix + '/', href)) {
+            // hashbang beginning with / refers to appbase
+            absHref = urlResolveShim(appBaseNoFile + appUrl);
+          } else if (appUrl = beginsWith(prefix, href)) {
+            // hashbang relative path
+            absHref = urlResolveShim(appUrl, baseUri);
           } else if (href[0] == '#') {
             // local anchor
             absHref = appBase + prefix + ($location.path() || '/') + href;
           } else {
-            // relative path - join with current path
-            var stack = $location.path().split("/"),
-              parts = href.split("/");
-            if (stack.length === 2 && !stack[1]) stack.length = 1;
-            for (var i=0; i<parts.length; i++) {
-              if (parts[i] == ".")
-                continue;
-              else if (parts[i] == "..")
-                stack.pop();
-              else if (parts[i].length)
-                stack.push(parts[i]);
-            }
-            absHref = appBase + prefix + stack.join('/');
+            // relative path
+            absHref = urlResolveShim(href, baseUri);
           }
         }
       }
@@ -765,6 +763,60 @@ function $LocationProvider(){
 
     function afterLocationChange(oldUrl) {
       $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
+    }
+
+    // Similar to URL(URL, base) of URLUtils
+    function urlResolveShim(url, base) {
+      var absHref;
+      if (url.indexOf('//') >= 0) {
+        absHref = url;
+      } else if (url.charAt(0) === '/') {
+        absHref = serverBase(base) + url;
+      } else {
+        absHref = stripFile(base) + url;
+      }
+
+      var resolvedUrl = urlResolve(absHref);
+      var hash = resolvedUrl.hash ? '#' + resolvedUrl.hash : '';
+      var search = resolvedUrl.search;
+      var path = resolvedUrl.pathname;
+      var normalizedPath = normalizePath(path); // only for IE7 compatibility
+      return serverBase(resolvedUrl.href) + normalizedPath + (search ? '?' + search : '') + hash;
+    }
+
+    function normalizePath(path) {
+      path = path || '';
+      var inputSegments = path.split('/');
+      var outputSegments = [];
+      var inputSegment;
+      for (var i = 0; i < inputSegments.length; i++) {
+        inputSegment = inputSegments[i];
+
+        if ((inputSegment.length === 0)
+            || (inputSegment == '.')) {
+          // Do nothing
+          continue;
+        } else if (inputSegment == '..') {
+            if (outputSegments.length) {
+                outputSegments.pop();
+            }
+        } else {
+            outputSegments.push(inputSegment);
+        }
+      }
+
+      var outputSegment, output = '';
+      for (i = 0; i < outputSegments.length; i++) {
+        outputSegment = outputSegments[i];
+        output += '/' + outputSegment;
+      }
+
+      if (path.lastIndexOf('/') == path.length - 1) {
+          // path.endsWith("/") || path.equals("")
+          output += '/';
+      }
+
+      return output;
     }
 }];
 }
