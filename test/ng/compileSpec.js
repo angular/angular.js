@@ -300,7 +300,7 @@ describe('$compile', function() {
       });
       inject(function($compile, $rootScope, $httpBackend) {
         $httpBackend.expect('GET', 'template.html').respond('<circle></circle>');
-        element = $compile('<svg><svg-circle-url ng-repeat="l in list"/></svg>')($rootScope);
+        element = $compile('<svg><g ng-repeat="l in list"><svg-circle-url></svg-circle-url></g></svg>')($rootScope);
 
         // initially the template is not yet loaded
         $rootScope.$apply(function() {
