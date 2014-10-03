@@ -196,7 +196,7 @@ describe('$route', function() {
         event.preventDefault();
       });
 
-      $rootScope.$on('$beforeRouteChange', function(event) {
+      $rootScope.$on('$routeChangeStart', function(event) {
         throw new Error('Should not get here');
       });
 
