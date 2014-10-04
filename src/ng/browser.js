@@ -1,5 +1,4 @@
 'use strict';
-/* global stripHash: true */
 
 /**
  * ! This is a private undocumented service !
