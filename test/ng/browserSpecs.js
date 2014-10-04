@@ -652,6 +652,9 @@ describe('browser', function() {
       $provide.value('$browser', browser);
       browser.pollFns = [];
 
+      sniffer.history = true;
+      $provide.value('$sniffer', sniffer);
+
       $locationProvider.html5Mode(true);
     }));
 
