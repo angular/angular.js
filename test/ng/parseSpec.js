@@ -22,11 +22,30 @@ describe('parser', function() {
       };
     });
 
+    it('should only match number chars with isNumber', function() {
+      expect(Lexer.prototype.isNumber('0')).toBe(true);
+      expect(Lexer.prototype.isNumber('')).toBeFalsy();
+      expect(Lexer.prototype.isNumber(' ')).toBeFalsy();
+      expect(Lexer.prototype.isNumber(0)).toBeFalsy();
+      expect(Lexer.prototype.isNumber(false)).toBeFalsy();
+      expect(Lexer.prototype.isNumber(true)).toBeFalsy();
+      expect(Lexer.prototype.isNumber(undefined)).toBeFalsy();
+      expect(Lexer.prototype.isNumber(null)).toBeFalsy();
+    });
+
     it('should tokenize a string', function() {
       var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
       var i = 0;
       expect(tokens[i].index).toEqual(0);
-      expect(tokens[i].text).toEqual('a.bc');
+      expect(tokens[i].text).toEqual('a');
+
+      i++;
+      expect(tokens[i].index).toEqual(1);
+      expect(tokens[i].text).toEqual('.');
+
+      i++;
+      expect(tokens[i].index).toEqual(2);
+      expect(tokens[i].text).toEqual('bc');
 
       i++;
       expect(tokens[i].index).toEqual(4);
@@ -34,7 +53,9 @@ describe('parser', function() {
 
       i++;
       expect(tokens[i].index).toEqual(5);
-      expect(tokens[i].text).toEqual(22);
+      expect(tokens[i].text).toEqual('22');
+      expect(tokens[i].value).toEqual(22);
+      expect(tokens[i].constant).toEqual(true);
 
       i++;
       expect(tokens[i].index).toEqual(7);
@@ -46,7 +67,9 @@ describe('parser', function() {
 
       i++;
       expect(tokens[i].index).toEqual(9);
-      expect(tokens[i].text).toEqual(1.3);
+      expect(tokens[i].text).toEqual('1.3');
+      expect(tokens[i].value).toEqual(1.3);
+      expect(tokens[i].constant).toEqual(true);
 
       i++;
       expect(tokens[i].index).toEqual(12);
@@ -62,7 +85,7 @@ describe('parser', function() {
 
       i++;
       expect(tokens[i].index).toEqual(15);
-      expect(tokens[i].string).toEqual("a'c");
+      expect(tokens[i].value).toEqual("a'c");
 
       i++;
       expect(tokens[i].index).toEqual(21);
@@ -70,14 +93,15 @@ describe('parser', function() {
 
       i++;
       expect(tokens[i].index).toEqual(22);
-      expect(tokens[i].string).toEqual('d"e');
+      expect(tokens[i].value).toEqual('d"e');
     });
 
-    it('should tokenize identifiers with spaces after dots', function() {
-      var tokens = lex('foo. bar');
-      expect(tokens[0].text).toEqual('foo');
-      expect(tokens[1].text).toEqual('.');
-      expect(tokens[2].text).toEqual('bar');
+    it('should tokenize identifiers with spaces around dots the same as without spaces', function() {
+      function getText(t) { return t.text; }
+      var spaces = lex('foo. bar . baz').map(getText);
+      var noSpaces = lex('foo.bar.baz').map(getText);
+
+      expect(spaces).toEqual(noSpaces);
     });
 
     it('should tokenize undefined', function() {
@@ -85,7 +109,6 @@ describe('parser', function() {
       var i = 0;
       expect(tokens[i].index).toEqual(0);
       expect(tokens[i].text).toEqual('undefined');
-      expect(undefined).toEqual(tokens[i].fn());
     });
 
     it('should tokenize quoted string', function() {
@@ -93,23 +116,23 @@ describe('parser', function() {
       var tokens = lex(str);
 
       expect(tokens[1].index).toEqual(1);
-      expect(tokens[1].string).toEqual("'");
+      expect(tokens[1].value).toEqual("'");
 
       expect(tokens[3].index).toEqual(7);
-      expect(tokens[3].string).toEqual('"');
+      expect(tokens[3].value).toEqual('"');
     });
 
     it('should tokenize escaped quoted string', function() {
       var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
       var tokens = lex(str);
 
-      expect(tokens[0].string).toEqual('"\n\f\r\t\v\u00A0');
+      expect(tokens[0].value).toEqual('"\n\f\r\t\v\u00A0');
     });
 
     it('should tokenize unicode', function() {
       var tokens = lex('"\\u00A0"');
       expect(tokens.length).toEqual(1);
-      expect(tokens[0].string).toEqual('\u00a0');
+      expect(tokens[0].value).toEqual('\u00a0');
     });
 
     it('should ignore whitespace', function() {
@@ -155,12 +178,12 @@ describe('parser', function() {
     it('should tokenize method invocation', function() {
       var tokens = lex("a.b.c (d) - e.f()");
       expect(tokens.map(function(t) { return t.text;})).
-          toEqual(['a.b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
+          toEqual(['a', '.', 'b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
     });
 
     it('should tokenize number', function() {
       var tokens = lex("0.5");
-      expect(tokens[0].text).toEqual(0.5);
+      expect(tokens[0].value).toEqual(0.5);
     });
 
     it('should tokenize negative number', inject(function($rootScope) {
@@ -173,11 +196,11 @@ describe('parser', function() {
 
     it('should tokenize number with exponent', inject(function($rootScope) {
       var tokens = lex("0.5E-10");
-      expect(tokens[0].text).toEqual(0.5E-10);
+      expect(tokens[0].value).toEqual(0.5E-10);
       expect($rootScope.$eval("0.5E-10")).toEqual(0.5E-10);
 
       tokens = lex("0.5E+10");
-      expect(tokens[0].text).toEqual(0.5E+10);
+      expect(tokens[0].value).toEqual(0.5E+10);
     }));
 
     it('should throws exception for invalid exponent', function() {
@@ -192,7 +215,7 @@ describe('parser', function() {
 
     it('should tokenize number starting with a dot', function() {
       var tokens = lex(".5");
-      expect(tokens[0].text).toEqual(0.5);
+      expect(tokens[0].value).toEqual(0.5);
     });
 
     it('should throw error on invalid unicode', function() {
@@ -359,18 +382,26 @@ describe('parser', function() {
         expect(scope.$eval("a    . \nb", scope)).toEqual(4);
       });
 
+      it('should handle white-spaces around dots in method invocations', function() {
+        scope.a = {b: function() { return this.c; }, c: 4};
+        expect(scope.$eval("a . b ()", scope)).toEqual(4);
+        expect(scope.$eval("a. b ()", scope)).toEqual(4);
+        expect(scope.$eval("a .b ()", scope)).toEqual(4);
+        expect(scope.$eval("a  \n  . \nb   \n ()", scope)).toEqual(4);
+      });
+
       it('should throw syntax error exception for identifiers ending with a dot', function() {
         scope.a = {b: 4};
 
         expect(function() {
           scope.$eval("a.", scope);
-        }).toThrowMinErr('$parse', 'syntax',
-          "Token 'null' is an unexpected token at column 2 of the expression [a.] starting at [.].");
+        }).toThrowMinErr('$parse', 'ueoe',
+          "Unexpected end of expression: a.");
 
         expect(function() {
           scope.$eval("a .", scope);
-        }).toThrowMinErr('$parse', 'syntax',
-          "Token 'null' is an unexpected token at column 3 of the expression [a .] starting at [.].");
+        }).toThrowMinErr('$parse', 'ueoe',
+          "Unexpected end of expression: a .");
       });
 
       it('should resolve deeply nested paths (important for CSP mode)', function() {
@@ -506,13 +537,32 @@ describe('parser', function() {
       });
 
       it('should evaluate object', function() {
-        expect(toJson(scope.$eval("{}"))).toEqual("{}");
-        expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
-        expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
-        expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
-        expect(toJson(scope.$eval("{a:'b',}"))).toEqual('{"a":"b"}');
-        expect(toJson(scope.$eval("{'a':'b',}"))).toEqual('{"a":"b"}');
-        expect(toJson(scope.$eval("{\"a\":'b',}"))).toEqual('{"a":"b"}');
+        expect(scope.$eval("{}")).toEqual({});
+        expect(scope.$eval("{a:'b'}")).toEqual({a:"b"});
+        expect(scope.$eval("{'a':'b'}")).toEqual({a:"b"});
+        expect(scope.$eval("{\"a\":'b'}")).toEqual({a:"b"});
+        expect(scope.$eval("{a:'b',}")).toEqual({a:"b"});
+        expect(scope.$eval("{'a':'b',}")).toEqual({a:"b"});
+        expect(scope.$eval("{\"a\":'b',}")).toEqual({a:"b"});
+        expect(scope.$eval("{'0':1}")).toEqual({0:1});
+        expect(scope.$eval("{0:1}")).toEqual({0:1});
+        expect(scope.$eval("{1:1}")).toEqual({1:1});
+        expect(scope.$eval("{null:1}")).toEqual({null:1});
+        expect(scope.$eval("{'null':1}")).toEqual({null:1});
+        expect(scope.$eval("{false:1}")).toEqual({false:1});
+        expect(scope.$eval("{'false':1}")).toEqual({false:1});
+        expect(scope.$eval("{'':1,}")).toEqual({"":1});
+      });
+
+      it('should throw syntax error exception for non constant/identifier JSON keys', function() {
+        expect(function() { scope.$eval("{[:0}"); }).toThrowMinErr("$parse", "syntax",
+          "Syntax Error: Token '[' invalid key at column 2 of the expression [{[:0}] starting at [[:0}]");
+        expect(function() { scope.$eval("{{:0}"); }).toThrowMinErr("$parse", "syntax",
+          "Syntax Error: Token '{' invalid key at column 2 of the expression [{{:0}] starting at [{:0}]");
+        expect(function() { scope.$eval("{?:0}"); }).toThrowMinErr("$parse", "syntax",
+          "Syntax Error: Token '?' invalid key at column 2 of the expression [{?:0}] starting at [?:0}]");
+        expect(function() { scope.$eval("{):0}"); }).toThrowMinErr("$parse", "syntax",
+          "Syntax Error: Token ')' invalid key at column 2 of the expression [{):0}] starting at [):0}]");
       });
 
       it('should evaluate object access', function() {
@@ -520,8 +570,8 @@ describe('parser', function() {
       });
 
       it('should evaluate JSON', function() {
-        expect(toJson(scope.$eval("[{}]"))).toEqual("[{}]");
-        expect(toJson(scope.$eval("[{a:[]}, {b:1}]"))).toEqual('[{"a":[]},{"b":1}]');
+        expect(scope.$eval("[{}]")).toEqual([{}]);
+        expect(scope.$eval("[{a:[]}, {b:1}]")).toEqual([{a:[]}, {b:1}]);
       });
 
       it('should evaluate multiple statements', function() {
