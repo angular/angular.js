@@ -152,44 +152,31 @@ Lexer.prototype = {
   lex: function(text) {
     this.text = text;
     this.index = 0;
-    this.ch = undefined;
     this.tokens = [];
 
     while (this.index < this.text.length) {
-      this.ch = this.text.charAt(this.index);
-      if (this.is('"\'')) {
-        this.readString(this.ch);
-      } else if (this.isNumber(this.ch) || this.is('.') && this.isNumber(this.peek())) {
+      var ch = this.text.charAt(this.index);
+      if (ch === '"' || ch === "'") {
+        this.readString(ch);
+      } else if (this.isNumber(ch) || ch === '.' && this.isNumber(this.peek())) {
         this.readNumber();
-      } else if (this.isIdent(this.ch)) {
+      } else if (this.isIdent(ch)) {
         this.readIdent();
-      } else if (this.is('(){}[].,;:?')) {
-        this.tokens.push({
-          index: this.index,
-          text: this.ch
-        });
+      } else if (this.is(ch, '(){}[].,;:?')) {
+        this.tokens.push({index: this.index, text: ch});
         this.index++;
-      } else if (this.isWhitespace(this.ch)) {
+      } else if (this.isWhitespace(ch)) {
         this.index++;
       } else {
-        var ch2 = this.ch + this.peek();
+        var ch2 = ch + this.peek();
         var ch3 = ch2 + this.peek(2);
-        var fn = OPERATORS[this.ch];
-        var fn2 = OPERATORS[ch2];
-        var fn3 = OPERATORS[ch3];
-        if (fn3) {
-          this.tokens.push({index: this.index, text: ch3, fn: fn3});
-          this.index += 3;
-        } else if (fn2) {
-          this.tokens.push({index: this.index, text: ch2, fn: fn2});
-          this.index += 2;
-        } else if (fn) {
-          this.tokens.push({
-            index: this.index,
-            text: this.ch,
-            fn: fn
-          });
-          this.index += 1;
+        var op1 = OPERATORS[ch];
+        var op2 = OPERATORS[ch2];
+        var op3 = OPERATORS[ch3];
+        if (op1 || op2 || op3) {
+          var token = op3 ? ch3 : (op2 ? ch2 : ch);
+          this.tokens.push({index: this.index, text: token, operator: true});
+          this.index += token.length;
         } else {
           this.throwError('Unexpected next character ', this.index, this.index + 1);
         }
@@ -198,8 +185,8 @@ Lexer.prototype = {
     return this.tokens;
   },
 
-  is: function(chars) {
-    return chars.indexOf(this.ch) !== -1;
+  is: function(ch, chars) {
+    return chars.indexOf(ch) !== -1;
   },
 
   peek: function(i) {
@@ -208,7 +195,7 @@ Lexer.prototype = {
   },
 
   isNumber: function(ch) {
-    return ('0' <= ch && ch <= '9');
+    return ('0' <= ch && ch <= '9') && typeof ch === "string";
   },
 
   isWhitespace: function(ch) {
@@ -261,79 +248,28 @@ Lexer.prototype = {
       }
       this.index++;
     }
-    number = 1 * number;
     this.tokens.push({
       index: start,
       text: number,
       constant: true,
-      fn: function() { return number; }
+      value: Number(number)
     });
   },
 
   readIdent: function() {
-    var expression = this.text;
-
-    var ident = '';
     var start = this.index;
-
-    var lastDot, peekIndex, methodName, ch;
-
     while (this.index < this.text.length) {
-      ch = this.text.charAt(this.index);
-      if (ch === '.' || this.isIdent(ch) || this.isNumber(ch)) {
-        if (ch === '.') lastDot = this.index;
-        ident += ch;
-      } else {
+      var ch = this.text.charAt(this.index);
+      if (!(this.isIdent(ch) || this.isNumber(ch))) {
         break;
       }
       this.index++;
     }
-
-    //check if the identifier ends with . and if so move back one char
-    if (lastDot && ident[ident.length - 1] === '.') {
-      this.index--;
-      ident = ident.slice(0, -1);
-      lastDot = ident.lastIndexOf('.');
-      if (lastDot === -1) {
-        lastDot = undefined;
-      }
-    }
-
-    //check if this is not a method invocation and if it is back out to last dot
-    if (lastDot) {
-      peekIndex = this.index;
-      while (peekIndex < this.text.length) {
-        ch = this.text.charAt(peekIndex);
-        if (ch === '(') {
-          methodName = ident.substr(lastDot - start + 1);
-          ident = ident.substr(0, lastDot - start);
-          this.index = peekIndex;
-          break;
-        }
-        if (this.isWhitespace(ch)) {
-          peekIndex++;
-        } else {
-          break;
-        }
-      }
-    }
-
     this.tokens.push({
       index: start,
-      text: ident,
-      fn: CONSTANTS[ident] || getterFn(ident, this.options, expression)
+      text: this.text.slice(start, this.index),
+      identifier: true
     });
-
-    if (methodName) {
-      this.tokens.push({
-        index: lastDot,
-        text: '.'
-      });
-      this.tokens.push({
-        index: lastDot + 1,
-        text: methodName
-      });
-    }
   },
 
   readString: function(quote) {
@@ -364,9 +300,8 @@ Lexer.prototype = {
         this.tokens.push({
           index: start,
           text: rawString,
-          string: string,
           constant: true,
-          fn: function() { return string; }
+          value: string
         });
         return;
       } else {
@@ -427,16 +362,12 @@ Parser.prototype = {
       primary = this.arrayDeclaration();
     } else if (this.expect('{')) {
       primary = this.object();
+    } else if (this.peek().identifier) {
+      primary = this.identifier();
+    } else if (this.peek().constant) {
+      primary = this.constant();
     } else {
-      var token = this.expect();
-      primary = token.fn;
-      if (!primary) {
-        this.throwError('not a primary expression', token);
-      }
-      if (token.constant) {
-        primary.constant = true;
-        primary.literal = true;
-      }
+      this.throwError('not a primary expression', this.peek());
     }
 
     var next, context;
@@ -470,8 +401,11 @@ Parser.prototype = {
   },
 
   peek: function(e1, e2, e3, e4) {
-    if (this.tokens.length > 0) {
-      var token = this.tokens[0];
+    return this.peekAhead(0, e1, e2, e3, e4);
+  },
+  peekAhead: function(i, e1, e2, e3, e4) {
+    if (this.tokens.length > i) {
+      var token = this.tokens[i];
       var t = token.text;
       if (t === e1 || t === e2 || t === e3 || t === e4 ||
           (!e1 && !e2 && !e3 && !e4)) {
@@ -491,12 +425,19 @@ Parser.prototype = {
   },
 
   consume: function(e1) {
-    if (!this.expect(e1)) {
+    if (this.tokens.length === 0) {
+      throw $parseMinErr('ueoe', 'Unexpected end of expression: {0}', this.text);
+    }
+
+    var token = this.expect(e1);
+    if (!token) {
       this.throwError('is unexpected, expecting [' + e1 + ']', this.peek());
     }
+    return token;
   },
 
-  unaryFn: function(fn, right) {
+  unaryFn: function(op, right) {
+    var fn = OPERATORS[op];
     return extend(function $parseUnaryFn(self, locals) {
       return fn(self, locals, right);
     }, {
@@ -505,12 +446,35 @@ Parser.prototype = {
     });
   },
 
-  binaryFn: function(left, fn, right, isBranching) {
+  binaryFn: function(left, op, right, isBranching) {
+    var fn = OPERATORS[op];
     return extend(function $parseBinaryFn(self, locals) {
       return fn(self, locals, left, right);
     }, {
       constant: left.constant && right.constant,
       inputs: !isBranching && [left, right]
+    });
+  },
+
+  identifier: function() {
+    var id = this.consume().text;
+
+    //Continue reading each `.identifier` unless it is a method invocation
+    while (this.peek('.') && this.peekAhead(1).identifier && !this.peekAhead(2, '(')) {
+      id += this.consume().text + this.consume().text;
+    }
+
+    return CONSTANTS[id] || getterFn(id, this.options, this.text);
+  },
+
+  constant: function() {
+    var value = this.consume().value;
+
+    return extend(function $parseConstant() {
+      return value;
+    }, {
+      constant: true,
+      literal: true
     });
   },
 
@@ -545,8 +509,7 @@ Parser.prototype = {
   },
 
   filter: function(inputFn) {
-    var token = this.expect();
-    var fn = this.$filter(token.text);
+    var fn = this.$filter(this.consume().text);
     var argsFn;
     var args;
 
@@ -609,7 +572,7 @@ Parser.prototype = {
     var token;
     if ((token = this.expect('?'))) {
       middle = this.assignment();
-      if ((token = this.expect(':'))) {
+      if (this.consume(':')) {
         var right = this.assignment();
 
         return extend(function $parseTernary(self, locals) {
@@ -617,9 +580,6 @@ Parser.prototype = {
         }, {
           constant: left.constant && middle.constant && right.constant
         });
-
-      } else {
-        this.throwError('expected :', token);
       }
     }
 
@@ -630,7 +590,7 @@ Parser.prototype = {
     var left = this.logicalAND();
     var token;
     while ((token = this.expect('||'))) {
-      left = this.binaryFn(left, token.fn, this.logicalAND(), true);
+      left = this.binaryFn(left, token.text, this.logicalAND(), true);
     }
     return left;
   },
@@ -639,7 +599,7 @@ Parser.prototype = {
     var left = this.equality();
     var token;
     if ((token = this.expect('&&'))) {
-      left = this.binaryFn(left, token.fn, this.logicalAND(), true);
+      left = this.binaryFn(left, token.text, this.logicalAND(), true);
     }
     return left;
   },
@@ -648,7 +608,7 @@ Parser.prototype = {
     var left = this.relational();
     var token;
     if ((token = this.expect('==','!=','===','!=='))) {
-      left = this.binaryFn(left, token.fn, this.equality());
+      left = this.binaryFn(left, token.text, this.equality());
     }
     return left;
   },
@@ -657,7 +617,7 @@ Parser.prototype = {
     var left = this.additive();
     var token;
     if ((token = this.expect('<', '>', '<=', '>='))) {
-      left = this.binaryFn(left, token.fn, this.relational());
+      left = this.binaryFn(left, token.text, this.relational());
     }
     return left;
   },
@@ -666,7 +626,7 @@ Parser.prototype = {
     var left = this.multiplicative();
     var token;
     while ((token = this.expect('+','-'))) {
-      left = this.binaryFn(left, token.fn, this.multiplicative());
+      left = this.binaryFn(left, token.text, this.multiplicative());
     }
     return left;
   },
@@ -675,7 +635,7 @@ Parser.prototype = {
     var left = this.unary();
     var token;
     while ((token = this.expect('*','/','%'))) {
-      left = this.binaryFn(left, token.fn, this.unary());
+      left = this.binaryFn(left, token.text, this.unary());
     }
     return left;
   },
@@ -685,9 +645,9 @@ Parser.prototype = {
     if (this.expect('+')) {
       return this.primary();
     } else if ((token = this.expect('-'))) {
-      return this.binaryFn(Parser.ZERO, token.fn, this.unary());
+      return this.binaryFn(Parser.ZERO, token.text, this.unary());
     } else if ((token = this.expect('!'))) {
-      return this.unaryFn(token.fn, this.unary());
+      return this.unaryFn(token.text, this.unary());
     } else {
       return this.primary();
     }
@@ -695,7 +655,7 @@ Parser.prototype = {
 
   fieldAccess: function(object) {
     var expression = this.text;
-    var field = this.expect().text;
+    var field = this.consume().text;
     var getter = getterFn(field, this.options, expression);
 
     return extend(function $parseFieldAccess(scope, locals, self) {
@@ -780,8 +740,7 @@ Parser.prototype = {
           // Support trailing commas per ES5.1.
           break;
         }
-        var elementFn = this.expression();
-        elementFns.push(elementFn);
+        elementFns.push(this.expression());
       } while (this.expect(','));
     }
     this.consume(']');
@@ -807,11 +766,16 @@ Parser.prototype = {
           // Support trailing commas per ES5.1.
           break;
         }
-        var token = this.expect();
-        keys.push(token.string || token.text);
+        var token = this.consume();
+        if (token.constant) {
+          keys.push(token.value);
+        } else if (token.identifier) {
+          keys.push(token.text);
+        } else {
+          this.throwError("invalid key", token);
+        }
         this.consume(':');
-        var value = this.expression();
-        valueFns.push(value);
+        valueFns.push(this.expression());
       } while (this.expect(','));
     }
     this.consume('}');
