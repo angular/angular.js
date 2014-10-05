@@ -483,6 +483,9 @@ function qFactory(nextTick, exceptionHandler) {
    * the promise comes from a source that can't be trusted.
    *
    * @param {*} value Value or a promise
+   * @param {function=} callback Fulfilled promise callback, called when promise is fulfilled
+   * @param {function=} errback Rejection callback, called when promise is rejected
+   * @param {function=} progressback Notify callback, called when notifications are received
    * @returns {Promise} Returns a promise of the passed value or promise
    */
 
