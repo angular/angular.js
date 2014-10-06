@@ -1185,7 +1185,8 @@ describe('jqLite', function() {
         if (window.jQuery) return;
         var browserMoveTrigger = function(from, to){
           var fireEvent = function(type, element, relatedTarget){
-            var evnt, msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+            var evnt;
+
             if (msie < 9){
               evnt = document.createEventObject();
               evnt.srcElement = element;
