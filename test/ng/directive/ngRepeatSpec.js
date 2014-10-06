@@ -925,25 +925,21 @@ describe('ngRepeat', function() {
     }));
 
 
-    if (!msie || msie > 8) {
-      // only IE>8 supports element directives
-
-      it('should work when placed on a root element of element directive with ASYNC replaced template',
-          inject(function($templateCache, $compile, $rootScope) {
-        $compileProvider.directive('replaceMeWithRepeater', function() {
-          return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: 'replace-me-with-repeater.html'
-          };
-        });
-        $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
-        element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
-        expect(element.text()).toBe('');
-        $rootScope.$apply();
-        expect(element.text()).toBe('123');
-      }));
-    }
+    it('should work when placed on a root element of element directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          templateUrl: 'replace-me-with-repeater.html'
+        };
+      });
+      $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
 
     it('should work when combined with an ASYNC template that loads after the first digest', inject(function($httpBackend, $compile, $rootScope) {
       $compileProvider.directive('test', function() {
