@@ -22,7 +22,7 @@ So it's definitely not a plugin or some other native browser extension.
 
 ### Is AngularJS a templating system?
 
-At the highest level, Angular does look like a just another templating system. But there is one
+At the highest level, Angular does look like just another templating system. But there is one
 important reason why the Angular templating system is different, that makes it very good fit for
 application development: bidirectional data binding. The template is compiled in the browser and
 the compilation step produces a live view. This means you, the developers, don't need to write
@@ -39,7 +39,7 @@ for server-side communication.
 
 AngularJS was designed to be compatible with other security measures like Content Security Policy
 (CSP), HTTPS (SSL/TLS) and server-side authentication and authorization that greatly reduce the
-possible attack vectors and we highly recommended their use.
+possible attack vectors and we highly recommend their use.
 
 
 ### Can I download the source, build, and host the AngularJS environment locally?
