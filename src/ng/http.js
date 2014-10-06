@@ -995,7 +995,7 @@ function $HttpProvider() {
         }
 
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
-            config.withCredentials, config.responseType);
+            config.withCredentials, config.responseType, notify);
       }
 
       return promise;
@@ -1027,6 +1027,14 @@ function $HttpProvider() {
           resolveHttpPromise();
           if (!$rootScope.$$phase) $rootScope.$apply();
         }
+      }
+
+
+      /**
+       * Notify callback registered to $httpBackend()
+       */
+      function notify(xhr) {
+        deferred.notify(xhr);
       }
 
 
