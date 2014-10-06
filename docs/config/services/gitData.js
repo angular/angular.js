@@ -1,6 +1,5 @@
 "use strict";
 
-var gruntUtils = require('../../../lib/grunt/utils');
 var versionInfo = require('../../../lib/versions/version-info');
 
 /**
