@@ -169,6 +169,16 @@ describe('$location', function() {
     });
 
 
+    it('search() should copy object', function() {
+      var obj = {one: 1, two: true, three: null};
+      url.search(obj);
+      expect(obj).toEqual({one: 1, two: true, three: null});
+      obj.one = 'changed';
+      expect(url.search()).toEqual({one: 1, two: true});
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
+    });
+
+
     it('search() should change single parameter', function() {
       url.search({id: 'old', preserved: true});
       url.search('id', 'new');
