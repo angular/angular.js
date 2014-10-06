@@ -481,7 +481,7 @@ LocationHashbangInHtml5Url.prototype =
             if (value == null) delete search[key];
           });
 
-          this.$$search = search;
+          this.$$search = extend({}, search);
         } else {
           throw $locationMinErr('isrcharg',
               'The first argument of the `$location#search()` call must be a string or an object.');
