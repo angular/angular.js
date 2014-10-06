@@ -575,7 +575,10 @@ function $HttpProvider() {
      *      XHR object. See [requests with credentials](https://developer.mozilla.org/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials)
      *      for more information.
      *    - **responseType** - `{string}` - see
-     *      [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
+     *      [requestType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#responseType).
+     *    - **overrideMimeType** - `{string}` - force the response to be treated as the given MIME
+     *      type by calling [overrideMimeType()](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#overrideMimeType%28%29)
+     *      on the XHR object.
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -711,6 +714,10 @@ function $HttpProvider() {
 
         if (isUndefined(config.withCredentials) && !isUndefined(defaults.withCredentials)) {
           config.withCredentials = defaults.withCredentials;
+        }
+
+        if (isUndefined(config.overrideMimeType) && !isUndefined(defaults.overrideMimeType)) {
+          config.overrideMimeType = defaults.overrideMimeType;
         }
 
         // send request
@@ -995,7 +1002,7 @@ function $HttpProvider() {
         }
 
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
-            config.withCredentials, config.responseType);
+            config.withCredentials, config.responseType, config.overrideMimeType);
       }
 
       return promise;

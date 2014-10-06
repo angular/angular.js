@@ -1526,13 +1526,14 @@ describe('$http', function() {
   });
 
 
-  it('should pass timeout, withCredentials and responseType', function() {
+  it('should pass timeout, withCredentials, responseType, and overrideMimeType', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType, overrideMimeType) {
       expect(timeout).toBe(12345);
       expect(withCredentials).toBe(true);
       expect(responseType).toBe('json');
+      expect(overrideMimeType).toBe('text/plain;charset=x-user-defined');
     });
 
     module(function($provide) {
@@ -1545,7 +1546,8 @@ describe('$http', function() {
         url: 'some.html',
         timeout: 12345,
         withCredentials: true,
-        responseType: 'json'
+        responseType: 'json',
+        overrideMimeType: 'text/plain;charset=x-user-defined',
       });
       $rootScope.$digest();
       expect($httpBackend).toHaveBeenCalledOnce();
@@ -1555,11 +1557,12 @@ describe('$http', function() {
   });
 
 
-  it('should use withCredentials from default', function() {
+  it('should use withCredentials and overrideMimeType from default', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType, overrideMimeType) {
       expect(withCredentials).toBe(true);
+      expect(overrideMimeType).toBe('text/plain;charset=x-user-defined');
     });
 
     module(function($provide) {
@@ -1568,6 +1571,7 @@ describe('$http', function() {
 
     inject(function($http, $rootScope) {
       $http.defaults.withCredentials = true;
+      $http.defaults.overrideMimeType = 'text/plain;charset=x-user-defined';
       $http({
         method: 'GET',
         url: 'some.html',

@@ -1672,6 +1672,10 @@ function MockXhr() {
   };
 
   this.abort = angular.noop;
+
+  this.overrideMimeType = function(type) {
+    this.$$overrideMimeType = type;
+  };
 }
 
 
