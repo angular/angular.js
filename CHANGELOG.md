@@ -1,3 +1,125 @@
+<a name="1.3.0-rc.5"></a>
+# 1.3.0-rc.5 impossible-choreography (2014-10-08)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure class-based animations only consider the most recent DOM operations
+  ([c93924ed](https://github.com/angular/angular.js/commit/c93924ed275a62683b85c82f1c6c2e19d5662c9a),
+   [#8946](https://github.com/angular/angular.js/issues/8946), [#9458](https://github.com/angular/angular.js/issues/9458))
+  - abort class-based animations if the element is removed during digest
+  ([613d0a32](https://github.com/angular/angular.js/commit/613d0a3212de8dc01c817ca8526e09c57978a621),
+   [#8796](https://github.com/angular/angular.js/issues/8796))
+  - clear the GCS cache even when no animation is detected
+  ([cb85cbce](https://github.com/angular/angular.js/commit/cb85cbcec1c876db6062a0dc0bad80f842782194),
+   [#8813](https://github.com/angular/angular.js/issues/8813))
+- **$browser:**
+  - Cache `location.href` only during page reload phase
+  ([8ee1ba4b](https://github.com/angular/angular.js/commit/8ee1ba4b94d6fccff06d8781f7ed256c6ce664ff),
+   [#9235](https://github.com/angular/angular.js/issues/9235), [#9455](https://github.com/angular/angular.js/issues/9455))
+  - don’t use the history API when only the hash changes
+  ([7cb01a80](https://github.com/angular/angular.js/commit/7cb01a80beec669d8f6aae1dc211d2f0b7d4eac4),
+   [#9423](https://github.com/angular/angular.js/issues/9423), [#9424](https://github.com/angular/angular.js/issues/9424),
+   [858360b6](https://github.com/angular/angular.js/commit/858360b680a2bb5c19429c1be1c9506700cda476),
+   [0656484d](https://github.com/angular/angular.js/commit/0656484d3e709c5162570b0dd6473b0b6140e5b2),
+   [#9143](https://github.com/angular/angular.js/issues/9143), [#9406](https://github.com/angular/angular.js/issues/9406))
+  - handle async href on url change in <=IE9
+  ([404b95fe](https://github.com/angular/angular.js/commit/404b95fe30a1bcd1313adafbd0018578d5b21d3d),
+   [#9235](https://github.com/angular/angular.js/issues/9235))
+- **$compile:**
+  - handle the removal of an interpolated attribute
+  ([a75546af](https://github.com/angular/angular.js/commit/a75546afdf41adab786eda30c258190cd4c5f1ae),
+   [#9236](https://github.com/angular/angular.js/issues/9236), [#9240](https://github.com/angular/angular.js/issues/9240))
+  - remove comment nodes from templates before asserting single root node
+  ([feba0174](https://github.com/angular/angular.js/commit/feba0174db0f8f929273beb8b90691734a9292e2),
+   [#9212](https://github.com/angular/angular.js/issues/9212), [#9215](https://github.com/angular/angular.js/issues/9215))
+  - use the correct namespace for transcluded svg elements
+  ([f3539f3c](https://github.com/angular/angular.js/commit/f3539f3cb5d9477f50f065c6a0ac7d6ca0a31092),
+   [#9344](https://github.com/angular/angular.js/issues/9344), [#9415](https://github.com/angular/angular.js/issues/9415))
+- **$http:** honor application/json response header and parse json primitives
+  ([7b6c1d08](https://github.com/angular/angular.js/commit/7b6c1d08aceba6704a40302f373400aed9ed0e0b),
+   [#2973](https://github.com/angular/angular.js/issues/2973))
+- **$location:** allow `0` in `path()` and `hash()`
+  ([b8c5b871](https://github.com/angular/angular.js/commit/b8c5b87119a06edb8e8d1cefad81ee8d1f64f070))
+- **form:** fix submit prevention
+  ([86c7d122](https://github.com/angular/angular.js/commit/86c7d1221c706993044583d51a0c61423fee5bcf),
+   [#3370](https://github.com/angular/angular.js/issues/3370), [#3776](https://github.com/angular/angular.js/issues/3776))
+- **ngAnimate:** defer DOM operations for changing classes to postDigest
+  ([667183a8](https://github.com/angular/angular.js/commit/667183a8c79d6ffce571a2be78c05dc76503b222),
+   [#8234](https://github.com/angular/angular.js/issues/8234), [#9263](https://github.com/angular/angular.js/issues/9263))
+- **orderBy:** sort by identity if no predicate is given
+  ([607f016a](https://github.com/angular/angular.js/commit/607f016a0ba705ce40df0164360fb96a9d7f5912),
+   [#5847](https://github.com/angular/angular.js/issues/5847), [#4579](https://github.com/angular/angular.js/issues/4579), [#9403](https://github.com/angular/angular.js/issues/9403))
+- **select:**
+  - throw for `selectAs` and `trackBy`
+  ([30996f82](https://github.com/angular/angular.js/commit/30996f82afa03cd11771b3267e9367ecf9af6e6d))
+  - use `$viewValue` instead of `$modelValue`
+  ([f7174169](https://github.com/angular/angular.js/commit/f7174169f4f710d605f6a67f39f90a67a07d4cab),
+   [#8929](https://github.com/angular/angular.js/issues/8929))
+
+
+## Features
+
+- **$location:**
+  - add support for History API state handling ([6fd36dee](https://github.com/angular/angular.js/commit/6fd36deed954b338e48390862971d465148dc1f2),
+   [#9027](https://github.com/angular/angular.js/issues/9027))
+  - allow automatic rewriting of links to be disabled
+  ([b3e09be5](https://github.com/angular/angular.js/commit/b3e09be58960b913fee3869bf36e7de3305bbe00),
+   [#5487](https://github.com/angular/angular.js/issues/5487))
+
+
+## Performance Improvements
+
+- **$animate:**
+  - access DOM less in resolveElementClasses
+  ([22358cf9](https://github.com/angular/angular.js/commit/22358cf9c703d67f3cf9eb4899404b09578a5fad))
+  - don't join classes before it's necessary in resolveElementClasses
+  ([003c44ec](https://github.com/angular/angular.js/commit/003c44eceee54c3398b0d2971fd97a512d7f7cec))
+- **ngBind:** set textContent rather than using element.text()
+  ([074a146d](https://github.com/angular/angular.js/commit/074a146d8b1ee7c93bf6d5892448a5c2a0143a28),
+   [#9369](https://github.com/angular/angular.js/issues/9369), [#9396](https://github.com/angular/angular.js/issues/9396))
+
+
+## Breaking Changes
+
+- **$compile:** due to [feba0174](https://github.com/angular/angular.js/commit/feba0174db0f8f929273beb8b90691734a9292e2),
+
+
+If a template contains directives within comment nodes, and there is more than a single node in the
+template, those comment nodes are removed. The impact of this breaking change is expected to be
+quite low.
+
+Closes #9212
+Closes #9215
+
+- **ngAnimate:** due to [667183a8](https://github.com/angular/angular.js/commit/667183a8c79d6ffce571a2be78c05dc76503b222),
+
+
+The `$animate` CSS class API will always defer changes until the end of the next digest. This allows ngAnimate
+to coalesce class changes which occur over a short period of time into 1 or 2 DOM writes, rather than
+many. This prevents jank in browsers such as IE, and is generally a good thing.
+
+If you find that your classes are not being immediately applied, be sure to invoke `$digest()`.
+
+Closes #8234
+Closes #9263
+
+- **$select:** due to [30996f8](https://github.com/angular/angular.js/commit/30996f82afa03cd11771b3267e9367ecf9af6e6d)
+
+`ngOptions` will now throw an error when the comprehension expressions contains both a `select as`
+and `track by` expression.
+
+These expressions are fundamentally incompatible because it is not possible to reliably and
+consistently determine the parent object of a model, since `select as` can assign any child of a
+`value` as the model value.
+
+Prior to refactorings in this release, neither of these expressions worked correctly independently,
+and did not work at all when combined.
+
+See #6564
+
+
 <a name="1.3.0-rc.4"></a>
 # 1.3.0-rc.4 unicorn-hydrafication (2014-10-01)
 
