@@ -101,7 +101,6 @@ function annotate(fn) {
 /**
  * @ngdoc service
  * @name $injector
- * @kind function
  *
  * @description
  *
