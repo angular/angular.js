@@ -103,7 +103,7 @@ module.exports = new Package('angularjs', [
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['indexPage'],
-    getPath: function() {},
+    pathTemplate: '.',
     outputPathTemplate: '${id}.html'
   });
 
@@ -129,6 +129,12 @@ module.exports = new Package('angularjs', [
     getId: function(doc) { return 'error:' + doc.name; },
     getAliases: function(doc) { return [doc.id]; }
   });
+})
+
+.config(function(checkAnchorLinksProcessor) {
+  checkAnchorLinksProcessor.base = '/';
+  // We are only interested in docs that have an area (i.e. they are pages)
+  checkAnchorLinksProcessor.checkDoc = function(doc) { return doc.area; };
 })
 
 
