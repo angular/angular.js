@@ -258,8 +258,6 @@ describe('$anchorScroll', function() {
       };
     }
 
-    beforeEach(inject(setupBodyForOffsetTesting()));
-
     afterEach(inject(function($document) {
       dealoc($document);
     }));
@@ -269,18 +267,17 @@ describe('$anchorScroll', function() {
 
       var yOffsetNumber = 50;
 
-      beforeEach(inject(
-        setupBodyForOffsetTesting(),
-        setYOffset(yOffsetNumber)));
-
-
       it('should scroll with vertical offset', inject(
+        setupBodyForOffsetTesting(),
+        setYOffset(yOffsetNumber),
         addElements('id=some'),
         changeHashTo('some'),
         expectScrollingWithOffset('id=some', yOffsetNumber)));
 
 
       it('should use the correct vertical offset when changing `yOffset` at runtime', inject(
+        setupBodyForOffsetTesting(),
+        setYOffset(yOffsetNumber),
         addElements('id=some'),
         changeHashTo('some'),
         setYOffset(yOffsetNumber - 10),
@@ -293,6 +290,8 @@ describe('$anchorScroll', function() {
         var targetAdjustedOffset = 25;
 
         inject(
+          setupBodyForOffsetTesting(),
+          setYOffset(yOffsetNumber),
           addElements('id=some1', 'id=some2'),
           function($window) {
             // Make sure the elements are just a little shorter than the viewport height
@@ -334,6 +333,7 @@ describe('$anchorScroll', function() {
         }
 
         inject(
+          setupBodyForOffsetTesting(),
           addElements('id=id1', 'name=name2'),
           setYOffset(yOffsetFunction),
           changeHashTo('id1'),
@@ -371,6 +371,7 @@ describe('$anchorScroll', function() {
 
 
       it('should scroll with vertical offset when `top === 0`', inject(
+        setupBodyForOffsetTesting(),
         createAndSetYOffsetElement({
           background: 'DarkOrchid',
           height: '50px',
@@ -383,6 +384,7 @@ describe('$anchorScroll', function() {
 
 
       it('should scroll with vertical offset when `top > 0`', inject(
+        setupBodyForOffsetTesting(),
         createAndSetYOffsetElement({
           height: '50px',
           position: 'fixed',
@@ -394,6 +396,7 @@ describe('$anchorScroll', function() {
 
 
       it('should scroll without vertical offset when `position !== fixed`', inject(
+        setupBodyForOffsetTesting(),
         createAndSetYOffsetElement({
           height: '50px',
           position: 'absolute',

@@ -6,7 +6,7 @@
  *
  * @description
  * Use `$anchorScrollProvider` to disable automatic scrolling whenever
- * {@link ng.$location#hash $location.hash()} changes.
+ * {@link ng.$location#hash `$location.hash()`} changes.
  */
 function $AnchorScrollProvider() {
 
@@ -17,12 +17,12 @@ function $AnchorScrollProvider() {
    * @name $anchorScrollProvider#disableAutoScrolling
    *
    * @description
-   * By default, {@link ng.$anchorScroll $anchorScroll()} will automatically will detect changes to
-   * {@link ng.$location#hash $location.hash()} and scroll to the element matching the new hash.<br />
+   * By default, {@link $anchorScroll `$anchorScroll()`} will automatically will detect changes to
+   * {@link $location#hash `$location.hash()`} and scroll to the element matching the new hash.<br />
    * Use this method to disable automatic scrolling.
    *
    * If automatic scrolling is disabled, one must explicitly call
-   * {@link ng.$anchorScroll $anchorScroll()} in order to scroll to the element related to the
+   * {@link $anchorScroll `$anchorScroll()`} in order to scroll to the element related to the
    * current hash.
    */
   this.disableAutoScrolling = function() {
@@ -38,15 +38,15 @@ function $AnchorScrollProvider() {
    * @requires $rootScope
    *
    * @description
-   * When called, it checks the current value of {@link ng.$location#hash $location.hash()} and
+   * When called, it checks the current value of {@link $location#hash `$location.hash()`} and
    * scrolls to the related element, according to the rules specified in the
    * [Html5 spec](http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document).
    *
-   * It also watches the {@link ng.$location#hash $location.hash()} and automatically scrolls to
+   * It also watches the {@link $location#hash `$location.hash()`} and automatically scrolls to
    * match any anchor whenever it changes. This can be disabled by calling
-   * {@link ng.$anchorScrollProvider#disableAutoScrolling $anchorScrollProvider.disableAutoScrolling()}.
+   * {@link $anchorScrollProvider#disableAutoScrolling `$anchorScrollProvider.disableAutoScrolling()` }.
    *
-   * Additionally, you can use its {@link ng.$anchorScroll#yOffset yOffset} property to specify a
+   * Additionally, you can use its {@link $anchorScroll#yOffset `$anchorScroll.yOffset`} property to specify a
    * vertical scroll-offset (either fixed or dynamic).
    *
    * @property {(number|function|jqLite)} yOffset
@@ -225,6 +225,8 @@ function $AnchorScrollProvider() {
           var body = document.body;
           var bodyRect = body.getBoundingClientRect();
           var elemRect = elem.getBoundingClientRect();
+
+
           var necessaryOffset = offset - (elemRect.top - (bodyRect.top + body.scrollTop));
 
           $window.scrollBy(0, -1 * necessaryOffset);
