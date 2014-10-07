@@ -403,7 +403,23 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         ctrl.$render = render;
 
-        scope.$watchCollection(valuesFn, render);
+        if (trackFn) {
+          scope.$watchCollection(function() {
+            var locals = {},
+                values = valuesFn(scope);
+            if (values) {
+              var trackers = new Array(values.length);
+              for (var i = 0, ii = values.length; i < ii; i++) {
+                trackers[i] = trackFn(scope, locals);
+              }
+
+              return trackers;
+            }
+          }, render);
+        } else {
+          scope.$watchCollection(valuesFn, render);
+        }
+
         scope.$watchCollection(function () {
           var locals = {},
               values = valuesFn(scope);
@@ -570,7 +586,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
                 // if it's a null option
                 if (option.id === '' && nullOption) {
-                  // put back the pre-compiled element
+                  // put back the pre-compwailed element
                   element = nullOption;
                 } else {
                   // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but

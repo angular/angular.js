@@ -1130,6 +1130,29 @@ describe('select', function() {
         expect(element.val()).toEqual('?');
         expect(countSelected()).toEqual(1);
       });
+
+      it('should respect trackexpr when working with arrays of objects', function() {
+        var elementCount = 5;
+
+        createSelect({
+          'ng-model':'selected',
+          'ng-options':'v as v.label for v in makeValues() track by v.code'
+        });
+
+        scope.$apply(function() {
+          scope.makeValues = function() {
+            var values = [];
+            for (var i = 0; i < elementCount; i++) {
+              values.push({label: 'Value = ' + i, code: i});
+            }
+
+            return values;
+          };
+          scope.selected = {label: 'Value = 1', code: 1};
+        });
+
+        expect(element.find('option').length).toEqual(elementCount);
+      });
     });
 
 
