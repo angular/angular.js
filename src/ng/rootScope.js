@@ -333,6 +333,54 @@ function $RootScopeProvider(){
            scope.$digest();
            expect(scope.foodCounter).toEqual(1);
 
+
+
+           // Watching for changes on properties of an object with and without objectEquality
+           scope.foodObject = {
+             name: 'cheeseburger'
+           };
+           scope.foodObjectCounter = 0;
+           expect(scope.foodObjectCounter).toEqual(0);
+
+           // Let's first create this watcher without objectEquality to observe the behavior
+           scope.$watch('foodObject', function (newValue, oldValue) {
+             if (newValue !== oldValue) {
+               // Only update the food variable if the value has changed
+               scope.foodObjectCounter = scope.foodObjectCounter + 1;
+             }
+           });
+           // No digest has been run so the counter will be zero
+           expect(scope.foodObjectCounter).toEqual(0);
+
+           // Run the digest cycle, but since there has been no change, the count will still be zero
+           scope.$digest();
+           expect(scope.foodObjectCounter).toEqual(0);
+
+           // Update the property, and run the digest cycle. No change will be noticed by the watcher even though
+           // the property has been changed.
+           scope.foodObject.name = 'noodles';
+           scope.$digest();
+           expect(scope.foodObjectCounter).toEqual(0);
+
+           // Create a watcher with objectEquality to observe the changes of properties on an object
+           scope.foodObject.name = 'cheeseburger';
+           scope.foodEqualityCounter = 0;
+           scope.$watch('foodObject', function (newValue, oldValue) {
+             if (newValue !== oldValue) {
+               scope.foodEqualityCounter = scope.foodEqualityCounter + 1;
+             }
+           }, true); // ObjectEquality to be used
+           // No digest has been run so the counter will be zero
+           expect(scope.foodEqualityCounter).toEqual(0);
+
+           // Run the digest cycle, no expected changes, the count will remain at zero
+           scope.$digest();
+           expect(scope.foodEqualityCounter).toEqual(0);
+
+           // Updating a property on the object will now trigger the watcher using objectEquality and the counter will increment
+           scope.foodObject.name = 'noodles';
+           scope.$digest();
+           expect(scope.foodEqualityCounter).toEqual(1);
        * ```
        *
        *
