@@ -16,7 +16,7 @@ function $ControllerProvider() {
       CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
 
   function fnName(fn) {
-    var nameMatch = fn.toString().match(/function ([^\(]+)/);
+    var nameMatch = fn.toString().match(/^function ([^\(]+)/);
     return nameMatch && nameMatch[1] || '';
   }
 
