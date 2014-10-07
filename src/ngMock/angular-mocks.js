@@ -46,9 +46,10 @@ angular.mock.$Browser = function() {
   self.onUrlChange = function(listener) {
     self.pollFns.push(
       function() {
-        if (self.$$lastUrl != self.$$url) {
+        if (self.$$lastUrl !== self.$$url || self.$$state !== self.$$lastState) {
           self.$$lastUrl = self.$$url;
-          listener(self.$$url);
+          self.$$lastState = self.$$state;
+          listener(self.$$url, self.$$state);
         }
       }
     );
@@ -144,13 +145,22 @@ angular.mock.$Browser.prototype = {
     return pollFn;
   },
 
-  url: function(url, replace) {
+  url: function(url, replace, state) {
+    if (angular.isUndefined(state)) {
+      state = null;
+    }
     if (url) {
       this.$$url = url;
+      // Native pushState serializes & copies the object; simulate it.
+      this.$$state = angular.copy(state);
       return this;
     }
 
     return this.$$url;
+  },
+
+  state: function() {
+    return this.$$state;
   },
 
   cookies:  function(name, value) {
