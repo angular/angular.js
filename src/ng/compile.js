@@ -723,8 +723,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * @param {string|Object} name Name of the directive in camel-case (i.e. <code>ngBind</code> which
    *    will match as <code>ng-bind</code>), or an object map of directives where the keys are the
    *    names and the values are the factories.
-   * @param {Function|Array} directiveFactory An injectable directive factory function. See
-   *    {@link guide/directive} for more info.
+   * @param {Function|Array} directiveFactory An injectable directive factory function. For a gentle 
+   *    introduction to directives with examples of common use cases, see {@link guide/directive}. For 
+   *    an in-depth reference of all directive options, see {@link api/ng/service/$compile}.
    * @returns {ng.$compileProvider} Self for chaining.
    */
    this.directive = function registerDirective(name, directiveFactory) {
