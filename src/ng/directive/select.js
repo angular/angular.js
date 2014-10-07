@@ -414,7 +414,23 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         ctrl.$render = render;
 
-        scope.$watchCollection(valuesFn, scheduleRendering);
+        if (trackFn) {
+          scope.$watchCollection(function() {
+            var locals = {},
+                values = valuesFn(scope);
+            if (values) {
+              var trackers = new Array(values.length);
+              for (var i = 0, ii = values.length; i < ii; i++) {
+                trackers[i] = trackFn(scope, locals);
+              }
+
+              return trackers;
+            }
+          }, scheduleRendering);
+        } else {
+          scope.$watchCollection(valuesFn, scheduleRendering);
+        }
+
         scope.$watchCollection(function () {
           var locals = {},
               values = valuesFn(scope);
