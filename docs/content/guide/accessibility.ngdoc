@@ -55,6 +55,7 @@ navigation easier.
 
 Accessibility best practices that apply to web apps in general also apply to Angular.
 
+* [A11Y Project](http://a11yproject.com/)
 * [WebAim](http://webaim.org/)
 * [Using WAI-ARIA in HTML](http://www.w3.org/TR/2014/WD-aria-in-html-20140626/)
 * [Apps For All: Coding Accessible Web Applications](https://shop.smashingmagazine.com/apps-for-all-coding-accessible-web-applications.html)
