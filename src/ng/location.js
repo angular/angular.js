@@ -761,11 +761,17 @@ function $LocationProvider(){
 
     // update browser
     var changeCounter = 0;
+    var oldTransition = [null, null];
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = $browser.url();
       var currentReplace = $location.$$replace;
 
-      if (!changeCounter || oldUrl != $location.absUrl()) {
+      // Stop the same transition from being made twice in a short period of time
+      var madeTransition = (oldUrl == oldTransition[0] && $location.absUrl() == oldTransition[1]);
+
+      if (!madeTransition && (!changeCounter || oldUrl != $location.absUrl())) {
+        oldTransition[0] = oldUrl;
+        oldTransition[1] = $location.absUrl();
         changeCounter++;
         $rootScope.$evalAsync(function() {
           if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
@@ -776,6 +782,10 @@ function $LocationProvider(){
             afterLocationChange(oldUrl);
           }
         });
+      } else if (madeTransition) {
+        // We didn't increment changeCounter so we are safe to clear the last made transition
+        oldTransition[0] = null;
+        oldTransition[1] = null;
       }
       $location.$$replace = false;
 
