@@ -303,7 +303,8 @@
  *
  * * `true` - transclude the content (i.e. the child nodes) of the directive's element.
  * * `'element'` - transclude the whole of the directive's element including any directives on this
- *   element that defined at a lower priority than this directive.
+ *   element that defined at a lower priority than this directive. **Note:** With such transclusion, 
+ *   the `template` property is ignored.
  *
  *
  * #### `compile`
