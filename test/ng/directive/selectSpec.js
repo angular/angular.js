@@ -665,7 +665,7 @@ describe('select', function() {
 
     describe('trackBy', function() {
       beforeEach(function() {
-        scope.arr = [{id: 10, label: 'ten'}, {id:'20', label: 'twenty'}];
+        scope.arr = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}];
         scope.obj = {'10': {score: 10, label: 'ten'}, '20': {score: 20, label: 'twenty'}};
       });
 
@@ -1330,6 +1330,27 @@ describe('select', function() {
         expect(options.length).toEqual(2);
         expect(sortedHtml(options[0])).toEqual('<option value="0">C</option>');
         expect(sortedHtml(options[1])).toEqual('<option value="1">B</option>');
+      });
+
+
+      it('should update options in the DOM from object source', function() {
+        compile(
+          '<select ng-model="selected" ng-options="val.id as val.name for (key, val) in values"></select>'
+        );
+
+        scope.$apply(function() {
+          scope.values = {a: {id: 10, name: 'A'}, b: {id: 20, name: 'B'}};
+          scope.selected = scope.values.a.id;
+        });
+
+        scope.$apply(function() {
+          scope.values.a.name = 'C';
+        });
+
+        var options = element.find('option');
+        expect(options.length).toEqual(2);
+        expect(sortedHtml(options[0])).toEqual('<option value="a">C</option>');
+        expect(sortedHtml(options[1])).toEqual('<option value="b">B</option>');
       });
 
 
