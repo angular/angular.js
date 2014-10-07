@@ -27,10 +27,10 @@ describe('urlUtils', function() {
     it('should support various combinations of urls - both string and parsed', inject(function($document) {
       function expectIsSameOrigin(url, expectedValue) {
         expect(urlIsSameOrigin(url)).toBe(expectedValue);
-        expect(urlIsSameOrigin(urlResolve(url, true))).toBe(expectedValue);
+        expect(urlIsSameOrigin(urlResolve(url))).toBe(expectedValue);
       }
       expectIsSameOrigin('path', true);
-      var origin = urlResolve($document[0].location.href, true);
+      var origin = urlResolve($document[0].location.href);
       expectIsSameOrigin('//' + origin.host + '/path', true);
       // Different domain.
       expectIsSameOrigin('http://example.com/path', false);
