@@ -3408,8 +3408,73 @@ describe("ngAnimate", function() {
         $animate.triggerReflow();
 
         expect(log.length).toBe(2);
-        expect(log[0]).toEqual({ name : 'addClass', className : 'one five' });
+        expect(log[0]).toEqual({ name : 'addClass', className : 'one four five' });
         expect(log[1]).toEqual({ name : 'removeClass', className : 'three' });
+      });
+    });
+
+    it('should intelligently cancel out redundant class-based animations', function() {
+      var log = [];
+      var track = function(name) {
+        return function() {
+          log.push({ name : name, className : arguments[1] });
+        };
+      };
+      module(function($animateProvider) {
+        $animateProvider.register('.animate', function() {
+          return {
+            addClass    : track('addClass'),
+            removeClass : track('removeClass')
+          };
+        });
+      });
+      inject(function($rootScope, $animate, $compile, $rootElement, $document) {
+        $animate.enabled(true);
+
+        var element = $compile('<div class="animate three four"></div>')($rootScope);
+        $rootElement.append(element);
+        angular.element($document[0].body).append($rootElement);
+
+        $animate.removeClass(element, 'one');
+        $rootScope.$digest();
+        $animate.triggerReflow();
+        expect(log.length).toBe(0);
+        $animate.triggerCallbacks();
+
+        $animate.addClass(element, 'two');
+        $animate.addClass(element, 'two');
+        $animate.removeClass(element, 'two');
+        $rootScope.$digest();
+        $animate.triggerReflow();
+        expect(log.length).toBe(0);
+        $animate.triggerCallbacks();
+
+        $animate.removeClass(element, 'three');
+        $animate.addClass(element, 'three');
+        $rootScope.$digest();
+        $animate.triggerReflow();
+        expect(log.length).toBe(0);
+        $animate.triggerCallbacks();
+
+        $animate.removeClass(element, 'four');
+        $animate.addClass(element, 'four');
+        $animate.removeClass(element, 'four');
+        $rootScope.$digest();
+        $animate.triggerReflow();
+        expect(log.length).toBe(1);
+        $animate.triggerCallbacks();
+        expect(log[0]).toEqual({ name : 'removeClass', className : 'four' });
+
+        $animate.addClass(element, 'five');
+        $animate.addClass(element, 'five');
+        $animate.addClass(element, 'five');
+        $animate.removeClass(element, 'five');
+        $animate.addClass(element, 'five');
+        $rootScope.$digest();
+        $animate.triggerReflow();
+        expect(log.length).toBe(2);
+        $animate.triggerCallbacks();
+        expect(log[1]).toEqual({ name : 'addClass', className : 'five' });
       });
     });
 
