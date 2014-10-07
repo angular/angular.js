@@ -839,6 +839,7 @@ describe('parser', function() {
         describe('Window and $element/node', function() {
           it('should NOT allow access to the Window or DOM when indexing', inject(function($window, $document) {
             scope.wrap = {w: $window, d: $document};
+            scope.foo = function() {};
 
             expect(function() {
               scope.$eval('wrap["w"]', scope);
@@ -850,6 +851,11 @@ describe('parser', function() {
             }).toThrowMinErr(
                     '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
                     'disallowed! Expression: wrap["d"]');
+            expect(function() {
+              scope.$eval('foo([wrap.d])', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
+                    'disallowed! Expression: foo([wrap.d])');
           }));
 
           it('should NOT allow access to the Window or DOM returned from a function', inject(function($window, $document) {

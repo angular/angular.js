@@ -775,6 +775,7 @@ Parser.prototype = {
 
   // This is used with json array declaration
   arrayDeclaration: function () {
+    var expressionText = this.text;
     var elementFns = [];
     if (this.peekToken().text !== ']') {
       do {
@@ -791,7 +792,7 @@ Parser.prototype = {
     return extend(function $parseArrayLiteral(self, locals) {
       var array = [];
       for (var i = 0, ii = elementFns.length; i < ii; i++) {
-        array.push(elementFns[i](self, locals));
+        array.push(ensureSafeObject(elementFns[i](self, locals), expressionText));
       }
       return array;
     }, {
