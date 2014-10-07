@@ -2,12 +2,6 @@
 
 describe('SCE', function() {
 
-  // Work around an IE8 bug.  Though window.inject === angular.mock.inject, if it's invoked the
-  // window scope, IE8 loses the exception object that bubbles up and replaces it with a TypeError.
-  // By using a local alias, it gets invoked on the global scope instead of window.
-  // Ref: https://github.com/angular/angular.js/pull/4221#/issuecomment-25515813
-  var inject = angular.mock.inject;
-
   describe('when disabled', function() {
     beforeEach(function() {
       module(function($sceProvider) {
