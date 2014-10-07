@@ -1842,13 +1842,13 @@ describe('$location', function() {
 
     it('should rewrite URL', function() {
       expect(parseLinkAndReturn(location, 'http://other')).toEqual(undefined);
-      expect(parseLinkAndReturn(location, 'http://server/pre')).toEqual('http://server/pre/#!');
-      expect(parseLinkAndReturn(location, 'http://server/pre/')).toEqual('http://server/pre/#!');
+      expect(parseLinkAndReturn(location, 'http://server/pre')).toEqual('http://server/pre/');
+      expect(parseLinkAndReturn(location, 'http://server/pre/')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(location, 'http://server/pre/otherPath')).toEqual('http://server/pre/#!/otherPath');
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(location, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/#!/otherPath#test');
 
-      expect(parseLinkAndReturn(locationIndex, 'http://server/pre')).toEqual('http://server/pre/index.html#!');
+      expect(parseLinkAndReturn(locationIndex, 'http://server/pre')).toEqual('http://server/pre/index.html');
       expect(parseLinkAndReturn(locationIndex, 'http://server/pre/')).toEqual(undefined);
       expect(parseLinkAndReturn(locationIndex, 'http://server/pre/otherPath')).toEqual('http://server/pre/index.html#!/otherPath');
       // Note: relies on the previous state!

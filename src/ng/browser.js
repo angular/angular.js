@@ -168,6 +168,11 @@ function Browser(window, document, $log, $sniffer) {
       } else {
         if (!sameBase) {
           reloadLocation = url;
+        } else if (url.indexOf('#') === -1) {
+          // prevent page reload when navigating from a url with hash to the
+          // same url without a hash, e.g.
+          // from http://server/#asdf to http://server/
+          url += '#';
         }
         if (replace) {
           location.replace(url);
@@ -181,7 +186,9 @@ function Browser(window, document, $log, $sniffer) {
       // - reloadLocation is needed as browsers don't allow to read out
       //   the new location.href if a reload happened.
       // - the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return reloadLocation || location.href.replace(/%27/g,"'");
+      var result = reloadLocation || location.href.replace(/%27/g,"'");
+      // remove trailing hashes
+      return result.replace(/#$/, '');
     }
   };
 

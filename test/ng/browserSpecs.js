@@ -410,6 +410,11 @@ describe('browser', function() {
       expect(browser.url()).toEqual('https://another.com');
     });
 
+    it('should ignore a trailing hash when reading', function() {
+      fakeWindow.location.href = 'http://server/#';
+      expect(browser.url()).toBe('http://server/');
+    });
+
     it('should use history.pushState when available', function() {
       sniffer.history = true;
       browser.url('http://new.org');
@@ -494,6 +499,12 @@ describe('browser', function() {
       fakeWindow.location.href = 'dontchange';
       browser.url(current);
       expect(fakeWindow.location.href).toBe('dontchange');
+    });
+
+    it('should add a trailing hash when a hash was present before to prevent page reload', function() {
+      browser.url('http://server/#asdf');
+      browser.url('http://server/');
+      expect(fakeWindow.location.href).toBe('http://server/#');
     });
 
     it('should not read out location.href if a reload was triggered but still allow to change the url', function() {
