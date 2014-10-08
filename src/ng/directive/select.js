@@ -624,7 +624,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             index++; // increment since the existingOptions[0] is parent element not OPTION
             while(existingOptions.length > index) {
               option = existingOptions.pop();
-              selectCtrl.removeOption(option.label);
+              if(keys.indexOf(option.label) === -1) {
+                selectCtrl.removeOption(option.label);
+              }
               option.element.remove();
             }
           }
