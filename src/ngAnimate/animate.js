@@ -477,9 +477,14 @@ angular.module('ngAnimate', ['ng'])
           });
         });
 
+        var hasClasses = {};
+        forEach((element.attr('class') || '').replace(/\s+/g, ' ').split(' '), function(className) {
+          hasClasses[className] = true;
+        });
+
         var toAdd = [], toRemove = [];
         forEach(cache.classes, function(status, className) {
-          var hasClass = angular.$$hasClass(element[0], className);
+          var hasClass = hasClasses[className] === true;
           var matchingAnimation = lookup[className] || {};
 
           // When addClass and removeClass is called then $animate will check to

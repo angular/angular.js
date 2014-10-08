@@ -102,8 +102,14 @@ var $AnimateProvider = ['$provide', function($provide) {
 
     function resolveElementClasses(element, cache) {
       var toAdd = [], toRemove = [];
+
+      var hasClasses = {};
+      forEach((element.attr('class') || '').replace(/\s+/g, ' ').split(' '), function(className) {
+        hasClasses[className] = true;
+      });
+
       forEach(cache.classes, function(status, className) {
-        var hasClass = jqLiteHasClass(element[0], className);
+        var hasClass = hasClasses[className] === true;
 
         // If the most recent class manipulation (via $animate) was to remove the class, and the
         // element currently has the class, the class is scheduled for removal. Otherwise, if
