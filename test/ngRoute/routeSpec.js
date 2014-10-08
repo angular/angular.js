@@ -1,7 +1,8 @@
 'use strict';
 
 describe('$route', function() {
-  var $httpBackend;
+  var $httpBackend,
+      element;
 
   beforeEach(module('ngRoute'));
 
@@ -17,6 +18,57 @@ describe('$route', function() {
       $httpBackend.when('GET', '404.html').respond('not found');
     };
   }));
+
+  afterEach(function() {
+    dealoc(element);
+  });
+
+  it('should allow cancellation via $locationChangeStart via $routeChangeStart', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/Edit', {
+        id: 'edit', template: 'Some edit functionality'
+      });
+      $routeProvider.when('/Home', {
+        id: 'home'
+      });
+    });
+    module(provideLog);
+    inject(function($route, $location, $rootScope, $compile, log) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.id === 'home' && current.scope.unsavedChanges) {
+          event.preventDefault();
+        }
+      });
+      element = $compile('<div><div ng-view></div></div>')($rootScope);
+      $rootScope.$apply(function() {
+        $location.path('/Edit');
+      });
+      $rootScope.$on('$routeChangeSuccess', log.fn('routeChangeSuccess'));
+      $rootScope.$on('$locationChangeSuccess', log.fn('locationChangeSuccess'));
+
+      // aborted route change
+      $rootScope.$apply(function() {
+        $route.current.scope.unsavedChanges = true;
+      });
+      $rootScope.$apply(function() {
+        $location.path('/Home');
+      });
+      expect($route.current.id).toBe('edit');
+      expect($location.path()).toBe('/Edit');
+      expect(log).toEqual([]);
+
+      // successful route change
+      $rootScope.$apply(function() {
+        $route.current.scope.unsavedChanges = false;
+      });
+      $rootScope.$apply(function() {
+        $location.path('/Home');
+      });
+      expect($route.current.id).toBe('home');
+      expect($location.path()).toBe('/Home');
+      expect(log).toEqual(['locationChangeSuccess', 'routeChangeSuccess']);
+    });
+  });
 
   it('should route and fire change event', function() {
     var log = '',
@@ -481,7 +533,7 @@ describe('$route', function() {
 
 
   describe('events', function() {
-    it('should not fire $after/beforeRouteChange during bootstrap (if no route)', function() {
+    it('should not fire $routeChangeStart/success during bootstrap (if no route)', function() {
       var routeChangeSpy = jasmine.createSpy('route change');
 
       module(function($routeProvider) {
@@ -498,6 +550,10 @@ describe('$route', function() {
         $location.path('/no-route-here');
         $rootScope.$digest();
         expect(routeChangeSpy).not.toHaveBeenCalled();
+
+        $location.path('/one');
+        $rootScope.$digest();
+        expect(routeChangeSpy).toHaveBeenCalled();
       });
     });
 

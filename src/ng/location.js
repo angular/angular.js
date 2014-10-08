@@ -692,7 +692,9 @@ function $LocationProvider(){
    * @name $location#$locationChangeStart
    * @eventType broadcast on root scope
    * @description
-   * Broadcasted before a URL will change. This change can be prevented by calling
+   * Broadcasted before a URL will change.
+   *
+   * This change can be prevented by calling
    * `preventDefault` method of the event. See {@link ng.$rootScope.Scope#$on} for more
    * details about event object. Upon successful change
    * {@link ng.$location#events_$locationChangeSuccess $locationChangeSuccess} is fired.
