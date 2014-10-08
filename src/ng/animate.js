@@ -84,20 +84,6 @@ var $AnimateProvider = ['$provide', function($provide) {
   this.$get = ['$$q', '$$asyncCallback', '$rootScope', function($$q, $$asyncCallback, $rootScope) {
 
     var currentDefer;
-    var ELEMENT_NODE = 1;
-
-    function extractElementNodes(element) {
-      var elements = new Array(element.length);
-      var count = 0;
-      for(var i = 0; i < element.length; i++) {
-        var elm = element[i];
-        if (elm.nodeType == ELEMENT_NODE) {
-          elements[count++] = elm;
-        }
-      }
-      elements.length = count;
-      return jqLite(elements);
-    }
 
     function runAnimationPostDigest(fn) {
       var cancelFn, defer = $$q.defer();
@@ -299,7 +285,8 @@ var $AnimateProvider = ['$provide', function($provide) {
       setClass : function(element, add, remove, runSynchronously) {
         var self = this;
         var STORAGE_KEY = '$$animateClasses';
-        element = extractElementNodes(jqLite(element));
+        var createdCache = false;
+        element = jqLite(element);
 
         if (runSynchronously) {
           self.$$addClassImmediately(element, add);
@@ -312,7 +299,7 @@ var $AnimateProvider = ['$provide', function($provide) {
           cache = {
             classes: {}
           };
-          var createdCache = true;
+          createdCache = true;
         }
 
         var classes = cache.classes;

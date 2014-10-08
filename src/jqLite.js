@@ -166,7 +166,7 @@ function jqLiteAcceptsData(node) {
   // The window object can accept data but has no nodeType
   // Otherwise we are only interested in elements (1) and documents (9)
   var nodeType = node.nodeType;
-  return nodeType === 1 || !nodeType || nodeType === 9;
+  return nodeType === NODE_TYPE_ELEMENT || !nodeType || nodeType === NODE_TYPE_DOCUMENT;
 }
 
 function jqLiteBuildFragment(html, context) {
@@ -419,7 +419,7 @@ function jqLiteController(element, name) {
 function jqLiteInheritedData(element, name, value) {
   // if element is the document object work with the html element instead
   // this makes $(document).scope() possible
-  if(element.nodeType == 9) {
+  if(element.nodeType == NODE_TYPE_DOCUMENT) {
     element = element.documentElement;
   }
   var names = isArray(name) ? name : [name];
@@ -432,7 +432,7 @@ function jqLiteInheritedData(element, name, value) {
     // If dealing with a document fragment node with a host element, and no parent, use the host
     // element as the parent. This enables directives within a Shadow DOM or polyfilled Shadow DOM
     // to lookup parent controllers.
-    element = element.parentNode || (element.nodeType === 11 && element.host);
+    element = element.parentNode || (element.nodeType === NODE_TYPE_DOCUMENT_FRAGMENT && element.host);
   }
 }
 
@@ -610,7 +610,7 @@ forEach({
     function getText(element, value) {
       if (isUndefined(value)) {
         var nodeType = element.nodeType;
-        return (nodeType === 1 || nodeType === 3) ? element.textContent : '';
+        return (nodeType === NODE_TYPE_ELEMENT || nodeType === NODE_TYPE_TEXT) ? element.textContent : '';
       }
       element.textContent = value;
     }
@@ -832,7 +832,7 @@ forEach({
   children: function(element) {
     var children = [];
     forEach(element.childNodes, function(element){
-      if (element.nodeType === 1)
+      if (element.nodeType === NODE_TYPE_ELEMENT)
         children.push(element);
     });
     return children;
@@ -844,7 +844,7 @@ forEach({
 
   append: function(element, node) {
     var nodeType = element.nodeType;
-    if (nodeType !== 1 && nodeType !== 11) return;
+    if (nodeType !== NODE_TYPE_ELEMENT && nodeType !== NODE_TYPE_DOCUMENT_FRAGMENT) return;
 
     node = new JQLite(node);
 
@@ -855,7 +855,7 @@ forEach({
   },
 
   prepend: function(element, node) {
-    if (element.nodeType === 1) {
+    if (element.nodeType === NODE_TYPE_ELEMENT) {
       var index = element.firstChild;
       forEach(new JQLite(node), function(child){
         element.insertBefore(child, index);
@@ -906,7 +906,7 @@ forEach({
 
   parent: function(element) {
     var parent = element.parentNode;
-    return parent && parent.nodeType !== 11 ? parent : null;
+    return parent && parent.nodeType !== NODE_TYPE_DOCUMENT_FRAGMENT ? parent : null;
   },
 
   next: function(element) {
