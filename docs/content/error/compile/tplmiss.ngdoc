@@ -1,0 +1,7 @@
+@ngdoc error
+@name $compile:tplnrt
+@fullName Missing Template
+@description
+
+When a directive is declared with `template` (or `templateUrl`) and `replace` mode on, the template
+must exist and be valid.
