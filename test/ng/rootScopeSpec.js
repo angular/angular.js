@@ -943,6 +943,30 @@ describe('Scope', function() {
 
   });
 
+  describe('$when', function() {
+    it('should execute the action when the condition becomes true', inject(function($rootScope) {
+      $rootScope.value = 0;
+      $rootScope.$when('value > 1', function() {
+        $rootScope.message = 'greater';
+      });
+      expect($rootScope.message).toBeUndefined();
+      $rootScope.value = 1;
+      $rootScope.$digest();
+      expect($rootScope.message).toBeUndefined();
+      $rootScope.value = 2;
+      $rootScope.$digest();
+      expect($rootScope.message).toEqual('greater');
+    }));
+
+    it('should execute the action immediately if the condition is already true', inject(function($rootScope) {
+      $rootScope.value = 2;
+      $rootScope.$when('value > 1', function() {
+        $rootScope.message = 'greater';
+      });
+      expect($rootScope.message).toEqual('greater');
+    }));
+  });
+
   describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
 

@@ -658,6 +658,45 @@ function $RootScopeProvider(){
 
       /**
        * @ngdoc method
+       * @name $rootScope.Scope#$when
+       * @kind function
+       *
+       * @description
+       * Executes a function when some condition has been met.  If the `condition` expression
+       * evaluates to a truthy value at the time `$when` is called, `action` is executed
+       * immediately.  Otherwise, a {@link ng.$rootScope.Scope#$watch watcher} is created so that
+       * the `action` is called as soon as the `condition` becomes true.  This watcher is
+       * unregistered after the `action` has been completed.
+       * 
+       * @param {string|function(scope)} condition An angular {@link guide/expression expression} to be evaluated. 
+       *
+       *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
+       *    - `function(scope)`: execute the function with current `scope` parameter.
+       * @param {function()} action A callback that is executed when the `condition` evaluates to a truthy value.  
+       */
+      $when: function(condition, action) {
+        if (this.$eval(condition)) {
+          try {
+            action();
+          } catch (e) {
+            $exceptionHandler(e);
+          }
+        } else {
+          var deregister = this.$watch(condition, function(newValue) {
+            if (newValue) {
+              try {
+                action();
+              } catch (e) {
+                $exceptionHandler(e);
+              }
+              deregister();
+            }
+          });
+        }
+      },
+
+      /**
+       * @ngdoc method
        * @name $rootScope.Scope#$digest
        * @kind function
        *
