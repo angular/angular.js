@@ -729,6 +729,7 @@ describe('form', function() {
       formCtrl.$setPristine();
       scope.$digest();
       expect(form).toBePristine();
+      scope.$digest();
       expect(formCtrl.$pristine).toBe(true);
       expect(formCtrl.$dirty).toBe(false);
       expect(nestedForm).toBePristine();

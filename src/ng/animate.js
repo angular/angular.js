@@ -86,6 +86,19 @@ var $AnimateProvider = ['$provide', function($provide) {
     var currentDefer;
     var ELEMENT_NODE = 1;
 
+    function extractElementNodes(element) {
+      var elements = new Array(element.length);
+      var count = 0;
+      for(var i = 0; i < element.length; i++) {
+        var elm = element[i];
+        if (elm.nodeType == ELEMENT_NODE) {
+          elements[count++] = elm;
+        }
+      }
+      elements.length = count;
+      return jqLite(elements);
+    }
+
     function runAnimationPostDigest(fn) {
       var cancelFn, defer = $$q.defer();
       defer.promise.$$cancelFn = function ngAnimateMaybeCancel() {
@@ -102,31 +115,29 @@ var $AnimateProvider = ['$provide', function($provide) {
     }
 
     function resolveElementClasses(element, cache) {
-      var map = {};
-
-      forEach(cache.add, function(className) {
-        if (className && className.length) {
-          map[className] = map[className] || 0;
-          map[className]++;
-        }
-      });
-
-      forEach(cache.remove, function(className) {
-        if (className && className.length) {
-          map[className] = map[className] || 0;
-          map[className]--;
-        }
-      });
-
       var toAdd = [], toRemove = [];
-      forEach(map, function(status, className) {
+      forEach(cache.classes, function(status, className) {
         var hasClass = jqLiteHasClass(element[0], className);
 
-        if (status < 0 && hasClass) toRemove.push(className);
-        else if (status > 0 && !hasClass) toAdd.push(className);
+        // If the most recent class manipulation (via $animate) was to remove the class, and the
+        // element currently has the class, the class is scheduled for removal. Otherwise, if
+        // the most recent class manipulation (via $animate) was to add the class, and the
+        // element does not currently have the class, the class is scheduled to be added.
+        if (status === false && hasClass) {
+          toRemove.push(className);
+        } else if (status === true && !hasClass) {
+          toAdd.push(className);
+        }
       });
 
       return (toAdd.length + toRemove.length) > 0 && [toAdd.join(' '), toRemove.join(' ')];
+    }
+
+    function cachedClassManipulation(cache, classes, op) {
+      for (var i=0, ii = classes.length; i < ii; ++i) {
+        var className = classes[i];
+        cache[className] = op;
+      }
     }
 
     function asyncPromise() {
@@ -285,40 +296,50 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {string} remove the CSS class which will be removed from the element
        * @return {Promise} the animation callback promise
        */
-      setClass : function(element, add, remove) {
+      setClass : function(element, add, remove, runSynchronously) {
         var self = this;
         var STORAGE_KEY = '$$animateClasses';
-        element = jqLite(element);
+        element = extractElementNodes(jqLite(element));
+
+        if (runSynchronously) {
+          self.$$addClassImmediately(element, add);
+          self.$$removeClassImmediately(element, remove);
+          return asyncPromise();
+        }
+
+        var cache = element.data(STORAGE_KEY);
+        if (!cache) {
+          cache = {
+            classes: {}
+          };
+          var createdCache = true;
+        }
+
+        var classes = cache.classes;
 
         add = isArray(add) ? add : add.split(' ');
         remove = isArray(remove) ? remove : remove.split(' ');
+        cachedClassManipulation(classes, add, true);
+        cachedClassManipulation(classes, remove, false);
 
-        var cache = element.data(STORAGE_KEY);
-        if (cache) {
-          cache.add = cache.add.concat(add);
-          cache.remove = cache.remove.concat(remove);
-          //the digest cycle will combine all the animations into one function
-          return cache.promise;
-        } else {
-          element.data(STORAGE_KEY, cache = {
-            add : add,
-            remove : remove
+        if (createdCache) {
+          cache.promise = runAnimationPostDigest(function(done) {
+            var cache = element.data(STORAGE_KEY);
+            element.removeData(STORAGE_KEY);
+
+            var classes = cache && resolveElementClasses(element, cache);
+
+            if (classes) {
+              if (classes[0]) self.$$addClassImmediately(element, classes[0]);
+              if (classes[1]) self.$$removeClassImmediately(element, classes[1]);
+            }
+
+            done();
           });
+          element.data(STORAGE_KEY, cache);
         }
 
-        return cache.promise = runAnimationPostDigest(function(done) {
-          var cache = element.data(STORAGE_KEY);
-          element.removeData(STORAGE_KEY);
-
-          var classes = cache && resolveElementClasses(element, cache);
-
-          if (classes) {
-            if (classes[0]) self.$$addClassImmediately(element, classes[0]);
-            if (classes[1]) self.$$removeClassImmediately(element, classes[1]);
-          }
-
-          done();
-        });
+        return cache.promise;
       },
 
       enabled : noop,

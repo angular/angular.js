@@ -979,9 +979,7 @@ angular.module('ngAnimate', ['ng'])
           element = stripCommentsFromElement(element);
 
           if (classBasedAnimationsBlocked(element)) {
-            $delegate.$$addClassImmediately(element, add);
-            $delegate.$$removeClassImmediately(element, remove);
-            return;
+            return $delegate.setClass(element, add, remove, true);
           }
 
           // we're using a combined array for both the add and remove
@@ -1034,7 +1032,7 @@ angular.module('ngAnimate', ['ng'])
             var classes = resolveElementClasses(element, cache, state.active);
             return !classes
               ? done()
-              : performAnimation('setClass', classes, element, null, null, function() {
+              : performAnimation('setClass', classes, element, parentElement, null, function() {
                   if (classes[0]) $delegate.$$addClassImmediately(element, classes[0]);
                   if (classes[1]) $delegate.$$removeClassImmediately(element, classes[1]);
                 }, done);
