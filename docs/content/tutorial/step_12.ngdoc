@@ -36,20 +36,20 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.2.x",
-    "angular-mocks": "~1.2.x",
+    "angular": "~1.3.0",
+    "angular-mocks": "~1.3.0",
     "bootstrap": "~3.1.1",
-    "angular-route": "~1.2.x",
-    "angular-resource": "~1.2.x",
-    "jquery": "1.10.2",
-    "angular-animate": "~1.2.x"
+    "angular-route": "~1.3.0",
+    "angular-resource": "~1.3.0",
+    "jquery": "~2.1.1",
+    "angular-animate": "~1.3.0"
   }
 }
 ```
 
-* `"angular-animate": "~1.2.x"` tells bower to install a version of the
-angular-animate component that is compatible with version 1.2.x.
-* `"jquery": "1.10.2"` tells bower to install the 1.10.2 version of jQuery.  Note that this is not an
+* `"angular-animate": "~1.3.0"` tells bower to install a version of the
+angular-animate component that is compatible with version 1.3.x.
+* `"jquery": "2.1.1"` tells bower to install the 2.1.1 version of jQuery.  Note that this is not an
 Angular library, it is the standard jQuery library.  We can use bower to install a wide range of 3rd
 party libraries.
 
