@@ -4826,6 +4826,62 @@ describe("ngAnimate", function() {
         expect(spy).toHaveBeenCalled();
         expect(spy.callCount).toBe(1);
       }));
+
+      it('should permit class-based animations when ng-animate-children is true for a structural animation', function() {
+          var spy = jasmine.createSpy();
+
+          module(function($animateProvider) {
+            $animateProvider.register('.inner', function() {
+              return {
+                beforeAddClass : function(element, className, done) {
+                  spy();
+                  done();
+                },
+                beforeRemoveClass : function(element, className, done) {
+                  spy();
+                  done();
+                }
+              };
+            });
+          });
+
+          inject(function($animate, $sniffer, $rootScope, $compile) {
+
+          $animate.enabled(true);
+
+          var html = '<div ng-animate-children>' +
+                     '  <div class="inner" ng-class="{animate:bool}">...</div>' +
+                     '</div>';
+
+          var element = angular.element(html);
+          $compile(element)($rootScope);
+          var body = angular.element($document[0].body);
+          body.append($rootElement);
+
+          $rootScope.$watch('bool', function(bool) {
+            if (bool) {
+              $animate.enter(element, $rootElement);
+            } else if(element.parent().length) {
+              $animate.leave(element);
+            }
+          });
+
+          $rootScope.$digest();
+          expect(spy.callCount).toBe(0);
+
+          $rootScope.bool = true;
+          $rootScope.$digest();
+          $animate.triggerReflow();
+          $animate.triggerCallbacks();
+          expect(spy.callCount).toBe(1);
+
+          $rootScope.bool = false;
+          $rootScope.$digest();
+          $animate.triggerReflow();
+          $animate.triggerCallbacks();
+          expect(spy.callCount).toBe(2);
+        });
+      });
     });
 
     describe('SVG', function() {
