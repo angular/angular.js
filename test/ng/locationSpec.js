@@ -90,7 +90,7 @@ describe('$location', function() {
         };
       };
       $browserProvider.$get = function($document, $window) {
-        var sniffer = {history: true, hashchange: false};
+        var sniffer = {history: true};
         var logs = {log:[], warn:[], info:[], error:[]};
         var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
                    warn: function() { logs.warn.push(slice.call(arguments)); },
