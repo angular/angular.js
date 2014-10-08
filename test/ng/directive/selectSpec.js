@@ -432,13 +432,9 @@ describe('select', function() {
 
           scope.robot = 'r2d2';
 
-          scope.$apply();
-
           compile('<select ng-model="robot" ' +
           'ng-options="item for item in robots">' +
           '</select>');
-
-          scope.$apply();
 
           expect(getValues()).toEqual(['0', '1']);
           expect(getLabels()).toEqual(['c3p0', 'r2d2']);
