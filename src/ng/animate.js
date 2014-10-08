@@ -116,7 +116,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         }
       });
 
-      return (toAdd.length + toRemove.length) > 0 && [toAdd.join(' '), toRemove.join(' ')];
+      return (toAdd.length + toRemove.length) > 0 && [toAdd.length && toAdd, toRemove.length && toRemove];
     }
 
     function cachedClassManipulation(cache, classes, op) {
