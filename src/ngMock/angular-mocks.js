@@ -809,6 +809,7 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
           animate.queue.push({
             event : method,
             element : arguments[0],
+            options : arguments[arguments.length-1],
             args : arguments
           });
           return $delegate[method].apply($delegate, arguments);
