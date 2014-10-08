@@ -663,7 +663,7 @@ describe('select', function() {
     });
 
 
-    describe('trackBy', function() {
+    describe('trackBy expression', function() {
       beforeEach(function() {
         scope.arr = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}];
         scope.obj = {'10': {score: 10, label: 'ten'}, '20': {score: 20, label: 'twenty'}};
@@ -761,173 +761,22 @@ describe('select', function() {
     });
 
 
-    describe('selectAs+trackBy', function() {
+    describe('selectAs+trackBy expression', function() {
       beforeEach(function() {
         scope.arr = [{id: 10, label: 'ten'}, {id:'20', label: 'twenty'}];
         scope.obj = {'10': {score: 10, label: 'ten'}, '20': {score: 20, label: 'twenty'}};
       });
 
 
-      it('should bind selectAs expression result to scope (array&single)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'ng-options': 'item.id as item.name for item in values track by item.id'
-        });
+      it('should throw a helpful minerr', function() {
+        expect(function() {
 
-        scope.$apply(function() {
-          scope.values = [{id: 10, name: 'A'}, {id: 20, name: 'B'}];
-          scope.selected = 10;
-        });
-        expect(element.val()).toEqual('0');
+            createSelect({
+              'ng-model': 'selected',
+              'ng-options': 'item.id as item.name for item in values track by item.id'
+            });
 
-        scope.$apply(function() {
-          scope.selected = 20;
-        });
-        expect(element.val()).toEqual('1');
-
-        element.val('0');
-        browserTrigger(element, 'change');
-        expect(scope.selected).toBe(10);
-      });
-
-
-      it('should bind selectAs expression result to scope (array&multiple)',function() {
-        createSelect({
-          'ng-model': 'selected',
-          'multiple': true,
-          'ng-options': 'item.id as item.name for item in values track by item.id'
-        });
-
-        scope.$apply(function() {
-          scope.values = [{id: 10, name: 'A'}, {id: 20, name: 'B'}];
-          scope.selected = [10];
-        });
-        expect(element.val()).toEqual(['0']);
-
-        scope.$apply(function() {
-          scope.selected = [20];
-        });
-        expect(element.val()).toEqual(['1']);
-
-        element.children(0).attr('selected', 'selected');
-        element.children(1).attr('selected', 'selected');
-        browserTrigger(element, 'change');
-        expect(scope.selected).toEqual([10, 20]);
-      });
-
-
-      it('should bind selectAs expression result to scope (object&single)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'ng-options': 'value.score as value.label for (key, value) in obj track by value.score'
-        });
-
-        scope.$apply(function() {
-          scope.selected = 10;
-        });
-        expect(element.val()).toEqual('10');
-
-        scope.$apply(function() {
-          scope.selected = 20;
-        });
-        expect(element.val()).toEqual('20');
-
-        element.val('10');
-        browserTrigger(element, 'change');
-        expect(scope.selected).toBe(10);
-      });
-
-
-      it('should bind selectAs expression result to scope (object&multiple)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'multiple': true,
-          'ng-options': 'value.score as value.label for (key, value) in obj track by value.score'
-        });
-
-        scope.$apply(function() {
-          scope.selected = [10];
-        });
-        expect(element.val()).toEqual(['10']);
-
-        scope.$apply(function() {
-          scope.selected = [20];
-        });
-        expect(element.val()).toEqual(['20']);
-
-        element.find('option')[0].selected = 'selected';
-        browserTrigger(element, 'change');
-        expect(scope.selected).toEqual([10, 20]);
-      });
-
-
-      it('should correctly assign model if track & select expressions differ (array&single)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'ng-options': 'item.label as item.label for item in arr track by item.id'
-        });
-
-        scope.$apply(function() {
-          scope.selected = 'ten';
-        });
-        expect(element.val()).toBe('0');
-
-        element.val('1');
-        browserTrigger(element, 'change');
-        expect(scope.selected).toBe('twenty');
-      });
-
-
-      it('should correctly assign model if track & select expressions differ (array&multiple)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'multiple': true,
-          'ng-options': 'item.label as item.label for item in arr track by item.id'
-        });
-
-        scope.$apply(function() {
-          scope.selected = ['ten'];
-        });
-        expect(element.val()).toEqual(['0']);
-
-        element.find('option')[1].selected = 'selected';
-        browserTrigger(element, 'change');
-        expect(scope.selected).toEqual(['ten', 'twenty']);
-      });
-
-
-      it('should correctly assign model if track & select expressions differ (object&single)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'ng-options': 'val.label as val.label for (key, val) in obj track by val.score'
-        });
-
-        scope.$apply(function() {
-          scope.selected = 'ten';
-        });
-        expect(element.val()).toBe('10');
-
-        element.val('20');
-        browserTrigger(element, 'change');
-        expect(scope.selected).toBe('twenty');
-      });
-
-
-      it('should correctly assign model if track & select expressions differ (object&multiple)', function() {
-        createSelect({
-          'ng-model': 'selected',
-          'multiple': true,
-          'ng-options': 'val.label as val.label for (key, val) in obj track by val.score'
-        });
-
-        scope.$apply(function() {
-          scope.selected = ['ten'];
-        });
-        expect(element.val()).toEqual(['10']);
-
-        element.find('option')[1].selected = 'selected';
-        browserTrigger(element, 'change');
-        expect(scope.selected).toEqual(['ten', 'twenty']);
+        }).toThrowMinErr('ngOptions', 'trkslct', "Comprehension expression cannot contain both selectAs 'item.id' and trackBy 'item.id' expressions.");
       });
     });
 
@@ -1264,7 +1113,7 @@ describe('select', function() {
       it('should bind to scope value and track/identify objects', function() {
         createSelect({
           'ng-model': 'selected',
-          'ng-options': 'item as item.name for item in values track by item.id'
+          'ng-options': 'item.name for item in values track by item.id'
         });
 
         scope.$apply(function() {

@@ -36,8 +36,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  * </div>
  *
  * <div class="alert alert-info">
- * **Note:** Using `selectAs` will bind the result of the `selectAs` expression to the model, but
- * the value of the `select` and `option` elements will be either the index (for array data sources)
+ * **Note:** Using `select as` will bind the result of the `select as` expression to the model, but
+ * the value of the `<select>` and `<option>` html elements will be either the index (for array data sources)
  * or property name (for object data sources) of the value  within the collection.
  * </div>
  *
@@ -79,19 +79,18 @@ var ngOptionsMinErr = minErr('ngOptions');
  *      even when the options are recreated (e.g. reloaded from the server).
 
  * <div class="alert alert-info">
- * **Note:** Using `selectAs` together with `trackexpr` is not possible (and will throw).
- * TODO: Add some nice reasoning here, add a minErr and a nice error page.
- * reasoning:
+ * **Note:** Using `select as` together with `trackexpr` is not possible (and will throw).
+ * Reasoning:
  * - Example: <select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected">
  *   values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItemß'}}],
  *   $scope.selected = {name: 'aSubItem'};
- * - trackBy is always applied to `value`, with purpose to preserve the selection,
+ * - track by is always applied to `value`, with purpose to preserve the selection,
  *   (to `item` in this case)
  * - to calculate whether an item is selected we do the following:
- *   1. apply `trackBy` to the values in the array, e.g.
+ *   1. apply `track by` to the values in the array, e.g.
  *      In the example: [1,2]
- *   2. apply `trackBy` to the already selected value in `ngModel`:
- *      In the example: this is not possible, as `trackBy` refers to `item.id`, but the selected
+ *   2. apply `track by` to the already selected value in `ngModel`:
+ *      In the example: this is not possible, as `track by` refers to `item.id`, but the selected
  *      value from `ngModel` is `{name: aSubItem}`.
  *
  * </div>
@@ -367,6 +366,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             //re-usable object to represent option's locals
             locals = {};
 
+        if (trackFn && selectAsFn) {
+          throw ngOptionsMinErr('trkslct',
+            "Comprehension expression cannot contain both selectAs '{0}' " +
+            "and trackBy '{1}' expressions.",
+            selectAs, track);
+        }
+
         if (nullOption) {
           // compile the element since there might be bindings in it
           $compile(nullOption)(scope);
@@ -485,7 +491,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             } else {
               return viewValue == callExpression(compareValueFn, key, value);
             }
-          }
+          };
         }
 
         function scheduleRendering() {
