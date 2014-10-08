@@ -156,6 +156,28 @@ describe('ngShow / ngHide animations', function() {
       expect(item.element.text()).toBe('data');
       expect(item.element).toBeHidden();
     }));
+
+    it('should apply the temporary `.ng-hide-animate` class to the element',
+      inject(function($compile, $rootScope, $animate) {
+
+      var item;
+      var $scope = $rootScope.$new();
+      $scope.on = false;
+      element = $compile(html(
+        '<div class="show-hide" ng-show="on">data</div>'
+      ))($scope);
+      $scope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('addClass');
+      expect(item.options).toEqual('ng-hide-animate');
+
+      $scope.on = true;
+      $scope.$digest();
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('removeClass');
+      expect(item.options).toEqual('ng-hide-animate');
+    }));
   });
 
   describe('ngHide', function() {
@@ -180,6 +202,28 @@ describe('ngShow / ngHide animations', function() {
       expect(item.event).toBe('removeClass');
       expect(item.element.text()).toBe('datum');
       expect(item.element).toBeShown();
+    }));
+
+    it('should apply the temporary `.ng-hide-animate` class to the element',
+      inject(function($compile, $rootScope, $animate) {
+
+      var item;
+      var $scope = $rootScope.$new();
+      $scope.on = false;
+      element = $compile(html(
+        '<div class="show-hide" ng-hide="on">data</div>'
+      ))($scope);
+      $scope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('removeClass');
+      expect(item.options).toEqual('ng-hide-animate');
+
+      $scope.on = true;
+      $scope.$digest();
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('addClass');
+      expect(item.options).toEqual('ng-hide-animate');
     }));
   });
 });
