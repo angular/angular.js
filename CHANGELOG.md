@@ -4,8 +4,17 @@
 
 ## Bug Fixes
 
+- **$anchorScroll:** don't scroll to top when initializing and location hash is empty
+  ([d5445c60](https://github.com/angular/angular.js/commit/d5445c601fafd6ecd38befeaa4c9ec7bb044127c),
+   [#8848](https://github.com/angular/angular.js/issues/8848), [#9393](https://github.com/angular/angular.js/issues/9393))
 - **$animate:**
-  - ensure class-based animations only consider the most recent DOM operations
+  - ensure hidden elements with ngShow/ngHide stay hidden during animations
+  ([39d0b368](https://github.com/angular/angular.js/commit/39d0b36826a077f7549a70d0cf3edebe90a10aaa),
+   [#9103](https://github.com/angular/angular.js/issues/9103), [#9493](https://github.com/angular/angular.js/issues/9493))
+  - permit class-based animations for leave operations if ngAnimateChildren is enabled
+  ([df1a00b1](https://github.com/angular/angular.js/commit/df1a00b11ac2722f4da441837795985f12682030),
+   [#8092](https://github.com/angular/angular.js/issues/8092), [#9491](https://github.com/angular/angular.js/issues/9491))
+  - ensure that class-based animations only consider the most recent DOM operations
   ([c93924ed](https://github.com/angular/angular.js/commit/c93924ed275a62683b85c82f1c6c2e19d5662c9a),
    [#8946](https://github.com/angular/angular.js/issues/8946), [#9458](https://github.com/angular/angular.js/issues/9458))
   - abort class-based animations if the element is removed during digest
@@ -40,6 +49,9 @@
 - **$http:** honor application/json response header and parse json primitives
   ([7b6c1d08](https://github.com/angular/angular.js/commit/7b6c1d08aceba6704a40302f373400aed9ed0e0b),
    [#2973](https://github.com/angular/angular.js/issues/2973))
+- **$injector:** throw when factory $get method does not return a value
+  ([0d3b69a5](https://github.com/angular/angular.js/commit/0d3b69a5f27b41745b504c7ffd8d72653bac1f85),
+   [#4575](https://github.com/angular/angular.js/issues/4575), [#9210](https://github.com/angular/angular.js/issues/9210))
 - **$location:** allow `0` in `path()` and `hash()`
   ([b8c5b871](https://github.com/angular/angular.js/commit/b8c5b87119a06edb8e8d1cefad81ee8d1f64f070))
 - **form:** fix submit prevention
@@ -67,7 +79,9 @@
   - allow automatic rewriting of links to be disabled
   ([b3e09be5](https://github.com/angular/angular.js/commit/b3e09be58960b913fee3869bf36e7de3305bbe00),
    [#5487](https://github.com/angular/angular.js/issues/5487))
-
+- **$route:** ability to cancel $routeChangeStart event
+  ([f4ff11b0](https://github.com/angular/angular.js/commit/f4ff11b01e6a5f9a9eb25a38d327dfaadbd7c80c),
+   [#5581](https://github.com/angular/angular.js/issues/5581), [#5714](https://github.com/angular/angular.js/issues/5714), [#9502](https://github.com/angular/angular.js/issues/9502))
 
 ## Performance Improvements
 
@@ -118,6 +132,29 @@ Prior to refactorings in this release, neither of these expressions worked corre
 and did not work at all when combined.
 
 See #6564
+
+- **$route:** due to [f4ff11b0](https://github.com/angular/angular.js/commit/f4ff11b01e6a5f9a9eb25a38d327dfaadbd7c80c),
+
+Order of events has changed.
+Previously: `$locationChangeStart` -> `$locationChangeSuccess`
+  -> `$routeChangeStart` -> `$routeChangeSuccess`
+
+Now: `$locationChangeStart` -> `$routeChangeStart`
+  -> `$locationChangeSuccess` ->  -> `$routeChangeSuccess`
+
+Fixes #5581
+Closes #5714
+Closes #9502- **ngAnimate:** due to [667183a8](https://github.com/angular/angular.js/commit/667183a8c79d6ffce571a2be78c05dc76503b222),
+
+
+The $animate class API will always defer changes until the end of the next digest. This allows ngAnimate
+to coalesce class changes which occur over a short period of time into 1 or 2 DOM writes, rather than
+many. This prevents jank in browsers such as IE, and is generally a good thing.
+
+If you're finding that your classes are not being immediately applied, be sure to invoke $digest().
+
+Closes #8234
+Closes #9263
 
 
 <a name="1.3.0-rc.4"></a>
