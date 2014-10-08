@@ -410,7 +410,7 @@ function $SceDelegateProvider() {
  *
  * As of version 1.2, Angular ships with SCE enabled by default.
  *
- * Note:  When enabled (the default), IE8 in quirks mode is not supported.  In this mode, IE8 allows
+ * Note:  When enabled (the default), IE<11 in quirks mode is not supported.  In this mode, IE<11 allow
  * one to execute arbitrary javascript by the use of the expression() syntax.  Refer
  * <http://blogs.msdn.com/b/ie/archive/2008/10/16/ending-expressions.aspx> to learn more about them.
  * You can ensure your document is in standards mode and not quirks mode by adding `<!doctype html>`
@@ -727,13 +727,13 @@ function $SceProvider() {
    * sce.js and sceSpecs.js would need to be aware of this detail.
    */
 
-  this.$get = ['$parse', '$sniffer', '$sceDelegate', function(
-                $parse,   $sniffer,   $sceDelegate) {
-    // Prereq: Ensure that we're not running in IE8 quirks mode.  In that mode, IE allows
+  this.$get = ['$document', '$parse', '$sceDelegate', function(
+                $document,   $parse,   $sceDelegate) {
+    // Prereq: Ensure that we're not running in IE<11 quirks mode.  In that mode, IE < 11 allow
     // the "expression(javascript expression)" syntax which is insecure.
-    if (enabled && $sniffer.msie && $sniffer.msieDocumentMode < 8) {
+    if (enabled && $document[0].documentMode < 8) {
       throw $sceMinErr('iequirks',
-        'Strict Contextual Escaping does not support Internet Explorer version < 9 in quirks ' +
+        'Strict Contextual Escaping does not support Internet Explorer version < 11 in quirks ' +
         'mode.  You can fix this by adding the text <!doctype html> to the top of your HTML ' +
         'document.  See http://docs.angularjs.org/api/ng.$sce for more information.');
     }
