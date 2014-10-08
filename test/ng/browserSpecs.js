@@ -100,7 +100,7 @@ describe('browser', function() {
   beforeEach(function() {
     scripts = [];
     removedScripts = [];
-    sniffer = {history: true, hashchange: true};
+    sniffer = {history: true};
     fakeWindow = new MockWindow();
     fakeDocument = new MockDocument();
 
@@ -597,7 +597,7 @@ describe('browser', function() {
     var currentHref;
 
     beforeEach(function() {
-      sniffer = {history: true, hashchange: true};
+      sniffer = {history: true};
       currentHref = fakeWindow.location.href;
     });
 
@@ -683,9 +683,8 @@ describe('browser', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
-    it('should forward only popstate event when both history and hashchange supported', function() {
+    it('should forward only popstate event when history supported', function() {
       sniffer.history = true;
-      sniffer.hashchange = true;
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';
 
@@ -697,9 +696,8 @@ describe('browser', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
-    it('should forward hashchange event with new url when only hashchange supported', function() {
+    it('should forward hashchange event with new url when history not supported', function() {
       sniffer.history = false;
-      sniffer.hashchange = true;
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';
 
@@ -711,56 +709,8 @@ describe('browser', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
-    it('should use polling when neither history nor hashchange supported', function() {
+    it('should not fire urlChange if changed by browser.url method', function() {
       sniffer.history = false;
-      sniffer.hashchange = false;
-      browser.onUrlChange(callback);
-
-      fakeWindow.location.href = 'http://server.new';
-      fakeWindow.setTimeout.flush();
-      expect(callback).toHaveBeenCalledWith('http://server.new', null);
-
-      callback.reset();
-
-      fakeWindow.fire('popstate');
-      fakeWindow.fire('hashchange');
-      expect(callback).not.toHaveBeenCalled();
-    });
-
-    describe('after an initial location change by browser.url method when neither history nor hashchange supported', function() {
-      beforeEach(function() {
-        sniffer.history = false;
-        sniffer.hashchange = false;
-        browser.url("http://server/#current");
-      });
-
-      it('should fire callback with the correct URL on location change outside of angular', function() {
-        browser.onUrlChange(callback);
-
-        fakeWindow.location.href = 'http://server/#new';
-        fakeWindow.setTimeout.flush();
-        expect(callback).toHaveBeenCalledWith('http://server/#new', null);
-
-        fakeWindow.fire('popstate');
-        fakeWindow.fire('hashchange');
-        expect(callback).toHaveBeenCalledOnce();
-      });
-
-    });
-
-    it('should not fire urlChange if changed by browser.url method (polling)', function() {
-      sniffer.history = false;
-      sniffer.hashchange = false;
-      browser.onUrlChange(callback);
-      browser.url('http://new.com');
-
-      fakeWindow.setTimeout.flush();
-      expect(callback).not.toHaveBeenCalled();
-    });
-
-    it('should not fire urlChange if changed by browser.url method (hashchange)', function() {
-      sniffer.history = false;
-      sniffer.hashchange = true;
       browser.onUrlChange(callback);
       browser.url('http://new.com');
 

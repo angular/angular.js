@@ -23,20 +23,6 @@ describe('$sniffer', function() {
     });
   });
 
-  describe('hashchange', function() {
-    it('should be true if onhashchange property defined', function() {
-      expect(sniffer({onhashchange: true}).hashchange).toBe(true);
-    });
-
-    it('should be false if onhashchange property not defined', function() {
-      expect(sniffer({}).hashchange).toBe(false);
-    });
-
-    it('should be false if documentMode is 7 (IE8 comp mode)', function() {
-      expect(sniffer({onhashchange: true}, {documentMode: 7}).hashchange).toBe(false);
-    });
-  });
-
 
   describe('hasEvent', function() {
     var mockDocument, mockDivElement, $sniffer;
