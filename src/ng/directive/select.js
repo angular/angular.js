@@ -35,6 +35,12 @@ var ngOptionsMinErr = minErr('ngOptions');
  * be bound to string values at present.
  * </div>
  *
+ * <div class="alert alert-info">
+ * **Note:** Using `selectAs` will bind the result of the `selectAs` expression to the model, but
+ * the value of the `select` and `option` elements will be either the index (for array data sources)
+ * or property name (for object data sources) of the value  within the collection.
+ * </div>
+ *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required The control is considered valid only if value is entered.
@@ -69,7 +75,25 @@ var ngOptionsMinErr = minErr('ngOptions');
  *      DOM element.
  *   * `trackexpr`: Used when working with an array of objects. The result of this expression will be
  *      used to identify the objects in the array. The `trackexpr` will most likely refer to the
- *     `value` variable (e.g. `value.propertyName`).
+ *     `value` variable (e.g. `value.propertyName`). With this the selection is preserved
+ *      even when the options are recreated (e.g. reloaded from the server).
+
+ * <div class="alert alert-info">
+ * **Note:** Using `selectAs` together with `trackexpr` is not possible (and will throw).
+ * Reasoning:
+ * - Example: <select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected">
+ *   values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItemß'}}],
+ *   $scope.selected = {name: 'aSubItem'};
+ * - trackBy is always applied to `value`, with purpose to preserve the selection,
+ *   (to `item` in this case)
+ * - to calculate whether an item is selected we do the following:
+ *   1. apply `trackBy` to the values in the array, e.g.
+ *      In the example: [1,2]
+ *   2. apply `trackBy` to the already selected value in `ngModel`:
+ *      In the example: this is not possible, as `trackBy` refers to `item.id`, but the selected
+ *      value from `ngModel` is `{name: aSubItem}`.
+ *
+ * </div>
  *
  * @example
     <example module="selectExample">
@@ -326,6 +350,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         var displayFn = $parse(match[2] || match[1]),
             valueName = match[4] || match[6],
+            selectAs = / as /.test(match[0]) && match[1],
+            selectAsFn = selectAs ? $parse(selectAs) : null,
             keyName = match[5],
             groupByFn = $parse(match[3] || ''),
             valueFn = $parse(match[2] ? match[1] : valueName),
@@ -336,7 +362,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             // We try to reuse these if possible
             // - optionGroupsCache[0] is the options with no option group
             // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-            optionGroupsCache = [[{element: selectElement, label:''}]];
+            optionGroupsCache = [[{element: selectElement, label:''}]],
+            //re-usable object to represent option's locals
+            locals = {};
+
+        if (trackFn && selectAsFn) {
+          throw ngOptionsMinErr('trkslct',
+            "Comprehension expression cannot contain both selectAs ('{0}') " +
+            "and trackBy ('{1}') expressions.",
+            selectAs, track);
+        }
 
         if (nullOption) {
           // compile the element since there might be bindings in it
@@ -354,103 +389,110 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         // clear contents, we'll add what's needed based on the model
         selectElement.empty();
 
-        selectElement.on('change', function() {
-          scope.$apply(function() {
-            var optionGroup,
-                collection = valuesFn(scope) || [],
-                locals = {},
-                key, value, optionElement, index, groupIndex, length, groupLength, trackIndex;
-
-            if (multiple) {
-              value = [];
-              for (groupIndex = 0, groupLength = optionGroupsCache.length;
-                   groupIndex < groupLength;
-                   groupIndex++) {
-                // list of options for that group. (first item has the parent)
-                optionGroup = optionGroupsCache[groupIndex];
-
-                for(index = 1, length = optionGroup.length; index < length; index++) {
-                  if ((optionElement = optionGroup[index].element)[0].selected) {
-                    key = optionElement.val();
-                    if (keyName) locals[keyName] = key;
-                    if (trackFn) {
-                      for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
-                        locals[valueName] = collection[trackIndex];
-                        if (trackFn(scope, locals) == key) break;
-                      }
-                    } else {
-                      locals[valueName] = collection[key];
-                    }
-                    value.push(valueFn(scope, locals));
-                  }
-                }
-              }
-            } else {
-              key = selectElement.val();
-              if (key == '?') {
-                value = undefined;
-              } else if (key === ''){
-                value = null;
-              } else {
-                if (trackFn) {
-                  for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
-                    locals[valueName] = collection[trackIndex];
-                    if (trackFn(scope, locals) == key) {
-                      value = valueFn(scope, locals);
-                      break;
-                    }
-                  }
-                } else {
-                  locals[valueName] = collection[key];
-                  if (keyName) locals[keyName] = key;
-                  value = valueFn(scope, locals);
-                }
-              }
-            }
-            ctrl.$setViewValue(value);
-            render();
-          });
-        });
+        selectElement.on('change', selectionChanged);
 
         ctrl.$render = render;
 
         scope.$watchCollection(valuesFn, scheduleRendering);
-        scope.$watchCollection(function () {
-          var locals = {},
-              values = valuesFn(scope);
-          if (values) {
-            var toDisplay = new Array(values.length);
-            for (var i = 0, ii = values.length; i < ii; i++) {
-              locals[valueName] = values[i];
-              toDisplay[i] = displayFn(scope, locals);
-            }
-            return toDisplay;
-          }
-        }, scheduleRendering);
+        scope.$watchCollection(getLabels, scheduleRendering);
 
         if (multiple) {
           scope.$watchCollection(function() { return ctrl.$modelValue; }, scheduleRendering);
         }
 
+        // ------------------------------------------------------------------ //
 
-        function getSelectedSet() {
-          var selectedSet = false;
+        function callExpression(exprFn, key, value) {
+          locals[valueName] = value;
+          if (keyName) locals[keyName] = key;
+          return exprFn(scope, locals);
+        }
+
+        function selectionChanged() {
+          scope.$apply(function() {
+            var optionGroup,
+                collection = valuesFn(scope) || [],
+                key, value, optionElement, index, groupIndex, length, groupLength, trackIndex;
+            var viewValue;
+            if (multiple) {
+              viewValue = [];
+              forEach(selectElement.val(), function(selectedKey) {
+                viewValue.push(getViewValue(selectedKey, collection[selectedKey]));
+              });
+            } else {
+              var selectedKey = selectElement.val();
+              viewValue = getViewValue(selectedKey, collection[selectedKey]);
+            }
+            ctrl.$setViewValue(viewValue);
+            render();
+          });
+        }
+
+        function getViewValue(key, value) {
+          if (key === '?') {
+            return undefined;
+          } else if (key === '') {
+            return null;
+          } else {
+            var viewValueFn = selectAsFn ? selectAsFn : valueFn;
+            return callExpression(viewValueFn, key, value);
+          }
+        }
+
+        function getLabels() {
+          var values = valuesFn(scope);
+          var toDisplay;
+          if (values && isArray(values)) {
+            toDisplay = new Array(values.length);
+            for (var i = 0, ii = values.length; i < ii; i++) {
+              toDisplay[i] = callExpression(displayFn, i, values[i]);
+            }
+            return toDisplay;
+          } else if (values) {
+            // TODO: Add a test for this case
+            toDisplay = {};
+            for (var prop in values) {
+              if (values.hasOwnProperty(prop)) {
+                toDisplay[prop] = callExpression(displayFn, prop, values[prop]);
+              }
+            }
+          }
+          return toDisplay;
+        }
+
+        function createIsSelectedFn(viewValue) {
+          var selectedSet;
           if (multiple) {
-            var viewValue = ctrl.$viewValue;
-            if (trackFn && isArray(viewValue)) {
+            if (!selectAs && trackFn && isArray(viewValue)) {
+
               selectedSet = new HashMap([]);
-              var locals = {};
               for (var trackIndex = 0; trackIndex < viewValue.length; trackIndex++) {
-                locals[valueName] = viewValue[trackIndex];
-                selectedSet.put(trackFn(scope, locals), viewValue[trackIndex]);
+                // tracking by key
+                selectedSet.put(callExpression(trackFn, null, viewValue[trackIndex]), true);
               }
             } else {
               selectedSet = new HashMap(viewValue);
             }
+          } else if (!selectAsFn && trackFn) {
+            viewValue = callExpression(trackFn, null, viewValue);
           }
-          return selectedSet;
-        }
+          return function isSelected(key, value) {
+            var compareValueFn;
+            if (selectAsFn) {
+              compareValueFn = selectAsFn;
+            } else if (trackFn) {
+              compareValueFn = trackFn;
+            } else {
+              compareValueFn = valueFn;
+            }
 
+            if (multiple) {
+              return isDefined(selectedSet.remove(callExpression(compareValueFn, key, value)));
+            } else {
+              return viewValue == callExpression(compareValueFn, key, value);
+            }
+          }
+        }
 
         function scheduleRendering() {
           if (!renderScheduled) {
@@ -459,11 +501,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         }
 
-
         function render() {
           renderScheduled = false;
 
-              // Temporary location for the option groups before we render them
+          // Temporary location for the option groups before we render them
           var optionGroups = {'':[]},
               optionGroupNames = [''],
               optionGroupName,
@@ -474,54 +515,41 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               values = valuesFn(scope) || [],
               keys = keyName ? sortedKeys(values) : values,
               key,
+              value,
               groupLength, length,
               groupIndex, index,
-              locals = {},
               selected,
-              selectedSet = getSelectedSet(),
+              isSelected = createIsSelectedFn(viewValue),
+              anySelected = false,
               lastElement,
               element,
               label;
 
-
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
-
             key = index;
             if (keyName) {
               key = keys[index];
               if ( key.charAt(0) === '$' ) continue;
-              locals[keyName] = key;
             }
+            value = values[key];
 
-            locals[valueName] = values[key];
-
-            optionGroupName = groupByFn(scope, locals) || '';
+            optionGroupName = callExpression(groupByFn, key, value) || '';
             if (!(optionGroup = optionGroups[optionGroupName])) {
               optionGroup = optionGroups[optionGroupName] = [];
               optionGroupNames.push(optionGroupName);
             }
-            if (multiple) {
-              selected = isDefined(
-                selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals))
-              );
-            } else {
-              if (trackFn) {
-                var modelCast = {};
-                modelCast[valueName] = viewValue;
-                selected = trackFn(scope, modelCast) === trackFn(scope, locals);
-              } else {
-                selected = viewValue === valueFn(scope, locals);
-              }
-              selectedSet = selectedSet || selected; // see if at least one item is selected
-            }
-            label = displayFn(scope, locals); // what will be seen by the user
+
+            selected = isSelected(key, value);
+            anySelected = anySelected || selected;
+
+            label = callExpression(displayFn, key, value); // what will be seen by the user
 
             // doing displayFn(scope, locals) || '' overwrites zero values
             label = isDefined(label) ? label : '';
             optionGroup.push({
               // either the index into array or key from object
-              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),
+              id: (keyName ? keys[index] : index),
               label: label,
               selected: selected                   // determine if we should be selected
             });
@@ -529,8 +557,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           if (!multiple) {
             if (nullOption || viewValue === null) {
               // insert null option if we have a placeholder, or the model is null
-              optionGroups[''].unshift({id:'', label:'', selected:!selectedSet});
-            } else if (!selectedSet) {
+              optionGroups[''].unshift({id:'', label:'', selected:!anySelected});
+            } else if (!anySelected) {
               // option could not be found, we have to insert the undefined item
               optionGroups[''].unshift({id:'?', label:'', selected:true});
             }
