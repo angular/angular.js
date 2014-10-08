@@ -80,8 +80,7 @@ var ngOptionsMinErr = minErr('ngOptions');
 
  * <div class="alert alert-info">
  * **Note:** Using `selectAs` together with `trackexpr` is not possible (and will throw).
- * TODO: Add some nice reasoning here, add a minErr and a nice error page.
- * reasoning:
+ * Reasoning:
  * - Example: <select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected">
  *   values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItemß'}}],
  *   $scope.selected = {name: 'aSubItem'};
@@ -366,6 +365,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             optionGroupsCache = [[{element: selectElement, label:''}]],
             //re-usable object to represent option's locals
             locals = {};
+
+        if (trackFn && selectAsFn) {
+          throw ngOptionsMinErr('trkslct',
+            "Comprehension expression cannot contain both selectAs ('{0}') " +
+            "and trackBy ('{1}') expressions.",
+            selectAs, track);
+        }
 
         if (nullOption) {
           // compile the element since there might be bindings in it
