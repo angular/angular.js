@@ -140,8 +140,7 @@ function publishExternalAPI(angular){
     'getTestability': getTestability,
     '$$minErr': minErr,
     '$$csp': csp,
-    'reloadWithDebugInfo': reloadWithDebugInfo,
-    '$$hasClass': jqLiteHasClass
+    'reloadWithDebugInfo': reloadWithDebugInfo
   });
 
   angularModule = setupModuleLoader(window);

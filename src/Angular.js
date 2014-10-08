@@ -83,6 +83,12 @@
   getBlockNodes: true,
   hasOwnProperty: true,
   createMap: true,
+
+  NODE_TYPE_ELEMENT: true,
+  NODE_TYPE_TEXT: true,
+  NODE_TYPE_COMMENT: true,
+  NODE_TYPE_DOCUMENT: true,
+  NODE_TYPE_DOCUMENT_FRAGMENT: true,
 */
 
 ////////////////////////////////////
@@ -192,7 +198,7 @@ function isArrayLike(obj) {
 
   var length = obj.length;
 
-  if (obj.nodeType === 1 && length) {
+  if (obj.nodeType === NODE_TYPE_ELEMENT && length) {
     return true;
   }
 
@@ -1028,11 +1034,9 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.empty();
   } catch(e) {}
-  // As Per DOM Standards
-  var TEXT_NODE = 3;
   var elemHtml = jqLite('<div>').append(element).html();
   try {
-    return element[0].nodeType === TEXT_NODE ? lowercase(elemHtml) :
+    return element[0].nodeType === NODE_TYPE_TEXT ? lowercase(elemHtml) :
         elemHtml.
           match(/^(<[^>]+>)/)[1].
           replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
@@ -1610,3 +1614,9 @@ function getBlockNodes(nodes) {
 function createMap() {
   return Object.create(null);
 }
+
+var NODE_TYPE_ELEMENT = 1;
+var NODE_TYPE_TEXT = 3;
+var NODE_TYPE_COMMENT = 8;
+var NODE_TYPE_DOCUMENT = 9;
+var NODE_TYPE_DOCUMENT_FRAGMENT = 11;

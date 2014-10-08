@@ -477,9 +477,14 @@ angular.module('ngAnimate', ['ng'])
           });
         });
 
+        var hasClasses = {};
+        forEach((element.attr('class') || '').replace(/\s+/g, ' ').split(' '), function(className) {
+          hasClasses[className] = true;
+        });
+
         var toAdd = [], toRemove = [];
         forEach(cache.classes, function(status, className) {
-          var hasClass = angular.$$hasClass(element[0], className);
+          var hasClass = hasClasses[className] === true;
           var matchingAnimation = lookup[className] || {};
 
           // When addClass and removeClass is called then $animate will check to
@@ -979,7 +984,10 @@ angular.module('ngAnimate', ['ng'])
           element = stripCommentsFromElement(element);
 
           if (classBasedAnimationsBlocked(element)) {
-            return $delegate.setClass(element, add, remove);
+            // TODO(@caitp/@matsko): Don't use private/undocumented API here --- we should not be
+            // changing the DOM synchronously in this case. The `true` parameter must eventually be
+            // removed.
+            return $delegate.setClass(element, add, remove, true);
           }
 
           // we're using a combined array for both the add and remove
@@ -1033,7 +1041,8 @@ angular.module('ngAnimate', ['ng'])
             return !classes
               ? done()
               : performAnimation('setClass', classes, element, parentElement, null, function() {
-                  $delegate.setClass(element, classes[0], classes[1]);
+                  if (classes[0]) $delegate.$$addClassImmediately(element, classes[0]);
+                  if (classes[1]) $delegate.$$removeClassImmediately(element, classes[1]);
                 }, done);
           });
         },
