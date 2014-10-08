@@ -289,6 +289,8 @@ var $AnimateProvider = ['$provide', function($provide) {
         element = jqLite(element);
 
         if (runSynchronously) {
+          // TODO(@caitp/@matsko): Remove undocumented `runSynchronously` parameter, and always
+          // perform DOM manipulation asynchronously or in postDigest.
           self.$$addClassImmediately(element, add);
           self.$$removeClassImmediately(element, remove);
           return asyncPromise();
