@@ -369,3 +369,55 @@ describe('ngIf animations', function () {
     });
   });
 });
+
+describe('ngUnless', function () {
+  var $scope, $compile, element, $compileProvider;
+
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
+  beforeEach(inject(function ($rootScope, _$compile_) {
+    $scope = $rootScope.$new();
+    $compile = _$compile_;
+    element = $compile('<div></div>')($scope);
+  }));
+
+  afterEach(function () {
+    dealoc(element);
+  });
+
+  function makeUnless() {
+    forEach(arguments, function (expr) {
+      element.append($compile('<div class="my-class" ng-unless="' + expr + '"><div>Hi</div></div>')($scope));
+    });
+    $scope.$apply();
+  }
+
+  it('should immediately remove the element if condition is true', function () {
+    makeUnless('true');
+    expect(element.children().length).toBe(0);
+  });
+
+  it('should leave the element if condition is falsy', function () {
+    makeUnless('false', 'undefined', 'null', 'NaN', '\'\'', '0');
+    expect(element.children().length).toBe(6);
+  });
+
+  it('should remove the element if the condition is a non-empty string', function () {
+    makeUnless('\'f\'', '\'0\'', '\'false\'', '\'no\'', '\'n\'', '\'[]\'');
+    expect(element.children().length).toBe(0);
+  });
+
+  it('should remove the element if the condition is an object', function () {
+    makeUnless('[]', '{}');
+    expect(element.children().length).toBe(0);
+  });
+
+  it('should create then remove the element if condition changes', function () {
+    $scope.hello = false;
+    makeUnless('hello');
+    expect(element.children().length).toBe(1);
+    $scope.$apply('hello = true');
+    expect(element.children().length).toBe(0);
+  });
+});
