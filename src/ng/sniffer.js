@@ -21,7 +21,6 @@ function $SnifferProvider() {
           int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
         document = $document[0] || {},
-        documentMode = document.documentMode,
         vendorPrefix,
         vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
         bodyStyle = document.body && document.body.style,
@@ -81,9 +80,7 @@ function $SnifferProvider() {
       vendorPrefix: vendorPrefix,
       transitions : transitions,
       animations : animations,
-      android: android,
-      msie : msie,
-      msieDocumentMode: documentMode
+      android: android
     };
   }];
 }
