@@ -5,7 +5,7 @@
    * documentMode is an IE-only property
    * http://msdn.microsoft.com/en-us/library/ie/cc196988(v=vs.85).aspx
    */
-  msie = document.documentMode;
+  var msie = document.documentMode;
 
   /**
    * Triggers a browser event. Attempts to choose the right event if one is
