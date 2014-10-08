@@ -366,6 +366,21 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
+     * @name $route#$beforeRouteChange
+     * @eventType broadcast on root scope
+     *
+     * @description
+     * Broadcasted during locationChangeStart, will cancel $locationChangeStart
+     * if preventDefault() is called, thus preventing subsequent $routeChange
+     * events.
+     *
+     * @param {Object} angularEvent Synthetic event object.
+     * @param {Route}  nextRoute route information of the future route.
+     * @param {Route} currentRoute current route information.
+     */
+
+    /**
+     * @ngdoc event
      * @name $route#$routeChangeStart
      * @eventType broadcast on root scope
      * @description
@@ -469,6 +484,7 @@ function $RouteProvider(){
           }
         };
 
+    $rootScope.$on('$locationChangeStart', beforeUpdateRoute);
     $rootScope.$on('$locationChangeSuccess', updateRoute);
 
     return $route;
@@ -578,6 +594,18 @@ function $RouteProvider(){
               $rootScope.$broadcast('$routeChangeError', next, last, error);
             }
           });
+      }
+    }
+
+
+    // $locationChangeStart handler. Dispatches $beforeRouteChange, and cancels $locationChangeStart
+    // if the user cancels the $beforeRouteChange event.
+    function beforeUpdateRoute(event, next, current) {
+      var nextRoute = parseRoute();
+      var lastRoute = $route.current;
+
+      if ($rootScope.$broadcast('$beforeRouteChange', nextRoute, lastRoute).defaultPrevented) {
+        event.preventDefault();
       }
     }
 

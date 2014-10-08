@@ -196,7 +196,7 @@ describe('$route', function() {
         event.preventDefault();
       });
 
-      $rootScope.$on('$beforeRouteChange', function(event) {
+      $rootScope.$on('$routeChangeStart', function(event) {
         throw new Error('Should not get here');
       });
 
@@ -739,6 +739,65 @@ describe('$route', function() {
         $location.path('/locals');
         $rootScope.$digest();
         expect($exceptionHandler.errors).toEqual([myError]);
+      });
+    });
+
+
+    it('should pass nextRoute and currentRoute to $beforeRouteChange', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/a', {
+          template: '<p>route A</p>'
+        }).when('/b', {
+          template: '<p>route B</p>'
+        });
+      });
+
+      inject(function($location, $route, $rootScope) {
+        var beforeRouteChangeCalled = false;
+        $location.path('/a');
+        $rootScope.$digest();
+
+        $rootScope.$on('$beforeRouteChange', function(event, nextRoute, currentRoute) {
+          beforeRouteChangeCalled = true;
+          expect(nextRoute.template).toBe('<p>route B</p>');
+          expect(currentRoute.template).toBe('<p>route A</p>');
+        });
+
+        $location.path('/b');
+        $rootScope.$digest();
+
+        expect(beforeRouteChangeCalled).toBe(true);
+      });
+    });
+
+
+    it('should cancel $locationChange when $beforeRouteChange is cancelled', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/a', {
+          template: '<p>route A</p>'
+        }).when('/b', {
+          template: '<p>route B</p>'
+        });
+      });
+
+      inject(function($location, $route, $rootScope) {
+        var didChangeLocation = false;
+        $location.path('/a');
+        $rootScope.$digest();
+
+        $rootScope.$on('$beforeRouteChange', function(event, nextRoute, currentRoute) {
+          event.preventDefault();
+        });
+        $rootScope.$on('$locationChangeSuccess', function() {
+          didChangeLocation = true;
+        });
+
+        $location.path('/b');
+        $rootScope.$digest();
+
+        expect(didChangeLocation).toBe(false);
+        expect($location.path()).toBe('/a');
+        expect($route.current.template).toBe('<p>route A</p>');
       });
     });
   });
