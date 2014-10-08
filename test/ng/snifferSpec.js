@@ -332,16 +332,4 @@ describe('$sniffer', function() {
       expect($sniffer.android).toBe(2);
     });
   });
-
-  it('should return the internal msie flag', inject(function($sniffer) {
-    expect(isNaN($sniffer.msie)).toBe(isNaN(msie));
-    if (msie) {
-      expect($sniffer.msie).toBe(msie);
-    }
-  }));
-
-  it('should return document.documentMode as msieDocumentMode', function() {
-    var someDocumentMode = 123;
-    expect(sniffer({}, {documentMode: someDocumentMode}).msieDocumentMode).toBe(someDocumentMode);
-  });
 });

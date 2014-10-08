@@ -18,7 +18,7 @@ describe('$location', function() {
     var urlParsingNodePlaceholder;
 
     beforeEach(inject(function ($sniffer) {
-      if ($sniffer.msie) return;
+      if (msie) return;
 
       urlParsingNodePlaceholder = urlParsingNode;
 
@@ -38,7 +38,7 @@ describe('$location', function() {
     }));
 
     afterEach(inject(function ($sniffer) {
-      if ($sniffer.msie) return;
+      if (msie) return;
       //reset urlParsingNode
       urlParsingNode = urlParsingNodePlaceholder;
     }));
