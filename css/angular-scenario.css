@@ -13,7 +13,8 @@ body {
   text-align: center;
 }
 
-#json, #xml {
+#json,
+#xml {
   display: none;
 }
 
