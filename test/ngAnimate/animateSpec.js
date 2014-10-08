@@ -2456,6 +2456,78 @@ describe("ngAnimate", function() {
         }));
       });
 
+      describe("options", function() {
+
+        it('should add and remove the temporary className value is provided', function() {
+          var captures = {};
+          module(function($animateProvider) {
+            $animateProvider.register('.capture', function() {
+              return {
+                enter : capture('enter'),
+                leave : capture('leave'),
+                move : capture('move'),
+                addClass : capture('addClass'),
+                removeClass : capture('removeClass'),
+                setClass : capture('setClass')
+              };
+
+              function capture(event) {
+                return function(element, add, remove, done) {
+                  //some animations only have one extra param
+                  done = done || remove || add;
+                  captures[event]=done;
+                };
+              }
+            });
+          });
+          inject(function($animate, $rootScope, $compile, $rootElement, $document) {
+            var container = jqLite('<div class="container"></div>');
+            var container2 = jqLite('<div class="container2"></div>');
+            var element = jqLite('<div class="capture"></div>');
+            $rootElement.append(container);
+            $rootElement.append(container2);
+            angular.element($document[0].body).append($rootElement);
+
+            $compile(element)($rootScope);
+
+            assertTempClass('enter', 'temp-enter', function() {
+              $animate.enter(element, container, null, 'temp-enter');
+            });
+
+            assertTempClass('move', 'temp-move', function() {
+              $animate.move(element, null, container2, 'temp-move');
+            });
+
+            assertTempClass('addClass', 'temp-add', function() {
+              $animate.addClass(element, 'add', 'temp-add');
+            });
+
+            assertTempClass('removeClass', 'temp-remove', function() {
+              $animate.removeClass(element, 'add', 'temp-remove');
+            });
+
+            element.addClass('remove');
+            assertTempClass('setClass', 'temp-set', function() {
+              $animate.setClass(element, 'add', 'remove', 'temp-set');
+            });
+
+            assertTempClass('leave', 'temp-leave', function() {
+              $animate.leave(element, 'temp-leave');
+            });
+
+            function assertTempClass(event, className, animationOperation) {
+              expect(element).not.toHaveClass(className);
+              animationOperation();
+              $rootScope.$digest();
+              expect(element).toHaveClass(className);
+              $animate.triggerReflow();
+              captures[event]();
+              $animate.triggerCallbacks();
+              expect(element).not.toHaveClass(className);
+            }
+          });
+        });
+      });
 
       describe("addClass / removeClass", function() {
 
