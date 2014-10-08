@@ -831,7 +831,6 @@ angular.module('ngAnimate', ['ng'])
 
           cancelChildAnimations(element);
           classBasedAnimationsBlocked(element, true);
-          this.enabled(false, element);
           return runAnimationPostDigest(function(done) {
             return performAnimation('leave', 'ng-leave', stripCommentsFromElement(element), null, null, function() {
               $delegate.leave(element);
