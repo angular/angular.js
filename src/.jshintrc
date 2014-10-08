@@ -92,6 +92,13 @@
 
     "skipDestroyOnNextJQueryCleanData": true,
 
+    "NODE_TYPE_ELEMENT": false,
+    "NODE_TYPE_TEXT": false,
+    "NODE_TYPE_COMMENT": false,
+    "NODE_TYPE_COMMENT": false,
+    "NODE_TYPE_DOCUMENT": false,
+    "NODE_TYPE_DOCUMENT_FRAGMENT": false,
+
     /* filters.js */
     "getFirstThursdayOfYear": false,
 
