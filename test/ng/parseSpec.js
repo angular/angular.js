@@ -632,6 +632,38 @@ describe('parser', function() {
         expect(scope.a).not.toBeDefined();
       });
 
+      it('should evaluate Infinity', function() {
+        expect(scope.$eval("Infinity")).toBe(Infinity);
+        expect(scope.$eval("a=Infinity")).toBe(Infinity);
+        expect(scope.a).toBe(Infinity);
+      });
+
+      it('should evaluate -Infinity', function() {
+        expect(scope.$eval("-Infinity")).toBe(-Infinity);
+        expect(scope.$eval("a=-Infinity")).toBe(-Infinity);
+        expect(scope.a).toBe(-Infinity);
+      });
+
+      it('should dereference object properties named "Infinity"', function() {
+        scope.obj = { 'Infinity': 42 };
+        expect(scope.$eval("obj.Infinity")).toBe(42);
+        expect(scope.$eval("obj.Infinity = 43")).toBe(43);
+        expect(scope.obj.Infinity).toBe(43);
+      });
+
+      it('should evaluate NaN', function() {
+        expect(scope.$eval("NaN")).toBeNaN();
+        expect(scope.$eval("a=NaN")).toBeNaN();
+        expect(scope.a).toBeNaN();
+      });
+
+      it('should dereference object properties named "NaN"', function() {
+        scope.obj = { 'NaN': 42 };
+        expect(scope.$eval("obj.NaN")).toBe(42);
+        expect(scope.$eval("obj.NaN = 43")).toBe(43);
+        expect(scope.obj.NaN).toBe(43);
+      });
+
       it('should allow assignment after array dereference', function() {
         scope.obj = [{}];
         scope.$eval('obj[0].name=1');
