@@ -1068,7 +1068,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        */
       $observe: function(key, fn) {
         var attrs = this,
-            $$observers = (attrs.$$observers || (attrs.$$observers = Object.create(null))),
+            $$observers = (attrs.$$observers || (attrs.$$observers = createMap())),
             listeners = ($$observers[key] || ($$observers[key] = []));
 
         listeners.push(fn);
