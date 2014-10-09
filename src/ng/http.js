@@ -887,18 +887,31 @@ function $HttpProvider() {
      * @param {Object=} config Optional configuration object
      * @returns {HttpPromise} Future object
      */
-    createShortMethodsWithData('post', 'put');
 
-        /**
-         * @ngdoc property
-         * @name $http#defaults
-         *
-         * @description
-         * Runtime equivalent of the `$httpProvider.defaults` property. Allows configuration of
-         * default headers, withCredentials as well as request and response transformations.
-         *
-         * See "Setting HTTP Headers" and "Transforming Requests and Responses" sections above.
-         */
+    /**
+     * @ngdoc method
+     * @name $http#patch
+     *
+     * @description
+     * Shortcut method to perform `PATCH` request.
+     *
+     * @param {string} url Relative or absolute URL specifying the destination of the request
+     * @param {*} data Request content
+     * @param {Object=} config Optional configuration object
+     * @returns {HttpPromise} Future object
+     */
+    createShortMethodsWithData('post', 'put', 'patch');
+
+    /**
+     * @ngdoc property
+     * @name $http#defaults
+     *
+     * @description
+     * Runtime equivalent of the `$httpProvider.defaults` property. Allows configuration of
+     * default headers, withCredentials as well as request and response transformations.
+     *
+     * See "Setting HTTP Headers" and "Transforming Requests and Responses" sections above.
+     */
     $http.defaults = defaults;
 
 

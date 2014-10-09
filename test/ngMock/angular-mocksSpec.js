@@ -947,6 +947,26 @@ describe('ngMock', function() {
     }));
 
 
+    it('should provide "expect" methods for each HTTP verb', function() {
+      expect(typeof hb.expectGET).toBe("function");
+      expect(typeof hb.expectPOST).toBe("function");
+      expect(typeof hb.expectPUT).toBe("function");
+      expect(typeof hb.expectPATCH).toBe("function");
+      expect(typeof hb.expectDELETE).toBe("function");
+      expect(typeof hb.expectHEAD).toBe("function");
+    });
+
+
+    it('should provide "when" methods for each HTTP verb', function() {
+      expect(typeof hb.whenGET).toBe("function");
+      expect(typeof hb.whenPOST).toBe("function");
+      expect(typeof hb.whenPUT).toBe("function");
+      expect(typeof hb.whenPATCH).toBe("function");
+      expect(typeof hb.whenDELETE).toBe("function");
+      expect(typeof hb.whenHEAD).toBe("function");
+    });
+
+
     it('should respond with first matched definition', function() {
       hb.when('GET', '/url1').respond(200, 'content', {});
       hb.when('GET', '/url1').respond(201, 'another', {});
