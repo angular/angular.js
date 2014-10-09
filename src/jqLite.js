@@ -3,6 +3,9 @@
 /* global JQLitePrototype: true,
   addEventListenerFn: true,
   removeEventListenerFn: true,
+  jqLiteHasClass: true,
+  jqLiteAddClass: true,
+  jqLiteRemoveClass: true,
   BOOLEAN_ATTR: true,
   ALIASED_ATTR: true,
 */
@@ -351,13 +354,18 @@ function jqLiteData(element, key, value) {
   }
 }
 
-function jqLiteHasClass(element, selector) {
+
+var jqLiteHasClass = msie === 9 ? jqLiteHasClassIE9 : jqLiteHasClassCommon;
+var jqLiteAddClass = msie === 9 ? jqLiteAddClassIE9 : jqLiteAddClassCommon;
+var jqLiteRemoveClass = msie === 9 ? jqLiteRemoveClassIE9 : jqLiteRemoveClassCommon;
+
+function jqLiteHasClassCommon(element, selector) {
   if (!element.getAttribute) return false;
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
-function jqLiteRemoveClass(element, cssClasses) {
+function jqLiteRemoveClassCommon(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.setAttribute('class', trim(
@@ -369,7 +377,7 @@ function jqLiteRemoveClass(element, cssClasses) {
   }
 }
 
-function jqLiteAddClass(element, cssClasses) {
+function jqLiteAddClassCommon(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
                             .replace(/[\n\t]/g, " ");
@@ -382,6 +390,60 @@ function jqLiteAddClass(element, cssClasses) {
     });
 
     element.setAttribute('class', trim(existingClasses));
+  }
+}
+
+function jqLiteHasClassIE9(element, selector) {
+  if (!element.className && element.className !== '') return false;
+  var existingClasses = (' ' + (element.className.baseVal || element.className || '') + ' ')
+                          .replace(/[\r\n\s]+/g, ' ');
+  return existingClasses.indexOf( " " + selector + " " ) > -1;
+}
+
+function jqLiteRemoveClassIE9(element, cssClasses) {
+  if (cssClasses && (element.className || element.className === '')) {
+    var existingClasses = (' ' + (element.className.baseVal || element.className || '') + ' ')
+                            .replace(/[\r\n\s]+/g, ' ');
+
+    forEach(cssClasses.split(' '), function(cssClass) {
+      cssClass = trim(cssClass);
+      existingClasses = existingClasses.replace(' ' + cssClass + ' ', ' ');
+    });
+
+    existingClasses = trim(existingClasses);
+
+    if (typeof element.className === 'string') {
+      /* assuming regular node */
+      element.className = existingClasses;
+    } else {
+      /* assuming SVG */
+      element.className.baseVal = existingClasses;
+    }
+  }
+}
+
+function jqLiteAddClassIE9(element, cssClasses) {
+  // MSIE9 cannot reliably use setAttribute() when XML namespaces are used anywhere
+  // on the element. Because of this, we work with className directly.
+  if (cssClasses && (element.className || element.className === '')) {
+    var existingClasses = (' ' + (element.className.baseVal || element.className || '') + ' ')
+                            .replace(/[\r\n\s]+/g, ' ');
+
+    forEach(cssClasses.split(' '), function(cssClass) {
+      cssClass = trim(cssClass);
+      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+        existingClasses += cssClass + ' ';
+      }
+    });
+    existingClasses = trim(existingClasses);
+
+    if (typeof element.className === 'string') {
+      /* assuming regular node */
+      element.className = existingClasses;
+    } else {
+      /* assuming SVG */
+      element.className.baseVal = existingClasses;
+    }
   }
 }
 
