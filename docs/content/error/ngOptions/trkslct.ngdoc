@@ -3,6 +3,9 @@
 @fullName Comprehension expression cannot contain both `select as` and `track by` expressions.
 @description
 
+NOTE: This error was introduced in 1.3.0-rc.5, and was removed for 1.3.0-rc.6 in order to
+accommodate existing apps that write complex enough `track by` expressions to work with `select as`.
+
 This error occurs when 'ngOptions' is passed a comprehension expression that contains both a
 `select as` expression and a `track by` expression. These two expressions are fundamentally
 incompatible.
