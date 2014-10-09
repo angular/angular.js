@@ -1074,6 +1074,17 @@ describe('$http', function() {
           });
 
 
+          it('should deserialize json empty string when response header contains application/json',
+              function() {
+            $httpBackend.expect('GET', '/url').respond('""', {'Content-Type': 'application/json'});
+            $http({method: 'GET', url: '/url'}).success(callback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+            expect(callback.mostRecentCall.args[0]).toEqual('');
+          });
+
+
           it('should deserialize json with security prefix', function() {
             $httpBackend.expect('GET', '/url').respond(')]}\',\n[1, "abc", {"foo":"bar"}]');
             $http({method: 'GET', url: '/url'}).success(callback);
@@ -1091,6 +1102,18 @@ describe('$http', function() {
 
             expect(callback).toHaveBeenCalledOnce();
             expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+          });
+
+
+          it('should not attempt to deserialize json when HEAD request', function(){
+            //per http spec for Content-Type, HEAD request should return a Content-Type header
+            //set to what the content type would have been if a get was sent
+            $httpBackend.expect('HEAD', '/url').respond('', {'Content-Type': 'application/json'});
+            $http({method: 'HEAD', url: '/url'}).success(callback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+            expect(callback.mostRecentCall.args[0]).toEqual('');
           });
 
 
