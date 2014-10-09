@@ -231,7 +231,7 @@ function $HttpProvider() {
      *
      * ```js
      *   // Simple GET request example :
-     *   $http({method: 'GET', url: '/someUrl'}).
+     *   $http.get('/someUrl').
      *     success(function(data, status, headers, config) {
      *       // this callback will be called asynchronously
      *       // when the response is available
@@ -244,7 +244,7 @@ function $HttpProvider() {
      *
      * ```js
      *   // Simple POST request example (passing data) :
-     *   $http({method: 'POST', url: '/someUrl', data:{msg:'hello word!'}}).
+     *   $http.post('/someUrl', {msg:'hello word!'}).
      *     success(function(data, status, headers, config) {
      *       // this callback will be called asynchronously
      *       // when the response is available
