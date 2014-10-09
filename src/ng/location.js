@@ -671,7 +671,7 @@ function $LocationProvider(){
     } else if (isObject(mode)) {
 
       if (isBoolean(mode.enabled)) {
-        html5Mode.enabled =  mode.enabled;
+        html5Mode.enabled = mode.enabled;
       }
 
       if (isBoolean(mode.requireBase)) {
@@ -679,7 +679,7 @@ function $LocationProvider(){
       }
 
       if (isBoolean(mode.rewriteLinks)) {
-        html5Mode.rewriteLinks =  mode.rewriteLinks;
+        html5Mode.rewriteLinks = mode.rewriteLinks;
       }
 
       return this;
