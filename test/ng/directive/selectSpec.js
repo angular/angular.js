@@ -406,6 +406,54 @@ describe('select', function() {
           expect(scope.robot).toBe('r2d2');
         });
 
+        it('should remove unknown option when option is again known', function() {
+          var getValues = function() {
+            var result = [];
+
+            forEach(element.find('option'), function(option) {
+              result.push(option.getAttribute('value'));
+            });
+
+            return result;
+          }, getLabels = function() {
+            var result = [];
+
+            forEach(element.find('option'), function(option) {
+              result.push(option.innerHTML);
+            });
+
+            return result;
+          };
+
+          scope.robots = [
+            'c3p0',
+            'r2d2'
+          ];
+
+          scope.robot = 'r2d2';
+
+          compile('<select ng-model="robot" ' +
+          'ng-options="item for item in robots">' +
+          '</select>');
+
+          expect(getValues()).toEqual(['0', '1']);
+          expect(getLabels()).toEqual(['c3p0', 'r2d2']);
+
+          scope.$apply(function() {
+            delete scope.robot;
+          });
+
+          expect(getValues()).toEqual(['?', '0', '1']);
+          expect(getLabels()).toEqual(['', 'c3p0', 'r2d2']);
+
+          scope.$apply(function() {
+            scope.robot = 'r2d2';
+          });
+
+          expect(getValues()).toEqual(['0', '1']);
+          expect(getLabels()).toEqual(['c3p0', 'r2d2']);
+        });
+
         describe('selectController.hasOption', function() {
           it('should return true for options added via ngOptions', function() {
             scope.robots = [
