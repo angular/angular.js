@@ -135,7 +135,7 @@ var OPERATORS = extend(createMap(), {
     '|':true
 });
 /* jshint bitwise: true */
-var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "b": "\b", "'":"'", '"':'"'};
 
 
 /////////////////////////////////////////
@@ -344,16 +344,25 @@ Lexer.prototype = {
     var string = '';
     var rawString = quote;
     var escape = false;
+    var hex;
     while (this.index < this.text.length) {
       var ch = this.text.charAt(this.index);
       rawString += ch;
       if (escape) {
         if (ch === 'u') {
-          var hex = this.text.substring(this.index + 1, this.index + 5);
+          hex = this.text.substring(this.index + 1, this.index + 5);
           if (!hex.match(/[\da-f]{4}/i))
             this.throwError('Invalid unicode escape [\\u' + hex + ']');
           this.index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
+        } else if (ch === 'x') {
+          hex = this.text.substring(this.index + 1, this.index + 3);
+          if (!hex.match(/[\da-f]{2}/i))
+            this.throwError('Invalid hex escape [\\x' + hex + ']');
+          this.index += 2;
+          string += String.fromCharCode(parseInt(hex, 16));
+        } else if (ch >= '0' && ch <= '7') {
+          this.throwError('Octal literals are not allowed');
         } else {
           var rep = ESCAPE[ch];
           string = string + (rep || ch);
