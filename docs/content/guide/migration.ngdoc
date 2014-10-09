@@ -425,7 +425,6 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
   <li>{@link guide/migration#uncommon-region-specific-local-files-were-removed-from-i18n Uncommon region-specific local files were removed from i18n}</li>
   <li>{@link guide/migration#services-can-now-return-functions Services can now return functions}</li>
-  <li>{@link guide/migration#modifying-the-dom-outside-digest-cycle Modifying the DOM outside digest cycle}</li>
 </ul>
 
 
