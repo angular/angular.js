@@ -759,7 +759,7 @@ function $HttpProvider() {
         if(response.config.method.toLowerCase() === 'head'){
           resp.data = response.data;
         } else {
-          resp.data = transformData(response.data, response.headers, config.transformResponse)
+          resp.data = transformData(response.data, response.headers, config.transformResponse);
         }
         return (isSuccess(response.status))
           ? resp
