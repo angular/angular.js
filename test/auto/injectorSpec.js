@@ -1001,8 +1001,8 @@ describe('strict-di injector', function() {
       called = true;
       // jshint -W040
       expect(typeof this.$get).toBe('function');
-      // jshint +W040
       return this;
+      // jshint +W040
     }
     module(function($provide) {
       $provide.factory('$test', factoryFn);
