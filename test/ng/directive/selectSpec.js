@@ -817,22 +817,180 @@ describe('select', function() {
     });
 
 
+    /**
+     * This behavior is broken and should probably be cleaned up later as track by and select as
+     * aren't compatible.
+     */
     describe('selectAs+trackBy expression', function() {
       beforeEach(function() {
-        scope.arr = [{id: 10, label: 'ten'}, {id:'20', label: 'twenty'}];
-        scope.obj = {'10': {score: 10, label: 'ten'}, '20': {score: 20, label: 'twenty'}};
+        scope.arr = [{subItem: {label: 'ten', id: 10}}, {subItem: {label: 'twenty', id: 20}}];
+        scope.obj = {'10': {subItem: {id: 10, label: 'ten'}}, '20': {subItem: {id: 20, label: 'twenty'}}};
       });
 
 
-      it('should throw a helpful minerr', function() {
-        expect(function() {
+      it('It should use the "value" variable to represent items in the array as well as for the ' +
+          'selected values in track by expression (single&array)', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item.subItem as item.subItem.label for item in arr track by (item.id || item.subItem.id)'
+        });
 
-            createSelect({
-              'ng-model': 'selected',
-              'ng-options': 'item.id as item.name for item in values track by item.id'
-            });
+        // First test model -> view
 
-        }).toThrowMinErr('ngOptions', 'trkslct', "Comprehension expression cannot contain both selectAs 'item.id' and trackBy 'item.id' expressions.");
+        scope.$apply(function() {
+          scope.selected = scope.arr[0].subItem;
+        });
+        expect(element.val()).toEqual('0');
+
+        scope.$apply(function() {
+          scope.selected = scope.arr[1].subItem;
+        });
+        expect(element.val()).toEqual('1');
+
+        // Now test view -> model
+
+        element.val('0');
+        browserTrigger(element, 'change');
+        expect(scope.selected).toBe(scope.arr[0].subItem);
+
+        // Now reload the array
+        scope.$apply(function() {
+          scope.arr = [{
+            subItem: {label: 'new ten', id: 10}
+          },{
+            subItem: {label: 'new twenty', id: 20}
+          }];
+        });
+        expect(element.val()).toBe('0');
+        expect(scope.selected.id).toBe(10);
+      });
+
+
+      it('It should use the "value" variable to represent items in the array as well as for the ' +
+          'selected values in track by expression (multiple&array)', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'multiple': true,
+          'ng-options': 'item.subItem as item.subItem.label for item in arr track by (item.id || item.subItem.id)'
+        });
+
+        // First test model -> view
+
+        scope.$apply(function() {
+          scope.selected = [scope.arr[0].subItem];
+        });
+        expect(element.val()).toEqual(['0']);
+
+        scope.$apply(function() {
+          scope.selected = [scope.arr[1].subItem];
+        });
+        expect(element.val()).toEqual(['1']);
+
+        // Now test view -> model
+
+        element.find('option')[0].selected = true;
+        element.find('option')[1].selected = false;
+        browserTrigger(element, 'change');
+        expect(scope.selected).toEqual([scope.arr[0].subItem]);
+
+        // Now reload the array
+        scope.$apply(function() {
+          scope.arr = [{
+            subItem: {label: 'new ten', id: 10}
+          },{
+            subItem: {label: 'new twenty', id: 20}
+          }];
+        });
+        expect(element.val()).toEqual(['0']);
+        expect(scope.selected[0].id).toEqual(10);
+        expect(scope.selected.length).toBe(1);
+      });
+
+
+      it('It should use the "value" variable to represent items in the array as well as for the ' +
+          'selected values in track by expression (multiple&object)', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'multiple': true,
+          'ng-options': 'val.subItem as val.subItem.label for (key, val) in obj track by (val.id || val.subItem.id)'
+        });
+
+        // First test model -> view
+
+        scope.$apply(function() {
+          scope.selected = [scope.obj['10'].subItem];
+        });
+        expect(element.val()).toEqual(['10']);
+
+
+        scope.$apply(function() {
+          scope.selected = [scope.obj['10'].subItem];
+        });
+        expect(element.val()).toEqual(['10']);
+
+        // Now test view -> model
+
+        element.find('option')[0].selected = true;
+        element.find('option')[1].selected = false;
+        browserTrigger(element, 'change');
+        expect(scope.selected).toEqual([scope.obj['10'].subItem]);
+
+        // Now reload the object
+        scope.$apply(function() {
+          scope.obj = {
+            '10': {
+              subItem: {label: 'new ten', id: 10}
+            },
+            '20': {
+              subItem: {label: 'new twenty', id: 20}
+            }
+          };
+        });
+        expect(element.val()).toEqual(['10']);
+        expect(scope.selected[0].id).toBe(10);
+        expect(scope.selected.length).toBe(1);
+      });
+
+
+      it('It should use the "value" variable to represent items in the array as well as for the ' +
+          'selected values in track by expression (single&object)', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'val.subItem as val.subItem.label for (key, val) in obj track by (val.id || val.subItem.id)'
+        });
+
+        // First test model -> view
+
+        scope.$apply(function() {
+          scope.selected = scope.obj['10'].subItem;
+        });
+        expect(element.val()).toEqual('10');
+
+
+        scope.$apply(function() {
+          scope.selected = scope.obj['10'].subItem;
+        });
+        expect(element.val()).toEqual('10');
+
+        // Now test view -> model
+
+        element.find('option')[0].selected = true;
+        browserTrigger(element, 'change');
+        expect(scope.selected).toEqual(scope.obj['10'].subItem);
+
+        // Now reload the object
+        scope.$apply(function() {
+          scope.obj = {
+            '10': {
+              subItem: {label: 'new ten', id: 10}
+            },
+            '20': {
+              subItem: {label: 'new twenty', id: 20}
+            }
+          };
+        });
+        expect(element.val()).toEqual('10');
+        expect(scope.selected.id).toBe(10);
       });
     });
 
