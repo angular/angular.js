@@ -993,4 +993,21 @@ describe('strict-di injector', function() {
       inject(function($test) {});
     }).toThrowMinErr('$injector', 'undef');
   });
+
+
+  it('should always use provider as `this` when invoking a factory', function() {
+    // jshint -W040
+    var called = false;
+    function factoryFn() {
+      called = true;
+      expect(typeof this.$get).toBe('function');
+      return this;
+    }
+    module(function($provide) {
+      $provide.factory('$test', factoryFn);
+    });
+    inject(function($test) {});
+    expect(called).toBe(true);
+    // jshint +W040
+  });
 });
