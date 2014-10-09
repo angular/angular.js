@@ -28,16 +28,12 @@
  * exceptions fail hard when they happen, instead of just logging to the console.
  *
  * <hr />
- * Note, that code executed outside of the Angular context does not delegate exceptions to the
- * {@link ng.$exceptionHandler $exceptionHandler}. Some common such cases include functions invoked
- * by third party libraries and callbacks associated with XHR, setTimeout/setInterval and browser
- * DOM events (including callbacks registered using jqLite's/jQuery's `on`/`bind` methods).
- * For some of those cases, Angular provides native wrappers that transparently manage the $digest
- * cycle and delegate exceptions to the {@link ng.$exceptionHandler $exceptionHandler} (e.g.
- * {@link ng.$http $http} for XHR, {@link ng.$timeout $timeout}/{@link ng.$interval $interval} for
- * setTimeout/setInterval). For the rest, you can explicitly ensure that the code is excecuted
- * inside of the Angular context, by wrapping it in
- * {@link ng.$rootScope.Scope#$apply scope.$apply()}.
+ * Note, that code executed in event-listeners (even those registered using jqLite's `on`/`bind`
+ * methods) does not delegate exceptions to the {@link ng.$exceptionHandler $exceptionHandler}
+ * (unless executed during a digest).
+ *
+ * If you wish, you can manually delegate exceptions, e.g.
+ * `try { ... } catch(e) { $exceptionHandler(e); }`
  *
  * @param {Error} exception Exception associated with the error.
  * @param {string=} cause optional information about the context in which
