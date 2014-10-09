@@ -41,7 +41,7 @@ var ngOptionsMinErr = minErr('ngOptions');
  * or property name (for object data sources) of the value  within the collection.
  * </div>
  *
- * **Note:** Using `select as` together with `trackexpr` is not possible (and will throw).
+ * **Note:** Using `select as` together with `trackexpr` is not possible (and will throw an error).
  * Reasoning:
  * - Example: &lt;select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected"&gt;
  *   values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItemß'}}],
