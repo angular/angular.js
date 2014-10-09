@@ -248,16 +248,13 @@ function $InterpolateProvider() {
             return '';
           }
           switch (typeof value) {
-            case 'string': {
+            case 'string':
               break;
-            }
-            case 'number': {
+            case 'number':
               value = '' + value;
               break;
-            }
-            default: {
+            default:
               value = toJson(value);
-            }
           }
 
           return value;
