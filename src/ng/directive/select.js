@@ -363,13 +363,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             //re-usable object to represent option's locals
             locals = {};
 
-        if (trackFn && selectAsFn) {
-          throw ngOptionsMinErr('trkslct',
-            "Comprehension expression cannot contain both selectAs '{0}' " +
-            "and trackBy '{1}' expressions.",
-            selectAs, track);
-        }
-
         if (nullOption) {
           // compile the element since there might be bindings in it
           $compile(nullOption)(scope);
@@ -460,7 +453,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         function createIsSelectedFn(viewValue) {
           var selectedSet;
           if (multiple) {
-            if (!selectAs && trackFn && isArray(viewValue)) {
+            if (trackFn && isArray(viewValue)) {
 
               selectedSet = new HashMap([]);
               for (var trackIndex = 0; trackIndex < viewValue.length; trackIndex++) {
@@ -470,15 +463,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             } else {
               selectedSet = new HashMap(viewValue);
             }
-          } else if (!selectAsFn && trackFn) {
+          } else if (trackFn) {
             viewValue = callExpression(trackFn, null, viewValue);
           }
+
           return function isSelected(key, value) {
             var compareValueFn;
-            if (selectAsFn) {
-              compareValueFn = selectAsFn;
-            } else if (trackFn) {
+            if (trackFn) {
               compareValueFn = trackFn;
+            } else if (selectAsFn) {
+              compareValueFn = selectAsFn;
             } else {
               compareValueFn = valueFn;
             }
