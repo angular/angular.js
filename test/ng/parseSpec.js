@@ -1482,6 +1482,32 @@ describe('parser', function() {
           expect(watcherCalls).toBe(1);
         }));
 
+        it("should always reevaluate filters with non-primitive input created with null prototype",
+            inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          var parsed = $parse('obj | foo');
+          var obj = scope.obj = Object.create(null);
+
+          var watcherCalls = 0;
+          scope.$watch(parsed, function(input) {
+            expect(input).toBe(obj);
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(2);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(filterCalls).toBe(3);
+          expect(watcherCalls).toBe(1);
+        }));
+
         it("should not reevaluate filters with non-primitive input that does support valueOf()",
             inject(function($parse) {
           var filterCalls = 0;
