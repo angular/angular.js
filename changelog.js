@@ -202,6 +202,7 @@ var generate = function(version, file) {
 
 // publish for testing
 exports.parseRawCommit = parseRawCommit;
+exports.printSection = printSection;
 
 // hacky start if not run by jasmine :-D
 if (process.argv.join('').indexOf('jasmine-node') === -1) {
