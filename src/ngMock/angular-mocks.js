@@ -994,6 +994,11 @@ angular.mock.dump = function(object) {
  * First we create the controller under test:
  *
   ```js
+  // The module code
+  angular
+    .module('MyApp', [])
+    .controller('MyController', MyController);
+
   // The controller code
   function MyController($scope, $http) {
     var authToken;
@@ -1022,6 +1027,9 @@ angular.mock.dump = function(object) {
     // testing controller
     describe('MyController', function() {
        var $httpBackend, $rootScope, createController, authRequestHandler;
+
+       // Set up the module
+       beforeEach(module('MyApp'));
 
        beforeEach(inject(function($injector) {
          // Set up the mock http service responses
