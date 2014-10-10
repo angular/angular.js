@@ -38,15 +38,15 @@ var ngOptionsMinErr = minErr('ngOptions');
  * <div class="alert alert-info">
  * **Note:** Using `select as` will bind the result of the `select as` expression to the model, but
  * the value of the `<select>` and `<option>` html elements will be either the index (for array data sources)
- * or property name (for object data sources) of the value  within the collection.
+ * or property name (for object data sources) of the value within the collection.
  * </div>
  *
- * **Note:** Using `select as` together with `trackexpr` is not possible (and will throw an error).
+ * **Note:** Using `select as` together with `trackexpr` is not recommended.
  * Reasoning:
  * - Example: &lt;select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected"&gt;
- *   values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItemß'}}],
+ *   values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItem'}}],
  *   $scope.selected = {name: 'aSubItem'};
- * - track by is always applied to `value`, with purpose to preserve the selection,
+ * - track by is always applied to `value`, with the purpose of preserving the selection,
  *   (to `item` in this case)
  * - to calculate whether an item is selected we do the following:
  *   1. apply `track by` to the values in the array, e.g.
