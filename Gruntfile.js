@@ -101,7 +101,7 @@ module.exports = function(grunt) {
     },
 
 
-    protractor: {
+    'protractor-docs': {
       normal: 'protractor-conf.js',
       travis: 'protractor-travis-conf.js',
       jenkins: 'protractor-jenkins-conf.js'
@@ -318,16 +318,17 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor-docs']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
-  grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
-  grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
-  grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
-  grunt.registerTask('test:e2e', 'Alias for test:protractor', ['test:protractor']);
+  grunt.registerTask('test:protractor-docs', 'Run the end to end docs tests with Protractor and keep a test server running in the background',
+                     ['webdriver', 'connect:testserver', 'protractor-docs:normal']);
+  grunt.registerTask('test:travis-protractor-docs', 'Run the end to end docs tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor-docs:travis']);
+  grunt.registerTask('test:ci-protractor-docs', 'Run the end to end docs tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor-docs:jenkins']);
+  grunt.registerTask('test:docs-e2e', 'Alias for test:protractor', ['test:protractor-docs']);
   grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter','shell:promises-aplus-tests']);
 
   grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);

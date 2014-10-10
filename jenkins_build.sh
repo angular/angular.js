@@ -28,7 +28,7 @@ mkdir -p test_out
 grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
-grunt test:ci-protractor
+grunt test:ci-protractor-docs
 
 # DOCS APP TESTS #
 grunt test:docs --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
