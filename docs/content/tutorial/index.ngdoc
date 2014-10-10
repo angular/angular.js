@@ -122,7 +122,7 @@ nodejs --version
   </a>.
 </div>
 
-Once you have Node.js installed on your machine you can download the tool dependencies by running:
+Once you have Node.js installed on your machine you can download the tool dependencies by running from the directory where 'package.json' file is located:
 
 ```
 npm install
