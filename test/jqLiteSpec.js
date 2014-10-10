@@ -1400,6 +1400,94 @@ describe('jqLite', function() {
       expect(extraSpy).toHaveBeenCalledOnce();
     });
 
+
+    describe('native listener deregistration', function() {
+
+      it('should deregister the native listener when all jqLite listeners for given type are gone ' +
+         'after off("eventName", listener) call',  function() {
+        var aElem = jqLite(a);
+        var addEventListenerSpy = spyOn(aElem[0], 'addEventListener').andCallThrough();
+        var removeEventListenerSpy = spyOn(aElem[0], 'removeEventListener').andCallThrough();
+        var nativeListenerFn;
+
+        var jqLiteListener = function() {};
+        aElem.on('click', jqLiteListener);
+
+        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        nativeListenerFn = addEventListenerSpy.mostRecentCall.args[1];
+        expect(removeEventListenerSpy).not.toHaveBeenCalled();
+
+        aElem.off('click', jqLiteListener);
+        expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
+      });
+
+
+      it('should deregister the native listener when all jqLite listeners for given type are gone ' +
+         'after off("eventName") call',  function() {
+        var aElem = jqLite(a);
+        var addEventListenerSpy = spyOn(aElem[0], 'addEventListener').andCallThrough();
+        var removeEventListenerSpy = spyOn(aElem[0], 'removeEventListener').andCallThrough();
+        var nativeListenerFn;
+
+        aElem.on('click', function() {});
+        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        nativeListenerFn = addEventListenerSpy.mostRecentCall.args[1];
+        expect(removeEventListenerSpy).not.toHaveBeenCalled();
+
+        aElem.off('click');
+        expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
+      });
+
+
+      it('should deregister the native listener when all jqLite listeners for given type are gone ' +
+         'after off("eventName1 eventName2") call',  function() {
+        var aElem = jqLite(a);
+        var addEventListenerSpy = spyOn(aElem[0], 'addEventListener').andCallThrough();
+        var removeEventListenerSpy = spyOn(aElem[0], 'removeEventListener').andCallThrough();
+        var nativeListenerFn;
+
+        aElem.on('click', function() {});
+        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        nativeListenerFn = addEventListenerSpy.mostRecentCall.args[1];
+        addEventListenerSpy.reset();
+
+        aElem.on('dblclick', function() {});
+        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
+
+        expect(removeEventListenerSpy).not.toHaveBeenCalled();
+
+        aElem.off('click dblclick');
+
+        expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
+        expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
+        expect(removeEventListenerSpy.callCount).toBe(2);
+      });
+
+
+      it('should deregister the native listener when all jqLite listeners for given type are gone ' +
+         'after off() call',  function() {
+        var aElem = jqLite(a);
+        var addEventListenerSpy = spyOn(aElem[0], 'addEventListener').andCallThrough();
+        var removeEventListenerSpy = spyOn(aElem[0], 'removeEventListener').andCallThrough();
+        var nativeListenerFn;
+
+        aElem.on('click', function() {});
+        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        nativeListenerFn = addEventListenerSpy.mostRecentCall.args[1];
+        addEventListenerSpy.reset();
+
+        aElem.on('dblclick', function() {});
+        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
+
+        aElem.off();
+
+        expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
+        expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
+        expect(removeEventListenerSpy.callCount).toBe(2);
+      });
+    });
+
+
     // Only run this test for jqLite and not normal jQuery
     if ( _jqLiteMode ) {
       it('should throw an error if a selector is passed', function () {
