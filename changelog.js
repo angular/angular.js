@@ -112,7 +112,7 @@ var printSection = function(stream, title, section, printCommitLinks) {
         }
         stream.write(')\n');
       } else {
-        stream.write(util.format('%s %s', prefix, commit.subject));
+        stream.write(util.format('%s %s\n', prefix, commit.subject));
       }
     });
   });
@@ -188,6 +188,7 @@ var getPreviousTag = function() {
 
 
 var generate = function(version, file) {
+
   getPreviousTag().then(function(tag) {
     console.log('Reading git log since', tag);
     readGitLog('^fix|^feat|^perf|BREAKING', tag).then(function(commits) {
