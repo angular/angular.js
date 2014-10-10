@@ -175,9 +175,9 @@ function orderByFilter($parse){
            v2 = v2.toLowerCase();
         }
         if (v1 === v2) return 0;
-        return v1 < v2 ? -1 : 1;
+        return v2 > v1 ? 1 : -1;
       } else {
-        return t1 < t2 ? -1 : 1;
+        return t2 > t1 ? 1 : -1;
       }
     }
   };
