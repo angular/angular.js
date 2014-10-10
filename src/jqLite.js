@@ -274,18 +274,22 @@ function jqLiteOff(element, type, fn, unsupported) {
   if (!type) {
     for (type in events) {
       if (type !== '$destroy') {
-        removeEventListenerFn(element, type, events[type]);
+        removeEventListenerFn(element, type, handle);
       }
       delete events[type];
     }
   } else {
     forEach(type.split(' '), function(type) {
-      if (isUndefined(fn)) {
-        removeEventListenerFn(element, type, events[type]);
-        delete events[type];
-      } else {
-        arrayRemove(events[type] || [], fn);
+      if (isDefined(fn)) {
+        var listenerFns = events[type];
+        arrayRemove(listenerFns || [], fn);
+        if (listenerFns && listenerFns.length > 0) {
+          return;
+        }
       }
+
+      removeEventListenerFn(element, type, handle);
+      delete events[type];
     });
   }
 }
