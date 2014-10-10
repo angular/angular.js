@@ -533,7 +533,7 @@ describe('$route', function() {
 
 
   describe('events', function() {
-    it('should not fire $routeChangeStart/success during bootstrap (if no route)', function() {
+    it('should not fire $routeChangeStart/Success during bootstrap (if no route)', function() {
       var routeChangeSpy = jasmine.createSpy('route change');
 
       module(function($routeProvider) {
