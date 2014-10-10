@@ -663,6 +663,37 @@ describe('jqLite', function() {
     });
 
 
+    it('should properly work with elements with XML namespaced attributes', function() {
+      var element = jqLite('<div ng:class="foo bar baz"></div>');
+
+      element.addClass('foo');
+      element.addClass('bar');
+      expect(element.hasClass('foo')).toBe(true);
+      expect(element.hasClass('bar')).toBe(true);
+
+      element.removeClass('foo');
+      expect(element.hasClass('foo')).toBe(false);
+      expect(element.hasClass('bar')).toBe(true);
+    });
+
+
+    it('should properly work with elements with XML namespaced attributes for SVG', function() {
+      // this is a jqLite & SVG only test (jquery doesn't behave this way right now, which is a bug)
+      if (!window.SVGElement || !_jqLiteMode) return;
+      var svg = jqLite('<svg><rect ng:class="foo bar baz"></rect></svg>');
+      var element = svg.children();
+
+      element.addClass('foo');
+      element.addClass('bar');
+      expect(element.hasClass('foo')).toBe(true);
+      expect(element.hasClass('bar')).toBe(true);
+
+      element.removeClass('foo');
+      expect(element.hasClass('foo')).toBe(false);
+      expect(element.hasClass('bar')).toBe(true);
+    });
+
+
     it('should ignore comment elements', function() {
       var comment = jqLite(document.createComment('something'));
 
