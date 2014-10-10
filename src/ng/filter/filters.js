@@ -243,8 +243,13 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
-function timeZoneGetter(date) {
-  var zone = -1 * date.getTimezoneOffset();
+function timeZoneGetter(date, formats, timezone) {
+  var zone;
+  if (timezone && timezone === 'UTC') {
+    zone = 0;
+  } else {
+    zone = -1 * date.getTimezoneOffset();
+  }
   var paddedZone = (zone >= 0) ? "+" : "";
 
   paddedZone += padNumber(Math[zone > 0 ? 'floor' : 'ceil'](zone / 60), 2) +
@@ -471,7 +476,7 @@ function dateFilter($locale) {
     }
     forEach(parts, function(value){
       fn = DATE_FORMATS[value];
-      text += fn ? fn(date, $locale.DATETIME_FORMATS)
+      text += fn ? fn(date, $locale.DATETIME_FORMATS, timezone)
                  : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
     });
 
