@@ -144,17 +144,7 @@ Now: `$locationChangeStart` -> `$routeChangeStart`
 
 Fixes #5581
 Closes #5714
-Closes #9502- **ngAnimate:** due to [667183a8](https://github.com/angular/angular.js/commit/667183a8c79d6ffce571a2be78c05dc76503b222),
-
-
-The $animate class API will always defer changes until the end of the next digest. This allows ngAnimate
-to coalesce class changes which occur over a short period of time into 1 or 2 DOM writes, rather than
-many. This prevents jank in browsers such as IE, and is generally a good thing.
-
-If you're finding that your classes are not being immediately applied, be sure to invoke $digest().
-
-Closes #8234
-Closes #9263
+Closes #9502
 
 
 <a name="1.3.0-rc.4"></a>
