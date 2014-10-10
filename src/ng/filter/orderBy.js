@@ -177,7 +177,7 @@ function orderByFilter($parse){
         if (v1 === v2) return 0;
         return v2 > v2 ? 1 : -1;
       } else {
-        return t2 < t1 ? 1 : -1;
+        return t2 > t1 ? 1 : -1;
       }
     }
   };
