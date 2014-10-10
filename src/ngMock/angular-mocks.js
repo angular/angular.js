@@ -996,7 +996,7 @@ angular.mock.dump = function(object) {
   ```js
   // The module code
   angular
-    .module('MyApp')
+    .module('MyApp', [])
     .controller('MyController', MyController);
   
   // The controller code
