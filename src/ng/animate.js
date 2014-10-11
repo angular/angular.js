@@ -238,7 +238,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         return this.setClass(element, className, []);
       },
 
-      $$addClassImmediately : function addClassImmediately(element, className) {
+      $$addClassImmediately : function(element, className) {
         element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
@@ -264,7 +264,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         return this.setClass(element, [], className);
       },
 
-      $$removeClassImmediately : function removeClassImmediately(element, className) {
+      $$removeClassImmediately : function(element, className) {
         element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
