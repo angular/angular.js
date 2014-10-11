@@ -126,7 +126,6 @@ var VALIDITY_STATE_PROPERTY = 'validity';
  */
 var lowercase = function(string){return isString(string) ? string.toLowerCase() : string;};
 var hasOwnProperty = Object.prototype.hasOwnProperty;
-var valueOfObject = Object.prototype.valueOf;
 
 /**
  * @ngdoc function
