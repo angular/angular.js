@@ -329,7 +329,7 @@ describe("ngAnimate", function() {
             return function($animate, $compile, $rootScope, $rootElement) {
               element = $compile('<div></div>')($rootScope);
 
-              forEach(['.ng-hide-add', '.ng-hide-remove', '.ng-enter', '.ng-leave', '.ng-move'], function(selector) {
+              forEach(['.ng-hide-add', '.ng-hide-remove', '.ng-enter', '.ng-leave', '.ng-move', '.my-inline-animation'], function(selector) {
                 ss.addRule(selector, '-webkit-transition:1s linear all;' +
                                              'transition:1s linear all;');
               });
@@ -452,6 +452,20 @@ describe("ngAnimate", function() {
             $animate.triggerReflow();
           }
           expect(element.text()).toBe('21');
+        }));
+
+        it("should perform the animate event",
+          inject(function($animate, $compile, $rootScope, $timeout, $sniffer) {
+
+          $rootScope.$digest();
+          $animate.animate(element, { color: 'rgb(255, 0, 0)' }, { color: 'rgb(0, 0, 255)' }, 'animated');
+          $rootScope.$digest();
+
+          if($sniffer.transitions) {
+            expect(element.css('color')).toBe('rgb(255, 0, 0)');
+            $animate.triggerReflow();
+          }
+          expect(element.css('color')).toBe('rgb(0, 0, 255)');
         }));
 
         it("should animate the show animation event",
@@ -652,6 +666,16 @@ describe("ngAnimate", function() {
           expect(child.attr('class')).toContain('ng-hide-remove');
           expect(child.attr('class')).toContain('ng-hide-remove-active');
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+
+          //animate
+          $animate.animate(child, null, null, 'my-inline-animation');
+          $rootScope.$digest();
+          $animate.triggerReflow();
+
+          expect(child.attr('class')).toContain('my-inline-animation');
+          expect(child.attr('class')).toContain('my-inline-animation-active');
+          browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          $animate.triggerCallbackPromise();
 
           //leave
           $animate.leave(child);

@@ -170,6 +170,10 @@ var $AnimateProvider = ['$provide', function($provide) {
      * page}.
      */
     return {
+      animate : function(element, from, to) {
+        applyStyles(element, { from: from, to: to });
+        return asyncPromise();
+      },
 
       /**
        *

@@ -628,9 +628,10 @@ angular.module('ngAnimate', ['ng'])
         }
 
         var isSetClassOperation = animationEvent == 'setClass';
-        var isClassBased = isSetClassOperation ||
-                           animationEvent == 'addClass' ||
-                           animationEvent == 'removeClass';
+        var isClassBased = isSetClassOperation
+                           || animationEvent == 'addClass'
+                           || animationEvent == 'removeClass'
+                           || animationEvent == 'animate';
 
         var currentClassName = element.attr('class');
         var classes = currentClassName + ' ' + className;
@@ -699,6 +700,9 @@ angular.module('ngAnimate', ['ng'])
             switch(animation.event) {
               case 'setClass':
                 cancellations.push(animation.fn(element, classNameAdd, classNameRemove, progress, options));
+                break;
+              case 'animate':
+                cancellations.push(animation.fn(element, className, options.from, options.to, progress));
                 break;
               case 'addClass':
                 cancellations.push(animation.fn(element, classNameAdd || className,     progress, options));
@@ -819,6 +823,65 @@ angular.module('ngAnimate', ['ng'])
        *
        */
       return {
+        /**
+         * @ngdoc method
+         * @name $animate#animate
+         * @kind function
+         *
+         * @description
+         * Performs an inline animation on the element which applies the provided `to` and `from` CSS styles to the element.
+         * If any detected CSS transition, keyframe or JavaScript matches the provided `className` value then the animation
+         * will take on the provided styles. For example, if a transition animation is set for the given className then the
+         * provided `from` and `to` styles will be applied alongside the given transition. If a JavaScript animation is
+         * detected then the provided styles will be given in as function paramters.
+         *
+         * ```js
+         * ngModule.animation('.my-inline-animation', function() {
+         *   return {
+         *     animate : function(element, className, from, to, done) {
+         *       //styles
+         *     }
+         *   }
+         * });
+         * ```
+         *
+         * Below is a breakdown of each step that occurs during the `animate` animation:
+         *
+         * | Animation Step                                                                                                    | What the element class attribute looks like                |
+         * |-------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+         * | 1. $animate.animate(...) is called                                                                                | class="my-animation"                                       |
+         * | 2. $animate waits for the next digest to start the animation                                                      | class="my-animation ng-animate"                            |
+         * | 3. $animate runs the JavaScript-defined animations detected on the element                                        | class="my-animation ng-animate"                            |
+         * | 4. the className class value is added to the element                                                              | class="my-animation ng-animate className"                  |
+         * | 5. $animate scans the element styles to get the CSS transition/animation duration and delay                       | class="my-animation ng-animate className"                  |
+         * | 6. $animate blocks all CSS transitions on the element to ensure the .className class styling is applied right away| class="my-animation ng-animate className"                  |
+         * | 7. $animate applies the provided collection of `from` CSS styles to the element                                   | class="my-animation ng-animate className"                  |
+         * | 8. $animate waits for a single animation frame (this performs a reflow)                                           | class="my-animation ng-animate className"                  |
+         * | 9. $animate removes the CSS transition block placed on the element                                                | class="my-animation ng-animate className"                  |
+         * | 10. the className-active class is added (this triggers the CSS transition/animation)                              | class="my-animation ng-animate className className-active" |
+         * | 11. $animate applies the collection of `to` CSS styles to the element which are then handled by the transition    | class="my-animation ng-animate className className-active" |
+         * | 12. $animate waits for the animation to complete (via events and timeout)                                         | class="my-animation ng-animate className className-active" |
+         * | 13. The animation ends and all generated CSS classes are removed from the element                                 | class="my-animation"                                       |
+         * | 14. The returned promise is resolved.                                                                             | class="my-animation"                                       |
+         *
+         * @param {DOMElement} element the element that will be the focus of the enter animation
+         * @param {object} from a collection of CSS styles that will be applied to the element at the start of the animation
+         * @param {object} to a collection of CSS styles that the element will animate towards
+         * @param {string=} className an optional CSS class that will be added to the element for the duration of the animation (the default class is `ng-inline-animate`)
+         * @param {object=} options an optional collection of options that will be picked up by the CSS transition/animation
+         * @return {Promise} the animation callback promise
+        */
+        animate : function(element, from, to, className, options) {
+          className = className || 'ng-inline-animate';
+          options = parseAnimateOptions(options) || {};
+          options.from = to ? from : null;
+          options.to   = to ? to : from;
+
+          return runAnimationPostDigest(function(done) {
+            return performAnimation('animate', className, stripCommentsFromElement(element), null, null, noop, options, done);
+          });
+        },
+
         /**
          * @ngdoc method
          * @name $animate#enter
@@ -1256,7 +1319,10 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
-        if (runner.isClassBased && !runner.isSetClassOperation && !skipAnimation) {
+        if (runner.isClassBased
+            && !runner.isSetClassOperation
+            && animationEvent != 'animate'
+            && !skipAnimation) {
           skipAnimation = (animationEvent == 'addClass') == element.hasClass(className); //opposite of XOR
         }
 
@@ -1947,6 +2013,13 @@ angular.module('ngAnimate', ['ng'])
       }
 
       return {
+        animate : function(element, className, from, to, animationCompleted, options) {
+          options = options || {};
+          options.from = from;
+          options.to = to;
+          return animate('animate', element, className, animationCompleted, options);
+        },
+
         enter : function(element, animationCompleted, options) {
           options = options || {};
           return animate('enter', element, 'ng-enter', animationCompleted, options);
