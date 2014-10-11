@@ -100,7 +100,7 @@ var $AnimateProvider = ['$provide', function($provide) {
       return defer.promise;
     }
 
-    function resolveElementClasses(element, cache) {
+    function resolveElementClasses(element, classes) {
       var toAdd = [], toRemove = [];
 
       var hasClasses = createMap();
@@ -108,7 +108,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         hasClasses[className] = true;
       });
 
-      forEach(cache.classes, function(status, className) {
+      forEach(classes, function(status, className) {
         var hasClass = hasClasses[className];
 
         // If the most recent class manipulation (via $animate) was to remove the class, and the
@@ -288,19 +288,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {string} remove the CSS class which will be removed from the element
        * @return {Promise} the animation callback promise
        */
-      setClass : function(element, add, remove, runSynchronously) {
+      setClass : function(element, add, remove) {
         var self = this;
         var STORAGE_KEY = '$$animateClasses';
         var createdCache = false;
         element = jqLite(element);
-
-        if (runSynchronously) {
-          // TODO(@caitp/@matsko): Remove undocumented `runSynchronously` parameter, and always
-          // perform DOM manipulation asynchronously or in postDigest.
-          self.$$addClassImmediately(element, add);
-          self.$$removeClassImmediately(element, remove);
-          return asyncPromise();
-        }
 
         var cache = element.data(STORAGE_KEY);
         if (!cache) {
@@ -322,11 +314,14 @@ var $AnimateProvider = ['$provide', function($provide) {
             var cache = element.data(STORAGE_KEY);
             element.removeData(STORAGE_KEY);
 
-            var classes = cache && resolveElementClasses(element, cache);
-
-            if (classes) {
-              if (classes[0]) self.$$addClassImmediately(element, classes[0]);
-              if (classes[1]) self.$$removeClassImmediately(element, classes[1]);
+            // in the event that the element is removed before postDigest
+            // is run then the cache will be undefined and there will be
+            // no need anymore to add or remove and of the element classes
+            if (cache) {
+              var classes = resolveElementClasses(element, cache.classes);
+              if (classes) {
+                self.$$setClassImmediately(element, classes[0], classes[1]);
+              }
             }
 
             done();
@@ -335,6 +330,12 @@ var $AnimateProvider = ['$provide', function($provide) {
         }
 
         return cache.promise;
+      },
+
+      $$setClassImmediately : function(element, add, remove) {
+        add && this.$$addClassImmediately(element, add);
+        remove && this.$$removeClassImmediately(element, remove);
+        return asyncPromise();
       },
 
       enabled : noop,
