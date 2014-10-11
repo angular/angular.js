@@ -46,12 +46,13 @@ module.exports = function(grunt) {
           base: '.',
           keepalive: true,
           middleware: function(connect, options){
+            var base = Array.isArray(options.base) ? options.base[options.base.length - 1] : options.base;
             return [
               util.conditionalCsp(),
               util.rewrite(),
               connect.favicon('images/favicon.ico'),
-              connect.static(options.base),
-              connect.directory(options.base)
+              connect.static(base),
+              connect.directory(base)
             ];
           }
         }
@@ -64,6 +65,7 @@ module.exports = function(grunt) {
           port: 8000,
           hostname: '0.0.0.0',
           middleware: function(connect, options){
+            var base = Array.isArray(options.base) ? options.base[options.base.length - 1] : options.base;
             return [
               function(req, resp, next) {
                 // cache get requests to speed up tests on travis
@@ -75,7 +77,7 @@ module.exports = function(grunt) {
               },
               util.conditionalCsp(),
               connect.favicon('images/favicon.ico'),
-              connect.static(options.base)
+              connect.static(base)
             ];
           }
         }
@@ -287,14 +289,14 @@ module.exports = function(grunt) {
       }
     },
 
-    shell:{
-      "promises-aplus-tests":{
-        options:{
-          //stdout:true,
-          stderr:true,
-          failOnError:true
+    shell: {
+      "promises-aplus-tests": {
+        options: {
+          stdout: false,
+          stderr: true,
+          failOnError: true
         },
-        command:path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js')
+        command: path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js')
       }
     },
 
