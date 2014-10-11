@@ -1000,7 +1000,7 @@ angular.module('ngAnimate', ['ng'])
             // TODO(@caitp/@matsko): Don't use private/undocumented API here --- we should not be
             // changing the DOM synchronously in this case. The `true` parameter must eventually be
             // removed.
-            return $delegate.setClass(element, add, remove, true);
+            return $delegate.$$setClassImmediately(element, add, remove);
           }
 
           // we're using a combined array for both the add and remove
