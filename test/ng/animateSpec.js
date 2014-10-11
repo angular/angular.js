@@ -50,6 +50,15 @@ describe("$animate", function() {
       expect(element.text()).toBe('21');
     }));
 
+    it("should apply styles instantly to the element",
+      inject(function($animate, $compile, $rootScope) {
+
+      $animate.animate(element, { color: 'rgb(0, 0, 0)' });
+      expect(element.css('color')).toBe('rgb(0, 0, 0)');
+
+      $animate.animate(element, { color: 'rgb(255, 0, 0)' }, { color: 'rgb(0, 255, 0)' });
+      expect(element.css('color')).toBe('rgb(0, 255, 0)');
+    }));
 
     it("should still perform DOM operations even if animations are disabled (post-digest)", inject(function($animate, $rootScope) {
       $animate.enabled(false);
