@@ -39,7 +39,7 @@
  * - [`addClass()`](http://api.jquery.com/addClass/)
  * - [`after()`](http://api.jquery.com/after/)
  * - [`append()`](http://api.jquery.com/append/)
- * - [`attr()`](http://api.jquery.com/attr/)
+ * - [`attr()`](http://api.jquery.com/attr/) - Does not support functions as parameters
  * - [`bind()`](http://api.jquery.com/bind/) - Does not support namespaces, selectors or eventData
  * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
  * - [`clone()`](http://api.jquery.com/clone/)
@@ -451,6 +451,20 @@ function jqLiteRemove(element, keepData) {
   if (!keepData) jqLiteDealoc(element);
   var parent = element.parentNode;
   if (parent) parent.removeChild(element);
+}
+
+
+function jqLiteDocumentLoaded(action, win) {
+  win = win || window;
+  if (win.document.readyState === 'complete') {
+    // Force the action to be run async for consistent behaviour
+    // from the action's point of view
+    // i.e. it will definitely not be in a $apply
+    win.setTimeout(action);
+  } else {
+    // No need to unbind this handler as load is only ever called once
+    jqLite(win).on('load', action);
+  }
 }
 
 //////////////////////////////////////////
