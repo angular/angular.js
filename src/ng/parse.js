@@ -1168,16 +1168,17 @@ function $ParseProvider() {
     }
 
     function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
-      var unwatch;
+      var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
       }, function oneTimeListener(value, old, scope) {
+        lastValue = value;
         if (isFunction(listener)) {
           listener.call(this, value, old, scope);
         }
         if (isAllDefined(value)) {
           scope.$$postDigest(function () {
-            if(isAllDefined(value)) unwatch();
+            if(isAllDefined(lastValue)) unwatch();
           });
         }
       }, objectEquality);
