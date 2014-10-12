@@ -119,6 +119,7 @@
     "JQLitePrototype": false,
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
+    "jqLiteDocumentLoaded": false,
 
     /* apis.js */
     "hashKey": false,

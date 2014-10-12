@@ -140,6 +140,7 @@
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
     "jqLiteIsTextNode": false,
+    "jqLiteDocumentLoaded": false,
 
     /* apis.js */
     "hashKey": false,
