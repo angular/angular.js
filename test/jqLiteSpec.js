@@ -1993,4 +1993,49 @@ describe('jqLite', function() {
     });
   });
 
+
+  describe('jqLiteDocumentLoaded', function() {
+
+    function createMockWindow(readyState) {
+      return {
+        document: {readyState: readyState || 'loading'},
+        setTimeout: jasmine.createSpy('window.setTimeout'),
+        addEventListener: jasmine.createSpy('window.addEventListener'),
+        removeEventListener: jasmine.createSpy('window.removeEventListener')
+      };
+    }
+
+    it('should execute the callback via a timeout if the document has already completed loading', function() {
+      function onLoadCallback() { }
+
+      var mockWindow = createMockWindow('complete');
+
+      jqLiteDocumentLoaded(onLoadCallback, mockWindow);
+
+      expect(mockWindow.addEventListener).not.toHaveBeenCalled();
+      expect(mockWindow.setTimeout.mostRecentCall.args[0]).toBe(onLoadCallback);
+    });
+
+
+    it('should register a listener for the `load` event', function() {
+      var onLoadCallback = jasmine.createSpy('onLoadCallback');
+      var mockWindow = createMockWindow();
+
+      jqLiteDocumentLoaded(onLoadCallback, mockWindow);
+
+      expect(mockWindow.addEventListener).toHaveBeenCalledOnce();
+    });
+
+
+    it('should execute the callback only once the document completes loading', function() {
+      var onLoadCallback = jasmine.createSpy('onLoadCallback');
+      var mockWindow = createMockWindow();
+
+      jqLiteDocumentLoaded(onLoadCallback, mockWindow);
+      expect(onLoadCallback).not.toHaveBeenCalled();
+
+      jqLite(mockWindow).triggerHandler('load');
+      expect(onLoadCallback).toHaveBeenCalledOnce();
+    });
+  });
 });
