@@ -282,10 +282,13 @@ using `templateUrl` instead:
   </file>
 </example>
 
-`templateUrl` can also be expressed as a function which should return the location of the html template you would like to load in dynamically for the directive. The function is passed the element the directive was called on as well as any attributes attached to that element.
+`templateUrl` can also be expressed as a function which should return the location of the html template
+you would like to load in dynamically for the directive. The function is passed the element the directive
+was called on as well as any attributes attached to that element.
 
 <div class="alert alert-warning">
-**Note:** You do not currently have the ability to access scope variables from the `templateUrl` function, as the template is requested before the scope has initialized.
+**Note:** You do not currently have the ability to access scope variables from the `templateUrl` function,
+as the template is requested before the scope has initialized.
 </div>
 
 <example module="docsTemplateUrlDirective">
