@@ -73,7 +73,7 @@ function $AnchorScrollProvider() {
      <example module="anchorScrollExample">
        <file name="index.html">
          <div id="scrollArea" ng-controller="ScrollController">
-           <a ng-click="gotoBottom()">Go to bottom</a>
+           <a id="top" ng-click="gotoBottom()">Go to bottom</a>
            <a id="bottom"></a> You're at the bottom!
          </div>
        </file>
@@ -102,6 +102,37 @@ function $AnchorScrollProvider() {
            margin-top: 2000px;
          }
        </file>
+       <file name="protractor.js" type="protractor">
+         function _isElemVisible() {
+           var elem = document.getElementById(arguments[0]);
+           var rect = elem.getBoundingClientRect();
+           var docElem = document.documentElement;
+           return (rect.top < docElem.clientHeight) &&
+                  (rect.bottom > 0) &&
+                  (rect.left < docElem.clientWidth) &&
+                  (rect.right > 0);
+         }
+
+         function expectVisible(id, expected) {
+           browser.driver.executeScript(_isElemVisible, id).then(function(isVisible) {
+             expect(isVisible).toBe(expected);
+           });
+         }
+
+         function scrollToTop() {
+           browser.driver.executeScript('window.scrollTo(0, 0);');
+         }
+
+         it('should scroll to #bottom upon clicking #top', function() {
+           scrollToTop();
+           expectVisible('top', true);
+           expectVisible('bottom', false);
+
+           element(by.id('top')).click();
+           expectVisible('top', false);
+           expectVisible('bottom', true);
+         });
+       </file>
      </example>
    *
    * <hr />
@@ -112,18 +143,19 @@ function $AnchorScrollProvider() {
      <example module="anchorScrollOffsetExample">
        <file name="index.html">
          <div class="fixed-header" ng-controller="headerCtrl">
-           <a href="" ng-click="gotoAnchor(x)" ng-repeat="x in [1,2,3,4,5]">
-             Go to anchor {{x}}
+           <a href="" ng-click="gotoAnchor(x)" ng-repeat="x in [0,1,2,3,4]">
+             Go to anchor {{$index + 1}}
            </a>
          </div>
-         <div id="anchor{{x}}" class="anchor" ng-repeat="x in [1,2,3,4,5]">
-           Anchor {{x}} of 5
+         <div id="anchor{{y}}" class="anchor" ng-repeat="y in [0,1,2,3,4]">
+           Anchor {{$index + 1}} of 5
          </div>
        </file>
        <file name="script.js">
          angular.module('anchorScrollOffsetExample', [])
            .run(['$anchorScroll', function($anchorScroll) {
-             $anchorScroll.yOffset = 50;   // always scroll by 50 extra pixels
+             // scroll with a 50px offset from the top of the viewport
+             $anchorScroll.yOffset = 50;
            }])
            .controller('headerCtrl', ['$anchorScroll', '$location', '$scope',
              function ($anchorScroll, $location, $scope) {
@@ -144,6 +176,8 @@ function $AnchorScrollProvider() {
        </file>
        <file name="style.css">
          body {
+           height: 100%;
+           margin: 0;
            padding-top: 50px;
          }
 
@@ -163,6 +197,153 @@ function $AnchorScrollProvider() {
            display: inline-block;
            margin: 5px 15px;
          }
+       </file>
+       <file name="protractor.js" type="protractor">
+         function _isElemVisible() {
+           var elem = document.getElementById(arguments[0]);
+           var rect = elem.getBoundingClientRect();
+           var docElem = document.documentElement;
+           return (rect.top < docElem.clientHeight) &&
+                  (rect.bottom > 0) &&
+                  (rect.left < docElem.clientWidth) &&
+                  (rect.right > 0);
+         }
+
+         function _getElemTop() {
+           var elem = document.getElementById(arguments[0]);
+           var rect = elem.getBoundingClientRect();
+           return rect.top;
+         }
+
+         function _getViewportHeight() {
+           return window.document.documentElement.clientHeight;
+         }
+
+         function _scrollElemIntoView() {
+           var elem = document.getElementById(arguments[0]);
+           elem.scrollIntoView();
+         }
+
+         function execWithTempViewportHeight(tempHeight, fn) {
+           setViewportHeight(tempHeight).then(function(oldHeight) {
+             fn();
+             setViewportHeight(oldHeight);
+           });
+         }
+
+         function execWithTempHash(tempHash, fn) {
+           browser.driver.getCurrentUrl().then(function(oldUrl) {
+             var newUrl = oldUrl + '#/#' + tempHash;
+             browser.get(newUrl);
+             fn();
+             browser.get(oldUrl);
+           });
+         }
+
+         function expectVisible(id, expected) {
+           browser.driver.executeScript(_isElemVisible, id).then(function(isVisible) {
+             expect(isVisible).toBe(expected);
+           });
+         }
+
+         function expectTop(id, expected) {
+           browser.driver.executeScript(_getElemTop, id).then(function(top) {
+             expect(top).toBe(expected);
+           });
+         }
+
+
+         function scrollIntoView(id) {
+           browser.driver.executeScript(_scrollElemIntoView, id);
+         }
+
+         function scrollTo(y) {
+           browser.driver.executeScript('window.scrollTo(0, ' + y + ');');
+         }
+
+         function scrollToTop() {
+           scrollTo(0);
+         }
+
+         function setViewportHeight(newHeight) {
+           return browser.driver.executeScript(_getViewportHeight).then(function(oldHeight) {
+             var heightDiff = newHeight - oldHeight;
+             var win = browser.driver.manage().window();
+
+             return win.getSize().then(function(size) {
+               var newWinHeight = size.height + heightDiff;
+
+               return win.setSize(size.width, newWinHeight).then(function() {
+                 return oldHeight;
+               });
+             });
+           });
+         }
+
+         describe('scrolling with 50px offset', function() {
+           var yOffset = 50;
+
+           beforeEach(function() {
+             scrollToTop();
+             expectVisible('anchor0', true);
+             expectTop('anchor0', yOffset);
+           });
+
+           it('should scroll to the correct anchor when clicking each link', function() {
+             var links = element.all(by.repeater('x in [0,1,2,3,4]'));
+             var lastAnchor = element.all(by.repeater('y in [0,1,2,3,4]')).last();
+
+             // Make sure there is enough room to scroll the last anchor to the top
+             lastAnchor.getSize().then(function(size) {
+               var tempHeight = size.height - 10;
+               execWithTempViewportHeight(tempHeight, function() {
+                 var idx = 0;
+                 links.each(function(link) {
+                   var targetAnchorId = 'anchor' + idx;
+                   link.click();
+                   expectVisible(targetAnchorId, true);
+                   expectTop(targetAnchorId, yOffset);
+                   idx++;
+                 });
+               });
+             });
+           });
+
+           it('should automatically scroll when navigating to a URL with a hash', function() {
+             var links = element.all(by.repeater('x in [0,1,2,3,4]'));
+             var lastAnchor = element.all(by.repeater('y in [0,1,2,3,4]')).last();
+             var targetAnchorId = 'anchor2';
+
+             // Make sure there is enough room to scroll the last anchor to the top
+             lastAnchor.getSize().then(function(size) {
+               var tempHeight = size.height - 10;
+               execWithTempViewportHeight(tempHeight, function() {
+                 execWithTempHash(targetAnchorId, function() {
+                   expectVisible(targetAnchorId, true);
+                   expectTop(targetAnchorId, yOffset);
+                 });
+               });
+             });
+           });
+
+           it('should not scroll "overzealously"', function () {
+             var lastLink = element.all(by.repeater('x in [0,1,2,3,4]')).last();
+             var lastAnchor = element.all(by.repeater('y in [0,1,2,3,4]')).last();
+             var targetAnchorId = 'anchor4';
+
+             // Make sure there is not enough room to scroll the last anchor to the top
+             lastAnchor.getSize().then(function(size) {
+               var tempHeight = size.height + (yOffset / 2);
+               execWithTempViewportHeight(tempHeight, function() {
+                 scrollIntoView(targetAnchorId);
+                 expectTop(targetAnchorId, yOffset / 2);
+                 lastLink.click();
+                 expectVisible(targetAnchorId, true);
+                 expectTop(targetAnchorId, yOffset);
+               });
+             });
+           });
+         });
        </file>
      </example>
    */
