@@ -282,6 +282,46 @@ using `templateUrl` instead:
   </file>
 </example>
 
+`templateUrl` can also be a function which returns the URL of an HMTL template to be loaded and
+used for the directive. Angular will call the `templateUrl` function with two parameters: the
+element that the directive was called on, and an `attr` object associated with that element.
+
+<div class="alert alert-warning">
+**Note:** You do not currently have the ability to access scope variables from the `templateUrl`
+function, since the template is requested before the scope is initialized.
+</div>
+
+<example module="docsTemplateUrlDirective">
+  <file name="script.js">
+    angular.module('docsTemplateUrlDirective', [])
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.customer = {
+          name: 'Naomi',
+          address: '1600 Amphitheatre'
+        };
+      }])
+      .directive('myCustomer', function() {
+        return {
+          templateUrl: function(elem, attr){
+            return 'customer-'+attr.type+'.html';
+          }
+        };
+      });
+  </file>
+  <file name="index.html">
+    <div ng-controller="Controller">
+      <div my-customer type="name"></div>
+      <div my-customer type="address"></div>
+    </div>
+  </file>
+  <file name="customer-name.html">
+    Name: {{customer.name}}
+  </file>
+  <file name="customer-address.html">
+    Address: {{customer.address}}
+  </file>
+</example>
+
 <div class="alert alert-warning">
 **Note:** When you create a directive, it is restricted to attribute and elements only by default. In order to
 create directives that are triggered by class name, you need to use the `restrict` option.
