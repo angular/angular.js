@@ -282,6 +282,43 @@ using `templateUrl` instead:
   </file>
 </example>
 
+`templateUrl` can also be expressed as a function which should return the location of the html template you would like to load in dynamically for the directive. The function is passed the element the directive was called on as well as any attributes attached to that element.
+
+<div class="alert alert-warning">
+**Note:** You do not currently have the ability to access scope variables from the `templateUrl` function, as the template is requested before the scope has initialized.
+</div>
+
+<example module="docsTemplateUrlDirective">
+  <file name="script.js">
+    angular.module('docsTemplateUrlDirective', [])
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.customer = {
+          name: 'Naomi',
+          address: '1600 Amphitheatre'
+        };
+      }])
+      .directive('myCustomer', function() {
+        return {
+          templateUrl: function(elem, attr){
+            return 'customer-'+attr.type+'.html';
+          }
+        };
+      });
+  </file>
+  <file name="index.html">
+    <div ng-controller="Controller">
+      <div my-customer type="name"></div>
+      <div my-customer type="address"></div>
+    </div>
+  </file>
+  <file name="customer-name.html">
+    Name: {{customer.name}}
+  </file>
+  <file name="customer-address.html">
+    Address: {{customer.address}}
+  </file>
+</example>
+
 <div class="alert alert-warning">
 **Note:** When you create a directive, it is restricted to attribute and elements only by default. In order to
 create directives that are triggered by class name, you need to use the `restrict` option.
