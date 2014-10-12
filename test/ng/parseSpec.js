@@ -1301,6 +1301,28 @@ describe('parser', function() {
             expect($rootScope.$$watchers.length).toBe(0);
             expect(log.empty()).toEqual([]);
           }));
+
+          it('should only become stable when all the elements of an array have defined values at the end of a $digest', inject(function($parse, $rootScope, log) {
+            var fn = $parse('::[foo]');
+            $rootScope.$watch(fn, function(value) { log(value); }, true);
+            $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
+
+            $rootScope.foo = 'bar';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(2);
+            expect(log.empty()).toEqual([['bar'], [undefined]]);
+
+            $rootScope.foo = 'baz';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(1);
+            expect(log.empty()).toEqual([['baz']]);
+
+            $rootScope.bar = 'qux';
+            $rootScope.$digest();
+            expect($rootScope.$$watchers.length).toBe(1);
+            expect(log).toEqual([]);
+          }));
+
         });
       });
 
