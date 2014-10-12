@@ -10,11 +10,13 @@ describe('linky', function() {
   }));
 
   it('should do basic filter', function() {
-    expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c")).
+    expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c “http://example.com” ‘http://me.com’")).
       toEqual('<a href="http://ab/">http://ab/</a> ' +
               '(<a href="http://a/">http://a/</a>) ' +
               '&lt;<a href="http://a/">http://a/</a>&gt; ' +
-              '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c');
+              '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c ' +
+              '&#8220;<a href="http://example.com">http://example.com</a>&#8221; ' +
+              '&#8216;<a href="http://me.com">http://me.com</a>&#8217;');
     expect(linky(undefined)).not.toBeDefined();
   });
 
