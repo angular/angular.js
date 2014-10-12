@@ -28,5 +28,10 @@ angular.module('directives', [])
       element.html(window.prettyPrintOne(html, lang, linenums));
     }
   };
-});
+})
 
+.directive('scrollYOffsetElement', ['$anchorScroll', function($anchorScroll) {
+  return function(scope, element) {
+    $anchorScroll.yOffset = element;
+  };
+}]);
