@@ -3,11 +3,16 @@
 var historyEntriesLength;
 var sniffer = {};
 
-function MockWindow() {
+function MockWindow(options) {
+  if (typeof options !== 'object') {
+    options = {};
+  }
   var events = {};
   var timeouts = this.timeouts = [];
   var locationHref = 'http://server/';
   var mockWindow = this;
+  var msie = options.msie;
+  var ieState;
 
   historyEntriesLength = 1;
 
@@ -53,16 +58,32 @@ function MockWindow() {
   };
 
   this.history = {
-    state: null,
-    pushState: function() {
+    pushState: function () {
       this.replaceState.apply(this, arguments);
       historyEntriesLength++;
     },
-    replaceState: function(state, title, url) {
+    replaceState: function (state, title, url) {
       locationHref = url;
       mockWindow.history.state = copy(state);
     }
   };
+  // IE 10-11 deserialize history.state on each read making subsequent reads
+  // different object.
+  if (!msie) {
+    this.history.state = null;
+  } else {
+    ieState = null;
+    Object.defineProperty(this.history, 'state', {
+      get: function() {
+        return copy(ieState);
+      },
+      set: function(value) {
+        ieState = value;
+      },
+      configurable: true,
+      enumerable: true,
+    });
+  }
 }
 
 function MockDocument() {
@@ -90,7 +111,7 @@ function MockDocument() {
 
 describe('browser', function() {
   /* global Browser: false */
-  var browser, fakeWindow, fakeDocument, logs, scripts, removedScripts;
+  var browser, fakeWindow, fakeDocument, fakeLog, logs, scripts, removedScripts;
 
   beforeEach(function() {
     scripts = [];
@@ -109,30 +130,55 @@ describe('browser', function() {
     browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
   });
 
-  describe('MockBrowser historyEntriesLength', function() {
-    it('should increment historyEntriesLength when setting location.href', function() {
-      expect(historyEntriesLength).toBe(1);
-      fakeWindow.location.href = '/foo';
-      expect(historyEntriesLength).toBe(2);
+  describe('MockBrowser', function() {
+    describe('historyEntriesLength', function() {
+      it('should increment historyEntriesLength when setting location.href', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.location.href = '/foo';
+        expect(historyEntriesLength).toBe(2);
+      });
+
+      it('should not increment historyEntriesLength when using location.replace', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.location.replace('/foo');
+        expect(historyEntriesLength).toBe(1);
+      });
+
+      it('should increment historyEntriesLength when using history.pushState', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.history.pushState({a: 2}, 'foo', '/bar');
+        expect(historyEntriesLength).toBe(2);
+      });
+
+      it('should not increment historyEntriesLength when using history.replaceState', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.history.replaceState({a: 2}, 'foo', '/bar');
+        expect(historyEntriesLength).toBe(1);
+      });
     });
 
-    it('should not increment historyEntriesLength when using location.replace', function() {
-      expect(historyEntriesLength).toBe(1);
-      fakeWindow.location.replace('/foo');
-      expect(historyEntriesLength).toBe(1);
-    });
+    describe('in IE', runTests({msie: true}));
+    describe('not in IE', runTests({msie: false}));
 
-    it('should increment historyEntriesLength when using history.pushState', function() {
-      expect(historyEntriesLength).toBe(1);
-      fakeWindow.history.pushState({a: 2}, 'foo', '/bar');
-      expect(historyEntriesLength).toBe(2);
-    });
+    function runTests(options) {
+      return function () {
+        it('should return the same state object on every read', function () {
+          var msie = options.msie;
 
-    it('should not increment historyEntriesLength when using history.replaceState', function() {
-      expect(historyEntriesLength).toBe(1);
-      fakeWindow.history.replaceState({a: 2}, 'foo', '/bar');
-      expect(historyEntriesLength).toBe(1);
-    });
+          fakeWindow = new MockWindow({msie: msie});
+          fakeWindow.location.state = {prop: 'val'};
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+
+          browser.url(fakeWindow.location.href, false, {prop: 'val'});
+          if (msie) {
+            expect(fakeWindow.history.state).not.toBe(fakeWindow.history.state);
+            expect(fakeWindow.history.state).toEqual(fakeWindow.history.state);
+          } else {
+            expect(fakeWindow.history.state).toBe(fakeWindow.history.state);
+          }
+        });
+      };
+    }
   });
 
   it('should contain cookie cruncher', function() {
@@ -602,58 +648,118 @@ describe('browser', function() {
       currentHref = fakeWindow.location.href;
     });
 
-    it('should change state', function() {
-      browser.url(currentHref + '/something', false, {prop: 'val1'});
-      expect(fakeWindow.history.state).toEqual({prop: 'val1'});
+    describe('in IE', runTests({msie: true}));
+    describe('not in IE', runTests({msie: false}));
+
+    function runTests(options) {
+      return function() {
+        beforeEach(function() {
+          fakeWindow = new MockWindow({msie: options.msie});
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          browser.onUrlChange(function() {});
+        });
+
+        it('should change state', function() {
+          browser.url(currentHref, false, {prop: 'val1'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val1'});
+          browser.url(currentHref + '/something', false, {prop: 'val2'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val2'});
+        });
+
+        it('should allow to set falsy states (except `undefined`)', function() {
+          fakeWindow.history.state = {prop: 'val1'};
+          fakeWindow.fire('popstate');
+
+          browser.url(currentHref, false, null);
+          expect(fakeWindow.history.state).toBe(null);
+
+          browser.url(currentHref, false, false);
+          expect(fakeWindow.history.state).toBe(false);
+
+          browser.url(currentHref, false, '');
+          expect(fakeWindow.history.state).toBe('');
+
+          browser.url(currentHref, false, 0);
+          expect(fakeWindow.history.state).toBe(0);
+        });
+
+        it('should treat `undefined` state as `null`', function() {
+          fakeWindow.history.state = {prop: 'val1'};
+          fakeWindow.fire('popstate');
+
+          browser.url(currentHref, false, undefined);
+          expect(fakeWindow.history.state).toBe(null);
+        });
+
+        it('should do pushState with the same URL and a different state', function() {
+          browser.url(currentHref, false, {prop: 'val1'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val1'});
+
+          browser.url(currentHref, false, null);
+          expect(fakeWindow.history.state).toBe(null);
+
+          browser.url(currentHref, false, {prop: 'val2'});
+          browser.url(currentHref, false, {prop: 'val3'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val3'});
+        });
+
+        it('should do pushState with the same URL and null state', function() {
+          fakeWindow.history.state = {prop: 'val1'};
+          fakeWindow.fire('popstate');
+
+          browser.url(currentHref, false, null);
+          expect(fakeWindow.history.state).toEqual(null);
+        });
+
+        it('should do pushState with the same URL and the same non-null state', function() {
+          fakeWindow.history.state = null;
+          fakeWindow.fire('popstate');
+
+          browser.url(currentHref, false, {prop: 'val2'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val2'});
+        });
+      };
+    }
+  });
+
+  describe('state', function() {
+    var currentHref;
+
+    beforeEach(function() {
+      sniffer = {history: true};
+      currentHref = fakeWindow.location.href;
     });
 
-    it('should allow to set falsy states (except `undefined`)', function() {
-      fakeWindow.history.state = {prop: 'val1'};
+    describe('in IE', runTests({msie: true}));
+    describe('not in IE', runTests({msie: false}));
 
-      browser.url(currentHref, false, null);
-      expect(fakeWindow.history.state).toBe(null);
+    function runTests(options) {
+      return function() {
+        beforeEach(function() {
+          fakeWindow = new MockWindow({msie: options.msie});
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+        });
 
-      browser.url(currentHref, false, false);
-      expect(fakeWindow.history.state).toBe(false);
+        it('should return history.state', function() {
+          browser.url(currentHref, false, {prop: 'val'});
+          expect(browser.state()).toEqual({prop: 'val'});
+          browser.url(currentHref, false, 2);
+          expect(browser.state()).toEqual(2);
+          browser.url(currentHref, false, null);
+          expect(browser.state()).toEqual(null);
+        });
 
-      browser.url(currentHref, false, '');
-      expect(fakeWindow.history.state).toBe('');
+        it('should return null if history.state is undefined', function() {
+          browser.url(currentHref, false, undefined);
+          expect(browser.state()).toBe(null);
+        });
 
-      browser.url(currentHref, false, 0);
-      expect(fakeWindow.history.state).toBe(0);
-    });
-
-    it('should treat `undefined` state as `null`', function() {
-      fakeWindow.history.state = {prop: 'val1'};
-
-      browser.url(currentHref, false, undefined);
-      expect(fakeWindow.history.state).toBe(null);
-    });
-
-    it('should do pushState with the same URL and a different state', function() {
-      browser.url(currentHref, false, {prop: 'val1'});
-      expect(fakeWindow.history.state).toEqual({prop: 'val1'});
-
-      browser.url(currentHref, false, null);
-      expect(fakeWindow.history.state).toBe(null);
-
-      browser.url(currentHref, false, {prop: 'val2'});
-      browser.url(currentHref, false, {prop: 'val3'});
-      expect(fakeWindow.history.state).toEqual({prop: 'val3'});
-    });
-
-    it('should do pushState with the same URL and null state', function() {
-      fakeWindow.history.state = {prop: 'val1'};
-      browser.url(currentHref, false, null);
-      expect(fakeWindow.history.state).toEqual(null);
-    });
-
-    it('should do pushState with the same URL and the same non-null state', function() {
-      browser.url(currentHref, false, {prop: 'val2'});
-      fakeWindow.history.state = {prop: 'val3'};
-      browser.url(currentHref, false, {prop: 'val2'});
-      expect(fakeWindow.history.state).toEqual({prop: 'val2'});
-    });
+        it('should return the same state object in subsequent invocations in IE', function() {
+          browser.url(currentHref, false, {prop: 'val'});
+          expect(browser.state()).toBe(browser.state());
+        });
+      };
+    }
   });
 
   describe('urlChange', function() {
@@ -717,6 +823,36 @@ describe('browser', function() {
 
       fakeWindow.fire('hashchange');
       expect(callback).not.toHaveBeenCalled();
+    });
+
+    describe('state handling', function() {
+      var currentHref;
+
+      beforeEach(function() {
+        sniffer = {history: true};
+        currentHref = fakeWindow.location.href;
+      });
+
+      describe('in IE', runTests({msie: true}));
+      describe('not in IE', runTests({msie: false}));
+
+      function runTests(options) {
+        return function() {
+          beforeEach(function() {
+            fakeWindow = new MockWindow({msie: options.msie});
+            browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          });
+
+          it('should fire onUrlChange listeners only once if both popstate and hashchange triggered', function() {
+            fakeWindow.history.state = {prop: 'val'};
+            browser.onUrlChange(callback);
+
+            fakeWindow.fire('hashchange');
+            fakeWindow.fire('popstate');
+            expect(callback).toHaveBeenCalledOnce();
+          });
+        };
+      }
     });
   });
 
@@ -876,9 +1012,7 @@ describe('browser', function() {
 
         // from $location for rewriting the initial url into a hash url
         expect(browser.url).toHaveBeenCalledWith('http://server/#/some/deep/path', true);
-        // from the initial call to the watch in $location for watching $location
-        expect(browser.url).toHaveBeenCalledWith('http://server/#/some/deep/path', false, null);
-        expect(changeUrlCount).toBe(2);
+        expect(changeUrlCount).toBe(1);
       });
 
     });
