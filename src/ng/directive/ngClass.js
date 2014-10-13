@@ -133,7 +133,8 @@ function classDirective(name, selector) {
  * one or more space-delimited class names.
  *
  * 3. If the expression evaluates to an object, then for each key-value pair of the
- * object with a truthy value the corresponding key is used as a class name.
+ * object with a truthy value the corresponding key is used as a class name. Use quotes around key
+ * names that contain hyphens. e.g. 'ng-valid', 'ng-invalid'.
  *
  * The directive won't add duplicate classes if a particular class was already set.
  *
