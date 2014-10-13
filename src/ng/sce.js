@@ -14,15 +14,6 @@ var SCE_CONTEXTS = {
 
 // Helper functions follow.
 
-// Copied from:
-// http://docs.closure-library.googlecode.com/git/closure_goog_string_string.js.source.html#line962
-// Prereq: s is a string.
-function escapeForRegexp(s) {
-  return s.replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1').
-           replace(/\x08/g, '\\x08');
-}
-
-
 function adjustMatcher(matcher) {
   if (matcher === 'self') {
     return matcher;
