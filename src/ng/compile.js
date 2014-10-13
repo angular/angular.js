@@ -443,7 +443,7 @@
  * then you must use this transclude function. When you call a transclude function it returns a a jqLite/JQuery
  * object that contains the compiled DOM, which is linked to the correct transclusion scope.
  *
- * When you call a transclusion function you can pass in a **clone attach function**. This function is accepts
+ * When you call a transclusion function you can pass in a **clone attach function**. This function accepts
  * two parameters, `function(clone, scope) { ... }`, where the `clone` is a fresh compiled copy of your transcluded
  * content and the `scope` is the newly created transclusion scope, to which the clone is bound.
  *
