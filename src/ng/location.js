@@ -850,9 +850,10 @@ function $LocationProvider(){
       var oldUrl = $browser.url();
       var oldState = $browser.state();
       var currentReplace = $location.$$replace;
+      var urlOrStateChanged = oldUrl !== $location.absUrl() ||
+        ($location.$$html5 && $sniffer.history && oldState !== $location.$$state);
 
-      if (initializing || oldUrl !== $location.absUrl() ||
-          ($location.$$html5 && $sniffer.history && oldState !== $location.$$state)) {
+      if (initializing || urlOrStateChanged) {
         initializing = false;
 
         $rootScope.$evalAsync(function() {
@@ -861,8 +862,10 @@ function $LocationProvider(){
             $location.$$parse(oldUrl);
             $location.$$state = oldState;
           } else {
-            setBrowserUrlWithFallback($location.absUrl(), currentReplace,
-                                      oldState === $location.$$state ? null : $location.$$state);
+            if (urlOrStateChanged) {
+              setBrowserUrlWithFallback($location.absUrl(), currentReplace,
+                                        oldState === $location.$$state ? null : $location.$$state);
+            }
             afterLocationChange(oldUrl, oldState);
           }
         });
