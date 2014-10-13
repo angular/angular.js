@@ -1,3 +1,75 @@
+<a name="1.3.0"></a>
+# 1.3.0 superluminal-nudge (2014-10-13)
+
+
+## Bug Fixes
+
+- **$browser:**
+  - account for IE deserializing history.state on each read
+  ([1efaf3dc](https://github.com/angular/angular.js/commit/1efaf3dc136f822703a9cda55afac7895a923ccb),
+   [#9587](https://github.com/angular/angular.js/issues/9587), [#9545](https://github.com/angular/angular.js/issues/9545))
+  - do not decode cookies that do not appear encoded
+  ([9c995905](https://github.com/angular/angular.js/commit/9c9959059eb84f0f1d748b70b50ec47b7d23d065),
+   [#9211](https://github.com/angular/angular.js/issues/9211), [#9225](https://github.com/angular/angular.js/issues/9225))
+- **$http:**
+  - allow empty json response
+  ([9ba24c54](https://github.com/angular/angular.js/commit/9ba24c54d60e643b1450cc5cfa8f990bd524c130),
+   [#9532](https://github.com/angular/angular.js/issues/9532), [#9562](https://github.com/angular/angular.js/issues/9562))
+  - don't run transformData on HEAD methods
+  ([6e4955a3](https://github.com/angular/angular.js/commit/6e4955a3086555d8ca30c29955faa213b39c6f27),
+   [#9528](https://github.com/angular/angular.js/issues/9528), [#9529](https://github.com/angular/angular.js/issues/9529))
+- **$injector:** ensure $get method invoked with provider context
+  ([372fa699](https://github.com/angular/angular.js/commit/372fa6993b2b1b4848aa4be3c3e11f69244fca6f),
+   [#9511](https://github.com/angular/angular.js/issues/9511), [#9512](https://github.com/angular/angular.js/issues/9512))
+- **$location:** use clone of passed search() object
+  ([c7a9009e](https://github.com/angular/angular.js/commit/c7a9009e143299f0e45a85d715ff22fc676d3f93),
+   [#9445](https://github.com/angular/angular.js/issues/9445))
+- **$parse:** stabilize one-time literal expressions correctly
+  ([874cac82](https://github.com/angular/angular.js/commit/874cac825bf29a936cb1b35f9af239687bc5e036))
+- **formController:** remove scope reference when form is destroyed
+  ([01f50e1a](https://github.com/angular/angular.js/commit/01f50e1a7b2bff7070616494774ec493f8133204),
+   [#9315](https://github.com/angular/angular.js/issues/9315))
+- **jqLite:** remove native listener when all jqLite listeners were deregistered
+  ([d71fb6f2](https://github.com/angular/angular.js/commit/d71fb6f2713f1a636f6e9c25479870ee9941ad18),
+   [#9509](https://github.com/angular/angular.js/issues/9509))
+- **select:**
+  - add basic track by and select as support
+  ([addfff3c](https://github.com/angular/angular.js/commit/addfff3c46311f59bdcd100351260006d457316f),
+   [#6564](https://github.com/angular/angular.js/issues/6564))
+  - manage select controller options correctly
+  ([2435e2b8](https://github.com/angular/angular.js/commit/2435e2b8f84fde9495b8e9440a2b4f865b1ff541),
+   [#9418](https://github.com/angular/angular.js/issues/9418))
+
+
+## Features
+
+- **$anchorScroll:** support a configurable vertical scroll offset
+  ([09c39d2c](https://github.com/angular/angular.js/commit/09c39d2ce687cdf0ac35dbb34a91f0d198c9d83a),
+   [#9368](https://github.com/angular/angular.js/issues/9368), [#2070](https://github.com/angular/angular.js/issues/2070), [#9360](https://github.com/angular/angular.js/issues/9360))
+- **$animate:**
+  - introduce the $animate.animate() method
+  ([02be700b](https://github.com/angular/angular.js/commit/02be700bda191b454de393f2805916f374a1d764))
+  - allow $animate to pass custom styles into animations
+  ([e5f4d7b1](https://github.com/angular/angular.js/commit/e5f4d7b10ae5e6a17ab349995451c33b7d294245))
+- **currencyFilter:** add fractionSize as optional parameter
+  ([20685ffe](https://github.com/angular/angular.js/commit/20685ffe11036d4d604d13f0d792ca46497af4a1),
+   [#3642](https://github.com/angular/angular.js/issues/3642), [#3461](https://github.com/angular/angular.js/issues/3461), [#3642](https://github.com/angular/angular.js/issues/3642), [#7922](https://github.com/angular/angular.js/issues/7922))
+- **jqLite:** add private jqDocumentComplete function
+  ([0dd316ef](https://github.com/angular/angular.js/commit/0dd316efea209e5e5de3e456b4e6562f011a1294))
+
+
+## Breaking Changes
+
+- **$animate:** due to [e5f4d7b1](https://github.com/angular/angular.js/commit/e5f4d7b10ae5e6a17ab349995451c33b7d294245),
+  staggering animations that use transitions will now
+always block the transition from starting (via `transition: 0s none`)
+up until the stagger step kicks in. The former behaviour was that the
+block was removed as soon as the pending class was added. This fix
+allows for styles to be applied in the pending class without causing
+an animation to trigger prematurely.
+
+
+
 <a name="1.3.0-rc.5"></a>
 # 1.3.0-rc.5 impossible-choreography (2014-10-08)
 
