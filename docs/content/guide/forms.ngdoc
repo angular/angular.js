@@ -190,7 +190,7 @@ This allows us to extend the above example with these features:
 
 
 
-# Custom triggers
+# Custom model update triggers
 
 By default, any change to the content will trigger a model update and form validation. You can
 override this behavior using the {@link ng.directive:ngModelOptions ngModelOptions} directive to
@@ -267,39 +267,40 @@ This example shows how to debounce model changes. Model will be updated only 250
   </file>
 </example>
 
-
-
 # Custom Validation
 
 Angular provides basic implementation for most common HTML5 {@link ng.directive:input input}
-types: ({@link input[text] text}, {@link input[number] number}, {@link input[url] url}, {@link input[email] email}, {@link input[radio] radio}, {@link input[checkbox] checkbox}), as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`, `min`, `max`).
+types: ({@link input[text] text}, {@link input[number] number}, {@link input[url] url},
+{@link input[email] email}, {@link input[radio] radio}, {@link input[checkbox] checkbox}),
+as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`,
+`min`, `max`).
 
-You can define your own validator by defining a directive which adds a validation function to the `ngModel` {@link ngModel.NgModelController controller}.
-The directive can get ahold of `ngModel` by specifying `require: 'ngModel'` in the directive definition.
-See below for an example.
+With a custom directive, you can add your own validation functions to the `$validators` object on
+the {@link ngModel.NgModelController `ngModelController`}. To get a hold of the controller,
+you require it in the directive as shown in the example below.
 
-Validation runs in two places:
+Each function in the `$validators` object receives the `modelValue` and the `viewValue`
+as parameters. Angular will then call `$setValidity` internally with the function's return value
+(`true`: valid, `false`: invalid). The validation functions are executed every time an input
+is changed (`$setViewValue` is called) or whenever the bound `model` changes.
+Validation happens after successfully running `$parsers` and `$formatters`, respectively.
+Failed validators are stored by key in
+{@link ngModel.NgModelController#$error `ngModelController.$error`}.
 
-  * **Model to View update** -
-    The functions in {@link ngModel.NgModelController#$formatters `NgModelController.$formatters`} are pipelined.
-    Whenever the bound model changes, each of these functions has an opportunity to format the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity `NgModelController.$setValidity`}.
+Additionally, there is the `$asyncValidators` object which handles asynchronous validation,
+such as making an `$http` request to the backend. Functions added to the object must return
+a promise that must be `resolved` when valid or `rejected` when invalid.
+In-progress async validations are stored by key in
+{@link ngModel.NgModelController#$pending `ngModelController.$pending`}.
 
-  * **View to Model update** -
-    In a similar way, whenever a user interacts with a control it calls {@link ngModel.NgModelController#$setViewValue `NgModelController.$setViewValue`}.
+In the following example we create two directives:
+ * An `integer` directive that validates whether the input is a valid integer. For example,
+ `1.23` is an invalid value, since it contains a fraction. Note that we validate the viewValue
+ (the string value of the control), and not the modelValue. This is because input[number] converts
+ the viewValue to a number when running the `$parsers`.
 
-This in turn runs all functions in the {@link ngModel.NgModelController#$parsers `NgModelController.$parsers`} array as a pipeline. Each function in `$parsers` has an opportunity to convert the value and change validity state of the form control through {@link ngModel.NgModelController#$setValidity `NgModelController.$setValidity`}.
-
-In the following example we create two directives.
-
-  * The first one is `integer` and it validates whether the input is a valid integer.
-    For example `1.23` is an invalid value, since it contains a fraction.
-    Note that we unshift the array instead of pushing.
-    This is because we want it to be the first parser and consume the control string value, as we need to execute the validation function before a conversion to number occurs.
-
-  * The second directive is a `smart-float`.
-    It parses both `1.2` and `1,2` into a valid float number `1.2`.
-    Note that we can't use input type `number` here as HTML5 browsers would not allow the user to type what it would consider an invalid number such as `1,2`.
-
+ * A `username` directive that asynchronously checks if a user-entered value is already taken.
+ We mock the server request with a `$q` deferred.
 
 <example module="form-example1">
   <file name="index.html">
@@ -308,18 +309,18 @@ In the following example we create two directives.
         Size (integer 0 - 10):
         <input type="number" ng-model="size" name="size"
                min="0" max="10" integer />{{size}}<br />
-        <span ng-show="form.size.$error.integer">This is not valid integer!</span>
+        <span ng-show="form.size.$error.integer">The value is not a valid integer!</span>
         <span ng-show="form.size.$error.min || form.size.$error.max">
           The value must be in range 0 to 10!</span>
       </div>
 
       <div>
-        Length (float):
-        <input type="text" ng-model="length" name="length" smart-float />
-        {{length}}<br />
-        <span ng-show="form.length.$error.float">
-          This is not a valid float number!</span>
+        Username:
+        <input type="text" ng-model="name" name="name" username />{{name}}<br />
+        <span ng-show="form.name.$pending.username">Checking if this name is available ...</span>
+        <span ng-show="form.name.$error.username">This username is already taken!</span>
       </div>
+
     </form>
   </file>
 
@@ -331,35 +332,52 @@ In the following example we create two directives.
       return {
         require: 'ngModel',
         link: function(scope, elm, attrs, ctrl) {
-          ctrl.$parsers.unshift(function(viewValue) {
+          ctrl.$validators.integer = function(modelValue, viewValue) {
+            if (ctrl.$isEmpty(modelValue)) {
+              // consider empty models to be valid
+              return true;
+            }
+
             if (INTEGER_REGEXP.test(viewValue)) {
               // it is valid
-              ctrl.$setValidity('integer', true);
-              return viewValue;
-            } else {
-              // it is invalid, return undefined (no model update)
-              ctrl.$setValidity('integer', false);
-              return undefined;
+              return true;
             }
-          });
+
+            // it is invalid
+            return false;
+          };
         }
       };
     });
 
-    var FLOAT_REGEXP = /^\-?\d+((\.|\,)\d+)?$/;
-    app.directive('smartFloat', function() {
+    app.directive('username', function($q, $timeout) {
       return {
         require: 'ngModel',
         link: function(scope, elm, attrs, ctrl) {
-          ctrl.$parsers.unshift(function(viewValue) {
-            if (FLOAT_REGEXP.test(viewValue)) {
-              ctrl.$setValidity('float', true);
-              return parseFloat(viewValue.replace(',', '.'));
-            } else {
-              ctrl.$setValidity('float', false);
-              return undefined;
+        var usernames = ['Jim', 'John', 'Jill', 'Jackie'];
+
+          ctrl.$asyncValidators.username = function(modelValue, viewValue) {
+
+            if (ctrl.$isEmpty(modelValue)) {
+              // consider empty model valid
+              return $q.when();
             }
-          });
+
+            var def = $q.defer();
+
+            $timeout(function() {
+              // Mock a delayed response
+              if (usernames.indexOf(modelValue) === -1) {
+                // The username is available
+                def.resolve();
+              } else {
+                def.reject();
+              }
+
+            }, 2000);
+
+            return def.promise;
+          };
         }
       };
     });
