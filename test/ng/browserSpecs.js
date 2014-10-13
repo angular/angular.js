@@ -641,11 +641,9 @@ describe('browser', function() {
   });
 
   describe('url (when state passed)', function() {
-    var currentHref;
+    var currentHref, pushState, replaceState, locationReplace;
 
     beforeEach(function() {
-      sniffer = {history: true};
-      currentHref = fakeWindow.location.href;
     });
 
     describe('in IE', runTests({msie: true}));
@@ -654,7 +652,14 @@ describe('browser', function() {
     function runTests(options) {
       return function() {
         beforeEach(function() {
+          sniffer = {history: true};
+
           fakeWindow = new MockWindow({msie: options.msie});
+          currentHref = fakeWindow.location.href;
+          pushState = spyOn(fakeWindow.history, 'pushState').andCallThrough();
+          replaceState = spyOn(fakeWindow.history, 'replaceState').andCallThrough();
+          locationReplace = spyOn(fakeWindow.location, 'replace').andCallThrough();
+
           browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
           browser.onUrlChange(function() {});
         });
@@ -703,20 +708,27 @@ describe('browser', function() {
           expect(fakeWindow.history.state).toEqual({prop: 'val3'});
         });
 
-        it('should do pushState with the same URL and null state', function() {
-          fakeWindow.history.state = {prop: 'val1'};
+        it('should do pushState with the same URL and deep equal but referentially different state', function() {
+          fakeWindow.history.state = {prop: 'val'};
           fakeWindow.fire('popstate');
+          expect(historyEntriesLength).toBe(1);
 
-          browser.url(currentHref, false, null);
-          expect(fakeWindow.history.state).toEqual(null);
+          browser.url(currentHref, false, {prop: 'val'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val'});
+          expect(historyEntriesLength).toBe(2);
         });
 
-        it('should do pushState with the same URL and the same non-null state', function() {
-          fakeWindow.history.state = null;
-          fakeWindow.fire('popstate');
+        it('should not do pushState with the same URL and state from $browser.state()', function() {
+          browser.url(currentHref, false, {prop: 'val'});
 
-          browser.url(currentHref, false, {prop: 'val2'});
-          expect(fakeWindow.history.state).toEqual({prop: 'val2'});
+          pushState.reset();
+          replaceState.reset();
+          locationReplace.reset();
+
+          browser.url(currentHref, false, browser.state());
+          expect(pushState).not.toHaveBeenCalled();
+          expect(replaceState).not.toHaveBeenCalled();
+          expect(locationReplace).not.toHaveBeenCalled();
         });
       };
     }
