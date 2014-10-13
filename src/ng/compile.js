@@ -1317,6 +1317,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn, elementTransclusion) {
 
+      // preserve previously bound scope
+      if (transcludeFn.$$bound) {
+        scope = transcludeFn.$$bound;
+      }
+
       var boundTranscludeFn = function(transcludedScope, cloneFn, futureParentElement, controllers, containingScope) {
 
         if (!transcludedScope) {
@@ -1326,6 +1331,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         return transcludeFn(transcludedScope, cloneFn, futureParentElement, controllers, previousBoundTranscludeFn);
       };
+
+      boundTranscludeFn.$$bound = scope;
 
       return boundTranscludeFn;
     }
@@ -1793,7 +1800,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           isolateScope = scope.$new(true);
         }
 
-        transcludeFn = boundTranscludeFn && controllersBoundTransclude;
+        if (boundTranscludeFn) {
+          transcludeFn = controllersBoundTransclude;
+          transcludeFn.$$bound = boundTranscludeFn.$$bound;
+        }
         if (controllerDirectives) {
           // TODO: merge `controllers` and `elementControllers` into single object.
           controllers = {};
@@ -1953,7 +1963,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var transcludeControllers;
 
           // No scope passed in:
-          if (!isScope(scope)) {
+          if (!isScope(scope) && !isUndefined(scope)) {
             futureParentElement = cloneAttachFn;
             cloneAttachFn = scope;
             scope = undefined;

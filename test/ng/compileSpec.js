@@ -5124,6 +5124,79 @@ describe('$compile', function() {
       });
 
 
+      it('should bind the tranclude function to the original scope when used ' +
+          'in a future `$compile` call', function() {
+
+        function countScopes($rootScope) {
+          return [$rootScope].concat(
+            getChildScopes($rootScope)
+          ).length;
+        }
+
+        function getChildScopes(scope) {
+          var children = [];
+          if (!scope.$$childHead) { return children; }
+          var childScope = scope.$$childHead;
+          do {
+            children.push(childScope);
+            children = children.concat(getChildScopes(childScope));
+          } while ((childScope = childScope.$$nextSibling));
+          return children;
+        }
+
+
+        module(function() {
+          directive('isolate', function() {
+            return {
+              scope: {}
+            };
+          });
+          directive('usesTransclude', function($compile) {
+            return {
+              scope: {foo: '='},
+              transclude: true,
+              template: '<div><div ng-if="foo"><div ng-transclude></div></div></div>',
+              compile: function(tElement, tAttrs) {
+                var content = tElement.contents();
+                tElement.empty();
+                return function(scope, element, attrs, ctrls, transcludeFn) {
+                  element.append(content);
+                  $compile(content, transcludeFn)(scope);
+                };
+              }
+            };
+          });
+        });
+        inject(function($compile) {
+          element = $compile(
+              '<div>' +
+                '<div ng-init="outer=true"></div>' +
+                '<div uses-transclude foo="foo">' +
+                  '<div uses-transclude foo="foo">' +
+                    '<span ng-if="outer">Success</span><span ng-if="!outer">Error</span>' +
+                  '</div>' +
+                '</div>' +
+              '</div>')($rootScope);
+          $rootScope.foo = false;
+          $rootScope.$digest();
+          expect(countScopes($rootScope)).toBe(2);
+          expect(element.text()).toBe('');
+          $rootScope.foo = true;
+          $rootScope.$digest();
+          expect(countScopes($rootScope)).toBe(8);
+          expect(element.text()).toBe('Success');
+          $rootScope.foo = false;
+          $rootScope.$digest();
+          expect(countScopes($rootScope)).toBe(2);
+          expect(element.text()).toBe('');
+          $rootScope.foo = true;
+          $rootScope.$digest();
+          expect(countScopes($rootScope)).toBe(8);
+          expect(element.text()).toBe('Success');
+        });
+      });
+
+
       // see issue https://github.com/angular/angular.js/issues/9095
       describe('removing a transcluded element', function() {
 
