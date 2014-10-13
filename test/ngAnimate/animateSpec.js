@@ -1143,7 +1143,7 @@ describe("ngAnimate", function() {
         element = $compile('<div class="fake-animation"></div>')($rootScope);
 
         $animate.enter(element, $rootElement, null, {
-          borderColor: 'red'
+          to : {borderColor: 'red'}
         });
 
         $rootScope.$digest();
@@ -1343,7 +1343,7 @@ describe("ngAnimate", function() {
             element = $compile(html('<div>1</div>'))($rootScope);
 
             $animate.addClass(element, 'on', {
-              borderColor: 'blue'
+              to: {borderColor: 'blue'}
             });
 
             $rootScope.$digest();
@@ -2346,7 +2346,7 @@ describe("ngAnimate", function() {
           element = $compile(html('<div>1</div>'))($rootScope);
 
           $animate.addClass(element, 'on', {
-            color: 'red'
+            to: {color: 'red'}
           });
 
           $rootScope.$digest();
@@ -2808,28 +2808,40 @@ describe("ngAnimate", function() {
             $compile(element)($rootScope);
 
             assertTempClass('enter', 'temp-enter', function() {
-              $animate.enter(element, container, null, 'temp-enter');
+              $animate.enter(element, container, null, {
+                tempClasses: 'temp-enter'
+              });
             });
 
             assertTempClass('move', 'temp-move', function() {
-              $animate.move(element, null, container2, 'temp-move');
+              $animate.move(element, null, container2, {
+                tempClasses: 'temp-move'
+              });
             });
 
             assertTempClass('addClass', 'temp-add', function() {
-              $animate.addClass(element, 'add', 'temp-add');
+              $animate.addClass(element, 'add', {
+                tempClasses: 'temp-add'
+              });
             });
 
             assertTempClass('removeClass', 'temp-remove', function() {
-              $animate.removeClass(element, 'add', 'temp-remove');
+              $animate.removeClass(element, 'add', {
+                tempClasses: 'temp-remove'
+              });
             });
 
             element.addClass('remove');
             assertTempClass('setClass', 'temp-set', function() {
-              $animate.setClass(element, 'add', 'remove', 'temp-set');
+              $animate.setClass(element, 'add', 'remove', {
+                tempClasses: 'temp-set'
+              });
             });
 
             assertTempClass('leave', 'temp-leave', function() {
-              $animate.leave(element, 'temp-leave');
+              $animate.leave(element, {
+                tempClasses: 'temp-leave'
+              });
             });
 
             function assertTempClass(event, className, animationOperation) {

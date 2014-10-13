@@ -111,25 +111,37 @@ describe("$animate", function() {
       parent.append(other);
       $animate.enabled(true);
 
-      $animate.enter(element, parent, null, { color : 'red' });
+      $animate.enter(element, parent, null, {
+        to: { color : 'red' }
+      });
       assertColor('red');
 
-      $animate.move(element, null, other, { color : 'yellow' });
+      $animate.move(element, null, other, {
+        to: { color : 'yellow' }
+      });
       assertColor('yellow');
 
-      $animate.addClass(element, 'on', { color : 'green' });
+      $animate.addClass(element, 'on', {
+        to: { color : 'green' }
+      });
       $rootScope.$digest();
       assertColor('green');
 
-      $animate.setClass(element, 'off', 'on', { color : 'black' });
+      $animate.setClass(element, 'off', 'on', {
+        to: { color : 'black' }
+      });
       $rootScope.$digest();
       assertColor('black');
 
-      $animate.removeClass(element, 'off', { color : 'blue' });
+      $animate.removeClass(element, 'off', {
+        to: { color : 'blue' }
+      });
       $rootScope.$digest();
       assertColor('blue');
 
-      $animate.leave(element, 'off', { color : 'blue' });
+      $animate.leave(element, 'off', {
+        to: { color : 'blue' }
+      });
       assertColor('blue'); //nothing should happen the element is gone anyway
 
       function assertColor(color) {

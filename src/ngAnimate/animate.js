@@ -323,24 +323,26 @@
  *
  * ### Applying Directive-specific Styles to an Animation
  * In some cases a directive or service may want to provide `$animate` with extra details that the animation will
- * include into its CSS-based animation. Let's say for example we wanted to render an animation that animates an
- * element towards the mouse coordinates as to where the user clicked last. By collecting the X/Y coordinates of
- * the click (via the event parameter) we can set the `top` and `left` styles into an object and pass that into
- * our function call to `$animate.addClass`.
+ * include into its animation. Let's say for example we wanted to render an animation that animates an element
+ * towards the mouse coordinates as to where the user clicked last. By collecting the X/Y coordinates of the click
+ * (via the event parameter) we can set the `top` and `left` styles into an object and pass that into our function
+ * call to `$animate.addClass`.
  *
  * ```js
  * canvas.on('click', function(e) {
  *   $animate.addClass(element, 'on', {
- *     left : e.client.x + 'px',
- *     top : e.client.y + 'px'
+ *     to: {
+ *       left : e.client.x + 'px',
+ *       top : e.client.y + 'px'
+ *     }
  *   }):
  * });
  * ```
  *
  * Now when the animation runs, and a transition or keyframe animation is picked up, then the animation itself will
- * also include and transition the styling of the `left` and `top` properties into it's running animation. If we want
+ * also include and transition the styling of the `left` and `top` properties into its running animation. If we want
  * to provide some starting animation values then we can do so by placing the starting animations styles into an object
- * called `before`. The destination styles are then placed inside of object called `after`.
+ * called `from` in the same object as the `to` animations.
  *
  * ```js
  * canvas.on('click', function(e) {
@@ -514,15 +516,12 @@ angular.module('ngAnimate', ['ng'])
         // some plugin code may still be passing in the callback
         // function as the last param for the $animate methods so
         // it's best to only allow string or array values for now
-        if (isString(options)) {
-          options = options.split(/\s+/);
+        if (isObject(options)) {
+          if (options.tempClasses && isString(options.tempClasses)) {
+            options.tempClasses = options.tempClasses.split(/\s+/);
+          }
+          return options;
         }
-        if (isArray(options)) {
-          options = {
-            tempClasses : options
-          };
-        }
-        if (isObject(options)) return options;
       }
 
       function resolveElementClasses(element, cache, runningAnimations) {
@@ -607,11 +606,9 @@ angular.module('ngAnimate', ['ng'])
           return;
         }
 
-        if (options && !options.from && !options.to) {
-          options = {
-            from : null,
-            to : options
-          };
+        if (options) {
+          options.to = options.to || {};
+          options.from = options.from || {};
         }
 
         var classNameAdd;
@@ -728,7 +725,7 @@ angular.module('ngAnimate', ['ng'])
           isSetClassOperation : isSetClassOperation,
           applyStyles : function() {
             if (options) {
-              element.css(angular.extend(options.from || {}, options.to));
+              element.css(angular.extend(options.from || {}, options.to || {}));
             }
           },
           before : function(allCompleteFn) {

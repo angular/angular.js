@@ -147,12 +147,8 @@ var $AnimateProvider = ['$provide', function($provide) {
 
     function applyStyles(element, options) {
       if (angular.isObject(options)) {
-        if (options.from || options.to) {
-          options = extend(options.from || {}, options.to || {});
-        } else {
-          delete options.tempClasses;
-        }
-        element.css(options);
+        var styles = extend(options.from || {}, options.to || {});
+        element.css(styles);
       }
     }
 
