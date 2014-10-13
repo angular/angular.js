@@ -1003,12 +1003,7 @@ describe('jqLite', function() {
           expect(type).toEqual('hashchange');
           eventFn = fn;
         },
-        removeEventListener: noop,
-        attachEvent: function(type, fn){
-          expect(type).toEqual('onhashchange');
-          eventFn = fn;
-        },
-        detachEvent: noop
+        removeEventListener: noop
       };
       window.window = window;
 
