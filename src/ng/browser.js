@@ -165,10 +165,12 @@ function Browser(window, document, $log, $sniffer) {
 
     // setter
     if (url) {
+      var sameState = lastHistoryState === state;
+
       // Don't change anything if previous and current URLs and states match. This also prevents
       // IE<10 from getting into redirect loop when in LocationHashbangInHtml5Url mode.
       // See https://github.com/angular/angular.js/commit/ffb2701
-      if (lastBrowserUrl === url && (!$sniffer.history || cachedState === state)) {
+      if (lastBrowserUrl === url && (!$sniffer.history || sameState)) {
         return;
       }
       var sameBase = lastBrowserUrl && stripHash(lastBrowserUrl) === stripHash(url);
@@ -178,9 +180,10 @@ function Browser(window, document, $log, $sniffer) {
       // due to a bug in IE10/IE11 which leads
       // to not firing a `hashchange` nor `popstate` event
       // in some cases (see #9143).
-      if ($sniffer.history && (!sameBase || cachedState !== state)) {
+      if ($sniffer.history && (!sameBase || !sameState)) {
         history[replace ? 'replaceState' : 'pushState'](state, '', url);
         cacheState();
+        // Do the assignment again so that those two variables are referentially identical.
         lastHistoryState = cachedState;
       } else {
         if (!sameBase) {
