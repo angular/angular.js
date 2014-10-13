@@ -49,7 +49,7 @@
       Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
       Show when checked:
       <span ng-if="checked" class="animate-if">
-        I'm removed when the checkbox is unchecked.
+        This is removed when the checkbox is unchecked.
       </span>
     </file>
     <file name="animations.css">
@@ -103,15 +103,15 @@ var ngIfDirective = ['$animate', function($animate) {
               });
             }
           } else {
-            if(previousElements) {
+            if (previousElements) {
               previousElements.remove();
               previousElements = null;
             }
-            if(childScope) {
+            if (childScope) {
               childScope.$destroy();
               childScope = null;
             }
-            if(block) {
+            if (block) {
               previousElements = getBlockNodes(block.clone);
               $animate.leave(previousElements).then(function() {
                 previousElements = null;
