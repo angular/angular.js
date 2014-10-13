@@ -946,11 +946,10 @@ function getterFn(path, options, fullExp) {
   return fn;
 }
 
-function valueOfAgnostic(value){
-  if(typeof value.valueOf !== 'function'){
-    return Object.prototype.valueOf.call(value);
-  }
-  return value.valueOf();
+var objectValueOf = Object.prototype.valueOf;
+
+function getValueOf(value) {
+  return isFunction(value.valueOf) ? value.valueOf() : objectValueOf(value);
 }
 
 ///////////////////////////////////
@@ -1099,7 +1098,7 @@ function $ParseProvider() {
         // attempt to convert the value to a primitive type
         // TODO(docs): add a note to docs that by implementing valueOf even objects and arrays can
         //             be cheaply dirty-checked
-        newValue = valueOfAgnostic(newValue);
+        newValue = getValueOf(newValue);
 
         if (typeof newValue === 'object') {
           // objects/arrays are not supported - deep-watching them would be too expensive
@@ -1126,7 +1125,7 @@ function $ParseProvider() {
           var newInputValue = inputExpressions(scope);
           if (!expressionInputDirtyCheck(newInputValue, oldInputValue)) {
             lastResult = parsedExpression(scope);
-            oldInputValue = newInputValue && valueOfAgnostic(newInputValue);
+            oldInputValue = newInputValue && getValueOf(newInputValue);
           }
           return lastResult;
         }, listener, objectEquality);
@@ -1143,7 +1142,7 @@ function $ParseProvider() {
         for (var i = 0, ii = inputExpressions.length; i < ii; i++) {
           var newInputValue = inputExpressions[i](scope);
           if (changed || (changed = !expressionInputDirtyCheck(newInputValue, oldInputValueOfValues[i]))) {
-            oldInputValueOfValues[i] = newInputValue && valueOfAgnostic(newInputValue);
+            oldInputValueOfValues[i] = newInputValue && getValueOf(newInputValue);
           }
         }
 
