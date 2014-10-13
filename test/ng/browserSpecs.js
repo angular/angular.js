@@ -29,12 +29,7 @@ function MockWindow() {
     events[name].push(listener);
   };
 
-  this.attachEvent = function(name, listener) {
-    this.addEventListener(name.substr(2), listener);
-  };
-
   this.removeEventListener = noop;
-  this.detachEvent = noop;
 
   this.fire = function(name) {
     forEach(events[name], function(fn) {
