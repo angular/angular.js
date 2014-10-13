@@ -1153,7 +1153,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                            maxPriority, ignoreDirective, previousCompileContext);
       compile.$$addScopeClass($compileNodes);
       var namespace = null;
-      return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn, futureParentElement){
+      return function publicLinkFn(scope, cloneConnectFn, futureParentElement, transcludeControllers, parentBoundTranscludeFn){
         assertArg(scope, 'scope');
         if (!namespace) {
           namespace = detectNamespaceForChildElements(futureParentElement);
@@ -1317,15 +1317,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn, elementTransclusion) {
 
-      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, futureParentElement, containingScope) {
+      // preserve previously bound scope
+      if (transcludeFn.$$bound) {
+        scope = transcludeFn.$$bound;
+      }
+
+      var boundTranscludeFn = function(transcludedScope, cloneFn, futureParentElement, controllers, containingScope) {
 
         if (!transcludedScope) {
           transcludedScope = scope.$new(false, containingScope);
           transcludedScope.$$transcluded = true;
         }
 
-        return transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn, futureParentElement);
+        return transcludeFn(transcludedScope, cloneFn, futureParentElement, controllers, previousBoundTranscludeFn);
       };
+
+      boundTranscludeFn.$$bound = scope;
 
       return boundTranscludeFn;
     }
@@ -1793,7 +1800,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           isolateScope = scope.$new(true);
         }
 
-        transcludeFn = boundTranscludeFn && controllersBoundTransclude;
+        if (boundTranscludeFn) {
+          transcludeFn = controllersBoundTransclude;
+          transcludeFn.$$bound = boundTranscludeFn.$$bound;
+        }
         if (controllerDirectives) {
           // TODO: merge `controllers` and `elementControllers` into single object.
           controllers = {};
@@ -1953,7 +1963,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var transcludeControllers;
 
           // No scope passed in:
-          if (!isScope(scope)) {
+          if (!isScope(scope) && !isUndefined(scope)) {
             futureParentElement = cloneAttachFn;
             cloneAttachFn = scope;
             scope = undefined;
@@ -1965,7 +1975,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (!futureParentElement) {
             futureParentElement = hasElementTranscludeDirective ? $element.parent() : $element;
           }
-          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers, futureParentElement, scopeToChild);
+          return boundTranscludeFn(scope, cloneAttachFn, futureParentElement, transcludeControllers, scopeToChild);
         }
       }
     }
