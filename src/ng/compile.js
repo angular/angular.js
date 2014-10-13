@@ -1153,7 +1153,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                            maxPriority, ignoreDirective, previousCompileContext);
       compile.$$addScopeClass($compileNodes);
       var namespace = null;
-      return function publicLinkFn(scope, cloneConnectFn, transcludeControllers, parentBoundTranscludeFn, futureParentElement){
+      return function publicLinkFn(scope, cloneConnectFn, futureParentElement, transcludeControllers, parentBoundTranscludeFn){
         assertArg(scope, 'scope');
         if (!namespace) {
           namespace = detectNamespaceForChildElements(futureParentElement);
@@ -1317,14 +1317,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn, elementTransclusion) {
 
-      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, futureParentElement, containingScope) {
+      var boundTranscludeFn = function(transcludedScope, cloneFn, futureParentElement, controllers, containingScope) {
 
         if (!transcludedScope) {
           transcludedScope = scope.$new(false, containingScope);
           transcludedScope.$$transcluded = true;
         }
 
-        return transcludeFn(transcludedScope, cloneFn, controllers, previousBoundTranscludeFn, futureParentElement);
+        return transcludeFn(transcludedScope, cloneFn, futureParentElement, controllers, previousBoundTranscludeFn);
       };
 
       return boundTranscludeFn;
@@ -1965,7 +1965,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (!futureParentElement) {
             futureParentElement = hasElementTranscludeDirective ? $element.parent() : $element;
           }
-          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers, futureParentElement, scopeToChild);
+          return boundTranscludeFn(scope, cloneAttachFn, futureParentElement, transcludeControllers, scopeToChild);
         }
       }
     }
