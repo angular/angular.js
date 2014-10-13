@@ -60,12 +60,15 @@ Note that `novalidate` is used to disable browser's native form validation.
 
 To allow styling of form as well as controls, `ngModel`  adds these CSS classes:
 
-- `ng-valid`
-- `ng-invalid`
-- `ng-pristine`
-- `ng-dirty`
-- `ng-touched`
-- `ng-untouched`
+- `ng-valid`: the model is valid
+- `ng-invalid`: the model is invalid
+- `ng-valid-[key]`: for each valid key added by `$setValidity`
+- `ng-invalid-[key]`: for each invalid key added by `$setValidity`
+- `ng-pristine`: the control hasn't been interacted with yet
+- `ng-dirty`: the control has been interacted with
+- `ng-touched`: the control has been blurred
+- `ng-untouched`: the control hasn't been blurred
+- `ng-pending`: any `$asyncValidators` are unfulfilled
 
 The following example uses the CSS to display validity of each form control.
 In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
