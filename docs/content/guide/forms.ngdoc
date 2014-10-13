@@ -384,6 +384,50 @@ In the following example we create two directives:
   </file>
 </example>
 
+# Modifying built-in validators
+
+Since Angular itself uses `$validators`, you can easily replace or remove built-in validators,
+should you find it necessary. The following example shows you how to overwrite the email validator
+in `input[email]` from a custom directive so that it requires a specific top-level domain,
+`example.com` to be present.
+Note that you can alternatively use `ng-pattern` to further restrict the validation.
+
+<example module="form-example-modify-validators">
+  <file name="index.html">
+    <form name="form" class="css-form" novalidate>
+      <div>
+        Overwritten Email:
+        <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
+        <span ng-show="form.overwrittenEmail.$error.email">This email format is invalid!</span><br>
+        Model: {{myEmail}}
+        </div>
+    </form>
+  </file>
+
+  <file name="script.js">
+    var app = angular.module('form-example-modify-validators', []);
+
+    app.directive('overwriteEmail', function() {
+      var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@example\.com$/i;
+
+      return {
+        require: 'ngModel',
+        restrict: '',
+        link: function(scope, elm, attrs, ctrl) {
+          // only apply the validator if ngModel is present and Angular has added the email validator
+          if (ctrl && ctrl.$validators.email) {
+
+            // this will overwrite the default Angular email validator
+            ctrl.$validators.email = function(modelValue) {
+              return ctrl.$isEmpty(modelValue) || EMAIL_REGEXP.test(modelValue);
+            };
+          }
+        }
+      };
+    });
+  </file>
+</example>
+
 
 # Implementing custom form controls (using `ngModel`)
 Angular implements all of the basic HTML form controls ({@link ng.directive:input input}, {@link ng.directive:select select}, {@link ng.directive:textarea textarea}), which should be sufficient for most cases.
