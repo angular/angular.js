@@ -54,6 +54,7 @@
     "isBoolean": false,
     "isPromiseLike": false,
     "trim": false,
+    "escapeForRegexp": false,
     "isElement": false,
     "makeMap": false,
     "size": false,

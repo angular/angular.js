@@ -88,6 +88,32 @@ describe('$$testability', function() {
       expect(names[0]).toBe(element.find('li')[0]);
     });
 
+    it('should find bindings with allowed special characters', function() {
+      element =
+          '<div>' +
+          '  <span>{{$index}}</span>' +
+          '  <span>{{foo.bar}}</span>' +
+          '  <span>{{foonbar}}</span>' +
+          '  <span>{{foo | uppercase}}</span>' +
+          '</div>';
+      element = $compile(element)(scope);
+      var indexes = $$testability.findBindings(element[0], '$index', true);
+      expect(indexes.length).toBe(1);
+      expect(indexes[0]).toBe(element.find('span')[0]);
+
+      var foobars = $$testability.findBindings(element[0], 'foo.bar', true);
+      expect(foobars.length).toBe(1); // it should not match {{foonbar}}
+      expect(foobars[0]).toBe(element.find('span')[1]);
+
+      var foo = $$testability.findBindings(element[0], 'foo', true);
+      expect(foo.length).toBe(1); // it should match {{foo | uppercase}}
+      var uppercase = $$testability.findBindings(element[0], 'uppercase', true);
+      expect(uppercase.length).toBe(1); // it should match {{foo | uppercase}}
+      var filteredFoo = $$testability.findBindings(element[0], 'foo | uppercase', true);
+      expect(filteredFoo.length).toBe(1); // it should match {{foo | uppercase}}
+      expect(filteredFoo[0]).toBe(element.find('span')[3]);
+    });
+
     it('should find partial models', function() {
       element =
           '<div>' +
