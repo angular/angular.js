@@ -21,11 +21,16 @@ var $compileMinErr = minErr('$compile');
  */
 function $TemplateRequestProvider() {
   this.$get = ['$templateCache', '$http', '$q', function($templateCache, $http, $q) {
+    var httpOptions = {
+      cache: $templateCache,
+      transformResponse: null
+    };
+
     function handleRequestFn(tpl, ignoreRequestError) {
       var self = handleRequestFn;
       self.totalPendingRequests++;
 
-      return $http.get(tpl, { cache : $templateCache })
+      return $http.get(tpl, httpOptions)
         .then(function(response) {
           var html = response.data;
           if(!html || html.length === 0) {
