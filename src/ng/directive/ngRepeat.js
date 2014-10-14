@@ -211,18 +211,21 @@
 var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
+  var nullAliasProperties = {};
 
-  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
+  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength, aliasAs) {
+    var aliasRef = aliasAs ? {} : nullAliasProperties;
     // TODO(perf): generate setters to shave off ~40ms or 1-1.5%
     scope[valueIdentifier] = value;
     if (keyIdentifier) scope[keyIdentifier] = key;
-    scope.$index = index;
-    scope.$first = (index === 0);
-    scope.$last = (index === (arrayLength - 1));
-    scope.$middle = !(scope.$first || scope.$last);
+    aliasRef.$index = scope.$index = index;
+    aliasRef.$first = scope.$first = (index === 0);
+    aliasRef.$last = scope.$last = (index === (arrayLength - 1));
+    aliasRef.$middle = scope.$middle = !(scope.$first || scope.$last);
     // jshint bitwise: false
-    scope.$odd = !(scope.$even = (index&1) === 0);
+    aliasRef.$odd = scope.$odd = !(aliasRef.$even = scope.$even = (index&1) === 0);
     // jshint bitwise: true
+    if (aliasAs) scope['$' + aliasAs] = aliasRef;
   };
 
   var getBlockStart = function(block) {
@@ -411,7 +414,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 $animate.move(getBlockNodes(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength, aliasAs);
             } else {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
@@ -428,7 +431,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // by a directive with templateUrl when its template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
-                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength, aliasAs);
               });
             }
           }

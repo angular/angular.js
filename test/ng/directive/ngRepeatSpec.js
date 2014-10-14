@@ -492,6 +492,43 @@ describe('ngRepeat', function() {
         return text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
       }
     }));
+
+    it('should expose the index properties using `${{userSpecifiedAliasName}}`', inject(function() {
+      var expression = '{{item}}-{{$results.' + ['$index', '$first', '$middle', '$last', '$odd', '$even'].join('}}-{{$results.') + '}}:';
+      element = $compile(
+        '<div>' +
+        '  <div ng-repeat="item in items as results">' + expression + '</div>' +
+        '</div>')(scope);
+
+      scope.items = ['a','b','c','d','e','f'];
+      scope.$digest();
+      expect(trim(element.text())).toEqual(
+          'a-0-true-false-false-false-true:' +
+          'b-1-false-true-false-true-false:' +
+          'c-2-false-true-false-false-true:' +
+          'd-3-false-true-false-true-false:' +
+          'e-4-false-true-false-false-true:' +
+          'f-5-false-false-true-true-false:');
+
+      scope.items.shift();
+      scope.$digest();
+      expect(trim(element.text())).toEqual(
+          'b-0-true-false-false-false-true:' +
+          'c-1-false-true-false-true-false:' +
+          'd-2-false-true-false-false-true:' +
+          'e-3-false-true-false-true-false:' +
+          'f-4-false-false-true-false-true:');
+    }));
+
+    it('should be possible to access the alias inside the loop', inject(function() {
+      element = $compile(
+        '<div>' +
+        '  <div ng-repeat="item in items as results">{{results[$index]}}</div>' +
+        '</div>')(scope);
+      scope.items = ['a','b','c','d','e','f'];
+      scope.$digest();
+      expect(trim(element.text())).toEqual('abcdef');
+    }));
   });
 
 
