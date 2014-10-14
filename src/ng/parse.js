@@ -946,7 +946,7 @@ function getterFn(path, options, fullExp) {
   return fn;
 }
 
-var objectValueOf = Object.prototype.valueOf;
+var objectValueOf = Object.prototype.valueOf.call;
 
 function getValueOf(value) {
   return isFunction(value.valueOf) ? value.valueOf() : objectValueOf(value);
