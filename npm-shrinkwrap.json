@@ -543,9 +543,6 @@
             "figures": {
               "version": "1.3.3"
             },
-            "lodash": {
-              "version": "2.4.1"
-            },
             "mute-stream": {
               "version": "0.0.4"
             },
@@ -655,9 +652,6 @@
                       }
                     }
                   }
-                },
-                "lodash": {
-                  "version": "2.4.1"
                 },
                 "mute-stream": {
                   "version": "0.0.4"
@@ -1241,9 +1235,6 @@
             }
           }
         },
-        "lodash": {
-          "version": "2.4.1"
-        },
         "q": {
           "version": "0.9.7"
         },
@@ -1440,9 +1431,6 @@
               "version": "1.0.0"
             }
           }
-        },
-        "lodash": {
-          "version": "2.4.1"
         },
         "minimatch": {
           "version": "0.3.0",
@@ -2190,9 +2178,6 @@
         "jshint": {
           "version": "2.5.6",
           "dependencies": {
-            "shelljs": {
-              "version": "0.3.0"
-            },
             "underscore": {
               "version": "1.6.0"
             },
@@ -2294,45 +2279,48 @@
       "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
-    "grunt-jscs-checker": {
-      "version": "0.4.4",
+    "grunt-jscs": {
+      "version": "0.7.1",
       "dependencies": {
         "hooker": {
           "version": "0.2.3"
         },
         "jscs": {
-          "version": "1.4.5",
+          "version": "1.6.2",
           "dependencies": {
             "colors": {
               "version": "0.6.2"
             },
             "commander": {
-              "version": "2.2.0"
+              "version": "2.3.0"
             },
             "esprima": {
-              "version": "1.1.1"
+              "version": "1.2.2"
+            },
+            "exit": {
+              "version": "0.1.2"
             },
             "glob": {
-              "version": "3.2.11",
+              "version": "4.0.6",
               "dependencies": {
+                "graceful-fs": {
+                  "version": "3.0.4"
+                },
                 "inherits": {
                   "version": "2.0.1"
                 },
-                "minimatch": {
-                  "version": "0.3.0",
+                "once": {
+                  "version": "1.3.1",
                   "dependencies": {
-                    "lru-cache": {
-                      "version": "2.5.0"
-                    },
-                    "sigmund": {
-                      "version": "1.0.0"
+                    "wrappy": {
+                      "version": "1.0.1"
                     }
                   }
                 }
               }
             },
             "minimatch": {
-              "version": "0.2.14",
+              "version": "1.0.0",
               "dependencies": {
                 "lru-cache": {
                   "version": "2.5.0"
@@ -2343,132 +2331,51 @@
               }
             },
             "strip-json-comments": {
-              "version": "0.1.3"
-            },
-            "vow": {
-              "version": "0.3.13"
+              "version": "1.0.1"
             },
             "vow-fs": {
-              "version": "0.2.3",
+              "version": "0.3.2",
               "dependencies": {
                 "node-uuid": {
                   "version": "1.4.0"
                 },
+                "vow": {
+                  "version": "0.4.4"
+                },
                 "vow-queue": {
-                  "version": "0.0.2"
+                  "version": "0.3.1"
+                },
+                "glob": {
+                  "version": "3.2.8",
+                  "dependencies": {
+                    "minimatch": {
+                      "version": "0.2.14",
+                      "dependencies": {
+                        "lru-cache": {
+                          "version": "2.5.0"
+                        },
+                        "sigmund": {
+                          "version": "1.0.0"
+                        }
+                      }
+                    },
+                    "inherits": {
+                      "version": "2.0.1"
+                    }
+                  }
                 }
               }
             },
             "xmlbuilder": {
-              "version": "2.2.1",
+              "version": "2.4.4",
               "dependencies": {
                 "lodash-node": {
                   "version": "2.4.1"
                 }
               }
-            }
-          }
-        },
-        "lodash.assign": {
-          "version": "2.4.1",
-          "dependencies": {
-            "lodash._basecreatecallback": {
-              "version": "2.4.1",
-              "dependencies": {
-                "lodash.bind": {
-                  "version": "2.4.1",
-                  "dependencies": {
-                    "lodash._createwrapper": {
-                      "version": "2.4.1",
-                      "dependencies": {
-                        "lodash._basebind": {
-                          "version": "2.4.1",
-                          "dependencies": {
-                            "lodash._basecreate": {
-                              "version": "2.4.1",
-                              "dependencies": {
-                                "lodash._isnative": {
-                                  "version": "2.4.1"
-                                },
-                                "lodash.noop": {
-                                  "version": "2.4.1"
-                                }
-                              }
-                            },
-                            "lodash.isobject": {
-                              "version": "2.4.1"
-                            }
-                          }
-                        },
-                        "lodash._basecreatewrapper": {
-                          "version": "2.4.1",
-                          "dependencies": {
-                            "lodash._basecreate": {
-                              "version": "2.4.1",
-                              "dependencies": {
-                                "lodash._isnative": {
-                                  "version": "2.4.1"
-                                },
-                                "lodash.noop": {
-                                  "version": "2.4.1"
-                                }
-                              }
-                            },
-                            "lodash.isobject": {
-                              "version": "2.4.1"
-                            }
-                          }
-                        },
-                        "lodash.isfunction": {
-                          "version": "2.4.1"
-                        }
-                      }
-                    },
-                    "lodash._slice": {
-                      "version": "2.4.1"
-                    }
-                  }
-                },
-                "lodash.identity": {
-                  "version": "2.4.1"
-                },
-                "lodash._setbinddata": {
-                  "version": "2.4.1",
-                  "dependencies": {
-                    "lodash._isnative": {
-                      "version": "2.4.1"
-                    },
-                    "lodash.noop": {
-                      "version": "2.4.1"
-                    }
-                  }
-                },
-                "lodash.support": {
-                  "version": "2.4.1",
-                  "dependencies": {
-                    "lodash._isnative": {
-                      "version": "2.4.1"
-                    }
-                  }
-                }
-              }
             },
-            "lodash.keys": {
-              "version": "2.4.1",
-              "dependencies": {
-                "lodash._isnative": {
-                  "version": "2.4.1"
-                },
-                "lodash.isobject": {
-                  "version": "2.4.1"
-                },
-                "lodash._shimkeys": {
-                  "version": "2.4.1"
-                }
-              }
-            },
-            "lodash._objecttypes": {
-              "version": "2.4.1"
+            "supports-color": {
+              "version": "1.1.0"
             }
           }
         },
@@ -2592,9 +2499,6 @@
                       }
                     }
                   }
-                },
-                "lodash": {
-                  "version": "2.4.1"
                 }
               }
             },
@@ -2736,9 +2640,6 @@
             },
             "graceful-fs": {
               "version": "3.0.2"
-            },
-            "lodash": {
-              "version": "2.4.1"
             },
             "mkdirp": {
               "version": "0.5.0",
@@ -3656,9 +3557,6 @@
           "dependencies": {
             "clone-stats": {
               "version": "0.0.1"
-            },
-            "lodash": {
-              "version": "2.4.1"
             }
           }
         },
@@ -3775,9 +3673,6 @@
         },
         "dateformat": {
           "version": "1.0.8"
-        },
-        "lodash": {
-          "version": "2.4.1"
         },
         "lodash._reinterpolate": {
           "version": "2.4.1"
@@ -4182,9 +4077,6 @@
         },
         "colors": {
           "version": "0.6.2"
-        },
-        "lodash": {
-          "version": "2.4.1"
         },
         "mime": {
           "version": "1.2.11"
@@ -5006,9 +4898,6 @@
         },
         "q": {
           "version": "1.0.0"
-        },
-        "lodash": {
-          "version": "2.4.1"
         },
         "source-map-support": {
           "version": "0.2.7",
