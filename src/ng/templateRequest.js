@@ -25,7 +25,28 @@ function $TemplateRequestProvider() {
       var self = handleRequestFn;
       self.totalPendingRequests++;
 
-      return $http.get(tpl, { cache : $templateCache })
+      var transformResponse = $http.defaults && $http.defaults.transformResponse;
+      var idx;
+
+      if (isArray(transformResponse)) {
+        var original = transformResponse;
+        transformResponse = [];
+        for (var i=0; i<original.length; ++i) {
+          var transformer = original[i];
+          if (transformer !== defaultHttpResponseTransform) {
+            transformResponse.push(transformer);
+          }
+        }
+      } else if (transformResponse === defaultHttpResponseTransform) {
+        transformResponse = null;
+      }
+
+      var httpOptions = {
+        cache: $templateCache,
+        transformResponse: transformResponse
+      };
+
+      return $http.get(tpl, httpOptions)
         .then(function(response) {
           var html = response.data;
           if(!html || html.length === 0) {
