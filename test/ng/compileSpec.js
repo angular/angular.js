@@ -5209,6 +5209,98 @@ describe('$compile', function() {
       });
 
 
+      // see issue https://github.com/angular/angular.js/issues/9413
+      describe('passing a parent bound transclude function to the link ' +
+          'function returned from `$compile`', function() {
+
+        beforeEach(module(function() {
+          directive('lazyCompile', function($compile) {
+            return {
+              compile: function(tElement, tAttrs) {
+                var content = tElement.contents();
+                tElement.empty();
+                return function(scope, element, attrs, ctrls, transcludeFn) {
+                  element.append(content);
+                  $compile(content)(scope, undefined, transcludeFn);
+                };
+              }
+            };
+          });
+          directive('toggle', valueFn({
+            scope: {t: '=toggle'},
+            transclude: true,
+            template: '<div ng-if="t"><lazy-compile><div ng-transclude></div></lazy-compile></div>'
+          }));
+        }));
+
+        it('should preserve the bound scope', function() {
+
+          inject(function($compile, $rootScope) {
+            element = $compile(
+              '<div>' +
+                '<div ng-init="outer=true"></div>' +
+                '<div toggle="t">' +
+                  '<span ng-if="outer">Success</span><span ng-if="!outer">Error</span>' +
+                '</div>' +
+              '</div>')($rootScope);
+
+            $rootScope.$apply('t = false');
+            expect($rootScope.$countChildScopes()).toBe(1);
+            expect(element.text()).toBe('');
+
+            $rootScope.$apply('t = true');
+            expect($rootScope.$countChildScopes()).toBe(4);
+            expect(element.text()).toBe('Success');
+
+            $rootScope.$apply('t = false');
+            expect($rootScope.$countChildScopes()).toBe(1);
+            expect(element.text()).toBe('');
+
+            $rootScope.$apply('t = true');
+            expect($rootScope.$countChildScopes()).toBe(4);
+            expect(element.text()).toBe('Success');
+          });
+        });
+
+
+        it('should preserve the bound scope when using recursive transclusion', function() {
+
+          directive('recursiveTransclude', valueFn({
+            transclude: true,
+            template: '<div><lazy-compile><div ng-transclude></div></lazy-compile></div>'
+          }));
+
+          inject(function($compile, $rootScope) {
+            element = $compile(
+              '<div>' +
+                '<div ng-init="outer=true"></div>' +
+                '<div toggle="t">' +
+                  '<div recursive-transclude>' +
+                    '<span ng-if="outer">Success</span><span ng-if="!outer">Error</span>' +
+                  '</div>' +
+                '</div>' +
+              '</div>')($rootScope);
+
+            $rootScope.$apply('t = false');
+            expect($rootScope.$countChildScopes()).toBe(1);
+            expect(element.text()).toBe('');
+
+            $rootScope.$apply('t = true');
+            expect($rootScope.$countChildScopes()).toBe(4);
+            expect(element.text()).toBe('Success');
+
+            $rootScope.$apply('t = false');
+            expect($rootScope.$countChildScopes()).toBe(1);
+            expect(element.text()).toBe('');
+
+            $rootScope.$apply('t = true');
+            expect($rootScope.$countChildScopes()).toBe(4);
+            expect(element.text()).toBe('Success');
+          });
+        });
+      });
+
+
       // see issue https://github.com/angular/angular.js/issues/9095
       describe('removing a transcluded element', function() {
 
