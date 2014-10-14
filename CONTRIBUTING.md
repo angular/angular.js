@@ -172,7 +172,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
     * **Do not use namespaces**: Instead,  wrap the entire angular code base in an anonymous closure and
       export our API explicitly rather than implicitly.
     * Wrap all code at **100 characters**.
-    * Instead of complex inheritance hierarchies, we **prefer simple objects**. We use prototypical
+    * Instead of complex inheritance hierarchies, we **prefer simple objects**. We use prototypal
       inheritance only when absolutely necessary.
     * We **love functions and closures** and, whenever possible, prefer them over objects.
     * To write concise code that can be better minified, we **use aliases internally** that map to the
