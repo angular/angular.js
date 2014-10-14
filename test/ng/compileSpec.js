@@ -5221,7 +5221,9 @@ describe('$compile', function() {
                 tElement.empty();
                 return function(scope, element, attrs, ctrls, transcludeFn) {
                   element.append(content);
-                  $compile(content)(scope, undefined, transcludeFn);
+                  $compile(content)(scope, undefined, {
+                    parentBoundTranscludeFn: transcludeFn
+                  });
                 };
               }
             };
