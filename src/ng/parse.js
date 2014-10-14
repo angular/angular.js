@@ -946,10 +946,10 @@ function getterFn(path, options, fullExp) {
   return fn;
 }
 
-var objectValueOf = Object.prototype.valueOf.call;
+var objectValueOf = Object.prototype.valueOf;
 
 function getValueOf(value) {
-  return isFunction(value.valueOf) ? value.valueOf() : objectValueOf(value);
+  return isFunction(value.valueOf) ? value.valueOf() : objectValueOf.call(value);
 }
 
 ///////////////////////////////////

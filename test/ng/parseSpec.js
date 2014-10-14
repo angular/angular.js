@@ -1460,7 +1460,7 @@ describe('parser', function() {
           expect(watcherCalls).toBe(1);
         }));
 
-        it("should always reevaluate filters with non-primitive input created with Object.create(null)",
+        it("should always reevaluate filters with non-primitive input created with null prototype",
             inject(function($parse) {
           var filterCalls = 0;
           $filterProvider.register('foo', valueFn(function(input) {
