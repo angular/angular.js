@@ -54,7 +54,7 @@
 - **currencyFilter:** add fractionSize as optional parameter
   ([20685ffe](https://github.com/angular/angular.js/commit/20685ffe11036d4d604d13f0d792ca46497af4a1),
    [#3642](https://github.com/angular/angular.js/issues/3642), [#3461](https://github.com/angular/angular.js/issues/3461), [#3642](https://github.com/angular/angular.js/issues/3642), [#7922](https://github.com/angular/angular.js/issues/7922))
-- **jqLite:** add private jqDocumentComplete function
+- **jqLite:** add private jqLiteDocumentLoaded function
   ([0dd316ef](https://github.com/angular/angular.js/commit/0dd316efea209e5e5de3e456b4e6562f011a1294))
 
 
