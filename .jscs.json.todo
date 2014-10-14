@@ -6,8 +6,8 @@
 {
   "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
   "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"],
-  "disallowLeftStickedOperators": ["?", "+", "-", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
-  "disallowRightStickedOperators": ["?", "+", "/", "*", ":", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
+  "requireSpaceAfterBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||"],
+  "requireSpaceBeforeBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||"],
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
   "disallowKeywordsOnNewLine": ["else"],
