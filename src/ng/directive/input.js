@@ -2234,6 +2234,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * @name ngModel
  *
  * @element input
+ * @priority 1
  *
  * @description
  * The `ngModel` directive binds an `input`,`select`, `textarea` (or custom form control) to a
