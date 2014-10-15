@@ -10,6 +10,10 @@ var helper = {
       fixture += '/';
     }
 
+    if (process.env.USE_JQUERY) {
+      fixture += '?jquery';
+    }
+
     browser.get('/e2e/fixtures/' + fixture);
     return helper;
   }
