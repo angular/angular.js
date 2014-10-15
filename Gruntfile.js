@@ -111,6 +111,13 @@ module.exports = function(grunt) {
     },
 
 
+    protractor: {
+      normal: 'protractor-e2e.conf.js',
+      travis: 'protractor-e2e-travis.conf.js',
+      jenkins: 'protractor-e2e-jenkins.conf.js'
+    },
+
+
     clean: {
       build: ['build'],
       tmp: ['tmp']
