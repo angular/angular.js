@@ -336,6 +336,10 @@ module.exports = function(grunt) {
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
   grunt.registerTask('test:e2e', 'Run E2E tests with Protractor with a test server running in the background',
                      ['webdriver', 'connect:testserver', 'protractor:normal']);
+  grunt.registerTask('test:travis-e2e', 'Run the E2E tests with protractor and keep a test server running in the background',
+                     ['connect:testserver', 'protractor:travis']);
+  grunt.registerTask('test:ci-e2e', 'Run the E2E tests with protractor and keep a test server running in the background',
+                     ['webdriver', 'connect:testserver', 'protractor:jenkins']);
   grunt.registerTask('test:protractor-docs', 'Run the end to end docs tests with Protractor and keep a test server running in the background',
                      ['webdriver', 'connect:testserver', 'protractor-docs:normal']);
   grunt.registerTask('test:travis-protractor-docs', 'Run the end to end docs tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor-docs:travis']);
