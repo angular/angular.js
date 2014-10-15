@@ -658,13 +658,15 @@ describe("resource", function() {
     var cc = CreditCard.get({id: 123});
     $httpBackend.flush();
 
+    cc.$myProp = 'still here';
+
     expect(cc.$promise).toBeDefined();
     expect(cc.$resolved).toBe(true);
 
     var json = JSON.parse(angular.toJson(cc));
     expect(json.$promise).not.toBeDefined();
     expect(json.$resolved).not.toBeDefined();
-    expect(json).toEqual({id: 123, number: '9876'});
+    expect(json).toEqual({id: 123, number: '9876', $myProp: 'still here'});
   });
 
   describe('promise api', function() {
