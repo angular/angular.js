@@ -549,6 +549,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function resolveElementClasses(element, cache, runningAnimations) {
+        if (!cache || !cache.classes) return;
         runningAnimations = runningAnimations || {};
 
         var lookup = {};
