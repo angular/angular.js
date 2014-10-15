@@ -4,14 +4,15 @@ exports.config = {
   allScriptsTimeout: 11000,
 
   specs: [
-    'test/e2e/tests/**/*.js'
+    'test/e2e/tests/helpers/**/*.js',
+    'test/e2e/tests/**/*Spec.js'
   ],
 
   capabilities: {
     'browserName': 'chrome'
   },
 
-  baseUrl: 'http://localhost:8000/e2e/',
+  baseUrl: 'http://localhost:8000/',
 
   framework: 'jasmine',
 

@@ -3,10 +3,11 @@
 var config = require('./protractor-shared-conf').config;
 
 config.specs = [
-  'test/e2e/tests/**/*.js'
+  'test/e2e/tests/helpers/**/*.js',
+  'test/e2e/tests/**/*Spec.js'
 ];
 
-config.baseUrl = 'http://localhost:8000/e2e/';
+config.baseUrl = 'http://localhost:8000/';
 
 config.capabilities = {
   browserName: 'chrome',

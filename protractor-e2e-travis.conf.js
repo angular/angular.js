@@ -28,10 +28,11 @@ config.multiCapabilities = [{
 }];
 
 config.specs = [
-  'test/e2e/tests/**/*.js'
+  'test/e2e/tests/helpers/**/*.js',
+  'test/e2e/tests/**/*Spec.js'
 ];
 
-config.baseUrl = 'http://localhost:8000/e2e/';
+config.baseUrl = 'http://localhost:8000/';
 
 config.allScriptsTimeout = 30000;
 config.getPageTimeout = 30000;
