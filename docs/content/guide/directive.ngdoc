@@ -282,7 +282,7 @@ using `templateUrl` instead:
   </file>
 </example>
 
-`templateUrl` can also be a function which returns the URL of an HMTL template to be loaded and
+`templateUrl` can also be a function which returns the URL of an HTML template to be loaded and
 used for the directive. Angular will call the `templateUrl` function with two parameters: the
 element that the directive was called on, and an `attr` object associated with that element.
 
