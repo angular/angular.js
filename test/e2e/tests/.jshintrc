@@ -1,0 +1,8 @@
+{
+  "browser": true,
+  "globals": {
+    "angular": false,
+    "jQuery": false,
+    "$": false
+  }
+}
