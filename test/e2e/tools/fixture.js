@@ -3,6 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var $ = require('cheerio');
+var util = require('./util');
 
 var root = path.resolve(__dirname, '..');
 var tests = path.resolve(root, 'tests');
@@ -36,7 +37,8 @@ function generateFixture(test, query) {
     else if (src === 'angular.js' && angular === null) angular = script;
     if (firstScript === null) firstScript = script;
     if (src) {
-      if (fs.statSync(path.resolve(build, src))) {
+      var s = util.stat(path.resolve(build, src));
+      if (s && s.isFile()) {
         $(script).attr('src', rewriteAngularSrc(src, query));
       }
     }
