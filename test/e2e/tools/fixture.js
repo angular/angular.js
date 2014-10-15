@@ -1,0 +1,68 @@
+'use strict';
+
+var fs = require('fs');
+var path = require('path');
+var $ = require('cheerio');
+
+var root = path.resolve(__dirname, '..');
+var tests = path.resolve(root, 'tests');
+
+var projectRoot = path.resolve(__dirname, '../../..');
+var build = path.resolve(projectRoot, 'build');
+
+function rewriteAngularSrc(src, query) {
+  if (query) {
+    if (query.build) {
+      return query.build + '/' + src;
+    } else if (query.cdn) {
+      return '//ajax.googleapis.com/ajax/libs/angularjs/' + query.cdn + '/' + src;
+    }
+  }
+  return '/build/' + src;
+}
+
+function generateFixture(test, query) {
+  var indexFile = path.resolve(tests, test, 'index.html');
+  var text = fs.readFileSync(indexFile, 'utf8');
+
+  var $$ = $.load(text);
+
+  var firstScript = null;
+  var jquery = null;
+  var angular = null;
+  $$('script').each(function(i, script) {
+    var src = $(script).attr('src');
+    if (src === 'jquery.js' && jquery === null) jquery = script;
+    else if (src === 'angular.js' && angular === null) angular = script;
+    if (firstScript === null) firstScript = script;
+    if (src) {
+      if (fs.statSync(path.resolve(build, src))) {
+        $(script).attr('src', rewriteAngularSrc(src, query));
+      }
+    }
+  });
+
+  if (jquery && (!('jquery' in query) || (/^(0|no|false|off|n)$/i).test(query.jquery))) {
+    $(jquery).remove();
+  } else if (query.jquery) {
+    if (!jquery) {
+      jquery = $.load('<script></script>')[0];
+      if (firstScript) {
+        $(firstScript).prepend(jquery);
+      } else {
+        $($$).first().before(jquery);
+      }
+    }
+    if (!/^\d+\.\d+.*$/.test(query.jquery)) {
+      $(jquery).attr('src', '/bower_components/jquery/dist/jquery.js');
+    } else {
+      $(jquery).attr('src', '//ajax.googleapis.com/ajax/libs/jquery/' + query.jquery + '/jquery.js');
+    }
+  }
+
+  return $$.html();
+}
+
+module.exports = {
+  generate: generateFixture
+};
