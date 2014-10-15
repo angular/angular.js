@@ -6,7 +6,7 @@ var $ = require('cheerio');
 var util = require('./util');
 
 var root = path.resolve(__dirname, '..');
-var tests = path.resolve(root, 'tests');
+var fixtures = path.resolve(root, 'fixtures');
 
 var projectRoot = path.resolve(__dirname, '../../..');
 var build = path.resolve(projectRoot, 'build');
@@ -23,7 +23,7 @@ function rewriteAngularSrc(src, query) {
 }
 
 function generateFixture(test, query) {
-  var indexFile = path.resolve(tests, test, 'index.html');
+  var indexFile = path.resolve(fixtures, test, 'index.html');
   var text = fs.readFileSync(indexFile, 'utf8');
 
   var $$ = $.load(text);

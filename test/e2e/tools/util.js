@@ -5,7 +5,7 @@ var path = require('path');
 var url = require('url');
 
 var root = path.resolve(__dirname, '..');
-var tests = path.resolve(root, 'tests');
+var tests = path.resolve(root, 'fixtures');
 
 function stat(path) {
   try {
@@ -29,7 +29,7 @@ function rewriteTestFile(testname, testfile) {
   testfile = testfile.slice(i);
   var s = stat(path.resolve(tests, testname, testfile));
   if (s && s.isFile() || s.isDirectory()) {
-    return ['/test/e2e/tests', testname, testfile].join('/');
+    return ['/test/e2e/fixtures', testname, testfile].join('/');
   }
   return false;
 }
