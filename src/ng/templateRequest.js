@@ -21,14 +21,25 @@ var $compileMinErr = minErr('$compile');
  */
 function $TemplateRequestProvider() {
   this.$get = ['$templateCache', '$http', '$q', function($templateCache, $http, $q) {
-    var httpOptions = {
-      cache: $templateCache,
-      transformResponse: null
-    };
-
     function handleRequestFn(tpl, ignoreRequestError) {
       var self = handleRequestFn;
       self.totalPendingRequests++;
+
+      var transformResponse = $http.defaults && $http.defaults.transformResponse;
+      var idx;
+
+      if (isArray(transformResponse) &&
+          (idx = transformResponse.indexOf(httpResponseTransform)) >= 0) {
+        transformResponse = copy(transformResponse, []);
+        transformResponse.splice(idx, 1);
+      } else if (transformResponse === httpResponseTransform) {
+        transformResponse = null;
+      }
+
+      var httpOptions = {
+        cache: $templateCache,
+        transformResponse: transformResponse
+      };
 
       return $http.get(tpl, httpOptions)
         .then(function(response) {
