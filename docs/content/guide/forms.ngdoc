@@ -7,15 +7,17 @@ Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
 A Form is a collection of controls for the purpose of grouping related controls together.
 
 Form and controls provide validation services, so that the user can be notified of invalid input.
-This provides a better user experience, because the user gets instant feedback on how to correct the error.
-Keep in mind that while client-side validation plays an important role in providing good user experience, it can easily be circumvented and thus can not be trusted.
+This provides a better user experience, because the user gets instant feedback on how to
+correct the error. Keep in mind that while client-side validation plays an important role
+in providing good user experience, it can easily be circumvented and thus can not be trusted.
 Server-side validation is still necessary for a secure application.
 
 
 # Simple form
 The key directive in understanding two-way data-binding is {@link ng.directive:ngModel ngModel}.
-The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view, as well as view to the model.
-In addition it provides an {@link ngModel.NgModelController API} for other directives to augment its behavior.
+The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view,
+as well as view to the model. In addition it provides an {@link ngModel.NgModelController API}
+for other directives to augment its behavior.
 
 <example module="formExample">
   <file name="index.html">
@@ -71,8 +73,9 @@ To allow styling of form as well as controls, `ngModel`  adds these CSS classes:
 - `ng-pending`: any `$asyncValidators` are unfulfilled
 
 The following example uses the CSS to display validity of each form control.
-In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
-This ensures that the user is not distracted with an error until after interacting with the control, and failing to satisfy its validity.
+In the example both `user.name` and `user.email` are required, but are rendered
+with red background only when they are dirty. This ensures that the user is not distracted
+with an error until after interacting with the control, and failing to satisfy its validity.
 
 <example module="formExample">
   <file name="index.html">
@@ -125,9 +128,9 @@ A form is an instance of {@link form.FormController FormController}.
 The form instance can optionally be published into the scope using the `name` attribute.
 
 Similarly, an input control that has the {@link ng.directive:ngModel ngModel} directive holds an
-instance of {@link ngModel.NgModelController NgModelController}.
-Such a control instance can be published as a property of the form instance using the `name` attribute
-on the input control.  The name attribute specifies the name of the property on the form instance.
+instance of {@link ngModel.NgModelController NgModelController}.Such a control instance
+can be published as a property of the form instance using the `name` attribute on the input control.
+The name attribute specifies the name of the property on the form instance.
 
 This implies that the internal state of both the form and the control is available for binding in
 the view using the standard binding primitives.
@@ -203,8 +206,8 @@ and validation, add "default" as one of the specified events.
 
 I.e. `ng-model-options="{ updateOn: 'default blur' }"`
 
-The following example shows how to override immediate updates. Changes on the inputs within the form will update the model
-only when the control loses focus (blur event).
+The following example shows how to override immediate updates. Changes on the inputs within the form
+will update the model only when the control loses focus (blur event).
 
 <example module="customTriggerExample">
   <file name="index.html">
@@ -244,10 +247,11 @@ in `debounce`. This can be useful to force immediate updates on some specific ci
 
 I.e. `ng-model-options="{ updateOn: 'default blur', debounce: { default: 500, blur: 0 } }"`
 
-If those attributes are added to an element, they will be applied to all the child elements and controls that inherit from it unless they are
-overridden.
+If those attributes are added to an element, they will be applied to all the child elements and
+controls that inherit from it unless they are overridden.
 
-This example shows how to debounce model changes. Model will be updated only 250 milliseconds after last change.
+This example shows how to debounce model changes. Model will be updated only 250 milliseconds
+after last change.
 
 <example module="debounceExample">
   <file name="index.html">
@@ -430,13 +434,17 @@ Note that you can alternatively use `ng-pattern` to further restrict the validat
 
 
 # Implementing custom form controls (using `ngModel`)
-Angular implements all of the basic HTML form controls ({@link ng.directive:input input}, {@link ng.directive:select select}, {@link ng.directive:textarea textarea}), which should be sufficient for most cases.
-However, if you need more flexibility, you can write your own form control as a directive.
+Angular implements all of the basic HTML form controls ({@link ng.directive:input input},
+{@link ng.directive:select select}, {@link ng.directive:textarea textarea}),
+which should be sufficient for most cases. However, if you need more flexibility,
+you can write your own form control as a directive.
 
 In order for custom control to work with `ngModel` and to achieve two-way data-binding it needs to:
 
-  - implement `$render` method, which is responsible for rendering the data after it passed the {@link ngModel.NgModelController#$formatters `NgModelController.$formatters`},
-  - call `$setViewValue` method, whenever the user interacts with the control and model needs to be updated. This is usually done inside a DOM Event listener.
+  - implement `$render` method, which is responsible for rendering the data after it passed the
+  {@link ngModel.NgModelController#$formatters `NgModelController.$formatters`},
+  - call `$setViewValue` method, whenever the user interacts with the control and model
+  needs to be updated. This is usually done inside a DOM Event listener.
 
 See {@link guide/directive `$compileProvider.directive`} for more info.
 
