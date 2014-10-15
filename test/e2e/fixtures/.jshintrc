@@ -1,11 +1,8 @@
 {
-  "node": true,
+  "browser": true,
   "globals": {
-    "describe": false,
-    "ddescribe": false,
-    "xdescribe": false,
-    "it": false,
-    "xit": false,
-    "iit": false,
+    "angular": false,
+    "jQuery": false,
+    "$": false
   }
 }
