@@ -4,6 +4,7 @@ exports.config = {
   allScriptsTimeout: 11000,
 
   specs: [
+    'test/e2e/tests/**/*.js',
     'build/docs/ptore2e/**/*.js',
     'docs/app/e2e/*.scenario.js'
   ],
@@ -30,7 +31,7 @@ exports.config = {
 
     require('jasmine-reporters');
     jasmine.getEnv().addReporter(
-      new jasmine.JUnitXmlReporter('test_out/e2e-' + exports.config.capabilities.browserName + '-', true, true));
+      new jasmine.JUnitXmlReporter('test_out/docs-e2e-' + exports.config.capabilities.browserName + '-', true, true));
   },
 
   jasmineNodeOpts: {

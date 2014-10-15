@@ -4,6 +4,7 @@ var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
 var path = require('path');
+var e2e = require('./test/e2e/tools');
 
 module.exports = function(grunt) {
   //grunt plugins
@@ -50,6 +51,7 @@ module.exports = function(grunt) {
             return [
               util.conditionalCsp(),
               util.rewrite(),
+              e2e.middleware(),
               connect.favicon('images/favicon.ico'),
               connect.static(base),
               connect.directory(base)
@@ -76,6 +78,7 @@ module.exports = function(grunt) {
                 next();
               },
               util.conditionalCsp(),
+              e2e.middleware(),
               connect.favicon('images/favicon.ico'),
               connect.static(base)
             ];
