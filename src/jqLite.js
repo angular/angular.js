@@ -489,7 +489,6 @@ var JQLitePrototype = JQLite.prototype = {
       // jshint -W064
       JQLite(window).on('load', trigger); // fallback to window.onload for others
       // jshint +W064
-      this.on('DOMContentLoaded', trigger);
     }
   },
   toString: function() {
