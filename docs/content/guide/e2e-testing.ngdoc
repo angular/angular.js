@@ -12,7 +12,7 @@ is now in maintenance mode.
 </div>
 
 As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
-verify the correctness of new features, catch bugs and notice regressions. End to end tests
+verify the correctness of new features, catch bugs and notice regressions. Unit tests
 are the first line of defense for catching bugs, but sometimes issues come up with integration
 between components which can't be captured in a unit test. End to end tests are made to find
 these problems.
