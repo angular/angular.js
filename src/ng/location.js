@@ -96,7 +96,7 @@ function LocationHtml5Url(appBase, basePrefix) {
 
   /**
    * Parse given html5 (regular) url string into properties
-   * @param {string} newAbsoluteUrl HTML5 url
+   * @param {string} url HTML5 url
    * @private
    */
   this.$$parse = function(url) {
