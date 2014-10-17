@@ -136,7 +136,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
 
       try {
         behavior.call(self, $window, $document, done);
-      } catch(e) {
+      } catch (e) {
         if (e.type && e.type === 'selector') {
           done(e.message);
         } else {

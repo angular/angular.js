@@ -202,7 +202,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     }
 
     // format fraction part.
-    while(fraction.length < fractionSize) {
+    while (fraction.length < fractionSize) {
       fraction += '0';
     }
 
@@ -227,7 +227,7 @@ function padNumber(num, digits, trim) {
     num = -num;
   }
   num = '' + num;
-  while(num.length < digits) num = '0' + num;
+  while (num.length < digits) num = '0' + num;
   if (trim)
     num = num.substr(num.length - digits);
   return neg + num;
@@ -465,7 +465,7 @@ function dateFilter($locale) {
       return date;
     }
 
-    while(format) {
+    while (format) {
       match = DATE_FORMATS_SPLIT.exec(format);
       if (match) {
         parts = concat(parts, match, 1);

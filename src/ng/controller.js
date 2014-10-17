@@ -82,7 +82,7 @@ function $ControllerProvider() {
         identifier = ident;
       }
 
-      if(isString(expression)) {
+      if (isString(expression)) {
         match = expression.match(CNTRL_REG),
         constructor = match[1],
         identifier = identifier || match[3];

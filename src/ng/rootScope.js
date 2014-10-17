@@ -613,7 +613,7 @@ function $RootScopeProvider(){
             if (oldLength > newLength) {
               // we used to have more keys, need to find them and destroy them.
               changeDetected++;
-              for(key in oldValue) {
+              for (key in oldValue) {
                 if (!newValue.hasOwnProperty(key)) {
                   oldLength--;
                   delete oldValue[key];
@@ -733,7 +733,7 @@ function $RootScopeProvider(){
           dirty = false;
           current = target;
 
-          while(asyncQueue.length) {
+          while (asyncQueue.length) {
             try {
               asyncTask = asyncQueue.shift();
               asyncTask.scope.$eval(asyncTask.expression);
@@ -790,7 +790,7 @@ function $RootScopeProvider(){
             // this piece should be kept in sync with the traversal in $broadcast
             if (!(next = (current.$$childHead ||
                 (current !== target && current.$$nextSibling)))) {
-              while(current !== target && !(next = current.$$nextSibling)) {
+              while (current !== target && !(next = current.$$nextSibling)) {
                 current = current.$parent;
               }
             }
@@ -798,7 +798,7 @@ function $RootScopeProvider(){
 
           // `break traverseScopesLoop;` takes us to here
 
-          if((dirty || asyncQueue.length) && !(ttl--)) {
+          if ((dirty || asyncQueue.length) && !(ttl--)) {
             clearPhase();
             throw $rootScopeMinErr('infdig',
                 '{0} $digest() iterations reached. Aborting!\n' +
@@ -810,7 +810,7 @@ function $RootScopeProvider(){
 
         clearPhase();
 
-        while(postDigestQueue.length) {
+        while (postDigestQueue.length) {
           try {
             postDigestQueue.shift()();
           } catch (e) {
@@ -1236,7 +1236,7 @@ function $RootScopeProvider(){
 
             try {
               listeners[i].apply(null, listenerArgs);
-            } catch(e) {
+            } catch (e) {
               $exceptionHandler(e);
             }
           }
@@ -1247,7 +1247,7 @@ function $RootScopeProvider(){
           // (though it differs due to having the extra check for $$listenerCount)
           if (!(next = ((current.$$listenerCount[name] && current.$$childHead) ||
               (current !== target && current.$$nextSibling)))) {
-            while(current !== target && !(next = current.$$nextSibling)) {
+            while (current !== target && !(next = current.$$nextSibling)) {
               current = current.$parent;
             }
           }
@@ -1301,7 +1301,7 @@ function $RootScopeProvider(){
       while (applyAsyncQueue.length) {
         try {
           applyAsyncQueue.shift()();
-        } catch(e) {
+        } catch (e) {
           $exceptionHandler(e);
         }
       }

@@ -253,7 +253,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           unknownOption = optionTemplate.clone();
 
       // find "null" option
-      for(var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
+      for (var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
         if (children[i].value === '') {
           emptyOption = nullOption = children.eq(i);
           break;
@@ -603,7 +603,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             }
 
             lastElement = null;  // start at the beginning
-            for(index = 0, length = optionGroup.length; index < length; index++) {
+            for (index = 0, length = optionGroup.length; index < length; index++) {
               option = optionGroup[index];
               if ((existingOption = existingOptions[index+1])) {
                 // reuse elements
@@ -661,7 +661,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             }
             // remove any excessive OPTIONs in a group
             index++; // increment since the existingOptions[0] is parent element not OPTION
-            while(existingOptions.length > index) {
+            while (existingOptions.length > index) {
               option = existingOptions.pop();
               updateLabelMap(labelMap, option.label, false);
               option.element.remove();
@@ -675,7 +675,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             });
           }
           // remove any excessive OPTGROUPs from select
-          while(optionGroupsCache.length > groupIndex) {
+          while (optionGroupsCache.length > groupIndex) {
             optionGroupsCache.pop()[0].element.remove();
           }
         }

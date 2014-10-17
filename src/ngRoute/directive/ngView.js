@@ -196,16 +196,16 @@ function ngViewFactory(   $route,   $anchorScroll,   $animate) {
         update();
 
         function cleanupLastView() {
-          if(previousLeaveAnimation) {
+          if (previousLeaveAnimation) {
             $animate.cancel(previousLeaveAnimation);
             previousLeaveAnimation = null;
           }
 
-          if(currentScope) {
+          if (currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
-          if(currentElement) {
+          if (currentElement) {
             previousLeaveAnimation = $animate.leave(currentElement);
             previousLeaveAnimation.then(function() {
               previousLeaveAnimation = null;

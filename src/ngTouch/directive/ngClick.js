@@ -213,7 +213,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       tapping = true;
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
-      if(tapElement.nodeType == 3) {
+      if (tapElement.nodeType == 3) {
         tapElement = tapElement.parentNode;
       }
 

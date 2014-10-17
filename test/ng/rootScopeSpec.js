@@ -318,7 +318,7 @@ describe('Scope', function() {
       try {
         $rootScope.$digest();
         throw new Error('Should have thrown exception');
-      } catch(e) {
+      } catch (e) {
         expect(e.message.match(/"fn: (watcherA|function)/g).length).toBe(10);
       }
     }));

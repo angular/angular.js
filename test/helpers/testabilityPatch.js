@@ -169,12 +169,12 @@ function sortedHtml(element, showNgClass) {
       if (className) {
         attrs.push(' class="' + className + '"');
       }
-      for(var i=0; i<attributes.length; i++) {
+      for (var i=0; i<attributes.length; i++) {
         if (i>0 && attributes[i] == attributes[i-1])
           continue; //IE9 creates dupes. Ignore them!
 
         var attr = attributes[i];
-        if(attr.name.match(/^ng[\:\-]/) ||
+        if (attr.name.match(/^ng[\:\-]/) ||
             (attr.value || attr.value === '') &&
             attr.value !='null' &&
             attr.value !='auto' &&
@@ -218,7 +218,7 @@ function sortedHtml(element, showNgClass) {
             }
           });
         }
-        for(var css in node.style){
+        for (var css in node.style){
           var value = node.style[css];
           if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
             var text = lowercase(css + ': ' + value);
@@ -240,7 +240,7 @@ function sortedHtml(element, showNgClass) {
       }
       html += '>';
       var children = node.childNodes;
-      for(var j=0; j<children.length; j++) {
+      for (var j=0; j<children.length; j++) {
         toString(children[j]);
       }
       html += '</' + node.nodeName.toLowerCase() + '>';

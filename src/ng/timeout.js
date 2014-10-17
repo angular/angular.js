@@ -41,7 +41,7 @@ function $TimeoutProvider() {
       timeoutId = $browser.defer(function() {
         try {
           deferred.resolve(fn());
-        } catch(e) {
+        } catch (e) {
           deferred.reject(e);
           $exceptionHandler(e);
         }

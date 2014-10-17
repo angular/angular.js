@@ -1184,7 +1184,7 @@ function $ParseProvider() {
         }
         if (isAllDefined(value)) {
           scope.$$postDigest(function () {
-            if(isAllDefined(lastValue)) unwatch();
+            if (isAllDefined(lastValue)) unwatch();
           });
         }
       }, objectEquality);

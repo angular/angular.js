@@ -15,11 +15,11 @@ function createMockStyleSheet(doc, wind) {
       try {
         ss.insertRule(selector + '{ ' + styles + '}', 0);
       }
-      catch(e) {
+      catch (e) {
         try {
           ss.addRule(selector, styles);
         }
-        catch(e2) {}
+        catch (e2) {}
       }
     },
 

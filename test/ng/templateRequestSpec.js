@@ -81,7 +81,7 @@ describe('$templateRequest', function() {
 
     try {
       $httpBackend.flush();
-    } catch(e) {}
+    } catch (e) {}
 
     expect($templateRequest.totalPendingRequests).toBe(0);
   }));

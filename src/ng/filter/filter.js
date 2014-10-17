@@ -124,7 +124,7 @@ function filterFilter() {
 
     predicates.check = function(value, index) {
       for (var j = 0; j < predicates.length; j++) {
-        if(!predicates[j](value, index)) {
+        if (!predicates[j](value, index)) {
           return false;
         }
       }

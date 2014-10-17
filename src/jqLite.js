@@ -423,7 +423,7 @@ function jqLiteController(element, name) {
 function jqLiteInheritedData(element, name, value) {
   // if element is the document object work with the html element instead
   // this makes $(document).scope() possible
-  if(element.nodeType == NODE_TYPE_DOCUMENT) {
+  if (element.nodeType == NODE_TYPE_DOCUMENT) {
     element = element.documentElement;
   }
   var names = isArray(name) ? name : [name];
@@ -983,7 +983,7 @@ forEach({
   JQLite.prototype[name] = function(arg1, arg2, arg3) {
     var value;
 
-    for(var i = 0, ii = this.length; i < ii; i++) {
+    for (var i = 0, ii = this.length; i < ii; i++) {
       if (isUndefined(value)) {
         value = fn(this[i], arg1, arg2, arg3);
         if (isDefined(value)) {

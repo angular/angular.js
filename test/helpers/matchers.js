@@ -195,7 +195,7 @@ beforeEach(function() {
         regex = jasmine.isA_("RegExp", content) ? content :
                   angular.isDefined(content) ? new RegExp(escapeRegexp(content)) : undefined;
 
-      if(!angular.isFunction(this.actual)) {
+      if (!angular.isFunction(this.actual)) {
         throw new Error('Actual is not a function');
       }
 

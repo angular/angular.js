@@ -240,12 +240,12 @@ angular.module('ngMessages', [])
 
         var messages = [];
         this.registerMessage = function(index, message) {
-          for(var i = 0; i < messages.length; i++) {
-            if(messages[i].type == message.type) {
-              if(index != i) {
+          for (var i = 0; i < messages.length; i++) {
+            if (messages[i].type == message.type) {
+              if (index != i) {
                 var temp = messages[index];
                 messages[index] = messages[i];
-                if(index < messages.length) {
+                if (index < messages.length) {
                   messages[i] = temp;
                 } else {
                   messages.splice(0, i); //remove the old one (and shift left)
@@ -262,7 +262,7 @@ angular.module('ngMessages', [])
 
           var found;
           angular.forEach(messages, function(message) {
-            if((!found || multiple) && truthyVal(values[message.type])) {
+            if ((!found || multiple) && truthyVal(values[message.type])) {
               message.attach();
               found = true;
             } else {
@@ -295,7 +295,7 @@ angular.module('ngMessages', [])
         });
 
         var tpl = $attrs.ngMessagesInclude || $attrs.include;
-        if(tpl) {
+        if (tpl) {
           $templateRequest(tpl)
             .then(function processTemplate(html) {
               var after, container = angular.element('<div/>').html(html);
@@ -359,10 +359,10 @@ angular.module('ngMessages', [])
 
         var commentNode = $element[0];
         var parentNode = commentNode.parentNode;
-        for(var i = 0, j = 0; i < parentNode.childNodes.length; i++) {
+        for (var i = 0, j = 0; i < parentNode.childNodes.length; i++) {
           var node = parentNode.childNodes[i];
-          if(node.nodeType == COMMENT_NODE && node.nodeValue.indexOf('ngMessage') >= 0) {
-            if(node === commentNode) {
+          if (node.nodeType == COMMENT_NODE && node.nodeValue.indexOf('ngMessage') >= 0) {
+            if (node === commentNode) {
               index = j;
               break;
             }
@@ -373,7 +373,7 @@ angular.module('ngMessages', [])
         ngMessages.registerMessage(index, {
           type : $attrs.ngMessage || $attrs.when,
           attach : function() {
-            if(!element) {
+            if (!element) {
               $transclude($scope, function(clone) {
                 $animate.enter(clone, null, $element);
                 element = clone;
@@ -381,7 +381,7 @@ angular.module('ngMessages', [])
             }
           },
           detach : function(now) {
-            if(element) {
+            if (element) {
               $animate.leave(element);
               element = null;
             }

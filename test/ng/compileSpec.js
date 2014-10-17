@@ -394,7 +394,7 @@ describe('$compile', function() {
 
       try {
         element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
-      } catch(e) {
+      } catch (e) {
       } finally {
         if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
       }
@@ -831,7 +831,7 @@ describe('$compile', function() {
           try {
             $compile('<div><span replace class="replace"></span></div>');
             this.fail(new Error('should have thrown Multiple directives error'));
-          } catch(e) {
+          } catch (e) {
             expect(e.message).toMatch(/Multiple directives .* asking for template/);
           }
         }));
@@ -4795,7 +4795,7 @@ describe('$compile', function() {
           // we need to do this because different browsers print empty attributes differently
           try {
             $compile('<div><div ng-transclude></div></div>')($rootScope);
-          } catch(e) {
+          } catch (e) {
             expect(e.message).toMatch(new RegExp(
                 '^\\[ngTransclude:orphan\\] ' +
                     'Illegal use of ngTransclude directive in the template! ' +

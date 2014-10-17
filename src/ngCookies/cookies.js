@@ -90,7 +90,7 @@ angular.module('ngCookies', ['ng']).
         }
 
         //update all cookies updated in $cookies
-        for(name in cookies) {
+        for (name in cookies) {
           value = cookies[name];
           if (!angular.isString(value)) {
             value = '' + value;

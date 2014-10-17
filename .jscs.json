@@ -2,5 +2,6 @@
   "disallowKeywords": ["with"],
   "disallowTrailingWhitespace": true,
   "disallowSpaceAfterPrefixUnaryOperators": ["!"],
-  "disallowSpaceBeforeBinaryOperators": [","]
+  "disallowSpaceBeforeBinaryOperators": [","],
+  "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"]
 }
