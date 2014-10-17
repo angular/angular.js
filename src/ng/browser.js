@@ -51,7 +51,7 @@ function Browser(window, document, $log, $sniffer) {
     } finally {
       outstandingRequestCount--;
       if (outstandingRequestCount === 0) {
-        while(outstandingRequestCallbacks.length) {
+        while (outstandingRequestCallbacks.length) {
           try {
             outstandingRequestCallbacks.pop()();
           } catch (e) {

@@ -170,7 +170,7 @@ describe('q', function() {
         forEach(queue, function(task) {
           try {
             task();
-          } catch(e) {
+          } catch (e) {
             if ( mockNextTick.logExceptions ) {
               dump('exception in mockNextTick:', e, e.name, e.message, task);
             }

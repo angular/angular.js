@@ -2107,7 +2107,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     var parserValid = isUndefined(modelValue) ? undefined : true;
 
     if (parserValid) {
-      for(var i = 0; i < ctrl.$parsers.length; i++) {
+      for (var i = 0; i < ctrl.$parsers.length; i++) {
         modelValue = ctrl.$parsers[i](modelValue);
         if (isUndefined(modelValue)) {
           parserValid = false;
@@ -2148,7 +2148,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
         listener();
-      } catch(e) {
+      } catch (e) {
         $exceptionHandler(e);
       }
     });
@@ -2251,7 +2251,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           idx = formatters.length;
 
       var viewValue = modelValue;
-      while(idx--) {
+      while (idx--) {
         viewValue = formatters[idx](viewValue);
       }
       if (ctrl.$viewValue !== viewValue) {

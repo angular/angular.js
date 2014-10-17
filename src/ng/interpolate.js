@@ -194,7 +194,7 @@ function $InterpolateProvider() {
           concat = [],
           expressionPositions = [];
 
-      while(index < textLength) {
+      while (index < textLength) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
              ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
           if (index !== startIndex) {
@@ -230,7 +230,7 @@ function $InterpolateProvider() {
 
       if (!mustHaveExpression || expressions.length) {
         var compute = function(values) {
-          for(var i = 0, ii = expressions.length; i < ii; i++) {
+          for (var i = 0, ii = expressions.length; i < ii; i++) {
             if (allOrNothing && isUndefined(values[i])) return;
             concat[expressionPositions[i]] = values[i];
           }
@@ -271,7 +271,7 @@ function $InterpolateProvider() {
               }
 
               return compute(values);
-            } catch(err) {
+            } catch (err) {
               var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
                   err.toString());
               $exceptionHandler(newErr);
@@ -302,7 +302,7 @@ function $InterpolateProvider() {
       function parseStringifyInterceptor(value) {
         try {
           return stringify(getValue(value));
-        } catch(err) {
+        } catch (err) {
           var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
             err.toString());
           $exceptionHandler(newErr);

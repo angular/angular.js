@@ -22,7 +22,7 @@ describe("$animate", function() {
     it("should enter the element to the start of the parent container",
       inject(function($animate, $compile, $rootScope) {
 
-      for(var i = 0; i < 5; i++) {
+      for (var i = 0; i < 5; i++) {
         element.append(jqLite('<div> ' + i + '</div>'));
       }
 

@@ -304,7 +304,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     var element = windowJquery(this),
         bindings;
     if (bindings = element.data('$binding')) {
-      for(var expressions = [], binding, j=0, jj=bindings.length;  j<jj; j++) {
+      for (var expressions = [], binding, j=0, jj=bindings.length;  j<jj; j++) {
         binding = bindings[j];
 
         if (binding.expressions) {
@@ -314,7 +314,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
         }
         for (var scope, expression, i = 0, ii = expressions.length; i < ii; i++) {
           expression = expressions[i];
-          if(match(expression)) {
+          if (match(expression)) {
             scope = scope || element.scope();
             push(scope.$eval(expression));
           }

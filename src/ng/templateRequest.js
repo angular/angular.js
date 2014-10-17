@@ -49,7 +49,7 @@ function $TemplateRequestProvider() {
       return $http.get(tpl, httpOptions)
         .then(function(response) {
           var html = response.data;
-          if(!html || html.length === 0) {
+          if (!html || html.length === 0) {
             return handleError();
           }
 

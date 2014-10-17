@@ -430,7 +430,7 @@ angular.module('ngAnimate', ['ng'])
     var rootAnimateState = {running: true};
 
     function extractElementNode(element) {
-      for(var i = 0; i < element.length; i++) {
+      for (var i = 0; i < element.length; i++) {
         var elm = element[i];
         if (elm.nodeType == ELEMENT_NODE) {
           return elm;
@@ -586,7 +586,7 @@ angular.module('ngAnimate', ['ng'])
             matches.push($injector.get(selectors['']));
           }
 
-          for(var i=0; i < classes.length; i++) {
+          for (var i=0; i < classes.length; i++) {
             var klass = classes[i],
                 selectorFactoryName = selectors[klass];
             if (selectorFactoryName && !flagMap[klass]) {
@@ -697,7 +697,7 @@ angular.module('ngAnimate', ['ng'])
             var progress = function() {
               afterAnimationComplete(index);
             };
-            switch(animation.event) {
+            switch (animation.event) {
               case 'setClass':
                 cancellations.push(animation.fn(element, classNameAdd, classNameRemove, progress, options));
                 break;
@@ -1217,7 +1217,7 @@ angular.module('ngAnimate', ['ng'])
          *
         */
         enabled : function(value, element) {
-          switch(arguments.length) {
+          switch (arguments.length) {
             case 2:
               if (value) {
                 cleanup(element);
@@ -1292,7 +1292,7 @@ angular.module('ngAnimate', ['ng'])
               skipAnimation = true;
             } else {
               //cancel all animations when a structural animation takes place
-              for(var klass in runningAnimations) {
+              for (var klass in runningAnimations) {
                 animationsToCancel.push(runningAnimations[klass]);
               }
               ngAnimateState = {};
@@ -1546,7 +1546,7 @@ angular.module('ngAnimate', ['ng'])
                                    state.running ||
                                    (state.last && !state.last.isClassBased);
         }
-        while(parentElement = parentElement.parent());
+        while (parentElement = parentElement.parent());
 
         return !hasParent || (!allowChildAnimations && parentRunningAnimation);
       }

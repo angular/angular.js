@@ -6,7 +6,7 @@
   var prefix = (function() {
     var filename = /(.*\/)angular-bootstrap.js(#(.*))?/;
     var scripts = document.getElementsByTagName("script");
-    for(var j = 0; j < scripts.length; j++) {
+    for (var j = 0; j < scripts.length; j++) {
       var src = scripts[j].src;
       if (src && src.match(filename)) {
         var parts = src.match(filename);
@@ -26,7 +26,7 @@
   window.onload = function() {
     try {
       if (previousOnLoad) previousOnLoad();
-    } catch(e) {}
+    } catch (e) {}
     angular.scenario.setUpAndRun({});
   };
 

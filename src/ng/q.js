@@ -318,7 +318,7 @@ function qFactory(nextTick, exceptionHandler) {
         } else {
           promise.reject(state.value);
         }
-      } catch(e) {
+      } catch (e) {
         promise.reject(e);
         exceptionHandler(e);
       }
@@ -368,7 +368,7 @@ function qFactory(nextTick, exceptionHandler) {
           this.promise.$$state.status = 1;
           scheduleProcessQueue(this.promise.$$state);
         }
-      } catch(e) {
+      } catch (e) {
         fns[1](e);
         exceptionHandler(e);
       }
@@ -396,7 +396,7 @@ function qFactory(nextTick, exceptionHandler) {
             callback = callbacks[i][3];
             try {
               result.notify(isFunction(callback) ? callback(progress) : progress);
-            } catch(e) {
+            } catch (e) {
               exceptionHandler(e);
             }
           }
@@ -461,7 +461,7 @@ function qFactory(nextTick, exceptionHandler) {
     var callbackOutput = null;
     try {
       if (isFunction(callback)) callbackOutput = callback();
-    } catch(e) {
+    } catch (e) {
       return makePromise(e, false);
     }
     if (isPromiseLike(callbackOutput)) {
