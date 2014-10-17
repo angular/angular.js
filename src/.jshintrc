@@ -100,7 +100,7 @@
     "NODE_TYPE_DOCUMENT": false,
     "NODE_TYPE_DOCUMENT_FRAGMENT": false,
 
-    "httpResponseTransform": false,
+    "defaultHttpResponseTransform": false,
 
     /* filters.js */
     "getFirstThursdayOfYear": false,
