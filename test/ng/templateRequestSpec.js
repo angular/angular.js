@@ -86,4 +86,48 @@ describe('$templateRequest', function() {
     expect($templateRequest.totalPendingRequests).toBe(0);
   }));
 
+  it('should not try to parse a response as JSON',
+    inject(function($templateRequest, $httpBackend) {
+      var spy = jasmine.createSpy('success');
+      $httpBackend.expectGET('a.html').respond('{{text}}', {
+        'Content-Type': 'application/json'
+      });
+      $templateRequest('a.html').then(spy);
+      $httpBackend.flush();
+      expect(spy).toHaveBeenCalledOnceWith('{{text}}');
+  }));
+
+  it('should use custom response transformers (array)', function() {
+    module(function($httpProvider) {
+      $httpProvider.defaults.transformResponse.push(function(data) {
+        return data + '!!';
+      });
+    });
+    inject(function($templateRequest, $httpBackend) {
+      var spy = jasmine.createSpy('success');
+      $httpBackend.expectGET('a.html').respond('{{text}}', {
+        'Content-Type': 'application/json'
+      });
+      $templateRequest('a.html').then(spy);
+      $httpBackend.flush();
+      expect(spy).toHaveBeenCalledOnceWith('{{text}}!!');
+    });
+  });
+
+  it('should use custom response transformers (function)', function() {
+    module(function($httpProvider) {
+      $httpProvider.defaults.transformResponse = function(data) {
+        return data + '!!';
+      };
+    });
+    inject(function($templateRequest, $httpBackend) {
+      var spy = jasmine.createSpy('success');
+      $httpBackend.expectGET('a.html').respond('{{text}}', {
+        'Content-Type': 'application/json'
+      });
+      $templateRequest('a.html').then(spy);
+      $httpBackend.flush();
+      expect(spy).toHaveBeenCalledOnceWith('{{text}}!!');
+    });
+  });
 });
