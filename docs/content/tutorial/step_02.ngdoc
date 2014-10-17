@@ -40,7 +40,7 @@ __`app/index.html`:__
 
   <ul>
     <li ng-repeat="phone in phones">
-      {{phone.name}}
+      <span>{{phone.name}}</span>
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
