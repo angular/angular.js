@@ -1638,6 +1638,31 @@ describe('Scope', function() {
           expect(child1.$$listenerCount).toEqual({event1: 1});
           expect(child2.$$listenerCount).toEqual({});
         }));
+
+
+        it('should not decrement $$listenerCount when called second time', inject(function($rootScope) {
+          var child = $rootScope.$new(),
+              listener1Spy = jasmine.createSpy(),
+              listener2Spy = jasmine.createSpy();
+
+          child.$on('abc', listener1Spy);
+          expect($rootScope.$$listenerCount).toEqual({abc: 1});
+          expect(child.$$listenerCount).toEqual({abc: 1});
+
+          var deregisterEventListener = child.$on('abc', listener2Spy);
+          expect($rootScope.$$listenerCount).toEqual({abc: 2});
+          expect(child.$$listenerCount).toEqual({abc: 2});
+
+          deregisterEventListener();
+
+          expect($rootScope.$$listenerCount).toEqual({abc: 1});
+          expect(child.$$listenerCount).toEqual({abc: 1});
+
+          deregisterEventListener();
+
+          expect($rootScope.$$listenerCount).toEqual({abc: 1});
+          expect(child.$$listenerCount).toEqual({abc: 1});
+        }));
       });
     });
 
