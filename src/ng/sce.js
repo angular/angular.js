@@ -718,8 +718,8 @@ function $SceProvider() {
    * sce.js and sceSpecs.js would need to be aware of this detail.
    */
 
-  this.$get = ['$document', '$parse', '$sceDelegate', function(
-                $document,   $parse,   $sceDelegate) {
+  this.$get = ['$parse', '$sceDelegate', function(
+                $parse,   $sceDelegate) {
     // Prereq: Ensure that we're not running in IE<11 quirks mode.  In that mode, IE < 11 allow
     // the "expression(javascript expression)" syntax which is insecure.
     if (enabled && msie < 8) {
