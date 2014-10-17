@@ -201,6 +201,8 @@ bind only to specified list of events. I.e. `ng-model-options="{ updateOn: 'blur
 and validate only after the control loses focus. You can set several events using a space delimited
 list. I.e. `ng-model-options="{ updateOn: 'mousedown blur' }"`
 
+<img alt="animation showing debounced input" src="img/guide/forms-update-on-blur.gif">
+
 If you want to keep the default behavior and just add new events that may trigger the model update
 and validation, add "default" as one of the specified events.
 
@@ -237,6 +239,8 @@ will update the model only when the control loses focus (blur event).
 You can delay the model update/validation by using the `debounce` key with the
 {@link ng.directive:ngModelOptions ngModelOptions} directive. This delay will also apply to
 parsers, validators and model flags like `$dirty` or `$pristine`.
+
+<img alt="animation showing debounced input" src="img/guide/forms-debounce.gif">
 
 I.e. `ng-model-options="{ debounce: 500 }"` will wait for half a second since
 the last content change before triggering the model update and form validation.
