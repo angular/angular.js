@@ -1045,7 +1045,7 @@ describe('angular', function() {
       var seen = {};
       var count = 100;
 
-      while(count--) {
+      while (count--) {
         var current = nextUid();
         expect(typeof current).toBe('number');
         expect(seen[current]).toBeFalsy();

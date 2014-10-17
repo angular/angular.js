@@ -75,7 +75,7 @@ var $AnimateProvider = ['$provide', function($provide) {
    * @return {RegExp} The current CSS className expression value. If null then there is no expression value
    */
   this.classNameFilter = function(expression) {
-    if(arguments.length === 1) {
+    if (arguments.length === 1) {
       this.$$classNameFilter = (expression instanceof RegExp) ? expression : null;
     }
     return this.$$classNameFilter;

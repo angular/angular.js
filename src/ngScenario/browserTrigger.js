@@ -51,8 +51,8 @@
     }
 
     var evnt;
-    if(/transitionend/.test(eventType)) {
-      if(window.WebKitTransitionEvent) {
+    if (/transitionend/.test(eventType)) {
+      if (window.WebKitTransitionEvent) {
         evnt = new WebKitTransitionEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
       }
@@ -60,14 +60,14 @@
         try {
           evnt = new TransitionEvent(eventType, eventData);
         }
-        catch(e) {
+        catch (e) {
           evnt = document.createEvent('TransitionEvent');
           evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
     }
-    else if(/animationend/.test(eventType)) {
-      if(window.WebKitAnimationEvent) {
+    else if (/animationend/.test(eventType)) {
+      if (window.WebKitAnimationEvent) {
         evnt = new WebKitAnimationEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
       }
@@ -75,7 +75,7 @@
         try {
           evnt = new AnimationEvent(eventType, eventData);
         }
-        catch(e) {
+        catch (e) {
           evnt = document.createEvent('AnimationEvent');
           evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
@@ -94,7 +94,7 @@
      * read */
     evnt.$manualTimeStamp = eventData.timeStamp;
 
-    if(!evnt) return;
+    if (!evnt) return;
 
     var originalPreventDefault = evnt.preventDefault,
         appWindow = element.ownerDocument.defaultView,

@@ -713,7 +713,7 @@ function createInjector(modulesToLoad, strictDi) {
 
       function runInvokeQueue(queue) {
         var i, ii;
-        for(i = 0, ii = queue.length; i < ii; i++) {
+        for (i = 0, ii = queue.length; i < ii; i++) {
           var invokeArgs = queue[i],
               provider = providerInjector.get(invokeArgs[0]);
 
@@ -793,7 +793,7 @@ function createInjector(modulesToLoad, strictDi) {
           length, i,
           key;
 
-      for(i = 0, length = $inject.length; i < length; i++) {
+      for (i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
         if (typeof key !== 'string') {
           throw $injectorMinErr('itkn',

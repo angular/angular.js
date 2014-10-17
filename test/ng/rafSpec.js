@@ -2,7 +2,7 @@
 
 describe('$$rAF', function() {
   it('should queue and block animation frames', inject(function($$rAF) {
-    if(!$$rAF.supported) return;
+    if (!$$rAF.supported) return;
 
     var message;
     $$rAF(function() {
@@ -15,7 +15,7 @@ describe('$$rAF', function() {
   }));
 
   it('should provide a cancellation method', inject(function($$rAF) {
-    if(!$$rAF.supported) return;
+    if (!$$rAF.supported) return;
 
     var present = true;
     var cancel = $$rAF(function() {
@@ -27,7 +27,7 @@ describe('$$rAF', function() {
 
     try {
       $$rAF.flush();
-    } catch(e) {}
+    } catch (e) {}
     expect(present).toBe(true);
   }));
 
@@ -62,11 +62,11 @@ describe('$$rAF', function() {
 
   describe('mocks', function() {
     it('should throw an error if no frames are present', inject(function($$rAF) {
-      if($$rAF.supported) {
+      if ($$rAF.supported) {
         var failed = false;
         try {
           $$rAF.flush();
-        } catch(e) {
+        } catch (e) {
           failed = true;
         }
         expect(failed).toBe(true);
@@ -94,7 +94,7 @@ describe('$$rAF', function() {
 
       try {
         cancel();
-      } catch(e) {}
+      } catch (e) {}
 
       expect($window.webkitCancelRequestAnimationFrame).toHaveBeenCalled();
     });

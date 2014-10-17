@@ -2382,7 +2382,7 @@ describe('input', function() {
       try {
         //set to text for browsers with datetime-local validation.
         inputElm[0].setAttribute('type', 'text');
-      } catch(e) {
+      } catch (e) {
         //for IE8
       }
 
@@ -2576,7 +2576,7 @@ describe('input', function() {
       try {
         //set to text for browsers with datetime-local validation.
         inputElm[0].setAttribute('type', 'text');
-      } catch(e) {
+      } catch (e) {
         //for IE8
       }
 
@@ -2745,7 +2745,7 @@ describe('input', function() {
       try {
         //set to text for browsers with datetime-local validation.
         inputElm[0].setAttribute('type', 'text');
-      } catch(e) {
+      } catch (e) {
         //for IE8
       }
 
@@ -3020,7 +3020,7 @@ describe('input', function() {
       try {
         //set to text for browsers with time validation.
         inputElm[0].setAttribute('type', 'text');
-      } catch(e) {
+      } catch (e) {
         //for IE8
       }
 
@@ -3284,7 +3284,7 @@ describe('input', function() {
       try {
         //set to text for browsers with date validation.
         inputElm[0].setAttribute('type', 'text');
-      } catch(e) {
+      } catch (e) {
         //for IE8
       }
 
@@ -4676,9 +4676,9 @@ describe('NgModel animations', function() {
   function findElementAnimations(element, queue) {
     var node = element[0];
     var animations = [];
-    for(var i = 0; i < queue.length; i++) {
+    for (var i = 0; i < queue.length; i++) {
       var animation = queue[i];
-      if(animation.element[0] == node) {
+      if (animation.element[0] == node) {
         animations.push(animation);
       }
     }
@@ -4688,7 +4688,7 @@ describe('NgModel animations', function() {
   function assertValidAnimation(animation, event, classNameA, classNameB) {
     expect(animation.event).toBe(event);
     expect(animation.args[1]).toBe(classNameA);
-    if(classNameB) expect(animation.args[2]).toBe(classNameB);
+    if (classNameB) expect(animation.args[2]).toBe(classNameB);
   }
 
   var doc, input, scope, model;

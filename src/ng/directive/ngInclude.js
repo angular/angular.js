@@ -198,15 +198,15 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
             currentElement;
 
         var cleanupLastIncludeContent = function() {
-          if(previousElement) {
+          if (previousElement) {
             previousElement.remove();
             previousElement = null;
           }
-          if(currentScope) {
+          if (currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
-          if(currentElement) {
+          if (currentElement) {
             $animate.leave(currentElement).then(function() {
               previousElement = null;
             });

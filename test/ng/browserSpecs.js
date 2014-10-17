@@ -337,7 +337,7 @@ describe('browser', function() {
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
         var i, longVal = '', cookieStr;
 
-        for(i=0; i<4083; i++) {
+        for (i=0; i<4083; i++) {
           longVal += 'x';
         }
 

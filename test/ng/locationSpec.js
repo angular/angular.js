@@ -1055,7 +1055,7 @@ describe('$location', function() {
           if (!relLink) {
             if (linkHref[0] == '/') {
               linkHref = 'http://host.com' + linkHref;
-            } else if(!linkHref.match(/:\/\//)) {
+            } else if (!linkHref.match(/:\/\//)) {
               // fake the behavior of <base> tag
               linkHref = 'http://host.com/base/' + linkHref;
             }

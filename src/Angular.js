@@ -801,7 +801,7 @@ function copy(source, destination, stackSource, stackDest) {
         });
       }
       for ( var key in source) {
-        if(source.hasOwnProperty(key)) {
+        if (source.hasOwnProperty(key)) {
           result = copy(source[key], null, stackSource, stackDest);
           if (isObject(source[key])) {
             stackSource.push(source[key]);
@@ -882,7 +882,7 @@ function equals(o1, o2) {
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
-          for(key=0; key<length; key++) {
+          for (key=0; key<length; key++) {
             if (!equals(o1[key], o2[key])) return false;
           }
           return true;
@@ -895,12 +895,12 @@ function equals(o1, o2) {
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2) || isArray(o2)) return false;
         keySet = {};
-        for(key in o1) {
+        for (key in o1) {
           if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
           if (!equals(o1[key], o2[key])) return false;
           keySet[key] = true;
         }
-        for(key in o2) {
+        for (key in o2) {
           if (!keySet.hasOwnProperty(key) &&
               key.charAt(0) !== '$' &&
               o2[key] !== undefined &&
@@ -1048,14 +1048,14 @@ function startingTag(element) {
     // turns out IE does not let you set .html() on elements which
     // are not allowed to have children. So we just ignore it.
     element.empty();
-  } catch(e) {}
+  } catch (e) {}
   var elemHtml = jqLite('<div>').append(element).html();
   try {
     return element[0].nodeType === NODE_TYPE_TEXT ? lowercase(elemHtml) :
         elemHtml.
           match(/^(<[^>]+>)/)[1].
           replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
-  } catch(e) {
+  } catch (e) {
     return lowercase(elemHtml);
   }
 
@@ -1075,7 +1075,7 @@ function startingTag(element) {
 function tryDecodeURIComponent(value) {
   try {
     return decodeURIComponent(value);
-  } catch(e) {
+  } catch (e) {
     // Ignore any invalid uri component
   }
 }
@@ -1095,7 +1095,7 @@ function parseKeyValue(/**string*/keyValue) {
         var val = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
         if (!hasOwnProperty.call(obj, key)) {
           obj[key] = val;
-        } else if(isArray(obj[key])) {
+        } else if (isArray(obj[key])) {
           obj[key].push(val);
         } else {
           obj[key] = [obj[key],val];

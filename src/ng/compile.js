@@ -854,7 +854,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    */
   var debugInfoEnabled = true;
   this.debugInfoEnabled = function(enabled) {
-    if(isDefined(enabled)) {
+    if (isDefined(enabled)) {
       debugInfoEnabled = enabled;
       return this;
     }
@@ -899,7 +899,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string} classVal The className value that will be added to the element
        */
       $addClass : function(classVal) {
-        if(classVal && classVal.length > 0) {
+        if (classVal && classVal.length > 0) {
           $animate.addClass(this.$$element, classVal);
         }
       },
@@ -916,7 +916,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string} classVal The className value that will be removed from the element
        */
       $removeClass : function(classVal) {
-        if(classVal && classVal.length > 0) {
+        if (classVal && classVal.length > 0) {
           $animate.removeClass(this.$$element, classVal);
         }
       },
@@ -969,7 +969,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (booleanKey) {
           this.$$element.prop(key, value);
           attrName = booleanKey;
-        } else if(aliasedKey) {
+        } else if (aliasedKey) {
           this[aliasedKey] = value;
           observer = aliasedKey;
         }
@@ -1022,7 +1022,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           result += $$sanitizeUri(trim(lastTuple[0]), true);
 
           // and add the last descriptor if any
-          if( lastTuple.length === 2) {
+          if (lastTuple.length === 2) {
             result += (" " + trim(lastTuple[1]));
           }
           this[key] = value = result;
@@ -1089,7 +1089,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function safeAddClass($element, className) {
       try {
         $element.addClass(className);
-      } catch(e) {
+      } catch (e) {
         // ignore, since it means that we are trying to set class on
         // SVG element, where class name is read-only.
       }
@@ -1278,7 +1278,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           stableNodeList = nodeList;
         }
 
-        for(i = 0, ii = linkFns.length; i < ii;) {
+        for (i = 0, ii = linkFns.length; i < ii;) {
           node = stableNodeList[linkFns[i++]];
           nodeLinkFn = linkFns[i++];
           childLinkFn = linkFns[i++];
@@ -1346,7 +1346,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           match,
           className;
 
-      switch(nodeType) {
+      switch (nodeType) {
         case NODE_TYPE_ELEMENT: /* Element */
           // use the node name: <directive>
           addDirective(directives,
@@ -1522,7 +1522,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           directiveValue;
 
       // executes all directives on the current element
-      for(var i = 0, ii = directives.length; i < ii; i++) {
+      for (var i = 0, ii = directives.length; i < ii; i++) {
         directive = directives[i];
         var attrStart = directive.$$start;
         var attrEnd = directive.$$end;
@@ -1855,7 +1855,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   isolateBindingContext[scopeName] = value;
                 });
                 attrs.$$observers[attrName].$$scope = scope;
-                if( attrs[attrName] ) {
+                if ( attrs[attrName] ) {
                   // If the attribute has been provided then we trigger an interpolation to ensure
                   // the value is there for use in the link fn
                   isolateBindingContext[scopeName] = $interpolate(attrs[attrName])(scope);
@@ -1915,7 +1915,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         // PRELINKING
-        for(i = 0, ii = preLinkFns.length; i < ii; i++) {
+        for (i = 0, ii = preLinkFns.length; i < ii; i++) {
           linkFn = preLinkFns[i];
           invokeLinkFn(linkFn,
               linkFn.isolateScope ? isolateScope : scope,
@@ -1936,7 +1936,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         childLinkFn && childLinkFn(scopeToChild, linkNode.childNodes, undefined, boundTranscludeFn);
 
         // POSTLINKING
-        for(i = postLinkFns.length - 1; i >= 0; i--) {
+        for (i = postLinkFns.length - 1; i >= 0; i--) {
           linkFn = postLinkFns[i];
           invokeLinkFn(linkFn,
               linkFn.isolateScope ? isolateScope : scope,
@@ -1996,7 +1996,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       if (name === ignoreDirective) return null;
       var match = null;
       if (hasDirectives.hasOwnProperty(name)) {
-        for(var directive, directives = $injector.get(name + Suffix),
+        for (var directive, directives = $injector.get(name + Suffix),
             i = 0, ii = directives.length; i<ii; i++) {
           try {
             directive = directives[i];
@@ -2008,7 +2008,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               tDirectives.push(directive);
               match = directive;
             }
-          } catch(e) { $exceptionHandler(e); }
+          } catch (e) { $exceptionHandler(e); }
         }
       }
       return match;
@@ -2025,7 +2025,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      */
     function directiveIsMultiElement(name) {
       if (hasDirectives.hasOwnProperty(name)) {
-        for(var directive, directives = $injector.get(name + Suffix),
+        for (var directive, directives = $injector.get(name + Suffix),
             i = 0, ii = directives.length; i<ii; i++) {
           directive = directives[i];
           if (directive.multiElement) {
@@ -2142,7 +2142,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           });
           afterTemplateChildLinkFn = compileNodes($compileNode[0].childNodes, childTranscludeFn);
 
-          while(linkQueue.length) {
+          while (linkQueue.length) {
             var scope = linkQueue.shift(),
                 beforeTemplateLinkNode = linkQueue.shift(),
                 linkRootElement = linkQueue.shift(),
@@ -2241,7 +2241,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function wrapTemplate(type, template) {
       type = lowercase(type || 'html');
-      switch(type) {
+      switch (type) {
       case 'svg':
       case 'math':
         var wrapper = document.createElement('div');
@@ -2322,7 +2322,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     //skip animations when the first digest occurs (when
                     //both the new and the old values are the same) since
                     //the CSS classes are the non-interpolated values
-                    if(name === 'class' && newValue != oldValue) {
+                    if (name === 'class' && newValue != oldValue) {
                       attr.$updateClass(newValue, oldValue);
                     } else {
                       attr.$set(name, newValue);
@@ -2352,7 +2352,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           i, ii;
 
       if ($rootElement) {
-        for(i = 0, ii = $rootElement.length; i < ii; i++) {
+        for (i = 0, ii = $rootElement.length; i < ii; i++) {
           if ($rootElement[i] == firstElementToRemove) {
             $rootElement[i++] = newNode;
             for (var j = i, j2 = j + removeCount - 1,
@@ -2427,7 +2427,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function invokeLinkFn(linkFn, scope, $element, attrs, controllers, transcludeFn) {
       try {
         linkFn(scope, $element, attrs, controllers, transcludeFn);
-      } catch(e) {
+      } catch (e) {
         $exceptionHandler(e, startingTag($element));
       }
     }
@@ -2516,10 +2516,10 @@ function tokenDifference(str1, str2) {
       tokens2 = str2.split(/\s+/);
 
   outer:
-  for(var i = 0; i < tokens1.length; i++) {
+  for (var i = 0; i < tokens1.length; i++) {
     var token = tokens1[i];
-    for(var j = 0; j < tokens2.length; j++) {
-      if(token == tokens2[j]) continue outer;
+    for (var j = 0; j < tokens2.length; j++) {
+      if (token == tokens2[j]) continue outer;
     }
     values += (values.length > 0 ? ' ' : '') + token;
   }

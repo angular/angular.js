@@ -105,7 +105,7 @@ function $FilterProvider($provide) {
    *    of the registered filter instances.
    */
   function register(name, factory) {
-    if(isObject(name)) {
+    if (isObject(name)) {
       var filters = {};
       forEach(name, function(filter, key) {
         filters[key] = register(key, filter);

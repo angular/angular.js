@@ -528,10 +528,10 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       angular.forEach(element.contents(), function(node) {
-        if(node.nodeType == 3 /* text node */) {
+        if (node.nodeType == 3 /* text node */) {
           expect(angular.element(node).scope()).not.toBe($route.current.scope);
           expect(angular.element(node).controller()).not.toBeDefined();
-        } else if(node.nodeType == 8 /* comment node */) {
+        } else if (node.nodeType == 8 /* comment node */) {
           expect(angular.element(node).scope()).toBe(element.scope());
           expect(angular.element(node).controller()).toBe(element.controller());
         } else {

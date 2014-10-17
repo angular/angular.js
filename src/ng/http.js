@@ -747,7 +747,7 @@ function $HttpProvider() {
         }
       });
 
-      while(chain.length) {
+      while (chain.length) {
         var thenFn = chain.shift();
         var rejectFn = chain.shift();
 
@@ -1093,7 +1093,7 @@ function $HttpProvider() {
                      encodeUriQuery(v));
         });
       });
-      if(parts.length > 0) {
+      if (parts.length > 0) {
         url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
       }
       return url;
