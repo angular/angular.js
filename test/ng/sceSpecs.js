@@ -27,11 +27,20 @@ describe('SCE', function() {
   });
 
   describe('IE<11 quirks mode', function() {
+    /* global msie: true */
+    var msieBackup;
+
+    beforeEach(function() {
+      msieBackup = msie;
+    });
+
+    afterEach(function() {
+      msie = msieBackup;
+    });
+
     function runTest(enabled, documentMode, expectException) {
+      msie = documentMode;
       module(function($provide) {
-        $provide.value('$document', [{
-          documentMode: documentMode
-        }]);
         $provide.value('$sceDelegate', {trustAs: null, valueOf: null, getTrusted: null});
       });
 

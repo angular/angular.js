@@ -722,7 +722,7 @@ function $SceProvider() {
                 $document,   $parse,   $sceDelegate) {
     // Prereq: Ensure that we're not running in IE<11 quirks mode.  In that mode, IE < 11 allow
     // the "expression(javascript expression)" syntax which is insecure.
-    if (enabled && $document[0].documentMode < 8) {
+    if (enabled && msie < 8) {
       throw $sceMinErr('iequirks',
         'Strict Contextual Escaping does not support Internet Explorer version < 11 in quirks ' +
         'mode.  You can fix this by adding the text <!doctype html> to the top of your HTML ' +
