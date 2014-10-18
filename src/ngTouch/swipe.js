@@ -21,7 +21,7 @@
      * documentation for `bind` below.
      */
 
-ngTouch.factory('$swipe', [function() {
+ngTouch.factory('$swipe', ['$window', function($window) {
   // The total distance in any direction before we make the call on swipe vs. scroll.
   var MOVE_BUFFER_RADIUS = 10;
 
@@ -29,13 +29,17 @@ ngTouch.factory('$swipe', [function() {
     'mouse': {
       start: 'mousedown',
       move: 'mousemove',
-      end: 'mouseup'
+      end: 'mouseup',
+      leave: 'mouseout',
+      enter: 'mouseover'
     },
     'touch': {
       start: 'touchstart',
       move: 'touchmove',
       end: 'touchend',
-      cancel: 'touchcancel'
+      cancel: 'touchcancel',
+      leave: 'touchleave',
+      enter: 'touchenter'
     }
   };
 
@@ -105,25 +109,47 @@ ngTouch.factory('$swipe', [function() {
       var lastPos;
       // Whether a swipe is active.
       var active = false;
+      // Whether mouse is outside element
+      var elementOutside = false;
 
       pointerTypes = pointerTypes || ['mouse', 'touch'];
-      element.on(getEvents(pointerTypes, 'start'), function(event) {
+
+      function ifOutside(func) {
+        return function(event) {
+          if (!elementOutside) {
+            return;
+          }
+          func(event);
+        };
+      }
+
+      function swipeStart(event) {
         startCoords = getCoordinates(event);
         active = true;
         totalX = 0;
         totalY = 0;
         lastPos = startCoords;
-        eventHandlers['start'] && eventHandlers['start'](startCoords, event);
-      });
-      var events = getEvents(pointerTypes, 'cancel');
-      if (events) {
-        element.on(events, function(event) {
-          active = false;
-          eventHandlers['cancel'] && eventHandlers['cancel'](event);
+
+        element.on(getEvents(pointerTypes, 'leave'), function() {
+          elementOutside = true;
         });
+        element.on(getEvents(pointerTypes, 'enter'), function() {
+          elementOutside = false;
+        });
+        eventHandlers['start'] && eventHandlers['start'](startCoords, event);
       }
 
-      element.on(getEvents(pointerTypes, 'move'), function(event) {
+      function swipeEnd(event) {
+        if (!active) return;
+        active = false;
+
+        element.off(getEvents(pointerTypes, 'enter'));
+        element.off(getEvents(pointerTypes, 'leave'));
+
+        eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
+      }
+
+      function swipeMove(event) {
         if (!active) return;
 
         // Android will send a touchcancel if it thinks we're starting to scroll.
@@ -155,13 +181,29 @@ ngTouch.factory('$swipe', [function() {
           event.preventDefault();
           eventHandlers['move'] && eventHandlers['move'](coords, event);
         }
-      });
+      }
 
-      element.on(getEvents(pointerTypes, 'end'), function(event) {
-        if (!active) return;
+      function swipeCancel(event) {
+        if (!active) {
+          return;
+        }
         active = false;
-        eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
-      });
+        eventHandlers['cancel'] && eventHandlers['cancel'](event);
+      }
+
+      function bindEvent(eventName, callback) {
+        var events = getEvents(pointerTypes, eventName);
+        if (events) {
+          element.on(events, callback);
+          angular.element($window).on(events, ifOutside(callback));
+        }
+      }
+
+      element.on(getEvents(pointerTypes, 'start'), swipeStart);
+
+      bindEvent('cancel', swipeCancel);
+      bindEvent('move', swipeMove);
+      bindEvent('end', swipeEnd);
     }
   };
 }]);
