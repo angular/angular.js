@@ -39,7 +39,7 @@ describe('$$rAF', function() {
       var injector = createInjector(['ng', function($provide) {
         $provide.value('$timeout', timeoutSpy);
         $provide.value('$window', {
-          location : window.location,
+          location: window.location,
         });
       }]);
 

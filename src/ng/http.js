@@ -1062,7 +1062,7 @@ function $HttpProvider() {
           status: status,
           headers: headersGetter(headers),
           config: config,
-          statusText : statusText
+          statusText: statusText
         });
       }
 

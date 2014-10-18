@@ -283,7 +283,7 @@ describe('NgModelController', function() {
       a = b = true;
 
       ctrl.$setViewValue('3');
-      expect(ctrl.$error).toEqual({ high : true, even : true });
+      expect(ctrl.$error).toEqual({ high: true, even: true });
 
       ctrl.$setViewValue('10');
       expect(ctrl.$error).toEqual({});
@@ -308,14 +308,14 @@ describe('NgModelController', function() {
       a = b = false; //not undefined
 
       ctrl.$setViewValue('2');
-      expect(ctrl.$error).toEqual({ high : true });
+      expect(ctrl.$error).toEqual({ high: true });
     });
 
     it('should not remove external validators when a parser failed', function() {
       ctrl.$parsers.push(function(v) { return undefined; });
       ctrl.$setValidity('externalError', false);
       ctrl.$setViewValue('someValue');
-      expect(ctrl.$error).toEqual({ externalError : true, parse: true });
+      expect(ctrl.$error).toEqual({ externalError: true, parse: true });
     });
 
     it('should remove all non-parse-related CSS classes from the form when a parser fails',
@@ -658,7 +658,7 @@ describe('NgModelController', function() {
 
       var stages = {};
 
-      stages.sync = { status1 : false, status2: false, count : 0 };
+      stages.sync = { status1: false, status2: false, count: 0 };
       ctrl.$validators.syncValidator1 = function(modelValue, viewValue) {
         stages.sync.count++;
         return stages.sync.status1;
@@ -669,7 +669,7 @@ describe('NgModelController', function() {
         return stages.sync.status2;
       };
 
-      stages.async = { defer : null, count : 0 };
+      stages.async = { defer: null, count: 0 };
       ctrl.$asyncValidators.asyncValidator = function(modelValue, viewValue) {
         stages.async.defer = $q.defer();
         stages.async.count++;
@@ -4465,7 +4465,7 @@ describe('input', function() {
 
 
     it('should consider bad input as an error before any other errors are considered', function() {
-      compileInput('<input type="text" ng-model="value" required />', { badInput : true });
+      compileInput('<input type="text" ng-model="value" required />', { badInput: true });
       var ctrl = inputElm.controller('ngModel');
       ctrl.$parsers.push(function() {
         return undefined;

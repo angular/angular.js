@@ -100,8 +100,8 @@ describe('$sniffer', function() {
     it('should still work for an older version of Webkit', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
+          body: {
+            style: {
               WebkitOpacity: '0'
             }
           }
@@ -125,8 +125,8 @@ describe('$sniffer', function() {
     it('should be false when there is no animation style', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {}
+          body: {
+            style: {}
           }
         };
         $provide.value('$document', jqLite(doc));
@@ -140,11 +140,11 @@ describe('$sniffer', function() {
       module(function($provide) {
         var animationStyle = 'some_animation 2s linear';
         var doc = {
-          body : {
-            style : {
-              WebkitAnimation : animationStyle,
-              MozAnimation : animationStyle,
-              OAnimation : animationStyle
+          body: {
+            style: {
+              WebkitAnimation: animationStyle,
+              MozAnimation: animationStyle,
+              OAnimation: animationStyle
             }
           }
         };
@@ -158,9 +158,9 @@ describe('$sniffer', function() {
     it('should be true with w3c-style animations', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
-              animation : 'some_animation 2s linear'
+          body: {
+            style: {
+              animation: 'some_animation 2s linear'
             }
           }
         };
@@ -174,8 +174,8 @@ describe('$sniffer', function() {
     it('should be true on android with older body style properties', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
+          body: {
+            style: {
               webkitAnimation: ''
             }
           }
@@ -196,8 +196,8 @@ describe('$sniffer', function() {
     it('should be true when an older version of Webkit is used', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
+          body: {
+            style: {
               WebkitOpacity: '0'
             }
           }
@@ -222,8 +222,8 @@ describe('$sniffer', function() {
     it('should be false when there is no transition style', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {}
+          body: {
+            style: {}
           }
         };
         $provide.value('$document', jqLite(doc));
@@ -237,11 +237,11 @@ describe('$sniffer', function() {
       module(function($provide) {
         var transitionStyle = '1s linear all';
         var doc = {
-          body : {
-            style : {
-              WebkitTransition : transitionStyle,
-              MozTransition : transitionStyle,
-              OTransition : transitionStyle
+          body: {
+            style: {
+              WebkitTransition: transitionStyle,
+              MozTransition: transitionStyle,
+              OTransition: transitionStyle
             }
           }
         };
@@ -255,9 +255,9 @@ describe('$sniffer', function() {
     it('should be true with w3c-style transitions', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
-              transition : '1s linear all'
+          body: {
+            style: {
+              transition: '1s linear all'
             }
           }
         };
@@ -271,8 +271,8 @@ describe('$sniffer', function() {
     it('should be true on android with older body style properties', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
+          body: {
+            style: {
               webkitTransition: ''
             }
           }
@@ -297,8 +297,8 @@ describe('$sniffer', function() {
     it('should be true on Boxee box with an older version of Webkit', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {}
+          body: {
+            style: {}
           }
         };
         var win = {

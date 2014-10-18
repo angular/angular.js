@@ -623,7 +623,7 @@ describe('angular', function() {
 
     it('should handle objects with length property as objects', function() {
       var obj = {
-          'foo' : 'bar',
+          'foo': 'bar',
           'length': 2
         },
         log = [];

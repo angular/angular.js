@@ -236,7 +236,7 @@ function publishExternalAPI(angular){
         $timeout: $TimeoutProvider,
         $window: $WindowProvider,
         $$rAF: $$RAFProvider,
-        $$asyncCallback : $$AsyncCallbackProvider
+        $$asyncCallback: $$AsyncCallbackProvider
       });
     }
   ]);

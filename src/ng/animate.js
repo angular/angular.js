@@ -170,7 +170,7 @@ var $AnimateProvider = ['$provide', function($provide) {
      * page}.
      */
     return {
-      animate : function(element, from, to) {
+      animate: function(element, from, to) {
         applyStyles(element, { from: from, to: to });
         return asyncPromise();
       },
@@ -191,7 +191,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {object=} options an optional collection of styles that will be applied to the element.
        * @return {Promise} the animation callback promise
        */
-      enter : function(element, parent, after, options) {
+      enter: function(element, parent, after, options) {
         applyStyles(element, options);
         after ? after.after(element)
               : parent.prepend(element);
@@ -209,7 +209,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {object=} options an optional collection of options that will be applied to the element.
        * @return {Promise} the animation callback promise
        */
-      leave : function(element, options) {
+      leave: function(element, options) {
         element.remove();
         return asyncPromise();
       },
@@ -232,7 +232,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {object=} options an optional collection of options that will be applied to the element.
        * @return {Promise} the animation callback promise
        */
-      move : function(element, parent, after, options) {
+      move: function(element, parent, after, options) {
         // Do not remove element before insert. Removing will cause data associated with the
         // element to be dropped. Insert will implicitly do the remove.
         return this.enter(element, parent, after, options);
@@ -251,11 +251,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {object=} options an optional collection of options that will be applied to the element.
        * @return {Promise} the animation callback promise
        */
-      addClass : function(element, className, options) {
+      addClass: function(element, className, options) {
         return this.setClass(element, className, [], options);
       },
 
-      $$addClassImmediately : function(element, className, options) {
+      $$addClassImmediately: function(element, className, options) {
         element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
@@ -280,11 +280,11 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {object=} options an optional collection of options that will be applied to the element.
        * @return {Promise} the animation callback promise
        */
-      removeClass : function(element, className, options) {
+      removeClass: function(element, className, options) {
         return this.setClass(element, [], className, options);
       },
 
-      $$removeClassImmediately : function(element, className, options) {
+      $$removeClassImmediately: function(element, className, options) {
         element = jqLite(element);
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
@@ -310,7 +310,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {object=} options an optional collection of options that will be applied to the element.
        * @return {Promise} the animation callback promise
        */
-      setClass : function(element, add, remove, options) {
+      setClass: function(element, add, remove, options) {
         var self = this;
         var STORAGE_KEY = '$$animateClasses';
         var createdCache = false;
@@ -320,7 +320,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         if (!cache) {
           cache = {
             classes: {},
-            options : options
+            options: options
           };
           createdCache = true;
         } else if (options && cache.options) {
@@ -357,15 +357,15 @@ var $AnimateProvider = ['$provide', function($provide) {
         return cache.promise;
       },
 
-      $$setClassImmediately : function(element, add, remove, options) {
+      $$setClassImmediately: function(element, add, remove, options) {
         add && this.$$addClassImmediately(element, add);
         remove && this.$$removeClassImmediately(element, remove);
         applyStyles(element, options);
         return asyncPromise();
       },
 
-      enabled : noop,
-      cancel : noop
+      enabled: noop,
+      cancel: noop
     };
   }];
 }];

@@ -1600,10 +1600,10 @@ describe('parser', function() {
         }));
 
         it('should not use locals to resolve object properties', inject(function($parse) {
-          expect($parse('a[0].b')({a: [ {b : 'scope'} ]}, {b : 'locals'})).toBe('scope');
-          expect($parse('a[0]["b"]')({a: [ {b : 'scope'} ]}, {b : 'locals'})).toBe('scope');
-          expect($parse('a[0][0].b')({a: [[{b : 'scope'}]]}, {b : 'locals'})).toBe('scope');
-          expect($parse('a[0].b.c')({a: [ {b: {c: 'scope'}}] }, {b : {c: 'locals'} })).toBe('scope');
+          expect($parse('a[0].b')({a: [ {b: 'scope'} ]}, {b: 'locals'})).toBe('scope');
+          expect($parse('a[0]["b"]')({a: [ {b: 'scope'} ]}, {b: 'locals'})).toBe('scope');
+          expect($parse('a[0][0].b')({a: [[{b: 'scope'}]]}, {b: 'locals'})).toBe('scope');
+          expect($parse('a[0].b.c')({a: [ {b: {c: 'scope'}}] }, {b: {c: 'locals'} })).toBe('scope');
         }));
       });
 
