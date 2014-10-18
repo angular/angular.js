@@ -371,8 +371,8 @@ angular.module('ngMessages', [])
         }
 
         ngMessages.registerMessage(index, {
-          type : $attrs.ngMessage || $attrs.when,
-          attach : function() {
+          type: $attrs.ngMessage || $attrs.when,
+          attach: function() {
             if (!element) {
               $transclude($scope, function(clone) {
                 $animate.enter(clone, null, $element);
@@ -380,7 +380,7 @@ angular.module('ngMessages', [])
               });
             }
           },
-          detach : function(now) {
+          detach: function(now) {
             if (element) {
               $animate.leave(element);
               element = null;

@@ -898,7 +898,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        *
        * @param {string} classVal The className value that will be added to the element
        */
-      $addClass : function(classVal) {
+      $addClass: function(classVal) {
         if (classVal && classVal.length > 0) {
           $animate.addClass(this.$$element, classVal);
         }
@@ -915,7 +915,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        *
        * @param {string} classVal The className value that will be removed from the element
        */
-      $removeClass : function(classVal) {
+      $removeClass: function(classVal) {
         if (classVal && classVal.length > 0) {
           $animate.removeClass(this.$$element, classVal);
         }
@@ -933,7 +933,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string} newClasses The current CSS className value
        * @param {string} oldClasses The former CSS className value
        */
-      $updateClass : function(newClasses, oldClasses) {
+      $updateClass: function(newClasses, oldClasses) {
         var toAdd = tokenDifference(newClasses, oldClasses);
         if (toAdd && toAdd.length) {
           $animate.addClass(this.$$element, toAdd);

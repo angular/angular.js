@@ -372,12 +372,12 @@ describe('ngRepeat', function() {
         '<div ng-repeat="item in items | filter:x as results track by $index">{{item.name}}/</div>')(scope);
 
       scope.items = [
-        { name : 'red' },
-        { name : 'blue' },
-        { name : 'green' },
-        { name : 'black' },
-        { name : 'orange' },
-        { name : 'blonde' }
+        { name: 'red' },
+        { name: 'blue' },
+        { name: 'green' },
+        { name: 'black' },
+        { name: 'orange' },
+        { name: 'blonde' }
       ];
 
       expect(scope.results).toBeUndefined();
@@ -387,9 +387,9 @@ describe('ngRepeat', function() {
       scope.$digest();
 
       expect(scope.results).toEqual([
-        { name : 'blue' },
-        { name : 'black' },
-        { name : 'blonde' }
+        { name: 'blue' },
+        { name: 'black' },
+        { name: 'blonde' }
       ]);
 
       scope.items = [];
@@ -421,12 +421,12 @@ describe('ngRepeat', function() {
     it('should support alias identifiers containing reserved words', inject(function($exceptionHandler) {
       scope.x = 'bl';
       scope.items = [
-        { name : 'red' },
-        { name : 'blue' },
-        { name : 'green' },
-        { name : 'black' },
-        { name : 'orange' },
-        { name : 'blonde' }
+        { name: 'red' },
+        { name: 'blue' },
+        { name: 'green' },
+        { name: 'black' },
+        { name: 'orange' },
+        { name: 'blonde' }
       ];
       forEach([
         'null2',
@@ -451,12 +451,12 @@ describe('ngRepeat', function() {
     it('should throw if alias identifier is not a simple identifier', inject(function($exceptionHandler) {
       scope.x = 'bl';
       scope.items = [
-        { name : 'red' },
-        { name : 'blue' },
-        { name : 'green' },
-        { name : 'black' },
-        { name : 'orange' },
-        { name : 'blonde' }
+        { name: 'red' },
+        { name: 'blue' },
+        { name: 'green' },
+        { name: 'black' },
+        { name: 'orange' },
+        { name: 'blonde' }
       ];
 
       forEach([

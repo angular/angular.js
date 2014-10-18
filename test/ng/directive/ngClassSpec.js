@@ -415,7 +415,7 @@ describe('ngClass animations', function() {
     module(function($animateProvider) {
       $animateProvider.register('.crazy', function() {
         return {
-          enter : function(element, done) {
+          enter: function(element, done) {
             element.data('state', 'crazy-enter');
             done();
           }

@@ -49,7 +49,7 @@ var ngAriaModule = angular.module('ngAria', ['ng']).
  */
 function $AriaProvider() {
   var config = {
-    ariaHidden : true,
+    ariaHidden: true,
     ariaChecked: true,
     ariaDisabled: true,
     ariaRequired: true,

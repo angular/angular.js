@@ -330,7 +330,7 @@ describe('ngSwitch animation', function() {
       module(function($animateProvider) {
         $animateProvider.register('.long-leave', function() {
           return {
-            leave : function(element, done) {
+            leave: function(element, done) {
               //do nothing at all
             }
           };

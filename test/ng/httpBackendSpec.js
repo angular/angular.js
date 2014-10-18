@@ -415,14 +415,14 @@ describe('$httpBackend', function() {
 
       //temporarily overriding the DOM element to pretend that the test runs origin with file:// protocol
       urlParsingNode = {
-        hash : "#/C:/",
-        host : "",
-        hostname : "",
-        href : "file:///C:/base#!/C:/foo",
-        pathname : "/C:/foo",
-        port : "",
-        protocol : "file:",
-        search : "",
+        hash: "#/C:/",
+        host: "",
+        hostname: "",
+        href: "file:///C:/base#!/C:/foo",
+        pathname: "/C:/foo",
+        port: "",
+        protocol: "file:",
+        search: "",
         setAttribute: angular.noop
       };
 

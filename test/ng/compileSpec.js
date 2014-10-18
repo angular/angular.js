@@ -4252,7 +4252,7 @@ describe('$compile', function() {
           return {
             require: '^parentDirective',
             templateUrl: 'childDirective.html',
-            controller : function(log) { log('childController'); }
+            controller: function(log) { log('childController'); }
           };
         });
       });
@@ -4343,14 +4343,14 @@ describe('$compile', function() {
             transclude: true,
             replace: true,
             templateUrl: 'childDirective.html',
-            controller : function(log) { log('childController'); }
+            controller: function(log) { log('childController'); }
           };
         });
         directive('babyDirective', function() {
           return {
             require: '^childDirective',
             templateUrl: 'babyDirective.html',
-            controller : function(log) { log('babyController'); }
+            controller: function(log) { log('babyController'); }
           };
         });
       });

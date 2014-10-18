@@ -25,14 +25,14 @@ describe('$location', function() {
       //temporarily overriding the DOM element
       //with output from IE, if not in IE
       urlParsingNode = {
-        hash : "#/C:/",
-        host : "",
-        hostname : "",
-        href : "file:///C:/base#!/C:/foo",
-        pathname : "/C:/foo",
-        port : "",
-        protocol : "file:",
-        search : "",
+        hash: "#/C:/",
+        host: "",
+        hostname: "",
+        href: "file:///C:/base#!/C:/foo",
+        pathname: "/C:/foo",
+        port: "",
+        protocol: "file:",
+        search: "",
         setAttribute: angular.noop
       };
     }));
