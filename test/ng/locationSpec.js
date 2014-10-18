@@ -1690,6 +1690,95 @@ describe('$location', function() {
       expect($browser.url()).toEqual('http://server/');
     }));
 
+    it('should allow redirect during $locationChangeStart',
+      inject(function($location, $browser, $rootScope, $log) {
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('before', newUrl, oldUrl, $browser.url());
+          if (newUrl === 'http://server/#/somePath') {
+            $location.url('/redirectPath');
+          }
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl, $browser.url());
+        });
+
+        $location.url('/somePath');
+        $rootScope.$apply();
+
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/redirectPath', 'http://server/',
+                  'http://server/#/redirectPath']);
+
+        expect($location.url()).toEqual('/redirectPath');
+        expect($browser.url()).toEqual('http://server/#/redirectPath');
+      })
+    );
+
+    it('should allow redirect during $locationChangeStart even if default prevented',
+      inject(function($location, $browser, $rootScope, $log) {
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('before', newUrl, oldUrl, $browser.url());
+          if (newUrl === 'http://server/#/somePath') {
+            event.preventDefault();
+            $location.url('/redirectPath');
+          }
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl, $browser.url());
+        });
+
+        $location.url('/somePath');
+        $rootScope.$apply();
+
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/redirectPath', 'http://server/',
+                  'http://server/#/redirectPath']);
+
+        expect($location.url()).toEqual('/redirectPath');
+        expect($browser.url()).toEqual('http://server/#/redirectPath');
+      })
+    );
+
+    it('should allow multiple redirect during $locationChangeStart',
+      inject(function($location, $browser, $rootScope, $log) {
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('before', newUrl, oldUrl, $browser.url());
+          if (newUrl === 'http://server/#/somePath') {
+            $location.url('/redirectPath');
+          } else if (newUrl === 'http://server/#/redirectPath') {
+            $location.url('/redirectPath2');
+          }
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl, $browser.url());
+        });
+
+        $location.url('/somePath');
+        $rootScope.$apply();
+
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/redirectPath2', 'http://server/', 'http://server/']);
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/redirectPath2', 'http://server/',
+                  'http://server/#/redirectPath2']);
+
+        expect($location.url()).toEqual('/redirectPath2');
+        expect($browser.url()).toEqual('http://server/#/redirectPath2');
+      })
+    );
+
     it ('should fire $locationChangeSuccess event when change from browser location bar',
       inject(function($log, $location, $browser, $rootScope) {
         $rootScope.$apply(); // clear initial $locationChangeStart
@@ -1715,6 +1804,66 @@ describe('$location', function() {
       })
     );
 
+    it('should allow redirect during browser url change',
+      inject(function($location, $browser, $rootScope, $log) {
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('before', newUrl, oldUrl, $browser.url());
+          if (newUrl === 'http://server/#/somePath') {
+            $location.url('/redirectPath');
+          }
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl, $browser.url());
+        });
+
+        $browser.url('http://server/#/somePath');
+        $browser.poll();
+
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/',
+                  'http://server/#/somePath']);
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/redirectPath', 'http://server/#/somePath',
+                  'http://server/#/somePath']);
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/redirectPath', 'http://server/#/somePath',
+                  'http://server/#/redirectPath']);
+
+        expect($location.url()).toEqual('/redirectPath');
+        expect($browser.url()).toEqual('http://server/#/redirectPath');
+      })
+    );
+
+    it('should allow redirect during browser url change even if default prevented',
+      inject(function($location, $browser, $rootScope, $log) {
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('before', newUrl, oldUrl, $browser.url());
+          if (newUrl === 'http://server/#/somePath') {
+            event.preventDefault();
+            $location.url('/redirectPath');
+          }
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl, $browser.url());
+        });
+
+        $browser.url('http://server/#/somePath');
+        $browser.poll();
+
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/',
+                  'http://server/#/somePath']);
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/redirectPath', 'http://server/#/somePath',
+                  'http://server/#/somePath']);
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/redirectPath', 'http://server/#/somePath',
+                  'http://server/#/redirectPath']);
+
+        expect($location.url()).toEqual('/redirectPath');
+        expect($browser.url()).toEqual('http://server/#/redirectPath');
+      })
+    );
 
     it('should listen on click events on href and prevent browser default in hashbang mode', function() {
       module(function() {
