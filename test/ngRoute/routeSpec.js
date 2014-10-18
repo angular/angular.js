@@ -70,6 +70,36 @@ describe('$route', function() {
     });
   });
 
+  it('should allow redirects while handling $routeChangeStart', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some', {
+        id: 'some', template: 'Some functionality'
+      });
+      $routeProvider.when('/redirect', {
+        id: 'redirect'
+      });
+    });
+    module(provideLog);
+    inject(function($route, $location, $rootScope, $compile, log) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.id === 'some') {
+          $location.path('/redirect');
+        }
+      });
+      $compile('<div><div ng-view></div></div>')($rootScope);
+      $rootScope.$on('$routeChangeStart', log.fn('routeChangeStart'));
+      $rootScope.$on('$routeChangeError', log.fn('routeChangeError'));
+      $rootScope.$on('$routeChangeSuccess', log.fn('routeChangeSuccess'));
+      $rootScope.$apply(function() {
+        $location.path('/some');
+      });
+
+      expect($route.current.id).toBe('redirect');
+      expect($location.path()).toBe('/redirect');
+      expect(log).toEqual(['routeChangeStart', 'routeChangeStart', 'routeChangeSuccess']);
+    });
+  });
+
   it('should route and fire change event', function() {
     var log = '',
         lastRoute,

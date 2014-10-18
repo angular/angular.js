@@ -829,11 +829,21 @@ function $LocationProvider() {
       $rootScope.$evalAsync(function() {
         var oldUrl = $location.absUrl();
         var oldState = $location.$$state;
+        var defaultPrevented;
 
         $location.$$parse(newUrl);
         $location.$$state = newState;
-        if ($rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl,
-            newState, oldState).defaultPrevented) {
+
+        defaultPrevented = $rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl,
+            newState, oldState).defaultPrevented;
+
+        // only process the location change if the location Url was not changed by a
+        // `$locationChangeStart` event handler.
+        if ($location.absUrl() !== newUrl) {
+          return;
+        }
+
+        if (defaultPrevented) {
           $location.$$parse(oldUrl);
           $location.$$state = oldState;
           setBrowserUrlWithFallback(oldUrl, false, oldState);
@@ -857,13 +867,22 @@ function $LocationProvider() {
         initializing = false;
 
         $rootScope.$evalAsync(function() {
-          if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl,
-              $location.$$state, oldState).defaultPrevented) {
+          var newUrl = $location.absUrl();
+          var defaultPrevented = $rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl,
+              $location.$$state, oldState).defaultPrevented;
+
+          // only process the location change if the location Url was not changed by a
+          // `$locationChangeStart` event handler.
+          if ($location.absUrl() !== newUrl) {
+            return;
+          }
+
+          if (defaultPrevented) {
             $location.$$parse(oldUrl);
             $location.$$state = oldState;
           } else {
             if (urlOrStateChanged) {
-              setBrowserUrlWithFallback($location.absUrl(), currentReplace,
+              setBrowserUrlWithFallback(newUrl, currentReplace,
                                         oldState === $location.$$state ? null : $location.$$state);
             }
             afterLocationChange(oldUrl, oldState);
