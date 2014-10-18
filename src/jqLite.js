@@ -122,7 +122,7 @@ function jqNextId() { return ++jqId; }
 
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
-var MOUSE_EVENT_MAP= { mouseleave : "mouseout", mouseenter : "mouseover"};
+var MOUSE_EVENT_MAP= { mouseleave: "mouseout", mouseenter: "mouseover"};
 var jqLiteMinErr = minErr('jqLite');
 
 /**
@@ -521,11 +521,11 @@ forEach('input,select,option,textarea,button,form,details'.split(','), function(
   BOOLEAN_ELEMENTS[value] = true;
 });
 var ALIASED_ATTR = {
-  'ngMinlength' : 'minlength',
-  'ngMaxlength' : 'maxlength',
-  'ngMin' : 'min',
-  'ngMax' : 'max',
-  'ngPattern' : 'pattern'
+  'ngMinlength': 'minlength',
+  'ngMaxlength': 'maxlength',
+  'ngMin': 'min',
+  'ngMax': 'max',
+  'ngPattern': 'pattern'
 };
 
 function getBooleanAttrName(element, name) {

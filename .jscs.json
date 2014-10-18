@@ -1,7 +1,11 @@
 {
   "disallowKeywords": ["with"],
+  "disallowMixedSpacesAndTabs": true,
+  "disallowMultipleLineStrings": true,
+  "disallowNewlineBeforeBlockStatements": true,
   "disallowTrailingWhitespace": true,
   "disallowSpaceAfterPrefixUnaryOperators": ["!"],
   "disallowSpaceBeforeBinaryOperators": [","],
+  "disallowSpaceAfterObjectKeys": true,
   "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"]
 }

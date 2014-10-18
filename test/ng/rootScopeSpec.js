@@ -566,7 +566,7 @@ describe('Scope', function() {
 
       it('should not trigger if nothing change', inject(function($rootScope) {
         $rootScope.$digest();
-        expect(log).toEqual([{ newVal : undefined, oldVal : undefined, identical : true }]);
+        expect(log).toEqual([{ newVal: undefined, oldVal: undefined, identical: true }]);
         log.reset();
 
         $rootScope.$digest();

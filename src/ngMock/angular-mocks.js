@@ -781,20 +781,20 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
     $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser',
                             function($delegate,   $$asyncCallback,   $timeout,   $browser) {
       var animate = {
-        queue : [],
-        cancel : $delegate.cancel,
-        enabled : $delegate.enabled,
-        triggerCallbackEvents : function() {
+        queue: [],
+        cancel: $delegate.cancel,
+        enabled: $delegate.enabled,
+        triggerCallbackEvents: function() {
           $$asyncCallback.flush();
         },
-        triggerCallbackPromise : function() {
+        triggerCallbackPromise: function() {
           $timeout.flush(0);
         },
-        triggerCallbacks : function() {
+        triggerCallbacks: function() {
           this.triggerCallbackEvents();
           this.triggerCallbackPromise();
         },
-        triggerReflow : function() {
+        triggerReflow: function() {
           angular.forEach(reflowQueue, function(fn) {
             fn();
           });
@@ -806,10 +806,10 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
         ['animate','enter','leave','move','addClass','removeClass','setClass'], function(method) {
         animate[method] = function() {
           animate.queue.push({
-            event : method,
-            element : arguments[0],
-            options : arguments[arguments.length-1],
-            args : arguments
+            event: method,
+            element: arguments[0],
+            options: arguments[arguments.length-1],
+            args: arguments
           });
           return $delegate[method].apply($delegate, arguments);
         };

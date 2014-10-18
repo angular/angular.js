@@ -711,15 +711,15 @@ describe('$http', function() {
       });
 
       it('should NOT delete Content-Type header if request data/body is set by request transform', function() {
-        $httpBackend.expect('POST', '/url', {'one' : 'two'}, function(headers) {
+        $httpBackend.expect('POST', '/url', {'one': 'two'}, function(headers) {
           return headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
         $http({
           url: '/url',
           method: 'POST',
-          transformRequest : function(data) {
-            data = {'one' : 'two'};
+          transformRequest: function(data) {
+            data = {'one': 'two'};
             return data;
           }
         });

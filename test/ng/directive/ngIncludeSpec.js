@@ -285,7 +285,7 @@ describe('ngInclude', function() {
     $httpBackend.expect('GET', 'myUrl2').respond('<div>{{logger("url2")}}</div>');
     $httpBackend.flush(); // now that we have two requests pending, flush!
 
-    expect(log).toEqual({ url2 : true });
+    expect(log).toEqual({ url2: true });
   }));
 
 

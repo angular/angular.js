@@ -121,35 +121,35 @@ describe("$animate", function() {
       $animate.enabled(true);
 
       $animate.enter(element, parent, null, {
-        to: { color : 'red' }
+        to: { color: 'red' }
       });
       assertColor('red');
 
       $animate.move(element, null, other, {
-        to: { color : 'yellow' }
+        to: { color: 'yellow' }
       });
       assertColor('yellow');
 
       $animate.addClass(element, 'on', {
-        to: { color : 'green' }
+        to: { color: 'green' }
       });
       $rootScope.$digest();
       assertColor('green');
 
       $animate.setClass(element, 'off', 'on', {
-        to: { color : 'black' }
+        to: { color: 'black' }
       });
       $rootScope.$digest();
       assertColor('black');
 
       $animate.removeClass(element, 'off', {
-        to: { color : 'blue' }
+        to: { color: 'blue' }
       });
       $rootScope.$digest();
       assertColor('blue');
 
       $animate.leave(element, 'off', {
-        to: { color : 'blue' }
+        to: { color: 'blue' }
       });
       assertColor('blue'); //nothing should happen the element is gone anyway
 
@@ -165,8 +165,8 @@ describe("$animate", function() {
 
       element.css('color', 'red');
       $animate.addClass(element, 'on', {
-        from : { color : 'green' },
-        to : { borderColor : 'purple' }
+        from: { color: 'green' },
+        to: { borderColor: 'purple' }
       });
       $rootScope.$digest();
 

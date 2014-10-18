@@ -966,7 +966,7 @@ function $RootScopeProvider(){
         asyncQueue.push({scope: this, expression: expr});
       },
 
-      $$postDigest : function(fn) {
+      $$postDigest: function(fn) {
         postDigestQueue.push(fn);
       },
 

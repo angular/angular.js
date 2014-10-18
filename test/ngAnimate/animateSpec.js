@@ -28,11 +28,11 @@ describe("ngAnimate", function() {
     module(function($animateProvider) {
       $animateProvider.register('.my-structrual-animation', function() {
         return {
-          enter : function(element, done) {
+          enter: function(element, done) {
             hasBeenAnimated = true;
             done();
           },
-          leave : function(element, done) {
+          leave: function(element, done) {
             hasBeenAnimated = true;
             done();
           }
@@ -61,13 +61,13 @@ describe("ngAnimate", function() {
     module(function($animateProvider, $compileProvider) {
       $compileProvider.directive('myRemoteDirective', function() {
         return {
-          templateUrl : 'remote.html'
+          templateUrl: 'remote.html'
         };
       });
       $animateProvider.register('.my-structrual-animation', function() {
         return {
-          enter : animateSpy,
-          leave : animateSpy
+          enter: animateSpy,
+          leave: animateSpy
         };
       });
     });
@@ -155,7 +155,7 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.animated', function() {
               return {
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   count++;
                   done();
                 }
@@ -213,7 +213,7 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.animated', function() {
               return {
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   count++;
                   done();
                 }
@@ -240,7 +240,7 @@ describe("ngAnimate", function() {
             $provide.value('$rootElement', rootElm);
             $animateProvider.register('.capture-animation', function() {
               return {
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   captured = true;
                   done();
                 }
@@ -299,9 +299,9 @@ describe("ngAnimate", function() {
                 };
               }
               return {
-                leave : animate,
-                addClass : animate,
-                removeClass : animate
+                leave: animate,
+                addClass: animate,
+                removeClass: animate
               };
             });
             $animateProvider.register('.custom-long-delay', function($timeout) {
@@ -313,9 +313,9 @@ describe("ngAnimate", function() {
                 };
               }
               return {
-                leave : animate,
-                addClass : animate,
-                removeClass : animate
+                leave: animate,
+                addClass: animate,
+                removeClass: animate
               };
             });
             $animateProvider.register('.setup-memo', function() {
@@ -509,18 +509,18 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.classify', function() {
               return {
-                beforeAddClass : fallback,
-                addClass : fallback,
-                beforeRemoveClass : fallback,
-                removeClass : fallback,
+                beforeAddClass: fallback,
+                addClass: fallback,
+                beforeRemoveClass: fallback,
+                removeClass: fallback,
 
-                beforeSetClass : function(element, add, remove, done) {
+                beforeSetClass: function(element, add, remove, done) {
                   count++;
                   expect(add).toBe('yes');
                   expect(remove).toBe('no');
                   done();
                 },
-                setClass : function(element, add, remove, done) {
+                setClass: function(element, add, remove, done) {
                   count++;
                   expect(add).toBe('yes');
                   expect(remove).toBe('no');
@@ -548,18 +548,18 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.classify', function() {
               return {
-                beforeAddClass : fallback,
-                addClass : fallback,
-                beforeRemoveClass : fallback,
-                removeClass : fallback,
+                beforeAddClass: fallback,
+                addClass: fallback,
+                beforeRemoveClass: fallback,
+                removeClass: fallback,
 
-                beforeSetClass : function(element, add, remove, done) {
+                beforeSetClass: function(element, add, remove, done) {
                   count++;
                   expect(add).toBe('yes');
                   expect(remove).toBe('no');
                   done();
                 },
-                setClass : function(element, add, remove, done) {
+                setClass: function(element, add, remove, done) {
                   count++;
                   expect(add).toBe('yes');
                   expect(remove).toBe('no');
@@ -587,22 +587,22 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.classify', function() {
               return {
-                beforeAddClass : function(element, className, done) {
+                beforeAddClass: function(element, className, done) {
                   count++;
                   expect(className).toBe('yes');
                   done();
                 },
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   count++;
                   expect(className).toBe('yes');
                   done();
                 },
-                beforeRemoveClass : function(element, className, done) {
+                beforeRemoveClass: function(element, className, done) {
                   count++;
                   expect(className).toBe('no');
                   done();
                 },
-                removeClass : function(element, className, done) {
+                removeClass: function(element, className, done) {
                   count++;
                   expect(className).toBe('no');
                   done();
@@ -693,12 +693,12 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.track-me', function() {
               return {
-                enter       : track('enter'),
-                leave       : track('leave'),
-                move        : track('move'),
-                addClass    : track('addClass'),
-                removeClass : track('removeClass'),
-                setClass    : track('setClass')
+                enter: track('enter'),
+                leave: track('leave'),
+                move: track('move'),
+                addClass: track('addClass'),
+                removeClass: track('removeClass'),
+                setClass: track('setClass')
               };
 
               function track(type) {
@@ -897,11 +897,11 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.hide', function() {
               return {
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   addClassDone = done;
                   return addClassDoneSpy;
                 },
-                removeClass : function(element, className, done) {
+                removeClass: function(element, className, done) {
                   removeClassDone = done;
                   return removeClassDoneSpy;
                 }
@@ -962,7 +962,7 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.capture', function() {
               return {
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   capture = true;
                   done();
                 }
@@ -1073,12 +1073,12 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.capture', function() {
               return {
-                enter : proxyAnimation,
-                leave : proxyAnimation,
-                move : proxyAnimation,
-                addClass : proxyAnimation,
-                removeClass : proxyAnimation,
-                setClass : proxyAnimation
+                enter: proxyAnimation,
+                leave: proxyAnimation,
+                move: proxyAnimation,
+                addClass: proxyAnimation,
+                removeClass: proxyAnimation,
+                setClass: proxyAnimation
               };
             });
           });
@@ -1167,7 +1167,7 @@ describe("ngAnimate", function() {
         element = $compile('<div class="fake-animation"></div>')($rootScope);
 
         $animate.enter(element, $rootElement, null, {
-          to : {borderColor: 'red'}
+          to: {borderColor: 'red'}
         });
 
         $rootScope.$digest();
@@ -1201,13 +1201,13 @@ describe("ngAnimate", function() {
             //CSS animation handler
             $animateProvider.register('', function() {
               return {
-                leave : function() { log.push('css'); }
+                leave: function() { log.push('css'); }
               };
             });
             //custom JS animation handler
             $animateProvider.register('.js-animation', function() {
               return {
-                leave : function() { log.push('js'); }
+                leave: function() { log.push('js'); }
               };
             });
           });
@@ -1297,7 +1297,7 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
             if ($sniffer.transitions) {
               $animate.triggerReflow();
-              browserTrigger(element,'animationend', { timeStamp : Date.now() + 20000, elapsedTime: 10 });
+              browserTrigger(element,'animationend', { timeStamp: Date.now() + 20000, elapsedTime: 10 });
             }
             expect(element).toBeShown();
           }));
@@ -1550,8 +1550,8 @@ describe("ngAnimate", function() {
               'animation-delay:0.1s;');
 
             var styles = {
-              from : { left : '50px' },
-              to : { left : '100px' }
+              from: { left: '50px' },
+              to: { left: '100px' }
             };
             var container = $compile(html('<div></div>'))($rootScope);
 
@@ -1999,8 +1999,8 @@ describe("ngAnimate", function() {
               'transition-delay:0.1s;');
 
             var styles = {
-              from : { left : '155px' },
-              to : { left : '255px' }
+              from: { left: '155px' },
+              to: { left: '255px' }
             };
             var container = $compile(html('<div></div>'))($rootScope);
 
@@ -2470,14 +2470,14 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.custom', function($timeout) {
               return {
-                removeClass : function(element, className, done) {
+                removeClass: function(element, className, done) {
                   $timeout(done, 2000);
                 }
               };
             });
             $animateProvider.register('.other', function($timeout) {
               return {
-                enter : function(element, done) {
+                enter: function(element, done) {
                   $timeout(done, 10000);
                 }
               };
@@ -2804,12 +2804,12 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.capture', function() {
               return {
-                enter : capture('enter'),
-                leave : capture('leave'),
-                move : capture('move'),
-                addClass : capture('addClass'),
-                removeClass : capture('removeClass'),
-                setClass : capture('setClass')
+                enter: capture('enter'),
+                leave: capture('leave'),
+                move: capture('move'),
+                addClass: capture('addClass'),
+                removeClass: capture('removeClass'),
+                setClass: capture('setClass')
               };
 
               function capture(event) {
@@ -2889,11 +2889,11 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.klassy', function($timeout) {
               return {
-                addClass : function(element, className, done) {
+                addClass: function(element, className, done) {
                   captured = 'addClass-' + className;
                   $timeout(done, 500, false);
                 },
-                removeClass : function(element, className, done) {
+                removeClass: function(element, className, done) {
                   captured = 'removeClass-' + className;
                   $timeout(done, 3000, false);
                 }
@@ -3388,7 +3388,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.custom', function($timeout) {
           return {
-            enter : function(element, done) {
+            enter: function(element, done) {
               element.addClass('i-was-animated');
               $timeout(done, 10, false);
             }
@@ -3423,7 +3423,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.usurper', function($timeout) {
           return {
-            leave : function(element, done) {
+            leave: function(element, done) {
               element.addClass('this-is-mine-now');
               $timeout(done, 55, false);
             }
@@ -3597,7 +3597,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.three', function() {
           return {
-            move : function(element, done) {
+            move: function(element, done) {
               fn = function() {
                 done();
               };
@@ -3634,11 +3634,11 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.classify', function() {
           return {
-            removeClass : function(element, className, done) {
+            removeClass: function(element, className, done) {
               element.data('classify','remove-' + className);
               done();
             },
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               element.data('classify','add-' + className);
               done();
             }
@@ -3736,14 +3736,14 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animan', function() {
           return {
-            enter : function(element, done) {
+            enter: function(element, done) {
               animationState = 'enter';
               step = done;
               return function(cancelled) {
                 animationState = cancelled ? 'enter-cancel' : animationState;
               };
             },
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               animationState = 'addClass';
               step = done;
               return function(cancelled) {
@@ -3811,14 +3811,14 @@ describe("ngAnimate", function() {
       var log = [];
       var track = function(name) {
         return function() {
-          log.push({ name : name, className : arguments[1] });
+          log.push({ name: name, className: arguments[1] });
         };
       };
       module(function($animateProvider) {
         $animateProvider.register('.animate', function() {
           return {
-            addClass    : track('addClass'),
-            removeClass : track('removeClass')
+            addClass: track('addClass'),
+            removeClass: track('removeClass')
           };
         });
       });
@@ -3839,8 +3839,8 @@ describe("ngAnimate", function() {
         $animate.triggerReflow();
 
         expect(log.length).toBe(2);
-        expect(log[0]).toEqual({ name : 'addClass', className : 'one four five' });
-        expect(log[1]).toEqual({ name : 'removeClass', className : 'three' });
+        expect(log[0]).toEqual({ name: 'addClass', className: 'one four five' });
+        expect(log[1]).toEqual({ name: 'removeClass', className: 'three' });
       });
     });
 
@@ -3848,14 +3848,14 @@ describe("ngAnimate", function() {
       var log = [];
       var track = function(name) {
         return function() {
-          log.push({ name : name, className : arguments[1] });
+          log.push({ name: name, className: arguments[1] });
         };
       };
       module(function($animateProvider) {
         $animateProvider.register('.animate', function() {
           return {
-            addClass    : track('addClass'),
-            removeClass : track('removeClass')
+            addClass: track('addClass'),
+            removeClass: track('removeClass')
           };
         });
       });
@@ -3894,7 +3894,7 @@ describe("ngAnimate", function() {
         $animate.triggerReflow();
         expect(log.length).toBe(1);
         $animate.triggerCallbacks();
-        expect(log[0]).toEqual({ name : 'removeClass', className : 'four' });
+        expect(log[0]).toEqual({ name: 'removeClass', className: 'four' });
 
         $animate.addClass(element, 'five');
         $animate.addClass(element, 'five');
@@ -3905,7 +3905,7 @@ describe("ngAnimate", function() {
         $animate.triggerReflow();
         expect(log.length).toBe(2);
         $animate.triggerCallbacks();
-        expect(log[1]).toEqual({ name : 'addClass', className : 'five' });
+        expect(log[1]).toEqual({ name: 'addClass', className: 'five' });
       });
     });
 
@@ -3914,9 +3914,9 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
           return {
-            beforeAddClass : spy,
-            beforeRemoveClass : spy,
-            beforeSetClass : spy
+            beforeAddClass: spy,
+            beforeRemoveClass: spy,
+            beforeSetClass: spy
           };
         });
       });
@@ -3962,9 +3962,9 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
           return {
-            beforeAddClass : spy,
-            beforeRemoveClass : spy,
-            beforeSetClass : spy
+            beforeAddClass: spy,
+            beforeRemoveClass: spy,
+            beforeSetClass: spy
           };
         });
       });
@@ -4009,7 +4009,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animate', function() {
           return {
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               continueAnimation = done;
             }
           };
@@ -4046,8 +4046,8 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animate', function() {
           return {
-            addClass : spy,
-            removeClass : spy
+            addClass: spy,
+            removeClass: spy
           };
         });
       });
@@ -4104,7 +4104,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.child', function() {
           return {
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               childAnimated = true;
               done();
             }
@@ -4112,7 +4112,7 @@ describe("ngAnimate", function() {
         });
         $animateProvider.register('.container', function() {
           return {
-            leave : function(element, done) {
+            leave: function(element, done) {
               containerAnimated = true;
               done();
             }
@@ -4158,11 +4158,11 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
           return {
-            enter : ani('enter'),
-            leave : ani('leave'),
-            move : ani('move'),
-            addClass : ani('addClass'),
-            removeClass : ani('removeClass')
+            enter: ani('enter'),
+            leave: ani('leave'),
+            move: ani('move'),
+            addClass: ani('addClass'),
+            removeClass: ani('removeClass')
           };
 
           function ani(type) {
@@ -4244,7 +4244,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
           return {
-            enter : function(element, done) {
+            enter: function(element, done) {
               intercepted = true;
               done();
             }
@@ -4271,7 +4271,7 @@ describe("ngAnimate", function() {
       var count = 0;
       module(function($provide) {
         $provide.value('$window', {
-          document : jqLite(window.document),
+          document: jqLite(window.document),
           getComputedStyle: function(element) {
             count++;
             return window.getComputedStyle(element);
@@ -4488,14 +4488,14 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.on', function() {
           return {
-            beforeAddClass : function(element, className, done) {
+            beforeAddClass: function(element, className, done) {
               currentAnimation = 'addClass';
               currentFn = done;
               return function(cancelled) {
                 currentAnimation = cancelled ? null : currentAnimation;
               };
             },
-            beforeRemoveClass : function(element, className, done) {
+            beforeRemoveClass: function(element, className, done) {
               currentAnimation = 'removeClass';
               currentFn = done;
               return function(cancelled) {
@@ -4532,7 +4532,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animated', function() {
           return {
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               count++;
               done();
             }
@@ -4562,11 +4562,11 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.class-animate', function() {
           return {
-            beforeAddClass : function(element, className, done) {
+            beforeAddClass: function(element, className, done) {
               steps.push('before');
               done();
             },
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               steps.push('after');
               done();
             }
@@ -4594,11 +4594,11 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.animate', function() {
           return {
-            beforeLeave : function(element, done) {
+            beforeLeave: function(element, done) {
               steps.push('before');
               done();
             },
-            leave : function(element, done) {
+            leave: function(element, done) {
               parentID = element.parent().attr('id');
               steps.push('after');
               done();
@@ -4731,12 +4731,12 @@ describe("ngAnimate", function() {
         $animateProvider.register('.special', function($sniffer, $window) {
           var prop = $sniffer.vendorPrefix == 'Webkit' ? 'WebkitAnimation' : 'animation';
           return {
-            beforeAddClass : function(element, className, done) {
+            beforeAddClass: function(element, className, done) {
               expect(element[0].style[prop]).not.toContain('none');
               expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('1s');
               done();
             },
-            addClass : function(element, className, done) {
+            addClass: function(element, className, done) {
               expect(element[0].style[prop]).not.toContain('none');
               expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('1s');
               done();
@@ -4797,11 +4797,11 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.special', function() {
           return {
-            enter : function(element, done) {
+            enter: function(element, done) {
               capturedAnimation = 'enter';
               done();
             },
-            leave : function(element, done) {
+            leave: function(element, done) {
               capturedAnimation = 'leave';
               done();
             }
@@ -4851,8 +4851,8 @@ describe("ngAnimate", function() {
         $animateProvider.classNameFilter(/prefixed-animation/);
         $animateProvider.register('.capture', function() {
           return {
-            enter : buildFn('enter'),
-            leave : buildFn('leave')
+            enter: buildFn('enter'),
+            leave: buildFn('leave')
           };
 
           function buildFn(key) {
@@ -4902,8 +4902,8 @@ describe("ngAnimate", function() {
         $animateProvider.classNameFilter(/prefixed-animation/);
         $animateProvider.register('.capture', function() {
           return {
-            enter : buildFn('enter'),
-            leave : buildFn('leave')
+            enter: buildFn('enter'),
+            leave: buildFn('leave')
           };
 
           function buildFn(key) {
@@ -5080,7 +5080,7 @@ describe("ngAnimate", function() {
       module(function($animateProvider) {
         $animateProvider.register('.going', function() {
           return {
-            leave : function() {
+            leave: function() {
               //left blank so it hangs
               stat = 'leaving';
               return function(cancelled) {
@@ -5160,10 +5160,10 @@ describe("ngAnimate", function() {
 
         function mockAnimate() {
           return {
-            enter : spy,
-            leave : spy,
-            addClass : spy,
-            removeClass : spy
+            enter: spy,
+            leave: spy,
+            addClass: spy,
+            removeClass: spy
           };
         }
       }));
@@ -5258,11 +5258,11 @@ describe("ngAnimate", function() {
           module(function($animateProvider) {
             $animateProvider.register('.inner', function() {
               return {
-                beforeAddClass : function(element, className, done) {
+                beforeAddClass: function(element, className, done) {
                   spy();
                   done();
                 },
-                beforeRemoveClass : function(element, className, done) {
+                beforeRemoveClass: function(element, className, done) {
                   spy();
                   done();
                 }

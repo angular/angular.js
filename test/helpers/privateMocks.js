@@ -11,7 +11,7 @@ function createMockStyleSheet(doc, wind) {
   var ss = doc.styleSheets[doc.styleSheets.length - 1];
 
   return {
-    addRule : function(selector, styles) {
+    addRule: function(selector, styles) {
       try {
         ss.insertRule(selector + '{ ' + styles + '}', 0);
       }
@@ -23,7 +23,7 @@ function createMockStyleSheet(doc, wind) {
       }
     },
 
-    destroy : function() {
+    destroy: function() {
       head.removeChild(node);
     }
   };
