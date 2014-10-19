@@ -52,10 +52,8 @@
   escapeForRegexp: true,
   isElement: true,
   makeMap: true,
-  size: true,
   includes: true,
   arrayRemove: true,
-  isLeafNode: true,
   copy: true,
   shallowCopy: true,
   equals: true,
@@ -636,34 +634,6 @@ function nodeName_(element) {
   return lowercase(element.nodeName || element[0].nodeName);
 }
 
-
-/**
- * @description
- * Determines the number of elements in an array, the number of properties an object has, or
- * the length of a string.
- *
- * Note: This function is used to augment the Object type in Angular expressions. See
- * {@link angular.Object} for more information about Angular arrays.
- *
- * @param {Object|Array|string} obj Object, array, or string to inspect.
- * @param {boolean} [ownPropsOnly=false] Count only "own" properties in an object
- * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
- */
-function size(obj, ownPropsOnly) {
-  var count = 0, key;
-
-  if (isArray(obj) || isString(obj)) {
-    return obj.length;
-  } else if (isObject(obj)) {
-    for (key in obj)
-      if (!ownPropsOnly || obj.hasOwnProperty(key))
-        count++;
-  }
-
-  return count;
-}
-
-
 function includes(array, obj) {
   return Array.prototype.indexOf.call(array, obj) != -1;
 }
@@ -673,18 +643,6 @@ function arrayRemove(array, value) {
   if (index >=0)
     array.splice(index, 1);
   return value;
-}
-
-function isLeafNode (node) {
-  if (node) {
-    switch (nodeName_(node)) {
-    case "option":
-    case "pre":
-    case "title":
-      return true;
-    }
-  }
-  return false;
 }
 
 /**
