@@ -44,6 +44,12 @@ describe('Filter: filter', function() {
     expect(filter(items, {name: 'b'})[0].name).toBe('abc');
   });
 
+  it('should filter an object', function() {
+    var items = {0: {name: 'a'}, 1: {name: 'abc', done: true}};
+    expect(filter(items, function(i) {return i.done;}).length).toBe(1);
+    expect(filter(items, 'a').length).toBe(2);
+  });
+
   it('should take function as predicate', function() {
     var items = [{name: 'a'}, {name: 'abc', done: true}];
     expect(filter(items, function(i) {return i.done;}).length).toBe(1);

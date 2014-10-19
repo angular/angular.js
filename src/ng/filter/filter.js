@@ -6,11 +6,11 @@
  * @kind function
  *
  * @description
- * Selects a subset of items from `array` and returns it as a new array.
+ * Selects a subset of items from `collection` and returns it as a new array.
  *
- * @param {Array} array The source array.
+ * @param {Array|Object} collection The source collection.
  * @param {string|Object|function()} expression The predicate to be used for selecting items from
- *   `array`.
+ *   `collection`.
  *
  *   Can be one of:
  *
@@ -19,7 +19,7 @@
  *     will be returned. The predicate can be negated by prefixing the string with `!`.
  *
  *   - `Object`: A pattern object can be used to filter specific properties on objects contained
- *     by `array`. For example `{name:"M", phone:"1"}` predicate will return an array of items
+ *     by `collection`. For example `{name:"M", phone:"1"}` predicate will return an array of items
  *     which have property `name` containing "M" and property `phone` containing "1". A special
  *     property name `$` can be used (as in `{$:"text"}`) to accept a match against any
  *     property of the object. That's equivalent to the simple substring match with a `string`
@@ -28,12 +28,12 @@
  *     not containing "M".
  *
  *   - `function(value, index)`: A predicate function can be used to write arbitrary filters. The
- *     function is called for each element of `array`. The final result is an array of those
- *     elements that the predicate returned true for.
+ *     function is called for each element of `collection`. The final result is an array of those
+ *     values that the predicate returned true for.
  *
  * @param {function(actual, expected)|true|undefined} comparator Comparator which is used in
  *     determining if the expected value (from the filter expression) and actual value (from
- *     the object in the array) should be considered a match.
+ *     the object in the collection) should be considered a match.
  *
  *   Can be one of:
  *
@@ -116,8 +116,8 @@
    </example>
  */
 function filterFilter() {
-  return function(array, expression, comparator) {
-    if (!isArray(array)) return array;
+  return function(collection, expression, comparator) {
+    if (!isObject(collection)) return collection;
 
     var comparatorType = typeof(comparator),
         predicates = [];
@@ -208,15 +208,14 @@ function filterFilter() {
         predicates.push(expression);
         break;
       default:
-        return array;
+        return collection;
     }
     var filtered = [];
-    for ( var j = 0; j < array.length; j++) {
-      var value = array[j];
-      if (predicates.check(value, j)) {
+    forEach(collection, function(value, index) {
+      if (predicates.check(value, index)) {
         filtered.push(value);
       }
-    }
+    }, this);
     return filtered;
   };
 }
