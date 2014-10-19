@@ -1329,7 +1329,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.3",
+      "version": "0.10.5",
       "dependencies": {
         "catharsis": {
           "version": "0.7.1"

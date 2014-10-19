@@ -157,6 +157,8 @@ module.exports = new Package('angularjs', [
     jqueryDeployment
   ];
 
+  generateProtractorTestsProcessor.basePath = 'build/docs/';
+
   generateExamplesProcessor.deployments = [
     debugDeployment,
     defaultDeployment,
