@@ -361,7 +361,7 @@ describe('ngMessages', function() {
       $rootScope.$apply(function() {
         $rootScope.data = {
           'a': 1,
-          'b': 2,
+          'b': 2
         };
       });
 
