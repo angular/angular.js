@@ -3,9 +3,9 @@
   "disallowMixedSpacesAndTabs": true,
   "disallowMultipleLineStrings": true,
   "disallowNewlineBeforeBlockStatements": true,
-  "disallowTrailingWhitespace": true,
+  "disallowSpaceAfterObjectKeys": true,
   "disallowSpaceAfterPrefixUnaryOperators": ["!"],
   "disallowSpaceBeforeBinaryOperators": [","],
-  "disallowSpaceAfterObjectKeys": true,
+  "disallowTrailingWhitespace": true,
   "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"]
 }
