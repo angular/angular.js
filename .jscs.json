@@ -6,6 +6,7 @@
   "disallowSpaceAfterObjectKeys": true,
   "disallowSpaceAfterPrefixUnaryOperators": ["!"],
   "disallowSpaceBeforeBinaryOperators": [","],
+  "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,
   "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"]
 }
