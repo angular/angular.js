@@ -63,8 +63,8 @@ gulp.task('build-app', function() {
 gulp.task('assets', ['bower'], function() {
   var JS_EXT = /\.js$/;
   return merge(
-    gulp.src([assets])
-      .pipe(gulp.dest(outputFolder)),
+    gulp.src(['img/**/*']).pipe(gulp.dest(outputFolder + '/img')),
+    gulp.src([assets]).pipe(gulp.dest(outputFolder)),
     gulp.src([assets])
       .pipe(foreach(function(stream, file) {
         if (JS_EXT.test(file.relative)) {
