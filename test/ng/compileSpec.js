@@ -295,7 +295,7 @@ describe('$compile', function() {
         directive('svgCircleUrl', valueFn({
           replace: true,
           templateUrl: 'template.html',
-          templateNamespace: 'SVG',
+          templateNamespace: 'SVG'
         }));
       });
       inject(function($compile, $rootScope, $httpBackend) {
@@ -1058,7 +1058,7 @@ describe('$compile', function() {
                 template: '<msup><mn>{{pow}}</mn></msup>',
                 templateNamespace: 'MATH',
                 scope: {
-                  pow: '@pow',
+                  pow: '@pow'
                 },
                 link: function(scope, elm, attr, ctrl, transclude) {
                   transclude(function(node) {
@@ -1972,7 +1972,7 @@ describe('$compile', function() {
                 templateUrl: 'template.html',
                 templateNamespace: 'math',
                 scope: {
-                  pow: '@pow',
+                  pow: '@pow'
                 },
                 link: function(scope, elm, attr, ctrl, transclude) {
                   transclude(function(node) {
@@ -3185,7 +3185,7 @@ describe('$compile', function() {
             'toString': '&',
 
             // Spidermonkey extension, may be obsolete in the future
-            'watch': '=',
+            'watch': '='
           }
         }));
       });

@@ -52,7 +52,7 @@ describe('module loader', function() {
       ['$provide', 'value', ['k', 'v'] ],
       ['$filterProvider', 'register', ['f', 'ff'] ],
       ['$compileProvider', 'directive', ['d', 'dd'] ],
-      ['$controllerProvider', 'register', ['ctrl', 'ccc']],
+      ['$controllerProvider', 'register', ['ctrl', 'ccc']]
     ]);
     expect(myModule._configBlocks).toEqual([
       ['$injector', 'invoke', ['config'] ],

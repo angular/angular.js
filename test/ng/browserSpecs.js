@@ -54,7 +54,7 @@ function MockWindow(options) {
     replace: function(url) {
       locationHref = url;
       mockWindow.history.state = null;
-    },
+    }
   };
 
   this.history = {
@@ -81,7 +81,7 @@ function MockWindow(options) {
         ieState = value;
       },
       configurable: true,
-      enumerable: true,
+      enumerable: true
     });
   }
 }

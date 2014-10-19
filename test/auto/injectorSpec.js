@@ -960,7 +960,7 @@ describe('strict-di injector', function() {
   it('should throw if magic annotation is used by provider', function() {
     module(function($provide) {
       $provide.provider({
-        '$test': function() { this.$get = function($rootScope) { return $rootScope; }; },
+        '$test': function() { this.$get = function($rootScope) { return $rootScope; }; }
       });
     });
     inject(function($injector) {
@@ -974,7 +974,7 @@ describe('strict-di injector', function() {
   it('should throw if magic annotation is used by factory', function() {
     module(function($provide) {
       $provide.factory({
-        '$test': function($rootScope) { return function() {}; },
+        '$test': function($rootScope) { return function() {}; }
       });
     });
     inject(function($injector) {

@@ -1988,7 +1988,7 @@ describe('select', function() {
         createSelect({
           'name': 'select',
           'ng-model': 'value',
-          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']'
         });
 
         scope.form.select.$parsers.push(function(value) {
@@ -2005,7 +2005,7 @@ describe('select', function() {
         createSelect({
           'name': 'select',
           'ng-model': 'value',
-          'ng-options': 'item for item in [\'the first\', \'the second\', \'the third\', \'the fourth\']',
+          'ng-options': 'item for item in [\'the first\', \'the second\', \'the third\', \'the fourth\']'
         });
 
         scope.form.select.$formatters.push(function(value) {
@@ -2022,7 +2022,7 @@ describe('select', function() {
         createSelect({
           'name': 'select',
           'ng-model': 'value',
-          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']'
         });
 
         scope.form.select.$validators.fail = function() {
@@ -2040,7 +2040,7 @@ describe('select', function() {
         createSelect({
           'name': 'select',
           'ng-model': 'value',
-          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']'
         });
 
         scope.form.select.$validators.pass = function() {
@@ -2059,7 +2059,7 @@ describe('select', function() {
         createSelect({
           'name': 'select',
           'ng-model': 'value',
-          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']'
         });
 
         scope.form.select.$asyncValidators.async = function() {
@@ -2085,7 +2085,7 @@ describe('select', function() {
         createSelect({
           'name': 'select',
           'ng-model': 'value',
-          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']',
+          'ng-options': 'item for item in [\'first\', \'second\', \'third\', \'fourth\']'
         });
 
         scope.form.select.$asyncValidators.async = function() {
