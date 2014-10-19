@@ -392,34 +392,6 @@ describe('angular', function() {
     });
   });
 
-  describe('size', function() {
-    it('should return the number of items in an array', function() {
-      expect(size([])).toBe(0);
-      expect(size(['a', 'b', 'c'])).toBe(3);
-    });
-
-    it('should return the number of properties of an object', function() {
-      expect(size({})).toBe(0);
-      expect(size({a:1, b:'a', c:noop})).toBe(3);
-    });
-
-    it('should return the number of own properties of an object', function() {
-      var obj = inherit({protoProp: 'c', protoFn: noop}, {a:1, b:'a', c:noop});
-
-      expect(size(obj)).toBe(5);
-      expect(size(obj, true)).toBe(3);
-    });
-
-    it('should return the string length', function() {
-      expect(size('')).toBe(0);
-      expect(size('abc')).toBe(3);
-    });
-
-    it('should not rely on length property of an object to determine its size', function() {
-      expect(size({length:99})).toBe(1);
-    });
-  });
-
 
   describe('csp', function() {
     var originalFunction;
