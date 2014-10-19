@@ -484,6 +484,7 @@ describe('NgModelController', function() {
 
   });
 
+
   describe('validations pipeline', function() {
 
     it('should perform validations when $validate() is called', function() {
@@ -2073,6 +2074,21 @@ describe('input', function() {
     scope.$apply('value = 0');
 
     expect(inputElm.val()).toBe('0');
+  });
+
+  it('should render the $viewValue when $modelValue is empty', function() {
+    compileInput('<input type="text" ng-model="value" />');
+
+    var ctrl = inputElm.controller('ngModel');
+
+    ctrl.$modelValue = null;
+
+    expect(ctrl.$isEmpty(ctrl.$modelValue)).toBe(true);
+
+    ctrl.$viewValue = 'abc';
+    ctrl.$render();
+
+    expect(inputElm.val()).toBe('abc');
   });
 
 
