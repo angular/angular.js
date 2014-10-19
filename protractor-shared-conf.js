@@ -3,7 +3,7 @@
 exports.config = {
   allScriptsTimeout: 11000,
 
-  baseUrl: 'http://localhost:8000/build/docs/',
+  baseUrl: 'http://localhost:8000/',
 
   framework: 'jasmine',
 
