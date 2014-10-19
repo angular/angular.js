@@ -66,7 +66,7 @@ The **normalization** process is as follows:
 1. Strip `x-` and `data-` from the front of the element/attributes.
 2. Convert the `:`, `-`, or `_`-delimited name to `camelCase`.
 
-Here are some equivalent examples of elements that match `ngBind`:
+Here are some equivalent examples of elements which can match an attribute directive, in this case `ngBind`:
 
 <example module="docsBindExample">
   <file name="script.js">
@@ -83,6 +83,7 @@ Here are some equivalent examples of elements that match `ngBind`:
       <span ng_bind="name"></span> <br/>
       <span data-ng-bind="name"></span> <br/>
       <span x-ng-bind="name"></span> <br/>
+      <span data:ng:bind="name"></span> <br/>
     </div>
   </file>
   <file name="protractor.js" type="protractor">
