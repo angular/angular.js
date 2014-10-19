@@ -66,15 +66,9 @@ The **normalization** process is as follows:
 1. Strip `x-` and `data-` from the front of the element/attributes.
 2. Convert the `:`, `-`, or `_`-delimited name to `camelCase`.
 
-Here are some equivalent examples of elements that match `ngBind`:
+For example, the following forms are all equivalent and match the {@link ngBind} directive:
 
 <example module="docsBindExample">
-  <file name="script.js">
-    angular.module('docsBindExample', [])
-      .controller('Controller', ['$scope', function($scope) {
-        $scope.name = 'Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)';
-      }]);
-  </file>
   <file name="index.html">
     <div ng-controller="Controller">
       Hello <input ng-model='name'> <hr/>
@@ -84,6 +78,12 @@ Here are some equivalent examples of elements that match `ngBind`:
       <span data-ng-bind="name"></span> <br/>
       <span x-ng-bind="name"></span> <br/>
     </div>
+  </file>
+  <file name="script.js">
+    angular.module('docsBindExample', [])
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.name = 'Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)';
+      }]);
   </file>
   <file name="protractor.js" type="protractor">
     it('should show off bindings', function() {
