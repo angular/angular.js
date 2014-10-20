@@ -332,7 +332,7 @@ reload to the original link.
 Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url
 base in the head of your main html file (`<base href="/my-base">`) unless `html5Mode.requireBase` is
 set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
-that, relative urls will always be resolved to this base url, event if the initial url of the
+that, relative urls will always be resolved to this base url, even if the initial url of the
 document was different.
 
 There is one exception: Links that only contain a hash fragment (e.g. `<a href="#target">`)
