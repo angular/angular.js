@@ -171,7 +171,7 @@ we require, so in these cases, we can add a callback to process the server respo
 
 ## Test
 
-Because we're now using the {@link ngResource ngResource} module, it's necessary to also need to
+Because we're now using the {@link ngResource ngResource} module, it's necessary to
 update the Karma config file with angular-resource so the new tests will pass.
 
 __`test/karma.conf.js`:__
