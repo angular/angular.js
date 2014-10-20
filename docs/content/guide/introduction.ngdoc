@@ -33,7 +33,7 @@ browser new syntax through a construct we call directives. Examples include:
   * Data binding, as in `{{}}`.
   * DOM control structures for repeating/hiding DOM fragments.
   * Support for forms and form validation.
-  * Attaching code-behind to DOM elements.
+  * Attaching new behavior to DOM elements, such as DOM event handling.
   * Grouping of HTML into reusable components.
 
 
