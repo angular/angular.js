@@ -46,32 +46,28 @@ function generateFixture(test, query) {
     }
   });
 
-  if (jquery && (!('jquery' in query) || (/^(0|no|false|off|n)$/i).test(query.jquery))) {
-    $(jquery).remove();
-  } else if ('jquery' in query) {
-    if ((/^(0|no|false|off|n)$/i).test(query.jquery)) {
-      if (jquery) {
-        $(jquery).remove();
-      }
-    } else {
-      if (!jquery) {
-        jquery = $.load('<script></script>')('script')[0];
-        if (firstScript) {
-          $(firstScript).before(jquery);
+  if (!('jquery' in query) || (/^(0|no|false|off|n)$/i).test(query.jquery)) {
+    if (jquery) {
+      $(jquery).remove();
+    }
+  } else {
+    if (!jquery) {
+      jquery = $.load('<script></script>')('script')[0];
+      if (firstScript) {
+        $(firstScript).before(jquery);
+      } else {
+        var head = $$('head');
+        if (head.length) {
+          head.prepend(jquery);
         } else {
-          var head = $$('head');
-          if (head.length) {
-            head.prepend(jquery);
-          } else {
-            $$.root().first().before(jquery);
-          }
+          $$.root().first().before(jquery);
         }
       }
-      if (!/^\d+\.\d+.*$/.test(query.jquery)) {
-        $(jquery).attr('src', '/bower_components/jquery/dist/jquery.js');
-      } else {
-        $(jquery).attr('src', '//ajax.googleapis.com/ajax/libs/jquery/' + query.jquery + '/jquery.js');
-      }
+    }
+    if (!/^\d+\.\d+.*$/.test(query.jquery)) {
+      $(jquery).attr('src', '/bower_components/jquery/dist/jquery.js');
+    } else {
+      $(jquery).attr('src', '//ajax.googleapis.com/ajax/libs/jquery/' + query.jquery + '/jquery.js');
     }
   }
 
