@@ -876,7 +876,7 @@ angular.mock.dump = function(object) {
   function serializeScope(scope, offset) {
     offset = offset ||  '  ';
     var log = [offset + 'Scope(' + scope.$id + '): {'];
-    for ( var key in scope ) {
+    for (var key in scope) {
       if (Object.prototype.hasOwnProperty.call(scope, key) && !key.match(/^(\$|this)/)) {
         log.push('  ' + key + ': ' + angular.toJson(scope[key]));
       }

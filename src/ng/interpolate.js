@@ -195,8 +195,8 @@ function $InterpolateProvider() {
           expressionPositions = [];
 
       while (index < textLength) {
-        if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
-             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
+        if (((startIndex = text.indexOf(startSymbol, index)) != -1) &&
+             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1)) {
           if (index !== startIndex) {
             concat.push(unescapeText(text.substring(index, startIndex)));
           }

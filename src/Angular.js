@@ -283,7 +283,7 @@ function sortedKeys(obj) {
 
 function forEachSorted(obj, iterator, context) {
   var keys = sortedKeys(obj);
-  for ( var i = 0; i < keys.length; i++) {
+  for (var i = 0; i < keys.length; i++) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
   return keys;
@@ -624,7 +624,7 @@ function isElement(node) {
  */
 function makeMap(str) {
   var obj = {}, items = str.split(","), i;
-  for ( i = 0; i < items.length; i++ )
+  for (i = 0; i < items.length; i++)
     obj[ items[i] ] = true;
   return obj;
 }
@@ -742,7 +742,7 @@ function copy(source, destination, stackSource, stackDest) {
     var result;
     if (isArray(source)) {
       destination.length = 0;
-      for ( var i = 0; i < source.length; i++) {
+      for (var i = 0; i < source.length; i++) {
         result = copy(source[i], null, stackSource, stackDest);
         if (isObject(source[i])) {
           stackSource.push(source[i]);
@@ -759,7 +759,7 @@ function copy(source, destination, stackSource, stackDest) {
           delete destination[key];
         });
       }
-      for ( var key in source) {
+      for (var key in source) {
         if (source.hasOwnProperty(key)) {
           result = copy(source[key], null, stackSource, stackDest);
           if (isObject(source[key])) {
@@ -1047,10 +1047,10 @@ function tryDecodeURIComponent(value) {
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
   forEach((keyValue || "").split('&'), function(keyValue) {
-    if ( keyValue ) {
+    if (keyValue) {
       key_value = keyValue.replace(/\+/g,'%20').split('=');
       key = tryDecodeURIComponent(key_value[0]);
-      if ( isDefined(key) ) {
+      if (isDefined(key)) {
         var val = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
         if (!hasOwnProperty.call(obj, key)) {
           obj[key] = val;

@@ -5384,13 +5384,13 @@ describe("ngAnimate", function() {
         var removeClassImmediately = $originalAnimate.$$removeClassImmediately;
         addClass = spyOn($originalAnimate, '$$addClassImmediately').andCallFake(function(element, classes) {
           var names = classes;
-          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join( ' ');
+          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('addClass(' + names + ')');
           return addClassImmediately.call($originalAnimate, element, classes);
         });
         removeClass = spyOn($originalAnimate, '$$removeClassImmediately').andCallFake(function(element, classes) {
           var names = classes;
-          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join( ' ');
+          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('removeClass(' + names + ')');
           return removeClassImmediately.call($originalAnimate, element, classes);
         });

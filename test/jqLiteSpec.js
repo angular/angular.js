@@ -1199,7 +1199,7 @@ describe('jqLite', function() {
     });
 
     // Only run this test for jqLite and not normal jQuery
-    if ( _jqLiteMode ) {
+    if (_jqLiteMode) {
       it('should throw an error if eventData or a selector is passed', function() {
         var elm = jqLite(a),
             anObj = {},
@@ -1484,7 +1484,7 @@ describe('jqLite', function() {
 
 
     // Only run this test for jqLite and not normal jQuery
-    if ( _jqLiteMode ) {
+    if (_jqLiteMode) {
       it('should throw an error if a selector is passed', function () {
         var aElem = jqLite(a);
         aElem.on('click', noop);

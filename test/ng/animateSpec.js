@@ -200,13 +200,13 @@ describe("$animate", function() {
         var removeClassImmediately = $animate.$$removeClassImmediately;
         addClass = spyOn($animate, '$$addClassImmediately').andCallFake(function(element, classes) {
           var names = classes;
-          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join( ' ');
+          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('addClass(' + names + ')');
           return addClassImmediately.call($animate, element, classes);
         });
         removeClass = spyOn($animate, '$$removeClassImmediately').andCallFake(function(element, classes) {
           var names = classes;
-          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join( ' ');
+          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('removeClass(' + names + ')');
           return removeClassImmediately.call($animate, element, classes);
         });

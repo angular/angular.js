@@ -128,7 +128,7 @@ function orderByFilter($parse){
           descending = predicate.charAt(0) == '-';
           predicate = predicate.substring(1);
         }
-        if ( predicate === '' ) {
+        if (predicate === '') {
           // Effectively no predicate was passed so we compare identity
           return reverseComparator(function(a, b) {
             return compare(a, b);
@@ -147,11 +147,11 @@ function orderByFilter($parse){
       }, descending);
     });
     var arrayCopy = [];
-    for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
+    for (var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
     return arrayCopy.sort(reverseComparator(comparator, reverseOrder));
 
     function comparator(o1, o2){
-      for ( var i = 0; i < sortPredicate.length; i++) {
+      for (var i = 0; i < sortPredicate.length; i++) {
         var comp = sortPredicate[i](o1, o2);
         if (comp !== 0) return comp;
       }
