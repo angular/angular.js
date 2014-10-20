@@ -463,12 +463,12 @@ describe('parser', function() {
         });
 
       it('should evaluate function call without arguments', function() {
-        scope['const'] =  function(a,b){return 123;};
+        scope['const'] =  function(a, b){return 123;};
         expect(scope.$eval("const()")).toEqual(123);
       });
 
       it('should evaluate function call with arguments', function() {
-        scope.add =  function(a,b) {
+        scope.add =  function(a, b) {
           return a+b;
         };
         expect(scope.$eval("add(1,2)")).toEqual(3);
