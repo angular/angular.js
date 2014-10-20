@@ -167,7 +167,7 @@ function filterFilter() {
             case 'object':
               return comparator(obj, text);
             default:
-              for ( var objKey in obj) {
+              for (var objKey in obj) {
                 if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
                   return true;
                 }
@@ -176,7 +176,7 @@ function filterFilter() {
           }
           return false;
         case 'array':
-          for ( var i = 0; i < obj.length; i++) {
+          for (var i = 0; i < obj.length; i++) {
             if (search(obj[i], text)) {
               return true;
             }
@@ -211,7 +211,7 @@ function filterFilter() {
         return array;
     }
     var filtered = [];
-    for ( var j = 0; j < array.length; j++) {
+    for (var j = 0; j < array.length; j++) {
       var value = array[j];
       if (predicates.check(value, j)) {
         filtered.push(value);

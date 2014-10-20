@@ -34,7 +34,7 @@ describe('$controller', function() {
           scope = {},
           ctrl;
 
-      $controllerProvider.register({FooCtrl: FooCtrl, BarCtrl: BarCtrl} );
+      $controllerProvider.register({FooCtrl: FooCtrl, BarCtrl: BarCtrl});
 
       ctrl = $controller('FooCtrl', {$scope: scope});
       expect(scope.foo).toBe('foo');

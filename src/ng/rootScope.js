@@ -81,7 +81,7 @@ function $RootScopeProvider(){
   };
 
   this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
-      function( $injector,   $exceptionHandler,   $parse,   $browser) {
+      function($injector, $exceptionHandler, $parse, $browser) {
 
     /**
      * @ngdoc type

@@ -1010,9 +1010,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           for (var i=0; i<nbrUrisWith2parts; i++) {
             var innerIdx = i*2;
             // sanitize the uri
-            result += $$sanitizeUri(trim( rawUris[innerIdx]), true);
+            result += $$sanitizeUri(trim(rawUris[innerIdx]), true);
             // add the descriptor
-            result += ( " " + trim(rawUris[innerIdx+1]));
+            result += (" " + trim(rawUris[innerIdx+1]));
           }
 
           // split the last item into uri and descriptor
@@ -1291,7 +1291,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               childScope = scope;
             }
 
-            if ( nodeLinkFn.transcludeOnThisElement ) {
+            if (nodeLinkFn.transcludeOnThisElement) {
               childBoundTranscludeFn = createBoundTranscludeFn(
                   scope, nodeLinkFn.transclude, parentBoundTranscludeFn,
                   nodeLinkFn.elementTranscludeOnThisElement);
@@ -1855,7 +1855,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   isolateBindingContext[scopeName] = value;
                 });
                 attrs.$$observers[attrName].$$scope = scope;
-                if ( attrs[attrName] ) {
+                if (attrs[attrName]) {
                   // If the attribute has been provided then we trigger an interpolation to ensure
                   // the value is there for use in the link fn
                   isolateBindingContext[scopeName] = $interpolate(attrs[attrName])(scope);
@@ -2000,7 +2000,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             i = 0, ii = directives.length; i<ii; i++) {
           try {
             directive = directives[i];
-            if ( (maxPriority === undefined || maxPriority > directive.priority) &&
+            if ((maxPriority === undefined || maxPriority > directive.priority) &&
                  directive.restrict.indexOf(location) != -1) {
               if (startAttrName) {
                 directive = inherit(directive, {$$start: startAttrName, $$end: endAttrName});

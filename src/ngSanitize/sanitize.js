@@ -231,7 +231,7 @@ function makeMap(str) {
  * @param {string} html string
  * @param {object} handler
  */
-function htmlParser( html, handler ) {
+function htmlParser(html, handler) {
   if (typeof html !== 'string') {
     if (html === null || typeof html === 'undefined') {
       html = '';
@@ -242,50 +242,50 @@ function htmlParser( html, handler ) {
   var index, chars, match, stack = [], last = html, text;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
-  while ( html ) {
+  while (html) {
     text = '';
     chars = true;
 
     // Make sure we're not in a script or style element
-    if ( !stack.last() || !specialElements[ stack.last() ] ) {
+    if (!stack.last() || !specialElements[ stack.last() ]) {
 
       // Comment
-      if ( html.indexOf("<!--") === 0 ) {
+      if (html.indexOf("<!--") === 0) {
         // comments containing -- are not allowed unless they terminate the comment
         index = html.indexOf("--", 4);
 
-        if ( index >= 0 && html.lastIndexOf("-->", index) === index) {
-          if (handler.comment) handler.comment( html.substring( 4, index ) );
-          html = html.substring( index + 3 );
+        if (index >= 0 && html.lastIndexOf("-->", index) === index) {
+          if (handler.comment) handler.comment(html.substring(4, index));
+          html = html.substring(index + 3);
           chars = false;
         }
       // DOCTYPE
-      } else if ( DOCTYPE_REGEXP.test(html) ) {
-        match = html.match( DOCTYPE_REGEXP );
+      } else if (DOCTYPE_REGEXP.test(html)) {
+        match = html.match(DOCTYPE_REGEXP);
 
-        if ( match ) {
-          html = html.replace( match[0], '');
+        if (match) {
+          html = html.replace(match[0], '');
           chars = false;
         }
       // end tag
-      } else if ( BEGING_END_TAGE_REGEXP.test(html) ) {
-        match = html.match( END_TAG_REGEXP );
+      } else if (BEGING_END_TAGE_REGEXP.test(html)) {
+        match = html.match(END_TAG_REGEXP);
 
-        if ( match ) {
-          html = html.substring( match[0].length );
-          match[0].replace( END_TAG_REGEXP, parseEndTag );
+        if (match) {
+          html = html.substring(match[0].length);
+          match[0].replace(END_TAG_REGEXP, parseEndTag);
           chars = false;
         }
 
       // start tag
-      } else if ( BEGIN_TAG_REGEXP.test(html) ) {
-        match = html.match( START_TAG_REGEXP );
+      } else if (BEGIN_TAG_REGEXP.test(html)) {
+        match = html.match(START_TAG_REGEXP);
 
-        if ( match ) {
+        if (match) {
           // We only have a valid start-tag if there is a '>'.
-          if ( match[4] ) {
-            html = html.substring( match[0].length );
-            match[0].replace( START_TAG_REGEXP, parseStartTag );
+          if (match[4]) {
+            html = html.substring(match[0].length);
+            match[0].replace(START_TAG_REGEXP, parseStartTag);
           }
           chars = false;
         } else {
@@ -295,13 +295,13 @@ function htmlParser( html, handler ) {
         }
       }
 
-      if ( chars ) {
+      if (chars) {
         index = html.indexOf("<");
 
-        text += index < 0 ? html : html.substring( 0, index );
-        html = index < 0 ? "" : html.substring( index );
+        text += index < 0 ? html : html.substring(0, index);
+        html = index < 0 ? "" : html.substring(index);
 
-        if (handler.chars) handler.chars( decodeEntities(text) );
+        if (handler.chars) handler.chars(decodeEntities(text));
       }
 
     } else {
@@ -309,15 +309,15 @@ function htmlParser( html, handler ) {
         function(all, text){
           text = text.replace(COMMENT_REGEXP, "$1").replace(CDATA_REGEXP, "$1");
 
-          if (handler.chars) handler.chars( decodeEntities(text) );
+          if (handler.chars) handler.chars(decodeEntities(text));
 
           return "";
       });
 
-      parseEndTag( "", stack.last() );
+      parseEndTag("", stack.last());
     }
 
-    if ( html == last ) {
+    if (html == last) {
       throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block " +
                                         "of html: {0}", html);
     }
@@ -327,22 +327,22 @@ function htmlParser( html, handler ) {
   // Clean up any remaining tags
   parseEndTag();
 
-  function parseStartTag( tag, tagName, rest, unary ) {
+  function parseStartTag(tag, tagName, rest, unary) {
     tagName = angular.lowercase(tagName);
-    if ( blockElements[ tagName ] ) {
-      while ( stack.last() && inlineElements[ stack.last() ] ) {
-        parseEndTag( "", stack.last() );
+    if (blockElements[ tagName ]) {
+      while (stack.last() && inlineElements[ stack.last() ]) {
+        parseEndTag("", stack.last());
       }
     }
 
-    if ( optionalEndTagElements[ tagName ] && stack.last() == tagName ) {
-      parseEndTag( "", tagName );
+    if (optionalEndTagElements[ tagName ] && stack.last() == tagName) {
+      parseEndTag("", tagName);
     }
 
     unary = voidElements[ tagName ] || !!unary;
 
-    if ( !unary )
-      stack.push( tagName );
+    if (!unary)
+      stack.push(tagName);
 
     var attrs = {};
 
@@ -355,22 +355,22 @@ function htmlParser( html, handler ) {
 
         attrs[name] = decodeEntities(value);
     });
-    if (handler.start) handler.start( tagName, attrs, unary );
+    if (handler.start) handler.start(tagName, attrs, unary);
   }
 
-  function parseEndTag( tag, tagName ) {
+  function parseEndTag(tag, tagName) {
     var pos = 0, i;
     tagName = angular.lowercase(tagName);
-    if ( tagName )
+    if (tagName)
       // Find the closest opened tag of the same type
-      for ( pos = stack.length - 1; pos >= 0; pos-- )
-        if ( stack[ pos ] == tagName )
+      for (pos = stack.length - 1; pos >= 0; pos--)
+        if (stack[ pos ] == tagName)
           break;
 
-    if ( pos >= 0 ) {
+    if (pos >= 0) {
       // Close all the open elements, up the stack
-      for ( i = stack.length - 1; i >= pos; i-- )
-        if (handler.end) handler.end( stack[ i ] );
+      for (i = stack.length - 1; i >= pos; i--)
+        if (handler.end) handler.end(stack[ i ]);
 
       // Remove the open elements from the stack
       stack.length = pos;

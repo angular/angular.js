@@ -539,7 +539,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             key = index;
             if (keyName) {
               key = keys[index];
-              if ( key.charAt(0) === '$' ) continue;
+              if (key.charAt(0) === '$') continue;
             }
             value = values[key];
 

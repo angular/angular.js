@@ -243,7 +243,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       var e = touches[0].originalEvent || touches[0];
       var x = e.clientX;
       var y = e.clientY;
-      var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
+      var dist = Math.sqrt(Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2));
 
       if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
         // Call preventGhostClick so the clickbuster will catch the corresponding click.
