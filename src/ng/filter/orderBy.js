@@ -130,19 +130,19 @@ function orderByFilter($parse){
         }
         if ( predicate === '' ) {
           // Effectively no predicate was passed so we compare identity
-          return reverseComparator(function(a,b) {
+          return reverseComparator(function(a, b) {
             return compare(a, b);
           }, descending);
         }
         get = $parse(predicate);
         if (get.constant) {
           var key = get();
-          return reverseComparator(function(a,b) {
+          return reverseComparator(function(a, b) {
             return compare(a[key], b[key]);
           }, descending);
         }
       }
-      return reverseComparator(function(a,b){
+      return reverseComparator(function(a, b){
         return compare(get(a),get(b));
       }, descending);
     });
@@ -159,7 +159,7 @@ function orderByFilter($parse){
     }
     function reverseComparator(comp, descending) {
       return descending
-          ? function(a,b){return comp(b,a);}
+          ? function(a, b){return comp(b,a);}
           : comp;
     }
     function compare(v1, v2){

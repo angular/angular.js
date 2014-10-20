@@ -17,7 +17,7 @@ describe('$interval', function() {
           fn: fn,
           id: nextRepeatId
         });
-        repeatFns.sort(function(a,b){ return a.nextTime - b.nextTime;});
+        repeatFns.sort(function(a, b){ return a.nextTime - b.nextTime;});
 
         return nextRepeatId++;
       },
@@ -43,7 +43,7 @@ describe('$interval', function() {
           var task = repeatFns[0];
           task.fn();
           task.nextTime += task.delay;
-          repeatFns.sort(function(a,b){ return a.nextTime - b.nextTime;});
+          repeatFns.sort(function(a, b){ return a.nextTime - b.nextTime;});
         }
         return millis;
       }
