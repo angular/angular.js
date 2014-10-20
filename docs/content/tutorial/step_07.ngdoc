@@ -9,7 +9,7 @@
 In this step, you will learn how to create a layout template and how to build an app that has
 multiple views by adding routing, using an Angular module called 'ngRoute'.
 
-* When you now navigate to `app/index.html`, you are redirected to `app/index.html#/phones`
+* When you now navigate to `app/index.html`, you are redirected to `app/index.html/#/phones`
   and the phone list appears in the browser.
 * When you click on a phone link the url changes to one specific to that phone and the stub of a
   phone detail page is displayed.
