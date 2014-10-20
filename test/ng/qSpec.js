@@ -171,7 +171,7 @@ describe('q', function() {
           try {
             task();
           } catch (e) {
-            if ( mockNextTick.logExceptions ) {
+            if (mockNextTick.logExceptions) {
               dump('exception in mockNextTick:', e, e.name, e.message, task);
             }
           }

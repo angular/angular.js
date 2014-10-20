@@ -137,14 +137,14 @@ function LocationHtml5Url(appBase, basePrefix) {
     var appUrl, prevAppUrl;
     var rewrittenUrl;
 
-    if ( (appUrl = beginsWith(appBase, url)) !== undefined ) {
+    if ((appUrl = beginsWith(appBase, url)) !== undefined) {
       prevAppUrl = appUrl;
-      if ( (appUrl = beginsWith(basePrefix, appUrl)) !== undefined ) {
+      if ((appUrl = beginsWith(basePrefix, appUrl)) !== undefined) {
         rewrittenUrl = appBaseNoFile + (beginsWith('/', appUrl) || appUrl);
       } else {
         rewrittenUrl = appBase + prevAppUrl;
       }
-    } else if ( (appUrl = beginsWith(appBaseNoFile, url)) !== undefined ) {
+    } else if ((appUrl = beginsWith(appBaseNoFile, url)) !== undefined) {
       rewrittenUrl = appBaseNoFile + appUrl;
     } else if (appBaseNoFile == url + '/') {
       rewrittenUrl = appBaseNoFile;
@@ -278,11 +278,11 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
     var rewrittenUrl;
     var appUrl;
 
-    if ( appBase == stripHash(url) ) {
+    if (appBase == stripHash(url)) {
       rewrittenUrl = url;
-    } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
+    } else if ((appUrl = beginsWith(appBaseNoFile, url))) {
       rewrittenUrl = appBase + hashPrefix + appUrl;
-    } else if ( appBaseNoFile === url + '/') {
+    } else if (appBaseNoFile === url + '/') {
       rewrittenUrl = appBaseNoFile;
     }
     if (rewrittenUrl) {
@@ -728,7 +728,7 @@ function $LocationProvider(){
    */
 
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
-      function( $rootScope,   $browser,   $sniffer,   $rootElement) {
+      function($rootScope, $browser, $sniffer, $rootElement) {
     var $location,
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''

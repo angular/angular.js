@@ -18,7 +18,7 @@ beforeEach(function() {
 
       this.message = function() {
         return "Expected to have " + presentClasses +
-          (absentClasses ? (" and not have " + absentClasses + "" ) : "") +
+          (absentClasses ? (" and not have " + absentClasses + "") : "") +
           " but had " + element[0].className + ".";
       };
       return present && !absent;

@@ -2830,14 +2830,14 @@ describe('$compile', function() {
         directive('testLink', valueFn({
           templateUrl: 'test-link.html',
           link: function(scope, element, attrs) {
-            attrs.$observe( 'testLink', function ( val ) {
+            attrs.$observe('testLink', function (val) {
               scope.testAttr = val;
             });
           }
         }));
       });
       inject(function($compile, $rootScope, $templateCache) {
-        $templateCache.put('test-link.html', '{{testAttr}}' );
+        $templateCache.put('test-link.html', '{{testAttr}}');
         element = $compile('<div test-link="{{1+2}}"></div>')($rootScope);
         $rootScope.$apply();
         expect(element.text()).toBe('3');
@@ -6002,7 +6002,7 @@ describe('$compile', function() {
         'http://example.com/image1.jpg?x=a2x,b 1x,http://example.com/ima,ge2.jpg 2x':'http://example.com/image1.jpg?x=a2x,b 1x,http://example.com/ima,ge2.jpg 2x'
       };
 
-      forEach( testSet, function( ref, url) {
+      forEach(testSet, function(ref, url) {
         $rootScope.testUrl = url;
         $rootScope.$digest();
         expect(element.attr('srcset')).toEqual(ref);

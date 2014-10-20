@@ -195,7 +195,7 @@ describe('injector', function() {
 
 
     it('should handle no arg functions with spaces in the arguments list', function() {
-      function fn( ) {}
+      function fn() {}
       expect(annotate(fn)).toEqual([]);
       expect(fn.$inject).toEqual([]);
     });
@@ -264,7 +264,7 @@ describe('injector', function() {
           $provide.value('a', a);
         },
         angular.extend(function(p, serviceA) {
-          p.value('b', serviceA.$get() + 'B' );
+          p.value('b', serviceA.$get() + 'B');
         }, {$inject:['$provide', 'aProvider']}),
         ['$provide', 'bProvider', function(p, serviceB) {
           p.value('c', serviceB.$get() + 'C');

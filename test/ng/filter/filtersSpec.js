@@ -291,7 +291,7 @@ describe('filters', function() {
 
     it('should format timezones correctly (as per ISO_8601)', function() {
       //Note: TzDate's first argument is offset, _not_ timezone.
-      var utc       = new angular.mock.TzDate( 0, '2010-09-03T12:05:08.000Z');
+      var utc       = new angular.mock.TzDate(0, '2010-09-03T12:05:08.000Z');
       var eastOfUTC = new angular.mock.TzDate(-5, '2010-09-03T12:05:08.000Z');
       var westOfUTC = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z');
       var eastOfUTCPartial = new angular.mock.TzDate(-5.5, '2010-09-03T12:05:08.000Z');

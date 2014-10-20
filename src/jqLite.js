@@ -358,7 +358,7 @@ function jqLiteData(element, key, value) {
 function jqLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
-      indexOf( " " + selector + " " ) > -1);
+      indexOf(" " + selector + " ") > -1);
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
@@ -417,7 +417,7 @@ function jqLiteAddNodes(root, elements) {
 
 
 function jqLiteController(element, name) {
-  return jqLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
+  return jqLiteInheritedData(element, '$' + (name || 'ngController') + 'Controller');
 }
 
 function jqLiteInheritedData(element, name, value) {
@@ -802,7 +802,7 @@ forEach({
             var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
-            if ( !related || (related !== target && !target.contains(related)) ){
+            if (!related || (related !== target && !target.contains(related))){
               handle(event, type);
             }
           });

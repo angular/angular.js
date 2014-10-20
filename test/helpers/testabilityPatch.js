@@ -87,7 +87,7 @@ afterEach(function() {
 
   function forEachSorted(obj, iterator, context) {
     var keys = sortedKeys(obj);
-    for ( var i = 0; i < keys.length; i++) {
+    for (var i = 0; i < keys.length; i++) {
       iterator.call(context, obj[keys[i]], keys[i]);
     }
     return keys;
@@ -123,7 +123,7 @@ function dealoc(obj) {
     // element.contentWindow.document) and both properties are null for IFRAMES that aren't attached
     // to a document.
     var children = element[0].childNodes || [];
-    for ( var i = 0; i < children.length; i++) {
+    for (var i = 0; i < children.length; i++) {
       cleanup(angular.element(children[i]));
     }
   }
