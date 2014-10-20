@@ -1210,6 +1210,72 @@
     "canonical-path": {
       "version": "0.0.2"
     },
+    "cheerio": {
+      "version": "0.17.0",
+      "dependencies": {
+        "CSSselect": {
+          "version": "0.4.1",
+          "dependencies": {
+            "CSSwhat": {
+              "version": "0.4.7"
+            },
+            "domutils": {
+              "version": "1.4.3",
+              "dependencies": {
+                "domelementtype": {
+                  "version": "1.1.1"
+                }
+              }
+            }
+          }
+        },
+        "entities": {
+          "version": "1.1.1"
+        },
+        "htmlparser2": {
+          "version": "3.7.3",
+          "dependencies": {
+            "domhandler": {
+              "version": "2.2.0"
+            },
+            "domutils": {
+              "version": "1.5.0"
+            },
+            "domelementtype": {
+              "version": "1.1.1"
+            },
+            "readable-stream": {
+              "version": "1.1.13",
+              "dependencies": {
+                "core-util-is": {
+                  "version": "1.0.1"
+                },
+                "isarray": {
+                  "version": "0.0.1"
+                },
+                "string_decoder": {
+                  "version": "0.10.31"
+                },
+                "inherits": {
+                  "version": "2.0.1"
+                }
+              }
+            },
+            "entities": {
+              "version": "1.0.0"
+            }
+          }
+        },
+        "dom-serializer": {
+          "version": "0.0.1",
+          "dependencies": {
+            "domelementtype": {
+              "version": "1.1.1"
+            }
+          }
+        }
+      }
+    },
     "dgeni": {
       "version": "0.4.1",
       "dependencies": {
