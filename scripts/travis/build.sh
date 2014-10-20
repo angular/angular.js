@@ -15,13 +15,13 @@ elif [ $JOB = "e2e" ]; then
     export USE_JQUERY=1
   fi
 
-  grunt test:travis-e2e
-
   export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
   if [ $TEST_TARGET = "jquery" ]; then
     TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
   fi
-  grunt test:travis-protractor-docs --specs "$TARGET_SPECS"
+
+  export TARGET_SPECS="test/e2e/tests/**/*.js,$TARGET_SPECS"
+  grunt test:travis-protractor --specs "$TARGET_SPECS"
 else
   echo "Unknown job type. Please set JOB=unit or JOB=e2e-*."
 fi

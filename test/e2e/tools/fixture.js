@@ -40,6 +40,8 @@ function generateFixture(test, query) {
       var s = util.stat(path.resolve(build, src));
       if (s && s.isFile()) {
         $(script).attr('src', rewriteAngularSrc(src, query));
+      } else {
+        $(script).attr('src', util.rewriteTestFile(test, src));
       }
     }
   });

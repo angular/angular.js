@@ -28,7 +28,7 @@ function rewriteTestFile(testname, testfile) {
   while (testfile[i] === '/') ++i;
   testfile = testfile.slice(i);
   var s = stat(path.resolve(tests, testname, testfile));
-  if (s && s.isFile() || s.isDirectory()) {
+  if (s && (s.isFile() || s.isDirectory())) {
     return ['/test/e2e/fixtures', testname, testfile].join('/');
   }
   return false;

@@ -4,6 +4,7 @@ exports.config = {
   allScriptsTimeout: 11000,
 
   specs: [
+    'test/e2e/tests/**/*.js',
     'build/docs/ptore2e/**/*.js',
     'docs/app/e2e/*.scenario.js'
   ],
