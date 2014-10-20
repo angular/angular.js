@@ -931,6 +931,19 @@ function testFlags(validity, flags) {
   return false;
 }
 
+function multipleBasedInputType(ctrl, attr) {
+  var removeParserFormatter = angular.noop;
+  attr.$observe('multiple', function(val) {
+    if (val) {
+      removeParserFormatter = addListParserFormatter(ctrl, ', ', true);
+    } else {
+      removeParserFormatter();
+    }
+    ctrl.$$multiple = !!val;
+    ctrl.$validate();
+  });
+}
+
 function stringBasedInputType(ctrl) {
   ctrl.$formatters.push(function(value) {
     return ctrl.$isEmpty(value) ? value : value.toString();
@@ -1274,6 +1287,7 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // in browsers, i.e. we can always read out input.value even if it is not valid!
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
   stringBasedInputType(ctrl);
+  multipleBasedInputType(ctrl, attr);
 
   ctrl.$$parserName = 'email';
   ctrl.$validators.email = function(value) {
@@ -1985,11 +1999,21 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       validationDone(false);
       return;
     }
-    if (!processSyncValidators()) {
+    if (!runProcessor(processSyncValidators)) {
       validationDone(false);
       return;
     }
-    processAsyncValidators();
+    runProcessor(processAsyncValidators);
+
+    function runProcessor(fn) {
+      if (ctrl.$$multiple && isArray(modelValue)) {
+        return modelValue.reduce(function (result, value) {
+          return result && fn(value);
+        }, true);
+      } else {
+        return fn(modelValue);
+      }
+    }
 
     function processParseErrors(parseValid) {
       var errorKey = ctrl.$$parserName || 'parse';
@@ -2010,7 +2034,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       return true;
     }
 
-    function processSyncValidators() {
+    function processSyncValidators(modelValue) {
       var syncValidatorsValid = true;
       forEach(ctrl.$validators, function(validator, name) {
         var result = validator(modelValue, viewValue);
@@ -2026,7 +2050,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       return true;
     }
 
-    function processAsyncValidators() {
+    function processAsyncValidators(modelValue) {
       var validatorPromises = [];
       var allValid = true;
       forEach(ctrl.$asyncValidators, function(validator, name) {
@@ -2652,6 +2676,40 @@ var minlengthDirective = function() {
   };
 };
 
+function addListParserFormatter(ctrl, separator, trimValues) {
+  var trimmedSeparator = trimValues ? trim(separator) : separator;
+
+  var parse = function(viewValue) {
+    // If the viewValue is invalid (say required but empty) it will be `undefined`
+    if (isUndefined(viewValue)) return;
+
+    var list = [];
+
+    if (viewValue) {
+      forEach(viewValue.split(trimmedSeparator), function(value) {
+        if (value) list.push(trimValues ? trim(value) : value);
+      });
+    }
+
+    return list;
+  };
+
+  var format = function(value) {
+    if (isArray(value)) {
+      return value.join(separator);
+    }
+
+    return undefined;
+  };
+
+  ctrl.$parsers.push(parse);
+  ctrl.$formatters.push(format);
+
+  return function() {
+    arrayRemove(ctrl.$parsers, parse);
+    arrayRemove(ctrl.$formatters, format);
+  };
+}
 
 /**
  * @ngdoc directive
@@ -2745,31 +2803,7 @@ var ngListDirective = function() {
       // to access the ngList attribute, which doesn't pre-trim the attribute
       var ngList = element.attr(attr.$attr.ngList) || ', ';
       var trimValues = attr.ngTrim !== 'false';
-      var separator = trimValues ? trim(ngList) : ngList;
-
-      var parse = function(viewValue) {
-        // If the viewValue is invalid (say required but empty) it will be `undefined`
-        if (isUndefined(viewValue)) return;
-
-        var list = [];
-
-        if (viewValue) {
-          forEach(viewValue.split(separator), function(value) {
-            if (value) list.push(trimValues ? trim(value) : value);
-          });
-        }
-
-        return list;
-      };
-
-      ctrl.$parsers.push(parse);
-      ctrl.$formatters.push(function(value) {
-        if (isArray(value)) {
-          return value.join(ngList);
-        }
-
-        return undefined;
-      });
+      addListParserFormatter(ctrl, ngList, trimValues);
 
       // Override the standard $isEmpty because an empty array means the input is empty.
       ctrl.$isEmpty = function(value) {
