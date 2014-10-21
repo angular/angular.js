@@ -1,0 +1,7 @@
+@ngdoc error
+@name $location:wrgcase
+@fullName base path in $location has to be used with correct case
+@description
+
+While using {@link ng.$location `$location`}, you need to make sure, that the base href of an URL handed to the application
+matches the case of the base path of the application.

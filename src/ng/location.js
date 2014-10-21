@@ -59,6 +59,8 @@ function parseAppUrl(relativeUrl, locationObj, appBase) {
 function beginsWith(begin, whole) {
   if (whole.indexOf(begin) === 0) {
     return whole.substr(begin.length);
+  } else if (whole.toLowerCase().indexOf(begin.toLowerCase()) === 0) {
+      throw $locationMinErr('wrgcase', 'Invalid url "{0}", base path is expected case sensitive', whole);
   }
 }
 
