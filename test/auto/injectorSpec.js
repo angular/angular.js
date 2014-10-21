@@ -162,6 +162,7 @@ describe('injector', function() {
 
     it('should create $inject', function() {
       var extraParans = angular.noop;
+      // jscs:disable disallowSpacesInFunctionDeclaration
       // keep the multi-line to make sure we can handle it
       function $f_n0 /*
           */(
@@ -172,6 +173,7 @@ describe('injector', function() {
                  */
           _c,
           /* {some type} */ d) { extraParans();}
+      // jscs:enable disallowSpacesInFunctionDeclaration
       expect(annotate($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
     });

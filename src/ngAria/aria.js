@@ -139,11 +139,11 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
 }])
 .directive('ngModel', ['$aria', function($aria) {
 
-  function shouldAttachAttr (attr, elem) {
+  function shouldAttachAttr(attr, elem) {
     return $aria.config(attr) && !elem.attr(attr);
   }
 
-  function getShape (attr, elem) {
+  function getShape(attr, elem) {
     var type = attr.type,
         role = attr.role;
 
