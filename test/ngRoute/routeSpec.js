@@ -366,7 +366,7 @@ describe('$route', function() {
 
 
   it('should chain whens and otherwise', function() {
-    module(function($routeProvider){
+    module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'foo.html'}).
           otherwise({templateUrl: 'bar.html'}).
           when('/baz', {templateUrl: 'baz.html'});
@@ -432,7 +432,7 @@ describe('$route', function() {
     it('should handle unknown routes with "otherwise" route definition', function() {
       function NotFoundCtrl() {}
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/foo', {templateUrl: 'foo.html'});
         $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
       });
@@ -463,7 +463,7 @@ describe('$route', function() {
 
 
     it('should update $route.current and $route.next when default route is matched', function() {
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/foo', {templateUrl: 'foo.html'});
         $routeProvider.otherwise({templateUrl: '404.html'});
       });
@@ -801,7 +801,7 @@ describe('$route', function() {
 
 
   it('should match route with and without trailing slash', function() {
-    module(function($routeProvider){
+    module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'foo.html'});
       $routeProvider.when('/bar/', {templateUrl: 'bar.html'});
     });
@@ -912,7 +912,7 @@ describe('$route', function() {
         return '/custom';
       }
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id', {redirectTo: customRedirectFn});
       });
@@ -1106,7 +1106,7 @@ describe('$route', function() {
         return 'foo.html';
       }
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id', {templateUrl: customTemplateUrlFn});
       });

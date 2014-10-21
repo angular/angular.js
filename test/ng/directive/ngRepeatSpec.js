@@ -1379,7 +1379,7 @@ describe('ngRepeat animations', function() {
     };
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     body.empty();
   });
 

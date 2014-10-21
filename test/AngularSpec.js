@@ -3,7 +3,7 @@
 describe('angular', function() {
   var element;
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -579,7 +579,7 @@ describe('angular', function() {
       var args,
           log = [];
 
-      (function(){ args = arguments; }('a', 'b', 'c'));
+      (function() { args = arguments; }('a', 'b', 'c'));
 
       forEach(args, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
@@ -655,7 +655,7 @@ describe('angular', function() {
 
 
       it('should follow the ES spec when called with arguments', function() {
-        testForEachSpec(2, (function(){ return arguments; }(1,2)));
+        testForEachSpec(2, (function() { return arguments; }(1,2)));
       });
 
 
@@ -690,7 +690,7 @@ describe('angular', function() {
 
 
       it('should follow the ES spec when called with function', function() {
-        function f(){}
+        function f() {}
         f.a = 1;
         f.b = 2;
         testForEachSpec(2, f);
@@ -884,7 +884,7 @@ describe('angular', function() {
 
   describe('angular service', function() {
     it('should override services', function() {
-      module(function($provide){
+      module(function($provide) {
         $provide.value('fake', 'old');
         $provide.value('fake', 'new');
       });
@@ -894,7 +894,7 @@ describe('angular', function() {
     });
 
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
-      expect(angular.injector([function($provide){
+      expect(angular.injector([function($provide) {
         $provide.factory('svc1', function() { return 'svc1'; });
         $provide.factory('svc2', ['svc1', function(s) { return 'svc2-' + s; }]);
       }]).get('svc2')).toEqual('svc2-svc1');
@@ -971,7 +971,7 @@ describe('angular', function() {
       var compile = $compile(template);
       var templateClone = template.clone();
 
-      element = compile($rootScope, function(clone){
+      element = compile($rootScope, function(clone) {
         templateClone = clone;
       });
       $rootScope.$digest();
@@ -1039,7 +1039,7 @@ describe('angular', function() {
   });
 
   describe('bootstrap', function() {
-    it('should bootstrap app', function(){
+    it('should bootstrap app', function() {
       var element = jqLite('<div>{{1+2}}</div>');
       var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
@@ -1135,8 +1135,8 @@ describe('angular', function() {
   });
 
 
-  describe('startingElementHtml', function(){
-    it('should show starting element tag only', function(){
+  describe('startingElementHtml', function() {
+    it('should show starting element tag only', function() {
       expect(startingTag('<ng-abc x="2A"><div>text</div></ng-abc>')).
           toBe('<ng-abc x="2A">');
     });
@@ -1149,7 +1149,7 @@ describe('angular', function() {
     });
   });
 
-  describe('snake_case', function(){
+  describe('snake_case', function() {
     it('should convert to snake_case', function() {
       expect(snake_case('ABC')).toEqual('a_b_c');
       expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');

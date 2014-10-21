@@ -14,7 +14,7 @@ describe('angular.scenario.Describe', function() {
       log.text = log.text + text;
     };
     log.fn = function(text) {
-      return function(done){
+      return function(done) {
         log(text);
         (done || angular.noop)();
       };

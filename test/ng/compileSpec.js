@@ -28,7 +28,7 @@ describe('$compile', function() {
 
   var element, directive, $compile, $rootScope;
 
-  beforeEach(module(provideLog, function($provide, $compileProvider){
+  beforeEach(module(provideLog, function($provide, $compileProvider) {
     element = null;
     directive = $compileProvider.directive;
 
@@ -101,7 +101,7 @@ describe('$compile', function() {
       };
     });
 
-    directive('svgCircle', function(){
+    directive('svgCircle', function() {
       return {
         template: '<circle cx="2" cy="2" r="1"></circle>',
         templateNamespace: 'svg',
@@ -109,7 +109,7 @@ describe('$compile', function() {
       };
     });
 
-    directive('myForeignObject', function(){
+    directive('myForeignObject', function() {
       return {
         template: '<foreignObject width="100" height="100" ng-transclude></foreignObject>',
         templateNamespace: 'svg',
@@ -130,7 +130,7 @@ describe('$compile', function() {
     $compile(element)($rootScope);
   }
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -202,7 +202,7 @@ describe('$compile', function() {
       expect(box.width === 0 && box.height === 0).toBe(false);
     }
 
-    it('should handle transcluded svg elements', inject(function($compile){
+    it('should handle transcluded svg elements', inject(function($compile) {
       element = jqLite('<div><svg-container>' +
           '<circle cx="4" cy="4" r="2"></circle>' +
           '</svg-container></div>');
@@ -214,7 +214,7 @@ describe('$compile', function() {
       assertIsValidSvgCircle(circle[0]);
     }));
 
-    it('should handle custom svg elements inside svg tag', inject(function(){
+    it('should handle custom svg elements inside svg tag', inject(function() {
       element = jqLite('<div><svg width="300" height="300">' +
           '<svg-circle></svg-circle>' +
           '</svg></div>');
@@ -225,7 +225,7 @@ describe('$compile', function() {
       assertIsValidSvgCircle(circle[0]);
     }));
 
-    it('should handle transcluded custom svg elements', inject(function(){
+    it('should handle transcluded custom svg elements', inject(function() {
       element = jqLite('<div><svg-container>' +
           '<svg-circle></svg-circle>' +
           '</svg-container></div>');
@@ -237,7 +237,7 @@ describe('$compile', function() {
     }));
 
     if (supportsForeignObject()) {
-      it('should handle foreignObject', inject(function(){
+      it('should handle foreignObject', inject(function() {
         element = jqLite('<div><svg-container>' +
             '<foreignObject width="100" height="100"><div class="test" style="position:absolute;width:20px;height:20px">test</div></foreignObject>' +
             '</svg-container></div>');
@@ -250,7 +250,7 @@ describe('$compile', function() {
         expect(bounds.width === 20 && bounds.height === 20).toBe(true);
       }));
 
-      it('should handle custom svg containers that transclude to foreignObject that transclude html', inject(function(){
+      it('should handle custom svg containers that transclude to foreignObject that transclude html', inject(function() {
         element = jqLite('<div><svg-container>' +
             '<my-foreign-object><div class="test" style="width:20px;height:20px">test</div></my-foreign-object>' +
             '</svg-container></div>');
@@ -265,7 +265,7 @@ describe('$compile', function() {
 
       // NOTE: This test may be redundant.
       it('should handle custom svg containers that transclude to foreignObject'+
-         ' that transclude to custom svg containers that transclude to custom elements', inject(function(){
+         ' that transclude to custom svg containers that transclude to custom elements', inject(function() {
         element = jqLite('<div><svg-container>' +
             '<my-foreign-object><svg-container><svg-circle></svg-circle></svg-container></my-foreign-object>' +
             '</svg-container></div>');
@@ -327,7 +327,7 @@ describe('$compile', function() {
 
   describe('compile phase', function() {
 
-    it('should attach scope to the document node when it is compiled explicitly', inject(function($document){
+    it('should attach scope to the document node when it is compiled explicitly', inject(function($document) {
       $compile($document)($rootScope);
       expect($document.scope()).toBe($rootScope);
     }));
@@ -410,7 +410,7 @@ describe('$compile', function() {
 
 
     describe('multiple directives per element', function() {
-      it('should allow multiple directives per element', inject(function($compile, $rootScope, log){
+      it('should allow multiple directives per element', inject(function($compile, $rootScope, log) {
         element = $compile(
           '<span greet="angular" log="L" x-high-log="H" data-medium-log="M"></span>')
           ($rootScope);
@@ -419,7 +419,7 @@ describe('$compile', function() {
       }));
 
 
-      it('should recurse to children', inject(function($compile, $rootScope){
+      it('should recurse to children', inject(function($compile, $rootScope) {
         element = $compile('<div>0<a set="hello">1</a>2<b set="angular">3</b>4</div>')($rootScope);
         expect(element.text()).toEqual('0hello2angular4');
       }));
@@ -511,7 +511,7 @@ describe('$compile', function() {
             elementName = parts.shift();
             parts.sort();
             parts.unshift(elementName);
-            forEach(parts, function(value){
+            forEach(parts, function(value) {
               if (value.substring(0,2) !== 'ng') {
                 value = value.replace('=""', '');
                 var match = value.match(/=(.*)/);
@@ -528,14 +528,14 @@ describe('$compile', function() {
 
 
       it('should allow changing the template structure after the current node', function() {
-        module(function(){
+        module(function() {
           directive('after', valueFn({
             compile: function(element) {
               element.after('<span log>B</span>');
             }
           }));
         });
-        inject(function($compile, $rootScope, log){
+        inject(function($compile, $rootScope, log) {
           element = jqLite("<div><div after>A</div></div>");
           $compile(element)($rootScope);
           expect(element.text()).toBe('AB');
@@ -545,14 +545,14 @@ describe('$compile', function() {
 
 
       it('should allow changing the template structure after the current node inside ngRepeat', function() {
-        module(function(){
+        module(function() {
           directive('after', valueFn({
             compile: function(element) {
               element.after('<span log>B</span>');
             }
           }));
         });
-        inject(function($compile, $rootScope, log){
+        inject(function($compile, $rootScope, log) {
           element = jqLite('<div><div ng-repeat="i in [1,2]"><div after>A</div></div></div>');
           $compile(element)($rootScope);
           $rootScope.$digest();
@@ -583,7 +583,7 @@ describe('$compile', function() {
 
     describe('compiler control', function() {
       describe('priority', function() {
-        it('should honor priority', inject(function($compile, $rootScope, log){
+        it('should honor priority', inject(function($compile, $rootScope, log) {
           element = $compile(
             '<span log="L" x-high-log="H" data-medium-log="M"></span>')
             ($rootScope);
@@ -1571,7 +1571,7 @@ describe('$compile', function() {
               templateUrl: 'template.html'
             }));
           });
-          inject(function($compile, $httpBackend){
+          inject(function($compile, $httpBackend) {
             $httpBackend.whenGET('template.html').respond('<p>template.html</p>');
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
@@ -1602,7 +1602,7 @@ describe('$compile', function() {
         });
 
 
-        describe('delay compile / linking functions until after template is resolved', function(){
+        describe('delay compile / linking functions until after template is resolved', function() {
           var template;
           beforeEach(module(function() {
             function logDirective(name, priority, options) {
@@ -2255,7 +2255,7 @@ describe('$compile', function() {
 
         it('should not allow more then one isolate scope creation per element', inject(
           function($rootScope, $compile) {
-            expect(function(){
+            expect(function() {
               $compile('<div class="iscope-a; scope-b"></div>');
             }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
                 '<div class="iscope-a; scope-b">');
@@ -2274,7 +2274,7 @@ describe('$compile', function() {
             });
           });
           inject(function($compile) {
-            expect(function(){
+            expect(function() {
               $compile('<div class="iscope-a; high-priority-scope"></div>');
             }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [highPriorityScope, iscopeA] asking for new/isolated scope on: ' +
                     '<div class="iscope-a; high-priority-scope">');
@@ -2992,7 +2992,7 @@ describe('$compile', function() {
 
     describe('$set', function() {
       var attr;
-      beforeEach(function(){
+      beforeEach(function() {
         module(function() {
           directive('input', valueFn({
             restrict: 'ECA',
@@ -3698,7 +3698,7 @@ describe('$compile', function() {
     });
 
 
-    it('should update @-bindings on controller when bindToController and attribute change observed', function(){
+    it('should update @-bindings on controller when bindToController and attribute change observed', function() {
       module(function($compileProvider) {
         $compileProvider.directive('atBinding', valueFn({
           template: '<p>{{At.text}}</p>',

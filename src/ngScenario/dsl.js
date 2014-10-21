@@ -304,7 +304,7 @@ angular.scenario.dsl('select', function() {
         if (option.length) {
           select.val(value);
         } else {
-          option = select.find('option').filter(function(){
+          option = select.find('option').filter(function() {
             return _jQuery(this).text() === value;
           });
           if (!option.length) {

@@ -3,7 +3,7 @@
 describe('ngInclude', function() {
   var element;
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -650,14 +650,14 @@ describe('ngInclude animations', function() {
     };
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
   });
 
   beforeEach(module('ngAnimateMock'));
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 

@@ -4,11 +4,11 @@ describe('filters', function() {
 
   var filter;
 
-  beforeEach(inject(function($filter){
+  beforeEach(inject(function($filter) {
     filter = $filter;
   }));
 
-  it('should call the filter when evaluating expression', function(){
+  it('should call the filter when evaluating expression', function() {
     var filter = jasmine.createSpy('myFilter');
     createInjector(['ng', function($filterProvider) {
       $filterProvider.register('myFilter', valueFn(filter));
@@ -73,7 +73,7 @@ describe('filters', function() {
       expect(num).toBe('123.112');
     });
 
-    it('should format the same with string as well as numeric fractionSize', function(){
+    it('should format the same with string as well as numeric fractionSize', function() {
       var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
       num = formatNumber(123.1, pattern, ',', '.', 0);
@@ -84,7 +84,7 @@ describe('filters', function() {
       expect(num).toBe('123.100');
     });
 
-    it('should format numbers that round to zero as nonnegative', function(){
+    it('should format numbers that round to zero as nonnegative', function() {
       var num = formatNumber(-0.01, pattern, ',', '.', 1);
       expect(num).toBe('0.0');
     });

@@ -152,7 +152,7 @@ function sortedHtml(element, showNgClass) {
 
     if (node.nodeName == "#text") {
       html += node.nodeValue.
-        replace(/&(\w+[&;\W])?/g, function(match, entity){return entity?match:'&amp;';}).
+        replace(/&(\w+[&;\W])?/g, function(match, entity) {return entity?match:'&amp;';}).
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
     } else if (node.nodeName == "#comment") {
@@ -211,7 +211,7 @@ function sortedHtml(element, showNgClass) {
       if (node.style) {
         var style = [];
         if (node.style.cssText) {
-          forEach(node.style.cssText.split(';'), function(value){
+          forEach(node.style.cssText.split(';'), function(value) {
             value = trim(value);
             if (value) {
               style.push(lowercase(value));
@@ -230,7 +230,7 @@ function sortedHtml(element, showNgClass) {
         style.sort();
         var tmp = style;
         style = [];
-        forEach(tmp, function(value){
+        forEach(tmp, function(value) {
           if (!value.match(/^max[^\-]/))
             style.push(value);
         });
