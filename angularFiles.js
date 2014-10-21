@@ -106,6 +106,7 @@ var angularFiles = {
       'src/ngTouch/touch.js',
       'src/ngTouch/swipe.js',
       'src/ngTouch/directive/ngClick.js',
+      'src/ngTouch/directive/ngEventDirs.js',
       'src/ngTouch/directive/ngSwipe.js'
     ],
     'ngAria': [
