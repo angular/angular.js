@@ -43,7 +43,7 @@ describe('$templateRequest', function() {
     }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html');
   }));
 
-  it('should throw an error when the template is empty',
+  it('should not throw an error when the template is empty',
     inject(function($rootScope, $templateRequest, $httpBackend) {
 
     $httpBackend.expectGET('tpl.html').respond('');
@@ -55,7 +55,7 @@ describe('$templateRequest', function() {
     expect(function() {
       $rootScope.$digest();
       $httpBackend.flush();
-    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html');
+    }).not.toThrow();
   }));
 
   it('should keep track of how many requests are going on',

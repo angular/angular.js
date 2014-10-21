@@ -744,7 +744,7 @@ describe('$route', function() {
     });
 
 
-    it('should throw an error when a template is empty or not found', function() {
+    it('should throw an error when a template is not found', function() {
       module(function($routeProvider, $exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');
         $routeProvider.
@@ -766,7 +766,7 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain("[$compile:tpload] Failed to load template: r2.html");
+        expect($exceptionHandler.errors.length).toBe(0);
 
         $httpBackend.expectGET('r3.html').respond('abc');
         $location.path('/r3');
