@@ -499,7 +499,7 @@ function expectAriaAttrOnEachElement(elem, ariaAttr, expected) {
   });
 }
 
-function configAriaProvider (config) {
+function configAriaProvider(config) {
   return function() {
     angular.module('ariaTest', ['ngAria']).config(function($ariaProvider) {
       $ariaProvider.config(config);

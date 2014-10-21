@@ -1605,7 +1605,7 @@ describe('$compile', function() {
         describe('delay compile / linking functions until after template is resolved', function(){
           var template;
           beforeEach(module(function() {
-            function logDirective (name, priority, options) {
+            function logDirective(name, priority, options) {
               directive(name, function(log) {
                 return (extend({
                   priority: priority,
