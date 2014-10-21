@@ -1331,6 +1331,24 @@ describe('input', function() {
     expect(scope.name).toEqual('adam');
   });
 
+
+  it('should not add the property to the scope if name is unspecified', function() {
+    inputElm = jqLite('<input type="text" ng-model="name">');
+    formElm = jqLite('<form name="form"></form>');
+    formElm.append(inputElm);
+    $compile(formElm)(scope);
+
+    spyOn(scope.form, '$addControl').andCallThrough();
+    spyOn(scope.form, '$$renameControl').andCallThrough();
+
+    scope.$digest();
+
+    expect(scope.form['undefined']).toBeUndefined();
+    expect(scope.form.$addControl).not.toHaveBeenCalled();
+    expect(scope.form.$$renameControl).not.toHaveBeenCalled();
+  });
+
+
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
       $sniffer.android = false;
