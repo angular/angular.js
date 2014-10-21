@@ -400,9 +400,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         function selectionChanged() {
           scope.$apply(function() {
-            var optionGroup,
-                collection = valuesFn(scope) || [],
-                key, value, optionElement, index, groupIndex, length, groupLength, trackIndex;
+            var collection = valuesFn(scope) || [];
             var viewValue;
             if (multiple) {
               viewValue = [];

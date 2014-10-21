@@ -101,7 +101,7 @@ function classDirective(name, selector) {
       } else if (isString(classVal)) {
         return classVal.split(' ');
       } else if (isObject(classVal)) {
-        var classes = [], i = 0;
+        var classes = [];
         forEach(classVal, function(v, k) {
           if (v) {
             classes = classes.concat(k.split(' '));
