@@ -918,19 +918,6 @@ var inputType = {
   'file': noop
 };
 
-function testFlags(validity, flags) {
-  var i, flag;
-  if (flags) {
-    for (i=0; i<flags.length; ++i) {
-      flag = flags[i];
-      if (validity[flag]) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 function stringBasedInputType(ctrl) {
   ctrl.$formatters.push(function(value) {
     return ctrl.$isEmpty(value) ? value : value.toString();
@@ -943,7 +930,6 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 }
 
 function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  var validity = element.prop(VALIDITY_STATE_PROPERTY);
   var placeholder = element[0].placeholder, noevent = {};
   var type = lowercase(element[0].type);
 
