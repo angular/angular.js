@@ -1495,7 +1495,7 @@ describe('input', function() {
     }
   });
 
-  describe('"paste" and "cut" events', function() {
+  describe('legacy events', function() {
     beforeEach(function() {
       // Force browser to report a lack of an 'input' event
       $sniffer.hasEvent = function(eventName) {
@@ -1521,8 +1521,23 @@ describe('input', function() {
       expect(scope.name).toEqual('john');
     });
 
-  });
+    it('should update the model on "keypress" event', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
+      inputElm.val('cassius');
+      browserTrigger(inputElm, 'keypress');
+      $browser.defer.flush();
+      expect(scope.name).toEqual('cassius');
+    });
+
+    it('should not dirty the model on "keydown" event', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+      browserTrigger(inputElm, 'keydown');
+      $browser.defer.flush();
+      expect(inputElm).toBePristine();
+    });
+  });
 
   it('should update the model and trim the value', function() {
     compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
