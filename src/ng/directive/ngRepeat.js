@@ -59,6 +59,18 @@
  *    </ul>
  * ```
  *
+ * If you are working with objects that have something like an identifier attribute, you can track
+ * by just the identifier instead of the whole object. If you then reload your data, `ngRepeat`
+ * will not have to rebuild the DOM elements for items it had already rendered, even if the
+ * JavaScript objects in the collection have been substituted for new ones:
+ * ```html
+ *    <ul>
+ *      <li ng-repeat="model in collection track by model.id">
+ *        {{ model.name }}
+ *      </li>
+ *    </ul>
+ * ```
+ *
  * When no `track by` expression is provided, it is equivalent to tracking by the built-in
  * `$id` function, which tracks items by their identity:
  * ```html
