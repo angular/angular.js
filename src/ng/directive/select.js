@@ -38,7 +38,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  * <div class="alert alert-info">
  * **Note:** Using `select as` will bind the result of the `select as` expression to the model, but
  * the value of the `<select>` and `<option>` html elements will be either the index (for array data sources)
- * or property name (for object data sources) of the value within the collection.
+ * or property name (for object data sources) of the value within the collection. If a `track by` expression
+ * is used, the result of that expression will be set as the value of the `option` and `select` elements.
  * </div>
  *
  * **Note:** Using `select as` together with `trackexpr` is not recommended.
@@ -407,24 +408,35 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             if (multiple) {
               viewValue = [];
               forEach(selectElement.val(), function(selectedKey) {
-                viewValue.push(getViewValue(selectedKey, collection[selectedKey]));
+                viewValue.push(getViewValue(selectedKey, collection));
               });
             } else {
               var selectedKey = selectElement.val();
-              viewValue = getViewValue(selectedKey, collection[selectedKey]);
+              viewValue = getViewValue(selectedKey, collection);
             }
             ctrl.$setViewValue(viewValue);
             render();
           });
         }
 
-        function getViewValue(key, value) {
+        function getViewValue(key, collection) {
           if (key === '?') {
             return undefined;
           } else if (key === '') {
             return null;
           } else {
             var viewValueFn = selectAsFn ? selectAsFn : valueFn;
+            var result;
+            var value = collection[key];
+            if (trackFn) {
+              for (var i in collection) {
+                result = callExpression(trackFn, key, collection[i]);
+                if (result.toString() === key) {
+                  value = collection[i];
+                  break;
+                }
+              }
+            }
             return callExpression(viewValueFn, key, value);
           }
         }
@@ -558,7 +570,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             label = isDefined(label) ? label : '';
             optionGroup.push({
               // either the index into array or key from object
-              id: (keyName ? keys[index] : index),
+              id: trackFn? trackFn(scope, locals) : (keyName ? keys[index] : index),
               label: label,
               selected: selected                   // determine if we should be selected
             });
