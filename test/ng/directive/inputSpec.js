@@ -1331,6 +1331,11 @@ describe('input', function() {
     expect(scope.name).toEqual('adam');
   });
 
+  it('should not add the property to the scope if name is undefined', function() {
+    compileInput('<input type="text" ng-model="name" />');
+    expect(scope.form['undefined']).toBeUndefined();
+  });
+
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
       $sniffer.android = false;
