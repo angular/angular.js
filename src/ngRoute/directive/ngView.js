@@ -229,7 +229,7 @@ function ngViewFactory($route, $anchorScroll, $animate) {
             // function is called before linking the content, which would apply child
             // directives to non existing elements.
             var clone = $transclude(newScope, function(clone) {
-              $animate.enter(clone, null, currentElement || $element).then(function onNgViewEnter () {
+              $animate.enter(clone, null, currentElement || $element).then(function onNgViewEnter() {
                 if (angular.isDefined(autoScrollExp)
                   && (!autoScrollExp || scope.$eval(autoScrollExp))) {
                   $anchorScroll();
