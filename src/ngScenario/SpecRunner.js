@@ -120,7 +120,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
         });
         var result = $document.find(selector);
         if (selector.match(NG)) {
-          angular.forEach(['[ng-','[data-ng-','[x-ng-'], function(value, index){
+          angular.forEach(['[ng-','[data-ng-','[x-ng-'], function(value, index) {
             result = result.add(selector.replace(NG, value), $document);
           });
         }

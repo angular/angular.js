@@ -863,7 +863,7 @@ describe('$http', function() {
         $http.put('/url', 'some-data', {headers: {'Custom': 'Header'}});
       });
 
-      it('should have patch()', function(){
+      it('should have patch()', function() {
         $httpBackend.expect('PATCH', '/url', 'some-data').respond('');
         $http.patch('/url', 'some-data');
       });
@@ -904,7 +904,7 @@ describe('$http', function() {
       });
 
 
-      it('should $apply even if exception thrown during callback', inject(function($exceptionHandler){
+      it('should $apply even if exception thrown during callback', inject(function($exceptionHandler) {
         $httpBackend.when('GET').respond(200);
         callback.andThrow('error in callback');
 
@@ -1111,7 +1111,7 @@ describe('$http', function() {
           });
 
 
-          it('should not attempt to deserialize json when HEAD request', function(){
+          it('should not attempt to deserialize json when HEAD request', function() {
             //per http spec for Content-Type, HEAD request should return a Content-Type header
             //set to what the content type would have been if a get was sent
             $httpBackend.expect('HEAD', '/url').respond('', {'Content-Type': 'application/json'});
@@ -1122,7 +1122,7 @@ describe('$http', function() {
             expect(callback.mostRecentCall.args[0]).toEqual('');
           });
 
-          it('should not attempt to deserialize json for an empty response whose header contains application/json', function(){
+          it('should not attempt to deserialize json for an empty response whose header contains application/json', function() {
             //per http spec for Content-Type, HEAD request should return a Content-Type header
             //set to what the content type would have been if a get was sent
             $httpBackend.expect('GET', '/url').respond('', {'Content-Type': 'application/json'});

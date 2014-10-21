@@ -166,7 +166,7 @@ describe('ngMock', function() {
           $logProvider.debugEnabled(debugEnabled);
         }));
 
-        afterEach(inject(function($log){
+        afterEach(inject(function($log) {
           $log.reset();
         }));
 
@@ -195,7 +195,7 @@ describe('ngMock', function() {
         $log = log;
       }]));
 
-      afterEach(inject(function($log){
+      afterEach(inject(function($log) {
         $log.reset();
       }));
 
@@ -244,7 +244,7 @@ describe('ngMock', function() {
         expect($log.debug.logs).toContain(['fake log']);
       });
 
-      it('should assertEmpty', function(){
+      it('should assertEmpty', function() {
         try {
           $log.error(new Error('MyError'));
           $log.warn(new Error('MyWarn'));
@@ -264,7 +264,7 @@ describe('ngMock', function() {
         }
       });
 
-      it('should reset state', function(){
+      it('should reset state', function() {
         $log.error(new Error('MyError'));
         $log.warn(new Error('MyWarn'));
         $log.info(new Error('MyInfo'));
@@ -531,7 +531,7 @@ describe('ngMock', function() {
       log = '';
     }));
 
-    function logFn(text){
+    function logFn(text) {
       return function() {
         log += text +';';
       };
@@ -588,7 +588,7 @@ describe('ngMock', function() {
     }));
 
 
-    it('should log exceptions', module(function($exceptionHandlerProvider){
+    it('should log exceptions', module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
       var $exceptionHandler = $exceptionHandlerProvider.$get();
       $exceptionHandler('MyError');
@@ -623,7 +623,7 @@ describe('ngMock', function() {
     }));
 
 
-    it('should throw an exception when not flushed', inject(function($timeout){
+    it('should throw an exception when not flushed', inject(function($timeout) {
       $timeout(noop);
 
       var expectedError = 'Deferred tasks to flush (1): {id: 0, time: 0}';
@@ -669,11 +669,11 @@ describe('ngMock', function() {
   });
 
 
-  describe('angular.mock.dump', function(){
+  describe('angular.mock.dump', function() {
     var d = angular.mock.dump;
 
 
-    it('should serialize primitive types', function(){
+    it('should serialize primitive types', function() {
       expect(d(undefined)).toEqual('undefined');
       expect(d(1)).toEqual('1');
       expect(d(null)).toEqual('null');
@@ -681,19 +681,19 @@ describe('ngMock', function() {
     });
 
 
-    it('should serialize element', function(){
+    it('should serialize element', function() {
       var e = angular.element('<div>abc</div><span>xyz</span>');
       expect(d(e).toLowerCase()).toEqual('<div>abc</div><span>xyz</span>');
       expect(d(e[0]).toLowerCase()).toEqual('<div>abc</div>');
     });
 
-    it('should serialize scope', inject(function($rootScope){
+    it('should serialize scope', inject(function($rootScope) {
       $rootScope.obj = {abc:'123'};
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/{"abc":"123"}/);
     }));
 
-    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer){
+    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
       /* jshint -W001 */
       // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
       // things like hasOwnProperty even if it is explicitly defined on the actual object!
@@ -704,10 +704,10 @@ describe('ngMock', function() {
   });
 
 
-  describe('jasmine module and inject', function(){
+  describe('jasmine module and inject', function() {
     var log;
 
-    beforeEach(function(){
+    beforeEach(function() {
       log = '';
     });
 
@@ -816,7 +816,7 @@ describe('ngMock', function() {
       });
 
       describe('module with inject', function() {
-        beforeEach(module(function(){
+        beforeEach(module(function() {
           log += 'module;';
         }));
 

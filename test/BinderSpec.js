@@ -11,7 +11,7 @@ describe('Binder', function() {
   beforeEach(function() {
     this.compileToHtml = function (content) {
       var html;
-      inject(function($rootScope, $compile){
+      inject(function($rootScope, $compile) {
         content = jqLite(content);
         $compile(content)($rootScope);
         html = sortedHtml(content);
@@ -168,7 +168,7 @@ describe('Binder', function() {
   }));
 
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function() {
-    module(function($exceptionHandlerProvider){
+    module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {
@@ -344,7 +344,7 @@ describe('Binder', function() {
   }));
 
   it('ActionOnAHrefThrowsError', function() {
-    module(function($exceptionHandlerProvider){
+    module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {

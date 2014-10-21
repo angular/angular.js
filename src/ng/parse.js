@@ -99,7 +99,7 @@ CONSTANTS['this'].sharedGetter = true;
 
 //Operators - will be wrapped by binaryFn/unaryFn/assignment/filter
 var OPERATORS = extend(createMap(), {
-    '+':function(self, locals, a, b){
+    '+':function(self, locals, a, b) {
       a=a(self, locals); b=b(self, locals);
       if (isDefined(a)) {
         if (isDefined(b)) {
@@ -108,24 +108,24 @@ var OPERATORS = extend(createMap(), {
         return a;
       }
       return isDefined(b)?b:undefined;},
-    '-':function(self, locals, a, b){
+    '-':function(self, locals, a, b) {
           a=a(self, locals); b=b(self, locals);
           return (isDefined(a)?a:0)-(isDefined(b)?b:0);
         },
-    '*':function(self, locals, a, b){return a(self, locals)*b(self, locals);},
-    '/':function(self, locals, a, b){return a(self, locals)/b(self, locals);},
-    '%':function(self, locals, a, b){return a(self, locals)%b(self, locals);},
-    '===':function(self, locals, a, b){return a(self, locals)===b(self, locals);},
-    '!==':function(self, locals, a, b){return a(self, locals)!==b(self, locals);},
-    '==':function(self, locals, a, b){return a(self, locals)==b(self, locals);},
-    '!=':function(self, locals, a, b){return a(self, locals)!=b(self, locals);},
-    '<':function(self, locals, a, b){return a(self, locals)<b(self, locals);},
-    '>':function(self, locals, a, b){return a(self, locals)>b(self, locals);},
-    '<=':function(self, locals, a, b){return a(self, locals)<=b(self, locals);},
-    '>=':function(self, locals, a, b){return a(self, locals)>=b(self, locals);},
-    '&&':function(self, locals, a, b){return a(self, locals)&&b(self, locals);},
-    '||':function(self, locals, a, b){return a(self, locals)||b(self, locals);},
-    '!':function(self, locals, a){return !a(self, locals);},
+    '*':function(self, locals, a, b) {return a(self, locals)*b(self, locals);},
+    '/':function(self, locals, a, b) {return a(self, locals)/b(self, locals);},
+    '%':function(self, locals, a, b) {return a(self, locals)%b(self, locals);},
+    '===':function(self, locals, a, b) {return a(self, locals)===b(self, locals);},
+    '!==':function(self, locals, a, b) {return a(self, locals)!==b(self, locals);},
+    '==':function(self, locals, a, b) {return a(self, locals)==b(self, locals);},
+    '!=':function(self, locals, a, b) {return a(self, locals)!=b(self, locals);},
+    '<':function(self, locals, a, b) {return a(self, locals)<b(self, locals);},
+    '>':function(self, locals, a, b) {return a(self, locals)>b(self, locals);},
+    '<=':function(self, locals, a, b) {return a(self, locals)<=b(self, locals);},
+    '>=':function(self, locals, a, b) {return a(self, locals)>=b(self, locals);},
+    '&&':function(self, locals, a, b) {return a(self, locals)&&b(self, locals);},
+    '||':function(self, locals, a, b) {return a(self, locals)||b(self, locals);},
+    '!':function(self, locals, a) {return !a(self, locals);},
 
     //Tokenized as operators but parsed as assignment/filters
     '=':true,
@@ -479,7 +479,7 @@ Parser.prototype = {
     return false;
   },
 
-  expect: function(e1, e2, e3, e4){
+  expect: function(e1, e2, e3, e4) {
     var token = this.peek(e1, e2, e3, e4);
     if (token) {
       this.tokens.shift();
@@ -488,7 +488,7 @@ Parser.prototype = {
     return false;
   },
 
-  consume: function(e1){
+  consume: function(e1) {
     if (!this.expect(e1)) {
       this.throwError('is unexpected, expecting [' + e1 + ']', this.peek());
     }
@@ -610,7 +610,7 @@ Parser.prototype = {
       if ((token = this.expect(':'))) {
         var right = this.assignment();
 
-        return extend(function $parseTernary(self, locals){
+        return extend(function $parseTernary(self, locals) {
           return left(self, locals) ? middle(self, locals) : right(self, locals);
         }, {
           constant: left.constant && middle.constant && right.constant

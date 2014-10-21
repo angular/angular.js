@@ -259,12 +259,12 @@ describe('parser', function() {
         expect(scope.$eval("0||1&&2")).toEqual(0||1&&2);
       });
 
-      it('should parse ternary', function(){
-        var returnTrue = scope.returnTrue = function(){ return true; };
-        var returnFalse = scope.returnFalse = function(){ return false; };
-        var returnString = scope.returnString = function(){ return 'asd'; };
-        var returnInt = scope.returnInt = function(){ return 123; };
-        var identity = scope.identity = function(x){ return x; };
+      it('should parse ternary', function() {
+        var returnTrue = scope.returnTrue = function() { return true; };
+        var returnFalse = scope.returnFalse = function() { return false; };
+        var returnString = scope.returnString = function() { return 'asd'; };
+        var returnInt = scope.returnInt = function() { return 123; };
+        var identity = scope.identity = function(x) { return x; };
 
         // Simple.
         expect(scope.$eval('0?0:2')).toEqual(0?0:2);
@@ -463,7 +463,7 @@ describe('parser', function() {
         });
 
       it('should evaluate function call without arguments', function() {
-        scope['const'] =  function(a, b){return 123;};
+        scope['const'] =  function(a, b) {return 123;};
         expect(scope.$eval("const()")).toEqual(123);
       });
 
@@ -1246,7 +1246,7 @@ describe('parser', function() {
         }));
 
         describe('literal expressions', function () {
-          it('should only become stable when all the properties of an object have defined values', inject(function ($parse, $rootScope, log){
+          it('should only become stable when all the properties of an object have defined values', inject(function ($parse, $rootScope, log) {
             var fn = $parse('::{foo: foo, bar: bar}');
             $rootScope.$watch(fn, function(value) { log(value); }, true);
 
@@ -1274,7 +1274,7 @@ describe('parser', function() {
             expect(log.empty()).toEqual([]);
           }));
 
-          it('should only become stable when all the elements of an array have defined values', inject(function ($parse, $rootScope, log){
+          it('should only become stable when all the elements of an array have defined values', inject(function ($parse, $rootScope, log) {
             var fn = $parse('::[foo,bar]');
             $rootScope.$watch(fn, function(value) { log(value); }, true);
 

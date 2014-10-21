@@ -4,7 +4,7 @@ describe('ngSwitch', function() {
   var element;
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -319,7 +319,7 @@ describe('ngSwitch animation', function() {
     };
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
   });

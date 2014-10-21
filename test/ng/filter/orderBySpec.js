@@ -26,8 +26,8 @@ describe('Filter: orderBy', function() {
     expect(orderBy([{a:15}, {a:2}], 'a', "reverse")).toEqualData([{a:15}, {a:2}]);
   });
 
-  it('should sort inherited from array', function(){
-    function BaseCollection(){}
+  it('should sort inherited from array', function() {
+    function BaseCollection() {}
     BaseCollection.prototype = Array.prototype;
     var child = new BaseCollection();
     child.push({a:2});

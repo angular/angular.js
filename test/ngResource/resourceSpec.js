@@ -1078,7 +1078,7 @@ describe("resource", function() {
         expect(user).toEqualData([{id: 1, name: 'user1'}]);
       });
 
-      it('should not require it if not provided', function(){
+      it('should not require it if not provided', function() {
         $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
         var UserService = $resource('/users.json');
         var user = UserService.query();
@@ -1102,7 +1102,7 @@ describe("resource", function() {
         expect(user).toEqualData([{id: 1, name: 'user1'}]);
       });
 
-      it('should work with the action is overriden', function(){
+      it('should work with the action is overriden', function() {
         $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           query: {
@@ -1138,7 +1138,7 @@ describe("resource", function() {
       });
     });
 
-    describe('get', function(){
+    describe('get', function() {
       it('should add them to the id', function() {
         $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
         var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
@@ -1163,7 +1163,7 @@ describe("resource", function() {
         expect(user).toEqualData({id: 1, name: 'user1'});
       });
 
-      it('should work with the action is overriden', function(){
+      it('should work with the action is overriden', function() {
         $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           get: {

@@ -255,7 +255,7 @@ describe('ngIf animations', function () {
     };
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
   });

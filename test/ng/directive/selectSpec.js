@@ -25,7 +25,7 @@ describe('select', function() {
 
   beforeEach(function() {
     this.addMatchers({
-      toEqualSelect: function(expected){
+      toEqualSelect: function(expected) {
         var actualValues = [],
             expectedValues = [].slice.call(arguments);
 

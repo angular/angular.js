@@ -999,7 +999,7 @@ describe('jqLite', function() {
         alert: noop,
         setInterval: noop,
         length:10, // pretend you are an array
-        addEventListener: function(type, fn){
+        addEventListener: function(type, fn) {
           expect(type).toEqual('hashchange');
           eventFn = fn;
         },
@@ -1158,8 +1158,8 @@ describe('jqLite', function() {
 
       it('should fire mouseenter when coming from outside the browser window', function() {
         if (window.jQuery) return;
-        var browserMoveTrigger = function(from, to){
-          var fireEvent = function(type, element, relatedTarget){
+        var browserMoveTrigger = function(from, to) {
+          var fireEvent = function(type, element, relatedTarget) {
             var evnt;
             evnt = document.createEvent('MouseEvents');
 

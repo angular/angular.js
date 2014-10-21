@@ -3,7 +3,7 @@
 describe('Filter: filter', function() {
   var filter;
 
-  beforeEach(inject(function($filter){
+  beforeEach(inject(function($filter) {
     filter = $filter('filter');
   }));
 

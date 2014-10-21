@@ -95,7 +95,7 @@ function MockDocument() {
   this.find = function(name) {
     if (name == 'base') {
       return {
-        attr: function(name){
+        attr: function(name) {
           if (name == 'href') {
             return self.basePath;
           } else {

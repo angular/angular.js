@@ -117,7 +117,7 @@ describe("ngAnimate", function() {
       };
     }));
 
-    afterEach(function(){
+    afterEach(function() {
       if (ss) {
         ss.destroy();
       }
