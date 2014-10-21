@@ -168,7 +168,6 @@ function $AnchorScrollProvider() {
    */
   this.$get = ['$window', '$location', '$rootScope', function($window, $location, $rootScope) {
     var document = $window.document;
-    var scrollScheduled = false;
 
     // Helper function to get first anchor from a NodeList
     // (using `Array#some()` instead of `angular#forEach()` since it's more performant

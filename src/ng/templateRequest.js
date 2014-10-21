@@ -26,7 +26,6 @@ function $TemplateRequestProvider() {
       self.totalPendingRequests++;
 
       var transformResponse = $http.defaults && $http.defaults.transformResponse;
-      var idx;
 
       if (isArray(transformResponse)) {
         var original = transformResponse;
