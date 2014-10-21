@@ -6,7 +6,7 @@ describe('HTML', function() {
 
   beforeEach(module('ngSanitize'));
   beforeEach(function() {
-    expectHTML = function(html){
+    expectHTML = function(html) {
       var sanitize;
       inject(function($sanitize) {
         sanitize = $sanitize;
@@ -23,7 +23,7 @@ describe('HTML', function() {
     beforeEach(function() {
       text = "";
       handler = {
-        start: function(tag, attrs, unary){
+        start: function(tag, attrs, unary) {
           start = {
             tag: tag,
             attrs: attrs,
@@ -35,7 +35,7 @@ describe('HTML', function() {
             attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '');
           });
         },
-        chars: function(text_){
+        chars: function(text_) {
           text += text_;
         },
         end:function(tag) {
@@ -246,7 +246,7 @@ describe('HTML', function() {
     beforeEach(function() {
       html = '';
       uriValidator = jasmine.createSpy('uriValidator');
-      writer = htmlSanitizeWriter({push:function(text){html+=text;}}, uriValidator);
+      writer = htmlSanitizeWriter({push:function(text) {html+=text;}}, uriValidator);
     });
 
     it('should write basic HTML', function() {
@@ -473,7 +473,7 @@ describe('decodeEntities', function() {
     text = '';
     handler = {
       start: function() {},
-      chars: function(text_){
+      chars: function(text_) {
         text = text_;
       },
       end: function() {},

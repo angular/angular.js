@@ -44,7 +44,7 @@ describe('$location', function() {
     }));
 
 
-    it('should not include the drive name in path() on WIN', function (){
+    it('should not include the drive name in path() on WIN', function () {
       //See issue #4680 for details
       url = new LocationHashbangUrl('file:///base', '#!');
       url.$$parse('file:///base#!/foo?a=b&c#hash');
@@ -626,14 +626,14 @@ describe('$location', function() {
 
 
   function initService(options) {
-    return module(function($provide, $locationProvider){
+    return module(function($provide, $locationProvider) {
       $locationProvider.html5Mode(options.html5Mode);
       $locationProvider.hashPrefix(options.hashPrefix);
       $provide.value('$sniffer', {history: options.supportHistory});
     });
   }
   function initBrowser(options) {
-    return function($browser){
+    return function($browser) {
       $browser.url(options.url);
       $browser.$$baseHref = options.basePath;
     };
@@ -915,7 +915,7 @@ describe('$location', function() {
   // html5 history enabled, but not supported by browser
   describe('history on old browser', function() {
 
-    afterEach(inject(function($rootElement){
+    afterEach(inject(function($rootElement) {
       dealoc($rootElement);
     }));
 
@@ -959,7 +959,7 @@ describe('$location', function() {
   // html5 history enabled and supported by browser
   describe('history on new browser', function() {
 
-    afterEach(inject(function($rootElement){
+    afterEach(inject(function($rootElement) {
       dealoc($rootElement);
     }));
 
@@ -1081,7 +1081,7 @@ describe('$location', function() {
     }
 
     function initBrowser() {
-      return function($browser, $document){
+      return function($browser, $document) {
         $browser.url('http://host.com/base/index.html');
         $browser.$$baseHref = '/base/index.html';
       };
@@ -1826,7 +1826,7 @@ describe('$location', function() {
         });
       });
 
-      inject(function(){});
+      inject(function() {});
     });
 
 
@@ -1845,7 +1845,7 @@ describe('$location', function() {
         });
       });
 
-      inject(function(){});
+      inject(function() {});
     });
 
 
@@ -1862,7 +1862,7 @@ describe('$location', function() {
         });
       });
 
-      inject(function(){});
+      inject(function() {});
     });
 
 
@@ -1875,7 +1875,7 @@ describe('$location', function() {
         });
       });
 
-      inject(function(){});
+      inject(function() {});
     });
   });
 

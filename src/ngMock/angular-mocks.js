@@ -67,7 +67,7 @@ angular.mock.$Browser = function() {
   self.defer = function(fn, delay) {
     delay = delay || 0;
     self.deferredFns.push({time:(self.defer.now + delay), fn:fn, id: self.deferredNextId});
-    self.deferredFns.sort(function(a, b){ return a.time - b.time;});
+    self.deferredFns.sort(function(a, b) { return a.time - b.time;});
     return self.deferredNextId++;
   };
 
@@ -135,7 +135,7 @@ angular.mock.$Browser.prototype = {
   * run all fns in pollFns
   */
   poll: function poll() {
-    angular.forEach(this.pollFns, function(pollFn){
+    angular.forEach(this.pollFns, function(pollFn) {
       pollFn();
     });
   },
@@ -497,7 +497,7 @@ angular.mock.$IntervalProvider = function() {
         id: nextRepeatId,
         deferred: deferred
       });
-      repeatFns.sort(function(a, b){ return a.nextTime - b.nextTime;});
+      repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
 
       nextRepeatId++;
       return promise;
@@ -546,7 +546,7 @@ angular.mock.$IntervalProvider = function() {
         var task = repeatFns[0];
         task.fn();
         task.nextTime += task.delay;
-        repeatFns.sort(function(a, b){ return a.nextTime - b.nextTime;});
+        repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
       }
       return millis;
     };

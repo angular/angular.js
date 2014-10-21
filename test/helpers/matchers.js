@@ -8,11 +8,11 @@ beforeEach(function() {
       var present = true;
       var absent = false;
 
-      angular.forEach(presentClasses.split(' '), function(className){
+      angular.forEach(presentClasses.split(' '), function(className) {
         present = present && element.hasClass(className);
       });
 
-      angular.forEach(absentClasses.split(' '), function(className){
+      angular.forEach(absentClasses.split(' '), function(className) {
         absent = absent || element.hasClass(className);
       });
 

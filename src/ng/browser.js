@@ -72,7 +72,7 @@ function Browser(window, document, $log, $sniffer) {
     // force browser to execute all pollFns - this is needed so that cookies and other pollers fire
     // at some deterministic time in respect to the test runner's actions. Leaving things up to the
     // regular poller would result in flaky tests.
-    forEach(pollFns, function(pollFn){ pollFn(); });
+    forEach(pollFns, function(pollFn) { pollFn(); });
 
     if (outstandingRequestCount === 0) {
       callback();
@@ -114,7 +114,7 @@ function Browser(window, document, $log, $sniffer) {
    */
   function startPoller(interval, setTimeout) {
     (function check() {
-      forEach(pollFns, function(pollFn){ pollFn(); });
+      forEach(pollFns, function(pollFn) { pollFn(); });
       pollTimeout = setTimeout(check, interval);
     })();
   }
@@ -449,9 +449,9 @@ function Browser(window, document, $log, $sniffer) {
 
 }
 
-function $BrowserProvider(){
+function $BrowserProvider() {
   this.$get = ['$window', '$log', '$sniffer', '$document',
-      function($window, $log, $sniffer, $document){
+      function($window, $log, $sniffer, $document) {
         return new Browser($window, $document, $log, $sniffer);
       }];
 }

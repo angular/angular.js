@@ -86,7 +86,7 @@
      </file>
    </example>
 */
-function limitToFilter(){
+function limitToFilter() {
   return function(input, limit) {
     if (isNumber(input)) input = input.toString();
     if (!isArray(input) && !isString(input)) return input;

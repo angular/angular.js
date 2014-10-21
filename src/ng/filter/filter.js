@@ -153,7 +153,7 @@ function filterFilter() {
       }
     }
 
-    var search = function(obj, text){
+    var search = function(obj, text) {
       if (typeof text === 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
       }

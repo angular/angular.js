@@ -5,7 +5,7 @@ describe('linky', function() {
 
   beforeEach(module('ngSanitize'));
 
-  beforeEach(inject(function($filter){
+  beforeEach(inject(function($filter) {
     linky = $filter('linky');
   }));
 

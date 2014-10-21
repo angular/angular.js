@@ -11,7 +11,7 @@ describe('injector', function() {
     };
     providerInjector = $injector;
   }));
-  beforeEach(inject(function($injector){
+  beforeEach(inject(function($injector) {
     injector = $injector;
   }));
 
@@ -295,9 +295,9 @@ describe('injector', function() {
 
     it('should load dependant modules only once', function() {
       var log = '';
-      angular.module('a', [], function(){ log += 'a'; });
-      angular.module('b', ['a'], function(){ log += 'b'; });
-      angular.module('c', ['a', 'b'], function(){ log += 'c'; });
+      angular.module('a', [], function() { log += 'a'; });
+      angular.module('b', ['a'], function() { log += 'b'; });
+      angular.module('c', ['a', 'b'], function() { log += 'c'; });
       createInjector(['c', 'c']);
       expect(log).toEqual('abc');
     });
@@ -327,8 +327,8 @@ describe('injector', function() {
 
     it('should execute runBlocks after injector creation', function() {
       var log = '';
-      angular.module('a', [], function(){ log += 'a'; }).run(function() { log += 'A'; });
-      angular.module('b', ['a'], function(){ log += 'b'; }).run(function() { log += 'B'; });
+      angular.module('a', [], function() { log += 'a'; }).run(function() { log += 'A'; });
+      angular.module('b', ['a'], function() { log += 'b'; }).run(function() { log += 'B'; });
       createInjector([
         'b',
         valueFn(function() { log += 'C'; }),
@@ -383,7 +383,7 @@ describe('injector', function() {
         it('should create configuration injectable constants', function() {
           var log = [];
           createInjector([
-            function($provide){
+            function($provide) {
               $provide.constant('abc', 123);
               $provide.constant({a: 'A', b:'B'});
               return function(a) {
@@ -660,7 +660,7 @@ describe('injector', function() {
 
 
       it('should decorate the missing service error with module function', function() {
-        function myModule(xyzzy){}
+        function myModule(xyzzy) {}
         expect(function() {
           createInjector([myModule]);
         }).toThrowMinErr(
@@ -670,7 +670,7 @@ describe('injector', function() {
 
 
       it('should decorate the missing service error with module array function', function() {
-        function myModule(xyzzy){}
+        function myModule(xyzzy) {}
         expect(function() {
           createInjector([['xyzzy', myModule]]);
         }).toThrowMinErr(
@@ -681,8 +681,8 @@ describe('injector', function() {
 
       it('should throw error when trying to inject oneself', function() {
         expect(function() {
-          createInjector([function($provide){
-            $provide.factory('service', function(service){});
+          createInjector([function($provide) {
+            $provide.factory('service', function(service) {});
             return function(service) {};
           }]);
         }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: service <- service');
@@ -691,9 +691,9 @@ describe('injector', function() {
 
       it('should throw error when trying to inject circular dependency', function() {
         expect(function() {
-          createInjector([function($provide){
-            $provide.factory('a', function(b){});
-            $provide.factory('b', function(a){});
+          createInjector([function($provide) {
+            $provide.factory('a', function(b) {});
+            $provide.factory('b', function(a) {});
             return function(a) {};
           }]);
         }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: a <- b <- a');

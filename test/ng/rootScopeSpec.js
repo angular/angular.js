@@ -679,7 +679,7 @@ describe('Scope', function() {
         it('should watch array-like objects like arrays', function () {
           var arrayLikelog = [];
           $rootScope.$watchCollection('arrayLikeObject', function logger(obj) {
-            forEach(obj, function (element){
+            forEach(obj, function (element) {
               arrayLikelog.push(element.name);
             });
           });
@@ -1699,7 +1699,7 @@ describe('Scope', function() {
         expect(log).toEqual('2>1>0>');
       });
 
-      it('should allow all events on the same scope to run even if stopPropagation is called', function(){
+      it('should allow all events on the same scope to run even if stopPropagation is called', function() {
         child.$on('myEvent', logger);
         grandChild.$on('myEvent', function(e) { e.stopPropagation(); });
         grandChild.$on('myEvent', logger);

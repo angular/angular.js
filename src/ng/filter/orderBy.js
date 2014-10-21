@@ -116,12 +116,12 @@
 </example>
  */
 orderByFilter.$inject = ['$parse'];
-function orderByFilter($parse){
+function orderByFilter($parse) {
   return function(array, sortPredicate, reverseOrder) {
     if (!(isArrayLike(array))) return array;
     sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
     if (sortPredicate.length === 0) { sortPredicate = ['+']; }
-    sortPredicate = sortPredicate.map(function(predicate){
+    sortPredicate = sortPredicate.map(function(predicate) {
       var descending = false, get = predicate || identity;
       if (isString(predicate)) {
         if ((predicate.charAt(0) == '+' || predicate.charAt(0) == '-')) {
@@ -142,7 +142,7 @@ function orderByFilter($parse){
           }, descending);
         }
       }
-      return reverseComparator(function(a, b){
+      return reverseComparator(function(a, b) {
         return compare(get(a),get(b));
       }, descending);
     });
@@ -150,7 +150,7 @@ function orderByFilter($parse){
     for (var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
     return arrayCopy.sort(reverseComparator(comparator, reverseOrder));
 
-    function comparator(o1, o2){
+    function comparator(o1, o2) {
       for (var i = 0; i < sortPredicate.length; i++) {
         var comp = sortPredicate[i](o1, o2);
         if (comp !== 0) return comp;
@@ -159,10 +159,10 @@ function orderByFilter($parse){
     }
     function reverseComparator(comp, descending) {
       return descending
-          ? function(a, b){return comp(b,a);}
+          ? function(a, b) {return comp(b,a);}
           : comp;
     }
-    function compare(v1, v2){
+    function compare(v1, v2) {
       var t1 = typeof v1;
       var t2 = typeof v2;
       if (t1 == t2) {

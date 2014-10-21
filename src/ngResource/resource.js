@@ -30,7 +30,7 @@ function lookupDottedPath(obj, path) {
 function shallowClearAndCopy(src, dst) {
   dst = dst || {};
 
-  angular.forEach(dst, function(value, key){
+  angular.forEach(dst, function(value, key) {
     delete dst[key];
   });
 

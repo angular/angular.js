@@ -10,7 +10,7 @@ describe('a', function() {
   }));
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 

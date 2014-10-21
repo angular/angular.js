@@ -55,7 +55,7 @@
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol, fractionSize){
+  return function(amount, currencySymbol, fractionSize) {
     if (isUndefined(currencySymbol)) {
       currencySymbol = formats.CURRENCY_SYM;
     }
@@ -480,7 +480,7 @@ function dateFilter($locale) {
       date = new Date(date.getTime());
       date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
     }
-    forEach(parts, function(value){
+    forEach(parts, function(value) {
       fn = DATE_FORMATS[value];
       text += fn ? fn(date, $locale.DATETIME_FORMATS)
                  : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
