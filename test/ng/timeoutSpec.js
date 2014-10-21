@@ -105,6 +105,25 @@ describe('$timeout', function() {
   }));
 
 
+  it('should allow the `fn` parameter to be optional', inject(function($timeout, log) {
+
+    $timeout().then(function(value) { log('promise success: ' + value); }, log.fn('promise error'));
+    expect(log).toEqual([]);
+
+    $timeout.flush();
+    expect(log).toEqual(['promise success: undefined']);
+
+    log.reset();
+    $timeout(1000).then(function(value) { log('promise success: ' + value); }, log.fn('promise error'));
+    expect(log).toEqual([]);
+
+    $timeout.flush(500);
+    expect(log).toEqual([]);
+    $timeout.flush(500);
+    expect(log).toEqual(['promise success: undefined']);
+  }));
+
+
   describe('exception handling', function() {
 
     beforeEach(module(function($exceptionHandlerProvider) {
@@ -165,19 +184,24 @@ describe('$timeout', function() {
       var task1 = jasmine.createSpy('task1'),
           task2 = jasmine.createSpy('task2'),
           task3 = jasmine.createSpy('task3'),
-          promise1, promise3;
+          task4 = jasmine.createSpy('task4'),
+          promise1, promise3, promise4;
 
       promise1 = $timeout(task1);
       $timeout(task2);
       promise3 = $timeout(task3, 333);
+      promise4 = $timeout(333);
+      promise3.then(task4);
 
-      $timeout.cancel(promise3);
       $timeout.cancel(promise1);
+      $timeout.cancel(promise3);
+      $timeout.cancel(promise4);
       $timeout.flush();
 
       expect(task1).not.toHaveBeenCalled();
       expect(task2).toHaveBeenCalledOnce();
       expect(task3).not.toHaveBeenCalled();
+      expect(task4).not.toHaveBeenCalled();
     }));
 
 
