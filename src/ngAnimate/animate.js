@@ -208,8 +208,8 @@
  * when a CSS class containing a transition is applied to an element:
  *
  * ```css
+ * /&#42; this works as expected &#42;/
  * .fade {
- *   /&#42; this works as expected &#42;/
  *   transition:1s linear all;
  *   opacity:0;
  * }
@@ -218,6 +218,30 @@
  * Please keep this in mind when coding the CSS markup that will be used within class-based transitions.
  * Also, try not to mix the two class-based animation flavors together since the CSS code may become
  * overly complex.
+ *
+ *
+ * ### Preventing Collisions With Third Party Libraries
+ *
+ * Some third-party frameworks place animation duration defaults across many element or className
+ * selectors in order to make their code small and reuseable. This can lead to issues with ngAnimate, which
+ * is expecting actual animations on these elements and has to wait for their completion.
+ *
+ * You can prevent this unwanted behavior by using a prefix on all your animation classes:
+ *
+ * ```css
+ * /&#42; prefixed with animate- &#42;/
+ * .animate-fade-add.animate-fade-add-active {
+ *   transition:1s linear all;
+ *   opacity:0;
+ * }
+ * ```
+ *
+ * You then configure `$animate` to enforce this prefix:
+ *
+ * ```js
+ * $animateProvider.classNamePrefix(/animate-/);
+ * ```
+ * </div>
  *
  * ### CSS Staggering Animations
  * A Staggering animation is a collection of animations that are issued with a slight delay in between each successive operation resulting in a
