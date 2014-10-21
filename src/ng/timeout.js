@@ -4,7 +4,8 @@
 function $TimeoutProvider() {
   this.$get = ['$rootScope', '$browser', '$q', '$$q', '$exceptionHandler',
        function($rootScope,   $browser,   $q,   $$q,   $exceptionHandler) {
-    var deferreds = {};
+
+     var deferreds = {};
 
 
      /**
@@ -19,12 +20,16 @@ function $TimeoutProvider() {
       * The return value of registering a timeout function is a promise, which will be resolved when
       * the timeout is reached and the timeout function is executed.
       *
+      * Additionally, the wrapper function can also be used without a target 'fn' function in order
+      * to generate a delayed promise.
+      *
       * To cancel a timeout request, call `$timeout.cancel(promise)`.
       *
       * In tests you can use {@link ngMock.$timeout `$timeout.flush()`} to
       * synchronously flush the queue of deferred functions.
       *
-      * @param {function()} fn A function, whose execution should be delayed.
+      * @param {function()} fn A function, whose execution should be delayed. This argument is
+      *   optional and can be skipped if required.
       * @param {number=} [delay=0] Delay in milliseconds.
       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
       *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
@@ -32,7 +37,18 @@ function $TimeoutProvider() {
       *   promise will be resolved with is the return value of the `fn` function.
       *
       */
-    function timeout(fn, delay, invokeApply) {
+    function timeout() {
+      var fn, delay, invokeApply;
+      if (isFunction(arguments[0])) {
+        fn = arguments[0],
+        delay = arguments[1],
+        invokeApply = arguments[2];
+      } else {
+        fn = noop,
+        delay = arguments[0],
+        invokeApply = false;
+      }
+
       var skipApply = (isDefined(invokeApply) && !invokeApply),
           deferred = (skipApply ? $$q : $q).defer(),
           promise = deferred.promise,
