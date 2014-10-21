@@ -87,6 +87,10 @@ function setupModuleLoader(window) {
 
       assertNotHasOwnProperty(name, 'module');
       if (requires && modules.hasOwnProperty(name)) {
+        if (modules[name] && window.console) {
+            //logProvider is not available at this place
+            window.console.log('The module \'' + name + '\' already exists and has been redefined.');
+        }
         modules[name] = null;
       }
       return ensure(modules, name, function() {
