@@ -294,6 +294,21 @@ describe('$route', function() {
       $rootScope.$digest();
       expect($route.current).toBeDefined();
     }));
+
+    it("should use route params inherited from prototype chain", function() {
+      function BaseRoute() {}
+      BaseRoute.prototype.templateUrl = 'foo.html';
+
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', new BaseRoute);
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect($route.current.templateUrl).toBe('foo.html');
+      });
+    });
   });
 
 
