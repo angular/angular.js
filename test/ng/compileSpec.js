@@ -3065,6 +3065,8 @@ describe('$compile', function() {
             optref: '=?',
             optrefAlias: '=? optref',
             optreference: '=?',
+            colref: '=*',
+            colrefAlias: '=* colref',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -3558,6 +3560,53 @@ describe('$compile', function() {
         expect(componentScope.optref).toBe(undefined);
         expect(componentScope.optrefAlias).toBe(undefined);
         expect(componentScope.optreference).toBe(undefined);
+      }));
+    });
+
+
+    describe('collection object reference', function () {
+      it('should update isolate scope when origin scope changes', inject(function () {
+        $rootScope.collection = [{
+          name: 'Gabriel',
+          value: 18
+        }, {
+          name: 'Tony',
+          value: 91
+        }];
+        $rootScope.query = "";
+        $rootScope.$apply();
+
+        compile('<div><span my-component colref="collection | filter:query">');
+
+        expect(componentScope.colref).toEqual($rootScope.collection);
+        expect(componentScope.colrefAlias).toEqual(componentScope.colref);
+
+        $rootScope.query = "Gab";
+        $rootScope.$apply();
+
+        expect(componentScope.colref).toEqual([$rootScope.collection[0]]);
+        expect(componentScope.colrefAlias).toEqual([$rootScope.collection[0]]);
+      }));
+
+      it('should update origin scope when isolate scope changes', inject(function () {
+        $rootScope.collection = [{
+          name: 'Gabriel',
+          value: 18
+        }, {
+          name: 'Tony',
+          value: 91
+        }];
+
+        compile('<div><span my-component colref="collection">');
+
+        var newItem = {
+          name: 'Pablo',
+          value: 10
+        };
+        componentScope.colref.push(newItem);
+        componentScope.$apply();
+
+        expect($rootScope.collection[2]).toEqual(newItem);
       }));
     });
 
