@@ -56,7 +56,7 @@ describe('ngView', function() {
   });
 
 
-  it('should not instantiate the associated controller when an empty template is downloaded', function() {
+  it('should instantiate the associated controller when an empty template is downloaded', function() {
     var log = [], controllerScope,
         Ctrl = function($scope) {
           controllerScope = $scope;
@@ -73,9 +73,9 @@ describe('ngView', function() {
 
       expect(function() {
         $rootScope.$digest();
-      }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: /tpl.html');
+      }).not.toThrow();
 
-      expect(controllerScope).toBeUndefined();
+      expect(controllerScope).toBeDefined();
     });
   });
 
