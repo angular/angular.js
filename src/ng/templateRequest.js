@@ -40,7 +40,11 @@ function $TemplateRequestProvider() {
         transformResponse: transformResponse
       };
 
-      return $http.get($sce.getTrustedResourceUrl(tpl), httpOptions)
+      if (!isDefined($templateCache.get(tpl))) {
+        tpl = $sce.getTrustedResourceUrl(tpl);
+      }
+
+      return $http.get(tpl, httpOptions)
         .then(function(response) {
           self.totalPendingRequests--;
           return response.data;

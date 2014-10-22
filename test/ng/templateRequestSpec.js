@@ -25,6 +25,19 @@ describe('$templateRequest', function() {
           /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/tpl\.html.*/);
   }));
 
+  it('should fetch templates from cache even if url is untrusted',
+     inject(function($rootScope, $templateRequest, $httpBackend, $templateCache) {
+
+     $templateCache.put('http://example.com/tpl.html', '<div>abc</div>');
+
+     var content;
+     $templateRequest('http://example.com/tpl.html').then(function(html) { content = html; });
+
+     $rootScope.$digest();
+
+     expect(content).toBe('<div>abc</div>');
+  }));
+
   it('should cache the request to prevent extra downloads',
     inject(function($rootScope, $templateRequest, $httpBackend) {
 

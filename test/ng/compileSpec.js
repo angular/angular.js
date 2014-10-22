@@ -1242,15 +1242,6 @@ describe('$compile', function() {
           }
         ));
 
-        it('should not load cross domain templates by default', inject(
-          function($compile, $rootScope, $templateCache, $sce) {
-            expect(function() {
-              $templateCache.put('http://example.com/should-not-load.html', 'Should not load even if in cache.');
-              $compile('<div class="crossDomainTemplate"></div>')($rootScope);
-            }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
-          }
-        ));
-
         it('should load cross domain templates when trusted', inject(
           function($compile, $httpBackend, $rootScope, $sce) {
             $httpBackend.expect('GET', 'http://example.com/trusted-template.html').respond('<span>example.com/trusted_template_contents</span>');
