@@ -122,6 +122,7 @@ function orderByFilter($parse) {
     sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
     if (sortPredicate.length === 0) { sortPredicate = ['+']; }
     sortPredicate = sortPredicate.map(function(predicate) {
+      predicate = predicate || '';
       var descending = false, get = predicate || identity;
       if (isString(predicate)) {
         if ((predicate.charAt(0) == '+' || predicate.charAt(0) == '-')) {
@@ -130,6 +131,12 @@ function orderByFilter($parse) {
         }
         if (predicate === '') {
           // Effectively no predicate was passed so we compare identity
+          if (array.some(isObject)) {
+            return function() {
+              return descending ? 1 : 0;
+            };
+          }
+
           return reverseComparator(function(a, b) {
             return compare(a, b);
           }, descending);

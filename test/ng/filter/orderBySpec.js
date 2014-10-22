@@ -91,6 +91,20 @@ describe('Filter: orderBy', function() {
       .toEqualData([{"원": 31000}, {"원": 76000}, {"원": 156000}]);
   });
 
+  it('should maintain order in an array of objects when no predicate is provided', function() {
+    var array = [{a: 1}, {b: 2}, {c: 3}];
+
+    expect(orderBy(array)).toEqualData(array);
+    expect(orderBy(array, '')).toEqualData(array);
+    expect(orderBy(array, [])).toEqualData(array);
+    expect(orderBy(array, [''])).toEqualData(array);
+    expect(orderBy(array, ['+'])).toEqualData(array);
+  });
+
+  it('should inverse order in an array of objects when minus is provided without predicate', function() {
+    expect(orderBy([{a: 1}, {b: 2}, {c: 3}], ['-'])).toEqualData([{c: 3}, {b: 2}, {a: 1}]);
+  });
+
   it('should throw if quoted string predicate is quoted incorrectly', function() {
     /*jshint -W008 */
     expect(function() {
