@@ -658,7 +658,7 @@ describe('$route', function() {
         $routeProvider.when('/foo', { templateUrl: 'http://example.com/foo.html' });
       });
 
-      inject(function ($route, $location, $rootScope) {
+      inject(function($route, $location, $rootScope) {
         $location.path('/foo');
         expect(function() {
           $rootScope.$digest();
@@ -673,7 +673,7 @@ describe('$route', function() {
         $sceDelegateProvider.resourceUrlWhitelist([/^http:\/\/example\.com\/foo\.html$/]);
       });
 
-      inject(function ($route, $location, $rootScope) {
+      inject(function($route, $location, $rootScope) {
         $httpBackend.whenGET('http://example.com/foo.html').respond('FOO BODY');
         $location.path('/foo');
         $rootScope.$digest();

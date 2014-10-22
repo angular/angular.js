@@ -332,12 +332,12 @@ describe('Scope', function() {
         var d = $q.defer();
 
         d.resolve('Hello, world.');
-        $rootScope.$watch(function () {
+        $rootScope.$watch(function() {
           var $d2 = $q.defer();
           $d2.resolve('Goodbye.');
-          $d2.promise.then(function () { });
+          $d2.promise.then(function() { });
           return d.promise;
-        }, function () { return 0; });
+        }, function() { return 0; });
 
         expect(function() {
           $rootScope.$digest();
@@ -676,10 +676,10 @@ describe('Scope', function() {
           }).not.toThrow();
         });
 
-        it('should watch array-like objects like arrays', function () {
+        it('should watch array-like objects like arrays', function() {
           var arrayLikelog = [];
           $rootScope.$watchCollection('arrayLikeObject', function logger(obj) {
-            forEach(obj, function (element) {
+            forEach(obj, function(element) {
               arrayLikelog.push(element.name);
             });
           });
@@ -1224,7 +1224,7 @@ describe('Scope', function() {
     it('should cause a $digest rerun', inject(function($rootScope) {
       $rootScope.log = '';
       $rootScope.value = 0;
-      $rootScope.$watch('value', function () {
+      $rootScope.$watch('value', function() {
         $rootScope.log = $rootScope.log + ".";
       });
       $rootScope.$watch('init', function() {
@@ -1243,7 +1243,7 @@ describe('Scope', function() {
       expect($rootScope.log).toBe('12');
     }));
 
-    it('should run async expressions in their proper context', inject(function ($rootScope) {
+    it('should run async expressions in their proper context', inject(function($rootScope) {
       var child = $rootScope.$new();
       $rootScope.ctx = 'root context';
       $rootScope.log = '';

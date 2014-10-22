@@ -160,7 +160,7 @@ describe('Filter: filter', function() {
         {key: 1, nonkey:14}
       ];
       var expr = {key: 10};
-      var comparator = function (obj, value) {
+      var comparator = function(obj, value) {
         return obj > value;
       };
       expect(filter(items, expr, comparator)).toEqual([items[2]]);

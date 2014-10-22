@@ -268,7 +268,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
       bindSelector = '.ng-binding:visible';
   if (angular.isString(bindExp)) {
     bindExp = bindExp.replace(/\s/g, '');
-    match = function (actualExp) {
+    match = function(actualExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
         if (actualExp == bindExp) return true;

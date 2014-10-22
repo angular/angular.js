@@ -336,7 +336,7 @@ describe('ngSwitch animation', function() {
           };
         });
       });
-      inject(function ($compile, $rootScope, $animate, $templateCache) {
+      inject(function($compile, $rootScope, $animate, $templateCache) {
         var item;
         var $scope = $rootScope.$new();
         element = $compile(html(

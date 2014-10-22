@@ -6,6 +6,9 @@
   "disallowSpaceAfterObjectKeys": true,
   "disallowSpaceAfterPrefixUnaryOperators": ["!"],
   "disallowSpaceBeforeBinaryOperators": [","],
+  "disallowSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
   "disallowSpacesInFunctionDeclaration": {
     "beforeOpeningRoundBrace": true
   },

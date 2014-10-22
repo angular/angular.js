@@ -58,11 +58,11 @@ function MockWindow(options) {
   };
 
   this.history = {
-    pushState: function () {
+    pushState: function() {
       this.replaceState.apply(this, arguments);
       historyEntriesLength++;
     },
-    replaceState: function (state, title, url) {
+    replaceState: function(state, title, url) {
       locationHref = url;
       mockWindow.history.state = copy(state);
     }
@@ -161,8 +161,8 @@ describe('browser', function() {
     describe('not in IE', runTests({msie: false}));
 
     function runTests(options) {
-      return function () {
-        it('should return the same state object on every read', function () {
+      return function() {
+        it('should return the same state object on every read', function() {
           var msie = options.msie;
 
           fakeWindow = new MockWindow({msie: msie});
@@ -367,12 +367,12 @@ describe('browser', function() {
       });
     });
 
-    describe('put via cookies(cookieName, string), if no <base href> ', function () {
-      beforeEach(function () {
+    describe('put via cookies(cookieName, string), if no <base href> ', function() {
+      beforeEach(function() {
         fakeDocument.basePath = undefined;
       });
 
-      it('should default path in cookie to "" (empty string)', function () {
+      it('should default path in cookie to "" (empty string)', function() {
         browser.cookies('cookie', 'bender');
         // This only fails in Safari and IE when cookiePath returns undefined
         // Where it now succeeds since baseHref return '' instead of undefined

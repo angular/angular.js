@@ -1597,9 +1597,9 @@ describe('select', function() {
     });
 
 
-    describe('blank option', function () {
+    describe('blank option', function() {
 
-      it('should be compiled as template, be watched and updated', function () {
+      it('should be compiled as template, be watched and updated', function() {
         var option;
         createSingleSelect('<option value="">blank is {{blankVal}}</option>');
 
@@ -1626,7 +1626,7 @@ describe('select', function() {
       });
 
 
-      it('should support binding via ngBindTemplate directive', function () {
+      it('should support binding via ngBindTemplate directive', function() {
         var option;
         createSingleSelect('<option value="" ng-bind-template="blank is {{blankVal}}"></option>');
 
@@ -1643,7 +1643,7 @@ describe('select', function() {
       });
 
 
-      it('should support biding via ngBind attribute', function () {
+      it('should support biding via ngBind attribute', function() {
         var option;
         createSingleSelect('<option value="" ng-bind="blankVal"></option>');
 
@@ -1660,7 +1660,7 @@ describe('select', function() {
       });
 
 
-      it('should be rendered with the attributes preserved', function () {
+      it('should be rendered with the attributes preserved', function() {
         var option;
         createSingleSelect('<option value="" class="coyote" id="road-runner" ' +
           'custom-attr="custom-attr">{{blankVal}}</option>');

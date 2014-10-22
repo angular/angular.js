@@ -156,7 +156,7 @@ describe('$http', function() {
           });
         });
         inject(function($http, $httpBackend, $rootScope) {
-          $httpBackend.expect('GET', '/intercepted', null, function (headers) {
+          $httpBackend.expect('GET', '/intercepted', null, function(headers) {
             return headers.foo === 'intercepted';
           }).respond('');
           $http.get('/url');
@@ -177,7 +177,7 @@ describe('$http', function() {
           });
         });
         inject(function($http, $httpBackend, $rootScope) {
-          $httpBackend.expect('GET', '/url', null, function (headers) {
+          $httpBackend.expect('GET', '/url', null, function(headers) {
             return angular.equals(headers, {foo: 'intercepted'});
           }).respond('');
           $http.get('/url');
@@ -657,7 +657,7 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
-      it('should delete default headers if custom header function returns null', function () {
+      it('should delete default headers if custom header function returns null', function() {
 
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return !('Accept' in headers);
@@ -961,7 +961,7 @@ describe('$http', function() {
         });
 
 
-        it('should ignore Blob objects', function () {
+        it('should ignore Blob objects', function() {
           if (!window.Blob) return;
 
           var blob = new Blob(['blob!'], { type: 'text/plain' });
@@ -1211,7 +1211,7 @@ describe('$http', function() {
         expect(callback.mostRecentCall.args[0]).toBe('content');
       }));
 
-      it('should cache request when cache is provided and no method specified', function () {
+      it('should cache request when cache is provided and no method specified', function() {
         doFirstCacheRequest();
 
         $http({url: '/url', cache: cache}).success(callback);
@@ -1349,10 +1349,10 @@ describe('$http', function() {
       });
 
 
-      it('should allow the cached value to be an empty string', function () {
+      it('should allow the cached value to be an empty string', function() {
         cache.put('/abc', '');
 
-        callback.andCallFake(function (response, status, headers) {
+        callback.andCallFake(function(response, status, headers) {
           expect(response).toBe('');
           expect(status).toBe(200);
         });
@@ -1378,7 +1378,7 @@ describe('$http', function() {
           })
       );
 
-      describe('$http.defaults.cache', function () {
+      describe('$http.defaults.cache', function() {
 
         it('should be undefined by default', function() {
           expect($http.defaults.cache).toBeUndefined();

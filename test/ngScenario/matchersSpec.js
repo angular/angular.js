@@ -1,6 +1,6 @@
 'use strict';
 
-describe('angular.scenario.matchers', function () {
+describe('angular.scenario.matchers', function() {
   var matchers;
 
   function expectMatcher(value, test) {

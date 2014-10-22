@@ -28,7 +28,7 @@ beforeEach(function() {
   function isNgElementHidden(element) {
     // we need to check element.getAttribute for SVG nodes
     var hidden = true;
-    forEach(angular.element(element), function (element) {
+    forEach(angular.element(element), function(element) {
       if ((' ' +(element.getAttribute('class') || '') + ' ').indexOf(' ng-hide ') === -1) {
         hidden = false;
       }
@@ -184,7 +184,7 @@ beforeEach(function() {
       var result,
         exception,
         exceptionMessage = '',
-        escapeRegexp = function (str) {
+        escapeRegexp = function(str) {
           // This function escapes all special regex characters.
           // We use it to create matching regex from arbitrary strings.
           // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
@@ -209,7 +209,7 @@ beforeEach(function() {
         exceptionMessage = exception.message || exception;
       }
 
-      this.message = function () {
+      this.message = function() {
         return "Expected function " + not + "to throw " +
           namespace + "MinErr('" + code + "')" +
           (regex ? " matching " + regex.toString() : "") +

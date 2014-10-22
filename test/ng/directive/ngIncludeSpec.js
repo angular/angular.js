@@ -110,8 +110,8 @@ describe('ngInclude', function() {
   }));
 
   it('should fire $includeContentRequested event on scope after making the xhr call', inject(
-      function ($rootScope, $compile, $httpBackend) {
-    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event) {
+      function($rootScope, $compile, $httpBackend) {
+    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function(event) {
       expect(event.targetScope).toBe($rootScope);
     });
 
@@ -427,7 +427,7 @@ describe('ngInclude', function() {
         compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
       });
 
@@ -444,7 +444,7 @@ describe('ngInclude', function() {
 
       element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = true;
       });
@@ -452,7 +452,7 @@ describe('ngInclude', function() {
       expect($animate.queue.shift().event).toBe('enter');
       $animate.triggerCallbacks();
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'another.html';
         $rootScope.value = 'some-string';
       });
@@ -479,7 +479,7 @@ describe('ngInclude', function() {
         compileAndLink('<div><ng:include src="tpl"></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
       });
 
@@ -494,7 +494,7 @@ describe('ngInclude', function() {
 
       element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = false;
       });
@@ -502,12 +502,12 @@ describe('ngInclude', function() {
       expect($animate.queue.shift().event).toBe('enter');
       $animate.triggerCallbacks();
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = undefined;
       });
 
-      $rootScope.$apply(function () {
+      $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
         $rootScope.value = null;
       });
@@ -742,7 +742,7 @@ describe('ngInclude animations', function() {
         return $delegate;
       });
     });
-    inject(function ($compile, $rootScope, $animate, $templateCache) {
+    inject(function($compile, $rootScope, $animate, $templateCache) {
       var item;
       var $scope = $rootScope.$new();
       element = $compile(html(

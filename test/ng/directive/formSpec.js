@@ -89,7 +89,7 @@ describe('form', function() {
     expect(scope.myForm.alias).toBeDefined();
   });
 
-  it('should use ngForm value as form name when nested inside form', function () {
+  it('should use ngForm value as form name when nested inside form', function() {
     doc = $compile(
       '<form name="myForm">' +
         '<div ng-form="nestedForm"><input type="text" name="alias" ng-model="value"/></div>' +
@@ -174,7 +174,7 @@ describe('form', function() {
     }).toThrowMinErr('ng', 'badname');
   });
 
-  describe('triggering commit value on submit', function () {
+  describe('triggering commit value on submit', function() {
     it('should trigger update on form submit', function() {
       var form = $compile(
           '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
@@ -226,7 +226,7 @@ describe('form', function() {
     });
   });
 
-  describe('rollback view value', function () {
+  describe('rollback view value', function() {
     it('should trigger rollback on form controls', function() {
       var form = $compile(
           '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
@@ -761,7 +761,7 @@ describe('form', function() {
     });
   });
 
-  describe('$setUntouched', function () {
+  describe('$setUntouched', function() {
     it('should trigger setUntouched on form controls', function() {
       var form = $compile(
           '<form name="myForm">' +

@@ -9,7 +9,7 @@ describe('Binder', function() {
   }
 
   beforeEach(function() {
-    this.compileToHtml = function (content) {
+    this.compileToHtml = function(content) {
       var html;
       inject(function($rootScope, $compile) {
         content = jqLite(content);
@@ -369,7 +369,7 @@ describe('Binder', function() {
     expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
   }));
 
-  it('ShouldTemplateBindPreElements', inject(function ($rootScope, $compile) {
+  it('ShouldTemplateBindPreElements', inject(function($rootScope, $compile) {
     element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
     $rootScope.name = "World";
     $rootScope.$apply();
@@ -442,7 +442,7 @@ describe('Binder', function() {
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
     element = $compile('<div ng-bind="name"></div>')($rootScope);
     $rootScope.name = '';
-    $rootScope.$watch('watched', function () {
+    $rootScope.$watch('watched', function() {
       $rootScope.name = 123;
     });
     $rootScope.watched = 'change';
