@@ -726,18 +726,18 @@ describe('select', function() {
       });
 
 
-        it('should use the tracked expression as option value', function () {
-            createSelect({
-                'ng-model': 'selected',
-                'ng-options': 'item.label for item in arr track by item.id'
-            });
-
-            var options = element.find('option');
-            expect(options.length).toEqual(3);
-            expect(sortedHtml(options[0])).toEqual('<option value="?"></option>');
-            expect(sortedHtml(options[1])).toEqual('<option value="10">ten</option>');
-            expect(sortedHtml(options[2])).toEqual('<option value="20">twenty</option>');
+      it('should use the tracked expression as option value', function () {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item.label for item in arr track by item.id'
         });
+
+        var options = element.find('option');
+        expect(options.length).toEqual(3);
+        expect(sortedHtml(options[0])).toEqual('<option value="?"></option>');
+        expect(sortedHtml(options[1])).toEqual('<option value="10">ten</option>');
+        expect(sortedHtml(options[2])).toEqual('<option value="20">twenty</option>');
+      });
 
       it('should preserve value even when reference has changed (single&array)', function() {
         createSelect({
