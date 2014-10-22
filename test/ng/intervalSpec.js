@@ -288,14 +288,14 @@ describe('$interval', function() {
   });
 
   describe('$window delegation', function() {
-    it('should use $window.setInterval instead of the global function', inject(function ($interval, $window) {
+    it('should use $window.setInterval instead of the global function', inject(function($interval, $window) {
       var setIntervalSpy = spyOn($window, 'setInterval');
 
       $interval(noop, 1000);
       expect(setIntervalSpy).toHaveBeenCalled();
     }));
 
-    it('should use $window.clearInterval instead of the global function', inject(function ($interval, $window) {
+    it('should use $window.clearInterval instead of the global function', inject(function($interval, $window) {
       var clearIntervalSpy = spyOn($window, 'clearInterval');
 
       $interval(noop, 1000, 1);

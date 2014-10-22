@@ -87,6 +87,7 @@ function pluralExtractor(content, localeInfo) {
       continue;
     }
     var temp = goog.i18n.pluralRules.select.toString().
+        replace(/function\s+\(/g, 'function(').
         replace(/goog\.i18n\.pluralRules\.Keyword/g, 'PLURAL_CATEGORY').
         replace(/goog\.i18n\.pluralRules\.get_vf_/g, 'getVF').
         replace(/goog\.i18n\.pluralRules\.get_wt_/g, 'getWT').

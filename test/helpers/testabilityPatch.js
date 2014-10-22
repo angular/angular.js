@@ -57,8 +57,8 @@ afterEach(function() {
 
     cache = angular.element.cache;
 
-    forEachSorted(cache, function (expando, key) {
-      angular.forEach(expando.data, function (value, key) {
+    forEachSorted(cache, function(expando, key) {
+      angular.forEach(expando.data, function(value, key) {
         count++;
         if (value && value.$element) {
           dump('LEAK', key, value.$id, sortedHtml(value.$element));
@@ -334,7 +334,7 @@ var karmaDump = window.dump || function() {
   window.console.log.apply(window.console, arguments);
 };
 
-window.dump = function () {
+window.dump = function() {
   karmaDump.apply(undefined, Array.prototype.map.call(arguments, function(arg) {
     return angular.mock.dump(arg);
   }));

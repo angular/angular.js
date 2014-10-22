@@ -41,7 +41,7 @@ function classDirective(name, selector) {
         function digestClassCounts(classes, count) {
           var classCounts = element.data('$classCounts') || {};
           var classesToUpdate = [];
-          forEach(classes, function (className) {
+          forEach(classes, function(className) {
             if (count > 0 || classCounts[className]) {
               classCounts[className] = (classCounts[className] || 0) + count;
               if (classCounts[className] === +(count > 0)) {

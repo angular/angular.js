@@ -17,7 +17,7 @@ describe('angular', function() {
   });
 
   describe("copy", function() {
-    it("should return same object", function () {
+    it("should return same object", function() {
       var obj = {};
       var arr = [];
       expect(copy({}, obj)).toBe(obj);
@@ -171,7 +171,7 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
 
-    it('should handle circular references when circularRefs is turned on', function () {
+    it('should handle circular references when circularRefs is turned on', function() {
       var a = {b: {a: null}, self: null, selfs: [null, null, [null]]};
       a.b.a = a;
       a.self = a;
@@ -623,7 +623,7 @@ describe('angular', function() {
       var log = [];
       var collection = [];
       collection[5] = 'SPARSE';
-      forEach(collection, function (item, index) {
+      forEach(collection, function(item, index) {
         log.push(item + index);
       });
       expect(log.length).toBe(1);
@@ -772,7 +772,7 @@ describe('angular', function() {
 
     beforeEach(function() {
       element = {
-        hasAttribute: function (name) {
+        hasAttribute: function(name) {
           return !!element[name];
         },
 
@@ -838,11 +838,11 @@ describe('angular', function() {
     });
 
 
-    it('should complain if an element has already been bootstrapped', function () {
+    it('should complain if an element has already been bootstrapped', function() {
       var element = jqLite('<div>bootstrap me!</div>');
       angular.bootstrap(element);
 
-      expect(function () {
+      expect(function() {
         angular.bootstrap(element);
       }).toThrowMatching(
         /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
@@ -852,9 +852,9 @@ describe('angular', function() {
     });
 
 
-    it('should complain if manually bootstrapping a document whose <html> element has already been bootstrapped', function () {
+    it('should complain if manually bootstrapping a document whose <html> element has already been bootstrapped', function() {
       angular.bootstrap(document.getElementsByTagName('html')[0]);
-      expect(function () {
+      expect(function() {
         angular.bootstrap(document);
       }).toThrowMatching(
         /\[ng:btstrpd\] App Already Bootstrapped with this Element 'document'/i
@@ -933,7 +933,7 @@ describe('angular', function() {
   });
 
 
-  describe('isWindow', function () {
+  describe('isWindow', function() {
     it('should return true for the Window object', function() {
       expect(isWindow(window)).toBe(true);
     });

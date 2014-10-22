@@ -5,7 +5,7 @@ describe('ngShow / ngHide', function() {
 
   function expectVisibility(exprs, ngShowOrNgHide, shownOrHidden) {
     element = $compile('<div></div>')($scope);
-    forEach(exprs, function (expr) {
+    forEach(exprs, function(expr) {
       var childElem = $compile('<div ' + ngShowOrNgHide + '="' + expr + '"></div>')($scope);
       element.append(childElem);
       $scope.$digest();
@@ -13,7 +13,7 @@ describe('ngShow / ngHide', function() {
     });
   }
 
-  beforeEach(inject(function ($rootScope, _$compile_) {
+  beforeEach(inject(function($rootScope, _$compile_) {
     $scope = $rootScope.$new();
     $compile = _$compile_;
   }));

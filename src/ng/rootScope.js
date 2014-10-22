@@ -424,7 +424,7 @@ function $RootScopeProvider() {
         if (!watchExpressions.length) {
           // No expressions means we call the listener ASAP
           var shouldCall = true;
-          self.$evalAsync(function () {
+          self.$evalAsync(function() {
             if (shouldCall) listener(newValues, newValues, self);
           });
           return function deregisterWatchGroup() {
@@ -441,7 +441,7 @@ function $RootScopeProvider() {
           });
         }
 
-        forEach(watchExpressions, function (expr, i) {
+        forEach(watchExpressions, function(expr, i) {
           var unwatchFn = self.$watch(expr, function watchGroupSubAction(value, oldValue) {
             newValues[i] = value;
             oldValues[i] = oldValue;

@@ -32,12 +32,12 @@
 
 function minErr(module, ErrorConstructor) {
   ErrorConstructor = ErrorConstructor || Error;
-  return function () {
+  return function() {
     var code = arguments[0],
       prefix = '[' + (module ? module + ':' : '') + code + '] ',
       template = arguments[1],
       templateArgs = arguments,
-      stringify = function (obj) {
+      stringify = function(obj) {
         if (typeof obj === 'function') {
           return obj.toString().replace(/ \{[\s\S]*$/, '');
         } else if (typeof obj === 'undefined') {
@@ -49,7 +49,7 @@ function minErr(module, ErrorConstructor) {
       },
       message, i;
 
-    message = prefix + template.replace(/\{\d+\}/g, function (match) {
+    message = prefix + template.replace(/\{\d+\}/g, function(match) {
       var index = +match.slice(1, -1), arg;
 
       if (index + 2 < templateArgs.length) {

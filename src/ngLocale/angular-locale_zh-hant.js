@@ -92,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "zh-hant",
-  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

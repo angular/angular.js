@@ -722,7 +722,7 @@ describe('ngMock', function() {
               'other': { some: 'replacement'}
             },
             'ngResource',
-            function ($provide) { $provide.value('example', 'win'); }
+            function($provide) { $provide.value('example', 'win'); }
           );
         });
 
@@ -754,7 +754,7 @@ describe('ngMock', function() {
 
           it('should add hashKey to module function', function() {
             module(testFn);
-            inject(function () {
+            inject(function() {
               expect(testFn.$$hashKey).toBeDefined();
             });
           });
@@ -1056,7 +1056,7 @@ describe('ngMock', function() {
       });
 
       it('should take function', function() {
-        hb.expect('GET', '/some').respond(function (m, u, d, h) {
+        hb.expect('GET', '/some').respond(function(m, u, d, h) {
           return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
         });
 

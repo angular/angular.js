@@ -196,7 +196,7 @@ describe('filters', function() {
     });
   });
 
-  describe('json', function () {
+  describe('json', function() {
     it('should do basic filter', function() {
       expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
     });
@@ -390,7 +390,7 @@ describe('filters', function() {
       expect(date('2003-09-10', format)).toEqual('2003-09-10 00-00-00');
     });
 
-    it('should support different degrees of subsecond precision', function () {
+    it('should support different degrees of subsecond precision', function() {
       var format = 'yyyy-MM-dd ss';
 
       var localDay = new Date(Date.UTC(2003, 9-1, 10, 13, 2, 3, 123)).getDate();

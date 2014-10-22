@@ -1772,7 +1772,7 @@ describe("ngAnimate", function() {
 
 
           it("should animate for the highest duration",
-            inject(function ($animate, $rootScope, $compile, $sniffer) {
+            inject(function($animate, $rootScope, $compile, $sniffer) {
               var style = '-webkit-transition:1s linear all 2s;' +
                                   'transition:1s linear all 2s;' +
                           '-webkit-animation:my_ani 10s 1s;' +
@@ -2386,7 +2386,7 @@ describe("ngAnimate", function() {
       });
 
 
-      describe('animation evaluation', function () {
+      describe('animation evaluation', function() {
 
         it('should re-evaluate the CSS classes for an animation each time',
           inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout, $compile) {

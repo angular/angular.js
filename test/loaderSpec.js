@@ -3,7 +3,7 @@
 describe('module loader', function() {
   var window;
 
-  beforeEach(function () {
+  beforeEach(function() {
     window = {};
     setupModuleLoader(window);
   });

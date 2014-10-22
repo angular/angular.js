@@ -442,7 +442,7 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should return original backend status code if different from 0', function () {
+    it('should return original backend status code if different from 0', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
       // request to http://

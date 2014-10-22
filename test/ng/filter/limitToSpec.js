@@ -58,7 +58,7 @@ describe('Filter: limitTo', function() {
   });
 
 
-  it('should return a copy of input array if X is exceeds array length', function () {
+  it('should return a copy of input array if X is exceeds array length', function() {
     expect(limitTo(items, 9)).toEqual(items);
     expect(limitTo(items, '9')).toEqual(items);
     expect(limitTo(items, -9)).toEqual(items);
