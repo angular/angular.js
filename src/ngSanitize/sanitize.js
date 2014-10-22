@@ -195,7 +195,7 @@ var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a
 
 // SVG Elements
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Elements
-var svgElements = makeMap("a,animate,animateColor,animateMotion,animateTransform,circle,defs," +
+var svgElements = makeMap("animate,animateColor,animateMotion,animateTransform,circle,defs," +
         "desc,ellipse,font-face,font-face-name,font-face-src,g,glyph,hkern,image,linearGradient," +
         "line,marker,metadata,missing-glyph,mpath,path,polygon,polyline,radialGradient,rect,set," +
         "stop,svg,switch,text,title,tspan,use");
@@ -216,7 +216,7 @@ var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap,xmlns:href");
 var htmlAttrs = makeMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,'+
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,'+
-    'scope,scrolling,shape,size,span,start,summary,svg,target,title,type,'+
+    'scope,scrolling,shape,size,span,start,summary,target,title,type,'+
     'valign,value,vspace,width');
 
 // SVG attributes (without "id" and "name" attributes)
