@@ -846,7 +846,7 @@ describe('ngView animations', function() {
     });
 
     it('should destroy the previous leave animation if a new one takes place',
-      inject(function ($compile, $rootScope, $animate, $location, $timeout) {
+      inject(function($compile, $rootScope, $animate, $location, $timeout) {
         var $scope = $rootScope.$new();
         element = $compile(html(
           '<div>' +
@@ -879,7 +879,7 @@ describe('ngView animations', function() {
   });
 
 
-  describe('autoscroll', function () {
+  describe('autoscroll', function() {
     var autoScrollSpy;
 
     function spyOnAnchorScroll() {

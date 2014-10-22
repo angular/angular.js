@@ -160,7 +160,7 @@ describe('SCE', function() {
     it('should NOT unwrap values when the type is different', inject(function($sce) {
       var originalValue = "originalValue";
       var wrappedValue = $sce.trustAs($sce.HTML, originalValue);
-      expect(function () { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
+      expect(function() { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
@@ -217,7 +217,7 @@ describe('SCE', function() {
       expect($sce.parseAsJs('"string"')()).toBe("string");
     }));
 
-    it('should be possible to do one-time binding', function () {
+    it('should be possible to do one-time binding', function() {
       module(provideLog);
       inject(function($sce, $rootScope, log) {
         $rootScope.$watch($sce.parseAsHtml('::foo'), function(value) {

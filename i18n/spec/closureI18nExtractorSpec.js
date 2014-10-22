@@ -56,7 +56,7 @@ function newTestLocaleInfo() {
 }
 
 
-describe("findLocaleId", function () {
+describe("findLocaleId", function() {
   it("should find the id from numbers", function() {
     expect(findLocaleId("NumberFormatSymbols_en_GB", "num")).toEqual("en_GB");
   });
@@ -74,7 +74,7 @@ describe("findLocaleId", function () {
   });
 });
 
-describe("extractNumberSymbols", function () {
+describe("extractNumberSymbols", function() {
   it("should extract number data", function() {
     var CONTENT = [
       "goog.provide('goog.i18n.NumberFormatSymbols_en_GB');",
@@ -117,7 +117,7 @@ describe("extractNumberSymbols", function () {
   })
 });
 
-describe("extractCurrencySymbols", function () {
+describe("extractCurrencySymbols", function() {
   it("should extract currency data", function() {
     var CONTENT = [
       "goog.i18n.currency.CurrencyInfo = {",
@@ -137,7 +137,7 @@ describe("extractCurrencySymbols", function () {
 });
 
 
-describe("extractDateTimeSymbols", function () {
+describe("extractDateTimeSymbols", function() {
   it("should extract date time data", function() {
     var CONTENT = [
 "goog.i18n.DateTimeSymbols_fr_CA = {",

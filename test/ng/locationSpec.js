@@ -13,11 +13,11 @@ describe('$location', function() {
   });
 
 
-  describe('File Protocol', function () {
+  describe('File Protocol', function() {
     /* global urlParsingNode: true */
     var urlParsingNodePlaceholder;
 
-    beforeEach(inject(function ($sniffer) {
+    beforeEach(inject(function($sniffer) {
       if (msie) return;
 
       urlParsingNodePlaceholder = urlParsingNode;
@@ -37,14 +37,14 @@ describe('$location', function() {
       };
     }));
 
-    afterEach(inject(function ($sniffer) {
+    afterEach(inject(function($sniffer) {
       if (msie) return;
       //reset urlParsingNode
       urlParsingNode = urlParsingNodePlaceholder;
     }));
 
 
-    it('should not include the drive name in path() on WIN', function () {
+    it('should not include the drive name in path() on WIN', function() {
       //See issue #4680 for details
       url = new LocationHashbangUrl('file:///base', '#!');
       url.$$parse('file:///base#!/foo?a=b&c#hash');
@@ -53,7 +53,7 @@ describe('$location', function() {
     });
 
 
-    it('should include the drive name if it was provided in the input url', function () {
+    it('should include the drive name if it was provided in the input url', function() {
       url = new LocationHashbangUrl('file:///base', '#!');
       url.$$parse('file:///base#!/C:/foo?a=b&c#hash');
 
@@ -148,7 +148,7 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/0?search=a&b=c&d#hash');
     });
 
-    it('path() should set to empty path on null value', function () {
+    it('path() should set to empty path on null value', function() {
       url.path('/foo');
       expect(url.path()).toBe('/foo');
       url.path(null);
@@ -398,7 +398,7 @@ describe('$location', function() {
     });
 
 
-    describe('state', function () {
+    describe('state', function() {
       it('should set $$state and return itself', function() {
         expect(url.$$state).toEqual(null);
 
@@ -407,7 +407,7 @@ describe('$location', function() {
         expect(returned).toBe(url);
       });
 
-      it('should set state', function () {
+      it('should set state', function() {
         url.state({a: 2});
         expect(url.state()).toEqual({a: 2});
       });
@@ -944,7 +944,7 @@ describe('$location', function() {
       );
     });
 
-    it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
+    it('should correctly convert html5 url with path matching basepath to hashbang url', function() {
       initService({html5Mode:true,hashPrefix: '!',supportHistory: false});
       inject(
         initBrowser({url:'http://domain.com/base/index.html',basePath: '/base/index.html'}),
@@ -1942,7 +1942,7 @@ describe('$location', function() {
 
 
   function throwOnState(location) {
-    expect(function () {
+    expect(function() {
       location.state({a: 2});
     }).toThrowMinErr('$location', 'nostate', 'History API state support is available only ' +
       'in HTML5 mode and only in browsers supporting HTML5 History API'
@@ -2004,7 +2004,7 @@ describe('$location', function() {
       expect(location.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
     });
 
-    it('should throw on url(urlString, stateObject)', function () {
+    it('should throw on url(urlString, stateObject)', function() {
       throwOnState(location);
     });
   });
@@ -2034,7 +2034,7 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationIndex, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/index.html#!/otherPath#test');
     });
 
-    it('should throw on url(urlString, stateObject)', function () {
+    it('should throw on url(urlString, stateObject)', function() {
       throwOnState(location);
     });
   });

@@ -260,7 +260,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
                         : className;
-        forEach(element, function (element) {
+        forEach(element, function(element) {
           jqLiteAddClass(element, className);
         });
         applyStyles(element, options);
@@ -289,7 +289,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         className = !isString(className)
                         ? (isArray(className) ? className.join(' ') : '')
                         : className;
-        forEach(element, function (element) {
+        forEach(element, function(element) {
           jqLiteRemoveClass(element, className);
         });
         applyStyles(element, options);

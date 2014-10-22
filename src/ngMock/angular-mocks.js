@@ -309,7 +309,7 @@ angular.mock.$LogProvider = function() {
     }
   };
 
-  this.$get = function () {
+  this.$get = function() {
     var $log = {
       log: function() { $log.log.logs.push(concat([], arguments, 0)); },
       warn: function() { $log.warn.logs.push(concat([], arguments, 0)); },
@@ -329,7 +329,7 @@ angular.mock.$LogProvider = function() {
      * @description
      * Reset all of the logging arrays to empty.
      */
-    $log.reset = function () {
+    $log.reset = function() {
       /**
        * @ngdoc property
        * @name $log#log.logs
@@ -414,7 +414,7 @@ angular.mock.$LogProvider = function() {
       var errors = [];
       angular.forEach(['error', 'warn', 'info', 'log', 'debug'], function(logLevel) {
         angular.forEach($log[logLevel].logs, function(log) {
-          angular.forEach(log, function (logItem) {
+          angular.forEach(log, function(logItem) {
             errors.push('MOCK $log (' + logLevel + '): ' + String(logItem) + '\n' +
                         (logItem.stack || ''));
           });
@@ -638,7 +638,7 @@ function padNumber(num, digits, trim) {
  * ```
  *
  */
-angular.mock.TzDate = function (offset, timestamp) {
+angular.mock.TzDate = function(offset, timestamp) {
   var self = new Date(0);
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
@@ -1379,7 +1379,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
   $httpBackend.expect = function(method, url, data, headers) {
     var expectation = new MockHttpExpectation(method, url, data, headers),
         chain = {
-          respond: function (status, data, headers, statusText) {
+          respond: function(status, data, headers, statusText) {
             expectation.response = createResponse(status, data, headers, statusText);
             return chain;
           }
@@ -1704,7 +1704,7 @@ function MockXhr() {
  * that adds a "flush" and "verifyNoPendingTasks" methods.
  */
 
-angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function ($delegate, $browser) {
+angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $browser) {
 
   /**
    * @ngdoc method

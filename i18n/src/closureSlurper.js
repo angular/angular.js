@@ -80,7 +80,7 @@ function writeLocaleFiles() {
     var filename = NG_LOCALE_DIR + 'angular-locale_' + correctedLocaleId + '.js'
     console.log('Writing ' + filename);
     return qfs.write(filename, content)
-        .then(function () {
+        .then(function() {
           console.log('Wrote ' + filename);
           ++num_files;
         });

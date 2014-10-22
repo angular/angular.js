@@ -12,9 +12,9 @@ describe('parser', function() {
   describe('lexer', function() {
     var lex;
 
-    beforeEach(function () {
+    beforeEach(function() {
       /* global Lexer: false */
-      lex = function () {
+      lex = function() {
         var lexer = new Lexer({csp: false});
         return lexer.lex.apply(lexer, arguments);
       };
@@ -71,7 +71,7 @@ describe('parser', function() {
       expect(tokens[i].string).toEqual('d"e');
     });
 
-    it('should tokenize identifiers with spaces after dots', function () {
+    it('should tokenize identifiers with spaces after dots', function() {
       var tokens = lex('foo. bar');
       expect(tokens[0].text).toEqual('foo');
       expect(tokens[1].text).toEqual('.');
@@ -202,7 +202,7 @@ describe('parser', function() {
 
   var $filterProvider, scope;
 
-  beforeEach(module(['$filterProvider', function (filterProvider) {
+  beforeEach(module(['$filterProvider', function(filterProvider) {
     $filterProvider = filterProvider;
   }]));
 
@@ -217,7 +217,7 @@ describe('parser', function() {
         });
       }, provideLog));
 
-      beforeEach(inject(function ($rootScope) {
+      beforeEach(inject(function($rootScope) {
         scope = $rootScope;
       }));
 
@@ -349,7 +349,7 @@ describe('parser', function() {
         expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
       });
 
-      it('should handle white-spaces around dots in paths', function () {
+      it('should handle white-spaces around dots in paths', function() {
         scope.a = {b: 4};
         expect(scope.$eval("a . b", scope)).toEqual(4);
         expect(scope.$eval("a. b", scope)).toEqual(4);
@@ -357,7 +357,7 @@ describe('parser', function() {
         expect(scope.$eval("a    . \nb", scope)).toEqual(4);
       });
 
-      it('should throw syntax error exception for identifiers ending with a dot', function () {
+      it('should throw syntax error exception for identifiers ending with a dot', function() {
         scope.a = {b: 4};
 
         expect(function() {
@@ -528,7 +528,7 @@ describe('parser', function() {
       });
 
       it('should evaluate object methods in correct context (this)', function() {
-        var C = function () {
+        var C = function() {
           this.a = 123;
         };
         C.prototype.getA = function() {
@@ -541,7 +541,7 @@ describe('parser', function() {
       });
 
       it('should evaluate methods in correct context (this) in argument', function() {
-        var C = function () {
+        var C = function() {
           this.a = 123;
         };
         C.prototype.sum = function(value) {
@@ -568,7 +568,7 @@ describe('parser', function() {
         expect(scope.$eval("a().name")).toEqual("misko");
       });
 
-      it('should evaluate field access after array access', function () {
+      it('should evaluate field access after array access', function() {
         scope.items =  [{}, {name:'misko'}];
         expect(scope.$eval('items[1].name')).toEqual("misko");
       });
@@ -767,7 +767,7 @@ describe('parser', function() {
           });
         });
 
-        describe('Function prototype functions', function () {
+        describe('Function prototype functions', function() {
           it('should NOT allow invocation to Function.call', function() {
             scope.fn = Function.prototype.call;
 
@@ -1245,8 +1245,8 @@ describe('parser', function() {
           expect(fn()).toEqual(null);
         }));
 
-        describe('literal expressions', function () {
-          it('should only become stable when all the properties of an object have defined values', inject(function ($parse, $rootScope, log) {
+        describe('literal expressions', function() {
+          it('should only become stable when all the properties of an object have defined values', inject(function($parse, $rootScope, log) {
             var fn = $parse('::{foo: foo, bar: bar}');
             $rootScope.$watch(fn, function(value) { log(value); }, true);
 
@@ -1274,7 +1274,7 @@ describe('parser', function() {
             expect(log.empty()).toEqual([]);
           }));
 
-          it('should only become stable when all the elements of an array have defined values', inject(function ($parse, $rootScope, log) {
+          it('should only become stable when all the elements of an array have defined values', inject(function($parse, $rootScope, log) {
             var fn = $parse('::[foo,bar]');
             $rootScope.$watch(fn, function(value) { log(value); }, true);
 

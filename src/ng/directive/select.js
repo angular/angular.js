@@ -664,7 +664,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               updateLabelMap(labelMap, option.label, false);
               option.element.remove();
             }
-            forEach(labelMap, function (count, label) {
+            forEach(labelMap, function(count, label) {
               if (count > 0) {
                 selectCtrl.addOption(label);
               } else if (count < 0) {
@@ -699,7 +699,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
         }
       }
 
-      return function (scope, element, attr) {
+      return function(scope, element, attr) {
         var selectCtrlName = '$selectController',
             parent = element.parent(),
             selectCtrl = parent.data(selectCtrlName) ||

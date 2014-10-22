@@ -115,7 +115,7 @@ function $AriaProvider() {
    */
   this.$get = function() {
     return {
-      config: function (key) {
+      config: function(key) {
         return config[camelCase(key)];
       },
       $$watchExpr: watchExpr

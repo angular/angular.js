@@ -59,7 +59,7 @@ describe('injector', function() {
 
 
   it('should allow query names', function() {
-    providers('abc', function () { return ''; });
+    providers('abc', function() { return ''; });
 
     expect(injector.has('abc')).toBe(true);
     expect(injector.has('xyz')).toBe(false);
@@ -154,9 +154,11 @@ describe('injector', function() {
       fn.$inject = ['a'];
       expect(annotate(fn)).toBe(fn.$inject);
       expect(annotate(function() {})).toEqual([]);
-      expect(annotate(function () {})).toEqual([]);
+      expect(annotate(function() {})).toEqual([]);
+      // jscs:disable disallowSpacesInAnonymousFunctionExpression
       expect(annotate(function  () {})).toEqual([]);
       expect(annotate(function /* */ () {})).toEqual([]);
+      // jscs:enable disallowSpacesInAnonymousFunctionExpression
     });
 
 
@@ -169,7 +171,7 @@ describe('injector', function() {
           $a, // x, <-- looks like an arg but it is a comment
           b_, /* z, <-- looks like an arg but it is a
                  multi-line comment
-                 function (a, b) {}
+                 function(a, b) {}
                  */
           _c,
           /* {some type} */ d) { extraParans();}
@@ -304,7 +306,7 @@ describe('injector', function() {
 
     it('should load different instances of dependent functions', function() {
       function  generateValueModule(name, value) {
-        return function ($provide) {
+        return function($provide) {
           $provide.value(name, value);
         };
       }
