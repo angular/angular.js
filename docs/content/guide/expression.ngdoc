@@ -278,9 +278,9 @@ digest cycle as long as that value is not undefined. If the value of the express
 within the digest loop and later, within the same digest loop, it is set to undefined,
 then the expression is not fulfilled and will remain watched.
 
-  1. Given an expression that starts with `::` when a digest loop is entered and expression
-     is dirty-checked store the value as V
-  2. If V is not undefined mark the result of the expression as stable and schedule a task
+  1. Given an expression that starts with `::`, when a digest loop is entered and expression
+     is dirty-checked, store the value as V
+  2. If V is not undefined, mark the result of the expression as stable and schedule a task
      to deregister the watch for this expression when we exit the digest loop
   3. Process the digest loop as normal
   4. When digest loop is done and all the values have settled process the queue of watch
