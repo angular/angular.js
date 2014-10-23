@@ -14,14 +14,6 @@ if (window.bindJQuery) bindJQuery();
 beforeEach(function() {
   // all this stuff is not needed for module tests, where jqlite and publishExternalAPI and jqLite are not global vars
   if (window.publishExternalAPI) {
-    publishExternalAPI(angular);
-
-    // workaround for IE bug https://plus.google.com/104744871076396904202/posts/Kqjuj6RSbbT
-    // IE overwrite window.jQuery with undefined because of empty jQuery var statement, so we have to
-    // correct this, but only if we are not running in jqLite mode
-    if (!_jqLiteMode && _jQuery !== jQuery) {
-      jQuery = _jQuery;
-    }
 
     // This resets global id counter;
     uid = 0;
