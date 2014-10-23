@@ -889,7 +889,7 @@ describe('$http', function() {
     describe('scope.$apply', function() {
 
       it('should $apply after success callback', function() {
-        $httpBackend.when('GET').respond(200);
+        $httpBackend.when('GET', null).respond(200);
         $http({method: 'GET', url: '/some'});
         $httpBackend.flush();
         expect($rootScope.$apply).toHaveBeenCalledOnce();
@@ -897,7 +897,7 @@ describe('$http', function() {
 
 
       it('should $apply after error callback', function() {
-        $httpBackend.when('GET').respond(404);
+        $httpBackend.when('GET', null).respond(404);
         $http({method: 'GET', url: '/some'});
         $httpBackend.flush();
         expect($rootScope.$apply).toHaveBeenCalledOnce();
@@ -905,7 +905,7 @@ describe('$http', function() {
 
 
       it('should $apply even if exception thrown during callback', inject(function($exceptionHandler){
-        $httpBackend.when('GET').respond(200);
+        $httpBackend.when('GET', null).respond(200);
         callback.andThrow('error in callback');
 
         $http({method: 'GET', url: '/some'}).then(callback);
@@ -1495,7 +1495,7 @@ describe('$http', function() {
     describe('pendingRequests', function() {
 
       it('should be an array of pending requests', function() {
-        $httpBackend.when('GET').respond(200);
+        $httpBackend.when('GET', null).respond(200);
         expect($http.pendingRequests.length).toBe(0);
 
         $http({method: 'get', url: '/some'});
@@ -1508,7 +1508,7 @@ describe('$http', function() {
 
 
       it('should update pending requests even when served from cache', inject(function($rootScope) {
-        $httpBackend.when('GET').respond(200);
+        $httpBackend.when('GET', null).respond(200);
 
         $http({method: 'get', url: '/cached', cache: true});
         $http({method: 'get', url: '/cached', cache: true});
@@ -1529,7 +1529,7 @@ describe('$http', function() {
 
 
       it('should remove the request before firing callbacks', function() {
-        $httpBackend.when('GET').respond(200);
+        $httpBackend.when('GET', null).respond(200);
         $http({method: 'get', url: '/url'}).success(function() {
           expect($http.pendingRequests.length).toBe(0);
         });
