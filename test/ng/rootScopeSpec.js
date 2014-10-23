@@ -922,6 +922,84 @@ describe('Scope', function() {
       expect(log).toEqual('');
     });
 
+    it('should perform shallow and deep watch', function() {
+      scope.$watchGroup({a: true, b: false}, function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(JSON.stringify(oldValues) + ' >>> ' + JSON.stringify(values));
+      });
+
+      scope.a = {foo: 'bar'};
+      scope.b = {baz: 'qux'};
+      scope.$digest();
+      expect(log).toEqual('{"a":{"foo":"bar"},"b":{"baz":"qux"}} >>> {"a":{"foo":"bar"},"b":{"baz":"qux"}}');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a.foo = 'a';
+      scope.b.baz = 'a';
+      scope.$digest();
+      expect(log).toEqual('{"a":{"foo":"bar"},"b":{"baz":"a"}} >>> {"a":{"foo":"a"},"b":{"baz":"a"}}');
+
+      log.reset();
+      scope.a.foo = 'A';
+      scope.b = {baz: 'B'};
+      scope.$digest();
+      expect(log).toEqual('{"a":{"foo":"a"},"b":{"baz":"a"}} >>> {"a":{"foo":"A"},"b":{"baz":"B"}}');
+    });
+
+    it('should work for an object with just a single key', function() {
+      scope.$watchGroup({a: false}, function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(JSON.stringify(oldValues) + ' >>> ' + JSON.stringify(values));
+      });
+
+      scope.a = 'foo';
+      scope.$digest();
+      expect(log).toEqual('{"a":"foo"} >>> {"a":"foo"}');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a = 'bar';
+      scope.$digest();
+      expect(log).toEqual('{"a":"foo"} >>> {"a":"bar"}');
+    });
+
+    it('should deep watch an object with just a single key', function() {
+      scope.$watchGroup({a: true}, function(values, oldValues, s) {
+        expect(s).toBe(scope);
+        log(JSON.stringify(oldValues) + ' >>> ' + JSON.stringify(values));
+      });
+
+      scope.a = {foo: 'bar'};
+      scope.$digest();
+      expect(log).toEqual('{"a":{"foo":"bar"}} >>> {"a":{"foo":"bar"}}');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+
+      scope.a.foo = 'baz';
+      scope.$digest();
+      expect(log).toEqual('{"a":{"foo":"bar"}} >>> {"a":{"foo":"baz"}}');
+    });
+
+    it('should call the listener once when the object of watchExpressions is empty', function() {
+      scope.$watchGroup({}, function(values, oldValues) {
+        log(JSON.stringify(oldValues) + ' >>> ' + JSON.stringify(values));
+      });
+
+      expect(log).toEqual('');
+      scope.$digest();
+      expect(log).toEqual('{} >>> {}');
+
+      log.reset();
+      scope.$digest();
+      expect(log).toEqual('');
+    });
 
     it('should not call watch action fn when watchGroup was deregistered', function() {
       var deregisterMany = scope.$watchGroup(['a', 'b'], function(values, oldValues) {

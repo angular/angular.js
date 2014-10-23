@@ -414,12 +414,24 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a de-registration function for all listeners.
        */
       $watchGroup: function(watchExpressions, listener) {
-        var oldValues = new Array(watchExpressions.length);
-        var newValues = new Array(watchExpressions.length);
+        var oldValues;
+        var newValues;
+        var watchEquality;
+        var watchKeys = Object.keys(watchExpressions);
         var deregisterFns = [];
         var self = this;
         var changeReactionScheduled = false;
         var firstRun = true;
+
+        if (isArray(watchExpressions)) {
+          oldValues = new Array(watchExpressions.length);
+          newValues = new Array(watchExpressions.length);
+        } else {
+          watchEquality = watchExpressions;
+          watchExpressions = watchKeys;
+          oldValues = {};
+          newValues = {};
+        }
 
         if (!watchExpressions.length) {
           // No expressions means we call the listener ASAP
@@ -434,22 +446,24 @@ function $RootScopeProvider(){
 
         if (watchExpressions.length === 1) {
           // Special case size of one
+          var key = watchKeys[0];
           return this.$watch(watchExpressions[0], function watchGroupAction(value, oldValue, scope) {
-            newValues[0] = value;
-            oldValues[0] = oldValue;
+            newValues[key] = value;
+            oldValues[key] = oldValue;
             listener(newValues, (value === oldValue) ? newValues : oldValues, scope);
-          });
+          }, watchEquality && watchEquality[key]);
         }
 
         forEach(watchExpressions, function (expr, i) {
+          var key = watchKeys[i];
           var unwatchFn = self.$watch(expr, function watchGroupSubAction(value, oldValue) {
-            newValues[i] = value;
-            oldValues[i] = oldValue;
+            newValues[key] = value;
+            oldValues[key] = oldValue;
             if (!changeReactionScheduled) {
               changeReactionScheduled = true;
               self.$evalAsync(watchGroupAction);
             }
-          });
+          }, watchEquality && watchEquality[key]);
           deregisterFns.push(unwatchFn);
         });
 
