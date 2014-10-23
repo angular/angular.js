@@ -1614,7 +1614,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var terminalPriority = -Number.MAX_VALUE,
           newScopeDirective,
           controllerDirectives = previousCompileContext.controllerDirectives,
-          controllers,
           newIsolateScopeDirective = previousCompileContext.newIsolateScopeDirective,
           templateDirective = previousCompileContext.templateDirective,
           nonTlbTranscludeDirective = previousCompileContext.nonTlbTranscludeDirective,
@@ -1904,8 +1903,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (controllerDirectives) {
-          // TODO: merge `controllers` and `elementControllers` into single object.
-          controllers = {};
           elementControllers = {};
           forEach(controllerDirectives, function(directive) {
             var locals = {
@@ -1931,8 +1928,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (!hasElementTranscludeDirective) {
               $element.data('$' + directive.name + 'Controller', controllerInstance.instance);
             }
-
-            controllers[directive.name] = controllerInstance;
           });
         }
 
@@ -1947,14 +1942,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                       isolateScope.$$isolateBindings,
                                       newIsolateScopeDirective, isolateScope);
         }
-        if (controllers) {
+        if (elementControllers) {
           // Initialize bindToController bindings for new/isolate scopes
           var scopeDirective = newIsolateScopeDirective || newScopeDirective;
           var bindings;
           var controllerForBindings;
-          if (scopeDirective && controllers[scopeDirective.name]) {
+          if (scopeDirective && elementControllers[scopeDirective.name]) {
             bindings = scopeDirective.$$bindings.bindToController;
-            controller = controllers[scopeDirective.name];
+            controller = elementControllers[scopeDirective.name];
 
             if (controller && controller.identifier && bindings) {
               controllerForBindings = controller;
@@ -1963,7 +1958,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                               bindings, scopeDirective);
             }
           }
-          forEach(controllers, function(controller) {
+          forEach(elementControllers, function(controller) {
             var result = controller();
             if (result !== controller.instance &&
                 controller === controllerForBindings) {
@@ -1974,7 +1969,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                               bindings, scopeDirective);
             }
           });
-          controllers = null;
         }
 
         // PRELINKING
