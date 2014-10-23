@@ -98,6 +98,19 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should support deep expression objects with multiple properties', function() {
+    var items = [{person: {name: 'Annet', email: 'annet@example.com'}},
+                 {person: {name: 'Billy', email: 'me@billy.com'}},
+                 {person: {name: 'Joan', email: 'joan@example.net'}},
+                 {person: {name: 'John', email: 'john@example.com'}},
+                 {person: {name: 'Rita', email: 'rita@example.com'}}];
+    var expr = {person: {name: 'Jo', email: '!example.com'}};
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)).toEqual([items[2]]);
+  });
+
+
   it('should match any properties for given "$" property', function() {
     var items = [{first: 'tom', last: 'hevery'},
                  {first: 'adam', last: 'hevery', alias: 'tom', done: false},
@@ -107,6 +120,19 @@ describe('Filter: filter', function() {
     expect(filter(items, {$: false}).length).toBe(1);
     expect(filter(items, {$: 10}).length).toBe(0);
     expect(filter(items, {$: 'hevery'})[0]).toEqual(items[0]);
+  });
+
+
+  it('should match any properties in the nested object for given deep "$" property', function() {
+    var items = [{person: {name: 'Annet', email: 'annet@example.com'}},
+                 {person: {name: 'Billy', email: 'me@billy.com'}},
+                 {person: {name: 'Joan', email: 'joan@example.net'}},
+                 {person: {name: 'John', email: 'john@example.com'}},
+                 {person: {name: 'Rita', email: 'rita@example.com'}}];
+    var expr = {person: {$: 'net'}};
+
+    expect(filter(items, expr).length).toBe(2);
+    expect(filter(items, expr)).toEqual([items[0], items[2]]);
   });
 
 
@@ -128,6 +154,7 @@ describe('Filter: filter', function() {
     expect(filter(items, '!isk').length).toBe(1);
     expect(filter(items, '!isk')[0]).toEqual(items[1]);
   });
+
 
   describe('should support comparator', function() {
 
@@ -176,6 +203,47 @@ describe('Filter: filter', function() {
 
       expr = 10;
       expect(filter(items, expr, comparator)).toEqual([items[2], items[3]]);
+    });
+
+
+    it('and use it correctly with deep expression objects', function() {
+      var items = [
+        {id: 0, details: {email: 'admin@example.com', role: 'admin'}},
+        {id: 1, details: {email: 'user1@example.com', role: 'user'}},
+        {id: 2, details: {email: 'user2@example.com', role: 'user'}}
+      ];
+      var expr, comp;
+
+      expr = {details: {email: 'user@example.com', role: 'adm'}};
+      expect(filter(items, expr)).toEqual([]);
+
+      expr = {details: {email: 'admin@example.com', role: 'adm'}};
+      expect(filter(items, expr)).toEqual([items[0]]);
+
+      expr = {details: {email: 'admin@example.com', role: 'adm'}};
+      expect(filter(items, expr, true)).toEqual([]);
+
+      expr = {details: {email: 'admin@example.com', role: 'admin'}};
+      expect(filter(items, expr, true)).toEqual([items[0]]);
+
+      expr = {details: {email: 'user', role: 'us'}};
+      expect(filter(items, expr)).toEqual([items[1], items[2]]);
+
+      expr = {id: 0, details: {email: 'user', role: 'us'}};
+      expect(filter(items, expr)).toEqual([]);
+
+      expr = {id: 1, details: {email: 'user', role: 'us'}};
+      expect(filter(items, expr)).toEqual([items[1]]);
+
+      comp = function(actual, expected) {
+        return isString(actual) && isString(expected) && (actual.indexOf(expected) === 0);
+      };
+
+      expr = {details: {email: 'admin@example.com', role: 'admn'}};
+      expect(filter(items, expr, comp)).toEqual([]);
+
+      expr = {details: {email: 'admin@example.com', role: 'adm'}};
+      expect(filter(items, expr, comp)).toEqual([items[0]]);
     });
   });
 });
