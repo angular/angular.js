@@ -219,6 +219,19 @@
  * Also, try not to mix the two class-based animation flavors together since the CSS code may become
  * overly complex.
  *
+ * <div class="alert alert-warning">
+ * **Note:** Some third-party frameworks place animation duration defaults across many element or className selectors in order to make their code small and reuseable.
+ * This can lead to issues with ngAnimate, which is expecting actual animations on these elements and has to wait for their completion.
+ * You can prevent this unwanted behavior by using a prefix on all your animation classes:
+ * ```css
+ * .animate-fade-add.animate-fade-add-active {
+ *   transition:1s linear all;
+ *   opacity:0;
+ * }
+ * ```
+ * After what you can configure `$animate` to enforce this prefix: `$animateProvider.classNamePrefix(/animate-/);`
+ * </div>
+ *
  * ### CSS Staggering Animations
  * A Staggering animation is a collection of animations that are issued with a slight delay in between each successive operation resulting in a
  * curtain-like effect. The ngAnimate module (versions >=1.2) supports staggering animations and the stagger effect can be
