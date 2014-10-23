@@ -146,6 +146,9 @@ function shallowClearAndCopy(src, dst) {
  *     By default, transformResponse will contain one function that checks if the response looks like
  *     a JSON string and deserializes it using `angular.fromJson`. To prevent this behavior, set
  *     `transformResponse` to an empty array: `transformResponse: []`
+ *   - **`transformParams`** – `{function(params)}` – transform function. The transform function
+ *     takes the http params as an object and returns its transformed (typically serialized)
+ *     version.
  *   - **`cache`** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
  *     GET request, otherwise if a cache instance built with
  *     {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
@@ -343,6 +346,26 @@ function shallowClearAndCopy(src, dst) {
  *    // This will PUT /notes/ID with the note object in the request payload
  *    }]);
  * ```
+ * # Serializing params
+ * In this example we serialize params at the action level
+    ```js
+      //param day expects a custom string that is only the year and month.
+      var User = $resource('/user/:userId/events/:day',
+      {userId: '@userId', day: '@day'}, {
+       events: {
+         method:'GET',
+         transformParams: function(params) {
+           angular.forEach(params, function(value, key) {
+             if (value instanceof Date) {
+               params[key] = value.getFullYear() + '-' + value.getUTCDate();
+             }
+           });
+           return params;
+         }
+       }
+      });
+     User.events({userId:123, day: new Date()});
+   ```
  */
 angular.module('ngResource', ['ng']).
   provider('$resource', function () {
@@ -423,6 +446,14 @@ angular.module('ngResource', ['ng']).
             encodedVal;
 
           var urlParams = self.urlParams = {};
+          if (config.transformParams) {
+            if(isFunction(config.transformParams)) {
+              params = config.transformParams(params);
+            } else {
+              throw $resourceMinErr('badcfg', 'Error in transformParams. Expected ' +
+                  'function but got an {0}', typeof(config.transformParams));
+            }
+          }
           forEach(url.split(/\W/), function (param) {
             if (param === 'hasOwnProperty') {
               throw $resourceMinErr('badname', "hasOwnProperty is not a valid parameter name.");
