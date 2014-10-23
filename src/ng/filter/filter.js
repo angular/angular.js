@@ -119,104 +119,85 @@ function filterFilter() {
   return function(array, expression, comparator) {
     if (!isArray(array)) return array;
 
-    var comparatorType = typeof(comparator),
-        predicates = [];
+    var predicateFn;
 
-    predicates.check = function(value, index) {
-      for (var j = 0; j < predicates.length; j++) {
-        if (!predicates[j](value, index)) {
-          return false;
-        }
-      }
-      return true;
-    };
-
-    if (comparatorType !== 'function') {
-      if (comparatorType === 'boolean' && comparator) {
-        comparator = function(obj, text) {
-          return angular.equals(obj, text);
-        };
-      } else {
-        comparator = function(obj, text) {
-          if (obj && text && typeof obj === 'object' && typeof text === 'object') {
-            for (var objKey in obj) {
-              if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey) &&
-                  comparator(obj[objKey], text[objKey])) {
-                return true;
-              }
-            }
-            return false;
-          }
-          text = ('' + text).toLowerCase();
-          return ('' + obj).toLowerCase().indexOf(text) > -1;
-        };
-      }
-    }
-
-    var search = function(obj, text) {
-      if (typeof text === 'string' && text.charAt(0) === '!') {
-        return !search(obj, text.substr(1));
-      }
-      switch (typeof obj) {
-        case 'boolean':
-        case 'number':
-        case 'string':
-          return comparator(obj, text);
-        case 'object':
-          switch (typeof text) {
-            case 'object':
-              return comparator(obj, text);
-            default:
-              for (var objKey in obj) {
-                if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
-                  return true;
-                }
-              }
-              break;
-          }
-          return false;
-        case 'array':
-          for (var i = 0; i < obj.length; i++) {
-            if (search(obj[i], text)) {
-              return true;
-            }
-          }
-          return false;
-        default:
-          return false;
-      }
-    };
     switch (typeof expression) {
+      case 'object':
+        // Replace `{$: 'xyz'}` with `'xyz'` and fall through
+        var keys = Object.keys(expression);
+        if ((keys.length === 1) && (keys[0] === '$')) expression  = expression.$;
+        // jshint -W086
       case 'boolean':
       case 'number':
       case 'string':
-        // Set up expression object and fall through
-        expression = {$:expression};
-        // jshint -W086
-      case 'object':
         // jshint +W086
-        for (var key in expression) {
-          (function(path) {
-            if (typeof expression[path] === 'undefined') return;
-            predicates.push(function(value) {
-              return search(path == '$' ? value : (value && value[path]), expression[path]);
-            });
-          })(key);
-        }
+        predicateFn = createPredicateFn(expression, comparator);
         break;
       case 'function':
-        predicates.push(expression);
+        predicateFn = expression;
         break;
       default:
         return array;
     }
-    var filtered = [];
-    for (var j = 0; j < array.length; j++) {
-      var value = array[j];
-      if (predicates.check(value, j)) {
-        filtered.push(value);
-      }
-    }
-    return filtered;
+
+    return array.filter(predicateFn);
   };
+}
+
+// Helper functions for `filterFilter`
+function createPredicateFn(expression, comparator) {
+  var predicateFn;
+
+  if (comparator === true) {
+    comparator = equals;
+  } else if (!isFunction(comparator)) {
+    comparator = function(actual, expected) {
+      actual = ('' + actual).toLowerCase();
+      expected = ('' + expected).toLowerCase();
+      return actual.indexOf(expected) !== -1;
+    };
+  }
+
+  predicateFn = function(item) {
+    return deepCompare(item, expression, comparator);
+  };
+
+  return predicateFn;
+}
+
+function deepCompare(actual, expected, comparator) {
+  var actualType = typeof actual;
+  var expectedType = typeof expected;
+
+  if (expectedType === 'function') {
+    return expected(actual);
+  } else if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
+    return !deepCompare(actual, expected.substring(1), comparator);
+  } else if (actualType === 'array') {
+    return actual.some(function(item) {
+      return deepCompare(item, expected, comparator);
+    });
+  }
+
+  switch (actualType) {
+    case 'object':
+      if (expectedType === 'object') {
+        return Object.keys(expected).every(function(key) {
+          var actualVal = (key === '$') ? actual : actual[key];
+          var expectedVal = expected[key];
+          return deepCompare(actualVal, expectedVal, comparator);
+        });
+      } else {
+        return Object.keys(actual).some(function(key) {
+          return (key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator);
+        });
+      }
+      break;
+    default:
+      if (expectedType === 'object') {
+        return false;
+      }
+
+      return comparator(actual, expected);
+  }
 }
