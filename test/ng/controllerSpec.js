@@ -59,6 +59,32 @@ describe('$controller', function() {
     });
 
 
+    it('should allow registration of controllers using named functions', function() {
+      var FooCtrl = function FooCtrl($scope) { $scope.foo = 'bar'; },
+          scope = {},
+          ctrl;
+
+      $controllerProvider.register(FooCtrl);
+      ctrl = $controller('FooCtrl', {$scope: scope});
+
+      expect(scope.foo).toBe('bar');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+
+    it('should allow registration of controllers using named functions in array annotations', function() {
+      var FooCtrl = function FooCtrl($scope) { $scope.foo = 'bar'; },
+          scope = {},
+          ctrl;
+
+      $controllerProvider.register(['$scope', FooCtrl]);
+      ctrl = $controller('FooCtrl', {$scope: scope});
+
+      expect(scope.foo).toBe('bar');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+
     it('should throw an exception if a controller is called "hasOwnProperty"', function () {
       expect(function() {
         $controllerProvider.register('hasOwnProperty', function($scope) {});
