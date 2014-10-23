@@ -1,9 +1,10 @@
 /* global $LogProvider: false */
 'use strict';
 
-function initService(debugEnabled) {
+function initService(debugEnabled, debugLevel) {
     return module(function($logProvider){
       $logProvider.debugEnabled(debugEnabled);
+      $logProvider.debugLevel(debugLevel);
     });
   }
 
@@ -178,4 +179,47 @@ describe('$log', function() {
       expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
     });
   });
+
+  describe('$logLevel', function() {
+
+    it('should log all levels if not defined', function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+
+      function($log) {
+        $log.log();
+        $log.info();
+        $log.warn();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;info;warn;error;debug;');
+
+    });
+
+    it('should log only errors and warns if warn level is defined', function(){
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+        initService(true, 'warn');
+      },
+
+      function($log) {
+        $log.log();
+        $log.info();
+        $log.warn();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('warn;error;debug;');
+
+    });
+
+  });
+
+
 });
