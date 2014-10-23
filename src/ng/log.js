@@ -45,6 +45,10 @@
  */
 function $LogProvider(){
   var debug = true,
+      error = true,
+      warn = true,
+      info = true,
+      log = true,
       self = this;
 
   /**
@@ -63,6 +67,69 @@ function $LogProvider(){
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name $logProvider#errorEnabled
+   * @description
+   * @param {boolean=} flag enable or disable error level messages
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.errorEnabled = function(flag) {
+    if (isDefined(flag)){
+      error = flag;
+    return this;
+    } else {
+      return error;
+    }
+  };
+
+  /**
+   * @ngdoc method
+   * @name $logProvider#warnEnabled
+   * @description
+   * @param {boolean=} flag enable or disable warn level messages
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.warnEnabled = function(flag) {
+    if (isDefined(flag)){
+      warn = flag;
+    return this;
+    } else {
+      return warn;
+    }
+  };
+
+  /**
+   * @ngdoc method
+   * @name $logProvider#infoEnabled
+   * @description
+   * @param {boolean=} flag enable or disable info level messages
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.infoEnabled = function(flag) {
+    if (isDefined(flag)){
+      info = flag;
+    } else {
+      return info;
+    }
+  };
+
+  /**
+   * @ngdoc method
+   * @name $logProvider#logEnabled
+   * @description
+   * @param {boolean=} flag enable or disable log level messages
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.logEnabled = function(flag) {
+    if (isDefined(flag)){
+      log = flag;
+    return this;
+    } else {
+      return log;
+    }
+  };
+
   this.$get = ['$window', function($window){
     return {
       /**
@@ -72,8 +139,15 @@ function $LogProvider(){
        * @description
        * Write a log message
        */
-      log: consoleLog('log'),
+      log: (function () {
+        var fn = consoleLog('log');
 
+        return function() {
+          if (log) {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
       /**
        * @ngdoc method
        * @name $log#info
@@ -81,7 +155,15 @@ function $LogProvider(){
        * @description
        * Write an information message
        */
-      info: consoleLog('info'),
+      info: (function () {
+        var fn = consoleLog('info');
+
+        return function() {
+          if (info) {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
@@ -90,7 +172,15 @@ function $LogProvider(){
        * @description
        * Write a warning message
        */
-      warn: consoleLog('warn'),
+      warn: (function () {
+        var fn = consoleLog('warn');
+
+        return function() {
+          if (warn) {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
@@ -99,7 +189,15 @@ function $LogProvider(){
        * @description
        * Write an error message
        */
-      error: consoleLog('error'),
+      error: (function () {
+        var fn = consoleLog('error');
+
+        return function() {
+          if (error) {
+            fn.apply(self, arguments);
+          }
+        };
+      }()),
 
       /**
        * @ngdoc method
