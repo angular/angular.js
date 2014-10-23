@@ -3564,8 +3564,8 @@ describe('$compile', function() {
     });
 
 
-    describe('collection object reference', function () {
-      it('should update isolate scope when origin scope changes', inject(function () {
+    describe('collection object reference', function() {
+      it('should update isolate scope when origin scope changes', inject(function() {
         $rootScope.collection = [{
           name: 'Gabriel',
           value: 18
@@ -3588,7 +3588,7 @@ describe('$compile', function() {
         expect(componentScope.colrefAlias).toEqual([$rootScope.collection[0]]);
       }));
 
-      it('should update origin scope when isolate scope changes', inject(function () {
+      it('should update origin scope when isolate scope changes', inject(function() {
         $rootScope.collection = [{
           name: 'Gabriel',
           value: 18
