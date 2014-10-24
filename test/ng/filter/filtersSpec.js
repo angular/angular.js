@@ -210,6 +210,9 @@ describe('filters', function() {
     it('should do basic filter', function() {
       expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
     });
+    it('should allow custom indentation', function() {
+      expect(filter('json')({a:"b"}, 4)).toEqual(toJson({a:"b"}, 4));
+    });
   });
 
   describe('lowercase', function() {
