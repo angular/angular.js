@@ -654,7 +654,7 @@ describe('injector', function() {
       it('should decorate the missing service error with module name', function() {
         angular.module('TestModule', [], function(xyzzy) {});
         expect(function() {
-          createInjector(['TestModule' ]);
+          createInjector(['TestModule']);
         }).toThrowMinErr(
           '$injector', 'modulerr', /Failed to instantiate module TestModule due to:\n.*\[\$injector:unpr] Unknown provider: xyzzy/
         );
@@ -710,12 +710,12 @@ describe('injector', function() {
     var Instance = function() { this.name = 'angular'; };
 
     function createInjectorWithValue(instanceName, instance) {
-      return createInjector([ ['$provide', function(provide) {
+      return createInjector([['$provide', function(provide) {
         provide.value(instanceName, instance);
       }]]);
     }
     function createInjectorWithFactory(serviceName, serviceDef) {
-      return createInjector([ ['$provide', function(provide) {
+      return createInjector([['$provide', function(provide) {
         provide.factory(serviceName, serviceDef);
       }]]);
     }
@@ -748,7 +748,7 @@ describe('injector', function() {
     var $injector;
 
     beforeEach(function() {
-      $injector = createInjector([ function($provide) {
+      $injector = createInjector([function($provide) {
         $provide.value('book', 'moby');
         $provide.value('author', 'melville');
       }]);
@@ -812,7 +812,7 @@ describe('injector', function() {
     var $injector;
 
     beforeEach(function() {
-      $injector = createInjector([ function($provide) {
+      $injector = createInjector([function($provide) {
         $provide.value('book', 'moby');
         $provide.value('author', 'melville');
       }]);

@@ -349,8 +349,8 @@ describe('browser', function() {
 
         browser.cookies('x', longVal + 'xxxx'); //total size 4097-4099, a warning should be logged
         expect(logs.warn).toEqual(
-          [[ "Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
-             "bytes)!" ]]);
+          [["Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
+             "bytes)!"]]);
 
         //force browser to dropped a cookie and make sure that the cache is not out of sync
         browser.cookies('x', 'shortVal');
