@@ -339,6 +339,18 @@ the dirty checking function must be efficient. Care should be taken that the dir
 function does not do any DOM access, as DOM access is orders of magnitude slower than property
 access on JavaScript object.
 
+### Scope `$watch` Depths
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-scope-watch-strategies.png">
+
+Dirty checking can be done with three strategies: By reference, by collection contents, and by value. The strategies differ in the kinds of changes they detect, and in their performance characteristics.
+
+   - Watching *by reference* ({@link
+      ng.$rootScope.Scope#$watch scope.$watch} `(watchExpression, listener)`) detects a change when the whole value returned by the watch expression switches to a new value. If the value is an array or an object, changes inside it are not detected. This is the most efficient stategy.
+   - Watching *collection contents* ({@link
+      ng.$rootScope.Scope#$watchCollection scope.$watchCollection} `(watchExpression, listener)`) detects changes that occur inside an array or an object: When items are added, removed, or reordered. The detection is shallow - it does not reach into nested collections. Watching collection contents is more expensive than watching by reference, because copies of the collection contents need to be maintained. However, the strategy attempts to minimize the amount of copying required.
+   - Watching *by value* ({@link
+      ng.$rootScope.Scope#$watch scope.$watch} `(watchExpression, listener, true)`) detects any change in an arbitrarily nested data structure. It is the most powerful change detection strategy, but also the most expensive. A full traversal of the nested data structure is needed on each digest, and a full copy of it needs to be held in memory.
+
 ## Integration with the browser event loop
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-runtime.png">
 
