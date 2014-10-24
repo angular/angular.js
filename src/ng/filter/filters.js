@@ -524,7 +524,8 @@ function dateFilter($locale) {
  */
 function jsonFilter() {
   return function(object, spacing) {
-    return toJson(object, spacing || true);
+    if (isUndefined(spacing)) spacing = 2;
+    return toJson(object, spacing);
   };
 }
 
