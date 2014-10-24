@@ -25,7 +25,9 @@
  *     property of the object. That's equivalent to the simple substring match with a `string`
  *     as described above. The predicate can be negated by prefixing the string with `!`.
  *     For Example `{name: "!M"}` predicate will return an array of items which have property `name`
- *     not containing "M".
+ *     not containing "M". If the first character of a property name is a colon (":") then it will be parsed
+ *     as an angular expression. For example `{":getData().name": "M"}` predicate will invoke `getData()`
+ *     method for each item and match its `name` property.
  *
  *   - `function(value, index)`: A predicate function can be used to write arbitrary filters. The
  *     function is called for each element of `array`. The final result is an array of those
@@ -115,7 +117,8 @@
      </file>
    </example>
  */
-function filterFilter() {
+filterFilter.$inject = ['$parse'];
+function filterFilter($parse) {
   return function(array, expression, comparator) {
     if (!isArray(array)) return array;
 
@@ -198,8 +201,15 @@ function filterFilter() {
         for (var key in expression) {
           (function(path) {
             if (typeof expression[path] === 'undefined') return;
+            var expressionVal = expression[path];
+            if(path.charAt(0) == ':') {
+              path = $parse(path.substring(1));
+            }
             predicates.push(function(value) {
-              return search(path == '$' ? value : (value && value[path]), expression[path]);
+              return search(
+                typeof path === 'function' ? (value && path(value)) :
+                  path == '$' ? value : (value && value[path]),
+                  expressionVal);
             });
           })(key);
         }

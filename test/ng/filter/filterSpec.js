@@ -173,4 +173,28 @@ describe('Filter: filter', function() {
 
   });
 
+  it('should parse as angular expression when used with ":expression" syntax', function() {
+    var items = [
+        {
+          foo: function() {
+            return {key: 1};
+          }
+        },
+        {
+          foo: function() {
+            return {key: 2};
+          }
+        },
+        {
+          foo: function() {
+            return 'foo';
+          }
+        }
+      ];
+
+    expect(filter(items, {':foo().key': 1})).toEqual([items[0]]);
+    expect(filter(items, {':foo().key': 2})).toEqual([items[1]]);
+    expect(filter(items, {':foo()': 'foo'})).toEqual([items[2]]);
+  });
+
 });
