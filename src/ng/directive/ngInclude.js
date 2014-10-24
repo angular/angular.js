@@ -178,8 +178,8 @@
  * @param {Object} angularEvent Synthetic event object.
  * @param {String} src URL of content to load.
  */
-var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce',
-                  function($templateRequest,   $anchorScroll,   $animate,   $sce) {
+var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce', '$q',
+                  function($templateRequest,   $anchorScroll,   $animate,   $sce,   $q) {
   return {
     restrict: 'ECA',
     priority: 400,
@@ -215,6 +215,22 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
           }
         };
 
+        // Normalizes the include src to always be
+        // a thenable.
+        var getIncludeContent = function(src) {
+          // If the src is a method then invoke it
+          // and resolve with the return value.
+          if (angular.isFunction(src)) {
+            return $q(function(resolve) {
+              return resolve(src());
+            });
+          } else {
+            //set the 2nd param to true to ignore the template request error so that the inner
+            //contents and scope can be cleaned up.
+            return $templateRequest(src, true);
+          }
+        };
+
         scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
           var afterAnimation = function() {
             if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
@@ -226,7 +242,7 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
           if (src) {
             //set the 2nd param to true to ignore the template request error so that the inner
             //contents and scope can be cleaned up.
-            $templateRequest(src, true).then(function(response) {
+            getIncludeContent(src).then(function(response) {
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
               ctrl.template = response;
