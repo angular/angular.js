@@ -511,7 +511,7 @@ function dateFilter($locale) {
    <example>
      <file name="index.html">
        <pre id="default-spacing">{{ {'name':'value'} | json }}</pre>
-       <pre i="custom-spacing">{{ {'name':'value'} | json: }}</pre>
+       <pre id="custom-spacing">{{ {'name':'value'} | json: }}</pre>
      </file>
      <file name="protractor.js" type="protractor">
        it('should jsonify filtered objects', function() {
