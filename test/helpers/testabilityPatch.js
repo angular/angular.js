@@ -218,7 +218,7 @@ function sortedHtml(element, showNgClass) {
             }
           });
         }
-        for (var css in node.style){
+        for (var css in node.style) {
           var value = node.style[css];
           if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
             var text = lowercase(css + ': ' + value);
