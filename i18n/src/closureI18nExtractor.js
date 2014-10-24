@@ -224,7 +224,7 @@ function outputLocale(localeInfo, localeID) {
           getDecimals + getVF + getWT +
           '$provide.value("$locale", ';
 
-  var suffix = ');\n}]);';
+  var suffix = ');\n}]);\n';
 
   return prefix + content + suffix;
 }
