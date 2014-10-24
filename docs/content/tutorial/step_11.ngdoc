@@ -276,7 +276,7 @@ describe('PhoneCat controllers', function() {
 
 You should now see the following output in the Karma tab:
 
-<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)</pre>
+<pre>Chrome 22.0: Executed 5 of 5 SUCCESS (0.038 secs / 0.01 secs)</pre>
 
 
 # Summary
