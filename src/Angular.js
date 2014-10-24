@@ -825,24 +825,31 @@ function shallowCopy(src, dst) {
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  */
-function equals(o1, o2, visitedObjArr) {
+function equals(o1, o2, comparisons) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2) {
     if (t1 == 'object') {
-      if (typeof visitedObjArr == 'undefined') {
-        visitedObjArr = {};
+      comparisons || (comparisons = new WeakMap());
+      if (comparisons.has(o1) && comparisons.get(o1).has(o2)) {
+        return true;
       } else {
-        if (o1 in visitedObjArr) return true;
+        if (!comparisons.has(o1)) {
+          comparisons.set(o1, new WeakMap());
+        }
+        comparisons.get(o1).set(o2, true);
+        if (!comparisons.has(o2)) {
+          comparisons.set(o2, new WeakMap());
+        }
+        comparisons.get(o2).set(o1, true);
       }
-      visitedObjArr[o1] = true;
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
           for (key=0; key<length; key++) {
-            if (!equals(o1[key], o2[key], visitedObjArr)) return false;
+            if (!equals(o1[key], o2[key], comparisons)) return false;
           }
           return true;
         }
@@ -856,7 +863,7 @@ function equals(o1, o2, visitedObjArr) {
         keySet = {};
         for (key in o1) {
           if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-          if (!equals(o1[key], o2[key], visitedObjArr)) return false;
+          if (!equals(o1[key], o2[key], comparisons)) return false;
           keySet[key] = true;
         }
         for (key in o2) {
