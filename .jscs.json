@@ -4,7 +4,7 @@
   "disallowMultipleLineStrings": true,
   "disallowNewlineBeforeBlockStatements": true,
   "disallowSpaceAfterObjectKeys": true,
-  "disallowSpaceAfterPrefixUnaryOperators": ["!"],
+  "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~", "!"],
   "disallowSpaceBeforeBinaryOperators": [","],
   "disallowSpacesInAnonymousFunctionExpression": {
     "beforeOpeningRoundBrace": true
