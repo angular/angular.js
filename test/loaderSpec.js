@@ -12,6 +12,7 @@ describe('module loader', function() {
     setupModuleLoader(window);
   });
 
+
   it('should set up namespace', function() {
     expect(window.angular).toBeDefined();
     expect(window.angular.module).toBeDefined();
@@ -64,27 +65,13 @@ describe('module loader', function() {
     expect(myModule._runBlocks).toEqual(['runBlock']);
   });
 
+
   it('should allow module redefinition', function() {
-    var module1 = window.angular.module('module1', []);
-    var module2 = window.angular.module('module1', []);
-
-    expect(window.angular.module('module1')).not.toBe(module1);
-    expect(window.angular.module('module1')).toBe(module2);
+    expect(window.angular.module('a', [])).not.toBe(window.angular.module('a', []));
   });
 
-  it('should inform about redefined module', function() {
-    var module1 = window.angular.module('module1', []);
 
-
-    spyOn(window.console, 'log');
-    var module2 = window.angular.module('module1', []);
-
-    expect(window.angular.module('module1')).not.toBe(module1);
-    expect(window.angular.module('module1')).toBe(module2);
-    expect(window.console.log).toHaveBeenCalled();
-  });
-
-   it('should complain of no module', function() {
+  it('should complain of no module', function() {
     expect(function() {
       window.angular.module('dontExist');
     }).toThrowMinErr("$injector", "nomod", "Module 'dontExist' is not available! You either misspelled the module name " +
@@ -100,5 +87,14 @@ describe('module loader', function() {
 
   it('should expose `$$minErr` on the `angular` object', function() {
     expect(window.angular.$$minErr).toEqual(jasmine.any(Function));
+  });
+
+  it('should inform about redefined module', function() {
+    window.angular.module('module1', []);
+
+    spyOn(window.console, 'log');
+    window.angular.module('module1', []);
+
+    expect(window.console.log).toHaveBeenCalledWith( 'The module \'module1\' already exists and has been redefined.');
   });
 });
