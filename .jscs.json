@@ -16,6 +16,7 @@
   "disallowSpacesInNamedFunctionExpression": {
     "beforeOpeningRoundBrace": true
   },
+  "disallowSpacesInsideArrayBrackets": true,
   "disallowSpacesInsideParentheses": true,
   "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,

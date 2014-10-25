@@ -1113,7 +1113,7 @@ describe("resource", function() {
         });
         var user = UserService.query();
         $httpBackend.flush();
-        expect(user).toEqualData([ {id: 1, name: 'user1'} ]);
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
       });
 
       it('should not convert string literals in array into Resource objects', function() {
