@@ -41,10 +41,14 @@ angular.module('search', [])
 
   $scope.submit = function() {
     var result;
-    for(var i in $scope.results) {
-      result = $scope.results[i][0];
-      if(result) {
-        break;
+    if ($scope.results.api) {
+      result = $scope.results.api[0];
+    } else {
+      for(var i in $scope.results) {
+        result = $scope.results[i][0];
+        if(result) {
+          break;
+        }
       }
     }
     if(result) {
