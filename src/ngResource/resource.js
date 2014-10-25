@@ -187,7 +187,7 @@ function shallowClearAndCopy(src, dst) {
  *   read, update, delete) on server-side data like this:
  *   ```js
  *   var User = $resource('/user/:userId', {userId:'@id'});
- *   var user = User.get({userId:123}, function() {
+ *   User.get({userId:123}, function(user) {
  *     user.abc = true;
  *     user.$save();
  *   });
@@ -246,7 +246,7 @@ function shallowClearAndCopy(src, dst) {
       });
 
      // We can retrieve a collection from the server
-     var cards = CreditCard.query(function() {
+     CreditCard.query(function(cards) {
        // GET: /user/123/card
        // server returns: [ {id:456, number:'1234', name:'Smith'} ];
 
@@ -334,11 +334,12 @@ function shallowClearAndCopy(src, dst) {
  *    app.controller('NotesCtrl', ['$scope', '$routeParams', 'Notes',
                                       function($scope, $routeParams, Notes) {
  *    // First get a note object from the factory
- *    var note = Notes.get({ id:$routeParams.id });
- *    $id = note.id;
+ *    Notes.get({ id:$routeParams.id }, function(note) {
+ *        $id = note.id;
  *
- *    // Now call update passing in the ID first then the object you are updating
- *    Notes.update({ id:$id }, note);
+ *        // Now call update passing in the ID first then the object you are updating
+ *        Notes.update({ id:$id }, note);
+ *    });
  *
  *    // This will PUT /notes/ID with the note object in the request payload
  *    }]);
