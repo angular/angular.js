@@ -969,8 +969,7 @@ function toJsonReplacer(key, value) {
  */
 function toJson(obj, pretty) {
   if (typeof obj === 'undefined') return undefined;
-  var spaces = pretty ? ((angular.isNumber(pretty) && pretty > 0) ? new Array(pretty + 1).join(' ') : '  ') : null;
-  return JSON.stringify(obj, toJsonReplacer, spaces);
+  return JSON.stringify(obj, toJsonReplacer, pretty ? parseInt(pretty) || 2 : null);
 }
 
 
