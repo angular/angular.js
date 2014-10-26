@@ -713,6 +713,132 @@ describe('ngRepeat', function() {
   });
 
 
+  it('should be able to access $prev and $next value on every iteration over an array', function() {
+    element = $compile(
+      '<ul>' +
+      '<li ng-repeat="item in items">{{item}}:{{$prev}}-{{$next}}|</li>' +
+      '</ul>')(scope);
+
+    // INIT AND FIRST CHECK
+    scope.items = ['banana', 'apple', 'orange'];
+    scope.$digest();
+    expect(element.text()).
+      toEqual('banana:-apple|apple:banana-orange|orange:apple-|');
+
+    // PUSH AND CHECK
+    scope.items.push('peach');
+    scope.$digest();
+    expect(element.text()).
+      toEqual('banana:-apple|apple:banana-orange|orange:apple-peach|peach:orange-|');
+
+    // POP'N'SHIFT AND CHECK
+    scope.items.pop();
+    scope.items.shift();
+    scope.$digest();
+    expect(element.text()).
+      toEqual('apple:-orange|orange:apple-|');
+  });
+
+
+  it('should be able to access $prev and $next value on every iteration over an array of objects', function() {
+    element = $compile(
+      '<ul>' +
+      '<li ng-repeat="item in items">' +
+      '{{item.name}}:' +
+      '<span ng-if="$prev">{{$prev.name}}</span>' +
+      '-' +
+      '<span ng-if="$next">{{$next.name}}</span>' +
+      '|' +
+      '</li>' +
+      '</ul>')(scope);
+
+    // INIT AND FIRST CHECK
+    scope.items = [{name: 'banana'}, {name: 'apple'}, {name: 'orange'}];
+    scope.$digest();
+    expect(element.text()).
+      toEqual('banana:-apple|apple:banana-orange|orange:apple-|');
+
+    // PUSH AND CHECK
+    scope.items.push({name: 'peach'});
+    scope.$digest();
+    expect(element.text()).
+      toEqual('banana:-apple|apple:banana-orange|orange:apple-peach|peach:orange-|');
+
+    // POP'N'SHIFT AND CHECK
+    scope.items.pop();
+    scope.items.shift();
+    scope.$digest();
+    expect(element.text()).
+      toEqual('apple:-orange|orange:apple-|');
+  });
+
+
+  it('should be able to access $prev and $next value on every iteration over an object', function() {
+    element = $compile(
+      '<ul>' +
+      '<li ng-repeat="item in items">' +
+      '{{item}}:' +
+      '<span ng-if="$prev">{{$prev}}</span>' +
+      '-' +
+      '<span ng-if="$next">{{$next}}</span>' +
+      '|' +
+      '</li>' +
+      '</ul>')(scope);
+
+    // INIT AND FIRST CHECK
+    scope.items = {first: 'great', second: 'nice', third: 'awesome'};
+    scope.$digest();
+    expect(element.text()).
+      toEqual('great:-nice|nice:great-awesome|awesome:nice-|');
+
+    // ADD AND CHECK
+    scope.items.fourth = 'marvelous';
+    scope.$digest();
+    expect(element.text()).
+      toEqual('great:-marvelous|marvelous:great-nice|nice:marvelous-awesome|awesome:nice-|');
+
+    // DELETE AND CHECK
+    delete scope.items.fourth;
+    delete scope.items.first;
+    scope.$digest();
+    expect(element.text()).
+      toEqual('nice:-awesome|awesome:nice-|');
+  });
+
+
+  it('should be able to access $prev and $next value correctly after filtering out bad keys', function() {
+    element = $compile(
+      '<ul>' +
+      '<li ng-repeat="item in items">' +
+      '{{item}}:' +
+      '<span ng-if="$prev">{{$prev}}</span>' +
+      '-' +
+      '<span ng-if="$next">{{$next}}</span>' +
+      '|' +
+      '</li>' +
+      '</ul>')(scope);
+
+    // INIT AND FIRST CHECK
+    scope.items = {first: 'great', second: 'nice', $toBeFilteredOut: 'bad', third: 'awesome'};
+    scope.$digest();
+    expect(element.text()).
+      toEqual('great:-nice|nice:great-awesome|awesome:nice-|');
+
+    // ADD AND CHECK
+    scope.items.fourth = 'marvelous';
+    scope.$digest();
+    expect(element.text()).
+      toEqual('great:-marvelous|marvelous:great-nice|nice:marvelous-awesome|awesome:nice-|');
+
+    // DELETE AND CHECK
+    delete scope.items.fourth;
+    delete scope.items.first;
+    scope.$digest();
+    expect(element.text()).
+      toEqual('nice:-awesome|awesome:nice-|');
+  });
+
+
   it('should ignore $ and $$ properties', function() {
     element = $compile('<ul><li ng-repeat="i in items">{{i}}|</li></ul>')(scope);
     scope.items = ['a', 'b', 'c'];

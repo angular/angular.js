@@ -19,6 +19,8 @@
  * | `$last`   | {@type boolean} | true if the repeated element is last in the iterator.                       |
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
+ * | `$prev`   | {@type *}       | value of previous element (undefined if it doesn't exist).                  |
+ * | `$next`   | {@type *}       | value of next element (undefined if it doesn't exist).                      |
  *
  * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
  * This may be useful when, for instance, nesting ngRepeats.
@@ -212,7 +214,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
 
-  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
+  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength, prevValue, nextValue) {
     // TODO(perf): generate setters to shave off ~40ms or 1-1.5%
     scope[valueIdentifier] = value;
     if (keyIdentifier) scope[keyIdentifier] = key;
@@ -223,6 +225,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     // jshint bitwise: false
     scope.$odd = !(scope.$even = (index&1) === 0);
     // jshint bitwise: true
+    scope.$prev = prevValue;
+    scope.$next = nextValue;
   };
 
   var getBlockStart = function(block) {
@@ -318,7 +322,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               // lastBlockMap on the next iteration.
               nextBlockMap = createMap(),
               collectionLength,
-              key, value, // key/value of iteration
+              key, value, useCollectionKeysAsIndex, // key/value of iteration
+              prevValue, nextValue, // prev/next value
               trackById,
               trackByIdFn,
               collectionKeys,
@@ -347,10 +352,11 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
           collectionLength = collectionKeys.length;
           nextBlockOrder = new Array(collectionLength);
+          useCollectionKeysAsIndex = collection !== collectionKeys;
 
           // locate existing items
           for (index = 0; index < collectionLength; index++) {
-            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            key = useCollectionKeysAsIndex ? collectionKeys[index] : index;
             value = collection[key];
             trackById = trackByIdFn(key, value, index);
             if (lastBlockMap[trackById]) {
@@ -391,9 +397,13 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
           // we are not using forEach for perf reasons (trying to avoid #call)
           for (index = 0; index < collectionLength; index++) {
-            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            key = useCollectionKeysAsIndex ? collectionKeys[index] : index;
             value = collection[key];
             block = nextBlockOrder[index];
+
+            // assign previous and next value to local vars and pass them to scope
+            prevValue = index === 0 ? undefined : collection[useCollectionKeysAsIndex ? collectionKeys[index - 1] : index - 1];
+            nextValue = index === collectionLength ? undefined : collection[useCollectionKeysAsIndex ? collectionKeys[index + 1] : index + 1];
 
             if (block.scope) {
               // if we have already seen this object, then we need to reuse the
@@ -411,7 +421,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 $animate.move(getBlockNodes(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength, prevValue, nextValue);
             } else {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
@@ -428,7 +438,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // by a directive with templateUrl when its template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
-                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength, prevValue, nextValue);
               });
             }
           }
