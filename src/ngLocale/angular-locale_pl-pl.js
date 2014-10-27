@@ -1,75 +1,93 @@
+'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+function getDecimals(n) {
+  n = n + '';
+  var i = n.indexOf('.');
+  return (i == -1) ? 0 : n.length - i - 1;
+}
+
+function getVF(n, opt_precision) {
+  var v = opt_precision;
+
+  if (undefined === v) {
+    v = Math.min(getDecimals(n), 3);
+  }
+
+  var base = Math.pow(10, v);
+  var f = ((n * base) | 0) % base;
+  return {v: v, f: f};
+}
+
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
-    "AMPMS": {
-      "0": "AM",
-      "1": "PM"
-    },
-    "DAY": {
-      "0": "niedziela",
-      "1": "poniedzia\u0142ek",
-      "2": "wtorek",
-      "3": "\u015broda",
-      "4": "czwartek",
-      "5": "pi\u0105tek",
-      "6": "sobota"
-    },
-    "MONTH": {
-      "0": "stycznia",
-      "1": "lutego",
-      "2": "marca",
-      "3": "kwietnia",
-      "4": "maja",
-      "5": "czerwca",
-      "6": "lipca",
-      "7": "sierpnia",
-      "8": "wrze\u015bnia",
-      "9": "pa\u017adziernika",
-      "10": "listopada",
-      "11": "grudnia"
-    },
-    "SHORTDAY": {
-      "0": "niedz.",
-      "1": "pon.",
-      "2": "wt.",
-      "3": "\u015br.",
-      "4": "czw.",
-      "5": "pt.",
-      "6": "sob."
-    },
-    "SHORTMONTH": {
-      "0": "sty",
-      "1": "lut",
-      "2": "mar",
-      "3": "kwi",
-      "4": "maj",
-      "5": "cze",
-      "6": "lip",
-      "7": "sie",
-      "8": "wrz",
-      "9": "pa\u017a",
-      "10": "lis",
-      "11": "gru"
-    },
+    "AMPMS": [
+      "AM",
+      "PM"
+    ],
+    "DAY": [
+      "niedziela",
+      "poniedzia\u0142ek",
+      "wtorek",
+      "\u015broda",
+      "czwartek",
+      "pi\u0105tek",
+      "sobota"
+    ],
+    "MONTH": [
+      "stycznia",
+      "lutego",
+      "marca",
+      "kwietnia",
+      "maja",
+      "czerwca",
+      "lipca",
+      "sierpnia",
+      "wrze\u015bnia",
+      "pa\u017adziernika",
+      "listopada",
+      "grudnia"
+    ],
+    "SHORTDAY": [
+      "niedz.",
+      "pon.",
+      "wt.",
+      "\u015br.",
+      "czw.",
+      "pt.",
+      "sob."
+    ],
+    "SHORTMONTH": [
+      "sty",
+      "lut",
+      "mar",
+      "kwi",
+      "maj",
+      "cze",
+      "lip",
+      "sie",
+      "wrz",
+      "pa\u017a",
+      "lis",
+      "gru"
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
-    "short": "dd.MM.yyyy HH:mm",
-    "shortDate": "dd.MM.yyyy",
+    "short": "dd.MM.y HH:mm",
+    "shortDate": "dd.MM.y",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "z\u0142",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
-    "PATTERNS": {
-      "0": {
+    "PATTERNS": [
+      {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -78,21 +96,20 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": ""
       },
-      "1": {
+      {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(",
-        "negSuf": "\u00a0\u00a4)",
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
         "posSuf": "\u00a0\u00a4"
       }
-    }
+    ]
   },
   "id": "pl-pl",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  if (n == (n | 0) && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) {   return PLURAL_CATEGORY.FEW;  }  if (n != 1 && (n % 10 == 0 || n % 10 == 1) || n == (n | 0) && n % 10 >= 5 && n % 10 <= 9 || n == (n | 0) && n % 100 >= 12 && n % 100 <= 14) {   return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v == 0 && i != 1 && i % 10 >= 0 && i % 10 <= 1 || vf.v == 0 && i % 10 >= 5 && i % 10 <= 9 || vf.v == 0 && i % 100 >= 12 && i % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

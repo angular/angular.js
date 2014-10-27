@@ -2,7 +2,7 @@
 
 describe('$cookies', function() {
   beforeEach(module('ngCookies', function($provide) {
-    $provide.factory('$browser', function(){
+    $provide.factory('$browser', function() {
       return angular.extend(new angular.mock.$Browser(), {cookieHash: {preexisting:'oldCookie'}});
     });
   }));
@@ -45,15 +45,25 @@ describe('$cookies', function() {
   }));
 
 
-  it('should drop or reset any cookie that was set to a non-string value',
+  it('should convert non-string values to string',
       inject(function($cookies, $browser, $rootScope) {
     $cookies.nonString = [1, 2, 3];
     $cookies.nullVal = null;
     $cookies.undefVal = undefined;
-    $cookies.preexisting = function() {};
+    var preexisting = $cookies.preexisting = function() {};
     $rootScope.$digest();
-    expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
-    expect($cookies).toEqual({'preexisting': 'oldCookie'});
+    expect($browser.cookies()).toEqual({
+      'preexisting': '' + preexisting,
+      'nonString': '1,2,3',
+      'nullVal': 'null',
+      'undefVal': 'undefined'
+    });
+    expect($cookies).toEqual({
+      'preexisting': '' + preexisting,
+      'nonString': '1,2,3',
+      'nullVal': 'null',
+      'undefVal': 'undefined'
+    });
   }));
 
 
@@ -125,7 +135,7 @@ describe('$cookieStore', function() {
     $rootScope.$digest();
     expect($browser.cookies()).toEqual({});
   }));
-  it('should handle empty string value cookies', inject(function ($cookieStore, $browser, $rootScope) {
+  it('should handle empty string value cookies', inject(function($cookieStore, $browser, $rootScope) {
     $cookieStore.put("emptyCookie",'');
     $rootScope.$digest();
     expect($browser.cookies()).
@@ -135,5 +145,5 @@ describe('$cookieStore', function() {
     $browser.cookieHash['blankCookie'] = '';
     $browser.poll();
     expect($cookieStore.get("blankCookie")).toEqual('');
-  }))
+  }));
 });

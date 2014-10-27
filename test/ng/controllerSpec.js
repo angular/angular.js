@@ -16,7 +16,7 @@ describe('$controller', function() {
   describe('provider', function() {
 
     it('should allow registration of controllers', function() {
-      var FooCtrl = function($scope) { $scope.foo = 'bar' },
+      var FooCtrl = function($scope) { $scope.foo = 'bar'; },
         scope = {},
         ctrl;
 
@@ -29,12 +29,12 @@ describe('$controller', function() {
 
 
     it('should allow registration of map of controllers', function() {
-      var FooCtrl = function($scope) { $scope.foo = 'foo' },
-          BarCtrl = function($scope) { $scope.bar = 'bar' },
+      var FooCtrl = function($scope) { $scope.foo = 'foo'; },
+          BarCtrl = function($scope) { $scope.bar = 'bar'; },
           scope = {},
           ctrl;
 
-      $controllerProvider.register({FooCtrl: FooCtrl, BarCtrl: BarCtrl} );
+      $controllerProvider.register({FooCtrl: FooCtrl, BarCtrl: BarCtrl});
 
       ctrl = $controller('FooCtrl', {$scope: scope});
       expect(scope.foo).toBe('foo');
@@ -47,7 +47,7 @@ describe('$controller', function() {
 
 
     it('should allow registration of controllers annotated with arrays', function() {
-      var FooCtrl = function($scope) { $scope.foo = 'bar' },
+      var FooCtrl = function($scope) { $scope.foo = 'bar'; },
           scope = {},
           ctrl;
 
@@ -57,6 +57,28 @@ describe('$controller', function() {
       expect(scope.foo).toBe('bar');
       expect(ctrl instanceof FooCtrl).toBe(true);
     });
+
+
+    it('should throw an exception if a controller is called "hasOwnProperty"', function() {
+      expect(function() {
+        $controllerProvider.register('hasOwnProperty', function($scope) {});
+      }).toThrowMinErr('ng', 'badname', "hasOwnProperty is not a valid controller name");
+    });
+
+
+    it('should instantiate a controller defined on window if allowGlobals is set',
+      inject(function($window) {
+        var scope = {};
+        var Foo = function() {};
+
+        $controllerProvider.allowGlobals();
+
+        $window.a = {Foo: Foo};
+
+        var foo = $controller('a.Foo', {$scope: scope});
+        expect(foo).toBeDefined();
+        expect(foo instanceof Foo).toBe(true);
+      }));
   });
 
 
@@ -90,15 +112,15 @@ describe('$controller', function() {
   });
 
 
-  it('should instantiate controller defined on window', inject(function($window) {
+  it('should not instantiate a controller defined on window', inject(function($window) {
     var scope = {};
     var Foo = function() {};
 
     $window.a = {Foo: Foo};
 
-    var foo = $controller('a.Foo', {$scope: scope});
-    expect(foo).toBeDefined();
-    expect(foo instanceof Foo).toBe(true);
+    expect(function() {
+      $controller('a.Foo', {$scope: scope});
+    }).toThrow();
   }));
 
 
@@ -131,7 +153,7 @@ describe('$controller', function() {
 
       expect(function() {
         $controller('a.b.FooCtrl as foo');
-      }).toThrow("[$controller:noscp] Cannot export controller 'a.b.FooCtrl' as 'foo'! No $scope object provided via `locals`.");
+      }).toThrowMinErr("$controller", "noscp", "Cannot export controller 'a.b.FooCtrl' as 'foo'! No $scope object provided via `locals`.");
 
     });
   });

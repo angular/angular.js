@@ -1,34 +1,65 @@
 'use strict';
 
-describe('ngIf', function () {
-  var $scope, $compile, element;
+describe('ngIf', function() {
+  var $scope, $compile, element, $compileProvider;
 
-  beforeEach(inject(function ($rootScope, _$compile_) {
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
+  beforeEach(inject(function($rootScope, _$compile_) {
     $scope = $rootScope.$new();
     $compile = _$compile_;
     element = $compile('<div></div>')($scope);
   }));
 
-  afterEach(function () {
+  afterEach(function() {
     dealoc(element);
   });
 
-  function makeIf(expr) {
-    element.append($compile('<div class="my-class" ng-if="' + expr + '"><div>Hi</div></div>')($scope));
+  function makeIf() {
+    forEach(arguments, function(expr) {
+      element.append($compile('<div class="my-class" ng-if="' + expr + '"><div>Hi</div></div>')($scope));
+    });
     $scope.$apply();
   }
 
-  it('should immediately remove element if condition is false', function () {
-    makeIf('false');
+  it('should immediately remove the element if condition is falsy', function() {
+    makeIf('false', 'undefined', 'null', 'NaN', '\'\'', '0');
     expect(element.children().length).toBe(0);
   });
 
-  it('should leave the element if condition is true', function () {
+  it('should leave the element if condition is true', function() {
     makeIf('true');
     expect(element.children().length).toBe(1);
   });
 
-  it('should create then remove the element if condition changes', function () {
+  it('should leave the element if the condition is a non-empty string', function() {
+    makeIf('\'f\'', '\'0\'', '\'false\'', '\'no\'', '\'n\'', '\'[]\'');
+    expect(element.children().length).toBe(6);
+  });
+
+  it('should leave the element if the condition is an object', function() {
+    makeIf('[]', '{}');
+    expect(element.children().length).toBe(2);
+  });
+
+  it('should not add the element twice if the condition goes from true to true', function() {
+    $scope.hello = 'true1';
+    makeIf('hello');
+    expect(element.children().length).toBe(1);
+    $scope.$apply('hello = "true2"');
+    expect(element.children().length).toBe(1);
+  });
+
+  it('should not recreate the element if the condition goes from true to true', function() {
+    $scope.hello = 'true1';
+    makeIf('hello');
+    element.children().data('flag', true);
+    $scope.$apply('hello = "true2"');
+    expect(element.children().data('flag')).toBe(true);
+  });
+
+  it('should create then remove the element if condition changes', function() {
     $scope.hello = true;
     makeIf('hello');
     expect(element.children().length).toBe(1);
@@ -36,7 +67,7 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(0);
   });
 
-  it('should create a new scope', function () {
+  it('should create a new scope every time the expression evaluates to true', function() {
     $scope.$apply('value = true');
     element.append($compile(
       '<div ng-if="value"><span ng-init="value=false"></span></div>'
@@ -45,7 +76,27 @@ describe('ngIf', function () {
     expect(element.children('div').length).toBe(1);
   });
 
-  it('should play nice with other elements beside it', function () {
+  it('should destroy the child scope every time the expression evaluates to false', function() {
+    $scope.value = true;
+    element.append($compile(
+        '<div ng-if="value"></div>'
+    )($scope));
+    $scope.$apply();
+
+    var childScope = element.children().scope();
+    var destroyed = false;
+
+    childScope.$on('$destroy', function() {
+      destroyed = true;
+    });
+
+    $scope.value = false;
+    $scope.$apply();
+
+    expect(destroyed).toBe(true);
+  });
+
+  it('should play nice with other elements beside it', function() {
     $scope.values = [1, 2, 3, 4];
     element.append($compile(
       '<div ng-repeat="i in values"></div>' +
@@ -58,6 +109,43 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(6);
     $scope.$apply('values.push(1)');
     expect(element.children().length).toBe(9);
+  });
+
+  it('should play nice with ngInclude on the same element', inject(function($templateCache) {
+    $templateCache.put('test.html', [200, '{{value}}', {}]);
+
+    $scope.value = 'first';
+    element.append($compile(
+      '<div ng-if="value==\'first\'" ng-include="\'test.html\'"></div>'
+    )($scope));
+    $scope.$apply();
+    expect(element.text()).toBe('first');
+
+    $scope.value = 'later';
+    $scope.$apply();
+    expect(element.text()).toBe('');
+  }));
+
+  it('should work with multiple elements', function() {
+    $scope.show = true;
+    $scope.things = [1, 2, 3];
+    element.append($compile(
+      '<div>before;</div>' +
+        '<div ng-if-start="show">start;</div>' +
+        '<div ng-repeat="thing in things">{{thing}};</div>' +
+        '<div ng-if-end>end;</div>' +
+        '<div>after;</div>'
+    )($scope));
+    $scope.$apply();
+    expect(element.text()).toBe('before;start;1;2;3;end;after;');
+
+    $scope.things.push(4);
+    $scope.$apply();
+    expect(element.text()).toBe('before;start;1;2;3;4;end;after;');
+
+    $scope.show = false;
+    $scope.$apply();
+    expect(element.text()).toBe('before;after;');
   });
 
   it('should restore the element to its compiled state', function() {
@@ -73,119 +161,211 @@ describe('ngIf', function () {
     expect(element.children()[0].className).toContain('my-class');
   });
 
+  it('should work when combined with an ASYNC template that loads after the first digest', inject(function($httpBackend, $compile, $rootScope) {
+    $compileProvider.directive('test', function() {
+      return {
+        templateUrl: 'test.html'
+      };
+    });
+    $httpBackend.whenGET('test.html').respond('hello');
+    element.append('<div ng-if="show" test></div>');
+    $compile(element)($rootScope);
+    $rootScope.show = true;
+    $rootScope.$apply();
+    expect(element.text()).toBe('');
+
+    $httpBackend.flush();
+    expect(element.text()).toBe('hello');
+
+    $rootScope.show = false;
+    $rootScope.$apply();
+    // Note: there are still comments in element!
+    expect(element.children().length).toBe(0);
+    expect(element.text()).toBe('');
+  }));
 });
 
-describe('ngIf ngAnimate', function () {
-  var vendorPrefix, window;
-  var body, element;
+describe('ngIf and transcludes', function() {
+  it('should allow access to directive controller from children when used in a replace template', function() {
+    var controller;
+    module(function($compileProvider) {
+      var directive = $compileProvider.directive;
+      directive('template', valueFn({
+        template: '<div ng-if="true"><span test></span></div>',
+        replace: true,
+        controller: function() {
+          this.flag = true;
+        }
+      }));
+      directive('test', valueFn({
+        require: '^template',
+        link: function(scope, el, attr, ctrl) {
+          controller = ctrl;
+        }
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      var element = $compile('<div><div template></div></div>')($rootScope);
+      $rootScope.$apply();
+      expect(controller.flag).toBe(true);
+      dealoc(element);
+    });
+  });
 
-  function html(html) {
-    body.html(html);
-    element = body.children().eq(0);
+
+  it('should use the correct transcluded scope', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('iso', valueFn({
+        link: function(scope) {
+          scope.val = 'value in iso scope';
+        },
+        restrict: 'E',
+        transclude: true,
+        template: '<div ng-if="true">val={{val}}-<div ng-transclude></div></div>',
+        scope: {}
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      $rootScope.val = 'transcluded content';
+      var element = $compile('<iso><span ng-bind="val"></span></iso>')($rootScope);
+      $rootScope.$digest();
+      expect(trim(element.text())).toEqual('val=value in iso scope-transcluded content');
+      dealoc(element);
+    });
+  });
+});
+
+describe('ngIf animations', function() {
+  var body, element, $rootElement;
+
+  function html(content) {
+    $rootElement.html(content);
+    element = $rootElement.children().eq(0);
     return element;
   }
 
-  beforeEach(function() {
-    // we need to run animation on attached elements;
-    body = jqLite(document.body);
-  });
+  beforeEach(module('ngAnimateMock'));
 
-  afterEach(function(){
+  beforeEach(module(function() {
+    // we need to run animation on attached elements;
+    return function(_$rootElement_) {
+      $rootElement = _$rootElement_;
+      body = jqLite(document.body);
+      body.append($rootElement);
+    };
+  }));
+
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
   });
 
-  beforeEach(module(function($animationProvider, $provide) {
-    $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer, $animator) {
-      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
-      $animator.enabled(true);
+  beforeEach(module(function($animateProvider, $provide) {
+    return function($animate) {
+      $animate.enabled(true);
     };
   }));
 
-  it('should fire off the enter animation + add and remove the css classes',
-    inject(function($compile, $rootScope, $sniffer) {
+  it('should fire off the enter animation',
+    inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 1s linear all';
       element = $compile(html(
         '<div>' +
-          '<div ng-if="value" style="' + style + '" ng-animate="{enter: \'custom-enter\', leave: \'custom-leave\'}"><div>Hi</div></div>' +
+          '<div ng-if="value"><div>Hi</div></div>' +
         '</div>'
       ))($scope);
 
       $rootScope.$digest();
       $scope.$apply('value = true');
 
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('Hi');
 
       expect(element.children().length).toBe(1);
-      var first = element.children()[0];
+    })
+  );
 
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('custom-enter');
-        window.setTimeout.expect(1).process();
-        expect(first.className).toContain('custom-enter-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(first.className).not.toContain('custom-enter');
-      expect(first.className).not.toContain('custom-enter-active');
-  }));
-
-  it('should fire off the leave animation + add and remove the css classes',
-    inject(function ($compile, $rootScope, $sniffer) {
+  it('should fire off the leave animation',
+    inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 1s linear all';
       element = $compile(html(
         '<div>' +
-          '<div ng-if="value" style="' + style + '" ng-animate="{enter: \'custom-enter\', leave: \'custom-leave\'}"><div>Hi</div></div>' +
+          '<div ng-if="value"><div>Hi</div></div>' +
         '</div>'
       ))($scope);
       $scope.$apply('value = true');
 
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('Hi');
+
       expect(element.children().length).toBe(1);
-      var first = element.children()[0];
-
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
       $scope.$apply('value = false');
-      expect(element.children().length).toBe($sniffer.transitions ? 1 : 0);
 
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('custom-leave');
-        window.setTimeout.expect(1).process();
-        expect(first.className).toContain('custom-leave-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+      item = $animate.queue.shift();
+      expect(item.event).toBe('leave');
+      expect(item.element.text()).toBe('Hi');
 
       expect(element.children().length).toBe(0);
-  }));
+    })
+  );
 
-  it('should catch and use the correct duration for animation',
-    inject(function ($compile, $rootScope, $sniffer) {
+  it('should destroy the previous leave animation if a new one takes place', function() {
+    module(function($provide) {
+      $provide.decorator('$animate', function($delegate, $$q) {
+        var emptyPromise = $$q.defer().promise;
+        $delegate.leave = function() {
+          return emptyPromise;
+        };
+        return $delegate;
+      });
+    });
+    inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 0.5s linear all';
       element = $compile(html(
         '<div>' +
-          '<div ng-if="value" style="' + style + '" ng-animate="{enter: \'custom-enter\', leave: \'custom-leave\'}"><div>Hi</div></div>' +
+          '<div ng-if="value">Yo</div>' +
         '</div>'
       ))($scope);
+
       $scope.$apply('value = true');
 
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(500).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-  }));
+      var destroyed, inner = element.children(0);
+      inner.on('$destroy', function() {
+        destroyed = true;
+      });
 
+      $scope.$apply('value = false');
+
+      $scope.$apply('value = true');
+
+      $scope.$apply('value = false');
+
+      expect(destroyed).toBe(true);
+    });
+  });
+
+  it('should work with svg elements when the svg container is transcluded', function() {
+    module(function($compileProvider) {
+      $compileProvider.directive('svgContainer', function() {
+        return {
+          template: '<svg ng-transclude></svg>',
+          replace: true,
+          transclude: true
+        };
+      });
+    });
+    inject(function($compile, $rootScope) {
+      element = $compile('<svg-container><circle ng-if="flag"></circle></svg-container>')($rootScope);
+      $rootScope.flag = true;
+      $rootScope.$apply();
+
+      var circle = element.find('circle');
+      expect(circle[0].toString()).toMatch(/SVG/);
+    });
+  });
 });

@@ -70,15 +70,10 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
 
         if ($window.angular) {
           // Disable animations
-
-          // TODO(i): this doesn't disable javascript animations
-          //          we don't need that for our tests, but it should be done
           $window.angular.resumeBootstrap([['$provide', function($provide) {
-            $provide.decorator('$sniffer', function($delegate) {
-              $delegate.transitions = false;
-              $delegate.animations = false;
-              return $delegate;
-            });
+            return ['$animate', function($animate) {
+              $animate.enabled(false);
+            }];
           }]]);
         }
 
@@ -118,7 +113,7 @@ angular.scenario.Application.prototype.executeAction = function(action) {
       return $injector;
     };
 
-    $injector.invoke(function($browser){
+    $injector.invoke(function($browser) {
       $browser.notifyWhenNoOutstandingRequests(function() {
         action.call(self, $window, $element);
       });

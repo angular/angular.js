@@ -1,15 +1,26 @@
 'use strict';
 
+/* global currencyFilter: true,
+ dateFilter: true,
+ filterFilter: true,
+ jsonFilter: true,
+ limitToFilter: true,
+ lowercaseFilter: true,
+ numberFilter: true,
+ orderByFilter: true,
+ uppercaseFilter: true,
+ */
+
 /**
- * @ngdoc object
- * @name ng.$filterProvider
+ * @ngdoc provider
+ * @name $filterProvider
  * @description
  *
- * Filters are just functions which transform input to an output. However filters need to be Dependency Injected. To
- * achieve this a filter definition consists of a factory function which is annotated with dependencies and is
- * responsible for creating a filter function.
+ * Filters are just functions which transform input to an output. However filters need to be
+ * Dependency Injected. To achieve this a filter definition consists of a factory function which is
+ * annotated with dependencies and is responsible for creating a filter function.
  *
- * <pre>
+ * ```js
  *   // Filter registration
  *   function MyModule($provide, $filterProvider) {
  *     // create a service to demonstrate injection (not always needed)
@@ -28,10 +39,12 @@
  *       };
  *     });
  *   }
- * </pre>
+ * ```
  *
- * The filter function is registered with the `$injector` under the filter name suffixe with `Filter`.
- * <pre>
+ * The filter function is registered with the `$injector` under the filter name suffix with
+ * `Filter`.
+ *
+ * ```js
  *   it('should be the same instance', inject(
  *     function($filterProvider) {
  *       $filterProvider.register('reverse', function(){
@@ -41,29 +54,17 @@
  *     function($filter, reverseFilter) {
  *       expect($filter('reverse')).toBe(reverseFilter);
  *     });
- * </pre>
+ * ```
  *
  *
  * For more information about how angular filters work, and how to create your own filters, see
- * {@link guide/dev_guide.templates.filters Understanding Angular Filters} in the angular Developer
- * Guide.
- */
-/**
- * @ngdoc method
- * @name ng.$filterProvider#register
- * @methodOf ng.$filterProvider
- * @description
- * Register filter factory function.
- *
- * @param {String} name Name of the filter.
- * @param {function} fn The filter factory function which is injectable.
+ * {@link guide/filter Filters} in the Angular Developer Guide.
  */
 
-
 /**
- * @ngdoc function
- * @name ng.$filter
- * @function
+ * @ngdoc service
+ * @name $filter
+ * @kind function
  * @description
  * Filters are used for formatting data displayed to the user.
  *
@@ -73,23 +74,68 @@
  *
  * @param {String} name Name of the filter function to retrieve
  * @return {Function} the filter function
- */
+ * @example
+   <example name="$filter" module="filterExample">
+     <file name="index.html">
+       <div ng-controller="MainCtrl">
+        <h3>{{ originalText }}</h3>
+        <h3>{{ filteredText }}</h3>
+       </div>
+     </file>
+
+     <file name="script.js">
+      angular.module('filterExample', [])
+      .controller('MainCtrl', function($scope, $filter) {
+        $scope.originalText = 'hello';
+        $scope.filteredText = $filter('uppercase')($scope.originalText);
+      });
+     </file>
+   </example>
+  */
 $FilterProvider.$inject = ['$provide'];
 function $FilterProvider($provide) {
   var suffix = 'Filter';
 
+  /**
+   * @ngdoc method
+   * @name $filterProvider#register
+   * @param {string|Object} name Name of the filter function, or an object map of filters where
+   *    the keys are the filter names and the values are the filter factories.
+   * @returns {Object} Registered filter instance, or if a map of filters was provided then a map
+   *    of the registered filter instances.
+   */
   function register(name, factory) {
-    return $provide.factory(name + suffix, factory);
+    if (isObject(name)) {
+      var filters = {};
+      forEach(name, function(filter, key) {
+        filters[key] = register(key, filter);
+      });
+      return filters;
+    } else {
+      return $provide.factory(name + suffix, factory);
+    }
   }
   this.register = register;
 
   this.$get = ['$injector', function($injector) {
     return function(name) {
       return $injector.get(name + suffix);
-    }
+    };
   }];
 
   ////////////////////////////////////////
+
+  /* global
+    currencyFilter: false,
+    dateFilter: false,
+    filterFilter: false,
+    jsonFilter: false,
+    limitToFilter: false,
+    lowercaseFilter: false,
+    numberFilter: false,
+    orderByFilter: false,
+    uppercaseFilter: false,
+  */
 
   register('currency', currencyFilter);
   register('date', dateFilter);

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
@@ -41,63 +43,63 @@ function help() {
   console.log('gdocs.js --login <username>');
   console.log('gdocs.js --fetch [<docs collection>]');
   process.exit(-1);
-};
+}
 
 
 function fetch(collection, url){
   console.log('fetching a list of docs in collection ' + collection + '...');
   request('GET', url, {
-        headers: {
-          'Gdata-Version': '3.0',
-          'Authorization': 'GoogleLogin auth=' + getAuthToken()
-        }
-      },
-      function(chunk){
-        var entries = chunk.split('<entry');
-        entries.shift();
-        entries.forEach(function(entry){
-          var title = entry.match(/<title>(.*?)<\/title>/)[1];
-          if (title.match(/\.ngdoc$/)) {
-            var exportUrl = entry.match(/<content type='text\/html' src='(.*?)'\/>/)[1];
-            download(collection, title, exportUrl);
-          };
-        });
+      headers: {
+        'Gdata-Version': '3.0',
+        'Authorization': 'GoogleLogin auth=' + getAuthToken()
       }
-    );
+    },
+    function(chunk){
+      var entries = chunk.split('<entry');
+      entries.shift();
+      entries.forEach(function(entry){
+        var title = entry.match(/<title>(.*?)<\/title>/)[1];
+        if (title.match(/\.ngdoc$/)) {
+          var exportUrl = entry.match(/<content type='text\/html' src='(.*?)'\/>/)[1];
+          download(collection, title, exportUrl);
+        }
+      });
+    }
+  );
 }
 
 function download(collection, name, url) {
   console.log('Downloading:', name, '...');
   request('GET', url + '&exportFormat=txt',
-      {
-        headers: {
-          'Gdata-Version': '3.0',
-          'Authorization': 'GoogleLogin auth=' + getAuthToken()
-        }
-      },
-      function(data){
-        data = data.replace('\ufeff', '');
-        data = data.replace(/\r\n/mg, '\n');
-
-        // strip out all text annotations
-        data = data.replace(/\[[a-zA-Z]{1,2}\]/mg, '');
-
-        // strip out all docos comments
-        data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '');
-
-        // fix smart-quotes
-        data = data.replace(/[“”]/g, '"');
-        data = data.replace(/[‘’]/g, "'");
-
-
-        data = data + '\n';
-
-        //this should be a bug in Google Doc API, hence need to remove this once the bug is fixed
-        data = data.replace(/\n\n/g, '\n');
-
-        fs.writeFileSync('docs/content/' + collection + '/' + name, reflow(data, 100));
+    {
+      headers: {
+        'Gdata-Version': '3.0',
+        'Authorization': 'GoogleLogin auth=' + getAuthToken()
       }
-    );
+    },
+    function(data){
+      data = data.replace('\ufeff', '');
+      data = data.replace(/\r\n/mg, '\n');
+
+      // strip out all text annotations
+      data = data.replace(/\[[a-zA-Z]{1,2}\]/mg, '');
+
+      // strip out all docos comments
+      data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '');
+
+      // fix smart-quotes
+      data = data.replace(/[“”]/g, '"');
+      data = data.replace(/[‘’]/g, "'");
+
+
+      data = data + '\n';
+
+      //this should be a bug in Google Doc API, hence need to remove this once the bug is fixed
+      data = data.replace(/\n\n/g, '\n');
+
+      fs.writeFileSync('docs/content/' + collection + '/' + name, reflow(data, 100));
+    }
+  );
 }
 
 /**
@@ -111,34 +113,34 @@ function download(collection, name, url) {
  */
 function login(username, password){
   request('POST', 'https://www.google.com/accounts/ClientLogin',
-      {
-        data: {
-          Email: username,
-          Passwd: password,
-          accountType: 'GOOGLE',
-          service: 'writely',
-          'Gdata-version': '3.0'
-        },
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded'
-        }
+    {
+      data: {
+        Email: username,
+        Passwd: password,
+        accountType: 'GOOGLE',
+        service: 'writely',
+        'Gdata-version': '3.0'
       },
-      function(chunk){
-        var token;
-        chunk.split('\n').forEach(function(line){
-          var parts = line.split('=');
-          if (parts[0] == 'Auth') {
-            token = parts[1];
-          }
-        });
-        if (token) {
-          fs.writeFileSync('tmp/gdocs.auth', token);
-          console.log("logged in, token saved in 'tmp/gdocs.auth'");
-        } else {
-          console.log('failed to log in');
-        }
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
       }
-    );
+    },
+    function(chunk){
+      var token;
+      chunk.split('\n').forEach(function(line){
+        var parts = line.split('=');
+        if (parts[0] == 'Auth') {
+          token = parts[1];
+        }
+      });
+      if (token) {
+        fs.writeFileSync('tmp/gdocs.auth', token);
+        console.log("logged in, token saved in 'tmp/gdocs.auth'");
+      } else {
+        console.log('failed to log in');
+      }
+    }
+  );
 }
 
 function getAuthToken() {
@@ -152,17 +154,18 @@ function getAuthToken() {
 }
 
 function request(method, url, options, response) {
-  var url = url.match(/http(s?):\/\/(.+?)(\/.*)/);
+  url = url.match(/http(s?):\/\/(.+?)(\/.*)/);
   var isHttps = url[1];
-  var request = (isHttps ? https : http).request({
+  var req = (isHttps ? https : http).request({
     host: url[2],
     port: (url[1] ? 443 : 80),
     path: url[3],
     method: method
   }, function(res){
+    var data;
     switch (res.statusCode) {
       case 200:
-        var data = [];
+        data = [];
         res.setEncoding('utf8');
         res.on('end', function () { response(data.join('')); });
         res.on('close', function () { response(data.join('')); });  // https
@@ -173,7 +176,7 @@ function request(method, url, options, response) {
         console.log('Eror: Login credentials expired! Please login.');
         break;
       default:
-        var data = [];
+        data = [];
         console.log('ERROR: ', res.statusCode);
         console.log('REQUEST URL: ', url[0]);
         console.log('REQUEST POST: ', options.data);
@@ -186,14 +189,14 @@ function request(method, url, options, response) {
     }
   });
   for(var header in options.headers) {
-    request.setHeader(header, options.headers[header]);
+    req.setHeader(header, options.headers[header]);
   }
   if (options.data)
-    request.write(encodeData(options.data));
-  request.on('end', function() {
+    req.write(encodeData(options.data));
+  req.on('end', function() {
     console.log('end');
   });
-  request.end();
+  req.end();
 }
 
 function encodeData(obj) {
@@ -215,7 +218,9 @@ function askPassword(callback) {
   stdin.on("data", function(c) {
     c = c + "";
     switch (c) {
-      case "\n": case "\r": case "\u0004":
+      case "\n":
+      case "\r":
+      case "\u0004":
         stdio.setRawMode(false);
         stdin.pause();
         callback(password);
@@ -227,7 +232,7 @@ function askPassword(callback) {
         password += c;
         break;
     }
-  })
+  });
 
 }
 

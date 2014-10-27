@@ -29,4 +29,16 @@ describe("ScenarioSpec: Compilation", function() {
       expect(jqLite(element).text()).toEqual('123');
     }));
   });
+
+  describe('jQuery', function() {
+    it('should exist on the angular.scenario object', function() {
+      expect(angular.scenario.jQuery).toBeDefined();
+    });
+
+    it('should have common jQuery methods', function() {
+      var jQuery = angular.scenario.jQuery;
+      expect(typeof jQuery).toEqual('function');
+      expect(typeof jQuery('<div></div>').html).toEqual('function');
+    });
+  });
 });

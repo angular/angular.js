@@ -3,9 +3,9 @@
 /**
  * A future action in a spec.
  *
- * @param {string} name of the future action
- * @param {function()} future callback(error, result)
- * @param {function()} Optional. function that returns the file/line number.
+ * @param {string} name name of the future action
+ * @param {function()} behavior future callback(error, result)
+ * @param {function()} line Optional. function that returns the file/line number.
  */
 angular.scenario.Future = function(name, behavior, line) {
   this.name = name;
@@ -28,7 +28,7 @@ angular.scenario.Future.prototype.execute = function(doneFn) {
     if (result) {
       try {
         result = self.parser(result);
-      } catch(e) {
+      } catch (e) {
         error = e;
       }
     }
@@ -38,7 +38,7 @@ angular.scenario.Future.prototype.execute = function(doneFn) {
 };
 
 /**
- * Configures the future to convert it's final with a function fn(value)
+ * Configures the future to convert its final with a function fn(value)
  *
  * @param {function()} fn function(value) that returns the parsed value
  */
@@ -48,7 +48,7 @@ angular.scenario.Future.prototype.parsedWith = function(fn) {
 };
 
 /**
- * Configures the future to parse it's final value from JSON
+ * Configures the future to parse its final value from JSON
  * into objects.
  */
 angular.scenario.Future.prototype.fromJson = function() {
@@ -56,7 +56,7 @@ angular.scenario.Future.prototype.fromJson = function() {
 };
 
 /**
- * Configures the future to convert it's final value from objects
+ * Configures the future to convert its final value from objects
  * into JSON.
  */
 angular.scenario.Future.prototype.toJson = function() {

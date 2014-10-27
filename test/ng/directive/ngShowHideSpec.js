@@ -1,55 +1,115 @@
 'use strict';
 
 describe('ngShow / ngHide', function() {
-  var element;
+  var $scope, $compile, element;
 
+  function expectVisibility(exprs, ngShowOrNgHide, shownOrHidden) {
+    element = $compile('<div></div>')($scope);
+    forEach(exprs, function(expr) {
+      var childElem = $compile('<div ' + ngShowOrNgHide + '="' + expr + '"></div>')($scope);
+      element.append(childElem);
+      $scope.$digest();
+      expect(childElem)[shownOrHidden === 'shown' ? 'toBeShown' : 'toBeHidden']();
+    });
+  }
+
+  beforeEach(inject(function($rootScope, _$compile_) {
+    $scope = $rootScope.$new();
+    $compile = _$compile_;
+  }));
 
   afterEach(function() {
     dealoc(element);
   });
 
   describe('ngShow', function() {
-    it('should show and hide an element', inject(function($rootScope, $compile) {
+    function expectShown() {
+      expectVisibility(arguments, 'ng-show', 'shown');
+    }
+
+    function expectHidden() {
+      expectVisibility(arguments, 'ng-show', 'hidden');
+    }
+
+    it('should show and hide an element', function() {
       element = jqLite('<div ng-show="exp"></div>');
-      element = $compile(element)($rootScope);
-      $rootScope.$digest();
-      expect(isCssVisible(element)).toEqual(false);
-      $rootScope.exp = true;
-      $rootScope.$digest();
-      expect(isCssVisible(element)).toEqual(true);
-    }));
+      element = $compile(element)($scope);
+      $scope.$digest();
+      expect(element).toBeHidden();
+      $scope.exp = true;
+      $scope.$digest();
+      expect(element).toBeShown();
+    });
 
+    // https://github.com/angular/angular.js/issues/5414
+    it('should show if the expression is a function with a no arguments', function() {
+      element = jqLite('<div ng-show="exp"></div>');
+      element = $compile(element)($scope);
+      $scope.exp = function() {};
+      $scope.$digest();
+      expect(element).toBeShown();
+    });
 
-    it('should make hidden element visible', inject(function($rootScope, $compile) {
-      element = jqLite('<div style="display: none" ng-show="exp"></div>');
-      element = $compile(element)($rootScope);
-      expect(isCssVisible(element)).toBe(false);
-      $rootScope.exp = true;
-      $rootScope.$digest();
-      expect(isCssVisible(element)).toBe(true);
-    }));
+    it('should make hidden element visible', function() {
+      element = jqLite('<div class="ng-hide" ng-show="exp"></div>');
+      element = $compile(element)($scope);
+      expect(element).toBeHidden();
+      $scope.exp = true;
+      $scope.$digest();
+      expect(element).toBeShown();
+    });
+
+    it('should hide the element if condition is falsy', function() {
+      expectHidden('false', 'undefined', 'null', 'NaN', '\'\'', '0');
+    });
+
+    it('should show the element if condition is a non-empty string', function() {
+      expectShown('\'f\'', '\'0\'', '\'false\'', '\'no\'', '\'n\'', '\'[]\'');
+    });
+
+    it('should show the element if condition is an object', function() {
+      expectShown('[]', '{}');
+    });
   });
 
   describe('ngHide', function() {
-    it('should hide an element', inject(function($rootScope, $compile) {
+    function expectShown() {
+      expectVisibility(arguments, 'ng-hide', 'shown');
+    }
+
+    function expectHidden() {
+      expectVisibility(arguments, 'ng-hide', 'hidden');
+    }
+
+    it('should hide an element', function() {
       element = jqLite('<div ng-hide="exp"></div>');
-      element = $compile(element)($rootScope);
-      expect(isCssVisible(element)).toBe(true);
-      $rootScope.exp = true;
-      $rootScope.$digest();
-      expect(isCssVisible(element)).toBe(false);
-    }));
+      element = $compile(element)($scope);
+      expect(element).toBeShown();
+      $scope.exp = true;
+      $scope.$digest();
+      expect(element).toBeHidden();
+    });
+
+    it('should show the element if condition is falsy', function() {
+      expectShown('false', 'undefined', 'null', 'NaN', '\'\'', '0');
+    });
+
+    it('should hide the element if condition is a non-empty string', function() {
+      expectHidden('\'f\'', '\'0\'', '\'false\'', '\'no\'', '\'n\'', '\'[]\'');
+    });
+
+    it('should hide the element if condition is an object', function() {
+      expectHidden('[]', '{}');
+    });
   });
 });
 
-describe('ngShow / ngHide - ngAnimate', function() {
-  var window;
-  var vendorPrefix;
+describe('ngShow / ngHide animations', function() {
   var body, element, $rootElement;
 
-  function html(html) {
+  function html(content) {
     body.append($rootElement);
-    $rootElement.html(html);
+    $rootElement.html(content);
     element = $rootElement.children().eq(0);
     return element;
   }
@@ -59,158 +119,111 @@ describe('ngShow / ngHide - ngAnimate', function() {
     body = jqLite(document.body);
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
     body.removeAttr('ng-animation-running');
   });
 
-  beforeEach(module(function($animationProvider, $provide) {
-    $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer, _$rootElement_, $animator) {
-      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+  beforeEach(module('ngAnimateMock'));
+
+  beforeEach(module(function($animateProvider, $provide) {
+    return function(_$rootElement_) {
       $rootElement = _$rootElement_;
-      $animator.enabled(true);
     };
   }));
 
   describe('ngShow', function() {
-    it('should fire off the animator.show and animator.hide animation', inject(function($compile, $rootScope, $sniffer) {
+    it('should fire off the $animate.show and $animate.hide animation', inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
       $scope.on = true;
       element = $compile(html(
-        '<div ' +
-          'style="'+vendorPrefix+'transition: 1s linear all"' +
-          'ng-show="on" ' +
-          'ng-animate="{show: \'custom-show\', hide: \'custom-hide\', animateFirst: true}">' +
-        '</div>'
+        '<div ng-show="on">data</div>'
       ))($scope);
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-show');
-        window.setTimeout.expect(1).process();
-
-        expect(element.attr('class')).toContain('custom-show-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(element.attr('class')).not.toContain('custom-show-active');
-      expect(element.attr('class')).not.toContain('custom-show');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.element.text()).toBe('data');
+      expect(item.element).toBeShown();
 
       $scope.on = false;
       $scope.$digest();
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-hide');
-        window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-hide-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
 
-      expect(element.attr('class')).not.toContain('custom-hide-active');
-      expect(element.attr('class')).not.toContain('custom-hide');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.element.text()).toBe('data');
+      expect(item.element).toBeHidden();
     }));
 
-    it('should skip animation if parent animation running', function() {
-      var fired = false;
-      inject(function($animator, $compile, $rootScope, $sniffer) {
-        $animator.enabled(true);
-        $rootScope.$digest();
-        $rootScope.val = true;
-        var element = $compile(html('<div ng-show="val" ng-animate="\'animation\'">123</div>'))($rootScope);
-        $rootElement.controller('ngAnimate').running = true;
-        element.css('display','none');
-        expect(element.css('display')).toBe('none');
+    it('should apply the temporary `.ng-hide-animate` class to the element',
+      inject(function($compile, $rootScope, $animate) {
 
-        $rootScope.$digest();
-        expect(element[0].style.display).toBe('');
-        expect(fired).toBe(false);
-
-        $rootElement.controller('ngAnimate').running = false;
-        $rootScope.val = false;
-        $rootScope.$digest();
-        if ($sniffer.transitions) {
-          window.setTimeout.expect(1).process();
-          window.setTimeout.expect(0).process();
-        } else {
-          expect(window.setTimeout.queue).toEqual([]);
-        }
-        expect(element[0].style.display).toBe('none');
-      });
-    });
-  });
-
-  describe('ngHide', function() {
-    it('should fire off the animator.show and animator.hide animation', inject(function($compile, $rootScope, $sniffer) {
+      var item;
       var $scope = $rootScope.$new();
-      $scope.off = true;
+      $scope.on = false;
       element = $compile(html(
-          '<div ' +
-              'style="'+vendorPrefix+'transition: 1s linear all"' +
-              'ng-hide="off" ' +
-              'ng-animate="{show: \'custom-show\', hide: \'custom-hide\', animateFirst: true}">' +
-          '</div>'
+        '<div class="show-hide" ng-show="on">data</div>'
       ))($scope);
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-hide');
-        window.setTimeout.expect(1).process();
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('addClass');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
 
-        expect(element.attr('class')).toContain('custom-hide-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+      $scope.on = true;
+      $scope.$digest();
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('removeClass');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
+    }));
+  });
 
-      expect(element.attr('class')).not.toContain('custom-hide-active');
-      expect(element.attr('class')).not.toContain('custom-hide');
+  describe('ngHide', function() {
+    it('should fire off the $animate.show and $animate.hide animation', inject(function($compile, $rootScope, $animate) {
+      var item;
+      var $scope = $rootScope.$new();
+      $scope.off = true;
+      element = $compile(html(
+          '<div ng-hide="off">datum</div>'
+      ))($scope);
+      $scope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('addClass');
+      expect(item.element.text()).toBe('datum');
+      expect(item.element).toBeHidden();
 
       $scope.off = false;
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-show');
-        window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-show-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(element.attr('class')).not.toContain('custom-show-active');
-      expect(element.attr('class')).not.toContain('custom-show');
+      item = $animate.queue.shift();
+      expect(item.event).toBe('removeClass');
+      expect(item.element.text()).toBe('datum');
+      expect(item.element).toBeShown();
     }));
 
-    it('should disable animation when parent animation is running', function() {
-      var fired = false;
-      module(function($animationProvider) {
-        $animationProvider.register('destructive-animation', function() {
-          return {
-            setup : function() {},
-            start : function(element, done) {
-              fired = true;
-            }
-          };
-        });
-      });
-      inject(function($compile, $rootScope) {
-        $rootScope.val = false;
-        var element = $compile(html('<div ng-hide="val" ng-animate="{ hide:\'destructive-animation\' }">123</div>'))($rootScope);
-        $rootElement.controller('ngAnimate').running = true;
-        element.css('display','block');
-        expect(element.css('display')).toBe('block');
+    it('should apply the temporary `.ng-hide-animate` class to the element',
+      inject(function($compile, $rootScope, $animate) {
 
-        $rootScope.val = true;
-        $rootScope.$digest();
+      var item;
+      var $scope = $rootScope.$new();
+      $scope.on = false;
+      element = $compile(html(
+        '<div class="show-hide" ng-hide="on">data</div>'
+      ))($scope);
+      $scope.$digest();
 
-        expect(element.css('display')).toBe('none');
-        expect(fired).toBe(false);
-      });
-    });
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('removeClass');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
+
+      $scope.on = true;
+      $scope.$digest();
+      item = $animate.queue.shift();
+      expect(item.event).toEqual('addClass');
+      expect(item.options.tempClasses).toEqual('ng-hide-animate');
+    }));
   });
 });

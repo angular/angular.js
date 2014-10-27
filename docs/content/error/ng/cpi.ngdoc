@@ -1,0 +1,10 @@
+@ngdoc error
+@name ng:cpi
+@fullName Bad Copy
+@description
+
+This error occurs when attempting to copy an object to itself. Calling {@link
+angular.copy angular.copy} with a `destination` object deletes
+all of the elements or properties on `destination` before copying to it. Copying
+an object to itself is not supported. Make sure to check your calls to
+`angular.copy` and avoid copying objects or arrays to themselves.

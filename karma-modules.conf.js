@@ -1,14 +1,17 @@
-var angularFiles = require(__dirname + '/angularFiles.js');
+'use strict';
 
-files = angularFiles.mergeFiles(JASMINE, JASMINE_ADAPTER, 'jstdModules', 'angularSrcModules');
-exclude = ['**/*jasmine*/**', '**/*jstd*/**'];
+var angularFiles = require('./angularFiles');
+var sharedConfig = require('./karma-shared.conf');
 
-autoWatch = true;
-logLevel = LOG_INFO;
-logColors = true;
-browsers = ['Chrome'];
+module.exports = function(config) {
+  sharedConfig(config, {testName: 'AngularJS: modules', logFile: 'karma-modules.log'});
 
-junitReporter = {
-  outputFile: 'test_out/modules.xml',
-  suite: 'modules'
+  config.set({
+    files: angularFiles.mergeFilesFor('karmaModules', 'angularSrcModules'),
+
+    junitReporter: {
+      outputFile: 'test_out/modules.xml',
+      suite: 'modules'
+    }
+  });
 };

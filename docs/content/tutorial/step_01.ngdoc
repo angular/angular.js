@@ -1,5 +1,6 @@
-@ngdoc overview
-@name Tutorial: 1 - Static Template
+@ngdoc tutorial
+@name 1 - Static Template
+@step 1
 @description
 
 <ul doc-tutorial-nav="1"></ul>
@@ -11,17 +12,14 @@ dynamically display the same result with any set of data.
 
 In this step you will add some basic information about two cell phones to an HTML page.
 
+- The page now contains a list with information about two phones.
 
 <div doc-tutorial-reset="1"></div>
 
 
-The page now contains a list with information about two phones.
+**`app/index.html`:**
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
-
-__`app/index.html`:__
-<pre>
+```html
   <ul>
     <li>
       <span>Nexus S</span>
@@ -36,7 +34,7 @@ __`app/index.html`:__
       </p>
     </li>
   </ul>
-</pre>
+```
 
 
 # Experiments

@@ -1,0 +1,312 @@
+@ngdoc error
+@name $rootScope:inprog
+@fullName Action Already In Progress
+@description
+
+At any point in time there can be only one `$digest` or `$apply` operation in progress. This is to
+prevent very hard to detect bugs from entering your application. The stack trace of this error
+allows you to trace the origin of the currently executing `$apply` or `$digest` call, which caused
+the error.
+
+## Background
+
+Angular uses a dirty-checking digest mechanism to monitor and update values of the scope during
+the processing of your application.  The digest works by checking all the values that are being
+watched against their previous value and running any watch handlers that have been defined for those
+values that have changed.
+
+This digest mechanism is triggered by calling `$digest` on a scope object.  Normally you do not need
+to trigger a digest manually, because every external action that can trigger changes in your
+application, such as mouse events, timeouts or server responses, wrap the Angular application code
+in a block of code that will run `$digest` when the code completes.
+
+You wrap Angular code in a block that will be followed by a `$digest` by calling `$apply` on a scope
+object.  So, in pseudo-code, the process looks like this:
+
+```
+element.on('mouseup', function() {
+  scope.$apply(function() {
+    $scope.doStuff();
+  });
+});
+```
+
+where `$apply()` looks something like:
+
+```
+$apply = function(fn) {
+  try {
+    fn();
+  } finally() {
+    $digest();
+  }
+}
+```
+
+## Digest Phases
+
+Angular keeps track of what phase of processing we are in, the relevant ones being `$apply` and
+`$digest`.  Trying to reenter a `$digest` or `$apply` while one of them is already in progress is
+typically a sign of programming error that needs to be fixed. So Angular will throw this error when
+that occurs.
+
+In most situations it should be well defined whether a piece of code will be run inside an `$apply`,
+in which case you should not be calling `$apply` or `$digest`, or it will be run outside, in which
+case you should wrap any code that will be interacting with Angular scope or services, in a call to
+`$apply`.
+
+As an example, all Controller code should expect to be run within Angular, so it should have no need
+to call `$apply` or `$digest`.  Conversely, code that is being trigger directly as a call back to
+some external event, from the DOM or 3rd party library, should expect that it is never called from
+within Angular, and so any Angular application code that it calls should first be wrapped in a call
+to $apply.
+
+## Common Causes
+
+Apart from simply incorrect calls to `$apply` or `$digest` there are some cases when you may get
+this error through no fault of your own.
+
+### Inconsistent API (Sync/Async)
+
+This error is often seen when interacting with an API that is sometimes sync and sometimes async.
+
+For example, imagine a 3rd party library that has a method which will retrieve data for us. Since it
+may be making an asynchronous call to a server, it accepts a callback function, which will be called
+when the data arrives.
+
+```
+function MyController($scope, thirdPartyComponent) {
+  thirdPartyComponent.getData(function(someData) {
+    $scope.$apply(function() {
+      $scope.someData = someData;
+    });
+  });
+}
+```
+
+We expect that our callback will be called asynchronously, and so from outside Angular. Therefore, we
+correctly wrap our application code that interacts with Angular in a call to `$apply`.
+
+The problem comes if `getData()` decides to call the callback handler synchronously; perhaps it has
+the data already cached in memory and so it immediately calls the callback to return the data,
+synchronously.
+
+Since, the `MyController` constructor is always instantiated from within an `$apply` call, our
+handler is trying to enter a new `$apply` block from within one.
+
+This is not an ideal design choice on the part of the 3rd party library.
+
+To resolve this type of issue, either fix the api to be always synchronous or asynchronous or force
+your callback handler to always run asynchronously by using the `$timeout` service.
+
+```
+function MyController($scope, thirdPartyComponent) {
+  thirdPartyComponent.getData(function(someData) {
+    $timeout(function() {
+      $scope.someData = someData;
+    }, 0);
+  });
+}
+```
+
+Here we have used `$timeout` to schedule the changes to the scope in a future call stack.
+By providing a timeout period of 0ms, this will occur as soon as possible and `$timeout` will ensure
+that the code will be called in a single `$apply` block.
+
+### Triggering Events Programmatically
+
+The other situation that often leads to this error is when you trigger code (such as a DOM event)
+programmatically (from within Angular), which is normally called by an external trigger.
+
+For example, consider a directive that will set focus on an input control when a value in the scope
+is true:
+
+```
+myApp.directive('setFocusIf', function() {
+  return {
+    link: function($scope, $element, $attr) {
+      $scope.$watch($attr.setFocusIf, function(value) {
+        if ( value ) { $element[0].focus(); }
+      });
+    }
+  };
+});
+```
+
+If we applied this directive to an input which also used the `ngFocus` directive to trigger some
+work when the element receives focus we will have a problem:
+
+```
+<input set-focus-if="hasFocus" ng-focus="msg='has focus'">
+<button ng-click="hasFocus = true">Focus</button>
+```
+
+In this setup, there are two ways to trigger ngFocus. First from a user interaction:
+
+* Click on the input control
+* The input control gets focus
+* The `ngFocus` directive is triggered, setting `$scope.msg='has focus'` from within a new call to
+`$apply()`
+
+Second programmatically:
+
+* Click the button
+* The `ngClick` directive sets the value of `$scope.hasFocus` to true inside a call to `$apply`
+* The `$digest` runs, which triggers the watch inside the `setFocusIf` directive
+* The watch's handle runs, which gives the focus to the input
+* The `ngFocus` directive is triggered, setting `$scope.msg='has focus'` from within a new call to
+`$apply()`
+
+In this second scenario, we are already inside a `$digest` when the ngFocus directive makes another
+call to `$apply()`, causing this error to be thrown.
+
+It is possible to workaround this problem by moving the call to set the focus outside of the digest,
+by using `$timeout(fn, 0, false)`, where the `false` value tells Angular not to wrap this `fn` in a
+`$apply` block:
+
+```
+myApp.directive('setFocusIf', function($timeout) {
+  return {
+    link: function($scope, $element, $attr) {
+      $scope.$watch($attr.setFocusIf, function(value) {
+        if ( value ) {
+          $timeout(function() {
+            // We must reevaluate the value in case it was changed by a subsequent
+            // watch handler in the digest.
+            if ( $scope.$eval($attr.setFocusIf) ) {
+              $element[0].focus();
+            }
+          }, 0, false);
+        }
+      });
+    }
+  }
+});
+```
+
+## Diagnosing This Error
+
+When you get this error it can be rather daunting to diagnose the cause of the issue.  The best
+course of action is to investigate the stack trace from the error.  You need to look for places
+where `$apply` or `$digest` have been called and find the context in which this occurred.
+
+There should be two calls:
+
+* The first call is the good `$apply`/`$digest` and would normally be triggered by some event near
+the top of the call stack.
+
+* The second call is the bad `$apply`/`$digest` and this is the one to investigate.
+
+Once you have identified this call you work your way up the stack to see what the problem is.
+
+* If the second call was made in your application code then you should look at why this code has been
+called from within a `$apply`/`$digest`.  It may be a simple oversight or maybe it fits with the
+sync/async scenario described earlier.
+
+* If the second call was made inside an Angular directive then it is likely that it matches the second
+programmatic event trigger scenario described earlier.  In this case you may need to look further up
+the tree to what triggered the event in the first place.
+
+### Example Problem
+
+Let's look at how to investigate this error using the `setFocusIf` example from above. This example
+defines a new `setFocusIf` directive that sets the focus on the element where it is defined when the
+value of its attribute becomes true.
+
+<example name="error-$rootScope-inprog" module="app">
+  <file name="index.html">
+    <button ng-click="focusInput = true">Focus</button>
+    <input ng-focus="count = count + 1" set-focus-if="focusInput" />
+  </file>
+  <file name="app.js">
+    angular.module('app', []).directive('setFocusIf', function() {
+      return function link($scope, $element, $attr) {
+        $scope.$watch($attr.setFocusIf, function(value) {
+          if ( value ) { $element[0].focus(); }
+        });
+      };
+    });
+  </file>
+</example>
+
+When you click on the button to cause the focus to occur we get our `$rootScope:inprog` error. The
+stacktrace looks like this:
+
+```
+Error: [$rootScope:inprog]
+    at Error (native)
+    at angular.min.js:6:467
+    at n (angular.min.js:105:60)
+    at g.$get.g.$apply (angular.min.js:113:195)
+    at HTMLInputElement.<anonymous> (angular.min.js:198:401)
+    at angular.min.js:32:32
+    at Array.forEach (native)
+    at q (angular.min.js:7:295)
+    at HTMLInputElement.c (angular.min.js:32:14)
+    at Object.fn (app.js:12:38) angular.js:10111
+(anonymous function) angular.js:10111
+$get angular.js:7412
+$get.g.$apply angular.js:12738                   <--- $apply
+(anonymous function) angular.js:19833            <--- called here
+(anonymous function) angular.js:2890
+q angular.js:320
+c angular.js:2889
+(anonymous function) app.js:12
+$get.g.$digest angular.js:12469
+$get.g.$apply angular.js:12742                   <--- $apply
+(anonymous function) angular.js:19833            <--- called here
+(anonymous function) angular.js:2890
+q angular.js:320
+```
+
+We can see (even though the Angular code is minified) that there were two calls to `$apply`, first
+on line `19833`, then on line `12738` of `angular.js`.
+
+It is this second call that caused the error.  If we look at the angular.js code, we can see that
+this call is made by an Angular directive.
+
+```
+var ngEventDirectives = {};
+forEach(
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+  function(name) {
+    var directiveName = directiveNormalize('ng-' + name);
+    ngEventDirectives[directiveName] = ['$parse', function($parse) {
+      return {
+        compile: function($element, attr) {
+          var fn = $parse(attr[directiveName]);
+          return function(scope, element, attr) {
+            element.on(lowercase(name), function(event) {
+              scope.$apply(function() {
+                fn(scope, {$event:event});
+              });
+            });
+          };
+        }
+      };
+    }];
+  }
+);
+```
+
+It is not possible to tell which from the stack trace, but we happen to know in this case that it is
+the `ngFocus` directive.
+
+Now look up the stack to see that our application code is only entered once in `app.js` at line `12`.
+This is where our problem is:
+
+```
+10: link: function($scope, $element, $attr) {
+11:   $scope.$watch($attr.setFocusIf, function(value) {
+12:     if ( value ) { $element[0].focus(); }    <---- This is the source of the problem
+13:   });
+14: }
+```
+
+We can now see that the second `$apply` was caused by us programmatically triggering a DOM event
+(i.e. focus) to occur. We must fix this by moving the code outside of the $apply block using
+`$timeout` as described above.
+
+## Further Reading
+To learn more about Angular processing model please check out the
+{@link guide/concepts concepts doc} as well as the {@link ng.$rootScope.Scope api} doc.

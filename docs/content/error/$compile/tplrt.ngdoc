@@ -1,0 +1,53 @@
+@ngdoc error
+@name $compile:tplrt
+@fullName Invalid Template Root
+@description
+
+When a directive is declared with `template` (or `templateUrl`) and `replace` mode on, the template
+must have exactly one root element. That is, the text of the template property or the content
+referenced by the templateUrl must be contained within a single html element.
+For example, `<p>blah <em>blah</em> blah</p>` instead of simply `blah <em>blah</em> blah`.
+Otherwise, the replacement operation would result in a single element (the directive) being replaced
+with multiple elements or nodes, which is unsupported and not commonly needed in practice.
+
+
+For example a directive with definition:
+
+```
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    replace: true,
+    templateUrl: 'someUrl'
+    ...
+  }
+});
+```
+
+And a template provided at URL `someUrl`. The template must be an html fragment that has only a
+single root element, like the `div` element in this template:
+
+```
+<div><b>Hello</b> World!</div>
+```
+
+An an invalid template to be used with this directive is one that defines multiple root nodes or
+elements. For example:
+
+```
+<b>Hello</b> World!
+```
+
+Watch out for html comments at the beginning or end of templates, as these can cause this error as
+well.  Consider the following template:
+
+```
+<div class='container'>
+  <div class='wrapper>
+     ...
+  </div> <!-- wrapper -->
+</div> <!-- container -->
+```
+
+The `<!-- container -->` comment is interpreted as a second root element and causes the template to
+be invalid.

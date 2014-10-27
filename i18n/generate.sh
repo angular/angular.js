@@ -1,7 +1,12 @@
 #!/bin/bash
 
+set -e
+
 BASE_DIR=`dirname $0`
 cd $BASE_DIR
 
+./run-tests.sh
 
-/usr/bin/env jasmine-node spec/ --noColor && node src/closureSlurper.js
+node src/closureSlurper.js
+
+

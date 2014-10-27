@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$cacheFactory', function() {
 
   it('should be injected', inject(function($cacheFactory) {
@@ -15,7 +17,7 @@ describe('$cacheFactory', function() {
   it('should complain if the cache id is being reused', inject(function($cacheFactory) {
     $cacheFactory('cache1');
     expect(function() { $cacheFactory('cache1'); }).
-      toThrow("[$cacheFactory:iid] CacheId 'cache1' is already taken!");
+      toThrowMinErr("$cacheFactory", "iid", "CacheId 'cache1' is already taken!");
   }));
 
 
@@ -162,7 +164,7 @@ describe('$cacheFactory', function() {
         cache.put('foo', 'bar');
         cache.destroy();
 
-        expect(function() { cache.get('foo'); } ).toThrow();
+        expect(function() { cache.get('foo'); }).toThrow();
         expect(function() { cache.get('neverexisted'); }).toThrow();
         expect(function() { cache.put('foo', 'bar'); }).toThrow();
 
@@ -176,7 +178,7 @@ describe('$cacheFactory', function() {
   describe('LRU cache', function() {
 
     it('should create cache with defined capacity', inject(function($cacheFactory) {
-      cache = $cacheFactory('cache1', {capacity: 5});
+      var cache = $cacheFactory('cache1', {capacity: 5});
       expect(cache.info().size).toBe(0);
 
       for (var i=0; i<5; i++) {
@@ -193,6 +195,7 @@ describe('$cacheFactory', function() {
 
 
     describe('eviction', function() {
+      var cache;
 
       beforeEach(inject(function($cacheFactory) {
         cache = $cacheFactory('cache1', {capacity: 2});

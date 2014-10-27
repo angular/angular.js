@@ -1,0 +1,15 @@
+@ngdoc overview
+@name Error Reference
+@description
+
+# Error Reference
+
+Use the Error Reference manual to find information about error conditions in
+your AngularJS app. Errors thrown in production builds of AngularJS will log
+links to this site on the console.
+
+Other useful references for debugging your app include:
+
+- {@link api/ API Reference} for detailed information about specific features
+- {@link guide/ Developer Guide} for AngularJS concepts
+- {@link tutorial/ Tutorial} for getting started

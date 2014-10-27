@@ -1,3 +1,7 @@
+/* global describe: false, it: false, expect: false */
+
+'use strict';
+
 describe('changelog.js', function() {
   var ch = require('./changelog');
 
@@ -13,7 +17,7 @@ describe('changelog.js', function() {
       expect(msg.hash).toBe('9b1aff905b638aa274a5fc8f88662df446d374bd');
       expect(msg.subject).toBe('broadcast $destroy event on scope destruction');
       expect(msg.body).toBe('perf testing shows that in chrome this change adds 5-15% overhead\n' +
-          'when destroying 10k nested scopes where each scope has a $destroy listener\n')
+          'when destroying 10k nested scopes where each scope has a $destroy listener\n');
       expect(msg.component).toBe('scope');
     });
 

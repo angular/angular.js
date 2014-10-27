@@ -1,0 +1,27 @@
+@ngdoc error
+@name ngModel:nonassign
+@fullName Non-Assignable Expression
+@description
+
+This error occurs when expression the {@link ng.directive:ngModel ngModel} directive is bound to is a non-assignable expression.
+
+Examples using assignable expressions include:
+
+```
+<input ng-model="namedVariable">
+<input ng-model="myObj.someProperty">
+<input ng-model="indexedArray[0]">
+```
+
+Examples of non-assignable expressions include:
+
+```
+<input ng-model="foo + bar">
+<input ng-model="42">
+<input ng-model="'oops'">
+<input ng-model="myFunc()">
+```
+
+Always make sure that the expression bound via `ngModel` directive can be assigned to.
+
+For more information, see the {@link ng.directive:ngModel ngModel API doc}.

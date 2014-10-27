@@ -5,7 +5,7 @@ describe('angular.scenario.Application', function() {
   var app, frames;
 
   function callLoadHandlers(app) {
-    var handler = app.getFrame_().triggerHandler('load')
+    var handler = app.getFrame_().triggerHandler('load');
   }
 
   beforeEach(function() {
@@ -29,7 +29,7 @@ describe('angular.scenario.Application', function() {
       return {x:counter++, document:{x:counter++}};
     };
     app.navigateTo('http://www.google.com/');
-    app.executeAction(function($document, $window) {
+    app.executeAction(function($window, $document) {
       testWindow = $window;
       testDocument = $document;
     });

@@ -1,0 +1,21 @@
+@ngdoc error
+@name ngModel:constexpr
+@fullName Non-Constant Expression
+@description
+
+Some attributes used in conjunction with ngModel (such as ngTrueValue or ngFalseValue) will only
+accept constant expressions.
+
+Examples using constant expressions include:
+
+```
+<input type="checkbox" ng-model="..." ng-true-value="'truthyValue'">
+<input type="checkbox" ng-model="..." ng-false-value="0">
+```
+
+Examples of non-constant expressions include:
+
+```
+<input type="checkbox" ng-model="..." ng-true-value="someValue">
+<input type="checkbox" ng-model="..." ng-false-value="{foo: someScopeValue}">
+```

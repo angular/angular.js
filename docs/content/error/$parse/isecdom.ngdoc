@@ -1,0 +1,47 @@
+@ngdoc error
+@name $parse:isecdom
+@fullName Referencing a DOM node in Expression
+@description
+
+Occurs when an expression attempts to access a DOM node.
+
+AngularJS restricts access to DOM nodes from within expressions since it's a known way to
+execute arbitrary Javascript code.
+
+This check is only performed on object index and function calls in Angular expressions.  These are
+places that are harder for the developer to guard.  Dotted member access (such as a.b.c) does not
+perform this check - it's up to the developer to not expose such sensitive and powerful objects
+directly on the scope chain.
+
+To resolve this error, avoid access to DOM nodes.
+
+
+# Event Handlers and Return Values
+
+The `$parse:isecdom` error also occurs when an event handler invokes a function that returns a DOM
+node.
+
+```html
+  <button ng-click="iWillReturnDOM()">click me</button>
+```
+
+```js
+  $scope.iWillReturnDOM = function() {
+    return someDomNode;
+  }
+```
+
+To fix this issue, avoid returning DOM nodes from event handlers.
+
+*Note: This error often means that you are accessing DOM from your controllers, which is usually
+a sign of poor coding style that violates separation of concerns.*
+
+
+# Implicit Returns in CoffeeScript
+
+This error can occur more frequently when using CoffeeScript, which has a feature called implicit
+returns. This language feature returns the last dereferenced object in the function when the
+function has no explicit return statement.
+
+The solution in this scenario is to add an explicit return statement. For example `return false` to
+the function.

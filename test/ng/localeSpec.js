@@ -1,6 +1,7 @@
 'use strict';
 
 describe('$locale', function() {
+  /* global $LocaleProvider: false */
 
   var $locale = new $LocaleProvider().$get();
 

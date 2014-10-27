@@ -1,36 +1,21 @@
-files = [
-  JASMINE,
-  JASMINE_ADAPTER,
+'use strict';
 
-  'build/docs/components/jquery.js',
-  'test/jquery_remove.js',
+var sharedConfig = require('./karma-shared.conf');
 
-  'build/angular.js',
-  'build/angular-cookies.js',
-  'build/angular-mocks.js',
-  'build/angular-resource.js',
-  'build/angular-mobile.js',
-  'build/angular-sanitize.js',
-  'build/angular-route.js',
+module.exports = function(config) {
+  sharedConfig(config, {testName: 'AngularJS: docs', logFile: 'karma-docs.log'});
 
-  'build/docs/components/lib/lunr.js/lunr.js',
-  'build/docs/components/lib/google-code-prettify/src/prettify.js',
-  'build/docs/components/showdown.js',
+  config.set({
+    files: [
+      'build/angular.js',
+      'build/angular-mocks.js',
+      'docs/app/src/**/*.js',
+      'docs/app/test/**/*Spec.js'
+    ],
 
-  'build/docs/components/angular-bootstrap.js',
-  'build/docs/components/angular-bootstrap-prettify.js',
-  'build/docs/js/docs.js',
-  'build/docs/docs-data.js',
-
-  'docs/component-spec/*.js'
-];
-
-autoWatch = true;
-logLevel = LOG_INFO;
-logColors = true;
-browsers = ['Chrome'];
-
-junitReporter = {
-  outputFile: 'test_out/docs.xml',
-  suite: 'Docs'
+    junitReporter: {
+      outputFile: 'test_out/docs.xml',
+      suite: 'Docs'
+    }
+  });
 };

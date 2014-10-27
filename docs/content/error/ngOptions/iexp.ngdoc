@@ -1,0 +1,13 @@
+@ngdoc error
+@name ngOptions:iexp
+@fullName Invalid Expression
+@description
+This error occurs when 'ngOptions' is passed an expression that isn't in an expected form.
+
+Here's an example of correct syntax:
+
+```
+<select ng-model="color" ng-options="c.name for c in colors">
+```
+
+For more information on valid expression syntax, see 'ngOptions' in {@link ng.directive:select select} directive docs.

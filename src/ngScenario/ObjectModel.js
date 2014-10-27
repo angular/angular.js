@@ -66,7 +66,7 @@ angular.scenario.ObjectModel = function(runner) {
 
   runner.on('StepBegin', function(spec, step) {
     var it = self.getSpec(spec.id);
-    var step = new angular.scenario.ObjectModel.Step(step.name);
+    step = new angular.scenario.ObjectModel.Step(step.name);
     it.steps.push(step);
 
     // forward the event
@@ -140,8 +140,9 @@ angular.scenario.ObjectModel.prototype.on = function(eventName, listener) {
  */
 angular.scenario.ObjectModel.prototype.emit = function(eventName) {
   var self = this,
-      args = Array.prototype.slice.call(arguments, 1),
-      eventName = eventName.toLowerCase();
+      args = Array.prototype.slice.call(arguments, 1);
+
+  eventName = eventName.toLowerCase();
 
   if (this.listeners[eventName]) {
     angular.forEach(this.listeners[eventName], function(listener) {
@@ -170,7 +171,7 @@ angular.scenario.ObjectModel.prototype.getDefinitionPath = function(spec) {
 /**
  * Gets a spec by id.
  *
- * @param {string} The id of the spec to get the object for.
+ * @param {string} id The id of the spec to get the object for.
  * @return {Object} the Spec instance
  */
 angular.scenario.ObjectModel.prototype.getSpec = function(id) {
@@ -195,7 +196,7 @@ angular.scenario.ObjectModel.Spec = function(id, name, definitionNames) {
 /**
  * Adds a new step to the Spec.
  *
- * @param {string} step Name of the step (really name of the future)
+ * @param {string} name Name of the step (really name of the future)
  * @return {Object} the added step
  */
 angular.scenario.ObjectModel.Spec.prototype.addStep = function(name) {
@@ -229,7 +230,7 @@ angular.scenario.ObjectModel.Spec.prototype.setStatusFromStep = function(step) {
 /**
  * A single step inside a Spec.
  *
- * @param {string} step Name of the step
+ * @param {string} name Name of the step
  */
 angular.scenario.ObjectModel.Step = function(name) {
   this.name = name;

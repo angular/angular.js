@@ -1,0 +1,10 @@
+@ngdoc error
+@name $parse:isecfn
+@fullName Referencing Function Disallowed
+@description
+
+Occurs when an expression attempts to access the 'Function' object (constructor for all functions in JavaScript).
+
+Angular bans access to Function from within expressions since constructor access is a known way to execute arbitrary Javascript code.
+
+To resolve this error, avoid Function access.

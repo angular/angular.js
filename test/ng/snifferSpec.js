@@ -3,6 +3,7 @@
 describe('$sniffer', function() {
 
   function sniffer($window, $document) {
+    /* global $SnifferProvider: false */
     $window.navigator = {};
     $document = jqLite($document || {});
     if (!$document[0].body) {
@@ -19,20 +20,6 @@ describe('$sniffer', function() {
     it('should be false if history or pushState not defined', function() {
       expect(sniffer({history: {}}).history).toBe(false);
       expect(sniffer({}).history).toBe(false);
-    });
-  });
-
-  describe('hashchange', function() {
-    it('should be true if onhashchange property defined', function() {
-      expect(sniffer({onhashchange: true}).hashchange).toBe(true);
-    });
-
-    it('should be false if onhashchange property not defined', function() {
-      expect(sniffer({}).hashchange).toBe(false);
-    });
-
-    it('should be false if documentMode is 7 (IE8 comp mode)', function() {
-      expect(sniffer({onhashchange: true}, {documentMode: 7}).hashchange).toBe(false);
     });
   });
 
@@ -85,20 +72,11 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false if document.securityPolicy.isActive not available', function() {
+    it('should be false by default', function() {
       expect(sniffer({}).csp).toBe(false);
     });
-
-
-    it('should use document.securityPolicy.isActive if available', function() {
-      var createDocumentWithCSP = function(csp) {
-        return {securityPolicy: {isActive: csp}};
-      };
-
-      expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
-      expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
-    });
   });
+
 
   describe('vendorPrefix', function() {
 
@@ -106,19 +84,32 @@ describe('$sniffer', function() {
       inject(function($sniffer, $window) {
         var expectedPrefix;
         var ua = $window.navigator.userAgent.toLowerCase();
-        if(/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
+        if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
           expectedPrefix = 'Webkit';
         }
-        else if(/firefox/i.test(ua)) {
+        else if (/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
         }
-        else if(/ie/i.test(ua)) {
+        else if (/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
-        else if(/opera/i.test(ua)) {
-          expectedPrefix = 'O';
-        }
         expect($sniffer.vendorPrefix).toBe(expectedPrefix);
+      });
+    });
+
+    it('should still work for an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body: {
+            style: {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.vendorPrefix).toBe('webkit');
       });
     });
 
@@ -134,8 +125,8 @@ describe('$sniffer', function() {
     it('should be false when there is no animation style', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {}
+          body: {
+            style: {}
           }
         };
         $provide.value('$document', jqLite(doc));
@@ -149,11 +140,10 @@ describe('$sniffer', function() {
       module(function($provide) {
         var animationStyle = 'some_animation 2s linear';
         var doc = {
-          body : {
-            style : {
-              WebkitAnimation : animationStyle,
-              MozAnimation : animationStyle,
-              OAnimation : animationStyle
+          body: {
+            style: {
+              WebkitAnimation: animationStyle,
+              MozAnimation: animationStyle
             }
           }
         };
@@ -167,9 +157,9 @@ describe('$sniffer', function() {
     it('should be true with w3c-style animations', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
-              animation : 'some_animation 2s linear'
+          body: {
+            style: {
+              animation: 'some_animation 2s linear'
             }
           }
         };
@@ -179,6 +169,45 @@ describe('$sniffer', function() {
         expect($sniffer.animations).toBe(true);
       });
     });
+
+    it('should be true on android with older body style properties', function() {
+      module(function($provide) {
+        var doc = {
+          body: {
+            style: {
+              webkitAnimation: ''
+            }
+          }
+        };
+        var win = {
+          navigator: {
+            userAgent: 'android 2'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(true);
+      });
+    });
+
+    it('should be true when an older version of Webkit is used', function() {
+      module(function($provide) {
+        var doc = {
+          body: {
+            style: {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(false);
+      });
+    });
+
   });
 
   describe('transitions', function() {
@@ -192,8 +221,8 @@ describe('$sniffer', function() {
     it('should be false when there is no transition style', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {}
+          body: {
+            style: {}
           }
         };
         $provide.value('$document', jqLite(doc));
@@ -207,11 +236,10 @@ describe('$sniffer', function() {
       module(function($provide) {
         var transitionStyle = '1s linear all';
         var doc = {
-          body : {
-            style : {
-              WebkitTransition : transitionStyle,
-              MozTransition : transitionStyle,
-              OTransition : transitionStyle
+          body: {
+            style: {
+              WebkitTransition: transitionStyle,
+              MozTransition: transitionStyle
             }
           }
         };
@@ -225,9 +253,9 @@ describe('$sniffer', function() {
     it('should be true with w3c-style transitions', function() {
       module(function($provide) {
         var doc = {
-          body : {
-            style : {
-              transition : '1s linear all'
+          body: {
+            style: {
+              transition: '1s linear all'
             }
           }
         };
@@ -238,5 +266,68 @@ describe('$sniffer', function() {
       });
     });
 
+    it('should be true on android with older body style properties', function() {
+      module(function($provide) {
+        var doc = {
+          body: {
+            style: {
+              webkitTransition: ''
+            }
+          }
+        };
+        var win = {
+          navigator: {
+            userAgent: 'android 2'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.transitions).toBe(true);
+      });
+    });
+
+  });
+
+
+  describe('history', function() {
+    it('should be true on Boxee box with an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body: {
+            style: {}
+          }
+        };
+        var win = {
+          history: {
+            pushState: noop
+          },
+          navigator: {
+            userAgent: 'boxee (alpha/Darwin 8.7.1 i386 - 0.9.11.5591)'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.history).toBe(false);
+      });
+    });
+  });
+
+  it('should provide the android version', function() {
+    module(function($provide) {
+      var win = {
+        navigator: {
+          userAgent: 'android 2'
+        }
+      };
+      $provide.value('$document', jqLite({}));
+      $provide.value('$window', win);
+    });
+    inject(function($sniffer) {
+      expect($sniffer.android).toBe(2);
+    });
   });
 });

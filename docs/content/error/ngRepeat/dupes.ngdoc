@@ -1,0 +1,22 @@
+@ngdoc error
+@name ngRepeat:dupes
+@fullName Duplicate Key in Repeater
+@description
+
+Occurs if there are duplicate keys in an {@link ng.directive:ngRepeat ngRepeat} expression.  Duplicate keys are banned because AngularJS uses keys to associate DOM nodes with items.
+
+By default, collections are keyed by reference which is desirable for most common models but can be problematic for primitive types that are interned (share references).
+
+For example the issue can be triggered by this *invalid* code:
+
+```
+<div ng-repeat="value in [4, 4]"></div>
+```
+
+To resolve this error either ensure that the items in the collection have unique identity or use the `track by` syntax to specify how to track the association between models and DOM.
+
+The example above can be resolved by using `track by $index`, which will cause the items to be keyed by their position in the array instead of their value:
+
+```
+<div ng-repeat="value in [4, 4] track by $index"></div>
+```

@@ -1,0 +1,82 @@
+<div class="container-fluid" ng-app="orderByBenchmark">
+  <div class="row" ng-controller="DataController as ctrl">
+    <div class="col-lg-8">
+      <p>Filters</p>
+
+      <p>
+        <label>Number of ngRepeats:</label>
+        <input type="number" ng-model="ctrl.ngRepeatCount">
+      </p>
+
+      <p>
+        <div class="radio">
+          <label>
+            <input type="radio" ng-model="benchmarkType" value="baseline">baseline
+          </label>
+        </div>
+        <pre><code>ng-repeat="row in ctrl.rows"</code></pre>
+        <br />
+        <div class="radio">
+          <label>
+            <input type="radio" ng-model="benchmarkType" value="orderBy">orderBy
+          </label>
+        </div>
+        <pre><code>ng-repeat="row in ctrl.rows | orderBy:'name'"</code></pre>
+        <br />
+        <div class="radio">
+          <label>
+            <input type="radio" ng-model="benchmarkType" value="orderByArray">orderBy array expression
+          </label>
+        </div>
+        <pre><code>ng-repeat="row in ctrl.rows | orderBy:['name', 'index']"</code></pre>
+        <br />
+        <div class="radio">
+          <label>
+            <input type="radio" ng-model="benchmarkType"
+            value="orderByFunction">orderBy function expression
+          </label>
+        </div>
+        <pre><code>ng-repeat="row in ctrl.rows | orderBy:rawProperty('name')"</code></pre>
+        <br />
+        <div class="radio">
+          <label>
+            <input type="radio" ng-model="benchmarkType"
+            value="orderByArrayFunction">orderBy array function expression
+          </label>
+        </div>
+        <pre><code>ng-repeat="row in ctrl.rows | orderBy:[rawProperty('name'), rawProperty('index')]"</code></pre>
+      </p>
+
+
+      Debug output:
+      <ng-switch on="benchmarkType">
+        <div ng-switch-when="baseline">
+          <span ng-repeat="row in ctrl.rows">
+            <span ng-bind="row.name"></span>,
+          </span>
+        </div>
+        <div ng-switch-when="orderBy">
+          <span ng-repeat="row in ctrl.rows | orderBy:'name'">
+            <span ng-bind="row.name"></span>,
+          </span>
+        </div>
+        <div ng-switch-when="orderByArray">
+          <span ng-repeat="row in ctrl.rows | orderBy:['name', 'index']">
+            <span ng-bind="row.name"></span>,
+          </span>
+        </div>
+        <div ng-switch-when="orderByFunction">
+          <span ng-repeat="row in ctrl.rows | orderBy:rawProperty('name')">
+            <span ng-bind="row.name"></span>,
+          </span>
+        </div>
+        <div ng-switch-when="orderByArrayFunction">
+          <span ng-repeat="row in ctrl.rows | orderBy:[rawProperty('name'), rawProperty('index')]">
+            <span ng-bind="row.name"></span>,
+          </span>
+        </div>
+      </ng-switch>
+
+    </div>
+  </div>
+</div>

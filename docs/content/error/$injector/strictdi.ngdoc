@@ -1,0 +1,54 @@
+@ngdoc error
+@name $injector:strictdi
+@fullName Explicit annotation required
+@description
+
+This error occurs when attempting to invoke a function or provider which
+has not been explicitly annotated, while the application is running with
+strict-di mode enabled.
+
+For example:
+
+```
+angular.module("myApp", [])
+  // BadController cannot be invoked, because
+  // the dependencies to be injected are not
+  // explicitly listed.
+  .controller("BadController", function($scope, $http, $filter) {
+    // ...
+  });
+```
+
+To fix the error, explicitly annotate the function using either the inline
+bracket notation, or with the $inject property:
+
+```
+function GoodController1($scope, $http, $filter) {
+  // ...
+}
+GoodController1.$inject = ["$scope", "$http", "$filter"];
+
+angular.module("myApp", [])
+  // GoodController1 can be invoked because it
+  // had an $inject property, which is an array
+  // containing the dependency names to be
+  // injected.
+  .controller("GoodController1", GoodController1)
+
+  // GoodController2 can also be invoked, because
+  // the dependencies to inject are listed, in
+  // order, in the array, with the function to be
+  // invoked trailing on the end.
+  .controller("GoodController2", [
+    "$scope",
+    "$http",
+    "$filter",
+    function($scope, $http, $filter) {
+      // ...
+    }
+  ]);
+
+```
+
+For more information about strict-di mode, see {@link ng.directive:ngApp ngApp}
+and {@link angular.bootstrap angular.bootstrap}.

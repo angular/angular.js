@@ -53,10 +53,10 @@ describe("angular.scenario.dsl", function() {
     // Just use the real one since it delegates to this.addFuture
     $root.addFutureAction = angular.scenario.
       SpecRunner.prototype.addFutureAction;
-    jqLite($window.document).html('');
+    jqLite($window.document).empty();
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     jqLite($window.document).removeData('$injector');
   });
 
@@ -227,6 +227,7 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.select('test').option('A');
         expect(doc.find('[data-ng-model="test"]').val()).toEqual('A');
       });
+
       it('should select single option using x-ng', function() {
         doc.append(
           '<select x-ng-model="test">' +
@@ -238,18 +239,29 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('[x-ng-model="test"]').val()).toEqual('A');
       });
 
-
-
-
-      it('should select option by name', function() {
+      it('should select option by exact name', function() {
         doc.append(
             '<select ng-model="test">' +
-            '  <option value=A>one</option>' +
+            '  <option value=A>twenty one</option>' +
             '  <option value=B selected>two</option>' +
+            '  <option value=C>thirty one</option>' +
+            '  <option value=D>one</option>' +
             '</select>'
           );
-          $root.dsl.select('test').option('one');
-          expect(doc.find('[ng-model="test"]').val()).toEqual('A');
+        $root.dsl.select('test').option('one');
+        expect(doc.find('[ng-model="test"]').val()).toEqual('D');
+      });
+
+      it('should select option by name if no exact match and name contains value', function() {
+        doc.append(
+            '<select ng-model="test">' +
+            '  <option value=A>twenty one</option>' +
+            '  <option value=B selected>two</option>' +
+            '  <option value=C>thirty one</option>' +
+            '</select>'
+          );
+        $root.dsl.select('test').option('one');
+        expect(doc.find('[ng-model="test"]').val()).toEqual('A');
       });
 
       it('should select multiple options', function() {
@@ -270,15 +282,15 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureError).toMatch(/did not match/);
       });
 
-      it('should fail to select an option that does not exist', function(){
-          doc.append(
-              '<select ng-model="test">' +
-              '  <option value=A>one</option>' +
-              '  <option value=B selected>two</option>' +
-              '</select>'
-            );
-            $root.dsl.select('test').option('three');
-            expect($root.futureError).toMatch(/not found/);
+      it('should fail to select an option that does not exist', function() {
+        doc.append(
+            '<select ng-model="test">' +
+            '  <option value=A>one</option>' +
+            '  <option value=B selected>two</option>' +
+            '</select>'
+          );
+        $root.dsl.select('test').option('three');
+        expect($root.futureError).toMatch(/not found/);
       });
     });
 

@@ -1,4 +1,6 @@
-angularFiles = {
+'use strict';
+
+var angularFiles = {
   'angularSrc': [
     'src/minErr.js',
     'src/Angular.js',
@@ -10,26 +12,33 @@ angularFiles = {
     'src/auto/injector.js',
 
     'src/ng/anchorScroll.js',
-    'src/ng/animation.js',
-    'src/ng/animator.js',
+    'src/ng/animate.js',
+    'src/ng/asyncCallback.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/document.js',
     'src/ng/exceptionHandler.js',
+    'src/ng/http.js',
+    'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
+    'src/ng/interval.js',
+    'src/ng/locale.js',
     'src/ng/location.js',
     'src/ng/log.js',
     'src/ng/parse.js',
     'src/ng/q.js',
+    'src/ng/raf.js',
     'src/ng/rootScope.js',
+    'src/ng/sanitizeUri.js',
+    'src/ng/sce.js',
     'src/ng/sniffer.js',
-    'src/ng/window.js',
-    'src/ng/http.js',
-    'src/ng/httpBackend.js',
-    'src/ng/locale.js',
+    'src/ng/templateRequest.js',
+    'src/ng/testability.js',
     'src/ng/timeout.js',
+    'src/ng/urlUtils.js',
+    'src/ng/window.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
@@ -39,7 +48,7 @@ angularFiles = {
 
     'src/ng/directive/directives.js',
     'src/ng/directive/a.js',
-    'src/ng/directive/booleanAttrs.js',
+    'src/ng/directive/attrs.js',
     'src/ng/directive/form.js',
     'src/ng/directive/input.js',
     'src/ng/directive/ngBind.js',
@@ -63,23 +72,46 @@ angularFiles = {
     'src/ng/directive/style.js'
   ],
 
-  'angularSrcModules': [
-    'src/ngCookies/cookies.js',
-    'src/ngResource/resource.js',
-    'src/ngRoute/routeUtils.js',
-    'src/ngRoute/route.js',
-    'src/ngRoute/routeParams.js',
-    'src/ngRoute/directive/ngView.js',
-    'src/ngSanitize/sanitize.js',
-    'src/ngSanitize/directive/ngBindHtml.js',
-    'src/ngSanitize/filter/linky.js',
-    'src/ngMock/angular-mocks.js',
-    'src/ngMobile/mobile.js',
-    'src/ngMobile/swipe.js',
-    'src/ngMobile/directive/ngClick.js',
-    'src/ngMobile/directive/ngSwipe.js',
-    'docs/components/angular-bootstrap/bootstrap.js'
+  'angularLoader': [
+    'src/minErr.js',
+    'src/loader.js'
   ],
+
+  'angularModules': {
+    'ngAnimate': [
+      'src/ngAnimate/animate.js'
+    ],
+    'ngCookies': [
+      'src/ngCookies/cookies.js'
+    ],
+    'ngMessages': [
+      'src/ngMessages/messages.js'
+    ],
+    'ngResource': [
+      'src/ngResource/resource.js'
+    ],
+    'ngRoute': [
+      'src/ngRoute/route.js',
+      'src/ngRoute/routeParams.js',
+      'src/ngRoute/directive/ngView.js'
+    ],
+    'ngSanitize': [
+      'src/ngSanitize/sanitize.js',
+      'src/ngSanitize/filter/linky.js'
+    ],
+    'ngMock': [
+      'src/ngMock/angular-mocks.js'
+    ],
+    'ngTouch': [
+      'src/ngTouch/touch.js',
+      'src/ngTouch/swipe.js',
+      'src/ngTouch/directive/ngClick.js',
+      'src/ngTouch/directive/ngSwipe.js'
+    ],
+    'ngAria': [
+      'src/ngAria/aria.js'
+    ]
+  },
 
   'angularScenario': [
     'src/ngScenario/Scenario.js',
@@ -99,129 +131,104 @@ angularFiles = {
   ],
 
   'angularTest': [
-    'test/testabilityPatch.js',
-    'test/matchers.js',
+    'test/helpers/*.js',
     'test/ngScenario/*.js',
     'test/ngScenario/output/*.js',
-    'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
     'test/ng/**/*.js',
+    'test/ngAnimate/*.js',
+    'test/ngMessages/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngMobile/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/*.js'
   ],
 
-  'jstd': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'components/jquery/jquery.js',
+  'karma': [
+    'bower_components/jquery/dist/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
-    'example/personalLog/*.js',
-    'example/personalLog/test/*.js'
   ],
 
-  'jstdExclude': [
+  'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js'
   ],
 
-  'jstdScenario': [
+  'karmaScenario': [
     'build/angular-scenario.js',
-    'build/jstd-scenario-adapter-config.js',
-    'build/jstd-scenario-adapter.js',
     'build/docs/docs-scenario.js'
   ],
 
-  "jstdModules": [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+  "karmaModules": [
     'build/angular.js',
     '@angularSrcModules',
     'src/ngScenario/browserTrigger.js',
-    'test/matchers.js',
-    'test/testabilityPatch.js',
+    'test/helpers/*.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngRoute/**/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/**/*.js',
-    'test/ngMobile/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/*.js'
   ],
 
-  'jstdPerf': [
-   'lib/jasmine/jasmine.js',
-   'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-   '@angularSrc',
-   '@angularSrcModules',
-   'src/ngMock/angular-mocks.js',
-   'perf/data/*.js',
-   'perf/testUtils.js',
-   'perf/*.js'
-  ],
-
-  'jstdPerfExclude': [
-    'src/ng/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
-  ],
-
-  'jstdJquery': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'components/jquery/jquery.js',
+  'karmaJquery': [
+    'bower_components/jquery/dist/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
-    'example/personalLog/*.js',
-
-    'example/personalLog/test/*.js'
   ],
 
-  'jstdJqueryExclude': [
+  'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js'
   ]
 };
 
+angularFiles['angularSrcModules'] = [].concat(
+  angularFiles['angularModules']['ngAnimate'],
+  angularFiles['angularModules']['ngMessages'],
+  angularFiles['angularModules']['ngCookies'],
+  angularFiles['angularModules']['ngResource'],
+  angularFiles['angularModules']['ngRoute'],
+  angularFiles['angularModules']['ngSanitize'],
+  angularFiles['angularModules']['ngMock'],
+  angularFiles['angularModules']['ngTouch'],
+  angularFiles['angularModules']['ngAria']
+);
+
 if (exports) {
-  exports.files = angularFiles
-  exports.mergeFiles = function mergeFiles() {
+  exports.files = angularFiles;
+  exports.mergeFilesFor = function() {
     var files = [];
 
-    [].splice.call(arguments, 0).forEach(function(file) {
-      if (file.match(/karma/)) {
-        files.push(file);
-      } else {
-        angularFiles[file].forEach(function(f) {
-          // replace @ref
-          var match = f.match(/^\@(.*)/);
-          if (match) {
-            var deps = angularFiles[match[1]];
-            files = files.concat(deps);
-          } else {
-            if (!/jstd|jasmine/.test(f)) { //TODO(i): remove once we don't have jstd/jasmine in repo
-              files.push(f);
-            }
-          }
-        });
-      }
+    Array.prototype.slice.call(arguments, 0).forEach(function(filegroup) {
+      angularFiles[filegroup].forEach(function(file) {
+        // replace @ref
+        var match = file.match(/^\@(.*)/);
+        if (match) {
+          files = files.concat(angularFiles[match[1]]);
+        } else {
+          files.push(file);
+        }
+      });
     });
 
     return files;
-  }
+  };
 }
