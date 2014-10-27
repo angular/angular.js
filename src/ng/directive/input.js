@@ -2460,9 +2460,14 @@ var ngModelDirective = function() {
           element.on('blur', function(ev) {
             if (modelCtrl.$touched) return;
 
-            scope.$apply(function() {
-              modelCtrl.$setTouched();
-            });
+            var onBlurSetTouched = function() {
+                modelCtrl.$setTouched();
+            };
+            if (scope.$$phase) {
+                scope.$evalAsync(onBlurSetTouched);
+            } else {
+                scope.$apply(onBlurSetTouched);
+            }
           });
         }
       };
