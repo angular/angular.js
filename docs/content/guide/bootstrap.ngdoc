@@ -73,6 +73,23 @@ If the {@link ng.directive:ngApp `ng-app`} directive is found then Angular will:
 </html>
 ```
 
+As a best practice, consider consider adding an `ng-strict-di` directive on the same element as
+`ng-app`:
+
+
+```html
+<!doctype html>
+<html ng-app="optionalModuleName" ng-strict-di>
+  <body>
+    I can add: {{ 1+2 }}.
+    <script src="angular.js"></script>
+  </body>
+</html>
+```
+
+This will ensure that all services in your application are properly annotated.
+See the {@link guide/di#using-strict-dependency-injection dependancy injection strict mode} docs
+for more.
 
 
 ## Manual Initialization
