@@ -73,7 +73,7 @@ If the {@link ng.directive:ngApp `ng-app`} directive is found then Angular will:
 </html>
 ```
 
-As a best practice, consider consider adding an `ng-strict-di` directive on the same element as
+As a best practice, consider adding an `ng-strict-di` directive on the same element as
 `ng-app`:
 
 
