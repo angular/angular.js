@@ -232,13 +232,13 @@ You can also register services via the {@link auto.$provide `$provide`} service 
 module's `config` function:
 
 ```javascript
-angular.module('myModule', []).config(function($provide) {
+angular.module('myModule', []).config(['$provide', function($provide) {
   $provide.factory('serviceId', function() {
     var shinyNewServiceInstance;
     //factory function body that constructs shinyNewServiceInstance
     return shinyNewServiceInstance;
   });
-});
+}]);
 ```
 
 This technique is often used in unit tests to mock out a service's dependencies.
