@@ -1280,6 +1280,32 @@ describe('ngModel', function() {
     dealoc(element);
   }));
 
+  it('should digest asynchronously on "blur" event if a apply is already in progress',
+      inject(function($compile, $rootScope) {
+
+    var element = $compile('<form name="myForm">' +
+                             '<input name="myControl" ng-model="value" >' +
+                           '</form>')($rootScope);
+    var inputElm = element.find('input');
+    var control = $rootScope.myForm.myControl;
+
+    $rootScope.$apply(function() {
+      expect(control.$touched).toBe(false);
+      expect(control.$untouched).toBe(true);
+
+      browserTrigger(inputElm, 'blur');
+
+      expect(control.$touched).toBe(false);
+      expect(control.$untouched).toBe(true);
+    });
+
+    expect(control.$touched).toBe(true);
+    expect(control.$untouched).toBe(false);
+
+    dealoc(element);
+  }));
+
+
   it('should register/deregister a nested ngModel with parent form when entering or leaving DOM',
       inject(function($compile, $rootScope) {
 
