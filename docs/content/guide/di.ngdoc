@@ -29,7 +29,7 @@ and "value" components as dependencies, but they can also be provided with speci
 components as dependencies. Note that you cannot inject "providers" into `run` blocks.
 
 - The `config` method accepts a function, which can be injected with "provider" and "constant"
-components as dependencies.  Note that you cannot inject "service" or "value" components into
+components as dependencies. Note that you cannot inject "service" or "value" components into
 configuration.
 
 See {@link module#module-loading-dependencies Modules} for more details about `run` and `config`
@@ -56,8 +56,8 @@ angular.module('myModule', [])
 
 ### Module Methods
 
-We can specify functions to run at configuration and run time for a module by calling the `run` and
-`config` methods. These functions are injectable with dependencies just like the factory functions
+We can specify functions to run at configuration and run time for a module by calling the `config`
+and `run` methods. These functions are injectable with dependencies just like the factory functions
 above.
 
 ```js
@@ -93,8 +93,9 @@ Moreover, additional dependencies are made available to Controllers:
 * {@link scope `$scope`}: Controllers are associated with an element in the DOM and so are
   provided with access to the {@link scope scope}. Other components (like services) only have
   access to the {@link $rootScope `$rootScope`} service.
-* {@link `$route`} resolves: If a controller is instantiated as part of a route, then any values that
-  are resolved as part of the route are made available for injection into the controller.
+* {@link ngRoute.$routeProvider#when resolves}: If a controller is instantiated as part of a route,
+  then any values that are resolved as part of the route are made available for injection into the
+  controller.
 
 
 ## Dependency Annotation
@@ -127,8 +128,6 @@ When using this type of annotation, take care to keep the annotation array in sy
 parameters in the function declaration.
 
 ### `$inject` Property Annotation
-
-Rather than pass an array to the `controller
 
 To allow the minifiers to rename the function parameters and still be able to inject the right services,
 the function needs to be annotated with the `$inject` property. The `$inject` property is an array
@@ -175,7 +174,7 @@ However this method will not work with JavaScript minifiers/obfuscators because 
 rename parameters.
 
 Tools like [ng-annotate](https://github.com/olov/ng-annotate) let you use implicit dependency
-annotations in your app and automatically add annotations array notation prior to minifying.
+annotations in your app and automatically add inline array annotations prior to minifying.
 If you decide to take this approach, you probably want to use `ng-strict-di`.
 
 Because of these caveats, we recommend avoiding this style of annotation.
