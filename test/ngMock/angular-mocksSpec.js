@@ -1507,6 +1507,174 @@ describe('ngMock', function() {
       expect($rootElement.text()).toEqual('');
     }));
   });
+
+
+  describe('$rootScopeDecorator', function() {
+
+    describe('$countChildScopes', function() {
+
+      it('should return 0 when no child scopes', inject(function($rootScope) {
+        expect($rootScope.$countChildScopes()).toBe(0);
+
+        var childScope = $rootScope.$new();
+        expect($rootScope.$countChildScopes()).toBe(1);
+        expect(childScope.$countChildScopes()).toBe(0);
+
+        var grandChildScope = childScope.$new();
+        expect(childScope.$countChildScopes()).toBe(1);
+        expect(grandChildScope.$countChildScopes()).toBe(0);
+      }));
+
+
+      it('should correctly navigate complex scope tree', inject(function($rootScope) {
+        var child;
+
+        $rootScope.$new();
+        $rootScope.$new().$new().$new();
+        child = $rootScope.$new().$new();
+        child.$new();
+        child.$new();
+        child.$new().$new().$new();
+
+        expect($rootScope.$countChildScopes()).toBe(11);
+      }));
+
+
+      it('should provide the current count even after child destructions', inject(function($rootScope) {
+        expect($rootScope.$countChildScopes()).toBe(0);
+
+        var childScope1 = $rootScope.$new();
+        expect($rootScope.$countChildScopes()).toBe(1);
+
+        var childScope2 = $rootScope.$new();
+        expect($rootScope.$countChildScopes()).toBe(2);
+
+        childScope1.$destroy();
+        expect($rootScope.$countChildScopes()).toBe(1);
+
+        childScope2.$destroy();
+        expect($rootScope.$countChildScopes()).toBe(0);
+      }));
+
+
+      it('should work with isolate scopes', inject(function($rootScope) {
+        /*
+                  RS
+                  |
+                 CIS
+                /   \
+              GCS   GCIS
+         */
+
+        var childIsolateScope = $rootScope.$new(true);
+        expect($rootScope.$countChildScopes()).toBe(1);
+
+        var grandChildScope = childIsolateScope.$new();
+        expect($rootScope.$countChildScopes()).toBe(2);
+        expect(childIsolateScope.$countChildScopes()).toBe(1);
+
+        var grandChildIsolateScope = childIsolateScope.$new(true);
+        expect($rootScope.$countChildScopes()).toBe(3);
+        expect(childIsolateScope.$countChildScopes()).toBe(2);
+
+        childIsolateScope.$destroy();
+        expect($rootScope.$countChildScopes()).toBe(0);
+      }));
+    });
+
+
+    describe('$countWatchers', function() {
+
+      it('should return the sum of watchers for the current scope and all of its children', inject(
+        function($rootScope) {
+
+          expect($rootScope.$countWatchers()).toBe(0);
+
+          var childScope = $rootScope.$new();
+          expect($rootScope.$countWatchers()).toBe(0);
+
+          childScope.$watch('foo');
+          expect($rootScope.$countWatchers()).toBe(1);
+          expect(childScope.$countWatchers()).toBe(1);
+
+          $rootScope.$watch('bar');
+          childScope.$watch('baz');
+          expect($rootScope.$countWatchers()).toBe(3);
+          expect(childScope.$countWatchers()).toBe(2);
+      }));
+
+
+      it('should correctly navigate complex scope tree', inject(function($rootScope) {
+        var child;
+
+        $rootScope.$watch('foo1');
+
+        $rootScope.$new();
+        $rootScope.$new().$new().$new();
+
+        child = $rootScope.$new().$new();
+        child.$watch('foo2');
+        child.$new();
+        child.$new();
+        child = child.$new().$new().$new();
+        child.$watch('foo3');
+        child.$watch('foo4');
+
+        expect($rootScope.$countWatchers()).toBe(4);
+      }));
+
+
+      it('should provide the current count even after child destruction and watch deregistration',
+          inject(function($rootScope) {
+
+        var deregisterWatch1 = $rootScope.$watch('exp1');
+
+        var childScope = $rootScope.$new();
+        childScope.$watch('exp2');
+
+        expect($rootScope.$countWatchers()).toBe(2);
+
+        childScope.$destroy();
+        expect($rootScope.$countWatchers()).toBe(1);
+
+        deregisterWatch1();
+        expect($rootScope.$countWatchers()).toBe(0);
+      }));
+
+
+      it('should work with isolate scopes', inject(function($rootScope) {
+        /*
+                 RS=1
+                   |
+                CIS=1
+                /    \
+            GCS=1  GCIS=1
+         */
+
+        $rootScope.$watch('exp1');
+        expect($rootScope.$countWatchers()).toBe(1);
+
+        var childIsolateScope = $rootScope.$new(true);
+        childIsolateScope.$watch('exp2');
+        expect($rootScope.$countWatchers()).toBe(2);
+        expect(childIsolateScope.$countWatchers()).toBe(1);
+
+        var grandChildScope = childIsolateScope.$new();
+        grandChildScope.$watch('exp3');
+
+        var grandChildIsolateScope = childIsolateScope.$new(true);
+        grandChildIsolateScope.$watch('exp4');
+
+        expect($rootScope.$countWatchers()).toBe(4);
+        expect(childIsolateScope.$countWatchers()).toBe(3);
+        expect(grandChildScope.$countWatchers()).toBe(1);
+        expect(grandChildIsolateScope.$countWatchers()).toBe(1);
+
+        childIsolateScope.$destroy();
+        expect($rootScope.$countWatchers()).toBe(1);
+      }));
+    });
+  });
 });
 
 
