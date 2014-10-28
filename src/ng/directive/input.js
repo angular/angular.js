@@ -2416,7 +2416,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
      </file>
  * </example>
  */
-var ngModelDirective = function() {
+var ngModelDirective = ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     require: ['ngModel', '^?form', '^?ngModelOptions'],
@@ -2459,7 +2459,8 @@ var ngModelDirective = function() {
 
           element.on('blur', function(ev) {
             if (modelCtrl.$touched) return;
-            if (scope.$$phase) {
+
+            if ($rootScope.$$phase) {
                 scope.$evalAsync(modelCtrl.$setTouched);
             } else {
                 scope.$apply(modelCtrl.$setTouched);
@@ -2469,7 +2470,7 @@ var ngModelDirective = function() {
       };
     }
   };
-};
+}];
 
 
 /**
