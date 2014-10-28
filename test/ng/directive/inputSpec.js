@@ -1804,7 +1804,7 @@ describe('input', function() {
     }
   });
 
-  describe('"paste" and "cut" events', function() {
+  describe('"keydown", "paste" and "cut" events', function() {
     beforeEach(function() {
       // Force browser to report a lack of an 'input' event
       $sniffer.hasEvent = function(eventName) {
@@ -1812,8 +1812,12 @@ describe('input', function() {
       };
     });
 
-    it('should update the model on "paste" event', function() {
+    it('should update the model on "paste" event if the input value changes', function() {
       compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+      browserTrigger(inputElm, 'keydown');
+      $browser.defer.flush();
+      expect(inputElm).toBePristine();
 
       inputElm.val('mark');
       browserTrigger(inputElm, 'paste');
@@ -1830,6 +1834,21 @@ describe('input', function() {
       expect(scope.name).toEqual('john');
     });
 
+    it('should cancel the delayed dirty if a change occurs', function() {
+      compileInput('<input type="text" ng-model="name" />');
+      var ctrl = inputElm.controller('ngModel');
+
+      browserTrigger(inputElm, 'keydown', {target: inputElm[0]});
+      inputElm.val('f');
+      browserTrigger(inputElm, 'change');
+      expect(inputElm).toBeDirty();
+
+      ctrl.$setPristine();
+      scope.$apply();
+
+      $browser.defer.flush();
+      expect(inputElm).toBePristine();
+    });
   });
 
 
