@@ -140,7 +140,7 @@
  *   `notifyCallback` method. The promise cannot be resolved or rejected from the notifyCallback
  *   method.
  *
- * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
+ * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)` - however this does NOT work in IE8
  *
  * - `finally(callback)` – allows you to observe either the fulfillment or rejection of a promise,
  *   but to do so without modifying the final value. This is useful to release resources or do some
