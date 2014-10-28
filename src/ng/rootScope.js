@@ -113,6 +113,10 @@ function $RootScopeProvider() {
          expect(parent.salutation).toEqual('Hello');
      * ```
      *
+     * When interacting with `Scope` in tests, additional helper methods are available on the
+     * instances of `Scope` type. See {@link ngMock.$rootScope.Scope ngMock Scope} for additional
+     * details.
+     *
      *
      * @param {Object.<string, function()>=} providers Map of service factory which need to be
      *                                       provided for the current scope. Defaults to {@link ng}.
