@@ -66,10 +66,26 @@ function classDirective(name, selector) {
           }
         }
 
+        function removeFalseClasses(classVal) {
+          if (isArray(classVal) || isString(classVal)) {
+            return;
+          }
+          if (isObject(classVal)) {
+            var classes = [], i = 0;
+            forEach(classVal, function(v, k) {
+              if (!v) {
+                classes = classes.concat(k.split(' '));
+              }
+            });
+            attr.$removeClass(classes);
+          }
+        }
+
         function ngClassWatchAction(newVal) {
           if (selector === true || scope.$index % 2 === selector) {
             var newClasses = arrayClasses(newVal || []);
             if (!oldVal) {
+              removeFalseClasses(newVal);
               addClasses(newClasses);
             } else if (!equals(newVal,oldVal)) {
               var oldClasses = arrayClasses(oldVal);

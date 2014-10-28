@@ -45,8 +45,8 @@ describe('ngClass', function() {
   it('should support adding multiple classes conditionally via a map of class names to boolean ' +
       'expressions', inject(function($rootScope, $compile) {
     element = $compile(
-        '<div class="existing" ' +
-            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB()}">' +
+        '<div class="existing existingTrue existingFalse" ' +
+            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB(), existingTrue: true, existingFalse: false}">' +
         '</div>')($rootScope);
     $rootScope.conditionA = true;
     $rootScope.$digest();
@@ -54,6 +54,8 @@ describe('ngClass', function() {
     expect(element.hasClass('A')).toBeTruthy();
     expect(element.hasClass('B')).toBeFalsy();
     expect(element.hasClass('AnotB')).toBeTruthy();
+    expect(element.hasClass('existingTrue')).toBeTruthy();
+    expect(element.hasClass('existingFalse')).toBeFalsy();
 
     $rootScope.conditionB = function() { return true; };
     $rootScope.$digest();
@@ -61,6 +63,8 @@ describe('ngClass', function() {
     expect(element.hasClass('A')).toBeTruthy();
     expect(element.hasClass('B')).toBeTruthy();
     expect(element.hasClass('AnotB')).toBeFalsy();
+    expect(element.hasClass('existingTrue')).toBeTruthy();
+    expect(element.hasClass('existingFalse')).toBeFalsy();
   }));
 
 
