@@ -8,7 +8,7 @@
 
 In this step, you will change the way our app fetches data.
 
-* We defined a custom service that represents a [RESTful][restful] client. Using this client we
+* We define a custom service that represents a [RESTful][restful] client. Using this client we
 can make requests to the server for data in an easier way, without having to deal with the
 lower-level {@link ng.$http $http} API, HTTP methods and URLs.
 
@@ -32,25 +32,32 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.2.x",
-    "angular-mocks": "~1.2.x",
+    "angular": "~1.3.0",
+    "angular-mocks": "~1.3.0",
     "bootstrap": "~3.1.1",
-    "angular-route": "~1.2.x",
-    "angular-resource": "~1.2.x"
+    "angular-route": "~1.3.0",
+    "angular-resource": "~1.3.0"
   }
 }
 ```
 
-The new dependency `"angular-resource": "~1.2.x"` tells bower to install a version of the
-angular-resource component that is compatible with version 1.2.x.  We must ask bower to download
+The new dependency `"angular-resource": "~1.3.0"` tells bower to install a version of the
+angular-resource component that is compatible with version 1.3.x.  We must ask bower to download
 and install this dependency. We can do this by running:
 
 ```
 npm install
 ```
 
+<div class="alert alert-warning">
+  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then you may have a
+  problem with the `bower install` due to a conflict between the versions of angular.js that need to
+  be installed.  If you get this then simply delete your `app/bower_components` folder before running
+  `npm install`.
+</div>
+
 <div class="alert alert-info">
-  If you have bower installed globally then you can run `bower install` but for this project we have
+  **Note:** If you have bower installed globally then you can run `bower install` but for this project we have
   preconfigured `npm install` to run bower for us.
 </div>
 
@@ -59,7 +66,7 @@ npm install
 
 Our custom resource service will be defined in `app/js/services.js` so we need to include this file
 in our layout template. Additionally, we also need to load the `angular-resource.js` file, which
-contains the {@link api/ngResource ngResource} module:
+contains the {@link module:ngResource ngResource} module:
 
 __`app/index.html`.__
 
@@ -164,7 +171,7 @@ we require, so in these cases, we can add a callback to process the server respo
 
 ## Test
 
-Because we're now using the {@link ngResource ngResource} module, it's necessary to also need to
+Because we're now using the {@link ngResource ngResource} module, it's necessary to
 update the Karma config file with angular-resource so the new tests will pass.
 
 __`test/karma.conf.js`:__
@@ -269,12 +276,12 @@ describe('PhoneCat controllers', function() {
 
 You should now see the following output in the Karma tab:
 
-<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)</pre>
+<pre>Chrome 22.0: Executed 5 of 5 SUCCESS (0.038 secs / 0.01 secs)</pre>
 
 
 # Summary
 
-With the phone image swapper in place, we're ready for {@link step_12 step 12} (the last step!) to
+Now that we've seen how to build a custom service as a RESTful client, we're ready for {@link step_12 step 12} (the last step!) to
 learn how to improve this application with animations.
 
 

@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Bootstrap
+@sortOrder 350
 @description
 
 # Bootstrap
@@ -19,7 +20,7 @@ initialization.
 <html xmlns:ng="http://angularjs.org" ng-app>
   <body>
     ...
-    <script src="angular.js">
+    <script src="angular.js"></script>
   </body>
 </html>
 ```
@@ -38,11 +39,7 @@ initialization.
 
         <html ng-app>
 
-  3. If you require IE7 support add `id="ng-app"`
-
-        <html ng-app id="ng-app">
-
-  4. If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
+  3. If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
     to make IE happy. (This is here for historical reasons, and we no longer recommend use of
     `ng:`.)
 
@@ -76,6 +73,23 @@ If the {@link ng.directive:ngApp `ng-app`} directive is found then Angular will:
 </html>
 ```
 
+As a best practice, consider adding an `ng-strict-di` directive on the same element as
+`ng-app`:
+
+
+```html
+<!doctype html>
+<html ng-app="optionalModuleName" ng-strict-di>
+  <body>
+    I can add: {{ 1+2 }}.
+    <script src="angular.js"></script>
+  </body>
+</html>
+```
+
+This will ensure that all services in your application are properly annotated.
+See the {@link guide/di#using-strict-dependency-injection dependancy injection strict mode} docs
+for more.
 
 
 ## Manual Initialization
@@ -90,7 +104,9 @@ Here is an example of manually initializing Angular:
 <!doctype html>
 <html>
 <body>
-  Hello {{'World'}}!
+  <div ng-controller="MyController">
+    Hello {{greetMe}}!
+  </div>
   <script src="http://code.angularjs.org/snapshot/angular.js"></script>
 
   <script>
@@ -129,8 +145,8 @@ This is the sequence that your code should follow:
 
 ## Deferred Bootstrap
 
-This feature enables tools like Batarang and test runners to
-hook into angular's bootstrap process and sneak in more modules
+This feature enables tools like [Batarang](github.com/angular/angularjs-batarang) and test runners
+to hook into angular's bootstrap process and sneak in more modules
 into the DI registry which can replace or augment DI services for
 the purpose of instrumentation or mocking out heavy dependencies.
 

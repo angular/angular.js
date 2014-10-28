@@ -1,22 +1,6 @@
 {
-  "bitwise": true,
-  "immed": true,
-  "newcap": true,
-  "noarg": true,
-  "noempty": true,
-  "nonew": true,
-  "trailing": true,
-  "maxlen": 200,
-  "boss": true,
-  "eqnull": true,
-  "expr": true,
-  "globalstrict": true,
-  "laxbreak": true,
-  "loopfunc": true,
-  "sub": true,
-  "undef": true,
+  "extends": "../.jshintrc-base",
   "browser": true,
-  "indent": 2,
   "globals": {
     /* auto/injector.js */
     "createInjector": false,
@@ -39,7 +23,6 @@
     "uppercase": false,
     "manualLowercase": false,
     "manualUppercase": false,
-    "nodeName_": false,
     "isArrayLike": false,
     "forEach": false,
     "sortedKeys": false,
@@ -68,13 +51,11 @@
     "isBoolean": false,
     "trim": false,
     "isElement": false,
+    "isPromiseLike": false,
     "makeMap": false,
     "map": false,
-    "size": false,
     "includes": false,
-    "indexOf": false,
     "arrayRemove": false,
-    "isLeafNode": false,
     "copy": false,
     "shallowCopy": false,
     "equals": false,
@@ -85,7 +66,6 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
-    "toBoolean": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
@@ -100,7 +80,9 @@
     "assertArgFn": false,
     "assertNotHasOwnProperty": false,
     "getter": false,
-    "getBlockElements": false,
+    "getBlockNodes": false,
+    "createMap": false,
+    "VALIDITY_STATE_PROPERTY": true,
 
     /* AngularPublic.js */
     "version": false,
@@ -135,6 +117,7 @@
     "JQLitePrototype": false,
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
+    "jqLiteDocumentLoaded": false,
 
     /* apis.js */
     "hashKey": false,
@@ -177,6 +160,7 @@
     "provideLog": false,
     "spyOnlyCallsWithArgs": false,
     "createMockStyleSheet": false,
-    "browserTrigger": false
+    "browserTrigger": false,
+    "jqLiteCacheSize": false
   }
 }

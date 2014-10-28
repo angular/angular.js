@@ -47,7 +47,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 ### Testing
 
-* **Unit testing:** [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), {@link guide/dev_guide.unit-testing Unit testing}, {@link guide/dev_guide.services.testing_services Testing services}, [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
+* **Unit testing:** [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), {@link guide/unit-testing Unit testing}, {@link guide/services#unit-testing Testing services}, [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
 * **Scenario testing:** [Protractor](https://github.com/angular/protractor)
 
 ## Specific Topics
@@ -70,7 +70,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 This is a short list of libraries with specific support and documentation for working with Angular.  You can find a full list of all known Angular external libraries at [ngmodules.org](http://ngmodules.org/).
 
-* **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/)
+* **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/), [angular-localization](http://doshprompt.github.io/angular-localization/)
 * **RESTful services:** [Restangular](https://github.com/mgonto/restangular)
 * **SQL and NoSQL backends:** [BreezeJS](http://www.breezejs.com/), [AngularFire](http://angularfire.com/)
 * **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/), [ngTagsInput](https://github.com/mbenford/ngTagsInput)
@@ -81,7 +81,8 @@ This is a short list of libraries with specific support and documentation for wo
 
 ### General
 
-* **Javascript minification: **[Background](http://thegreenpizza.github.io/2013/05/25/building-minification-safe-angular.js-applications/), [ngmin automation tool](http://www.thinkster.io/pick/XlWneEZCqY/angularjs-ngmin)
+* **Docs Page:** {@link guide/production Running an AngularJS App in Production}
+* **Javascript minification: **[Background](http://thegreenpizza.github.io/2013/05/25/building-minification-safe-angular.js-applications/), [ng-annotate automation tool](https://github.com/olov/ng-annotate)
 * **Analytics and Logging:** [Angularyitcs (Google Analytics)](http://ngmodules.org/modules/angularytics), [Angulartics (Analytics)](https://github.com/luisfarzati/angulartics), [Logging Client-Side Errors](http://www.bennadel.com/blog/2542-Logging-Client-Side-Errors-With-AngularJS-And-Stacktrace-js.htm)
 * **SEO:** [By hand](http://www.yearofmoo.com/2012/11/angularjs-and-seo.html), [prerender.io](http://prerender.io/), [Brombone](http://www.brombone.com/), [SEO.js](http://getseojs.com/), [SEO4Ajax](http://www.seo4ajax.com/)
 
@@ -89,7 +90,7 @@ This is a short list of libraries with specific support and documentation for wo
 
 * **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html), [Getting Started with Django Rest Framework and AngularJS](http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html)
 * **FireBase:** [AngularFire](http://angularfire.com/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
-* **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/resources/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
+* **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/developers/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications/), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
 * **Hood.ie:** [60 Minutes to Awesome](http://www.roberthorvick.com/2013/06/30/todomvc-angularjs-hood-ie-60-minutes-to-awesome/)
 * **MEAN Stack: **[Blog post](http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and), [Setup](http://thecodebarbarian.wordpress.com/2013/07/22/introduction-to-the-mean-stack-part-one-setting-up-your-tools/), [GDL Video](https://developers.google.com/live/shows/913996610)
 * **Rails: **[Tutorial](http://coderberry.me/blog/2013/04/22/angularjs-on-rails-4-part-1/), [AngularJS with Rails4](https://shellycloud.com/blog/2013/10/how-to-integrate-angularjs-with-rails-4), [angularjs-rails](https://github.com/hiravgandhi/angularjs-rails)
@@ -104,6 +105,7 @@ This is a short list of libraries with specific support and documentation for wo
 * [Recipes With AngularJS](http://www.amazon.co.uk/Recipes-Angular-js-Frederik-Dietz-ebook/dp/B00DK95V48) by Frederik Dietz
 * [Developing an AngularJS Edge](http://www.amazon.com/Developing-AngularJS-Edge-Christopher-Hiller-ebook/dp/B00CJLFF8K) by Christopher Hiller
 * [ng-book: The Complete Book on AngularJS](http://ng-book.com/) by Ari Lerner
+* [AngularJS : Novice to Ninja](http://www.amazon.in/AngularJS-Novice-Ninja-Sandeep-Panda/dp/0992279453) by Sandeep Panda
 
 ###Videos:
 * [egghead.io](http://egghead.io/)

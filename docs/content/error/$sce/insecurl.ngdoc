@@ -15,9 +15,9 @@ By default, only URLs that belong to the same origin are trusted. These are urls
 The {@link ng.directive:ngInclude ngInclude} directive and {@link guide/directive directives} that specify a `templateUrl` require a trusted resource URL.
 
 To load templates from other domains and/or protocols, either adjust the {@link
-api/ng.$sceDelegateProvider#resourceUrlWhitelist whitelist}/ {@link
-api/ng.$sceDelegateProvider#resourceUrlBlacklist blacklist} or wrap the URL with a call to {@link
-api/ng.$sce#trustAsResourceUrl $sce.trustAsResourceUrl}.
+ng.$sceDelegateProvider#resourceUrlWhitelist whitelist}/ {@link
+ng.$sceDelegateProvider#resourceUrlBlacklist blacklist} or wrap the URL with a call to {@link
+ng.$sce#trustAsResourceUrl $sce.trustAsResourceUrl}.
 
 **Note**: The browser's [Same Origin
 Policy](https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest) and

@@ -894,6 +894,9 @@ if (goog.LOCALE == 'fr') {
 if (goog.LOCALE == 'fr_CA' || goog.LOCALE == 'fr-CA') {
   goog.i18n.pluralRules.select = goog.i18n.pluralRules.frSelect_;
 }
+if (goog.LOCALE == 'ga') {
+  goog.i18n.pluralRules.select = goog.i18n.pluralRules.gaSelect_;
+}
 if (goog.LOCALE == 'gl') {
   goog.i18n.pluralRules.select = goog.i18n.pluralRules.enSelect_;
 }

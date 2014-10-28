@@ -304,7 +304,7 @@ angular.scenario.dsl('select', function() {
         if (option.length) {
           select.val(value);
         } else {
-          option = select.find('option').filter(function(){
+          option = select.find('option').filter(function() {
             return _jQuery(this).text() === value;
           });
           if (!option.length) {
@@ -377,7 +377,7 @@ angular.scenario.dsl('element', function() {
         var href = elements.attr('href');
         var eventProcessDefault = elements.trigger('click')[0];
 
-        if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+        if (href && elements[0].nodeName.toLowerCase() === 'a' && eventProcessDefault) {
           this.application.navigateTo(href, function() {
             done();
           }, done);
@@ -394,7 +394,7 @@ angular.scenario.dsl('element', function() {
         var href = elements.attr('href');
         var eventProcessDefault = elements.trigger('dblclick')[0];
 
-        if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+        if (href && elements[0].nodeName.toLowerCase() === 'a' && eventProcessDefault) {
           this.application.navigateTo(href, function() {
             done();
           }, done);

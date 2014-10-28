@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Modules
+@sortOrder 320
 @description
 
 # What is a Module?
@@ -26,10 +27,12 @@ should be bootstrapped. There are several advantages to this approach:
 
 I'm in a hurry. How do I get a Hello World module working?
 
-<example module='myApp'>
+<example ng-app-included="true">
   <file name="index.html">
-    <div>
-      {{ 'World' | greet }}
+    <div ng-app="myApp">
+      <div>
+        {{ 'World' | greet }}
+      </div>
     </div>
   </file>
 
@@ -45,12 +48,18 @@ I'm in a hurry. How do I get a Hello World module working?
       };
     });
   </file>
+
+  <file name="protractor.js" type="protractor">
+    it('should add Hello to the name', function() {
+      expect(element(by.binding("'World' | greet")).getText()).toEqual('Hello, World!');
+    });
+  </file>
 </example>
 
 Important things to notice:
 
   * The {@link angular.Module Module} API
-  * The reference to `myApp` module in `<html ng-app="myApp">`.
+  * The reference to `myApp` module in `<div ng-app="myApp">`.
     This is what bootstraps the app using your module.
   * The empty array in `angular.module('myApp', [])`.
     This array is the list of modules `myApp` depends on.
@@ -75,13 +84,14 @@ The above is a suggestion. Tailor it to your needs.
 <example module='xmpl'>
   <file name="index.html">
     <div ng-controller="XmplController">
-      {{ greeting }}!
+      {{ greeting }}
     </div>
   </file>
 
   <file name="script.js">
-    angular.module('xmpl.service', []).
-      value('greeter', {
+    angular.module('xmpl.service', [])
+
+      .value('greeter', {
         salutation: 'Hello',
         localize: function(localization) {
           this.salutation = localization.salutation;
@@ -89,8 +99,9 @@ The above is a suggestion. Tailor it to your needs.
         greet: function(name) {
           return this.salutation + ' ' + name + '!';
         }
-      }).
-      value('user', {
+      })
+
+      .value('user', {
         load: function(name) {
           this.name = name;
         }
@@ -100,21 +111,28 @@ The above is a suggestion. Tailor it to your needs.
 
     angular.module('xmpl.filter', []);
 
-    angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
-      run(function(greeter, user) {
+    angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter'])
+
+      .run(function(greeter, user) {
         // This is effectively part of the main method initialization code
         greeter.localize({
           salutation: 'Bonjour'
         });
         user.load('World');
+      })
+
+      .controller('XmplController', function($scope, greeter, user){
+        $scope.greeting = greeter.greet(user.name);
       });
 
-
-    // A Controller for your app
-    var XmplController = function($scope, greeter, user) {
-      $scope.greeting = greeter.greet(user.name);
-    };
   </file>
+
+  <file name="protractor.js" type="protractor">
+    it('should add Hello to the name', function() {
+      expect(element(by.binding("greeting")).getText()).toEqual('Bonjour World!');
+    });
+  </file>
+
 </example>
 
 

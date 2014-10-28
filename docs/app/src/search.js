@@ -10,28 +10,45 @@ angular.module('search', [])
   $scope.search = function(q) {
     var MIN_SEARCH_LENGTH = 2;
     if(q.length >= MIN_SEARCH_LENGTH) {
-      var results = docsSearch(q);
-      var totalAreas = 0;
-      for(var i in results) {
-        ++totalAreas;
-      }
-      if(totalAreas > 0) {
-        $scope.colClassName = 'cols-' + totalAreas;
-      }
-      $scope.hasResults = totalAreas > 0;
-      $scope.results = results;
+      docsSearch(q).then(function(hits) {
+        var results = {};
+        angular.forEach(hits, function(hit) {
+          var area = hit.area;
+
+          var limit = (area == 'api') ? 40 : 14;
+          results[area] = results[area] || [];
+          if(results[area].length < limit) {
+            results[area].push(hit);
+          }
+        });
+
+        var totalAreas = 0;
+        for(var i in results) {
+          ++totalAreas;
+        }
+        if(totalAreas > 0) {
+          $scope.colClassName = 'cols-' + totalAreas;
+        }
+        $scope.hasResults = totalAreas > 0;
+        $scope.results = results;
+      });
     }
     else {
       clearResults();
     }
     if(!$scope.$$phase) $scope.$apply();
   };
+
   $scope.submit = function() {
     var result;
-    for(var i in $scope.results) {
-      result = $scope.results[i][0];
-      if(result) {
-        break;
+    if ($scope.results.api) {
+      result = $scope.results.api[0];
+    } else {
+      for(var i in $scope.results) {
+        result = $scope.results[i][0];
+        if(result) {
+          break;
+        }
       }
     }
     if(result) {
@@ -39,76 +56,124 @@ angular.module('search', [])
       $scope.hideResults();
     }
   };
+
   $scope.hideResults = function() {
     clearResults();
     $scope.q = '';
   };
 }])
 
-.controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
-  $scope.results = docsSearch($location.path().split(/[\/\.:]/).pop());
+
+.controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch',
+        function($scope, $location, docsSearch) {
+  docsSearch($location.path().split(/[\/\.:]/).pop()).then(function(results) {
+    $scope.results = {};
+    angular.forEach(results, function(result) {
+      var area = $scope.results[result.area] || [];
+      area.push(result);
+      $scope.results[result.area] = area;
+    });
+  });
 }])
 
-.factory('lunrSearch', function() {
-  return function(properties) {
-    if (window.RUNNING_IN_NG_TEST_RUNNER) return null;
 
-    var engine = lunr(properties);
-    return {
-      store : function(values) {
-        engine.add(values);
-      },
-      search : function(q) {
-        return engine.search(q);
-      }
-    };
-  };
-})
+.provider('docsSearch', function() {
 
-.factory('docsSearch', ['$rootScope','lunrSearch', 'NG_PAGES',
-    function($rootScope, lunrSearch, NG_PAGES) {
-  if (window.RUNNING_IN_NG_TEST_RUNNER) {
-    return null;
-  }
+  // This version of the service builds the index in the current thread,
+  // which blocks rendering and other browser activities.
+  // It should only be used where the browser does not support WebWorkers
+  function localSearchFactory($http, $timeout, NG_PAGES) {
 
-  var index = lunrSearch(function() {
-    this.ref('id');
-    this.field('title', {boost: 50});
-    this.field('keywords', { boost : 20 });
-  });
+    console.log('Using Local Search Index');
 
-  angular.forEach(NG_PAGES, function(page, key) {
-    if(page.searchTerms) {
-      index.store({
-        id : key,
-        title : page.searchTerms.titleWords,
-        keywords : page.searchTerms.keywords
+    // Create the lunr index
+    var index = lunr(function() {
+      this.ref('path');
+      this.field('titleWords', {boost: 50});
+      this.field('members', { boost: 40});
+      this.field('keywords', { boost : 20 });
+    });
+
+    // Delay building the index by loading the data asynchronously
+    var indexReadyPromise = $http.get('js/search-data.json').then(function(response) {
+      var searchData = response.data;
+      // Delay building the index for 500ms to allow the page to render
+      return $timeout(function() {
+        // load the page data into the index
+        angular.forEach(searchData, function(page) {
+          index.add(page);
+        });
+      }, 500);
+    });
+
+    // The actual service is a function that takes a query string and
+    // returns a promise to the search results
+    // (In this case we just resolve the promise immediately as it is not
+    // inherently an async process)
+    return function(q) {
+      return indexReadyPromise.then(function() {
+        var hits = index.search(q);
+        var results = [];
+        angular.forEach(hits, function(hit) {
+          results.push(NG_PAGES[hit.ref]);
+        });
+        return results;
       });
     };
-  });
+  }
+  localSearchFactory.$inject = ['$http', '$timeout', 'NG_PAGES'];
 
-  return function(q) {
-    var results = {
-      api : [],
-      tutorial : [],
-      guide : [],
-      error : [],
-      misc : []
+  // This version of the service builds the index in a WebWorker,
+  // which does not block rendering and other browser activities.
+  // It should only be used where the browser does support WebWorkers
+  function webWorkerSearchFactory($q, $rootScope, NG_PAGES) {
+
+    console.log('Using WebWorker Search Index')
+
+    var searchIndex = $q.defer();
+    var results;
+
+    var worker = new Worker('js/search-worker.js');
+
+    // The worker will send us a message in two situations:
+    // - when the index has been built, ready to run a query
+    // - when it has completed a search query and the results are available
+    worker.onmessage = function(oEvent) {
+      $rootScope.$apply(function() {
+
+        switch(oEvent.data.e) {
+          case 'index-ready':
+            searchIndex.resolve();
+            break;
+          case 'query-ready':
+            var pages = oEvent.data.d.map(function(path) {
+              return NG_PAGES[path];
+            });
+            results.resolve(pages);
+            break;
+        }
+      });
     };
-    angular.forEach(index.search(q), function(result) {
-      var key = result.ref;
-      var item = NG_PAGES[key];
-      var area = item.area;
-      item.path = key;
 
-      var limit = area == 'api' ? 40 : 14;
-      if(results[area].length < limit) {
-        results[area].push(item);
-      }
-    });
-    return results;
+    // The actual service is a function that takes a query string and
+    // returns a promise to the search results
+    return function(q) {
+
+      // We only run the query once the index is ready
+      return searchIndex.promise.then(function() {
+
+        results = $q.defer();
+        worker.postMessage({ q: q });
+        return results.promise;
+      });
+    };
+  }
+  webWorkerSearchFactory.$inject = ['$q', '$rootScope', 'NG_PAGES'];
+
+  return {
+    $get: window.Worker ? webWorkerSearchFactory : localSearchFactory
   };
-}])
+})
 
 .directive('focused', function($timeout) {
   return function(scope, element, attrs) {

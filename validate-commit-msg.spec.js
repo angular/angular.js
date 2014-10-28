@@ -1,3 +1,6 @@
+/* global describe: false, beforeEach: false, it: false, expect: false, spyOn: false */
+'use strict';
+
 describe('validate-commit-msg.js', function() {
   var m = require('./validate-commit-msg');
   var errors = [];

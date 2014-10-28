@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Internet Explorer Compatibility
+@sortOrder 530
 @description
 
 # Internet Explorer Compatibility

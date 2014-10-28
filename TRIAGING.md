@@ -26,7 +26,6 @@ This process based on the idea of minimizing user pain
     * You can triage older issues as well
     * Triage to your heart's content
 1. Assign yourself: Pick an issue that is not assigned to anyone and assign it to you
-
 1. Understandable? - verify if the description of the request is clear.
     * If not, [close it][] according to the instructions below and go to the last step.
 1. Duplicate?
@@ -36,7 +35,6 @@ This process based on the idea of minimizing user pain
     * Label `Type: Bug`
     * Reproducible? - Steps to reproduce the bug are clear. If they are not, ask for a clarification. If there's no reply after a week, [close it][].
     * Reproducible on master? - <http://code.angularjs.org/snapshot/>
-
 1. Non bugs:
     * Label `Type: Feature`, `Type: Chore`, or `Type: Perf`
     * Belongs in core? – Often new features should be implemented as a third-party module rather than an addition to the core.
@@ -44,11 +42,11 @@ This process based on the idea of minimizing user pain
     * Label `needs: breaking change` - if needed
     * Label `needs: public api` - if the issue requires introduction of a new public API
 1. Label `browser: *` - if the issue **only** affects a certain browser
-1. Label `frequency: *` – How often does this issue come up? How many developers does this affect?
+1. Label `frequency: *` – How often does this issue come up? How many developers does this affect? Chose just one of the following:
     * low - obscure issue affecting a handful of developers
     * moderate - impacts a common usage pattern
     * high - impacts most or all Angular apps
-1. Label `severity: *` - How bad is the issue?
+1. Label `severity: *` - How bad is the issue? Chose just one of the following:
     * security issue
     * regression
     * memory leak
@@ -59,11 +57,10 @@ This process based on the idea of minimizing user pain
     * In rare cases, it's ok to have multiple components.
 1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. Apply to issues where the problem and solution are well defined in the comments, and it's not too complex.
 1. Label `origin: google` for issues from Google
-
 1. Assign a milestone:
-   * Backlog - triaged fixes and features, should be the default choice 
+   * Backlog - triaged fixes and features, should be the default choice
    * Current 1.x.y milestone (e.g. 1.3.0-beta-2) - regressions and urgent bugs only
-    
+
 
 1. Unassign yourself from the issue
 

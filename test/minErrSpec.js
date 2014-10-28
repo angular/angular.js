@@ -1,6 +1,6 @@
 'use strict';
 
-describe('minErr', function () {
+describe('minErr', function() {
 
   var supportStackTraces = function() {
     var e = new Error();
@@ -76,10 +76,18 @@ describe('minErr', function () {
     expect(myError.message).toMatch(/^\[test:26\] Something horrible happened!/);
   });
 
-  it('should include a namespace in the message only if it is namespaced', function () {
+  it('should include a namespace in the message only if it is namespaced', function() {
     var myError = emptyTestError('26', 'This is a {0}', 'Foo');
     var myNamespacedError = testError('26', 'That is a {0}', 'Bar');
     expect(myError.message).toMatch(/^\[26\] This is a Foo/);
     expect(myNamespacedError.message).toMatch(/^\[test:26\] That is a Bar/);
+  });
+
+
+  it('should accept an optional 2nd argument to construct custom errors', function() {
+    var normalMinErr = minErr('normal');
+    expect(normalMinErr('acode', 'aproblem') instanceof TypeError).toBe(false);
+    var typeMinErr = minErr('type', TypeError);
+    expect(typeMinErr('acode', 'aproblem') instanceof TypeError).toBe(true);
   });
 });

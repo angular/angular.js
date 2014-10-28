@@ -48,6 +48,22 @@ describe('$timeout', function() {
   }));
 
 
+  it('should NOT call $evalAsync or $digest if invokeApply is set to false',
+      inject(function($timeout, $rootScope) {
+    var evalAsyncSpy = spyOn($rootScope, '$evalAsync').andCallThrough();
+    var digestSpy = spyOn($rootScope, '$digest').andCallThrough();
+    var fulfilledSpy = jasmine.createSpy('fulfilled');
+
+    $timeout(fulfilledSpy, 1000, false);
+
+    $timeout.flush();
+
+    expect(fulfilledSpy).toHaveBeenCalledOnce();
+    expect(evalAsyncSpy).not.toHaveBeenCalled();
+    expect(digestSpy).not.toHaveBeenCalled();
+  }));
+
+
   it('should allow you to specify the delay time', inject(function($timeout, $browser) {
     var defer = spyOn($browser, 'defer');
     $timeout(noop, 123);

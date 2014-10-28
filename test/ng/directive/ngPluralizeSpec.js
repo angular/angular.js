@@ -5,7 +5,7 @@ describe('ngPluralize', function() {
     elementAlt;
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
     dealoc(elementAlt);
   });

@@ -2,7 +2,7 @@
 
 describe('$cookies', function() {
   beforeEach(module('ngCookies', function($provide) {
-    $provide.factory('$browser', function(){
+    $provide.factory('$browser', function() {
       return angular.extend(new angular.mock.$Browser(), {cookieHash: {preexisting:'oldCookie'}});
     });
   }));
@@ -135,7 +135,7 @@ describe('$cookieStore', function() {
     $rootScope.$digest();
     expect($browser.cookies()).toEqual({});
   }));
-  it('should handle empty string value cookies', inject(function ($cookieStore, $browser, $rootScope) {
+  it('should handle empty string value cookies', inject(function($cookieStore, $browser, $rootScope) {
     $cookieStore.put("emptyCookie",'');
     $rootScope.$digest();
     expect($browser.cookies()).

@@ -1,0 +1,139 @@
+<div ng-app="eventDelegationBenchmark">
+<div ng-controller="DataController as ctrl">
+<div class="container-fluid">
+
+<p>
+Impact of event delegation.
+</p>
+
+<p>
+<label>
+  Number of ngRepeats:
+  <input type="number" ng-model="ctrl.ngRepeatCount">
+</label>
+</p>
+
+<p>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="ngClick">ngClick</label></div>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="ngClickNoJqLite">ngClick without jqLite</label></div>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="ngShow">baseline: ng-show</label></div>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="textInterpolation">baseline: text interpolation</label></div>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="dlgtClick">delegate event directive (only compile)</label></div>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="noopDir">baseline: noop directive (compile and link)</label></div>
+<div class="radio"><label><input type=radio ng-model="benchmarkType" value="noop">baseline: no directive</label></div>
+</p>
+
+<p>
+How to read the results:
+<ul>
+  <li>The benchmark measures how long it takes to instantiate a given number of directives</li>
+  <li>ngClick is compared against ngShow and text interpolation as baseline. The results show
+      how expensive ngClick is compared to other very simple directives that touch the DOM.
+  </li>
+  <li>To measure the impact of jqLite.on vs element.addEventListener there is also a benchmark
+      that as a modified version of ngClick that uses element.addEventListener.
+  </li>
+  <li>The delegate event directive is compared against a noop directive with a compile and link function and the case with no directives.
+      The result shows how expensive it is to add a link function to a directive, as the delegate event directive has none.
+  </li>
+</ul>
+</p>
+
+<p>
+Results as of 7/31/2014:
+<ul>
+  <li>ngClick is very close to ngShow and text interpolation, especially when looking at a version of ngClick that does not use jqLite.on but element.addEventListener instead.</li>
+  <li>A delegate event directive that has no link function has the same speed as a directive with link function. I.e. ngClick is slower compared to the delegate event directive only because ngClick touches
+  the DOM for every element</li>
+  <li>A delegate event directive could be about 50% faster than ngClick. However, the overall performance
+      benefit depends on how many (and which) other directives are used on the same element
+      and what other things are part of the measures use case.
+      E.g. rows of a table with ngRepeat that use ngClick will probably also contain text interpolation.
+  </li>
+</ul>
+</p>
+
+Debug output:
+<ng-switch on="benchmarkType">
+  <div ng-switch-when="ngClick">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span ng-click="a()">1</span>
+        <span ng-click="a()">1</span>
+        <span ng-click="a()">1</span>
+        <span ng-click="a()">1</span>
+      </span>
+    </div>
+  </div>
+  <div ng-switch-when="ngClickNoJqLite">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span native-click="a()">1</span>
+        <span native-click="a()">1</span>
+        <span native-click="a()">1</span>
+        <span native-click="a()">1</span>
+        <span native-click="a()">1</span>
+      </span>
+    </div>
+  </div>
+  <div ng-switch-when="ngShow">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span ng-show="true">1</span>
+        <span ng-show="true">1</span>
+        <span ng-show="true">1</span>
+        <span ng-show="true">1</span>
+        <span ng-show="true">1</span>
+      </span>
+    </div>
+  </div>
+  <div ng-switch-when="textInterpolation">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span>{{row}}</span>
+        <span>{{row}}</span>
+        <span>{{row}}</span>
+        <span>{{row}}</span>
+        <span>{{row}}</span>
+      </span>
+    </div>
+  </div>
+  <div ng-switch-when="dlgtClick">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span dlgt-click="a()">1</span>
+        <span dlgt-click="a()">1</span>
+        <span dlgt-click="a()">1</span>
+        <span dlgt-click="a()">1</span>
+        <span dlgt-click="a()">1</span>
+      </span>
+    </div>
+  </div>
+  <div ng-switch-when="noopDir">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span noop-dir>1</span>
+        <span noop-dir>1</span>
+        <span noop-dir>1</span>
+        <span noop-dir>1</span>
+        <span noop-dir>1</span>
+      </span>
+    </div>
+  </div>
+  <div ng-switch-when="noop">
+    <div>
+      <span ng-repeat="row in ctrl.rows">
+        <span>1</span>
+        <span>1</span>
+        <span>1</span>
+        <span>1</span>
+        <span>1</span>
+      </span>
+    </div>
+  </div>
+
+</ng-switch>
+
+</div>
+</div>
+</div>

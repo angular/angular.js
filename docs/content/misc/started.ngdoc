@@ -10,7 +10,7 @@ becoming an Angular expert.
 1. Read the {@link guide/concepts conceptual overview}.<br/>Understand Angular's vocabulary and how all the Angular
    components work together.
 1. Do the {@link tutorial/ AngularJS Tutorial}.<br/>Walk end-to-end through building an application complete with tests
-   on top of a node.js web server.  Covers every major AngularJS feature and show you how to set up your development
+   on top of a node.js web server.  Covers every major AngularJS feature and shows you how to set up your development
    environment.
 1. Download or clone the [Seed App project template](https://github.com/angular/angular-seed).<br/>Gives you a
    starter app with a directory layout, test harness, and scripts to begin building your application.

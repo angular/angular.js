@@ -102,6 +102,50 @@ __`test/e2e/scenarios.js`:__
 You can now rerun `npm run protractor` to see the tests run.
 
 
+You also have to refactor one of your unit tests because of the addition of the `mainImageUrl`
+model property to the `PhoneDetailCtrl` controller. Below, we create the function `xyzPhoneData`
+which returns the appropriate json with the `images` attribute in order to get the test to pass.
+
+__`test/unit/controllersSpec.js`:__
+
+```js
+...
+  beforeEach(module('phonecatApp'));
+
+...
+
+ describe('PhoneDetailCtrl', function(){
+    var scope, $httpBackend, ctrl,
+        xyzPhoneData = function() {
+          return {
+            name: 'phone xyz',
+            images: ['image/url1.png', 'image/url2.png']
+          }
+        };
+
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
+
+      $routeParams.phoneId = 'xyz';
+      scope = $rootScope.$new();
+      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
+    }));
+
+
+    it('should fetch phone detail', function() {
+      expect(scope.phone).toBeUndefined();
+      $httpBackend.flush();
+
+      expect(scope.phone).toEqual(xyzPhoneData());
+    });
+  });
+```
+
+Your unit tests should now be passing.
+
+
 # Experiments
 
 * Let's add a new controller method to `PhoneDetailCtrl`:

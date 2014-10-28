@@ -3,9 +3,10 @@
 describe('Filter: filter', function() {
   var filter;
 
-  beforeEach(inject(function($filter){
+  beforeEach(inject(function($filter) {
     filter = $filter('filter');
   }));
+
 
   it('should filter by string', function() {
     var items = ['MIsKO', {name: 'shyam'}, ['adam'], 1234];
@@ -27,12 +28,14 @@ describe('Filter: filter', function() {
     expect(filter(items, "I don't exist").length).toBe(0);
   });
 
+
   it('should not read $ properties', function() {
     expect(''.charAt(0)).toBe(''); // assumption
 
     var items = [{$name: 'misko'}];
     expect(filter(items, 'misko').length).toBe(0);
   });
+
 
   it('should filter on specific property', function() {
     var items = [{ignore: 'a', name: 'a'}, {ignore: 'a', name: 'abc'}];
@@ -44,12 +47,25 @@ describe('Filter: filter', function() {
     expect(filter(items, {name: 'b'})[0].name).toBe('abc');
   });
 
+
   it('should take function as predicate', function() {
     var items = [{name: 'a'}, {name: 'abc', done: true}];
     expect(filter(items, function(i) {return i.done;}).length).toBe(1);
   });
 
-  it('should take object as perdicate', function() {
+
+  it('should pass the index to a function predicate', function() {
+    var items = [0, 1, 2, 3];
+
+    var result = filter(items, function(value, index) {
+      return index % 2 === 0;
+    });
+
+    expect(result).toEqual([0, 2]);
+  });
+
+
+  it('should take object as predicate', function() {
     var items = [{first: 'misko', last: 'hevery'},
                  {first: 'adam', last: 'abrons'}];
 
@@ -61,7 +77,7 @@ describe('Filter: filter', function() {
   });
 
 
-  it('should support predicat object with dots in the name', function() {
+  it('should support predicate object with dots in the name', function() {
     var items = [{'first.name': 'misko', 'last.name': 'hevery'},
                  {'first.name': 'adam', 'last.name': 'abrons'}];
 
@@ -93,16 +109,18 @@ describe('Filter: filter', function() {
     expect(filter(items, {$: 'hevery'})[0]).toEqual(items[0]);
   });
 
+
   it('should support boolean properties', function() {
     var items = [{name: 'tom', current: true},
-               {name: 'demi', current: false},
-               {name: 'sofia'}];
+                 {name: 'demi', current: false},
+                 {name: 'sofia'}];
 
     expect(filter(items, {current:true}).length).toBe(1);
     expect(filter(items, {current:true})[0].name).toBe('tom');
     expect(filter(items, {current:false}).length).toBe(1);
     expect(filter(items, {current:false})[0].name).toBe('demi');
   });
+
 
   it('should support negation operator', function() {
     var items = ['misko', 'adam'];
@@ -123,8 +141,8 @@ describe('Filter: filter', function() {
         {key: 'value1', nonkey: 1},
         {key: 'value2', nonkey: 2},
         {key: 'value12', nonkey: 3},
-        {key: 'value1', nonkey:4},
-        {key: 'Value1', nonkey:5}
+        {key: 'value1', nonkey: 4},
+        {key: 'Value1', nonkey: 5}
       ];
       expr = {key: 'value1'};
       expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
@@ -133,34 +151,31 @@ describe('Filter: filter', function() {
         {key: 1, nonkey: 1},
         {key: 2, nonkey: 2},
         {key: 12, nonkey: 3},
-        {key: 1, nonkey:4}
+        {key: 1, nonkey: 4}
       ];
-      expr = { key: 1 };
+      expr = {key: 1};
       expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
 
       expr = 12;
       expect(filter(items, expr, true)).toEqual([items[2]]);
     });
 
+
     it('and use the function given to compare values', function() {
       var items = [
         {key: 1, nonkey: 1},
         {key: 2, nonkey: 2},
         {key: 12, nonkey: 3},
-        {key: 1, nonkey:14}
+        {key: 1, nonkey: 14}
       ];
       var expr = {key: 10};
-      var comparator = function (obj,value) {
+      var comparator = function(obj, value) {
         return obj > value;
       };
       expect(filter(items, expr, comparator)).toEqual([items[2]]);
 
       expr = 10;
       expect(filter(items, expr, comparator)).toEqual([items[2], items[3]]);
-
     });
-
-
   });
-
 });

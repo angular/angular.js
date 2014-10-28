@@ -8,13 +8,22 @@ describe('ngSrc', function() {
     dealoc(element);
   });
 
-  it('should not result empty string in img src', inject(function($rootScope, $compile) {
-    $rootScope.image = {};
-    element = $compile('<img ng-src="{{image.url}}">')($rootScope);
-    $rootScope.$digest();
-    expect(element.attr('src')).not.toBe('');
-    expect(element.attr('src')).toBe(undefined);
-  }));
+  describe('img[ng-src]', function() {
+    it('should not result empty string in img src', inject(function($rootScope, $compile) {
+      $rootScope.image = {};
+      element = $compile('<img ng-src="{{image.url}}">')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('src')).not.toBe('');
+      expect(element.attr('src')).toBe(undefined);
+    }));
+
+    it('should sanitize url', inject(function($rootScope, $compile) {
+      $rootScope.imageUrl = 'javascript:alert(1);';
+      element = $compile('<img ng-src="{{imageUrl}}">')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('src')).toBe('unsafe:javascript:alert(1);');
+    }));
+  });
 
   describe('iframe[ng-src]', function() {
     it('should pass through src attributes for the same domain', inject(function($compile, $rootScope) {

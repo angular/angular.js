@@ -28,7 +28,7 @@ angular.scenario.Future.prototype.execute = function(doneFn) {
     if (result) {
       try {
         result = self.parser(result);
-      } catch(e) {
+      } catch (e) {
         error = e;
       }
     }

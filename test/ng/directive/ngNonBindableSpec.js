@@ -5,7 +5,7 @@ describe('ngNonBindable', function() {
   var element;
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 

@@ -1,6 +1,6 @@
 angular.module('tutorials', [])
 
-.directive('docTutorialNav', function(templateMerge) {
+.directive('docTutorialNav', function() {
   var pages = [
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
@@ -8,23 +8,22 @@ angular.module('tutorials', [])
     'step_10', 'step_11', 'step_12', 'the_end'
   ];
   return {
-    compile: function(element, attrs) {
-      var seq = 1 * attrs.docTutorialNav,
-          props = {
-            seq: seq,
-            prev: pages[seq],
-            next: pages[2 + seq],
-            diffLo: seq ? (seq - 1): '0~1',
-            diffHi: seq
-          };
+    scope: {},
+    template:
+      '<a ng-href="tutorial/{{prev}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-step-backward"></i> Previous</li></a>\n' +
+      '<a ng-href="http://angular.github.io/angular-phonecat/step-{{seq}}/app"><li class="btn btn-primary"><i class="glyphicon glyphicon-play"></i> Live Demo</li></a>\n' +
+      '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{diffLo}}...step-{{diffHi}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> Code Diff</li></a>\n' +
+      '<a ng-href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="glyphicon glyphicon-step-forward"></i></li></a>',
+    link: function(scope, element, attrs) {
+      var seq = 1 * attrs.docTutorialNav;
+      scope.seq = seq;
+      scope.prev = pages[seq];
+      scope.next = pages[2 + seq];
+      scope.diffLo = seq ? (seq - 1): '0~1';
+      scope.diffHi = seq;
 
       element.addClass('btn-group');
       element.addClass('tutorial-nav');
-      element.append(templateMerge(
-        '<a href="tutorial/{{prev}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-step-backward"></i> Previous</li></a>\n' +
-        '<a href="http://angular.github.io/angular-phonecat/step-{{seq}}/app"><li class="btn btn-primary"><i class="glyphicon glyphicon-play"></i> Live Demo</li></a>\n' +
-        '<a href="https://github.com/angular/angular-phonecat/compare/step-{{diffLo}}...step-{{diffHi}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> Code Diff</li></a>\n' +
-        '<a href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="glyphicon glyphicon-step-forward"></i></li></a>', props));
     }
   };
 })

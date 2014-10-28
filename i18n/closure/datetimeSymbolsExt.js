@@ -319,7 +319,6 @@ goog.provide('goog.i18n.DateTimeSymbols_fur');
 goog.provide('goog.i18n.DateTimeSymbols_fur_IT');
 goog.provide('goog.i18n.DateTimeSymbols_fy');
 goog.provide('goog.i18n.DateTimeSymbols_fy_NL');
-goog.provide('goog.i18n.DateTimeSymbols_ga');
 goog.provide('goog.i18n.DateTimeSymbols_ga_IE');
 goog.provide('goog.i18n.DateTimeSymbols_gd');
 goog.provide('goog.i18n.DateTimeSymbols_gd_GB');
@@ -10770,9 +10769,9 @@ goog.i18n.DateTimeSymbols_fy_NL = goog.i18n.DateTimeSymbols_fy;
 
 
 /**
- * Date/time formatting symbols for locale ga.
+ * Date/time formatting symbols for locale ga_IE.
  */
-goog.i18n.DateTimeSymbols_ga = {
+goog.i18n.DateTimeSymbols_ga_IE = {
   ERAS: ['RC', 'AD'],
   ERANAMES: ['Roimh Chríost', 'Anno Domini'],
   NARROWMONTHS: ['E', 'F', 'M', 'A', 'B', 'M', 'I', 'L', 'M', 'D', 'S', 'N'],
@@ -10807,12 +10806,6 @@ goog.i18n.DateTimeSymbols_ga = {
   WEEKENDRANGE: [5, 6],
   FIRSTWEEKCUTOFFDAY: 2
 };
-
-
-/**
- * Date/time formatting symbols for locale ga_IE.
- */
-goog.i18n.DateTimeSymbols_ga_IE = goog.i18n.DateTimeSymbols_ga;
 
 
 /**
@@ -21329,12 +21322,8 @@ if (goog.LOCALE == 'fy_NL' || goog.LOCALE == 'fy-NL') {
   goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_fy;
 }
 
-if (goog.LOCALE == 'ga') {
-  goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_ga;
-}
-
 if (goog.LOCALE == 'ga_IE' || goog.LOCALE == 'ga-IE') {
-  goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_ga;
+  goog.i18n.DateTimeSymbols = goog.i18n.DateTimeSymbols_ga_IE;
 }
 
 if (goog.LOCALE == 'gd') {

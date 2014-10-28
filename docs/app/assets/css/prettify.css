@@ -40,7 +40,7 @@ pre.prettyprint.linenums {
 }
 ol.linenums {
   margin: 0 0 0 33px; /* IE indents via margin-left */
-} 
+}
 ol.linenums li {
   padding-left: 12px;
   font-size:12px;

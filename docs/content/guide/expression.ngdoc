@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Expressions
+@sortOrder 270
 @description
 
 # Angular Expressions
@@ -38,7 +39,9 @@ the method from your view. If you want to `eval()` an Angular expression yoursel
 ## Example
 <example>
   <file name="index.html">
-    1+2={{1+2}}
+    <span>
+      1+2={{1+2}}
+    </span>
   </file>
 
   <file name="protractor.js" type="protractor">
@@ -50,9 +53,9 @@ the method from your view. If you want to `eval()` an Angular expression yoursel
 
 You can try evaluating different expressions here:
 
-<example>
+<example module="expressionExample">
   <file name="index.html">
-    <div ng-controller="Cntl2" class="expressions">
+    <div ng-controller="ExampleController" class="expressions">
       Expression:
       <input type='text' ng-model="expr" size="80"/>
       <button ng-click="addExp(expr)">Evaluate</button>
@@ -66,23 +69,24 @@ You can try evaluating different expressions here:
   </file>
 
   <file name="script.js">
-    function Cntl2($scope) {
-      var exprs = $scope.exprs = [];
-      $scope.expr = '3*10|currency';
-      $scope.addExp = function(expr) {
-        exprs.push(expr);
-      };
+    angular.module('expressionExample', [])
+      .controller('ExampleController', ['$scope', function($scope) {
+        var exprs = $scope.exprs = [];
+        $scope.expr = '3*10|currency';
+        $scope.addExp = function(expr) {
+          exprs.push(expr);
+        };
 
-      $scope.removeExp = function(index) {
-        exprs.splice(index, 1);
-      };
-    }
+        $scope.removeExp = function(index) {
+          exprs.splice(index, 1);
+        };
+      }]);
   </file>
 
   <file name="protractor.js" type="protractor">
     it('should allow user expression testing', function() {
       element(by.css('.expressions button')).click();
-      var lis = element(by.css('.expressions ul')).element.all(by.repeater('expr in exprs'));
+      var lis = element(by.css('.expressions ul')).all(by.repeater('expr in exprs'));
       expect(lis.count()).toBe(1);
       expect(lis.get(0).getText()).toEqual('[ X ] 3*10|currency => $30.00');
     });
@@ -101,9 +105,9 @@ This restriction is intentional. It prevents accidental access to the global sta
 Instead use services like `$window` and `$location` in functions called from expressions. Such services
 provide mockable access to globals.
 
-<example>
+<example module="expressionExample">
   <file name="index.html">
-    <div class="example2" ng-controller="Cntl1">
+    <div class="example2" ng-controller="ExampleController">
       Name: <input ng-model="name" type="text"/>
       <button ng-click="greet()">Greet</button>
       <button ng-click="window.alert('Should not see me')">Won't greet</button>
@@ -111,13 +115,14 @@ provide mockable access to globals.
   </file>
 
   <file name="script.js">
-    function Cntl1($window, $scope){
-      $scope.name = 'World';
+    angular.module('expressionExample', [])
+      .controller('ExampleController', ['$window', '$scope', function($window, $scope) {
+        $scope.name = 'World';
 
-      $scope.greet = function() {
-        $window.alert('Hello ' + $scope.name);
-      };
-    }
+        $scope.greet = function() {
+          $window.alert('Hello ' + $scope.name);
+        };
+      }]);
   </file>
 
   <file name="protractor.js" type="protractor">
@@ -162,7 +167,9 @@ expression, delegate to a JavaScript method instead.
 ## `$event`
 
 Directives like {@link ng.directive:ngClick `ngClick`} and {@link ng.directive:ngFocus `ngFocus`}
-expose a `$event` object within the scope of that expression.
+expose a `$event` object within the scope of that expression. The object is an instance of a [jQuery
+Event Object](http://api.jquery.com/category/events/event-object/) when jQuery is present or a
+similar jqLite object.
 
 <example module="eventExampleApp">
   <file name="index.html">
@@ -271,9 +278,9 @@ digest cycle as long as that value is not undefined. If the value of the express
 within the digest loop and later, within the same digest loop, it is set to undefined,
 then the expression is not fulfilled and will remain watched.
 
-  1. Given an expression that starts with `::` when a digest loop is entered and expression
-     is dirty-checked store the value as V
-  2. If V is not undefined mark the result of the expression as stable and schedule a task
+  1. Given an expression that starts with `::`, when a digest loop is entered and expression
+     is dirty-checked, store the value as V
+  2. If V is not undefined, mark the result of the expression as stable and schedule a task
      to deregister the watch for this expression when we exit the digest loop
   3. Process the digest loop as normal
   4. When digest loop is done and all the values have settled process the queue of watch

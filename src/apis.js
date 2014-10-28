@@ -14,21 +14,23 @@
  *         The resulting string key is in 'type:hashKey' format.
  */
 function hashKey(obj, nextUidFn) {
-  var objType = typeof obj,
-      key;
+  var key = obj && obj.$$hashKey;
 
-  if (objType == 'function' || (objType == 'object' && obj !== null)) {
-    if (typeof (key = obj.$$hashKey) == 'function') {
-      // must invoke on object to keep the right this
+  if (key) {
+    if (typeof key === 'function') {
       key = obj.$$hashKey();
-    } else if (key === undefined) {
-      key = obj.$$hashKey = (nextUidFn || nextUid)();
     }
-  } else {
-    key = obj;
+    return key;
   }
 
-  return objType + ':' + key;
+  var objType = typeof obj;
+  if (objType == 'function' || (objType == 'object' && obj !== null)) {
+    key = obj.$$hashKey = objType + ':' + (nextUidFn || nextUid)();
+  } else {
+    key = objType + ':' + obj;
+  }
+
+  return key;
 }
 
 /**

@@ -99,7 +99,7 @@ describe('ngBind*', function() {
     it('should one-time bind the expressions that start with ::', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-template="{{::hello}} {{::name}}!"></div>')($rootScope);
       $rootScope.name = 'Misko';
-      expect($rootScope.$$watchers.length).toEqual(1);
+      expect($rootScope.$$watchers.length).toEqual(2);
       $rootScope.$digest();
       expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual(' Misko!');
@@ -121,6 +121,15 @@ describe('ngBind*', function() {
 
 
   describe('ngBindHtml', function() {
+
+    it('should complain about accidental use of interpolation', inject(function($compile) {
+      expect(function() {
+        $compile('<div ng-bind-html="{{myHtml}}"></div>');
+      }).toThrowMinErr('$parse', 'syntax', "Syntax Error: Token 'myHtml' is unexpected, " +
+          "expecting [:] at column 3 of the expression [{{myHtml}}] starting at [myHtml}}].");
+    }));
+
+
     describe('SCE disabled', function() {
       beforeEach(function() {
         module(function($sceProvider) { $sceProvider.enabled(false); });
@@ -151,13 +160,13 @@ describe('ngBind*', function() {
       it('should NOT set html for untrusted values', inject(function($rootScope, $compile) {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
-        expect($rootScope.$digest).toThrow();
+        expect(function() { $rootScope.$digest(); }).toThrow();
       }));
 
       it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
-        expect($rootScope.$digest).toThrow();
+        expect(function() { $rootScope.$digest(); }).toThrow();
       }));
 
       it('should set html for trusted values', inject(function($rootScope, $compile, $sce) {

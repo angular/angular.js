@@ -1,6 +1,9 @@
 @ngdoc overview
 @name  HTML Compiler
+@sortOrder 330
 @description
+
+# HTML Compiler
 
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
@@ -11,7 +14,7 @@ If you want a deeper look into Angular's compilation process, you're in the righ
 </div>
 
 
-# Overview
+## Overview
 
 Angular's {@link ng.$compile HTML compiler} allows the developer to teach the
 browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
@@ -24,8 +27,8 @@ browser how the window size needs to be divided in half so that the center is fo
 center needs to be aligned with the text's center. Simply add an `align="center"` attribute to any
 element to achieve the desired behavior. Such is the power of declarative language.
 
-But the declarative language is also limited, since it does not allow you to teach the browser new
-syntax. For example there is no easy way to get the browser to align the text at 1/3 the position
+However, the declarative language is also limited, as it does not allow you to teach the browser new
+syntax. For example, there is no easy way to get the browser to align the text at 1/3 the position
 instead of 1/2. What is needed is a way to teach the browser new HTML syntax.
 
 Angular comes pre-bundled with common directives which are useful for building any app. We also
@@ -84,7 +87,9 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
            position: 'relative',
            border: '1px solid red',
            backgroundColor: 'lightgrey',
-           cursor: 'pointer'
+           cursor: 'pointer',
+           display: 'block',
+           width: '65px'
           });
           element.on('mousedown', function(event) {
             // Prevent default dragging of selected content
@@ -198,7 +203,7 @@ This should help give you an idea of what Angular does internally.
 
   // Step 3: link the compiled template with the scope.
   var element = linkFn(scope);
-  
+
   // Step 4: Append to DOM (optional)
   parent.appendChild(element);
 ```
@@ -226,7 +231,7 @@ moved to the compile function for performance reasons.
 To understand, let's look at a real-world example with `ngRepeat`:
 
 ```html
-Hello {{user}}, you have these actions:
+Hello {{user.name}}, you have these actions:
 <ul>
   <li ng-repeat="action in user.actions">
     {{action.description}}
@@ -236,7 +241,7 @@ Hello {{user}}, you have these actions:
 
 When the above example is compiled, the compiler visits every node and looks for directives.
 
-`{{user}}` matches the {@link ng.$interpolate interpolation directive}
+`{{user.name}}` matches the {@link ng.$interpolate interpolation directive}
 and `ng-repeat` matches the {@link ng.directive:ngRepeat `ngRepeat` directive}.
 
 But {@link ng.directive:ngRepeat ngRepeat} has a dilemma.

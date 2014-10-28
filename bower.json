@@ -1,12 +1,8 @@
 {
   "name": "AngularJS",
   "devDependencies": {
-    "jquery": "1.10.2",
-    "lunr.js": "0.4.3",
-    "open-sans-fontface": "1.0.4",
-    "google-code-prettify": "1.0.1",
-    "closure-compiler": "https://closure-compiler.googlecode.com/files/compiler-20130603.zip",
-    "ng-closure-runner": "https://raw.github.com/angular/ng-closure-runner/v0.2.3/assets/ng-closure-runner.zip",
-    "bootstrap": "3.1.1"
+    "jquery": "2.1.1",
+    "closure-compiler": "https://dl.google.com/closure-compiler/compiler-20140814.zip",
+    "ng-closure-runner": "https://raw.github.com/angular/ng-closure-runner/v0.2.3/assets/ng-closure-runner.zip"
   }
 }

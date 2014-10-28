@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Using $location
+@sortOrder 500
 @description
 
 # What does it do?
@@ -60,7 +61,7 @@ changes to $location are reflected into the browser address bar.
 
   <tr>
     <td class="head">aware of docroot/context from which the application is loaded</td>
-    <td>no - window.location.path returns "/docroot/actual/path"</td>
+    <td>no - window.location.pathname returns "/docroot/actual/path"</td>
     <td>yes - $location.path() returns "/actual/path"</td>
   </tr>
 
@@ -90,10 +91,11 @@ To configure the `$location` service, retrieve the
 {@link ng.$locationProvider $locationProvider} and set the parameters as follows:
 
 
-- **html5Mode(mode)**: {boolean}<br />
-  `true` - see HTML5 mode<br />
-  `false` - see Hashbang mode<br />
-  default: `false`
+- **html5Mode(mode)**: {boolean|Object}<br />
+  `true` or `enabled:true` - see HTML5 mode<br />
+  `false` or `enabled:false` - see Hashbang mode<br />
+  `requireBase:true` - see Relative links<br />
+  default: `enabled:false`
 
 - **hashPrefix(prefix)**: {string}<br />
   prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
@@ -163,7 +165,7 @@ encoded.
 
 `$location` service has two configuration modes which control the format of the URL in the browser
 address bar: **Hashbang mode** (the default) and the **HTML5 mode** which is based on using the
-HTML5 [History API](http://www.w3.org/TR/html5/history.html). Applications use the same API in
+HTML5 [History API](http://www.w3.org/TR/html5/introduction.html#history-0). Applications use the same API in
 both modes and the `$location` service will work with appropriate URL segments and browser APIs to
 facilitate the browser URL change and history management.
 
@@ -210,6 +212,10 @@ facilitate the browser URL change and history management.
 ## Hashbang mode (default mode)
 
 In this mode, `$location` uses Hashbang URLs in all browsers.
+Angular also does not intercept and rewrite links in this mode. I.e. links work
+as expected and also perform full page reloads when other parts of the url
+than the hash fragment was changed.
+
 
 ### Example
 
@@ -240,7 +246,7 @@ it('should show example', inject(
 ## HTML5 mode
 
 In HTML5 mode, the `$location` service getters and setters interact with the browser URL address
-through the HTML5 history API, which allows for use of regular URL path and search segments,
+through the HTML5 history API. This allows for use of regular URL path and search segments,
 instead of their hashbang equivalents. If the HTML5 History API is not supported by a browser, the
 `$location` service will fall back to using the hashbang URLs automatically. This frees you from
 having to worry about whether the browser displaying your app supports the history API  or not; the
@@ -248,6 +254,10 @@ having to worry about whether the browser displaying your app supports the histo
 
 - Opening a regular URL in a legacy browser -> redirects to a hashbang URL
 - Opening hashbang URL in a modern browser -> rewrites to a regular URL
+
+Note that in this mode, Angular intercepts all links (subject to the "Html link rewriting" rules below)
+and updates the url in a way that never performs a full page reload.
+
 
 ### Example
 
@@ -297,8 +307,8 @@ history API  or not; the `$location` service makes this transparent to you.
 
 ### Html link rewriting
 
-When you use HTML5 history API mode, you will need different links in different browsers, but all you
-have to do is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
+When you use HTML5 history API mode, you will not need special hashbang links. All you have to do
+is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
 
 When a user clicks on this link,
 
@@ -313,32 +323,28 @@ reload to the original link.
   Example: `<a href="/ext/link?a=b" target="_self">link</a>`
 - Absolute links that go to a different domain<br>
   Example: `<a href="http://angularjs.org/">link</a>`
-- Links starting with '/' that lead to a different base path when base is defined<br>
+- Links starting with '/' that lead to a different base path<br>
   Example: `<a href="/not-my-base/link">link</a>`
 
-When running Angular in the root of a domain, along side perhaps a normal application in the same
-directory, the "otherwise" route handler will try to handle all the URLs, including ones that map
-to static files.
 
-To prevent this, you can set your base href for the app to `<base href=".">` and then prefix links
-to URLs that should be handled with `.`. Now, links to locations, which are not to be routed by Angular,
-are not prefixed with `.` and will not be intercepted by the `otherwise` rule in your `$routeProvider`.
+### Relative links
 
+Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url
+base in the head of your main html file (`<base href="/my-base">`) unless `html5Mode.requireBase` is
+set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
+that, relative urls will always be resolved to this base url, even if the initial url of the
+document was different.
+
+There is one exception: Links that only contain a hash fragment (e.g. `<a href="#target">`)
+will only change `$location.hash()` and not modify the url otherwise. This is useful for scrolling
+to anchors on the same page without needing to know on which page the user currently is.
 
 ### Server side
 
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
-to entry point of your application (e.g. index.html)
-
-### Relative links
-
-Be sure to check all relative links, images, scripts etc. You must either specify the url base in
-the head of your main html file (`<base href="/my-base">`) or you must use absolute urls
-(starting with `/`) everywhere because relative urls will be resolved to absolute urls using the
-initial absolute url of the document, which is often different from the root of the application.
-
-Running Angular apps with the History API enabled from document root is strongly encouraged as it
-takes care of all relative link issues.
+to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
+this case, as it allows Angular to differentiate between the part of the url that is the application
+base and the path that should be handeled by the application.
 
 ### Sending links among different browsers
 
@@ -358,118 +364,308 @@ Note that when you type hashbang url into first browser (or vice versa) it doesn
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
 = on page reload.
 
-In this examples we use `<base href="/base/index.html" />`
-<example>
+In these examples we use `<base href="/base/index.html" />`
+
+#### Browser in HTML5 mode
+<example module="html5-mode" name="location-html5-mode">
   <file name="index.html">
-    <div id="html5-mode" ng-controller="Html5Cntl">
-      <h3>Browser with History API</h3>
-      <div ng-address-bar browser="html5"></div><br><br>
-      $location.protocol() = {{$location.protocol()}}<br>
-      $location.host() = {{$location.host()}}<br>
-      $location.port() = {{$location.port()}}<br>
-      $location.path() = {{$location.path()}}<br>
-      $location.search() = {{$location.search()}}<br>
-      $location.hash() = {{$location.hash()}}<br>
-      <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
-      <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
-      <a href="/other-base/another?search">external</a>
-    </div>
-
-    <div id="hashbang-mode" ng-controller="HashbangCntl">
-      <h3>Browser without History API</h3>
-      <div ng-address-bar browser="hashbang"></div><br><br>
-      $location.protocol() = {{$location.protocol()}}<br>
-      $location.host() = {{$location.host()}}<br>
-      $location.port() = {{$location.port()}}<br>
-      $location.path() = {{$location.path()}}<br>
-      $location.search() = {{$location.search()}}<br>
-      $location.hash() = {{$location.hash()}}<br>
-      <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
-      <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
-      <a href="/other-base/another?search">external</a>
+    <div ng-controller="LocationController">
+      <div ng-address-bar></div><br><br>
+      <div>
+        $location.protocol() = <span ng-bind="$location.protocol()"></span> <br>
+        $location.host() = <span ng-bind="$location.host()"></span> <br>
+        $location.port() = <span ng-bind="$location.port()"></span> <br>
+        $location.path() = <span ng-bind="$location.path()"></span> <br>
+        $location.search() = <span ng-bind="$location.search()"></span> <br>
+        $location.hash() = <span ng-bind="$location.hash()"></span> <br>
+      </div>
+      <div id="navigation">
+        <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+        <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+        <a href="/other-base/another?search">external</a>
+      </div>
     </div>
   </file>
+  <file name="app.js">
+   angular.module('html5-mode', ['fake-browser', 'address-bar'])
 
-  <file name="script.js">
-    function FakeBrowser(initUrl, baseHref) {
-      this.onUrlChange = function(fn) {
-        this.urlChange = fn;
+   .constant('initUrl', 'http://www.example.com/base/path?a=b#h')
+   .constant('baseHref', '/base/index.html')
+   .value('$sniffer', { history: true })
+
+   .controller("LocationController", function($scope, $location) {
+     $scope.$location = {};
+     angular.forEach("protocol host port path search hash".split(" "), function(method){
+      $scope.$location[method] = function(){
+        var result = $location[method].call($location);
+        return angular.isObject(result) ? angular.toJson(result) : result;
+      };
+     });
+   })
+
+   .config(function($locationProvider) {
+     $locationProvider.html5Mode(true).hashPrefix('!');
+   })
+
+   .run(function($rootElement) {
+     $rootElement.on('click', function(e) { e.stopPropagation(); });
+   });
+  </file>
+
+  <file name="fakeBrowser.js">
+    angular.module('fake-browser', [])
+
+    .config(function($provide) {
+     $provide.decorator('$browser', function($delegate, baseHref, initUrl) {
+
+      $delegate.onUrlChange = function(fn) {
+         this.urlChange = fn;
+       };
+
+      $delegate.url = function() {
+         return initUrl;
       };
 
-      this.url = function() {
-        return initUrl;
-      };
+      $delegate.defer = function(fn, delay) {
+         setTimeout(function() { fn(); }, delay || 0);
+       };
 
-      this.defer = function(fn, delay) {
-        setTimeout(function() { fn(); }, delay || 0);
-      };
+      $delegate.baseHref = function() {
+         return baseHref;
+       };
 
-      this.baseHref = function() {
-        return baseHref;
-      };
+       return $delegate;
+     });
+    });
+    </file>
 
-      this.notifyWhenOutstandingRequests = angular.noop;
-    }
+  <file name="addressBar.js">
+   angular.module('address-bar', [])
+   .directive('ngAddressBar', function($browser, $timeout) {
+      return {
+        template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
+        link: function(scope, element, attrs){
+          var input = element.children("input"), delay;
 
-    var browsers = {
-      html5: new FakeBrowser('http://www.example.com/base/path?a=b#h', '/base/index.html'),
-      hashbang: new FakeBrowser('http://www.example.com/base/index.html#!/path?a=b#h', '/base/index.html')
-    };
+          input.on('keypress keyup keydown', function(event) {
+                  delay = (!delay ? $timeout(fireUrlChange, 250) : null);
+                  event.stopPropagation();
+                })
+               .val($browser.url());
 
-    function Html5Cntl($scope, $location) {
-      $scope.$location = $location;
-    }
-
-    function HashbangCntl($scope, $location) {
-      $scope.$location = $location;
-    }
-
-    function initEnv(name) {
-      var root = angular.element(document.getElementById(name + '-mode'));
-      // We must kill a link to the injector for this element otherwise angular will
-      // complain that it has been bootstrapped already.
-      root.data('$injector', null);
-      angular.bootstrap(root, [function($compileProvider, $locationProvider, $provide){
-        $locationProvider.html5Mode(true).hashPrefix('!');
-
-        $provide.value('$browser', browsers[name]);
-        $provide.value('$sniffer', {history: name == 'html5'});
-
-        $compileProvider.directive('ngAddressBar', function() {
-          return function(scope, elm, attrs) {
-            var browser = browsers[attrs.browser],
-                input = angular.element('<input type="text" style="width: 400px">').val(browser.url()),
-                delay;
-
-            input.on('keypress keyup keydown', function() {
-              if (!delay) {
-                delay = setTimeout(fireUrlChange, 250);
-              }
-            });
-
-            browser.url = function(url) {
-              return input.val(url);
-            };
-
-            elm.append('Address: ').append(input);
-
-            function fireUrlChange() {
-              delay = null;
-              browser.urlChange(input.val());
-            }
+          $browser.url = function(url) {
+            return url ? input.val(url) : input.val();
           };
-        });
-      }]);
-      root.on('click', function(e) {
-        e.stopPropagation();
-      });
-    }
 
-    initEnv('html5');
-    initEnv('hashbang');
+          function fireUrlChange() {
+            delay = null;
+            $browser.urlChange(input.val());
+          }
+        }
+      };
+    });
   </file>
+
+  <file name="protractor.js" type="protractor">
+
+    var addressBar = element(by.css("#addressBar")),
+        url = 'http://www.example.com/base/path?a=b#h';
+
+
+    it("should show fake browser info on load", function(){
+      expect(addressBar.getAttribute('value')).toBe(url);
+
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/path');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('h');
+
+    });
+
+    it("should change $location accordingly", function(){
+      var navigation = element.all(by.css("#navigation a"));
+
+      navigation.get(0).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/first?a=b");
+
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/first');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('');
+
+
+      navigation.get(1).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/sec/ond?flag#hash");
+
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/sec/ond');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"flag":true}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('hash');
+    });
+
+  </file>
+
 </example>
 
+####Browser in HTML5 Fallback mode (Hashbang mode)
+<example module="hashbang-mode" name="location-hashbang-mode">
+  <file name="index.html">
+    <div ng-controller="LocationController">
+      <div ng-address-bar></div><br><br>
+      <div>
+        $location.protocol() = <span ng-bind="$location.protocol()"></span> <br>
+        $location.host() = <span ng-bind="$location.host()"></span> <br>
+        $location.port() = <span ng-bind="$location.port()"></span> <br>
+        $location.path() = <span ng-bind="$location.path()"></span> <br>
+        $location.search() = <span ng-bind="$location.search()"></span> <br>
+        $location.hash() = <span ng-bind="$location.hash()"></span> <br>
+      </div>
+      <div id="navigation">
+        <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+        <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+        <a href="/other-base/another?search">external</a>
+      </div>
+    </div>
+  </file>
+  <file name="app.js">
+    angular.module('hashbang-mode', ['fake-browser', 'address-bar'])
+
+    .constant('initUrl', 'http://www.example.com/base/index.html#!/path?a=b#h')
+    .constant('baseHref', '/base/index.html')
+    .value('$sniffer', { history: false })
+
+    .config(function($locationProvider) {
+      $locationProvider.html5Mode(true).hashPrefix('!');
+    })
+
+    .controller("LocationController", function($scope, $location) {
+      $scope.$location = {};
+      angular.forEach("protocol host port path search hash".split(" "), function(method){
+        $scope.$location[method] = function(){
+          var result = $location[method].call($location);
+          return angular.isObject(result) ? angular.toJson(result) : result;
+        };
+      });
+    })
+
+    .run(function($rootElement) {
+      $rootElement.on('click', function(e) {
+        e.stopPropagation();
+      });
+    });
+
+  </file>
+
+  <file name="fakeBrowser.js">
+    angular.module('fake-browser', [])
+
+    .config(function($provide) {
+     $provide.decorator('$browser', function($delegate, baseHref, initUrl) {
+
+      $delegate.onUrlChange = function(fn) {
+         this.urlChange = fn;
+       };
+
+      $delegate.url = function() {
+         return initUrl;
+      };
+
+      $delegate.defer = function(fn, delay) {
+         setTimeout(function() { fn(); }, delay || 0);
+       };
+
+      $delegate.baseHref = function() {
+         return baseHref;
+       };
+
+       return $delegate;
+     });
+    });
+  </file>
+
+
+  <file name="addressBar.js">
+   angular.module('address-bar', [])
+   .directive('ngAddressBar', function($browser, $timeout) {
+      return {
+        template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
+        link: function(scope, element, attrs){
+          var input = element.children("input"), delay;
+
+          input.on('keypress keyup keydown', function(event) {
+                  delay = (!delay ? $timeout(fireUrlChange, 250) : null);
+                  event.stopPropagation();
+                })
+               .val($browser.url());
+
+          $browser.url = function(url) {
+            return url ? input.val(url) : input.val();
+          };
+
+          function fireUrlChange() {
+            delay = null;
+            $browser.urlChange(input.val());
+          }
+        }
+      };
+    });
+  </file>
+
+  <file name="protractor.js" type="protractor">
+
+    var addressBar = element(by.css("#addressBar")),
+         url = 'http://www.example.com/base/index.html#!/path?a=b#h';
+
+    it("should show fake browser info on load", function(){
+      expect(addressBar.getAttribute('value')).toBe(url);
+
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/path');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('h');
+
+    });
+
+    it("should change $location accordingly", function(){
+      var navigation = element.all(by.css("#navigation a"));
+
+      navigation.get(0).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/index.html#!/first?a=b");
+
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/first');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('');
+
+
+      navigation.get(1).click();
+
+      expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/index.html#!/sec/ond?flag#hash");
+
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/sec/ond');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"flag":true}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('hash');
+
+    });
+  </file>
+
+</example>
 
 # Caveats
 
@@ -618,27 +814,22 @@ then uses the information it obtains to compose hashbang URLs (such as
 
 ## Two-way binding to $location
 
-The Angular's compiler currently does not support two-way binding for methods (see [issue](https://github.com/angular/angular.js/issues/404)).  If you should require two-way binding
-to the $location object (using {@link input[text] ngModel} directive on an input
-field), you will need to specify an extra model property (e.g. `locationPath`) with two {@link ng.$rootScope.Scope#$watch $watchers}
-which push $location updates in both directions. For example:
-<example>
+Because `$location` uses getters/setters, you can use `ng-model-options="{ getterSetter: true }"`
+to bind it to `ngModel`:
+
+<example module="locationExample">
 <file name="index.html">
 <div ng-controller="LocationController">
-  <input type="text" ng-model="locationPath" />
+  <input type="text" ng-model="locationPath" ng-model-options="{ getterSetter: true }" />
 </div>
 </file>
 <file name="script.js">
-function LocationController($scope, $location) {
-  $scope.$watch('locationPath', function(path) {
-    $location.path(path);
-  });
-  $scope.$watch(function() {
-    return $location.path();
-  }, function(path) {
-    $scope.locationPath = path;
-  });
-}
+angular.module('locationExample', [])
+  .controller('LocationController', ['$scope', '$location', function($scope, $location) {
+    $scope.locationPath = function (newLocation) {
+      return $location.path(newLocation);
+    };
+  }]);
 </file>
 </example>
 

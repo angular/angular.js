@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('./protractor-shared-conf').config;
 
 config.sauceUser = process.env.SAUCE_USERNAME;
@@ -24,5 +26,8 @@ config.multiCapabilities = [{
   'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
   'build': process.env.TRAVIS_BUILD_NUMBER
 }];
+
+config.allScriptsTimeout = 30000;
+config.getPageTimeout = 30000;
 
 exports.config = config;

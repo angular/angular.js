@@ -1,4 +1,6 @@
-angularFiles = {
+'use strict';
+
+var angularFiles = {
   'angularSrc': [
     'src/minErr.js',
     'src/Angular.js',
@@ -32,6 +34,8 @@ angularFiles = {
     'src/ng/sanitizeUri.js',
     'src/ng/sce.js',
     'src/ng/sniffer.js',
+    'src/ng/templateRequest.js',
+    'src/ng/testability.js',
     'src/ng/timeout.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',
@@ -104,6 +108,9 @@ angularFiles = {
       'src/ngTouch/directive/ngClick.js',
       'src/ngTouch/directive/ngSwipe.js'
     ],
+    'ngAria': [
+      'src/ngAria/aria.js'
+    ]
   },
 
   'angularScenario': [
@@ -137,11 +144,12 @@ angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngTouch/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/*.js'
   ],
 
   'karma': [
-    'bower_components/jquery/jquery.js',
+    'bower_components/jquery/dist/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -171,11 +179,12 @@ angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/**/*.js',
-    'test/ngTouch/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/*.js'
   ],
 
   'karmaJquery': [
-    'bower_components/jquery/jquery.js',
+    'bower_components/jquery/dist/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -199,7 +208,8 @@ angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngRoute'],
   angularFiles['angularModules']['ngSanitize'],
   angularFiles['angularModules']['ngMock'],
-  angularFiles['angularModules']['ngTouch']
+  angularFiles['angularModules']['ngTouch'],
+  angularFiles['angularModules']['ngAria']
 );
 
 if (exports) {

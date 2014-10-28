@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Directives
+@sortOrder 300
 @description
 
 # Creating Custom Directives
@@ -21,7 +22,7 @@ At a high level, directives are markers on a DOM element (such as an attribute, 
 name, comment or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$compile `$compile`}) to
 attach a specified behavior to that DOM element or even transform the DOM element and its children.
 
-Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngView`.
+Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngClass`.
 Much like you create controllers and services, you can create your own directives for Angular to use.
 When Angular {@link guide/bootstrap bootstraps} your application, the
 {@link guide/compiler HTML compiler} traverses the DOM matching directives against the DOM elements.
@@ -65,15 +66,9 @@ The **normalization** process is as follows:
 1. Strip `x-` and `data-` from the front of the element/attributes.
 2. Convert the `:`, `-`, or `_`-delimited name to `camelCase`.
 
-Here are some equivalent examples of elements that match `ngBind`:
+For example, the following forms are all equivalent and match the {@link ngBind} directive:
 
 <example module="docsBindExample">
-  <file name="script.js">
-    angular.module('docsBindExample', [])
-      .controller('Controller', ['$scope', function($scope) {
-        $scope.name = 'Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)';
-      }]);
-  </file>
   <file name="index.html">
     <div ng-controller="Controller">
       Hello <input ng-model='name'> <hr/>
@@ -84,7 +79,13 @@ Here are some equivalent examples of elements that match `ngBind`:
       <span x-ng-bind="name"></span> <br/>
     </div>
   </file>
-  <file name="protractorTest.js">
+  <file name="script.js">
+    angular.module('docsBindExample', [])
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.name = 'Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)';
+      }]);
+  </file>
+  <file name="protractor.js" type="protractor">
     it('should show off bindings', function() {
       expect(element(by.css('div[ng-controller="Controller"] span[ng-bind]')).getText())
           .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
@@ -159,9 +160,11 @@ restrictions, you cannot simply write `cx="{{cx}}"`.
 With `ng-attr-cx` you can work around this problem.
 
 If an attribute with a binding is prefixed with the `ngAttr` prefix (denormalized as `ng-attr-`)
-then during the binding will be applied to the corresponding unprefixed attribute. This allows
+then during the binding it will be applied to the corresponding unprefixed attribute. This allows
 you to bind to attributes that would otherwise be eagerly processed by browsers
-(e.g. an SVG element's `circle[cx]` attributes).
+(e.g. an SVG element's `circle[cx]` attributes). When using `ngAttr`, the `allOrNothing` flag of
+{@link ng.$interpolate $interpolate} is used, so if any expression in the interpolated string
+results in `undefined`, the attribute is removed and not added to the element.
 
 For example, we could fix the example above by instead writing:
 
@@ -177,7 +180,7 @@ For example, we could fix the example above by instead writing:
 First let's talk about the {@link ng.$compileProvider#directive API for registering directives}. Much like
 controllers, directives are registered on modules. To register a directive, you use the
 `module.directive` API. `module.directive` takes the
-{@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
+{@link guide/directive#matching-directives normalized} directive name
 followed by a **factory function.** This factory function should return an object with the different
 options to tell `$compile` how the directive should behave when matched.
 
@@ -240,7 +243,7 @@ Let's create a directive that simply replaces its contents with a static templat
 Notice that we have bindings in this directive. After `$compile` compiles and links
 `<div my-customer></div>`, it will try to match directives on the element's children. This means you
 can compose directives of other directives. We'll see how to do that in
-{@link guide/directive#creating-custom-directives_demo_creating-directives-that-communicate an example}
+{@link guide/directive#creating-directives-that-communicate an example}
 below.
 
 In the example above we in-lined the value of the `template` option, but this will become annoying
@@ -279,12 +282,49 @@ using `templateUrl` instead:
   </file>
 </example>
 
-Great! But what if we wanted to have our directive match the tag name `<my-customer>` instead?
-If we simply put a `<my-customer>` element into the HTML, it doesn't work.
+`templateUrl` can also be a function which returns the URL of an HTML template to be loaded and
+used for the directive. Angular will call the `templateUrl` function with two parameters: the
+element that the directive was called on, and an `attr` object associated with that element.
 
 <div class="alert alert-warning">
-**Note:** When you create a directive, it is restricted to attribute only by default. In order to
-create directives that are triggered by element or class name, you need to use the `restrict` option.
+**Note:** You do not currently have the ability to access scope variables from the `templateUrl`
+function, since the template is requested before the scope is initialized.
+</div>
+
+<example module="docsTemplateUrlDirective">
+  <file name="script.js">
+    angular.module('docsTemplateUrlDirective', [])
+      .controller('Controller', ['$scope', function($scope) {
+        $scope.customer = {
+          name: 'Naomi',
+          address: '1600 Amphitheatre'
+        };
+      }])
+      .directive('myCustomer', function() {
+        return {
+          templateUrl: function(elem, attr){
+            return 'customer-'+attr.type+'.html';
+          }
+        };
+      });
+  </file>
+  <file name="index.html">
+    <div ng-controller="Controller">
+      <div my-customer type="name"></div>
+      <div my-customer type="address"></div>
+    </div>
+  </file>
+  <file name="customer-name.html">
+    Name: {{customer.name}}
+  </file>
+  <file name="customer-address.html">
+    Address: {{customer.address}}
+  </file>
+</example>
+
+<div class="alert alert-warning">
+**Note:** When you create a directive, it is restricted to attribute and elements only by default. In order to
+create directives that are triggered by class name, you need to use the `restrict` option.
 </div>
 
 The `restrict` option is typically set to:
@@ -328,9 +368,9 @@ Let's change our directive to use `restrict: 'E'`:
 </example>
 
 For more on the
-{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
+{@link ng.$compile#directive-definition-object `restrict`}
 property, see the
-{@link ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
+{@link ng.$compile#directive-definition-object API docs}.
 
 <div class="alert alert-info">
 **When should I use an attribute versus an element?**
@@ -352,7 +392,7 @@ element as a customer component.
 Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
 given scope.
 
-In its current implementation, we'd need to create a different controller each time In order to
+In its current implementation, we'd need to create a different controller each time in order to
 re-use such a directive:
 
 <example module="docsScopeProblemExample">
@@ -475,7 +515,6 @@ within our directive's template:
     angular.module('docsIsolationExample', [])
       .controller('Controller', ['$scope', function($scope) {
         $scope.naomi = { name: 'Naomi', address: '1600 Amphitheatre' };
-
         $scope.vojta = { name: 'Vojta', address: '3456 Somewhere Else' };
       }])
       .directive('myCustomer', function() {
@@ -510,7 +549,7 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-See the {@link api/ng/service/$compile#directive-definition-object
+See the {@link $compile#directive-definition-object
 "Directive Definition Object - scope"} section for more information about isolate scopes.
 </div>
 
@@ -537,7 +576,7 @@ where:
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
 to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
-end-to-end testing, where we want to ensure that all $timeouts have completed before completing the test.
+end-to-end testing, where we want to ensure that all `$timeout`s have completed before completing the test.
 We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
@@ -909,6 +948,30 @@ in the case when the directive is used as a component.
 Looking back at `myPane`'s definition, notice the last argument in its `link` function: `tabsCtrl`.
 When a directive requires a controller, it receives that controller as the fourth argument of its
 `link` function. Taking advantage of this, `myPane` can call the `addPane` function of `myTabs`.
+
+If multiple controllers are required, the `require` option of the directive can take an array argument.
+The corresponding parameter being sent to the `link` function will also be an array.
+
+```js
+angular.module('docsTabsExample', [])
+  .directive('myPane', function() {
+    return {
+      require: ['^myTabs', '^ngModel'],
+      restrict: 'E',
+      transclude: true,
+      scope: {
+        title: '@'
+      },
+      link: function(scope, element, attrs, controllers) {
+        var tabsCtrl = controllers[0],
+            modelCtrl = controllers[1];
+
+        tabsCtrl.addPane(scope);
+      },
+      templateUrl: 'my-pane.html'
+    };
+  });
+```
 
 Savvy readers may be wondering what the difference is between `link` and `controller`.
 The basic difference is that `controller` can expose an API, and `link` functions can interact with

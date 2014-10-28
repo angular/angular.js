@@ -267,7 +267,7 @@ goog.i18n.currency.adjustPrecision = function(pattern, currencyCode) {
  * 18: two decimals precision (2), currency sign last (16), no space (0)
  * 50: two decimals precision (2), currency sign last (16), space (32)
  *
- * @type {!Object.<!Array>}
+ * @type {!Object.<!Array.<?>>}
  */
 goog.i18n.currency.CurrencyInfo = {
   'AED': [2, 'dh', '\u062f.\u0625.', 'DH'],
@@ -334,7 +334,7 @@ goog.i18n.currency.CurrencyInfo = {
 
 /**
  * Tier 2 currency information.
- * @type {!Object.<!Array>}
+ * @type {!Object.<!Array.<?>>}
  */
 goog.i18n.currency.CurrencyInfoTier2 = {
   'AFN': [48, 'Af.', 'AFN'],

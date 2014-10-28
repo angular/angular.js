@@ -1,0 +1,76 @@
+<style>
+[ng-cloak] { display: none; }
+</style>
+<div ng-app="largetableBenchmark" ng-cloak>
+  <div ng-controller="DataController">
+    <div class="container-fluid">
+      <p>
+      Large table rendered with AngularJS
+      </p>
+
+      <div>none: <input type="radio" ng-model="benchmarkType" value="none"></div>
+      <div>baseline binding: <input type="radio" ng-model="benchmarkType" value="baselineBinding"></div>
+      <div>baseline interpolation: <input type="radio" ng-model="benchmarkType" value="baselineInterpolation"></div>
+      <div>ngBind: <input type="radio" ng-model="benchmarkType" value="ngBind"></div>
+      <div>ngBindOnce: <input type="radio" ng-model="benchmarkType" value="ngBindOnce"></div>
+      <div>interpolation: <input type="radio" ng-model="benchmarkType" value="interpolation"></div>
+      <div>ngBind + fnInvocation: <input type="radio" ng-model="benchmarkType" value="ngBindFn"></div>
+      <div>interpolation + fnInvocation: <input type="radio" ng-model="benchmarkType" value="interpolationFn"></div>
+      <div>ngBind + filter: <input type="radio" ng-model="benchmarkType" value="ngBindFilter"></div>
+      <div>interpolation + filter: <input type="radio" ng-model="benchmarkType" value="interpolationFilter"></div>
+
+      <ng-switch on="benchmarkType">
+        <baseline-binding-table ng-switch-when="baselineBinding">
+        </baseline-binding-table>
+        <baseline-interpolation-table ng-switch-when="baselineInterpolation">
+        </baseline-interpolation-table>
+        <div ng-switch-when="ngBind">
+          <h2>baseline binding</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row">
+              <span ng-bind="column.i"></span>:<span ng-bind="column.j"></span>|
+            </span>
+          </div>
+        </div>
+        <div ng-switch-when="ngBindOnce">
+          <h2>baseline binding once</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in ::row">
+              <span ng-bind="::column.i"></span>:<span ng-bind="::column.j"></span>|
+            </span>
+          </div>
+        </div>
+        <div ng-switch-when="interpolation">
+          <h2>baseline interpolation</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row">{{column.i}}:{{column.j}}|</span>
+          </div>
+        </div>
+        <div ng-switch-when="ngBindFn">
+          <h2>bindings with functions</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row"><span ng-bind="column.iFn()"></span>:<span ng-bind="column.jFn()"></span>|</span>
+          </div>
+        </div>
+        <div ng-switch-when="interpolationFn">
+          <h2>interpolation with functions</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row">{{column.iFn()}}:{{column.jFn()}}|</span>
+          </div>
+        </div>
+        <div ng-switch-when="ngBindFilter">
+          <h2>bindings with filter</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row"><span ng-bind="column.i | noop"></span>:<span ng-bind="column.j | noop"></span>|</span>
+          </div>
+        </div>
+        <div ng-switch-when="interpolationFilter">
+          <h2>interpolation with filter</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row">{{column.i | noop}}:{{column.j | noop}}|</span>
+          </div>
+        </div>
+      </ng-switch>
+    </div>
+  </div>
+</div>

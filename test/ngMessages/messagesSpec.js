@@ -35,7 +35,7 @@ describe('ngMessages', function() {
     expect(element.text()).not.toContain('Message is set');
 
     $rootScope.$apply(function() {
-      $rootScope.col = { val : true };
+      $rootScope.col = { val: true };
     });
 
     expect(element.text()).toContain('Message is set');
@@ -52,7 +52,7 @@ describe('ngMessages', function() {
     expect(element.text()).not.toContain('Message is set');
 
     $rootScope.$apply(function() {
-      $rootScope.col = { val : true };
+      $rootScope.col = { val: true };
     });
 
     expect(element.text()).toContain('Message is set');
@@ -65,7 +65,7 @@ describe('ngMessages', function() {
       '[]': [],
       '[{}]': [{}],
       '': '',
-      '{ val2 : true }': { val2 : true } },
+      '{ val2 : true }': { val2: true } },
   function(prop) {
     inject(function($rootScope, $compile) {
       element = $compile('<div ng-messages="col">' +
@@ -103,8 +103,8 @@ describe('ngMessages', function() {
 
       $rootScope.$apply(function() {
         $rootScope.col = {
-          blue : true,
-          red : false
+          blue: true,
+          red: false
         };
       });
 
@@ -113,7 +113,7 @@ describe('ngMessages', function() {
 
       $rootScope.$apply(function() {
         $rootScope.col = {
-          red : prop
+          red: prop
         };
       });
 
@@ -129,8 +129,8 @@ describe('ngMessages', function() {
 
       $rootScope.$apply(function() {
         $rootScope.col = {
-          blue : 0,
-          red : null
+          blue: 0,
+          red: null
         };
       });
 
@@ -150,9 +150,9 @@ describe('ngMessages', function() {
 
     $rootScope.$apply(function() {
       $rootScope.col = {
-        three : true,
-        one : true,
-        two : true
+        three: true,
+        one: true,
+        two: true
       };
     });
 
@@ -182,7 +182,7 @@ describe('ngMessages', function() {
     expect(element.hasClass('ng-inactive')).toBe(true);
 
     $rootScope.$apply(function() {
-      $rootScope.col = { ready : true };
+      $rootScope.col = { ready: true };
     });
 
     expect(element.hasClass('ng-active')).toBe(true);
@@ -207,7 +207,7 @@ describe('ngMessages', function() {
       expect(event.args[2]).toBe('ng-active');
 
       $rootScope.$apply(function() {
-        $rootScope.col = { ready : true };
+        $rootScope.col = { ready: true };
       });
 
       event = $animate.queue.pop();
@@ -221,7 +221,7 @@ describe('ngMessages', function() {
     they('should load a remote template using $prop',
       {'<div ng-messages ng-messages-include="...">':
           '<div ng-messages="data" ng-messages-include="abc.html"></div>',
-       '<ng-messages include="...">' :
+       '<ng-messages include="...">':
           '<ng-messages for="data" include="abc.html"></ng-messages>'},
     function(html) {
       inject(function($compile, $rootScope, $templateCache) {
@@ -277,8 +277,8 @@ describe('ngMessages', function() {
                          '</div>')($rootScope);
 
       $rootScope.data = {
-        required : true,
-        failed : true
+        required: true,
+        failed: true
       };
 
       $rootScope.$digest();
@@ -361,7 +361,7 @@ describe('ngMessages', function() {
       $rootScope.$apply(function() {
         $rootScope.data = {
           'a': 1,
-          'b': 2,
+          'b': 2
         };
       });
 
@@ -382,8 +382,8 @@ describe('ngMessages', function() {
 
   describe('when multiple', function() {
     they('should show all truthy messages when the $prop attr is present',
-      { 'multiple' : 'multiple',
-        'ng-messages-multiple' : 'ng-messages-multiple' },
+      { 'multiple': 'multiple',
+        'ng-messages-multiple': 'ng-messages-multiple' },
     function(prop) {
       inject(function($rootScope, $compile) {
         element = $compile('<div ng-messages="data" ' + prop + '>' +

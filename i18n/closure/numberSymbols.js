@@ -123,6 +123,8 @@ goog.provide('goog.i18n.NumberFormatSymbols_fr_MQ');
 goog.provide('goog.i18n.NumberFormatSymbols_fr_PM');
 goog.provide('goog.i18n.NumberFormatSymbols_fr_RE');
 goog.provide('goog.i18n.NumberFormatSymbols_fr_YT');
+goog.provide('goog.i18n.NumberFormatSymbols_ga');
+goog.provide('goog.i18n.NumberFormatSymbols_ga_IE');
 goog.provide('goog.i18n.NumberFormatSymbols_gl');
 goog.provide('goog.i18n.NumberFormatSymbols_gl_ES');
 goog.provide('goog.i18n.NumberFormatSymbols_gsw');
@@ -1375,6 +1377,36 @@ goog.i18n.NumberFormatSymbols_fr_RE = goog.i18n.NumberFormatSymbols_fr;
  * @enum {string}
  */
 goog.i18n.NumberFormatSymbols_fr_YT = goog.i18n.NumberFormatSymbols_fr;
+
+
+/**
+ * Number formatting symbols for locale ga.
+ * @enum {string}
+ */
+goog.i18n.NumberFormatSymbols_ga = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '\u2030',
+  INFINITY: '\u221E',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '\u00A4#,##0.00',
+  DEF_CURRENCY_CODE: 'EUR'
+};
+
+
+/**
+ * Number formatting symbols for locale ga_IE.
+ * @enum {string}
+ */
+goog.i18n.NumberFormatSymbols_ga_IE = goog.i18n.NumberFormatSymbols_ga;
 
 
 /**
@@ -3611,6 +3643,14 @@ if (goog.LOCALE == 'fr_RE' || goog.LOCALE == 'fr-RE') {
 
 if (goog.LOCALE == 'fr_YT' || goog.LOCALE == 'fr-YT') {
   goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_fr;
+}
+
+if (goog.LOCALE == 'ga') {
+  goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ga;
+}
+
+if (goog.LOCALE == 'ga_IE' || goog.LOCALE == 'ga-IE') {
+  goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ga;
 }
 
 if (goog.LOCALE == 'gl') {

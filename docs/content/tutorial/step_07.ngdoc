@@ -9,7 +9,7 @@
 In this step, you will learn how to create a layout template and how to build an app that has
 multiple views by adding routing, using an Angular module called 'ngRoute'.
 
-* When you now navigate to `app/index.html`, you are redirected to `app/index.html#/phones`
+* When you now navigate to `app/index.html`, you are redirected to `app/index.html/#/phones`
   and the phone list appears in the browser.
 * When you click on a phone link the url changes to one specific to that phone and the stub of a
   phone detail page is displayed.
@@ -26,23 +26,24 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
 
 ```json
 {
-  "name": "angular-seed",
+  "name": "angular-phonecat",
   "description": "A starter project for AngularJS",
   "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-seed",
+  "homepage": "https://github.com/angular/angular-phonecat",
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.2.x",
-    "angular-mocks": "~1.2.x",
+    "angular": "~1.3.0",
+    "angular-mocks": "~1.3.0",
+    "jquery": "2.1.1",
     "bootstrap": "~3.1.1",
-    "angular-route": "~1.2.x"
+    "angular-route": "~1.3.0"
   }
 }
 ```
 
-The new dependency `"angular-route": "~1.2.x"` tells bower to install a version of the
-angular-route component that is compatible with version 1.2.x.  We must tell bower to download
+The new dependency `"angular-route": "~1.3.0"` tells bower to install a version of the
+angular-route component that is compatible with version 1.3.x.  We must tell bower to download
 and install this dependency.
 
 If you have bower installed globally then you can run `bower install` but for this project we have
@@ -78,12 +79,17 @@ utilize the browser's history (back and forward navigation) and bookmarks.
 As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} (DI) is at the core of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
-When the application bootstraps, Angular creates an injector that will be used for all DI stuff in
-this app. The injector itself doesn't know anything about what `$http` or `$route` services do, in
-fact it doesn't even know about the existence of these services unless it is configured with proper
-module definitions. The sole responsibilities of the injector are to load specified module
-definition(s), register all service providers defined in these modules, and when asked, inject
-a specified function with dependencies (services) that it lazily instantiates via their providers.
+When the application bootstraps, Angular creates an injector that will be used to find and inject all
+of the services that are required by your app. The injector itself doesn't know anything about what
+`$http` or `$route` services do, in fact it doesn't even know about the existence of these services
+unless it is configured with proper module definitions.
+
+The injector only carries out the following steps :
+
+ * load the module definition(s) that you specify in your app
+ * register all Providers defined in these module definitions
+ * when asked to do so, inject a specified function and any necessary dependencies (services) that
+   it lazily instantiates via their Providers.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
@@ -197,7 +203,7 @@ moved the controllers into their own module `phonecatControllers` (as shown belo
 
 We added `angular-route.js` to `index.html` and created a new `phonecatControllers` module in
 `controllers.js`. That's not all we need to do to be able to use their code, however. We also have
-to add the modules dependencies of our app. By listing these two modules as dependencies of
+to add the modules as dependencies of our app. By listing these two modules as dependencies of
 `phonecatApp`, we can use the directives and services they provide.
 
 
