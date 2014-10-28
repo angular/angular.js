@@ -157,6 +157,7 @@ describe('$interpolate', function() {
 
 
     it('should support escaping interpolation signs', inject(function($interpolate) {
+      expect($interpolate('\\{\\{')(obj)).toBe('{{');
       expect($interpolate('{{foo}} \\{\\{bar\\}\\}')(obj)).toBe('Hello {{bar}}');
       expect($interpolate('\\{\\{foo\\}\\} {{bar}}')(obj)).toBe('{{foo}} World');
     }));
