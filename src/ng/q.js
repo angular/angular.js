@@ -100,6 +100,10 @@
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
+ *   Because `catch` is a reserved word in JavaScript and reserved keywords are not supported as
+ *   property names by ES3, you'll need to invoke the method like `promise['catch'](callback)` or
+ *  `promise.then(null, errorCallback)` to make your code IE8 and Android 2.x compatible.
+ *
  * - `finally(callback)` – allows you to observe either the fulfillment or rejection of a promise,
  *   but to do so without modifying the final value. This is useful to release resources or do some
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
