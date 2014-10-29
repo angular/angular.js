@@ -722,7 +722,29 @@ describe('select', function() {
     describe('trackBy expression', function() {
       beforeEach(function() {
         scope.arr = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}];
-        scope.obj = {'10': {score: 10, label: 'ten'}, '20': {score: 20, label: 'twenty'}};
+        scope.obj = {'1': {score: 10, label: 'ten'}, '2': {score: 20, label: 'twenty'}};
+      });
+
+
+      it('should set the result of track by expression to element value', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item.label for item in arr track by item.id'
+        });
+
+        scope.$apply(function() {
+          scope.selected = scope.arr[0];
+        });
+        expect(element.val()).toBe('10');
+
+        scope.$apply(function() {
+          scope.arr[0] = {id: 10, label: 'new ten'};
+        });
+        expect(element.val()).toBe('10');
+
+        element.children()[1].selected = 'selected';
+        browserTrigger(element, 'change');
+        expect(scope.selected).toEqual(scope.arr[1]);
       });
 
 
@@ -735,14 +757,14 @@ describe('select', function() {
         scope.$apply(function() {
           scope.selected = scope.arr[0];
         });
-        expect(element.val()).toBe('0');
+        expect(element.val()).toBe('10');
 
         scope.$apply(function() {
           scope.arr[0] = {id: 10, label: 'new ten'};
         });
-        expect(element.val()).toBe('0');
+        expect(element.val()).toBe('10');
 
-        element.children()[1].selected = 1;
+        element.children()[1].selected = 'selected';
         browserTrigger(element, 'change');
         expect(scope.selected).toEqual(scope.arr[1]);
       });
@@ -758,12 +780,12 @@ describe('select', function() {
         scope.$apply(function() {
           scope.selected = scope.arr;
         });
-        expect(element.val()).toEqual(['0','1']);
+        expect(element.val()).toEqual(['10','20']);
 
         scope.$apply(function() {
           scope.arr[0] = {id: 10, label: 'new ten'};
         });
-        expect(element.val()).toEqual(['0','1']);
+        expect(element.val()).toEqual(['10','20']);
 
         element.children()[0].selected = false;
         browserTrigger(element, 'change');
@@ -778,18 +800,18 @@ describe('select', function() {
         });
 
         scope.$apply(function() {
-          scope.selected = scope.obj['10'];
+          scope.selected = scope.obj['1'];
         });
         expect(element.val()).toBe('10');
 
         scope.$apply(function() {
-          scope.obj['10'] = {score: 10, label: 'ten'};
+          scope.obj['1'] = {score: 10, label: 'ten'};
         });
         expect(element.val()).toBe('10');
 
         element.val('20');
         browserTrigger(element, 'change');
-        expect(scope.selected).toBe(scope.obj[20]);
+        expect(scope.selected).toBe(scope.obj['2']);
       });
 
 
@@ -801,18 +823,18 @@ describe('select', function() {
         });
 
         scope.$apply(function() {
-          scope.selected = [scope.obj['10']];
+          scope.selected = [scope.obj['1']];
         });
         expect(element.val()).toEqual(['10']);
 
         scope.$apply(function() {
-          scope.obj['10'] = {score: 10, label: 'ten'};
+          scope.obj['1'] = {score: 10, label: 'ten'};
         });
         expect(element.val()).toEqual(['10']);
 
         element.children()[1].selected = 'selected';
         browserTrigger(element, 'change');
-        expect(scope.selected).toEqual([scope.obj[10], scope.obj[20]]);
+        expect(scope.selected).toEqual([scope.obj['1'], scope.obj['2']]);
       });
     });
 
@@ -824,7 +846,7 @@ describe('select', function() {
     describe('selectAs+trackBy expression', function() {
       beforeEach(function() {
         scope.arr = [{subItem: {label: 'ten', id: 10}}, {subItem: {label: 'twenty', id: 20}}];
-        scope.obj = {'10': {subItem: {id: 10, label: 'ten'}}, '20': {subItem: {id: 20, label: 'twenty'}}};
+        scope.obj = {'1': {subItem: {id: 10, label: 'ten'}}, '2': {subItem: {id: 20, label: 'twenty'}}};
       });
 
 
@@ -840,16 +862,16 @@ describe('select', function() {
         scope.$apply(function() {
           scope.selected = scope.arr[0].subItem;
         });
-        expect(element.val()).toEqual('0');
+        expect(element.val()).toEqual('10');
 
         scope.$apply(function() {
           scope.selected = scope.arr[1].subItem;
         });
-        expect(element.val()).toEqual('1');
+        expect(element.val()).toEqual('20');
 
         // Now test view -> model
 
-        element.val('0');
+        element.val('10');
         browserTrigger(element, 'change');
         expect(scope.selected).toBe(scope.arr[0].subItem);
 
@@ -861,7 +883,7 @@ describe('select', function() {
             subItem: {label: 'new twenty', id: 20}
           }];
         });
-        expect(element.val()).toBe('0');
+        expect(element.val()).toBe('10');
         expect(scope.selected.id).toBe(10);
       });
 
@@ -879,12 +901,12 @@ describe('select', function() {
         scope.$apply(function() {
           scope.selected = [scope.arr[0].subItem];
         });
-        expect(element.val()).toEqual(['0']);
+        expect(element.val()).toEqual(['10']);
 
         scope.$apply(function() {
           scope.selected = [scope.arr[1].subItem];
         });
-        expect(element.val()).toEqual(['1']);
+        expect(element.val()).toEqual(['20']);
 
         // Now test view -> model
 
@@ -901,7 +923,7 @@ describe('select', function() {
             subItem: {label: 'new twenty', id: 20}
           }];
         });
-        expect(element.val()).toEqual(['0']);
+        expect(element.val()).toEqual(['10']);
         expect(scope.selected[0].id).toEqual(10);
         expect(scope.selected.length).toBe(1);
       });
@@ -918,13 +940,12 @@ describe('select', function() {
         // First test model -> view
 
         scope.$apply(function() {
-          scope.selected = [scope.obj['10'].subItem];
+          scope.selected = [scope.obj['1'].subItem];
         });
         expect(element.val()).toEqual(['10']);
 
-
         scope.$apply(function() {
-          scope.selected = [scope.obj['10'].subItem];
+          scope.selected = [scope.obj['1'].subItem];
         });
         expect(element.val()).toEqual(['10']);
 
@@ -933,15 +954,15 @@ describe('select', function() {
         element.find('option')[0].selected = true;
         element.find('option')[1].selected = false;
         browserTrigger(element, 'change');
-        expect(scope.selected).toEqual([scope.obj['10'].subItem]);
+        expect(scope.selected).toEqual([scope.obj['1'].subItem]);
 
         // Now reload the object
         scope.$apply(function() {
           scope.obj = {
-            '10': {
+            '1': {
               subItem: {label: 'new ten', id: 10}
             },
-            '20': {
+            '2': {
               subItem: {label: 'new twenty', id: 20}
             }
           };
@@ -962,13 +983,13 @@ describe('select', function() {
         // First test model -> view
 
         scope.$apply(function() {
-          scope.selected = scope.obj['10'].subItem;
+          scope.selected = scope.obj['1'].subItem;
         });
         expect(element.val()).toEqual('10');
 
 
         scope.$apply(function() {
-          scope.selected = scope.obj['10'].subItem;
+          scope.selected = scope.obj['1'].subItem;
         });
         expect(element.val()).toEqual('10');
 
@@ -976,15 +997,15 @@ describe('select', function() {
 
         element.find('option')[0].selected = true;
         browserTrigger(element, 'change');
-        expect(scope.selected).toEqual(scope.obj['10'].subItem);
+        expect(scope.selected).toEqual(scope.obj['1'].subItem);
 
         // Now reload the object
         scope.$apply(function() {
           scope.obj = {
-            '10': {
+            '1': {
               subItem: {label: 'new ten', id: 10}
             },
-            '20': {
+            '2': {
               subItem: {label: 'new twenty', id: 20}
             }
           };
@@ -1338,20 +1359,20 @@ describe('select', function() {
           scope.selected = scope.values[1];
         });
 
-        expect(element.val()).toEqual('1');
+        expect(element.val()).toEqual('2');
 
         var first = jqLite(element.find('option')[0]);
         expect(first.text()).toEqual('first');
-        expect(first.attr('value')).toEqual('0');
+        expect(first.attr('value')).toEqual('1');
         var forth = jqLite(element.find('option')[3]);
         expect(forth.text()).toEqual('forth');
-        expect(forth.attr('value')).toEqual('3');
+        expect(forth.attr('value')).toEqual('4');
 
         scope.$apply(function() {
           scope.selected = scope.values[3];
         });
 
-        expect(element.val()).toEqual('3');
+        expect(element.val()).toEqual('4');
       });
 
 
