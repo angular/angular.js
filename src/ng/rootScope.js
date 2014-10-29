@@ -555,6 +555,9 @@ function $RootScopeProvider() {
           newValue = _value;
           var newLength, key, bothNaN, newItem, oldItem;
 
+          // If the new value is undefined, then return undefined as the watch may be a one-time watch
+          if (isUndefined(newValue)) return;
+
           if (!isObject(newValue)) { // if primitive
             if (oldValue !== newValue) {
               oldValue = newValue;

@@ -3367,6 +3367,31 @@ describe('$compile', function() {
         });
       });
 
+      it('should continue with a digets cycle when there is a two-way binding from the child to the parent', function() {
+        module(function() {
+          directive('hello', function() {
+            return {
+              restrict: 'E',
+              scope: { greeting: '=' },
+              template: '<button ng-click="setGreeting()">Say hi!</button>',
+              link: function(scope) {
+                scope.setGreeting = function() { scope.greeting = 'Hello!'; };
+              }
+            };
+          });
+        });
+
+        inject(function($rootScope) {
+          compile('<div>' +
+                    '<p>{{greeting}}</p>' +
+                    '<div><hello greeting="greeting"></hello></div>' +
+                  '</div>');
+          $rootScope.$digest();
+          browserTrigger(element.find('button'), 'click');
+          expect(element.find('p').text()).toBe('Hello!');
+        });
+      });
+
     });
 
 

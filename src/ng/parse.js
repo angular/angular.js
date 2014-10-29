@@ -1257,7 +1257,7 @@ function $ParseProvider() {
         var result = interceptorFn(value, scope, locals);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
-        return isDefined(value) ? result : value;
+        return isDefined(value) || interceptorFn.$stateful ? result : value;
       };
 
       // Propagate $$watchDelegates other then inputsWatchDelegate
