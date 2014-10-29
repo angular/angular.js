@@ -39,7 +39,7 @@ linking} phase the {@link ng.$compileProvider#directive directives} set up
 render the updated value to the DOM.
 
 Both controllers and directives have reference to the scope, but not to each other. This
-arrangement isolates the controller from the directive as well as from DOM. This is an important
+arrangement isolates the controller from the directive as well as from the DOM. This is an important
 point since it makes the controllers view agnostic, which greatly improves the testing story of
 the applications.
 
