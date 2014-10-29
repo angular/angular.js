@@ -400,6 +400,16 @@ describe('$aria', function() {
     });
   });
 
+  describe('announcing ngMessages', function() {
+    beforeEach(injectScopeAndCompiler);
+
+    it('should attach aria-live', function() {
+      var element = [
+        $compile('<div ng-messages="myForm.myName.$error">')(scope)
+      ];
+      expectAriaAttrOnEachElement(element, 'aria-live', "assertive");
+    });
+  });
 
   describe('aria-value when disabled', function() {
     beforeEach(configAriaProvider({
