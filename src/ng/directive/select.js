@@ -355,6 +355,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             valuesFn = $parse(match[7]),
             track = match[8],
             trackFn = track ? $parse(match[8]) : null,
+            trackKeysCache = {},
             // This is an array of array of existing option groups in DOM.
             // We try to reuse these if possible
             // - optionGroupsCache[0] is the options with no option group
@@ -405,10 +406,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             if (multiple) {
               viewValue = [];
               forEach(selectElement.val(), function(selectedKey) {
+                  selectedKey = trackFn ? trackKeysCache[selectedKey] : selectedKey;
                 viewValue.push(getViewValue(selectedKey, collection[selectedKey]));
               });
             } else {
-              var selectedKey = selectElement.val();
+              var selectedKey = trackFn ? trackKeysCache[selectElement.val()] : selectElement.val();
               viewValue = getViewValue(selectedKey, collection[selectedKey]);
             }
             ctrl.$setViewValue(viewValue);
@@ -530,7 +532,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               anySelected = false,
               lastElement,
               element,
-              label;
+              label,
+              optionId;
+
+          trackKeysCache = {};
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
@@ -554,9 +559,14 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
             // doing displayFn(scope, locals) || '' overwrites zero values
             label = isDefined(label) ? label : '';
+            optionId = trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index);
+            if (trackFn) {
+              trackKeysCache[optionId] = key;
+            }
+
             optionGroup.push({
               // either the index into array or key from object
-              id: (keyName ? keys[index] : index),
+              id: optionId,
               label: label,
               selected: selected                   // determine if we should be selected
             });
