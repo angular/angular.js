@@ -604,6 +604,10 @@ angular.module('ngResource', ['ng']).
 
               value.$resolved = true;
 
+			  if (typeof response === "string") {
+				response = {};
+			  }
+
               response.resource = value;
 
               return response;
