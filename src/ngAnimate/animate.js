@@ -564,30 +564,32 @@ angular.module('ngAnimate', ['ng'])
         });
 
         var toAdd = [], toRemove = [];
-        forEach(cache.classes, function(status, className) {
-          var hasClass = hasClasses[className];
-          var matchingAnimation = lookup[className] || {};
-
-          // When addClass and removeClass is called then $animate will check to
-          // see if addClass and removeClass cancel each other out. When there are
-          // more calls to removeClass than addClass then the count falls below 0
-          // and then the removeClass animation will be allowed. Otherwise if the
-          // count is above 0 then that means an addClass animation will commence.
-          // Once an animation is allowed then the code will also check to see if
-          // there exists any on-going animation that is already adding or remvoing
-          // the matching CSS class.
-          if (status === false) {
-            //does it have the class or will it have the class
-            if (hasClass || matchingAnimation.event == 'addClass') {
-              toRemove.push(className);
+        if(cache && cache.classes){
+          forEach(cache.classes, function(status, className) {
+            var hasClass = hasClasses[className];
+            var matchingAnimation = lookup[className] || {};
+  
+            // When addClass and removeClass is called then $animate will check to
+            // see if addClass and removeClass cancel each other out. When there are
+            // more calls to removeClass than addClass then the count falls below 0
+            // and then the removeClass animation will be allowed. Otherwise if the
+            // count is above 0 then that means an addClass animation will commence.
+            // Once an animation is allowed then the code will also check to see if
+            // there exists any on-going animation that is already adding or remvoing
+            // the matching CSS class.
+            if (status === false) {
+              //does it have the class or will it have the class
+              if (hasClass || matchingAnimation.event == 'addClass') {
+                toRemove.push(className);
+              }
+            } else if (status === true) {
+              //is the class missing or will it be removed?
+              if (!hasClass || matchingAnimation.event == 'removeClass') {
+                toAdd.push(className);
+              }
             }
-          } else if (status === true) {
-            //is the class missing or will it be removed?
-            if (!hasClass || matchingAnimation.event == 'removeClass') {
-              toAdd.push(className);
-            }
-          }
-        });
+          });
+        }
 
         return (toAdd.length + toRemove.length) > 0 && [toAdd.join(' '), toRemove.join(' ')];
       }
