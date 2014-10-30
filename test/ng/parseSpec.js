@@ -1164,6 +1164,23 @@ describe('parser', function() {
           fn.assign(scope, 123);
           expect(scope.a.b.c).toEqual(123);
         }));
+
+        it('should create undefined objects in assignment expressions', inject(function($parse) {
+          var fn = $parse('a.b.c');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(scope.a.b.c).toEqual(123);
+        }));
+
+        it('should create undefined objects in assignment expressions when a key is numeric', inject(function($parse) {
+          var fn = $parse('a.b[0]');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(isArray(scope.a.b)).toBeTruthy();
+          expect(scope.a.b[0]).toEqual(123);
+        }));
       });
 
       describe('one-time binding', function() {
