@@ -94,6 +94,7 @@ This is a short list of libraries with specific support and documentation for wo
 * **MEAN Stack: **[Blog post](http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and), [Setup](http://thecodebarbarian.wordpress.com/2013/07/22/introduction-to-the-mean-stack-part-one-setting-up-your-tools/), [GDL Video](https://developers.google.com/live/shows/913996610)
 * **Rails: **[Tutorial](http://coderberry.me/blog/2013/04/22/angularjs-on-rails-4-part-1/), [AngularJS with Rails4](https://shellycloud.com/blog/2013/10/how-to-integrate-angularjs-with-rails-4), [angularjs-rails](https://github.com/hiravgandhi/angularjs-rails)
 * **PHP: **[Building a RESTful web service](http://blog.brunoscopelliti.com/building-a-restful-web-service-with-angularjs-and-php-more-power-with-resource), [End to End with Laravel 4 (video)](http://www.youtube.com/watch?v=hqAyiqUs93c)
+* **Meteor: **[angular-meteor package](https://github.com/Urigo/angular-meteor)
 
 ## Learning Resources
 
