@@ -1,0 +1,60 @@
+@ngdoc overview
+@name  Security
+@sortOrder 525
+@description
+
+# Security
+
+This document explains some of AngularJS's security features and best practices that you should
+keep in mind as you build your application.
+
+
+## Expression Sandboxing
+
+AngularJS's expressions are sandboxed not for security reasons, but instead to maintain a proper
+separation of application responsibilities. For example, access to `window` is disallowed
+because it makes it easy to introduce brittle global state into your application.
+
+However, this sandbox is not intended to stop attackers who can edit the template before it's
+processed by Angular. It may be possible to run arbitrary JavaScript inside double-curly bindings
+if an attacker can modify them.
+
+But if an attacker can change arbitrary HTML templates, there's nothing stopping them from doing:
+
+```html
+<script>somethingEvil();</script>
+```
+
+It's better to design your application in such a way that users cannot change client-side templates.
+For instance:
+
+* Do not mix client and server templates
+* Do not use user input to generate templates dynamically
+* Do not run user input through `$scope.$eval`
+* Consider using {@link ng.directive:ngCsp CSP} (but don't rely only on CSP)
+
+## Mixing client-side and server-side templates
+
+In general, we recommend against this because it can create unintended XSS vectors.
+
+However, it's ok to mix server-side templating in the bootstrap template (`index.html`) as long
+as user input cannot be used on the server to output html that would then be processed by Angular
+in a way that would cause allow for arbitrary code execution.
+
+For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
+for generating templates that are bootstrapped/compiled by Angular.
+
+
+## Reporting a security issue
+
+Email us at [security@angularjs.org](mailto:security@angularjs.org) to report any potential
+security issues in AngularJS.
+
+Please keep in mind the above points about Angular's expression language.
+
+
+## See also
+
+* {@link ng.directive:ngCsp Content Security Policy}
+* {@link ng.$sce Strict Contextual Escaping}
+* {@link ngSanitize.$sanitize $sanitize}
