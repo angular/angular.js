@@ -382,6 +382,7 @@ After:
 - **input:** types date, time, datetime-local, month, week now always
   require a `Date` object as model ([46bd6dc8](https://github.com/angular/angular.js/commit/46bd6dc88de252886d75426efc2ce8107a5134e9),
    [#5864](https://github.com/angular/angular.js/issues/5864))
+- **$route:** the method **parseRoute** was removed from the $route injectable. You will need to refactor your code that depends on this method. 
 
 
 
