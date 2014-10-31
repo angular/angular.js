@@ -639,6 +639,42 @@ describe('select', function() {
       }, blank, unknown);
     }
 
+    describe('disableIf expression', function() {
+      it('should support disable with array source', function() {
+        scope.crew = [{name: 'Luffy', hungry: true}, {name: 'Zoro', hungry: false}];
+        scope.selected = scope.crew[1];
+
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'sailor.name disable if sailor.hungry for sailor in crew'
+        });
+
+        var luffyOpt = element.find('option').eq(0),
+            zoroOpt  = element.find('option').eq(1);
+        expect(luffyOpt.text()).toBe('Luffy');
+        expect(luffyOpt.prop('disabled')).toBeTruthy();
+        expect(zoroOpt.text()).toBe('Zoro');
+        expect(zoroOpt.prop('disabled')).toBeFalsy();
+      });
+
+      it('should support disable with object source', function() {
+        scope.crew = {Luffy: {hungry: true}, Zoro: {hungry: false}};
+        scope.selected = scope.crew.Zoro;
+
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'sailor disable if status.hungry for (sailor, status) in crew'
+        });
+
+        var luffyOpt = element.find('option').eq(0),
+            zoroOpt  = element.find('option').eq(1);
+        expect(luffyOpt.text()).toBe('Luffy');
+        expect(luffyOpt.prop('disabled')).toBeTruthy();
+        expect(zoroOpt.text()).toBe('Zoro');
+        expect(zoroOpt.prop('disabled')).toBeFalsy();
+      });
+    });
+
     describe('selectAs expression', function() {
       beforeEach(function() {
         scope.arr = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}];

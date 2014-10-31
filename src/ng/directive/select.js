@@ -69,13 +69,16 @@ var ngOptionsMinErr = minErr('ngOptions');
  *   * for array data sources:
  *     * `label` **`for`** `value` **`in`** `array`
  *     * `select` **`as`** `label` **`for`** `value` **`in`** `array`
+ *     * `label` **`disable if`** `cond` **`for`** `value` **`in`** `array`
  *     * `label`  **`group by`** `group` **`for`** `value` **`in`** `array`
- *     * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
+ *     * `select` **`as`** `label` **`disable if`** `cond` **`group by`** `group`
+ *         **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
  *   * for object data sources:
  *     * `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
  *     * `select` **`as`** `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
+ *     * `label` **`disable if`** `cond` **`for (`**`key` **`,`** `value`**`) in`** `object`
  *     * `label` **`group by`** `group` **`for (`**`key`**`,`** `value`**`) in`** `object`
- *     * `select` **`as`** `label` **`group by`** `group`
+ *     * `select` **`as`** `label` **`disable if`** `cond`  **`group by`** `group`
  *         **`for` `(`**`key`**`,`** `value`**`) in`** `object`
  *
  * Where:
@@ -88,6 +91,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  *     `expression` will most likely refer to the `value` variable (e.g. `value.propertyName`).
  *   * `select`: The result of this expression will be bound to the model of the parent `<select>`
  *      element. If not specified, `select` expression will default to `value`.
+ *   * `cond`: If the result of this expression is truthy, the `<option>` element's disabled attribute
+ *      will be set
  *   * `group`: The result of this expression will be used to group options using the `<optgroup>`
  *      DOM element.
  *   * `trackexpr`: Used when working with an array of objects. The result of this expression will be
@@ -167,7 +172,7 @@ var ngOptionsDirective = valueFn({
 // jshint maxlen: false
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                          //000011111111110000000000022222222220000000000000000000003333333333000000000000004444444444444440000000005555555555555550000000666666666666666000000000000000777777777700000000000000000008888888888
-  var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/,
+  var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+disable\s+if\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/,
       nullModelCtrl = {$setViewValue: noop};
 // jshint maxlen: 100
 
@@ -349,15 +354,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         }
 
         var displayFn = $parse(match[2] || match[1]),
-            valueName = match[4] || match[6],
+            valueName = match[5] || match[7],
             selectAs = / as /.test(match[0]) && match[1],
             selectAsFn = selectAs ? $parse(selectAs) : null,
-            keyName = match[5],
-            groupByFn = $parse(match[3] || ''),
+            keyName = match[6],
+            disableIfFn = $parse(match[3] || ''),
+            groupByFn = $parse(match[4] || ''),
             valueFn = $parse(match[2] ? match[1] : valueName),
-            valuesFn = $parse(match[7]),
-            track = match[8],
-            trackFn = track ? $parse(match[8]) : null,
+            valuesFn = $parse(match[8]),
+            track = match[9],
+            trackFn = track ? $parse(match[9]) : null,
             trackKeysCache = {},
             // This is an array of array of existing option groups in DOM.
             // We try to reuse these if possible
@@ -536,7 +542,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               lastElement,
               element,
               label,
-              optionId;
+              optionId,
+              disabled;
 
           trackKeysCache = {};
 
@@ -560,6 +567,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
             label = callExpression(displayFn, key, value); // what will be seen by the user
 
+            disabled = !!callExpression(disableIfFn, key, value);
+
             // doing displayFn(scope, locals) || '' overwrites zero values
             label = isDefined(label) ? label : '';
             optionId = trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index);
@@ -571,16 +580,17 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               // either the index into array or key from object
               id: optionId,
               label: label,
+              disabled: disabled,
               selected: selected                   // determine if we should be selected
             });
           }
           if (!multiple) {
             if (nullOption || viewValue === null) {
               // insert null option if we have a placeholder, or the model is null
-              optionGroups[''].unshift({id:'', label:'', selected:!anySelected});
+              optionGroups[''].unshift({id:'', label:'', selected:!anySelected, disabled:false});
             } else if (!anySelected) {
               // option could not be found, we have to insert the undefined item
-              optionGroups[''].unshift({id:'?', label:'', selected:true});
+              optionGroups[''].unshift({id:'?', label:'', selected:true, disabled:false});
             }
           }
 
@@ -627,6 +637,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 if (existingOption.id !== option.id) {
                   lastElement.val(existingOption.id = option.id);
                 }
+                if (existingOption.disabled !== option.disabled) {
+                  lastElement.prop('disabled', (existingOption.disabled = option.disabled));
+                }
                 // lastElement.prop('selected') provided by jQuery has side-effects
                 if (lastElement[0].selected !== option.selected) {
                   lastElement.prop('selected', (existingOption.selected = option.selected));
@@ -650,6 +663,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   // rather then the element.
                   (element = optionTemplate.clone())
                       .val(option.id)
+                      .prop('disabled', option.disabled)
+                      .attr('disabled', option.disabled)
                       .prop('selected', option.selected)
                       .attr('selected', option.selected)
                       .text(option.label);
@@ -659,6 +674,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                     element: element,
                     label: option.label,
                     id: option.id,
+                    disabled: option.disabled,
                     selected: option.selected
                 });
                 updateLabelMap(labelMap, option.label, true);
