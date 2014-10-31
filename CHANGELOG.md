@@ -1,3 +1,59 @@
+
+<a name="1.3.1"></a>
+# 1.3.1 spectral-lobster (2014-10-31)
+
+
+## Bug Fixes
+
+- **$compile:** returning null when an optional controller is not found
+  ([2cd5b4ec](https://github.com/angular/angular.js/commit/2cd5b4ec4409a818ccd33a6fbdeb99a3443a1809),
+   [#9404](https://github.com/angular/angular.js/issues/9404), [#9392](https://github.com/angular/angular.js/issues/9392))
+- **$observe:** check if the attribute is undefined
+  ([531a8de7](https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11),
+   [#9707](https://github.com/angular/angular.js/issues/9707), [#9720](https://github.com/angular/angular.js/issues/9720))
+- **$parse:** support dirty-checking objects with null prototype
+  ([28661d1a](https://github.com/angular/angular.js/commit/28661d1a8cc3a8454bad7ae531e027b1256476c9),
+   [#9568](https://github.com/angular/angular.js/issues/9568))
+- **$sce:** use msie instead of $document[0].documentMode
+  ([45252c3a](https://github.com/angular/angular.js/commit/45252c3a545336a0bac93be6ee28cde6afaa3cb4),
+   [#9661](https://github.com/angular/angular.js/issues/9661))
+- **$templateRequest:** ignore JSON Content-Type header and content
+  ([1bd473eb](https://github.com/angular/angular.js/commit/1bd473eb4587900086e0b6b308dcf1dcfe9760d9),
+   [#5756](https://github.com/angular/angular.js/issues/5756), [#9619](https://github.com/angular/angular.js/issues/9619))
+- **i18n:** rename datetimeSymbols to be camelCase
+  ([94f5a285](https://github.com/angular/angular.js/commit/94f5a285bfcf04d800afc462a7a37a3469d77f1a))
+- **loader:** fix double spaces
+  ([8b2f1a47](https://github.com/angular/angular.js/commit/8b2f1a47b584ceb98689f48538a2af73cd65dfd8),
+   [#9630](https://github.com/angular/angular.js/issues/9630))
+- **ngMock:** $httpBackend should match data containing Date objects correctly
+  ([1025f6eb](https://github.com/angular/angular.js/commit/1025f6ebf4e5933a12920889be00cd8ac8a106fa),
+   [#5127](https://github.com/angular/angular.js/issues/5127))
+- **ngSanitize:** attribute name: xmlns:href -> xlink:href
+  ([4cccf0f2](https://github.com/angular/angular.js/commit/4cccf0f2a89b002d63cb443e1e7b15f76dcef425),
+   [#9769](https://github.com/angular/angular.js/issues/9769))
+- **select:** assign result of track exp to element value
+  ([4b4098bf](https://github.com/angular/angular.js/commit/4b4098bfcae64f69c70a22393de1f3d9a0d3dc46),
+   [#9718](https://github.com/angular/angular.js/issues/9718), [#9592](https://github.com/angular/angular.js/issues/9592))
+- **templateRequest:** allow empty html template
+  ([52ceec22](https://github.com/angular/angular.js/commit/52ceec2229dc132b76da4e022c91474344f2d906),
+   [#9581](https://github.com/angular/angular.js/issues/9581))
+- **testability:** escape regex chars in `findBindings` if using `exactMatch`
+  ([02aa4f4b](https://github.com/angular/angular.js/commit/02aa4f4b85ee15922a1f2de8ba78f562c18518d0),
+   [#9595](https://github.com/angular/angular.js/issues/9595), [#9600](https://github.com/angular/angular.js/issues/9600))
+
+
+## Features
+
+- **$compile:** allow $watchCollection to be used in bi-directional bindings
+  ([40bbc981](https://github.com/angular/angular.js/commit/40bbc9817845bf75581daee5d0ec30980affb0f5),
+   [#9725](https://github.com/angular/angular.js/issues/9725))
+- **ngSanitize:** accept SVG elements and attributes
+  ([a54b25d7](https://github.com/angular/angular.js/commit/a54b25d77999a85701dfc5396fef78e586a99667),
+   [#9578](https://github.com/angular/angular.js/issues/9578), [#9751](https://github.com/angular/angular.js/issues/9751))
+
+
+
+
 <a name="1.3.0"></a>
 # 1.3.0 superluminal-nudge (2014-10-13)
 
