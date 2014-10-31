@@ -56,6 +56,9 @@ for other directives to augment its behavior.
 
 Note that `novalidate` is used to disable browser's native form validation.
 
+The value of `ngModel` won't be set unless it passes validation for the input field.
+For example: inputs of type `email` must have a value in the form of `user@domain`.
+
 
 
 # Using CSS classes
