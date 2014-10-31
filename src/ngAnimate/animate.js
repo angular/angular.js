@@ -564,7 +564,7 @@ angular.module('ngAnimate', ['ng'])
         });
 
         var toAdd = [], toRemove = [];
-        forEach(cache.classes, function(status, className) {
+        forEach((cache && cache.classes) || [], function(status, className) {
           var hasClass = hasClasses[className];
           var matchingAnimation = lookup[className] || {};
 
