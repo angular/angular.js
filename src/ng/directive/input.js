@@ -1589,6 +1589,7 @@ var VALID_CLASS = 'ng-valid',
  * @property {boolean} $dirty True if user has already interacted with the control.
  * @property {boolean} $valid True if there is no error.
  * @property {boolean} $invalid True if at least one error on the control.
+ * @property {string} $name The name attribute of the control.
  *
  * @description
  *
