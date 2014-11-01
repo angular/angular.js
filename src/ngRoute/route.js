@@ -146,6 +146,9 @@ function $RouteProvider() {
     if (angular.isUndefined(routeCopy.reloadOnSearch)) {
       routeCopy.reloadOnSearch = true;
     }
+    if (angular.isUndefined(routeCopy.caseInsensitiveMatch)) {
+      routeCopy.caseInsensitiveMatch = this.caseInsensitiveMatch;
+    }
     routes[path] = angular.extend(
       routeCopy,
       path && pathRegExp(path, routeCopy)
@@ -165,6 +168,15 @@ function $RouteProvider() {
 
     return this;
   };
+
+  /**
+   * @ngdoc property
+   * @name $routeProvider#caseInsensitiveMatch
+   *
+   * @property {boolean} caseInsensitiveMatch Value of the `caseInsensitiveMatch` property
+   *  for newly defined routes. Defaults to `false`.
+   */
+  this.caseInsensitiveMatch = false;
 
    /**
     * @param path {string} path
