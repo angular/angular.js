@@ -300,7 +300,7 @@ describe('$route', function() {
       BaseRoute.prototype.templateUrl = 'foo.html';
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo', new BaseRoute);
+        $routeProvider.when('/foo', new BaseRoute());
       });
 
       inject(function($route, $location, $rootScope) {
