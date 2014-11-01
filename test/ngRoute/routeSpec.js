@@ -237,6 +237,31 @@ describe('$route', function() {
     });
   });
 
+  it('should allow configuring caseInsensitiveMatch on the route provider level', function() {
+    module(function($routeProvider) {
+      $routeProvider.caseInsensitiveMatch = true;
+      $routeProvider.when('/Blank', {template: 'blank'});
+      $routeProvider.otherwise({template: 'other'});
+    });
+    inject(function($route, $location, $rootScope) {
+      $location.path('/bLaNk');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('blank');
+    });
+  });
+
+  it('should allow overriding provider\'s caseInsensitiveMatch setting on the route level', function() {
+    module(function($routeProvider) {
+      $routeProvider.caseInsensitiveMatch = true;
+      $routeProvider.when('/Blank', {template: 'blank', caseInsensitiveMatch: false});
+      $routeProvider.otherwise({template: 'other'});
+    });
+    inject(function($route, $location, $rootScope) {
+      $location.path('/bLaNk');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('other');
+    });
+  });
 
   it('should not change route when location is canceled', function() {
     module(function($routeProvider) {
