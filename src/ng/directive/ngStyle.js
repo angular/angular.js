@@ -21,7 +21,7 @@
  * @example
    <example>
      <file name="index.html">
-        <input type="button" value="set color" ng-click="myStyle={color:'red'}">
+        <input type="button" value="set color" ng-click="myStyle={'color':'red'}">
         <input type="button" value="set background" ng-click="myStyle={'background-color':'blue'}">
         <input type="button" value="clear" ng-click="myStyle={}">
         <br/>
