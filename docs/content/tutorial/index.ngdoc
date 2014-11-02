@@ -73,7 +73,7 @@ Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by r
 command:
 
 ```
-git clone --depth=14 https://github.com/angular/angular-phonecat.git
+git clone --depth=14 http://github.com/angular/angular-phonecat.git
 ```
 
 This command creates the `angular-phonecat` directory in your current directory.
