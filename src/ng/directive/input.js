@@ -1646,7 +1646,7 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
 
               // Listen for change events to enable binding
               element.on('blur keyup change', function() {
-                scope.$apply(read);
+                scope.$evalAsync(read);
               });
               read(); // initialize
 
