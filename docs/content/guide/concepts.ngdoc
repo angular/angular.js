@@ -154,7 +154,7 @@ First, there is a new JavaScript file that contains a so-called <a name="control
 More exactly, the file contains a constructor function that creates the actual controller instance.
 The purpose of controllers is to expose variables and functionality to expressions and directives.
 
-Besides the new file that contains the controller code we also added a
+Besides the new file that contains the controller code we also added an
 {@link ng.directive:ngController `ng-controller`} directive to the HTML.
 This directive tells Angular that the new `InvoiceController` is responsible for the element with the directive
 and all of the element's children.
