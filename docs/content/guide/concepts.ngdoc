@@ -89,7 +89,7 @@ A filter formats the value of an expression for display to the user.
 In the example above, the filter {@link ng.filter:currency `currency`} formats a number
 into an output that looks like money.
 
-The important thing in the example is that angular provides _live_ bindings:
+The important thing in the example is that Angular provides _live_ bindings:
 Whenever the input values change, the value of the expressions are automatically
 recalculated and the DOM is updated with their values.
 The concept behind this is <a name="databinding">"{@link databinding two-way data binding}"</a>.
@@ -156,7 +156,7 @@ The purpose of controllers is to expose variables and functionality to expressio
 
 Besides the new file that contains the controller code we also added a
 {@link ng.directive:ngController `ng-controller`} directive to the HTML.
-This directive tells angular that the new `InvoiceController` is responsible for the element with the directive
+This directive tells Angular that the new `InvoiceController` is responsible for the element with the directive
 and all of the element's children.
 The syntax `InvoiceController as invoice` tells Angular to instantiate the controller
 and save it in the variable `invoice` in the current scope.
