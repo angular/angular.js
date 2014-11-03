@@ -441,7 +441,7 @@ function $RouteProvider() {
            * {@link ng.$location $location} hasn't changed.
            *
            * As a result of that, {@link ngRoute.directive:ngView ngView}
-           * creates new scope, reinstantiates the controller.
+           * creates new scope and reinstantiates the controller.
            */
           reload: function() {
             forceReload = true;
