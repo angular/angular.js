@@ -2224,6 +2224,53 @@ describe('input', function() {
         });
       }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
+
+    it('should be invalid if entire string does not match pattern', function() {
+      compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}">');
+      changeInputValueTo('1234');
+      expect(scope.form.test.$error.pattern).not.toBe(true);
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('123');
+      expect(scope.form.test.$error.pattern).toBe(true);
+      expect(inputElm).not.toBeValid();
+
+      changeInputValueTo('12345');
+      expect(scope.form.test.$error.pattern).toBe(true);
+      expect(inputElm).not.toBeValid();
+    });
+
+
+    it('should be cope with patterns that start with ^', function() {
+      compileInput('<input type="text" name="test" ng-model="value" pattern="^\\d{4}">');
+      changeInputValueTo('1234');
+      expect(scope.form.test.$error.pattern).not.toBe(true);
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('123');
+      expect(scope.form.test.$error.pattern).toBe(true);
+      expect(inputElm).not.toBeValid();
+
+      changeInputValueTo('12345');
+      expect(scope.form.test.$error.pattern).toBe(true);
+      expect(inputElm).not.toBeValid();
+    });
+
+
+    it('should be cope with patterns that end with $', function() {
+      compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}$">');
+      changeInputValueTo('1234');
+      expect(scope.form.test.$error.pattern).not.toBe(true);
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('123');
+      expect(scope.form.test.$error.pattern).toBe(true);
+      expect(inputElm).not.toBeValid();
+
+      changeInputValueTo('12345');
+      expect(scope.form.test.$error.pattern).toBe(true);
+      expect(inputElm).not.toBeValid();
+    });
   });
 
 
