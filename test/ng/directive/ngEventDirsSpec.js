@@ -131,4 +131,45 @@ describe('event directives', function() {
     }));
 
   });
+
+  describe('hooks', function() {
+
+    describe('interceptor hook', function() {
+
+      describe('execution', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('interceptor').andCallFake(function(e) {
+            });
+
+            $compileProvider.directive('testInterceptor', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$interceptors.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should be called before the event handler', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-interceptor ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              $rootScope.value = 'newValue';
+            });
+
+            element.triggerHandler('click');
+            expect(that.spy).toHaveBeenCalled();
+            expect($rootScope.call).toHaveBeenCalled();
+          });
+        });
+      });
+    });
+  });
+
 });
