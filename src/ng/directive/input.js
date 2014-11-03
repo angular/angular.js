@@ -42,9 +42,14 @@ var inputType = {
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -585,9 +590,14 @@ var inputType = {
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -667,9 +677,14 @@ var inputType = {
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -750,9 +765,14 @@ var inputType = {
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -2582,7 +2602,7 @@ var patternDirective = function() {
       var regexp, patternExp = attr.ngPattern || attr.pattern;
       attr.$observe('pattern', function(regex) {
         if (isString(regex) && regex.length > 0) {
-          regex = new RegExp(regex);
+          regex = new RegExp('^' + regex + '$');
         }
 
         if (regex && !regex.test) {
