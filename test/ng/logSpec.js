@@ -117,6 +117,38 @@ describe('$log', function() {
     );
   });
 
+  describe("$log.snapshot", function() {
+
+    beforeEach(inject(
+      function() {
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      }
+    ));
+
+    it ("should default to log level 'log' if no log level specifier provided", inject(
+      function($log) {
+        $log.snapshot();
+        expect(logger).toEqual('log;');
+      }
+    ));
+
+    it ("should apply log level if log level provided", inject(
+      function($log) {
+        $log.snapshot.log();
+        $log.snapshot.warn();
+        $log.snapshot.info();
+        $log.snapshot.error();
+        $log.snapshot.debug();
+        expect(logger).toEqual('log;warn;info;error;debug;');
+      }
+    ));
+
+  });
+
   describe("$log.debug", function() {
 
     beforeEach(initService(false));
@@ -179,3 +211,4 @@ describe('$log', function() {
     });
   });
 });
+
