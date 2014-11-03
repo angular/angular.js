@@ -56,10 +56,10 @@ Try out the Live Preview above, and then let's walk through the example and desc
 
 This looks like normal HTML, with some new markup. In Angular, a file like this is called a
 <a name="template">"{@link templates template}"</a>. When Angular starts your application, it parses and
-processes this new markup from the template using the so called <a name="compiler">"{@link compiler compiler}"</a>.
+processes this new markup from the template using the so-called <a name="compiler">"{@link compiler compiler}"</a>.
 The loaded, transformed and rendered DOM is then called the <a name="view">"view"</a>.
 
-The first kind of new markup are the so called <a name="directive">"{@link directive directives}"</a>.
+The first kind of new markup are the so-called <a name="directive">"{@link directive directives}"</a>.
 They apply special behavior to attributes or elements in the HTML. In the example above we use the
 {@link ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
 initializes our application. Angular also defines a directive for the {@link ng.directive:input `input`}
@@ -150,7 +150,7 @@ different currencies and also pay the invoice.
 
 What changed?
 
-First, there is a new JavaScript file that contains a so called <a name="controller">"{@link controller controller}"</a>.
+First, there is a new JavaScript file that contains a so-called <a name="controller">"{@link controller controller}"</a>.
 More exactly, the file contains a constructor function that creates the actual controller instance.
 The purpose of controllers is to expose variables and functionality to expressions and directives.
 
@@ -263,7 +263,7 @@ services, ...) is created and wired using dependency injection. Within Angular,
 the DI container is called the <a name="injector">"{@link di injector}"</a>.
 
 To use DI, there needs to be a place where all the things that should work together are registered.
-In Angular, this is the purpose of the so called <a name="module">"{@link module modules}"</a>.
+In Angular, this is the purpose of the so-called <a name="module">"{@link module modules}"</a>.
 When Angular starts, it will use the configuration of the module with the name defined by the `ng-app` directive,
 including the configuration of all modules that this module depends on.
 
