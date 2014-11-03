@@ -50,14 +50,34 @@ forEach(
   function(eventName) {
     var directiveName = directiveNormalize('ng-' + eventName);
     ngEventDirectives[directiveName] = ['$parse', '$rootScope', function($parse, $rootScope) {
+      var intercept, passCallResult;
       return {
         restrict: 'A',
+        controller: [function() {
+          var that = this;
+          this.$interceptors = [];
+          this.$callResultWatchers = [];
+
+          intercept = function(event) {
+            return that.$interceptors.reduce(function(cont, f) {
+              return (cont === false) ? false : f(event);
+            }, true);
+          };
+
+          passCallResult = function(res) {
+            that.$callResultWatchers.forEach(function(f) {
+              f(res);
+            });
+          };
+        }],
         compile: function($element, attr) {
           var fn = $parse(attr[directiveName]);
           return function ngEventHandler(scope, element) {
             element.on(eventName, function(event) {
               var callback = function() {
-                fn(scope, {$event:event});
+                if (intercept(event) !== false) {
+                  passCallResult(fn(scope, {$event: event}));
+                }
               };
               if (forceAsyncEvents[eventName] && $rootScope.$$phase) {
                 scope.$evalAsync(callback);
