@@ -169,6 +169,41 @@ describe('event directives', function() {
           });
         });
       });
+
+      describe('cancellation', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('interceptor').andCallFake(function(e) {
+              return false;
+            });
+
+            $compileProvider.directive('testInterceptor', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$interceptors.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should only cancel calling event handler by returning false', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-interceptor ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              $rootScope.value = 'newValue';
+            });
+
+            element.triggerHandler('click');
+            expect(that.spy).toHaveBeenCalled();
+            expect($rootScope.call).not.toHaveBeenCalled();
+          });
+        });
+      });
     });
   });
 
