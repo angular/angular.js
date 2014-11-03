@@ -204,6 +204,41 @@ describe('event directives', function() {
           });
         });
       });
+
+      describe('handler function', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('interceptor');
+            $compileProvider.directive('testInterceptor', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$interceptors.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should have access to the event', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-interceptor ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              $rootScope.value = 'newValue';
+            });
+
+            element.triggerHandler('click');
+
+            expect(that.spy).toHaveBeenCalled();
+            var arg = that.spy.calls[0].args[0];
+            expect(arg).not.toBeUndefined();
+            expect(arg.target).toEqual(element[0]);
+          });
+        });
+      });
     });
   });
 
