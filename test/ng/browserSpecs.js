@@ -1,5 +1,7 @@
 'use strict';
 
+/* global getHash:true, stripHash:true */
+
 var historyEntriesLength;
 var sniffer = {};
 
@@ -50,6 +52,12 @@ function MockWindow(options) {
       locationHref = value;
       mockWindow.history.state = null;
       historyEntriesLength++;
+    },
+    get hash() {
+      return getHash(locationHref);
+    },
+    set hash(value) {
+      locationHref = stripHash(locationHref) + '#' + value;
     },
     replace: function(url) {
       locationHref = url;
