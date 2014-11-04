@@ -388,7 +388,10 @@ element as a customer component.
 
 
 ### Isolating the Scope of a Directive
-
+<div class="alert alert-warning">
+**Note:** Keep in mind that there are rules around case sensitivity for parameter names. If you find yourself with undefined 
+variable values try to make the variable name all lower case.
+</div>
 Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
 given scope.
 
