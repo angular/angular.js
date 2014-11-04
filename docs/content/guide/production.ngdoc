@@ -47,7 +47,7 @@ and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
 Using strict di mode in your production application will throw errors when a injectable
 function is not
 {@link di#implicit-annotation annotated implicitly}.
-This will force you to make sure that your injectable functions are implicitely annotated
+This will force you to make sure that your injectable functions are implicitly annotated
 which will improve angular's performance when injecting dependencies in your injectable
 functions because it doesn't have to dynamically discover a function's dependencies.
 It is recommended to automate the implicit annotation via a tool like
@@ -71,4 +71,4 @@ angular.bootstrap(document, ['myApp'], {
 ```
 
 For more information, see the
-[DI Guide](https://docs.angularjs.org/guide/di#using-strict-dependency-injection).
+{@link di#using-strict-dependency-injection DI Guide}.
