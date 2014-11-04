@@ -1048,6 +1048,13 @@ describe('Scope', function() {
     }));
 
 
+    it('should call $browser.$$applicationDestroyed when destroying rootScope', inject(function($rootScope, $browser) {
+      spyOn($browser, '$$applicationDestroyed');
+      $rootScope.$destroy();
+      expect($browser.$$applicationDestroyed).toHaveBeenCalledOnce();
+    }));
+
+
     it('should remove first', inject(function($rootScope) {
       first.$destroy();
       $rootScope.$digest();

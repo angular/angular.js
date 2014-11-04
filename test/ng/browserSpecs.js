@@ -647,6 +647,23 @@ describe('browser', function() {
         };
       }
     });
+
+
+    it("should stop calling callbacks when application has been torn down", function() {
+      sniffer.history = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      browser.$$applicationDestroyed();
+
+      fakeWindow.fire('popstate');
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.fire('hashchange');
+      fakeWindow.setTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
   });
 
 
