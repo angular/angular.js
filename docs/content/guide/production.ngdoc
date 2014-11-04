@@ -41,3 +41,34 @@ The page should reload and the debug information should now be available.
 
 For more see the docs pages on {@link ng.$compileProvider#debugInfoEnabled `$compileProvider`}
 and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
+
+## Strict DI Mode
+
+Using strict di mode in your production application will throw errors when a injectable
+function is not
+[annotated implicitly](https://docs.angularjs.org/guide/di#dependency-annotation#implicit-annotation).
+This will force you to make sure that your injectable functions are implicitely annotated
+which will improve angular's performance when injecting dependencies in your injectable
+functions because it doesn't have to dynamically discover a function's dependencies.
+It is recommended to automate the implicite annotation via a tool like
+[ng-annotate](https://github.com/olov/ng-annotate) when you deploy to production (and enable
+strict di mode)
+
+To enable strict di mode, you have two options:
+
+```html
+<div ng-app="myApp" ng-strict-di>
+  <!-- your app here -->
+</div>
+```
+
+or
+
+```js
+angular.bootstrap(document, ['myApp'], {
+  strictDi: true
+});
+```
+
+For more information, see the
+[DI Guide](https://docs.angularjs.org/guide/di#using-strict-dependency-injection).
