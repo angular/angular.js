@@ -782,7 +782,7 @@ function $HttpProvider() {
       function transformResponse(response) {
         // make a copy since the response must be cacheable
         var resp = extend({}, response);
-        if (!response.data) {
+        if (!response.data || response.data === ' ') {
           resp.data = response.data;
         } else {
           resp.data = transformData(response.data, response.headers, config.transformResponse);
