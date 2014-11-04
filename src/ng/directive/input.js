@@ -2122,13 +2122,18 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     function writeToModelIfNeeded() {
       if (ctrl.$modelValue !== prevModelValue) {
-        ctrl.$$writeModelToScope();
+        ctrl.$$writeModelToScope(prevModelValue);
       }
     }
   };
 
-  this.$$writeModelToScope = function() {
+  this.$$writeModelToScope = function(oldVal) {
     ngModelSet(ctrl.$modelValue);
+    // String input types can transform a value into a string without touching it.
+    if (oldVal != null && !isNaN(oldVal) &&
+        ctrl.$modelValue === oldVal.toString()) {
+      return;
+    }
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
         listener();
