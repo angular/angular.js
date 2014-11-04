@@ -511,6 +511,7 @@ describe('parser', function() {
         expect(toJson(scope.$eval("{a:'b',}"))).toEqual('{"a":"b"}');
         expect(toJson(scope.$eval("{'a':'b',}"))).toEqual('{"a":"b"}');
         expect(toJson(scope.$eval("{\"a\":'b',}"))).toEqual('{"a":"b"}');
+        expect(toJson(scope.$eval('{"":"b",}'))).toEqual('{"":"b"}');
       });
 
       it('should evaluate object access', function() {

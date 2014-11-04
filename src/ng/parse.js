@@ -806,7 +806,7 @@ Parser.prototype = {
           break;
         }
         var token = this.expect();
-        keys.push(token.string || token.text);
+        keys.push(isDefined(token.string) ? token.string : token.text);
         this.consume(':');
         var value = this.expression();
         valueFns.push(value);
