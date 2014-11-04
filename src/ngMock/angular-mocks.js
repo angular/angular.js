@@ -57,6 +57,7 @@ angular.mock.$Browser = function() {
     return listener;
   };
 
+  self.$$applicationDestroyed = angular.noop;
   self.$$checkUrlChange = angular.noop;
 
   self.deferredFns = [];
