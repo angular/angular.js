@@ -17,6 +17,12 @@
         </li>
 
         <li>
+          <input type="radio" ng-model="expressionType" value="constructorPath" id="constructorPath">
+          <label for="constructorPath">Constructor Paths</label>
+          ($parse special cases "constructor" for security)
+        </li>
+
+        <li>
           <input type="radio" ng-model="expressionType" value="fieldAccess" id="fieldAccess">
           <label for="fieldAccess">Field Accessors</label>
         </li>
@@ -75,6 +81,17 @@
           <span bm-pe-watch="row.date0"></span>
           <span bm-pe-watch="row.obj"></span>
           <span bm-pe-watch="row.keys"></span>
+        </li>
+
+        <li ng-switch-when="constructorPath" ng-repeat="(rowIdx, row) in ::data">
+          <span bm-pe-watch="row.index"></span>
+          <span bm-pe-watch="row.constructor.index"></span>
+          <span bm-pe-watch="row.constructor.index"></span>
+          <span bm-pe-watch="row.constructor.index"></span>
+          <span bm-pe-watch="row.constructor.constructor.index"></span>
+          <span bm-pe-watch="row.constructor.constructor.index"></span>
+          <span bm-pe-watch="row.constructor.constructor.constructor.index"></span>
+          <span bm-pe-watch="row.constructor.constructor.constructor.index"></span>
         </li>
 
         <li ng-switch-when="complexPath" ng-repeat="(rowIdx, row) in ::data">

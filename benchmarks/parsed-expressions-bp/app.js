@@ -71,7 +71,8 @@ app.controller('DataController', function($scope, $rootScope) {
       date2: new Date(Math.random()*Date.now()),
       func: function(){ return star; },
       obj: data[i-1],
-      keys: data[i-1] && (data[i-1].keys || Object.keys(data[i-1]))
+      keys: data[i-1] && (data[i-1].keys || Object.keys(data[i-1])),
+      constructor: data[i-1]
     });
   }
 

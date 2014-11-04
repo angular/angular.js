@@ -672,6 +672,24 @@ describe('parser', function() {
 
       describe('sandboxing', function() {
         describe('Function constructor', function() {
+          it('should not tranverse the Function constructor in the getter', function() {
+            expect(function() {
+              scope.$eval('{}.toString.constructor');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString.constructor');
+
+          });
+
+          it('should not allow access to the Function prototype in the getter', function() {
+            expect(function() {
+              scope.$eval('toString.constructor.prototype');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: toString.constructor.prototype');
+
+          });
+
           it('should NOT allow access to Function constructor in getter', function() {
 
             expect(function() {
