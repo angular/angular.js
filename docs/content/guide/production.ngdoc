@@ -46,11 +46,11 @@ and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
 
 Using strict di mode in your production application will throw errors when a injectable
 function is not
-[annotated implicitly](https://docs.angularjs.org/guide/di#dependency-annotation#implicit-annotation).
+{@link di#implicit-annotation annotated implicitly}.
 This will force you to make sure that your injectable functions are implicitely annotated
 which will improve angular's performance when injecting dependencies in your injectable
 functions because it doesn't have to dynamically discover a function's dependencies.
-It is recommended to automate the implicite annotation via a tool like
+It is recommended to automate the implicit annotation via a tool like
 [ng-annotate](https://github.com/olov/ng-annotate) when you deploy to production (and enable
 strict di mode)
 
