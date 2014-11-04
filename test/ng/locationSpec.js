@@ -1539,6 +1539,19 @@ describe('$location', function() {
     });
 
 
+    it('should not rewrite when clicked with shift pressed', function() {
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click', { keys: ['shift'] });
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
     it('should not mess up hash urls when clicking on links in hashbang mode', function() {
       var base;
       module(function() {
