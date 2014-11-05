@@ -1,6 +1,11 @@
 'use strict';
 /* global stripHash: true */
 
+function getHash(url) {
+  var index = url.indexOf('#');
+  return index === -1 ? '' : url.substr(index + 1);
+}
+
 /**
  * ! This is a private undocumented service !
  *
@@ -191,8 +196,10 @@ function Browser(window, document, $log, $sniffer) {
         }
         if (replace) {
           location.replace(url);
-        } else {
+        } else if (!sameBase) {
           location.href = url;
+        } else {
+          location.hash = getHash(url);
         }
       }
       return self;
