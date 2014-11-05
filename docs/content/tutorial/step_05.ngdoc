@@ -236,7 +236,9 @@ the response is received:
 ```
 
 * We flush the request queue in the browser by calling `$httpBackend.flush()`. This causes the
-promise returned by the `$http` service to be resolved with the trained response.
+promise returned by the `$http` service to be resolved with the trained response. See 
+'Flushing HTTP requests' in the {@link ngMock.$httpBackend mock $httpBackend} documentation for 
+a full explanation of why this is necessary.
 
 * We make the assertions, verifying that the phone model now exists on the scope.
 
