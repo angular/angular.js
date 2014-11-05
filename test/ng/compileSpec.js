@@ -26,12 +26,6 @@ describe('$compile', function() {
     return !!d.toString().match(/SVGForeignObject/);
   }
 
-  function countScopes($rootScope) {
-    return [$rootScope].concat(
-      getChildScopes($rootScope)
-    ).length;
-  }
-
   function getChildScopes(scope) {
     var children = [];
     if (!scope.$$childHead) { return children; }
@@ -5264,19 +5258,19 @@ describe('$compile', function() {
               '</div>')($rootScope);
 
             $rootScope.$apply('t = false');
-            expect(countScopes($rootScope)).toBe(2);
+            expect($rootScope.$countChildScopes()).toBe(1);
             expect(element.text()).toBe('');
 
             $rootScope.$apply('t = true');
-            expect(countScopes($rootScope)).toBe(5);
+            expect($rootScope.$countChildScopes()).toBe(4);
             expect(element.text()).toBe('Success');
 
             $rootScope.$apply('t = false');
-            expect(countScopes($rootScope)).toBe(2);
+            expect($rootScope.$countChildScopes()).toBe(1);
             expect(element.text()).toBe('');
 
             $rootScope.$apply('t = true');
-            expect(countScopes($rootScope)).toBe(5);
+            expect($rootScope.$countChildScopes()).toBe(4);
             expect(element.text()).toBe('Success');
           });
         });
@@ -5301,19 +5295,19 @@ describe('$compile', function() {
               '</div>')($rootScope);
 
             $rootScope.$apply('t = false');
-            expect(countScopes($rootScope)).toBe(2);
+            expect($rootScope.$countChildScopes()).toBe(1);
             expect(element.text()).toBe('');
 
             $rootScope.$apply('t = true');
-            expect(countScopes($rootScope)).toBe(5);
+            expect($rootScope.$countChildScopes()).toBe(4);
             expect(element.text()).toBe('Success');
 
             $rootScope.$apply('t = false');
-            expect(countScopes($rootScope)).toBe(2);
+            expect($rootScope.$countChildScopes()).toBe(1);
             expect(element.text()).toBe('');
 
             $rootScope.$apply('t = true');
-            expect(countScopes($rootScope)).toBe(5);
+            expect($rootScope.$countChildScopes()).toBe(4);
             expect(element.text()).toBe('Success');
           });
         });
@@ -5345,22 +5339,22 @@ describe('$compile', function() {
           $rootScope.$apply('t = true');
           expect(element.text()).toContain('msg-1');
           // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
-          expect(countScopes($rootScope)).toEqual(4);
+          expect($rootScope.$countChildScopes()).toBe(3);
 
           $rootScope.$apply('t = false');
           expect(element.text()).not.toContain('msg-1');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
 
           $rootScope.$apply('t = true');
           expect(element.text()).toContain('msg-1');
           // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
-          expect(countScopes($rootScope)).toEqual(4);
+          expect($rootScope.$countChildScopes()).toBe(3);
 
           $rootScope.$apply('t = false');
           expect(element.text()).not.toContain('msg-1');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
         }));
 
 
@@ -5377,22 +5371,22 @@ describe('$compile', function() {
           $rootScope.$apply('t = true');
           expect(element.text()).toContain('msg-1msg-1');
           // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
-          expect(countScopes($rootScope)).toEqual(4);
+          expect($rootScope.$countChildScopes()).toBe(3);
 
           $rootScope.$apply('t = false');
           expect(element.text()).not.toContain('msg-1msg-1');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
 
           $rootScope.$apply('t = true');
           expect(element.text()).toContain('msg-1msg-1');
           // Expected scopes: $rootScope, ngIf, transclusion, ngRepeat
-          expect(countScopes($rootScope)).toEqual(4);
+          expect($rootScope.$countChildScopes()).toBe(3);
 
           $rootScope.$apply('t = false');
           expect(element.text()).not.toContain('msg-1msg-1');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
         }));
 
 
@@ -5408,22 +5402,22 @@ describe('$compile', function() {
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some comment');
           // Expected scopes: $rootScope, ngIf, transclusion
-          expect(countScopes($rootScope)).toEqual(3);
+          expect($rootScope.$countChildScopes()).toBe(2);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some comment');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
 
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some comment');
           // Expected scopes: $rootScope, ngIf, transclusion
-          expect(countScopes($rootScope)).toEqual(3);
+          expect($rootScope.$countChildScopes()).toBe(2);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some comment');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
         }));
 
         it('should not leak the transclude scope if the transcluded contains only text nodes',
@@ -5438,22 +5432,22 @@ describe('$compile', function() {
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some text');
           // Expected scopes: $rootScope, ngIf, transclusion
-          expect(countScopes($rootScope)).toEqual(3);
+          expect($rootScope.$countChildScopes()).toBe(2);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some text');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
 
           $rootScope.$apply('t = true');
           expect(element.html()).toContain('some text');
           // Expected scopes: $rootScope, ngIf, transclusion
-          expect(countScopes($rootScope)).toEqual(3);
+          expect($rootScope.$countChildScopes()).toBe(2);
 
           $rootScope.$apply('t = false');
           expect(element.html()).not.toContain('some text');
           // Expected scopes: $rootScope
-          expect(countScopes($rootScope)).toEqual(1);
+          expect($rootScope.$countChildScopes()).toBe(0);
         }));
 
         it('should mark as destroyed all sub scopes of the scope being destroyed',
