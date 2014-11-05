@@ -6,56 +6,165 @@
 
 # Accessibility with ngAria
 
-You can use the `ngAria` module to have common ARIA attributes automatically applied when you
-use certain directives. To enable `ngAria`, just require the module into your application and 
-the code will hook into your ng-show/ng-hide, input, textarea, button, select and 
-ng-required directives and add the appropriate ARIA states and properties.
+The goal of ngAria is to improve Angular's default accessibility by enabling common
+[ARIA](http://www.w3.org/TR/wai-aria/) attributes that convey state or semantic information for
+assistive technologies used by persons with disabilities.
 
-Currently, the following attributes are implemented:
- * aria-hidden
- * aria-checked
- * aria-disabled
- * aria-required
- * aria-invalid
- * aria-multiline
- * aria-valuenow
- * aria-valuemin
- * aria-valuemax
- * tabindex
+##Including ngAria
 
-You can disable individual attributes by using the `{@link ngAria.$ariaProvider#config config}` method.
-
-###Example
+Using ngAria is as simple as requiring the ngAria module in your application. ngAria hooks into
+standard AngularJS directives and quietly injects accessibility support into your application
+at runtime.
 
 ```js
 angular.module('myApp', ['ngAria'])...
 ```
 
-Elements using `ng-model` with `required` or `ngRequired` directives will automatically have
-`aria-required` attributes with the proper corresponding values.
+Currently, ngAria interfaces with the following directives:
+
+ * <a href="#ngmodel">ngModel</a>
+ * <a href="#ngdisabled">ngDisabled</a>
+ * <a href="#ngshow">ngShow</a>
+ * <a href="#nghide">ngHide</a>
+ * <a href="#ngclick-and-ngdblclick">ngClick</a>
+ * <a href="#ngclick-and-ngdblclick">ngDblClick</a>
+
+<h2 id="ngmodel">ngModel</h2>
+
+Most of ngAria's heavy lifting happens in the [ngModel](https://docs.angularjs.org/api/ng/directive/ngModel)
+directive.  For elements using ngModel, special attention is paid by ngAria if that element also
+has a a role or type of `checkbox`, `radio`, `range` or `textbox`.
+
+For those elements using ngModel, ngAria will dynamically bind and update the following ARIA
+attributes (if they have not been explicitly specified by the developer):
+
+ * aria-checked
+ * aria-valuemin
+ * aria-valuemax
+ * aria-valuenow
+ * aria-invalid
+ * aria-required
+
+###Example
 
 ```html
-<material-input ng-model="val" required>
+<md-checkbox ng-model="val" required>
 ```
 
 Becomes:
 
 ```html
-<material-input ng-model="val" required aria-required="true">
+<md-checkbox ng-model="val" required aria-required="true" tabIndex="0">
 ```
 
-ngAria is just a starting point. You'll have to manually choose how to implement some
-accessibility features.
+ngAria will also add `tabIndex`, ensuring custom elements with these roles will be reachable from
+the keyboard. It is still up to **you** as a developer to **ensure custom controls will be
+operable** from the keybard. Think of `ng-click` on a `<div>` or `<md-checkbox>`: you still need
+to bind `ng-keypress` to make it fully operable from the keyboard. As a rule, any time you create
+a widget involving user interaction, be sure to test it with your keyboard and at least one mobile
+and desktop screen reader (preferably more).
 
-For instance, you may want to add `ng-keypress` bindings alongside `ng-click` to make keyboard
-navigation easier.
+<h2 id="ngdisabled">ngDisabled</h2>
 
+The `disabled` attribute is only valid for certain elements such as `button`, `input` and
+`textarea`. To properly disable custom element directives such as `<md-checkbox>` or `<taco-tab>`,
+using ngAria with [ngDisabled](https://docs.angularjs.org/api/ng/directive/ngDisabled) will also
+add `aria-disabled`. This tells assistive technologies when a non-native input is disabled, helping
+custom controls to be more accessible.
 
-## Additional Resources
+###Example
+
+```html
+<md-checkbox ng-disabled="disabled">
+```
+
+Becomes:
+
+```html
+<md-checkbox disabled aria-disabled="true">
+```
+
+>You can check whether a control is legitimately disabled for a screen reader by visiting
+[chrome://accessibility](chrome://accessibility).
+
+<h2 id="ngshow">ngShow</h2>
+
+>The [ngShow](https://docs.angularjs.org/api/ng/directive/ngShow) directive shows or hides the
+given HTML element based on the expression provided to the `ngShow` attribute. The element is
+shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
+
+In its default setup, ngAria for `ngShow` is actually redundant. It toggles `aria-hidden` on the
+directive when it is hidden or shown. However, the default CSS of `display: none !important`,
+already hides child elements from a screen reader. It becomes more useful when the default
+CSS is overridden with properties that don’t affect assistive technologies, such as `opacity`
+or `transform`. By toggling `aria-hidden` dynamically with ngAria, we can ensure content visually
+hidden with this technique will not be read aloud in a screen reader.
+
+One caveat with this combination of CSS and `aria-hidden`: you must also remove links and other
+interactive child elements from the tab order using `tabIndex=“-1”` on each control. This ensures
+screen reader users won't accidentally focus on "mystery elements". Managing tab index on every
+child control can be complex and affect performance, so it’s best to just stick with the default
+`display: none` CSS. See the [fourth rule of ARIA use](http://www.w3.org/TR/aria-in-html/#fourth-rule-of-aria-use).
+
+<h2 id="nghide">ngHide</h2>
+
+>The [ngHide](https://docs.angularjs.org/api/ng/directive/ngHide) directive shows or hides the
+given HTML element based on the expression provided to the `ngHide` attribute. The element is
+shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
+
+The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redundant. It toggles
+`aria-hidden` on the directive when it is hidden or shown, but the content is already hidden with
+`display: none`. See explanation for <a href="#ngshow">ngShow</a> when overriding the default CSS.
+
+<h2 id="ngclick">ngClick and ngDblClick</h2>
+If `ngClick` or `ngDblClick` is encountered, ngAria will add `tabIndex` if it isn't there already.
+Even with this, you must currently still add `ng-keypress` to non-interactive elements such as
+`<div>` or `<taco-button>` to enable keyboard access. I have recommended this also bind
+`ng-keypress` to be more useful; the conversation is [currently ongoing](https://github.com/angular/angular.js/issues/9254).
+
+* * *
+
+##Disabling attributes
+The attribute magic of ngAria may not work for every scenario. To disable individual attributes,
+you can use the `{@link ngAria.$ariaProvider#config config}` method:
+
+```
+angular.module('myApp', ['ngAria'], function config($ariaProvider) {
+  $ariaProvider.config({
+    tabindex: false
+  });
+});
+```
+* * *
+
+##Common Accessibility Patterns
 
 Accessibility best practices that apply to web apps in general also apply to Angular.
 
-* [A11Y Project](http://a11yproject.com/)
-* [WebAim](http://webaim.org/)
-* [Using WAI-ARIA in HTML](http://www.w3.org/TR/2014/WD-aria-in-html-20140626/)
-* [Apps For All: Coding Accessible Web Applications](https://shop.smashingmagazine.com/apps-for-all-coding-accessible-web-applications.html)
+ * **Text alternatives**: Add alternate text content to make visual information accessible using
+ [these W3C guidelines](http://www.w3.org/TR/html-alt-techniques/). The appropriate technique
+ depends on the specific markup but can be accomplished using offscreen spans, `aria-label` or
+ label elements, image `alt` attributes, `figure`/`figcaption` elements and more.
+ * **HTML Semantics**: If you're creating custom element directives, Web Components or HTML in
+ general, use native elements wherever possible to utilize built-in events and properties.
+ Alternatively, use ARIA to communicate semantic meaning. See [notes on ARIA use](http://www.w3.org/TR/aria-in-html/#notes-on-aria-use-in-html).
+ * **Focus management**: Guide the user around the app as views are appended/removed.
+ Focus should *never* be lost, as this causes unexpected behavior and much confusion (referred to
+ as "freak-out mode").
+ * **Announcing changes**: When filtering or other UI messaging happens away from the user's focus,
+ notify with [ARIA Live Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).
+ * **Color contrast and scale**: Make sure content is legible and interactive controls are usable
+ at all screen sizes. Consider configurable UI themes for people with color blindness, low vision
+ or other visual impairments.
+ * **Progressive enhancement**: Some users do not browse with JavaScript enabled or do not have
+ the latest browser. An accessible message about site requirements can inform users and improve
+ the experience.
+
+## Additional Resources
+
+ * [Using ARIA in HTML](http://www.w3.org/TR/aria-in-html/)
+ * [AngularJS Accessibility at ngEurope](https://www.youtube.com/watch?v=dmYDggEgU-s&list=UUEGUP3TJJfMsEM_1y8iviSQ)
+ * [Chrome Accessibility Developer Tools](https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb?hl=en)
+ * [W3C Accessibility Testing](http://www.w3.org/wiki/Accessibility_testing)
+ * [WebAIM](http://webaim.org)
+ * [A11y Project](http://a11yproject.com)
