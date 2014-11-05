@@ -188,6 +188,14 @@ function Browser(window, document, $log, $sniffer) {
       } else {
         if (!sameBase) {
           reloadLocation = url;
+        } else {
+          // If we are only changing the hash fragment then ensure that we retain a # character
+          // to prevent the page reloading,
+          // which stops us from reading the correct location.href,
+          // which causes $location watches to trigger an infinite digest.
+          if (url.indexOf('#') === -1) {
+            url += '#';
+          }
         }
         if (replace) {
           location.replace(url);
