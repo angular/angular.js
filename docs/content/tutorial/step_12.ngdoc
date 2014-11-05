@@ -9,8 +9,8 @@
 In this final step, we will enhance our phonecat web application by attaching CSS and JavaScript
 animations on top of the template code we created before.
 
-* Used the `ngAnimate` to enable animations throughout the application.
-* Common `ng` directives automatically trigger hooks for animations to tap into.
+* We now use the `ngAnimate` module to enable animations throughout the application.
+* We also use common `ng` directives to automatically trigger hooks for animations to tap into.
 * When an animation is found then the animation will run in between the standard DOM operation that
   is being issued on the element at the given time (e.g. inserting and removing nodes on
   {@link ngRepeat `ngRepeat`} or adding and removing classes on
