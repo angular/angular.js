@@ -368,7 +368,8 @@ occur whenever the CSS class itself changes.
 Whenever a new phone thumbnail is selected, the state changes and the `.active` CSS class is added
 to the matching profile image and the animation plays.
 
-Let's get started and tweak our HTML code on the `phone-detail.html` page first:
+Let's get started and tweak our HTML code on the `phone-detail.html` page first. Notice that we 
+have changed the way we display our large image:
 
 __`app/partials/phone-detail.html`.__
 
