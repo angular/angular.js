@@ -353,9 +353,25 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
     return {
       restrict: 'A',
       priority: 100,
-      link: function(scope, element, attr) {
+      require: normalized,
+      controller: function ngBooleanController($attrs) {
+        var isEnabled;
+        this.$listeners = [];
+
+        this[attrName] = function(newVal) {
+          if (newVal === undefined) {
+            return value;
+          } else {
+            isEnabled = !!newVal;
+            forEach(this.$listeners, function (f) { f(isEnabled) });
+            $attrs.$set(attrName, isEnabled);
+            return this;
+          }
+        };
+      },
+      link: function(scope, element, attr, ctrl) {
         scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
-          attr.$set(attrName, !!value);
+          ctrl[attrName](!!value);
         });
       }
     };
