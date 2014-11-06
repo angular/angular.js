@@ -408,7 +408,8 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
   ngAttributeAliasDirectives[normalized] = function() {
     return {
       priority: 99, // it needs to run after the attributes are interpolated
-      link: function(scope, element, attr) {
+      require: '?ngDisabled',
+      link: function(scope, element, attr, ngDisabled) {
         var propName = attrName,
             name = attrName;
 
@@ -419,7 +420,15 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
           propName = null;
         }
 
-        attr.$observe(normalized, function(value) {
+        attr.$observe(normalized, ngSrcSrcSetHrefWatchAttribute);
+
+        if (ngDisabled) {
+          ngDisabled.$listeners.push(function (enabled) {
+            ngSrcSrcSetHrefWatchAttribute(enabled ? attr["ngHref"] : false);
+          });
+        }
+
+        function ngSrcSrcSetHrefWatchAttribute(value) {
           if (!value) {
             if (attrName === 'href') {
               attr.$set(name, null);
@@ -434,7 +443,7 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
           // to set the property as well to achieve the desired effect.
           // we use attr[attrName] value since $set can sanitize the url.
           if (msie && propName) element.prop(propName, attr[name]);
-        });
+        };
       }
     };
   };
