@@ -23,7 +23,7 @@ This is to disallow changing the behaviour of existing functions
 in an unforseen fashion.
   - due to [6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99),
 
-The (deprecated) __proto__ propery does not work inside angular expressions
+The (deprecated) __proto__ property does not work inside angular expressions
 anymore.
   - due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
 
