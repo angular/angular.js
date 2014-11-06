@@ -1629,6 +1629,20 @@ describe('select', function() {
         expect(element.val()).toEqual('?');
         expect(element.find('option').eq(0).attr('selected')).toEqual('selected');
       });
+
+
+      it('should select the correct option for selectAs and falsy values', function() {
+        scope.values = [{value: 0, label: 'zero'}, {value: 1, label: 'one'}];
+        scope.selected = '';
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'option.value as option.label for option in values'
+        });
+
+        var option = element.find('option').eq(0);
+        expect(option.val()).toBe('?');
+        expect(option.text()).toBe('');
+      });
     });
 
 
