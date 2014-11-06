@@ -483,7 +483,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             if (multiple) {
               return isDefined(selectedSet.remove(callExpression(compareValueFn, key, value)));
             } else {
-              return viewValue == callExpression(compareValueFn, key, value);
+              return viewValue === callExpression(compareValueFn, key, value);
             }
           };
         }
