@@ -1349,6 +1349,8 @@ Closes #8230
 
 - **jQuery:** due to [9e7cb3c3](https://github.com/angular/angular.js/commit/9e7cb3c37543008e6236bb5a2c4536df2e1e43a9),
   Angular no longer supports jQuery versions below 2.1.1.
+- **$q:** due to [23bc92b1](https://github.com/angular/angular.js/commit/23bc92b17df882a907fb326320f0622717fefe7b),
+  Promises methods are no longer enumerated when using for-loops with `hasOwnProperty` check. E.g. `angular.extends`
 
 
 <a name="1.2.22"></a>
