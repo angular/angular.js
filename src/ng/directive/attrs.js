@@ -360,10 +360,10 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
 
         this[attrName] = function(newVal) {
           if (newVal === undefined) {
-            return value;
+            return isEnabled;
           } else {
             isEnabled = !!newVal;
-            forEach(this.$listeners, function (f) { f(isEnabled) });
+            forEach(this.$listeners, function (f) { f(isEnabled); });
             $attrs.$set(attrName, isEnabled);
             return this;
           }
@@ -443,7 +443,7 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
           // to set the property as well to achieve the desired effect.
           // we use attr[attrName] value since $set can sanitize the url.
           if (msie && propName) element.prop(propName, attr[name]);
-        };
+        }
       }
     };
   };
