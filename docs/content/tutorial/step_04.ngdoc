@@ -188,7 +188,12 @@ ordering will default to unordered/natural order.
 * Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
 text.
 
-* Reverse the sort order by adding a `-` symbol before the sorting value: `<option value="-age">Oldest</option>`
+* Reverse the sort order by adding a `-` symbol before the sorting value: 
+`<option value="-age">Oldest</option>` or add `:true` after '| orderBy:orderProp'. That 
+'| orderBy:orderProp:true'. Instead of `true` you could add a boolean variable `isReversed` like
+'| orderBy:orderProp:isReversed'. Then you can dd a checkbox binded to isReversed to let the user
+change the order. `<input type="checkbox" ng-model="isReversed"/>`.
+
 
 # Summary
 
