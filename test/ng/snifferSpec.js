@@ -64,9 +64,10 @@ describe('$sniffer', function() {
 
     it('should claim that IE9 doesn\'t have support for "oninput"', function() {
       // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
+      // IE10+ implementation is fubared when mixed with placeholders
       mockDivElement = {oninput: noop};
 
-      expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
+      expect($sniffer.hasEvent('input')).toBe(!(msie && msie <= 11));
     });
   });
 
