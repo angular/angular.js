@@ -5,7 +5,7 @@ var $parseMinErr = minErr('$parse');
 // Sandboxing Angular Expressions
 // ------------------------------
 // Angular expressions are generally considered safe because these expressions only have direct
-// access to $scope and locals. However, one can obtain the ability to execute arbitrary JS code by
+// access to `$scope` and locals. However, one can obtain the ability to execute arbitrary JS code by
 // obtaining a reference to native JS functions such as the Function constructor.
 //
 // As an example, consider the following Angular expression:
@@ -14,7 +14,7 @@ var $parseMinErr = minErr('$parse');
 //
 // This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits
 // against the expression language, but not to prevent exploits that were enabled by exposing
-// sensitive JavaScript or browser apis on Scope. Exposing such objects on a Scope is never a good
+// sensitive JavaScript or browser APIs on Scope. Exposing such objects on a Scope is never a good
 // practice and therefore we are not even trying to protect against interaction with an object
 // explicitly exposed in this way.
 //
@@ -22,6 +22,8 @@ var $parseMinErr = minErr('$parse');
 // window or some DOM object that has a reference to window is published onto a Scope.
 // Similarly we prevent invocations of function known to be dangerous, as well as assignments to
 // native objects.
+//
+// See https://docs.angularjs.org/guide/security
 
 
 function ensureSafeMemberName(name, fullExpression) {
@@ -29,8 +31,8 @@ function ensureSafeMemberName(name, fullExpression) {
       || name === "__lookupGetter__" || name === "__lookupSetter__"
       || name === "__proto__") {
     throw $parseMinErr('isecfld',
-        'Attempting to access a disallowed field in Angular expressions! '
-        +'Expression: {0}', fullExpression);
+            'Attempting to access a disallowed field in Angular expressions! '
+            +'Expression: {0}', fullExpression);
   }
   return name;
 }
@@ -70,12 +72,12 @@ function ensureSafeFunction(obj, fullExpression) {
   if (obj) {
     if (obj.constructor === obj) {
       throw $parseMinErr('isecfn',
-        'Referencing Function in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
+          'Referencing Function in Angular expressions is disallowed! Expression: {0}',
+          fullExpression);
     } else if (obj === CALL || obj === APPLY || obj === BIND) {
       throw $parseMinErr('isecff',
-        'Referencing call, apply or bind in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
+          'Referencing call, apply or bind in Angular expressions is disallowed! Expression: {0}',
+          fullExpression);
     }
   }
 }
@@ -99,37 +101,37 @@ CONSTANTS['this'].sharedGetter = true;
 
 //Operators - will be wrapped by binaryFn/unaryFn/assignment/filter
 var OPERATORS = extend(createMap(), {
-    '+':function(self, locals, a,b){
-      a=a(self, locals); b=b(self, locals);
-      if (isDefined(a)) {
-        if (isDefined(b)) {
-          return a + b;
-        }
-        return a;
+  '+':function(self, locals, a, b) {
+    a=a(self, locals); b=b(self, locals);
+    if (isDefined(a)) {
+      if (isDefined(b)) {
+        return a + b;
       }
-      return isDefined(b)?b:undefined;},
-    '-':function(self, locals, a,b){
-          a=a(self, locals); b=b(self, locals);
-          return (isDefined(a)?a:0)-(isDefined(b)?b:0);
-        },
-    '*':function(self, locals, a,b){return a(self, locals)*b(self, locals);},
-    '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
-    '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
-    '===':function(self, locals, a, b){return a(self, locals)===b(self, locals);},
-    '!==':function(self, locals, a, b){return a(self, locals)!==b(self, locals);},
-    '==':function(self, locals, a,b){return a(self, locals)==b(self, locals);},
-    '!=':function(self, locals, a,b){return a(self, locals)!=b(self, locals);},
-    '<':function(self, locals, a,b){return a(self, locals)<b(self, locals);},
-    '>':function(self, locals, a,b){return a(self, locals)>b(self, locals);},
-    '<=':function(self, locals, a,b){return a(self, locals)<=b(self, locals);},
-    '>=':function(self, locals, a,b){return a(self, locals)>=b(self, locals);},
-    '&&':function(self, locals, a,b){return a(self, locals)&&b(self, locals);},
-    '||':function(self, locals, a,b){return a(self, locals)||b(self, locals);},
-    '!':function(self, locals, a){return !a(self, locals);},
+      return a;
+    }
+    return isDefined(b)?b:undefined;},
+  '-':function(self, locals, a, b) {
+    a=a(self, locals); b=b(self, locals);
+    return (isDefined(a)?a:0)-(isDefined(b)?b:0);
+  },
+  '*':function(self, locals, a, b) {return a(self, locals)*b(self, locals);},
+  '/':function(self, locals, a, b) {return a(self, locals)/b(self, locals);},
+  '%':function(self, locals, a, b) {return a(self, locals)%b(self, locals);},
+  '===':function(self, locals, a, b) {return a(self, locals)===b(self, locals);},
+  '!==':function(self, locals, a, b) {return a(self, locals)!==b(self, locals);},
+  '==':function(self, locals, a, b) {return a(self, locals)==b(self, locals);},
+  '!=':function(self, locals, a, b) {return a(self, locals)!=b(self, locals);},
+  '<':function(self, locals, a, b) {return a(self, locals)<b(self, locals);},
+  '>':function(self, locals, a, b) {return a(self, locals)>b(self, locals);},
+  '<=':function(self, locals, a, b) {return a(self, locals)<=b(self, locals);},
+  '>=':function(self, locals, a, b) {return a(self, locals)>=b(self, locals);},
+  '&&':function(self, locals, a, b) {return a(self, locals)&&b(self, locals);},
+  '||':function(self, locals, a, b) {return a(self, locals)||b(self, locals);},
+  '!':function(self, locals, a) {return !a(self, locals);},
 
-    //Tokenized as operators but parsed as assignment/filters
-    '=':true,
-    '|':true
+  //Tokenized as operators but parsed as assignment/filters
+  '=':true,
+  '|':true
 });
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
@@ -140,14 +142,14 @@ var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'
 /**
  * @constructor
  */
-var Lexer = function (options) {
+var Lexer = function(options) {
   this.options = options;
 };
 
 Lexer.prototype = {
   constructor: Lexer,
 
-  lex: function (text) {
+  lex: function(text) {
     this.text = text;
     this.index = 0;
     this.ch = undefined;
@@ -212,13 +214,13 @@ Lexer.prototype = {
   isWhitespace: function(ch) {
     // IE treats non-breaking space as \u00A0
     return (ch === ' ' || ch === '\r' || ch === '\t' ||
-            ch === '\n' || ch === '\v' || ch === '\u00A0');
+        ch === '\n' || ch === '\v' || ch === '\u00A0');
   },
 
   isIdent: function(ch) {
     return ('a' <= ch && ch <= 'z' ||
-            'A' <= ch && ch <= 'Z' ||
-            '_' === ch || ch === '$');
+        'A' <= ch && ch <= 'Z' ||
+        '_' === ch || ch === '$');
   },
 
   isExpOperator: function(ch) {
@@ -228,8 +230,8 @@ Lexer.prototype = {
   throwError: function(error, start, end) {
     end = end || this.index;
     var colStr = (isDefined(start)
-            ? 's ' + start +  '-' + this.index + ' [' + this.text.substring(start, end) + ']'
-            : ' ' + end);
+        ? 's ' + start +  '-' + this.index + ' [' + this.text.substring(start, end) + ']'
+        : ' ' + end);
     throw $parseMinErr('lexerr', 'Lexer Error: {0} at column{1} in expression [{2}].',
         error, colStr, this.text);
   },
@@ -384,13 +386,13 @@ function isConstant(exp) {
 /**
  * @constructor
  */
-var Parser = function (lexer, $filter, options) {
+var Parser = function(lexer, $filter, options) {
   this.lexer = lexer;
   this.$filter = $filter;
   this.options = options;
 };
 
-Parser.ZERO = extend(function () {
+Parser.ZERO = extend(function() {
   return 0;
 }, {
   sharedGetter: true,
@@ -400,7 +402,7 @@ Parser.ZERO = extend(function () {
 Parser.prototype = {
   constructor: Parser,
 
-  parse: function (text) {
+  parse: function(text) {
     this.text = text;
     this.tokens = this.lexer.lex(text);
 
@@ -416,7 +418,7 @@ Parser.prototype = {
     return value;
   },
 
-  primary: function () {
+  primary: function() {
     var primary;
     if (this.expect('(')) {
       primary = this.filterChain();
@@ -458,7 +460,7 @@ Parser.prototype = {
   throwError: function(msg, token) {
     throw $parseMinErr('syntax',
         'Syntax Error: Token \'{0}\' {1} at column {2} of the expression [{3}] starting at [{4}].',
-          token.text, msg, (token.index + 1), this.text, this.text.substring(token.index));
+        token.text, msg, (token.index + 1), this.text, this.text.substring(token.index));
   },
 
   peekToken: function() {
@@ -479,7 +481,7 @@ Parser.prototype = {
     return false;
   },
 
-  expect: function(e1, e2, e3, e4){
+  expect: function(e1, e2, e3, e4) {
     var token = this.peek(e1, e2, e3, e4);
     if (token) {
       this.tokens.shift();
@@ -488,7 +490,7 @@ Parser.prototype = {
     return false;
   },
 
-  consume: function(e1){
+  consume: function(e1) {
     if (!this.expect(e1)) {
       this.throwError('is unexpected, expecting [' + e1 + ']', this.peek());
     }
@@ -523,12 +525,12 @@ Parser.prototype = {
         return (statements.length === 1)
             ? statements[0]
             : function $parseStatements(self, locals) {
-                var value;
-                for (var i = 0, ii = statements.length; i < ii; i++) {
-                  value = statements[i](self, locals);
-                }
-                return value;
-              };
+          var value;
+          for (var i = 0, ii = statements.length; i < ii; i++) {
+            value = statements[i](self, locals);
+          }
+          return value;
+        };
       }
     }
   },
@@ -610,7 +612,7 @@ Parser.prototype = {
       if ((token = this.expect(':'))) {
         var right = this.assignment();
 
-        return extend(function $parseTernary(self, locals){
+        return extend(function $parseTernary(self, locals) {
           return left(self, locals) ? middle(self, locals) : right(self, locals);
         }, {
           constant: left.constant && middle.constant && right.constant
@@ -762,15 +764,15 @@ Parser.prototype = {
 
       // IE stupidity! (IE doesn't have apply for some native functions)
       var v = fn.apply
-            ? fn.apply(context, args)
-            : fn(args[0], args[1], args[2], args[3], args[4]);
+          ? fn.apply(context, args)
+          : fn(args[0], args[1], args[2], args[3], args[4]);
 
       return ensureSafeObject(v, expressionText);
     };
   },
 
   // This is used with json array declaration
-  arrayDeclaration: function () {
+  arrayDeclaration: function() {
     var elementFns = [];
     if (this.peekToken().text !== ']') {
       do {
@@ -797,7 +799,7 @@ Parser.prototype = {
     });
   },
 
-  object: function () {
+  object: function() {
     var keys = [], valueFns = [];
     if (this.peekToken().text !== '}') {
       do {
@@ -852,50 +854,71 @@ function setter(obj, path, setValue, fullExp) {
   return setValue;
 }
 
-var getterFnCache = createMap();
+var getterFnCacheDefault = createMap();
+var getterFnCacheExpensive = createMap();
+
+function isPossiblyDangerousMemberName(name) {
+  return name == 'constructor';
+}
 
 /**
  * Implementation of the "Black Hole" variant from:
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
  */
-function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
+function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, expensiveChecks) {
   ensureSafeMemberName(key0, fullExp);
   ensureSafeMemberName(key1, fullExp);
   ensureSafeMemberName(key2, fullExp);
   ensureSafeMemberName(key3, fullExp);
   ensureSafeMemberName(key4, fullExp);
+  var eso = function(o) {
+    return ensureSafeObject(o, fullExp);
+  };
+  var eso0 = (expensiveChecks || isPossiblyDangerousMemberName(key0)) ? eso : identity;
+  var eso1 = (expensiveChecks || isPossiblyDangerousMemberName(key1)) ? eso : identity;
+  var eso2 = (expensiveChecks || isPossiblyDangerousMemberName(key2)) ? eso : identity;
+  var eso3 = (expensiveChecks || isPossiblyDangerousMemberName(key3)) ? eso : identity;
+  var eso4 = (expensiveChecks || isPossiblyDangerousMemberName(key4)) ? eso : identity;
 
   return function cspSafeGetter(scope, locals) {
     var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope;
 
     if (pathVal == null) return pathVal;
-    pathVal = pathVal[key0];
+    pathVal = eso0(pathVal[key0]);
 
     if (!key1) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key1];
+    pathVal = eso1(pathVal[key1]);
 
     if (!key2) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key2];
+    pathVal = eso2(pathVal[key2]);
 
     if (!key3) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key3];
+    pathVal = eso3(pathVal[key3]);
 
     if (!key4) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key4];
+    pathVal = eso4(pathVal[key4]);
 
     return pathVal;
   };
 }
 
-function getterFn(path, options, fullExp) {
-  var fn = getterFnCache[path];
+function getterFnWithEnsureSafeObject(fn, fullExpression) {
+  return function(s, l) {
+    return fn(s, l, ensureSafeObject, fullExpression);
+  };
+}
 
+function getterFn(path, options, fullExp) {
+  var expensiveChecks = options.expensiveChecks;
+  var getterFnCache = (expensiveChecks ? getterFnCacheExpensive : getterFnCacheDefault);
+  var fn = getterFnCache[path];
   if (fn) return fn;
+
 
   var pathKeys = path.split('.'),
       pathKeysLength = pathKeys.length;
@@ -903,13 +926,13 @@ function getterFn(path, options, fullExp) {
   // http://jsperf.com/angularjs-parse-getter/6
   if (options.csp) {
     if (pathKeysLength < 6) {
-      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp);
+      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp, expensiveChecks);
     } else {
       fn = function cspSafeGetter(scope, locals) {
         var i = 0, val;
         do {
           val = cspSafeGetterFn(pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++],
-                                pathKeys[i++], fullExp)(scope, locals);
+              pathKeys[i++], fullExp, expensiveChecks)(scope, locals);
 
           locals = undefined; // clear after first iteration
           scope = val;
@@ -919,22 +942,33 @@ function getterFn(path, options, fullExp) {
     }
   } else {
     var code = '';
+    if (expensiveChecks) {
+      code += 's = eso(s, fe);\nl = eso(l, fe);\n';
+    }
+    var needsEnsureSafeObject = expensiveChecks;
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
+      var lookupJs = (index
+        // we simply dereference 's' on any .dot notation
+          ? 's'
+        // but if we are first then we check locals first, and if so read it first
+          : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key;
+      if (expensiveChecks || isPossiblyDangerousMemberName(key)) {
+        lookupJs = 'eso(' + lookupJs + ', fe)';
+        needsEnsureSafeObject = true;
+      }
       code += 'if(s == null) return undefined;\n' +
-              's='+ (index
-                      // we simply dereference 's' on any .dot notation
-                      ? 's'
-                      // but if we are first then we check locals first, and if so read it first
-                      : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key + ';\n';
+          's=' + lookupJs + ';\n';
     });
     code += 'return s;';
 
     /* jshint -W054 */
-    var evaledFnGetter = new Function('s', 'l', code); // s=scope, l=locals
+    var evaledFnGetter = new Function('s', 'l', 'eso', 'fe', code); // s=scope, l=locals, eso=ensureSafeObject
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
-
+    if (needsEnsureSafeObject) {
+      evaledFnGetter = getterFnWithEnsureSafeObject(evaledFnGetter, fullExp);
+    }
     fn = evaledFnGetter;
   }
 
@@ -944,6 +978,12 @@ function getterFn(path, options, fullExp) {
   };
   getterFnCache[path] = fn;
   return fn;
+}
+
+var objectValueOf = Object.prototype.valueOf;
+
+function getValueOf(value) {
+  return isFunction(value.valueOf) ? value.valueOf() : objectValueOf.call(value);
 }
 
 ///////////////////////////////////
@@ -998,15 +1038,20 @@ function getterFn(path, options, fullExp) {
  *  service.
  */
 function $ParseProvider() {
-  var cache = createMap();
+  var cacheDefault = createMap();
+  var cacheExpensive = createMap();
 
-  var $parseOptions = {
-    csp: false
-  };
 
 
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
-    $parseOptions.csp = $sniffer.csp;
+    var $parseOptions = {
+          csp: $sniffer.csp,
+          expensiveChecks: false
+        },
+        $parseOptionsExpensive = {
+          csp: $sniffer.csp,
+          expensiveChecks: true
+        };
 
     function wrapSharedExpression(exp) {
       var wrapped = exp;
@@ -1023,13 +1068,14 @@ function $ParseProvider() {
       return wrapped;
     }
 
-    return function $parse(exp, interceptorFn) {
+    return function $parse(exp, interceptorFn, expensiveChecks) {
       var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
         case 'string':
           cacheKey = exp = exp.trim();
 
+          var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
           parsedExpression = cache[cacheKey];
 
           if (!parsedExpression) {
@@ -1038,8 +1084,9 @@ function $ParseProvider() {
               exp = exp.substring(2);
             }
 
-            var lexer = new Lexer($parseOptions);
-            var parser = new Parser(lexer, $filter, $parseOptions);
+            var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
+            var lexer = new Lexer(parseOptions);
+            var parser = new Parser(lexer, $filter, parseOptions);
             parsedExpression = parser.parse(exp);
 
             if (parsedExpression.constant) {
@@ -1049,7 +1096,7 @@ function $ParseProvider() {
               //wrap the parsedExpression before adding a $$watchDelegate
               parsedExpression = wrapSharedExpression(parsedExpression);
               parsedExpression.$$watchDelegate = parsedExpression.literal ?
-                oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
+                  oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
             } else if (parsedExpression.inputs) {
               parsedExpression.$$watchDelegate = inputsWatchDelegate;
             }
@@ -1092,8 +1139,7 @@ function $ParseProvider() {
         // attempt to convert the value to a primitive type
         // TODO(docs): add a note to docs that by implementing valueOf even objects and arrays can
         //             be cheaply dirty-checked
-        typeof newValue.valueOf !== 'function' && (newValue = Object.valueOf.apply(newValue)) ||
-            (newValue = newValue.valueOf());
+        newValue = getValueOf(newValue);
 
         if (typeof newValue === 'object') {
           // objects/arrays are not supported - deep-watching them would be too expensive
@@ -1109,7 +1155,7 @@ function $ParseProvider() {
 
     function inputsWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var inputExpressions = parsedExpression.$$inputs ||
-                    (parsedExpression.$$inputs = collectExpressionInputs(parsedExpression.inputs, []));
+          (parsedExpression.$$inputs = collectExpressionInputs(parsedExpression.inputs, []));
 
       var lastResult;
 
@@ -1120,8 +1166,7 @@ function $ParseProvider() {
           var newInputValue = inputExpressions(scope);
           if (!expressionInputDirtyCheck(newInputValue, oldInputValue)) {
             lastResult = parsedExpression(scope);
-            oldInputValue = newInputValue && typeof newInputValue.valueOf !== 'function' &&
-                Object.valueOf.apply(newInputValue) || newInputValue.valueOf();
+            oldInputValue = newInputValue && getValueOf(newInputValue);
           }
           return lastResult;
         }, listener, objectEquality);
@@ -1138,8 +1183,7 @@ function $ParseProvider() {
         for (var i = 0, ii = inputExpressions.length; i < ii; i++) {
           var newInputValue = inputExpressions[i](scope);
           if (changed || (changed = !expressionInputDirtyCheck(newInputValue, oldInputValueOfValues[i]))) {
-            oldInputValueOfValues[i] = newInputValue && typeof newInputValue.valueOf !== 'function' &&
-                Object.valueOf.apply(newInputValue) || newInputValue.valueOf();
+            oldInputValueOfValues[i] = newInputValue && getValueOf(newInputValue);
           }
         }
 
@@ -1161,7 +1205,7 @@ function $ParseProvider() {
           listener.apply(this, arguments);
         }
         if (isDefined(value)) {
-          scope.$$postDigest(function () {
+          scope.$$postDigest(function() {
             if (isDefined(lastValue)) {
               unwatch();
             }
@@ -1171,23 +1215,24 @@ function $ParseProvider() {
     }
 
     function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
-      var unwatch;
+      var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
       }, function oneTimeListener(value, old, scope) {
+        lastValue = value;
         if (isFunction(listener)) {
           listener.call(this, value, old, scope);
         }
         if (isAllDefined(value)) {
-          scope.$$postDigest(function () {
-            if(isAllDefined(value)) unwatch();
+          scope.$$postDigest(function() {
+            if (isAllDefined(lastValue)) unwatch();
           });
         }
       }, objectEquality);
 
       function isAllDefined(value) {
         var allDefined = true;
-        forEach(value, function (val) {
+        forEach(value, function(val) {
           if (!isDefined(val)) allDefined = false;
         });
         return allDefined;
@@ -1214,7 +1259,7 @@ function $ParseProvider() {
         var result = interceptorFn(value, scope, locals);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
-        return isDefined(value) ? result : value;
+        return isDefined(value) || interceptorFn.$stateful ? result : value;
       };
 
       // Propagate $$watchDelegates other then inputsWatchDelegate
