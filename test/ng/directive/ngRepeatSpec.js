@@ -166,6 +166,26 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('age:20|wealth:20|prodname:Bingo|dogname:Bingo|codename:20|');
   });
 
+
+  it('should iterate over on object created using `Object.create(null)`', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, value) in items">{{key}}:{{value}}|</li>' +
+      '</ul>')(scope);
+
+    var items = Object.create(null);
+    items.misko = 'swe';
+    items.shyam = 'set';
+
+    scope.items = items;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:swe|shyam:set|');
+
+    delete items.shyam;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:swe|');
+  });
+
   describe('track by', function() {
     it('should track using expression function', function() {
       element = $compile(
