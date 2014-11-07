@@ -1,0 +1,48 @@
+@ngdoc overview
+@name  Security
+@sortOrder 525
+@description
+
+# Security
+
+This document explains some of AngularJS's security features and best practices that you should
+keep in mind as you build your application.
+
+
+## Expression Sandboxing
+
+AngularJS's expressions are sandboxed not for security reasons, but instead to maintain a proper
+separation of application responsibilities. For example, access to `window` is disallowed
+because it makes it easy to introduce brittle global state into your application.
+
+However, this sandbox is not intended to stop attackers who can edit the contents of bindings.
+It may be possible to run arbitrary JavaScript inside double-curly bindings if an attacker can
+modify them.
+
+But if an attacker can change arbitrary HTML templates, there's nothing stopping them from doing:
+
+```html
+<script>somethingEvil();</script>
+```
+
+It's better to design your application in such a way that users cannot change client-side templates.
+
+
+## Mixing client-side and server-side templates
+
+We recommend against doing this because it can create unintended XSS vectors.
+
+
+## Reporting a security issue
+
+Email us at [security@angularjs.org](mailto:security@angularjs.org) to report any potential
+security issues in AngularJS.
+
+Please keep in mind the above points about Angular's expression language.
+
+
+## See also
+
+* {@link ng.directive:ngCsp Content Security Policy}
+* {@link ng.$sce Strict Contextual Escaping}
+* {@link ngSanitize.$sanitize $sanitize}
