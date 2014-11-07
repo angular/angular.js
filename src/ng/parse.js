@@ -31,8 +31,8 @@ function ensureSafeMemberName(name, fullExpression) {
       || name === "__lookupGetter__" || name === "__lookupSetter__"
       || name === "__proto__") {
     throw $parseMinErr('isecfld',
-            'Attempting to access a disallowed field in Angular expressions! '
-            +'Expression: {0}', fullExpression);
+        'Attempting to access a disallowed field in Angular expressions! '
+        +'Expression: {0}', fullExpression);
   }
   return name;
 }
@@ -72,12 +72,12 @@ function ensureSafeFunction(obj, fullExpression) {
   if (obj) {
     if (obj.constructor === obj) {
       throw $parseMinErr('isecfn',
-          'Referencing Function in Angular expressions is disallowed! Expression: {0}',
-          fullExpression);
+        'Referencing Function in Angular expressions is disallowed! Expression: {0}',
+        fullExpression);
     } else if (obj === CALL || obj === APPLY || obj === BIND) {
       throw $parseMinErr('isecff',
-          'Referencing call, apply or bind in Angular expressions is disallowed! Expression: {0}',
-          fullExpression);
+        'Referencing call, apply or bind in Angular expressions is disallowed! Expression: {0}',
+        fullExpression);
     }
   }
 }
@@ -101,37 +101,37 @@ CONSTANTS['this'].sharedGetter = true;
 
 //Operators - will be wrapped by binaryFn/unaryFn/assignment/filter
 var OPERATORS = extend(createMap(), {
-  '+':function(self, locals, a, b) {
-    a=a(self, locals); b=b(self, locals);
-    if (isDefined(a)) {
-      if (isDefined(b)) {
-        return a + b;
+    '+':function(self, locals, a, b) {
+      a=a(self, locals); b=b(self, locals);
+      if (isDefined(a)) {
+        if (isDefined(b)) {
+          return a + b;
+        }
+        return a;
       }
-      return a;
-    }
-    return isDefined(b)?b:undefined;},
-  '-':function(self, locals, a, b) {
-    a=a(self, locals); b=b(self, locals);
-    return (isDefined(a)?a:0)-(isDefined(b)?b:0);
-  },
-  '*':function(self, locals, a, b) {return a(self, locals)*b(self, locals);},
-  '/':function(self, locals, a, b) {return a(self, locals)/b(self, locals);},
-  '%':function(self, locals, a, b) {return a(self, locals)%b(self, locals);},
-  '===':function(self, locals, a, b) {return a(self, locals)===b(self, locals);},
-  '!==':function(self, locals, a, b) {return a(self, locals)!==b(self, locals);},
-  '==':function(self, locals, a, b) {return a(self, locals)==b(self, locals);},
-  '!=':function(self, locals, a, b) {return a(self, locals)!=b(self, locals);},
-  '<':function(self, locals, a, b) {return a(self, locals)<b(self, locals);},
-  '>':function(self, locals, a, b) {return a(self, locals)>b(self, locals);},
-  '<=':function(self, locals, a, b) {return a(self, locals)<=b(self, locals);},
-  '>=':function(self, locals, a, b) {return a(self, locals)>=b(self, locals);},
-  '&&':function(self, locals, a, b) {return a(self, locals)&&b(self, locals);},
-  '||':function(self, locals, a, b) {return a(self, locals)||b(self, locals);},
-  '!':function(self, locals, a) {return !a(self, locals);},
+      return isDefined(b)?b:undefined;},
+    '-':function(self, locals, a, b) {
+          a=a(self, locals); b=b(self, locals);
+          return (isDefined(a)?a:0)-(isDefined(b)?b:0);
+        },
+    '*':function(self, locals, a, b) {return a(self, locals)*b(self, locals);},
+    '/':function(self, locals, a, b) {return a(self, locals)/b(self, locals);},
+    '%':function(self, locals, a, b) {return a(self, locals)%b(self, locals);},
+    '===':function(self, locals, a, b) {return a(self, locals)===b(self, locals);},
+    '!==':function(self, locals, a, b) {return a(self, locals)!==b(self, locals);},
+    '==':function(self, locals, a, b) {return a(self, locals)==b(self, locals);},
+    '!=':function(self, locals, a, b) {return a(self, locals)!=b(self, locals);},
+    '<':function(self, locals, a, b) {return a(self, locals)<b(self, locals);},
+    '>':function(self, locals, a, b) {return a(self, locals)>b(self, locals);},
+    '<=':function(self, locals, a, b) {return a(self, locals)<=b(self, locals);},
+    '>=':function(self, locals, a, b) {return a(self, locals)>=b(self, locals);},
+    '&&':function(self, locals, a, b) {return a(self, locals)&&b(self, locals);},
+    '||':function(self, locals, a, b) {return a(self, locals)||b(self, locals);},
+    '!':function(self, locals, a) {return !a(self, locals);},
 
-  //Tokenized as operators but parsed as assignment/filters
-  '=':true,
-  '|':true
+    //Tokenized as operators but parsed as assignment/filters
+    '=':true,
+    '|':true
 });
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
@@ -214,13 +214,13 @@ Lexer.prototype = {
   isWhitespace: function(ch) {
     // IE treats non-breaking space as \u00A0
     return (ch === ' ' || ch === '\r' || ch === '\t' ||
-        ch === '\n' || ch === '\v' || ch === '\u00A0');
+            ch === '\n' || ch === '\v' || ch === '\u00A0');
   },
 
   isIdent: function(ch) {
     return ('a' <= ch && ch <= 'z' ||
-        'A' <= ch && ch <= 'Z' ||
-        '_' === ch || ch === '$');
+            'A' <= ch && ch <= 'Z' ||
+            '_' === ch || ch === '$');
   },
 
   isExpOperator: function(ch) {
@@ -230,8 +230,8 @@ Lexer.prototype = {
   throwError: function(error, start, end) {
     end = end || this.index;
     var colStr = (isDefined(start)
-        ? 's ' + start +  '-' + this.index + ' [' + this.text.substring(start, end) + ']'
-        : ' ' + end);
+            ? 's ' + start +  '-' + this.index + ' [' + this.text.substring(start, end) + ']'
+            : ' ' + end);
     throw $parseMinErr('lexerr', 'Lexer Error: {0} at column{1} in expression [{2}].',
         error, colStr, this.text);
   },
@@ -460,7 +460,7 @@ Parser.prototype = {
   throwError: function(msg, token) {
     throw $parseMinErr('syntax',
         'Syntax Error: Token \'{0}\' {1} at column {2} of the expression [{3}] starting at [{4}].',
-        token.text, msg, (token.index + 1), this.text, this.text.substring(token.index));
+          token.text, msg, (token.index + 1), this.text, this.text.substring(token.index));
   },
 
   peekToken: function() {
@@ -525,12 +525,12 @@ Parser.prototype = {
         return (statements.length === 1)
             ? statements[0]
             : function $parseStatements(self, locals) {
-          var value;
-          for (var i = 0, ii = statements.length; i < ii; i++) {
-            value = statements[i](self, locals);
-          }
-          return value;
-        };
+                var value;
+                for (var i = 0, ii = statements.length; i < ii; i++) {
+                  value = statements[i](self, locals);
+                }
+                return value;
+              };
       }
     }
   },
@@ -764,8 +764,8 @@ Parser.prototype = {
 
       // IE stupidity! (IE doesn't have apply for some native functions)
       var v = fn.apply
-          ? fn.apply(context, args)
-          : fn(args[0], args[1], args[2], args[3], args[4]);
+            ? fn.apply(context, args)
+            : fn(args[0], args[1], args[2], args[3], args[4]);
 
       return ensureSafeObject(v, expressionText);
     };
@@ -932,7 +932,7 @@ function getterFn(path, options, fullExp) {
         var i = 0, val;
         do {
           val = cspSafeGetterFn(pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++],
-              pathKeys[i++], fullExp, expensiveChecks)(scope, locals);
+                                pathKeys[i++], fullExp, expensiveChecks)(scope, locals);
 
           locals = undefined; // clear after first iteration
           scope = val;
@@ -949,16 +949,16 @@ function getterFn(path, options, fullExp) {
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
       var lookupJs = (index
-        // we simply dereference 's' on any .dot notation
-          ? 's'
-        // but if we are first then we check locals first, and if so read it first
-          : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key;
+                      // we simply dereference 's' on any .dot notation
+                      ? 's'
+                      // but if we are first then we check locals first, and if so read it first
+                      : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key;
       if (expensiveChecks || isPossiblyDangerousMemberName(key)) {
         lookupJs = 'eso(' + lookupJs + ', fe)';
         needsEnsureSafeObject = true;
       }
       code += 'if(s == null) return undefined;\n' +
-          's=' + lookupJs + ';\n';
+              's=' + lookupJs + ';\n';
     });
     code += 'return s;';
 
@@ -1096,7 +1096,7 @@ function $ParseProvider() {
               //wrap the parsedExpression before adding a $$watchDelegate
               parsedExpression = wrapSharedExpression(parsedExpression);
               parsedExpression.$$watchDelegate = parsedExpression.literal ?
-                  oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
+                oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
             } else if (parsedExpression.inputs) {
               parsedExpression.$$watchDelegate = inputsWatchDelegate;
             }
@@ -1155,7 +1155,7 @@ function $ParseProvider() {
 
     function inputsWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var inputExpressions = parsedExpression.$$inputs ||
-          (parsedExpression.$$inputs = collectExpressionInputs(parsedExpression.inputs, []));
+                    (parsedExpression.$$inputs = collectExpressionInputs(parsedExpression.inputs, []));
 
       var lastResult;
 
