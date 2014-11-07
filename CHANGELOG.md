@@ -1,5 +1,5 @@
-<a name="v1.3.1"></a>
-# v1.3.1 cardiovasculatory-magnification (2014-11-07)
+<a name="v1.3.2"></a>
+# v1.3.2 cardiovasculatory-magnification (2014-11-07)
 
 
 ## Bug Fixes
