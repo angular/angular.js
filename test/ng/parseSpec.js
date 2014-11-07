@@ -3,9 +3,11 @@
 describe('parser', function() {
 
   beforeEach(function() {
-    /* global getterFnCache: true */
-    // clear cache
-    getterFnCache = createMap();
+    /* global getterFnCacheDefault: true */
+    /* global getterFnCacheExpensive: true */
+    // clear caches
+    getterFnCacheDefault = createMap();
+    getterFnCacheExpensive = createMap();
   });
 
 
@@ -782,6 +784,22 @@ describe('parser', function() {
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
                     'Expression: foo["bar"]');
 
+          });
+
+          describe('expensiveChecks', function() {
+            it('should block access to window object even when aliased', inject(function($parse, $window) {
+              scope.foo = {w: $window};
+              // This isn't blocked for performance.
+              expect(scope.$eval($parse('foo.w'))).toBe($window);
+              // Event handlers use the more expensive path for better protection since they expose
+              // the $event object on the scope.
+              expect(function() {
+                scope.$eval($parse('foo.w', null, true));
+              }).toThrowMinErr(
+                      '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                      'Expression: foo.w');
+
+            }));
           });
         });
 

@@ -1388,22 +1388,188 @@ describe('input', function() {
     expect(scope.name).toEqual('caitp');
   });
 
-  it('should not dirty the model on an input event in response to a placeholder change', inject(function($sniffer) {
-    if (msie && $sniffer.hasEvent('input')) {
-      compileInput('<input type="text" ng-model="name" name="name" />');
-      inputElm.attr('placeholder', 'Test');
-      browserTrigger(inputElm, 'input');
+  describe("IE placeholder input events", function() {
+    //IE fires an input event whenever a placeholder visually changes, essentially treating it as a value
+    //Events:
+    //  placeholder attribute change: *input*
+    //  focus (which visually removes the placeholder value): focusin focus *input*
+    //  blur (which visually creates the placeholder value):  focusout *input* blur
+    //However none of these occur if the placeholder is not visible at the time of the event.
+    //These tests try simulate various scenerios which do/do-not fire the extra input event
 
-      expect(inputElm.attr('placeholder')).toBe('Test');
-      expect(inputElm).toBePristine();
+    it('should not dirty the model on an input event in response to a placeholder change', function() {
+      if (msie) {
+        compileInput('<input type="text" placeholder="Test" attr-capture ng-model="unsetValue" name="name" />');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('Test');
+        expect(inputElm).toBePristine();
 
-      inputElm.attr('placeholder', 'Test Again');
-      browserTrigger(inputElm, 'input');
+        attrs.$set('placeholder', '');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('');
+        expect(inputElm).toBePristine();
 
-      expect(inputElm.attr('placeholder')).toBe('Test Again');
-      expect(inputElm).toBePristine();
-    }
-  }));
+        attrs.$set('placeholder', 'Test Again');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('Test Again');
+        expect(inputElm).toBePristine();
+
+        attrs.$set('placeholder', undefined);
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe(undefined);
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('foo');
+        expect(inputElm).toBeDirty();
+      }
+    });
+
+    it('should not dirty the model on an input event in response to a interpolated placeholder change', inject(function($rootScope) {
+      if (msie) {
+        compileInput('<input type="text" placeholder="{{ph}}" ng-model="unsetValue" name="name" />');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm).toBePristine();
+
+        $rootScope.ph = 1;
+        $rootScope.$digest();
+        browserTrigger(inputElm, 'input');
+        expect(inputElm).toBePristine();
+
+        $rootScope.ph = "";
+        $rootScope.$digest();
+        browserTrigger(inputElm, 'input');
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('foo');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should dirty the model on an input event in response to a placeholder change while in focus', inject(function($rootScope) {
+      if (msie) {
+        $rootScope.ph = 'Test';
+        compileInput('<input type="text" ng-attr-placeholder="{{ph}}" ng-model="unsetValue" name="name" />');
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusin');
+        browserTrigger(inputElm, 'focus');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('Test');
+        expect(inputElm).toBePristine();
+
+        $rootScope.ph = 'Test Again';
+        $rootScope.$digest();
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('foo');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should not dirty the model on an input event in response to a ng-attr-placeholder change', inject(function($rootScope) {
+      if (msie) {
+        compileInput('<input type="text" ng-attr-placeholder="{{ph}}" ng-model="unsetValue" name="name" />');
+        expect(inputElm).toBePristine();
+
+        $rootScope.ph = 1;
+        $rootScope.$digest();
+        browserTrigger(inputElm, 'input');
+        expect(inputElm).toBePristine();
+
+        $rootScope.ph = "";
+        $rootScope.$digest();
+        browserTrigger(inputElm, 'input');
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('foo');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should not dirty the model on an input event in response to a focus', inject(function($sniffer) {
+      if (msie) {
+        compileInput('<input type="text" placeholder="Test" ng-model="unsetValue" name="name" />');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('Test');
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusin');
+        browserTrigger(inputElm, 'focus');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('Test');
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('foo');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should not dirty the model on an input event in response to a blur', inject(function($sniffer) {
+      if (msie) {
+        compileInput('<input type="text" placeholder="Test" ng-model="unsetValue" name="name" />');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm.attr('placeholder')).toBe('Test');
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusin');
+        browserTrigger(inputElm, 'focus');
+        browserTrigger(inputElm, 'input');
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusout');
+        browserTrigger(inputElm, 'input');
+        browserTrigger(inputElm, 'blur');
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('foo');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should dirty the model on an input event if there is a placeholder and value', inject(function($rootScope) {
+      if (msie) {
+        $rootScope.name = 'foo';
+        compileInput('<input type="text" placeholder="Test" ng-model="name" value="init" name="name" />');
+        expect(inputElm.val()).toBe($rootScope.name);
+        expect(inputElm).toBePristine();
+
+        changeInputValueTo('bar');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should dirty the model on an input event if there is a placeholder and value after focusing', inject(function($rootScope) {
+      if (msie) {
+        $rootScope.name = 'foo';
+        compileInput('<input type="text" placeholder="Test" ng-model="name" value="init" name="name" />');
+        expect(inputElm.val()).toBe($rootScope.name);
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusin');
+        browserTrigger(inputElm, 'focus');
+        changeInputValueTo('bar');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+
+    it('should dirty the model on an input event if there is a placeholder and value after bluring', inject(function($rootScope) {
+      if (msie) {
+        $rootScope.name = 'foo';
+        compileInput('<input type="text" placeholder="Test" ng-model="name" value="init" name="name" />');
+        expect(inputElm.val()).toBe($rootScope.name);
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusin');
+        browserTrigger(inputElm, 'focus');
+        expect(inputElm).toBePristine();
+
+        browserTrigger(inputElm, 'focusout');
+        browserTrigger(inputElm, 'blur');
+        changeInputValueTo('bar');
+        expect(inputElm).toBeDirty();
+      }
+    }));
+  });
 
 
   it('should interpolate input names', function() {
