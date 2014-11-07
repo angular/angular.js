@@ -876,7 +876,8 @@ function setter(obj, path, setValue, fullExp, options) {
   return setValue;
 }
 
-var getterFnCache = {};
+var getterFnCacheDefault = {};
+var getterFnCacheExpensive = {};
 
 function isPossiblyDangerousMemberName(name) {
   return name == 'constructor';
@@ -896,11 +897,12 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
   var eso = function(o) {
     return ensureSafeObject(o, fullExp);
   };
-  var eso0 = isPossiblyDangerousMemberName(key0) ? eso : identity;
-  var eso1 = isPossiblyDangerousMemberName(key1) ? eso : identity;
-  var eso2 = isPossiblyDangerousMemberName(key2) ? eso : identity;
-  var eso3 = isPossiblyDangerousMemberName(key3) ? eso : identity;
-  var eso4 = isPossiblyDangerousMemberName(key4) ? eso : identity;
+  var expensiveChecks = options.expensiveChecks;
+  var eso0 = (expensiveChecks || isPossiblyDangerousMemberName(key0)) ? eso : identity;
+  var eso1 = (expensiveChecks || isPossiblyDangerousMemberName(key1)) ? eso : identity;
+  var eso2 = (expensiveChecks || isPossiblyDangerousMemberName(key2)) ? eso : identity;
+  var eso3 = (expensiveChecks || isPossiblyDangerousMemberName(key3)) ? eso : identity;
+  var eso4 = (expensiveChecks || isPossiblyDangerousMemberName(key4)) ? eso : identity;
 
   return !options.unwrapPromises
       ? function cspSafeGetter(scope, locals) {
@@ -1006,6 +1008,8 @@ function getterFnWithExtraArgs(fn, fullExpression) {
 }
 
 function getterFn(path, options, fullExp) {
+  var expensiveChecks = options.expensiveChecks;
+  var getterFnCache = (expensiveChecks ? getterFnCacheExpensive : getterFnCacheDefault);
   // Check whether the cache has this getter already.
   // We can use hasOwnProperty directly on the cache because we ensure,
   // see below, that the cache never stores a path called 'hasOwnProperty'
@@ -1037,7 +1041,10 @@ function getterFn(path, options, fullExp) {
     }
   } else {
     var code = 'var p;\n';
-    var needsEnsureSafeObject = false;
+    if (expensiveChecks) {
+      code += 's = eso(s, fe);\nl = eso(l, fe);\n';
+    }
+    var needsEnsureSafeObject = expensiveChecks;
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
       var lookupJs = (index
@@ -1045,7 +1052,7 @@ function getterFn(path, options, fullExp) {
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
                       : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '["' + key + '"]';
-      var wrapWithEso = isPossiblyDangerousMemberName(key);
+      var wrapWithEso = expensiveChecks || isPossiblyDangerousMemberName(key);
       if (wrapWithEso) {
         lookupJs = 'eso(' + lookupJs + ', fe)';
         needsEnsureSafeObject = true;
@@ -1139,12 +1146,14 @@ function getterFn(path, options, fullExp) {
  *  service.
  */
 function $ParseProvider() {
-  var cache = {};
+  var cacheDefault = {};
+  var cacheExpensive = {};
 
   var $parseOptions = {
     csp: false,
     unwrapPromises: false,
-    logPromiseWarnings: true
+    logPromiseWarnings: true,
+    expensiveChecks: false
   };
 
 
@@ -1231,6 +1240,12 @@ function $ParseProvider() {
 
   this.$get = ['$filter', '$sniffer', '$log', function($filter, $sniffer, $log) {
     $parseOptions.csp = $sniffer.csp;
+    var $parseOptionsExpensive = {
+      csp: $parseOptions.csp,
+      unwrapPromises: $parseOptions.unwrapPromises,
+      logPromiseWarnings: $parseOptions.logPromiseWarnings,
+      expensiveChecks: true
+    };
 
     promiseWarning = function promiseWarningFn(fullExp) {
       if (!$parseOptions.logPromiseWarnings || promiseWarningCache.hasOwnProperty(fullExp)) return;
@@ -1239,18 +1254,20 @@ function $ParseProvider() {
           'Automatic unwrapping of promises in Angular expressions is deprecated.');
     };
 
-    return function(exp) {
+    return function(exp, expensiveChecks) {
       var parsedExpression;
 
       switch (typeof exp) {
         case 'string':
 
+          var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
           if (cache.hasOwnProperty(exp)) {
             return cache[exp];
           }
 
-          var lexer = new Lexer($parseOptions);
-          var parser = new Parser(lexer, $filter, $parseOptions);
+          var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
+          var lexer = new Lexer(parseOptions);
+          var parser = new Parser(lexer, $filter, parseOptions);
           parsedExpression = parser.parse(exp);
 
           if (exp !== 'hasOwnProperty') {

@@ -3,9 +3,10 @@
 describe('parser', function() {
 
   beforeEach(function() {
-    /* global getterFnCache: true, promiseWarningCache: true */
+    /* global getterFnCacheDefault: true, getterFnCacheExpensive: true, promiseWarningCache: true */
     // clear caches
-    getterFnCache = {};
+    getterFnCacheDefault = {};
+    getterFnCacheExpensive = {};
     promiseWarningCache = {};
   });
 
@@ -1067,7 +1068,6 @@ describe('parser', function() {
           expect(count).toBe(1);
         });
 
-
         it('should call the function once when it is not part of the context', function() {
           var count = 0;
           scope.fn = function() {
@@ -1078,6 +1078,20 @@ describe('parser', function() {
           expect(count).toBe(1);
         });
 
+        describe('expensiveChecks', function() {
+          it('should block access to window object even when aliased', inject(function($parse, $window) {
+            scope.foo = {w: $window};
+            // This isn't blocked for performance.
+            expect(scope.$eval($parse('foo.w'))).toBe($window);
+            // Event handlers use the more expensive path for better protection since they expose
+            // the $event object on the scope.
+            expect(function() {
+              scope.$eval($parse('foo.w', true));
+            }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                    'Expression: foo.w');
+          }));
+        });
 
         it('should call the function once when it is part of the context on assignments', function() {
           var count = 0;
