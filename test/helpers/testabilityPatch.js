@@ -152,7 +152,7 @@ function sortedHtml(element, showNgClass) {
 
     if (node.nodeName == "#text") {
       html += node.nodeValue.
-        replace(/&(\w+[&;\W])?/g, function(match, entity) {return entity?match:'&amp;';}).
+        replace(/&(\w+[&;\W])?/g, function(match, entity) {return entity ? match : '&amp;';}).
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
     } else if (node.nodeName == "#comment") {
