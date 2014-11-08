@@ -459,6 +459,16 @@ describe('$location', function() {
         expect(url.hash()).toBe('x <>#');
       });
 
+
+      it('should not break on invalid URLs', function() {
+        url = new LocationHtml5Url('http://example.com/');
+        url.$$parse('http://example.com/%?filter=%%U65-*55z65>ß.2á.3á02312-3-214.32@#%7B%7D%5D%5B%%%');
+        expect(url.path()).toBe('/');
+        expect(url.search()).toEqual({'filter': undefined});
+        expect(url.hash()).toBeUndefined();
+      });
+
+
       it('should decode pluses as spaces in urls', function() {
         url = new LocationHtml5Url('http://host.com/');
         url.$$parse('http://host.com/?a+b=c+d');

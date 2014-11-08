@@ -68,8 +68,12 @@ function urlResolve(url, base) {
   if (msie) {
     // Normalize before parse.  Refer Implementation Notes on why this is
     // done in two steps on IE.
-    urlParsingNode.setAttribute("href", href);
-    href = urlParsingNode.href;
+    try {
+      urlParsingNode.setAttribute("href", href);
+      href = urlParsingNode.href;
+    } catch (e) {
+      href = '';
+    }
   }
 
   urlParsingNode.setAttribute('href', href);

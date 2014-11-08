@@ -37,10 +37,10 @@ function parseAppUrl(relativeUrl, locationObj, appBase) {
     relativeUrl = '/' + relativeUrl;
   }
   var match = urlResolve(relativeUrl, appBase);
-  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
+  locationObj.$$path = tryDecodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
   locationObj.$$search = parseKeyValue(match.search);
-  locationObj.$$hash = decodeURIComponent(match.hash);
+  locationObj.$$hash = tryDecodeURIComponent(match.hash);
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
