@@ -109,10 +109,10 @@ var OPERATORS = extend(createMap(), {
         }
         return a;
       }
-      return isDefined(b)?b:undefined;},
+      return isDefined(b) ? b : undefined;},
     '-':function(self, locals, a, b) {
           a=a(self, locals); b=b(self, locals);
-          return (isDefined(a)?a:0) - (isDefined(b)?b:0);
+          return (isDefined(a) ? a : 0) - (isDefined(b) ? b : 0);
         },
     '*':function(self, locals, a, b) {return a(self, locals) * b(self, locals);},
     '/':function(self, locals, a, b) {return a(self, locals) / b(self, locals);},
