@@ -202,21 +202,21 @@ describe('Binder', function() {
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe(
-        '<div>'+
+        '<div>' +
           '<!-- ngRepeat: m in model -->' +
-          '<div name="a" ng-repeat="m in model">'+
+          '<div name="a" ng-repeat="m in model">' +
             '<!-- ngRepeat: i in m.item -->' +
-            '<ul name="a1" ng-repeat="i in m.item"></ul>'+
+            '<ul name="a1" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-            '<ul name="a2" ng-repeat="i in m.item"></ul>'+
+            '<ul name="a2" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-          '</div>'+
+          '</div>' +
           '<!-- end ngRepeat: m in model -->' +
-          '<div name="b" ng-repeat="m in model">'+
+          '<div name="b" ng-repeat="m in model">' +
             '<!-- ngRepeat: i in m.item -->' +
-            '<ul name="b1" ng-repeat="i in m.item"></ul>'+
+            '<ul name="b1" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-            '<ul name="b2" ng-repeat="i in m.item"></ul>'+
+            '<ul name="b2" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
           '</div>' +
           '<!-- end ngRepeat: m in model -->' +

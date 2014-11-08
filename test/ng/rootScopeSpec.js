@@ -296,7 +296,7 @@ describe('Scope', function() {
 
         expect(function() {
           $rootScope.$digest();
-        }).toThrowMinErr('$rootScope', 'infdig', '100 $digest() iterations reached. Aborting!\n'+
+        }).toThrowMinErr('$rootScope', 'infdig', '100 $digest() iterations reached. Aborting!\n' +
             'Watchers fired in the last 5 iterations: ' +
             '[["a; newVal: 96; oldVal: 95","b; newVal: 97; oldVal: 96"],' +
             '["a; newVal: 97; oldVal: 96","b; newVal: 98; oldVal: 97"],' +
@@ -341,7 +341,7 @@ describe('Scope', function() {
 
         expect(function() {
           $rootScope.$digest();
-        }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n'+
+        }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n' +
                 'Watchers fired in the last 5 iterations: []');
 
         expect($rootScope.$$phase).toBeNull();

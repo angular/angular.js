@@ -29,7 +29,7 @@ beforeEach(function() {
     // we need to check element.getAttribute for SVG nodes
     var hidden = true;
     forEach(angular.element(element), function(element) {
-      if ((' ' +(element.getAttribute('class') || '') + ' ').indexOf(' ng-hide ') === -1) {
+      if ((' '  + (element.getAttribute('class') || '') + ' ').indexOf(' ng-hide ') === -1) {
         hidden = false;
       }
     });
@@ -168,7 +168,7 @@ beforeEach(function() {
         return "Expected '" + angular.mock.dump(this.actual) + "' to have class '" + clazz + "'.";
       };
       var classes = clazz.trim().split(/\s+/);
-      for (var i=0; i<classes.length; ++i) {
+      for (var i = 0; i < classes.length; ++i) {
         if (!jqLiteHasClass(this.actual[0], classes[i])) {
           return false;
         }

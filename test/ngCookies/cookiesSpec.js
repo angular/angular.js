@@ -86,7 +86,7 @@ describe('$cookies', function() {
       inject(function($cookies, $browser, $rootScope) {
     var i, longVal;
 
-    for (i=0; i<5000; i++) {
+    for (i = 0; i < 5000; i++) {
       longVal += '*';
     }
 

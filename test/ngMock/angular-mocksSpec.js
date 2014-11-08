@@ -6,7 +6,7 @@ describe('ngMock', function() {
   describe('TzDate', function() {
 
     function minutes(min) {
-      return min*60*1000;
+      return min * 60 * 1000;
     }
 
     it('should look like a Date', function() {
@@ -533,7 +533,7 @@ describe('ngMock', function() {
 
     function logFn(text) {
       return function() {
-        log += text +';';
+        log += text + ';';
       };
     }
 

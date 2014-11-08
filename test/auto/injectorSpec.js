@@ -7,7 +7,7 @@ describe('injector', function() {
 
   beforeEach(module(function($provide, $injector) {
     providers = function(name, factory, annotations) {
-      $provide.factory(name, extend(factory, annotations||{}));
+      $provide.factory(name, extend(factory, annotations || {}));
     };
     providerInjector = $injector;
   }));
@@ -28,7 +28,7 @@ describe('injector', function() {
 
   it('should inject providers', function() {
     providers('a', function() {return 'Mi';});
-    providers('b', function(mi) {return mi+'sko';}, {$inject:['a']});
+    providers('b', function(mi) {return mi + 'sko';}, {$inject:['a']});
     expect(injector.get('b')).toEqual('Misko');
   });
 

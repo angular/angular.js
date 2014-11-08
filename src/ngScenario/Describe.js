@@ -116,7 +116,7 @@ angular.scenario.Describe.prototype.it = function(name, body) {
  */
 angular.scenario.Describe.prototype.iit = function(name, body) {
   this.it.apply(this, arguments);
-  this.its[this.its.length-1].only = true;
+  this.its[this.its.length - 1].only = true;
 };
 
 /**
