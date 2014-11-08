@@ -221,7 +221,7 @@ describe('SCE', function() {
       module(provideLog);
       inject(function($sce, $rootScope, log) {
         $rootScope.$watch($sce.parseAsHtml('::foo'), function(value) {
-          log(value+'');
+          log(value + '');
         });
 
         $rootScope.$digest();

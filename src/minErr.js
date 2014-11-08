@@ -69,7 +69,7 @@ function minErr(module, ErrorConstructor) {
     message = message + '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' +
       (module ? module + '/' : '') + code;
     for (i = 2; i < arguments.length; i++) {
-      message = message + (i == 2 ? '?' : '&') + 'p' + (i-2) + '=' +
+      message = message + (i == 2 ? '?' : '&') + 'p' + (i - 2) + '=' +
         encodeURIComponent(stringify(arguments[i]));
     }
     return new ErrorConstructor(message);

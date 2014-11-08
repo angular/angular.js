@@ -337,7 +337,7 @@ describe('browser', function() {
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
         var i, longVal = '', cookieStr;
 
-        for (i=0; i<4083; i++) {
+        for (i = 0; i < 4083; i++) {
           longVal += 'x';
         }
 
@@ -920,7 +920,7 @@ describe('browser', function() {
       });
     }
 
-    describe('update $location when it was changed outside of Angular in sync '+
+    describe('update $location when it was changed outside of Angular in sync ' +
        'before $digest was called', function() {
 
       it('should work with no history support, no html5Mode', function() {
