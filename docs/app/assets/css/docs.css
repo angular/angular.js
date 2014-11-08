@@ -128,6 +128,10 @@ h1,h2,h3,h4,h5,h6 {
   margin-bottom:5px;
 }
 
+.nav-index-group .nav-index-listing.current a {
+  color: #B52E31;
+}
+
 .nav-breadcrumb {
   margin:4px 0;
   padding:0;
