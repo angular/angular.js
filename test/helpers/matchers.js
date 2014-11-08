@@ -45,17 +45,17 @@ beforeEach(function() {
     toBeTouched: cssMatcher('ng-touched', 'ng-untouched'),
     toBeAPromise: function() {
       this.message = valueFn(
-          "Expected object " + (this.isNot ? "not ": "") + "to be a promise");
+          "Expected object " + (this.isNot ? "not " : "") + "to be a promise");
       return isPromiseLike(this.actual);
     },
     toBeShown: function() {
       this.message = valueFn(
-          "Expected element " + (this.isNot ? "": "not ") + "to have 'ng-hide' class");
+          "Expected element " + (this.isNot ? "" : "not ") + "to have 'ng-hide' class");
       return !isNgElementHidden(this.actual);
     },
     toBeHidden: function() {
       this.message = valueFn(
-          "Expected element " + (this.isNot ? "not ": "") + "to have 'ng-hide' class");
+          "Expected element " + (this.isNot ? "not " : "") + "to have 'ng-hide' class");
       return isNgElementHidden(this.actual);
     },
 

@@ -269,54 +269,54 @@ describe('parser', function() {
         var identity = scope.identity = function(x) { return x; };
 
         // Simple.
-        expect(scope.$eval('0?0:2')).toEqual(0?0:2);
-        expect(scope.$eval('1?0:2')).toEqual(1?0:2);
+        expect(scope.$eval('0?0:2')).toEqual(0 ? 0 : 2);
+        expect(scope.$eval('1?0:2')).toEqual(1 ? 0 : 2);
 
         // Nested on the left.
-        expect(scope.$eval('0?0?0:0:2')).toEqual(0?0?0:0:2);
-        expect(scope.$eval('1?0?0:0:2')).toEqual(1?0?0:0:2);
-        expect(scope.$eval('0?1?0:0:2')).toEqual(0?1?0:0:2);
-        expect(scope.$eval('0?0?1:0:2')).toEqual(0?0?1:0:2);
-        expect(scope.$eval('0?0?0:2:3')).toEqual(0?0?0:2:3);
-        expect(scope.$eval('1?1?0:0:2')).toEqual(1?1?0:0:2);
-        expect(scope.$eval('1?1?1:0:2')).toEqual(1?1?1:0:2);
-        expect(scope.$eval('1?1?1:2:3')).toEqual(1?1?1:2:3);
-        expect(scope.$eval('1?1?1:2:3')).toEqual(1?1?1:2:3);
+        expect(scope.$eval('0?0?0:0:2')).toEqual(0 ? 0 ? 0 : 0 : 2);
+        expect(scope.$eval('1?0?0:0:2')).toEqual(1 ? 0 ? 0 : 0 : 2);
+        expect(scope.$eval('0?1?0:0:2')).toEqual(0 ? 1 ? 0 : 0 : 2);
+        expect(scope.$eval('0?0?1:0:2')).toEqual(0 ? 0 ? 1 : 0 : 2);
+        expect(scope.$eval('0?0?0:2:3')).toEqual(0 ? 0 ? 0 : 2 : 3);
+        expect(scope.$eval('1?1?0:0:2')).toEqual(1 ? 1 ? 0 : 0 : 2);
+        expect(scope.$eval('1?1?1:0:2')).toEqual(1 ? 1 ? 1 : 0 : 2);
+        expect(scope.$eval('1?1?1:2:3')).toEqual(1 ? 1 ? 1 : 2 : 3);
+        expect(scope.$eval('1?1?1:2:3')).toEqual(1 ? 1 ? 1 : 2 : 3);
 
         // Nested on the right.
-        expect(scope.$eval('0?0:0?0:2')).toEqual(0?0:0?0:2);
-        expect(scope.$eval('1?0:0?0:2')).toEqual(1?0:0?0:2);
-        expect(scope.$eval('0?1:0?0:2')).toEqual(0?1:0?0:2);
-        expect(scope.$eval('0?0:1?0:2')).toEqual(0?0:1?0:2);
-        expect(scope.$eval('0?0:0?2:3')).toEqual(0?0:0?2:3);
-        expect(scope.$eval('1?1:0?0:2')).toEqual(1?1:0?0:2);
-        expect(scope.$eval('1?1:1?0:2')).toEqual(1?1:1?0:2);
-        expect(scope.$eval('1?1:1?2:3')).toEqual(1?1:1?2:3);
-        expect(scope.$eval('1?1:1?2:3')).toEqual(1?1:1?2:3);
+        expect(scope.$eval('0?0:0?0:2')).toEqual(0 ? 0 : 0 ? 0 : 2);
+        expect(scope.$eval('1?0:0?0:2')).toEqual(1 ? 0 : 0 ? 0 : 2);
+        expect(scope.$eval('0?1:0?0:2')).toEqual(0 ? 1 : 0 ? 0 : 2);
+        expect(scope.$eval('0?0:1?0:2')).toEqual(0 ? 0 : 1 ? 0 : 2);
+        expect(scope.$eval('0?0:0?2:3')).toEqual(0 ? 0 : 0 ? 2 : 3);
+        expect(scope.$eval('1?1:0?0:2')).toEqual(1 ? 1 : 0 ? 0 : 2);
+        expect(scope.$eval('1?1:1?0:2')).toEqual(1 ? 1 : 1 ? 0 : 2);
+        expect(scope.$eval('1?1:1?2:3')).toEqual(1 ? 1 : 1 ? 2 : 3);
+        expect(scope.$eval('1?1:1?2:3')).toEqual(1 ? 1 : 1 ? 2 : 3);
 
         // Precedence with respect to logical operators.
-        expect(scope.$eval('0&&1?0:1')).toEqual(0 && 1?0:1);
-        expect(scope.$eval('1||0?0:0')).toEqual(1 || 0?0:0);
+        expect(scope.$eval('0&&1?0:1')).toEqual(0 && 1 ? 0 : 1);
+        expect(scope.$eval('1||0?0:0')).toEqual(1 || 0 ? 0 : 0);
 
-        expect(scope.$eval('0?0&&1:2')).toEqual(0?0 && 1:2);
-        expect(scope.$eval('0?1&&1:2')).toEqual(0?1 && 1:2);
-        expect(scope.$eval('0?0||0:1')).toEqual(0?0 || 0:1);
-        expect(scope.$eval('0?0||1:2')).toEqual(0?0 || 1:2);
+        expect(scope.$eval('0?0&&1:2')).toEqual(0 ? 0 && 1 : 2);
+        expect(scope.$eval('0?1&&1:2')).toEqual(0 ? 1 && 1 : 2);
+        expect(scope.$eval('0?0||0:1')).toEqual(0 ? 0 || 0 : 1);
+        expect(scope.$eval('0?0||1:2')).toEqual(0 ? 0 || 1 : 2);
 
-        expect(scope.$eval('1?0&&1:2')).toEqual(1?0 && 1:2);
-        expect(scope.$eval('1?1&&1:2')).toEqual(1?1 && 1:2);
-        expect(scope.$eval('1?0||0:1')).toEqual(1?0 || 0:1);
-        expect(scope.$eval('1?0||1:2')).toEqual(1?0 || 1:2);
+        expect(scope.$eval('1?0&&1:2')).toEqual(1 ? 0 && 1 : 2);
+        expect(scope.$eval('1?1&&1:2')).toEqual(1 ? 1 && 1 : 2);
+        expect(scope.$eval('1?0||0:1')).toEqual(1 ? 0 || 0 : 1);
+        expect(scope.$eval('1?0||1:2')).toEqual(1 ? 0 || 1 : 2);
 
-        expect(scope.$eval('0?1:0&&1')).toEqual(0?1:0 && 1);
-        expect(scope.$eval('0?2:1&&1')).toEqual(0?2:1 && 1);
-        expect(scope.$eval('0?1:0||0')).toEqual(0?1:0 || 0);
-        expect(scope.$eval('0?2:0||1')).toEqual(0?2:0 || 1);
+        expect(scope.$eval('0?1:0&&1')).toEqual(0 ? 1 : 0 && 1);
+        expect(scope.$eval('0?2:1&&1')).toEqual(0 ? 2 : 1 && 1);
+        expect(scope.$eval('0?1:0||0')).toEqual(0 ? 1 : 0 || 0);
+        expect(scope.$eval('0?2:0||1')).toEqual(0 ? 2 : 0 || 1);
 
-        expect(scope.$eval('1?1:0&&1')).toEqual(1?1:0 && 1);
-        expect(scope.$eval('1?2:1&&1')).toEqual(1?2:1 && 1);
-        expect(scope.$eval('1?1:0||0')).toEqual(1?1:0 || 0);
-        expect(scope.$eval('1?2:0||1')).toEqual(1?2:0 || 1);
+        expect(scope.$eval('1?1:0&&1')).toEqual(1 ? 1 : 0 && 1);
+        expect(scope.$eval('1?2:1&&1')).toEqual(1 ? 2 : 1 && 1);
+        expect(scope.$eval('1?1:0||0')).toEqual(1 ? 1 : 0 || 0);
+        expect(scope.$eval('1?2:0||1')).toEqual(1 ? 2 : 0 || 1);
 
         // Function calls.
         expect(scope.$eval('returnTrue() ? returnString() : returnInt()')).toEqual(returnTrue() ? returnString() : returnInt());
