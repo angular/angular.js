@@ -1066,9 +1066,9 @@ describe("ngAnimate", function() {
           var animationDone;
           var animationStyles;
           var proxyAnimation = function() {
-            var limit = arguments.length-1;
+            var limit = arguments.length - 1;
             animationStyles = arguments[limit];
-            animationDone = arguments[limit-1];
+            animationDone = arguments[limit - 1];
           };
           module(function($animateProvider) {
             $animateProvider.register('.capture', function() {
@@ -1439,7 +1439,7 @@ describe("ngAnimate", function() {
             $timeout.verifyNoPendingTasks();
 
             expect(elements[0].attr('style')).toBeFalsy();
-            for (i=1;i<5;i++) {
+            for (i = 1; i < 5; i++) {
               expect(elements[i].attr('style')).not.toMatch(/animation-play-state:\s*paused/);
             }
           }));
@@ -2815,7 +2815,7 @@ describe("ngAnimate", function() {
               function capture(event) {
                 return function(element, add, remove, styles, done) {
                   //some animations only have one extra param
-                  done = arguments[arguments.length-2]; //the last one is the styles array
+                  done = arguments[arguments.length - 2]; //the last one is the styles array
                   captures[event]=done;
                 };
               }
@@ -4288,7 +4288,7 @@ describe("ngAnimate", function() {
         $rootElement.append(element);
         jqLite($document[0].body).append($rootElement);
 
-        for (var i=0;i<20;i++) {
+        for (var i = 0; i < 20; i++) {
           kid = $compile('<div class="kid"></div>')($rootScope);
           $animate.enter(kid, element);
         }
@@ -4300,8 +4300,8 @@ describe("ngAnimate", function() {
         dealoc(element);
         count = 0;
 
-        for (i=0;i<20;i++) {
-          kid = $compile('<div class="kid c-'+i+'"></div>')($rootScope);
+        for (i = 0; i < 20; i++) {
+          kid = $compile('<div class="kid c-' + i + '"></div>')($rootScope);
           $animate.enter(kid, element);
         }
 

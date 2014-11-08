@@ -374,7 +374,7 @@ describe('HTML', function() {
           inject(function($sanitize) {
             sanitize = $sanitize;
           });
-          var input = '<a href="'+this.actual+'"></a>';
+          var input = '<a href="' + this.actual + '"></a>';
           return sanitize(input) === input;
         },
         toBeValidImageSrc: function() {
@@ -382,7 +382,7 @@ describe('HTML', function() {
           inject(function($sanitize) {
             sanitize = $sanitize;
           });
-          var input = '<img src="'+this.actual+'"/>';
+          var input = '<img src="' + this.actual + '"/>';
           return sanitize(input) === input;
         }
       });

@@ -217,10 +217,10 @@ function callerFile(offset) {
     if (line) {
       if (line.indexOf('@') !== -1) {
         // Firefox
-        line = line.substring(line.indexOf('@')+1);
+        line = line.substring(line.indexOf('@') + 1);
       } else {
         // Chrome
-        line = line.substring(line.indexOf('(')+1).replace(')', '');
+        line = line.substring(line.indexOf('(') + 1).replace(')', '');
       }
     }
 
@@ -304,7 +304,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     var element = windowJquery(this),
         bindings;
     if (bindings = element.data('$binding')) {
-      for (var expressions = [], binding, j=0, jj=bindings.length;  j<jj; j++) {
+      for (var expressions = [], binding, j=0, jj=bindings.length;  j < jj; j++) {
         binding = bindings[j];
 
         if (binding.expressions) {
