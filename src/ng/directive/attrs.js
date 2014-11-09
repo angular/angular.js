@@ -363,7 +363,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
             return isEnabled;
           } else {
             isEnabled = !!newVal;
-            forEach(this.$listeners, function (f) { f(isEnabled); });
+            forEach(this.$listeners, function(f) { f(isEnabled); });
             $attrs.$set(attrName, isEnabled);
             return this;
           }
@@ -423,7 +423,7 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
         attr.$observe(normalized, ngSrcSrcSetHrefWatchAttribute);
 
         if (ngDisabled) {
-          ngDisabled.$listeners.push(function (enabled) {
+          ngDisabled.$listeners.push(function(enabled) {
             ngSrcSrcSetHrefWatchAttribute(enabled ? attr["ngHref"] : false);
           });
         }
