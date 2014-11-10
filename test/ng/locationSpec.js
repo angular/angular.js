@@ -1298,7 +1298,7 @@ describe('$location', function() {
 
 
     it ('should not rewrite links when rewriting links is disabled', function() {
-      configureService('/a?b=c', true, true, '', 'some content', false);
+      configureService({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
