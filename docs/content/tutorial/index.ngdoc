@@ -61,17 +61,24 @@ a few git commands.
 
 ### Install Git
 
-You can download and install Git from http://git-scm.com/download. Once installed you should have
-access to the `git` command line tool.  The main commands that you will need to use are:
+You can download and install Git from http://git-scm.com/download. You are allowed to install it in 
+any of your available drive. Once installed you should have access to the `git` command line tool.  
+
+The main commands that you will need to use are:
 
 - `git clone ...` : clone a remote repository onto your local machine
 - `git checkout ...` : check out a particular branch or a tagged version of the code to hack on
 
-### Download angular-phonecat
+### Download angular-phonecat : Steps to follow
 
-Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by running the following
+1. Create a specific folder by choosing any name you wish. 
+2. Go to that newly folder and right-click. You will see the followings:
+   - Git Init Here
+   - Git Gui
+   - Git Bash
+3. Now, click on the Git Bash and it will open Git Command line tool
+4. Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by running the following 
 command:
-
 ```
 git clone --depth=14 https://github.com/angular/angular-phonecat.git
 ```
@@ -99,7 +106,7 @@ If you want to run the preconfigured local web-server and the test tools then yo
 
 You can download a Node.js installer for your operating system from http://nodejs.org/download/.
 
-Check the version of Node.js that you have installed by running the following command:
+Check the version of Node.js that you have installed by running the following command: [By using cmd tool]
 
 ```
 node --version
