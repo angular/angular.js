@@ -1232,7 +1232,7 @@ describe('$location', function() {
     });
 
 
-    it('should not rewrite full url links do different domain', function() {
+    it('should not rewrite full url links to different domain', function() {
       configureService({linkHref: 'http://www.dot.abc/a?b=c', html5Mode: true});
       inject(
         initBrowser(),
