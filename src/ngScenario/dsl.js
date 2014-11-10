@@ -163,7 +163,7 @@ angular.scenario.dsl('expect', function() {
  */
 angular.scenario.dsl('using', function() {
   return function(selector, label) {
-    this.selector = _jQuery.trim((this.selector||'') + ' ' + selector);
+    this.selector = _jQuery.trim((this.selector || '') + ' ' + selector);
     if (angular.isString(label) && label.length) {
       this.label = label + ' ( ' + this.selector + ' )';
     } else {

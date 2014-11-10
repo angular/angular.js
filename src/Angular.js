@@ -634,7 +634,7 @@ function includes(array, obj) {
 
 function arrayRemove(array, value) {
   var index = array.indexOf(value);
-  if (index >=0)
+  if (index >= 0)
     array.splice(index, 1);
   return value;
 }
@@ -835,7 +835,7 @@ function equals(o1, o2) {
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
-          for (key=0; key<length; key++) {
+          for (key = 0; key < length; key++) {
             if (!equals(o1[key], o2[key])) return false;
           }
           return true;
@@ -1121,7 +1121,7 @@ var ngAttrPrefixes = ['ng-', 'data-ng-', 'ng:', 'x-ng-'];
 function getNgAttribute(element, ngAttr) {
   var attr, i, ii = ngAttrPrefixes.length;
   element = jqLite(element);
-  for (i=0; i<ii; ++i) {
+  for (i = 0; i < ii; ++i) {
     attr = ngAttrPrefixes[i] + ngAttr;
     if (isString(attr = element.attr(attr))) {
       return attr;

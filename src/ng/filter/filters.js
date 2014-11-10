@@ -187,7 +187,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     if (whole.length >= (lgroup + group)) {
       pos = whole.length - lgroup;
       for (i = 0; i < pos; i++) {
-        if ((pos - i)%group === 0 && i !== 0) {
+        if ((pos - i) % group === 0 && i !== 0) {
           formatedText += groupSep;
         }
         formatedText += whole.charAt(i);
@@ -195,7 +195,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     }
 
     for (i = pos; i < whole.length; i++) {
-      if ((whole.length - i)%lgroup === 0 && i !== 0) {
+      if ((whole.length - i) % lgroup === 0 && i !== 0) {
         formatedText += groupSep;
       }
       formatedText += whole.charAt(i);
@@ -435,10 +435,10 @@ function dateFilter($locale) {
         tzMin = int(match[9] + match[11]);
       }
       dateSetter.call(date, int(match[1]), int(match[2]) - 1, int(match[3]));
-      var h = int(match[4]||0) - tzHour;
-      var m = int(match[5]||0) - tzMin;
-      var s = int(match[6]||0);
-      var ms = Math.round(parseFloat('0.' + (match[7]||0)) * 1000);
+      var h = int(match[4] || 0) - tzHour;
+      var m = int(match[5] || 0) - tzMin;
+      var s = int(match[6] || 0);
+      var ms = Math.round(parseFloat('0.' + (match[7] || 0)) * 1000);
       timeSetter.call(date, h, m, s, ms);
       return date;
     }

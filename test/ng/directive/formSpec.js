@@ -165,9 +165,9 @@ describe('form', function() {
 
   it('should throw an exception if an input has name="hasOwnProperty"', function() {
     doc = jqLite(
-      '<form name="form">'+
-        '<input name="hasOwnProperty" ng-model="some" />'+
-        '<input name="other" ng-model="someOther" />'+
+      '<form name="form">' +
+        '<input name="hasOwnProperty" ng-model="some" />' +
+        '<input name="other" ng-model="someOther" />' +
       '</form>');
     expect(function() {
       $compile(doc)(scope);

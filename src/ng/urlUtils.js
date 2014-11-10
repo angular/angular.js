@@ -7,7 +7,7 @@
 // exactly the behavior needed here.  There is little value is mocking these out for this
 // service.
 var urlParsingNode = document.createElement("a");
-var originUrl = urlResolve(window.location.href, true);
+var originUrl = urlResolve(window.location.href);
 
 
 /**
@@ -62,7 +62,7 @@ var originUrl = urlResolve(window.location.href, true);
  *   | pathname      | The pathname, beginning with "/"
  *
  */
-function urlResolve(url, base) {
+function urlResolve(url) {
   var href = url;
 
   if (msie) {

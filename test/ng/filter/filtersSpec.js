@@ -145,7 +145,7 @@ describe('filters', function() {
       expect(number(+Infinity)).toEqual('');
       expect(number(-Infinity)).toEqual('');
       expect(number("1234.5678")).toEqual('1,234.568');
-      expect(number(1/0)).toEqual("");
+      expect(number(1 / 0)).toEqual("");
       expect(number(1,        2)).toEqual("1.00");
       expect(number(.1,       2)).toEqual("0.10");
       expect(number(.01,      2)).toEqual("0.01");
@@ -393,7 +393,7 @@ describe('filters', function() {
     it('should support different degrees of subsecond precision', function() {
       var format = 'yyyy-MM-dd ss';
 
-      var localDay = new Date(Date.UTC(2003, 9-1, 10, 13, 2, 3, 123)).getDate();
+      var localDay = new Date(Date.UTC(2003, 9 - 1, 10, 13, 2, 3, 123)).getDate();
 
       expect(date('2003-09-10T13:02:03.12345678Z', format)).toEqual('2003-09-' + localDay + ' 03');
       expect(date('2003-09-10T13:02:03.1234567Z', format)).toEqual('2003-09-' + localDay + ' 03');
