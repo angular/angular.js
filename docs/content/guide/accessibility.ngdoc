@@ -119,14 +119,22 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 <h2 id="ngclick">ngClick and ngDblClick</h2>
 If `ngClick` or `ngDblClick` is encountered, ngAria will add `tabIndex` if it isn't there already.
 Even with this, you must currently still add `ng-keypress` to non-interactive elements such as
-`<div>` or `<taco-button>` to enable keyboard access. I have recommended this also bind
-`ng-keypress` to be more useful; the conversation is [currently ongoing](https://github.com/angular/angular.js/issues/9254).
+`<div>` or `<taco-button>` to enable keyboard access. Conversation is
+[currently ongoing](https://github.com/angular/angular.js/issues/9254) about whether ngAria
+should also bind `ng-keypress` to be more useful.
+
+<h2 id="ngmessages">ngMessages</h2>
+
+The new ngMessages module makes it easy to display form validation or other messages with priority
+sequencing and animation. To expose these visual messages to screen readers,
+ngAria injects `aria-live="polite"`, causing them to be read aloud any time a message is shown,
+regardless of the user's focus location.
 
 * * *
 
 ##Disabling attributes
 The attribute magic of ngAria may not work for every scenario. To disable individual attributes,
-you can use the `{@link ngAria.$ariaProvider#config config}` method:
+you can use the {@link ngAria.$ariaProvider#config config} method:
 
 ```
 angular.module('myApp', ['ngAria'], function config($ariaProvider) {
@@ -135,7 +143,6 @@ angular.module('myApp', ['ngAria'], function config($ariaProvider) {
   });
 });
 ```
-* * *
 
 ##Common Accessibility Patterns
 
