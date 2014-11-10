@@ -103,6 +103,19 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should cancel timeout on completeRequest()', function() {
+    fakeTimeout.ids.length = fakeTimeout.fns.length = fakeTimeout.delays.length = 0;
+    fakeTimeoutId = 0;
+    spyOn(fakeTimeout, 'cancel').andCallThrough();
+    $backend('GET', '/some-url', null, callback, void 0, 100);
+    xhr = MockXhr.$$lastInstance;
+    expect(fakeTimeout.cancel).not.toHaveBeenCalled();
+    xhr.status = 200;
+    xhr.onload();
+    expect(fakeTimeout.cancel).toHaveBeenCalledWith(1);
+  });
+
+
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
       expect(status).toBe(204);
