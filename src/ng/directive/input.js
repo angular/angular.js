@@ -1015,7 +1015,16 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   element.on('change', listener);
 
   ctrl.$render = function() {
-    element.val(ctrl.$isEmpty(ctrl.$modelValue) ? '' : ctrl.$viewValue);
+    if (/text/.test(element[0].type)) {
+      var start = element[0].selectionStart;
+      var end = element[0].selectionEnd;
+
+      element.val(ctrl.$isEmpty(ctrl.$modelValue) ? '' : ctrl.$viewValue);
+
+      element[0].setSelectionRange(start, end);
+    } else {
+      element.val(ctrl.$isEmpty(ctrl.$modelValue) ? '' : ctrl.$viewValue);
+    }
   };
 }
 
