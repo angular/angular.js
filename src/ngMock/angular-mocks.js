@@ -1154,22 +1154,24 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
       wasExpected = true;
     }
 
-    var i = -1, definition;
-    while ((definition = definitions[++i])) {
-      if (definition.match(method, url, data, headers || {})) {
-        if (definition.response) {
-          // if $browser specified, we do auto flush all requests
-          ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
-        } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers, timeout, withCredentials);
-        } else throw new Error('No response defined !');
-        return;
+    if (definitions.length > 0) {
+      var i = -1, definition;
+      while ((definition = definitions[++i])) {
+        if (definition.match(method, url, data, headers || {})) {
+          if (definition.response) {
+            // if $browser specified, we do auto flush all requests
+            ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
+          } else if (definition.passThrough) {
+            $delegate(method, url, data, callback, headers, timeout, withCredentials);
+          } else throw new Error('No response defined !');
+          return;
+        }
       }
+      throw wasExpected ?
+          new Error('No response defined !') :
+          new Error('Unexpected request: ' + method + ' ' + url + '\n' +
+                    (expectation ? 'Expected ' + expectation : 'No more request expected'));
     }
-    throw wasExpected ?
-        new Error('No response defined !') :
-        new Error('Unexpected request: ' + method + ' ' + url + '\n' +
-                  (expectation ? 'Expected ' + expectation : 'No more request expected'));
   }
 
   /**
