@@ -729,7 +729,7 @@ Parser.prototype = {
         var key = ensureSafeMemberName(indexFn(self, locals), expression);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
         var o = ensureSafeObject(obj(self, locals), expression);
-        if (!o) obj.assign(self, o = {});
+        if (!o) obj.assign(self, o = isNumber(key) ? [] : {});
         return o[key] = value;
       }
     });
