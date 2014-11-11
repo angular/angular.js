@@ -125,7 +125,7 @@ function filterFilter() {
       case 'object':
         // Replace `{$: 'xyz'}` with `'xyz'` and fall through
         var keys = Object.keys(expression);
-        if ((keys.length === 1) && (keys[0] === '$')) expression  = expression.$;
+        if ((keys.length === 1) && (keys[0] === '$')) expression = expression.$;
         // jshint -W086
       case 'boolean':
       case 'number':
