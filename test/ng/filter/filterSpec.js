@@ -156,6 +156,26 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should not consider the expression\'s inherited properties', function() {
+    Object.prototype.noop = noop;
+
+    var items = [
+      {text: 'hello'},
+      {text: 'goodbye'},
+      {text: 'kittens'},
+      {text: 'puppies'}
+    ];
+
+    expect(filter(items, {text: 'hell'}).length).toBe(1);
+    expect(filter(items, {text: 'hell'})[0]).toBe(items[0]);
+
+    expect(filter(items, 'hell').length).toBe(1);
+    expect(filter(items, 'hell')[0]).toBe(items[0]);
+
+    delete(Object.prototype.noop);
+  });
+
+
   describe('should support comparator', function() {
 
     it('as equality when true', function() {
