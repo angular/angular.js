@@ -2495,6 +2495,16 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should accept values of any length when maxlength is negative', function() {
+      compileInput('<input type="text" ng-model="value" ng-maxlength="-1" />');
+
+      changeInputValueTo('');
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('aaaaaaaaaa');
+      expect(inputElm).toBeValid();
+    });
+
     it('should listen on ng-maxlength when maxlength is observed', function() {
       var value = 0;
       compileInput('<input type="text" ng-model="value" ng-maxlength="max" attr-capture />');
