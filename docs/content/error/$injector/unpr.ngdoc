@@ -61,7 +61,7 @@ Attempting to inject one controller into another will also throw an `Unknown pro
 
 ```
 angular.module('myModule', [])
-  .controller('MyFirstController', function() { /* ... */ });
+  .controller('MyFirstController', function() { /* ... */ })
   .controller('MySecondController', ['MyFirstController', function(MyFirstController) {
     // This controller throws an unknown provider error because
     // MyFirstController cannot be injected.
