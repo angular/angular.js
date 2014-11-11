@@ -1,5 +1,7 @@
 'use strict';
 
+/* global getHash:true, stripHash:true */
+
 var historyEntriesLength;
 var sniffer = {};
 
@@ -50,6 +52,12 @@ function MockWindow(options) {
       locationHref = value;
       mockWindow.history.state = null;
       historyEntriesLength++;
+    },
+    get hash() {
+      return getHash(locationHref);
+    },
+    set hash(value) {
+      locationHref = stripHash(locationHref) + '#' + value;
     },
     replace: function(url) {
       locationHref = url;
@@ -582,18 +590,6 @@ describe('browser', function() {
       expect(pushState).not.toHaveBeenCalled();
       expect(replaceState).not.toHaveBeenCalled();
       expect(fakeWindow.location.href).toEqual('http://server/');
-    });
-
-
-    it("should retain the # character when replacing and the only change is clearing the hash fragment, to prevent page reload", function() {
-      sniffer.history = true;
-      browser.url('http://server/#123');
-
-      expect(fakeWindow.location.href).toEqual('http://server/#123');
-
-      browser.url('http://server/', true);
-
-      expect(locationReplace).toHaveBeenCalledWith('http://server/#');
     });
 
 

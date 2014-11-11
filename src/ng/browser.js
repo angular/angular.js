@@ -62,6 +62,11 @@ function Browser(window, document, $log, $sniffer) {
     }
   }
 
+  function getHash(url) {
+    var index = url.indexOf('#');
+    return index === -1 ? '' : url.substr(index + 1);
+  }
+
   /**
    * @private
    * Note: this method is used only by scenario runner
@@ -188,19 +193,13 @@ function Browser(window, document, $log, $sniffer) {
       } else {
         if (!sameBase) {
           reloadLocation = url;
-        } else {
-          // If we are only changing the hash fragment then ensure that we retain a # character
-          // to prevent the page reloading,
-          // which stops us from reading the correct location.href,
-          // which causes $location watches to trigger an infinite digest.
-          if (url.indexOf('#') === -1) {
-            url += '#';
-          }
         }
         if (replace) {
           location.replace(url);
-        } else {
+        } else if (!sameBase) {
           location.href = url;
+        } else {
+          location.hash = getHash(url);
         }
       }
       return self;
