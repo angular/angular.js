@@ -1138,7 +1138,7 @@ function createDateInputType(type, regexp, parseDate, format) {
       } else {
         previousDate = null;
       }
-      return '';
+      return value;
     });
 
     if (isDefined(attr.min) || attr.ngMin) {
