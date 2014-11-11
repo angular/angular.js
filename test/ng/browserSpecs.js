@@ -1,8 +1,18 @@
 'use strict';
 
-function MockWindow() {
+/* global getHash:true, stripHash:true */
+
+var historyEntriesLength;
+var sniffer = {};
+
+function MockWindow(options) {
+  if (typeof options !== 'object') {
+    options = {};
+  }
   var events = {};
   var timeouts = this.timeouts = [];
+  var locationHref = 'http://server/';
+  var mockWindow = this;
 
   this.setTimeout = function(fn) {
     return timeouts.push(fn) - 1;
@@ -36,8 +46,24 @@ function MockWindow() {
   };
 
   this.location = {
-    href: 'http://server/',
-    replace: noop
+    get href() {
+      return locationHref;
+    },
+    set href(value) {
+      locationHref = value;
+      mockWindow.history.state = null;
+      historyEntriesLength++;
+    },
+    get hash() {
+      return getHash(locationHref);
+    },
+    set hash(value) {
+      locationHref = stripHash(locationHref) + '#' + value;
+    },
+    replace: function(url) {
+      locationHref = url;
+      mockWindow.history.state = null;
+    }
   };
 
   this.history = {
@@ -451,6 +477,17 @@ describe('browser', function() {
       expect(locationReplace).not.toHaveBeenCalled();
     });
 
+    it("should retain the # character when the only change is clearing the hash fragment, to prevent page reload", function() {
+      sniffer.history = true;
+
+      browser.url('http://server/#123');
+      expect(fakeWindow.location.href).toEqual('http://server/#123');
+
+      browser.url('http://server/');
+      expect(fakeWindow.location.href).toEqual('http://server/#');
+
+    });
+
     it('should use location.replace when history.replaceState not available', function() {
       sniffer.history = false;
       browser.url('http://new.org', true);
@@ -462,6 +499,7 @@ describe('browser', function() {
       expect(fakeWindow.location.href).toEqual('http://server/');
     });
 
+
     it('should use location.replace and not use replaceState when the url only changed in the hash fragment to please IE10/11', function() {
       sniffer.history = true;
       browser.url('http://server/#123', true);
@@ -472,6 +510,7 @@ describe('browser', function() {
       expect(replaceState).not.toHaveBeenCalled();
       expect(fakeWindow.location.href).toEqual('http://server/');
     });
+
 
     it('should return $browser to allow chaining', function() {
       expect(browser.url('http://any.com')).toBe(browser);
@@ -835,7 +874,6 @@ describe('browser', function() {
         expect(browser.url()).toBe(newUrl);
         $rootScope.$digest();
         expect(browser.url()).toBe(newUrl);
-        expect(fakeWindow.location.href).toBe(current);
       });
     });
 
