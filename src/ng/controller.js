@@ -70,7 +70,7 @@ function $ControllerProvider() {
      *    * if $controllerProvider#allowGlobals, check `window[constructor]` on the global
      *      `window` object (not recommended)
      *
-     *    If use a string with `controller as` syntax, the controller instance is published into a `scope` 
+     *    If use a string with `controller as` syntax, the controller instance is published into a `scope`
      *    property, but the `scope` must be injected into `locals` param.
      *
      *    The string can use the `controller as property` syntax, where the controller instance is published
