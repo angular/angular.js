@@ -292,7 +292,7 @@ describe('$http', function() {
 
     it('should throw error if its not a string or not an object supplied', inject(function($httpBackend, $http) {
         expect(function() {
-            $http(['/url'])
+            $http(['/url']);
         }).toThrowMinErr('$http','argument');
     }));
 
