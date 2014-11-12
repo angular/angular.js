@@ -1,0 +1,81 @@
+<style>
+[ng-cloak] { display: none; }
+</style>
+<div ng-app="compileBenchmark" ng-cloak>
+  <div ng-controller="DataController">
+    <div class="container-fluid">
+      <p>
+        Directive $compile/link performance.
+      </p>
+
+      <!-- A couple options aren't compatible or have requirements, just show a message -->
+      <ul style="color:red">
+        <li ng-if="o.multiElement && !o.wrap">Multi Element currently requires a parent node (Wrap)</li>
+        <li ng-if="o.replace && !o.templateType">Replace without a template?</li>
+      </ul>
+
+      <ul style="list-style:none">
+        <li>
+          <input type="text" ng-model="oJSON" width="250">
+        </li>
+
+        <li>
+          <label for="compile">Compile</label>
+          <input type="checkbox" ng-model="o.compile" id="compile">
+        </li>
+
+        <li>
+          Link:
+          <label for="preLink">PRE</label>
+          <input type="checkbox" ng-model="o.preLink" id="preLink">
+          <label for="postLink">POST</label>
+          <input type="checkbox" ng-model="o.postLink" id="postLink">
+        </li>
+
+        <li>
+          Template:
+          <label for="tt-none">None</label>
+          <input type="radio" name="templateType" ng-model="o.templateType" ng-value="false" selected id="tt-none">
+          <label for="tt-template">Yes</label>
+          <input type="radio" name="templateType" ng-model="o.templateType" value="template" id="tt-template">
+          <label for="tt-url">URL</label>
+          <input type="radio" name="templateType" ng-model="o.templateType" value="templateUrl" id="tt-url">
+        </li>
+
+        <li>
+          <label for="replace">Replace</label>
+          <input type="checkbox" ng-model="o.replace" id="replace">
+        </li>
+
+        <li>
+          Transclude:
+          <label for="t-none">None</label>
+          <input type="radio" ng-model="o.transclude" ng-value="false" id="t-none">
+          <label for="t-yes">Yes</label>
+          <input type="radio" ng-model="o.transclude" ng-value="true" id="t-yes">
+          <label for="t-element">Element</label>
+          <input type="radio" ng-model="o.transclude" value="element" id="t-element">
+        </li>
+
+        <li>
+          <label for="controller">Controller</label>
+          <input type="checkbox" ng-model="o.controller" id="controller">
+        </li>
+
+        <li>
+          <label for="wrap">Wrap</label>
+          <input type="checkbox" ng-model="o.wrap" id="wrap">
+        </li>
+
+        <li>
+          <label for="multiElement">Multi Element</label>
+          <input type="checkbox" ng-model="o.multiElement" id="multiElement">
+          <label for="elementCount" ng-show="o.multiElement">
+            Elements
+            <input type="number" ng-model="o.elementCount" id="elementCount" placeholder="1">
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
