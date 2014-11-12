@@ -716,6 +716,13 @@ function $HttpProvider() {
         transformRequest: defaults.transformRequest,
         transformResponse: defaults.transformResponse
       };
+
+      if (angular.isString(requestConfig)) {
+          requestConfig = {url: requestConfig};
+      } else if (angular.isArray(requestConfig) || !angular.isObject(requestConfig)) {
+          throw minErr('$http')('argument','Invalid argument, expected object, received {0}', requestConfig);
+      }
+
       var headers = mergeHeaders(requestConfig);
 
       extend(config, requestConfig);
