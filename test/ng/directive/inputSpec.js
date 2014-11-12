@@ -505,6 +505,121 @@ describe('NgModelController', function() {
         expect(ctrl.$valid).toBe(true);
       });
 
+      it('should pass the last parsed modelValue to the validators', function() {
+        ctrl.$parsers.push(function(modelValue) {
+          return modelValue + 'def';
+        });
+
+        ctrl.$setViewValue('abc');
+
+        ctrl.$validators.test = function(modelValue, viewValue) {
+          return true;
+        };
+
+        spyOn(ctrl.$validators, 'test');
+
+        ctrl.$validate();
+
+        expect(ctrl.$validators.test).toHaveBeenCalledWith('abcdef', 'abc');
+      });
+
+      it('should set the model to undefined when it becomes invalid', function() {
+        var valid = true;
+        ctrl.$validators.test = function(modelValue, viewValue) {
+          return valid;
+        };
+
+        scope.$apply('value = "abc"');
+        expect(scope.value).toBe('abc');
+
+        valid = false;
+        ctrl.$validate();
+
+        expect(scope.value).toBeUndefined();
+      });
+
+      it('should update the model when it becomes valid', function() {
+        var valid = true;
+        ctrl.$validators.test = function(modelValue, viewValue) {
+          return valid;
+        };
+
+        scope.$apply('value = "abc"');
+        expect(scope.value).toBe('abc');
+
+        valid = false;
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+
+        valid = true;
+        ctrl.$validate();
+        expect(scope.value).toBe('abc');
+      });
+
+      it('should not update the model when it is valid, but there is a parse error', function() {
+        ctrl.$parsers.push(function(modelValue) {
+          return undefined;
+        });
+
+        ctrl.$setViewValue('abc');
+        expect(ctrl.$error.parse).toBe(true);
+        expect(scope.value).toBeUndefined();
+
+        ctrl.$validators.test = function(modelValue, viewValue) {
+          return true;
+        };
+
+        ctrl.$validate();
+        expect(ctrl.$error).toEqual({parse: true});
+        expect(scope.value).toBeUndefined();
+      });
+
+      it('should not set an invalid model to undefined when validity is the same', function() {
+        ctrl.$validators.test = function() {
+          return false;
+        };
+
+        scope.$apply('value = "invalid"');
+        expect(ctrl.$valid).toBe(false);
+        expect(scope.value).toBe('invalid');
+
+        ctrl.$validate();
+        expect(ctrl.$valid).toBe(false);
+        expect(scope.value).toBe('invalid');
+      });
+
+      it('should not change a model that has a formatter', function() {
+        ctrl.$validators.test = function() {
+          return true;
+        };
+
+        ctrl.$formatters.push(function(modelValue) {
+          return 'xyz';
+        });
+
+        scope.$apply('value = "abc"');
+        expect(ctrl.$viewValue).toBe('xyz');
+
+        ctrl.$validate();
+        expect(scope.value).toBe('abc');
+      });
+
+      it('should not change a model that has a parser', function() {
+        ctrl.$validators.test = function() {
+          return true;
+        };
+
+        ctrl.$parsers.push(function(modelValue) {
+          return 'xyz';
+        });
+
+        scope.$apply('value = "abc"');
+
+        ctrl.$validate();
+        expect(scope.value).toBe('abc');
+      });
+    });
+
     describe('view -> model update', function() {
       it('should always perform validations using the parsed model value', function() {
         var captures;
@@ -937,6 +1052,7 @@ describe('NgModelController', function() {
   });
 });
 
+
 describe('ngModel', function() {
   var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
@@ -1350,7 +1466,6 @@ describe('input', function() {
     expect(scope.form.$addControl).not.toHaveBeenCalled();
     expect(scope.form.$$renameControl).not.toHaveBeenCalled();
   });
-
 
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
@@ -2314,6 +2429,14 @@ describe('input', function() {
       expect(inputElm).toBeValid();
       expect(scope.form.input.$error.minlength).not.toBe(true);
     });
+
+    it('should validate when the model is initalized as a number', function() {
+      scope.value = 12345;
+      compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
+      expect(scope.value).toBe(12345);
+      expect(scope.form.input.$error.minlength).toBeUndefined();
+    });
+
   });
 
 
@@ -2410,6 +2533,13 @@ describe('input', function() {
       scope.value = '12345';
       compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
       expect(scope.value).toBe('12345');
+    });
+
+    it('should validate when the model is initalized as a number', function() {
+      scope.value = 12345;
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="10" />');
+      expect(scope.value).toBe(12345);
+      expect(scope.form.input.$error.maxlength).toBeUndefined();
     });
 
   });
