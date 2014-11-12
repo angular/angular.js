@@ -314,7 +314,7 @@ someModule.directive('someDirective', function() {
 ```
 
 ```html
-  <div some-directive name=“::myName” color=“My color is {{::myColor}}”></div>
+  <div some-directive name="::myName" color="My color is {{::myColor}}"></div>
 ```
 
 
