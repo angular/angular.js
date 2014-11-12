@@ -164,6 +164,12 @@ expression. The reason behind this is core to the Angular philosophy that applic
 be in controllers, not the views. If you need a real conditional, loop, or to throw from a view
 expression, delegate to a JavaScript method instead.
 
+## No RegExp creation with literal notation
+
+You can't create regular expressions from within AngularJS expressions. This is to avoid complex
+model transformation logic inside templates. Such logic is better placed in a controller or in a dedicated
+filter where it can be tested properly.
+
 ## `$event`
 
 Directives like {@link ng.directive:ngClick `ngClick`} and {@link ng.directive:ngFocus `ngFocus`}
