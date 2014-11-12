@@ -717,9 +717,7 @@ function $HttpProvider() {
         transformResponse: defaults.transformResponse
       };
 
-      if (angular.isString(requestConfig)) {
-          requestConfig = {url: requestConfig};
-      } else if (angular.isArray(requestConfig) || !angular.isObject(requestConfig)) {
+      if (angular.isArray(requestConfig) || !angular.isObject(requestConfig)) {
           throw minErr('$http')('argument','Invalid argument, expected object, received {0}', requestConfig);
       }
 
