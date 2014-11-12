@@ -5,33 +5,49 @@
  * @name ngAria
  * @description
  *
- * The `ngAria` module provides support for adding <abbr title="Accessible Rich Internet Applications">ARIA</abbr>
- * attributes that convey state or semantic information about the application in order to allow assistive technologies
- * to convey appropriate information to persons with disabilities.
+ * The `ngAria` module provides support for common
+ * [<abbr title="Accessible Rich Internet Applications">ARIA</abbr>](http://www.w3.org/TR/wai-aria/)
+ * attributes that convey state or semantic information about the application for users
+ * of assistive technologies, such as screen readers.
  *
  * <div doc-module-components="ngAria"></div>
  *
- * # Usage
- * To enable the addition of the ARIA tags, just require the module into your application and the tags will
- * hook into your ng-show/ng-hide, input, textarea, button, select and ng-required directives and adds the
- * appropriate ARIA attributes.
+ * ## Usage
  *
- * Currently, the following ARIA attributes are implemented:
+ * For ngAria to do its magic, simply include the module as a dependency. The directives supported
+ * by ngAria are:
+ * `ngModel`, `ngDisabled`, `ngShow`, `ngHide`, `ngClick`, `ngDblClick`, and `ngMessages`.
  *
- * + aria-hidden
- * + aria-checked
- * + aria-disabled
- * + aria-required
- * + aria-invalid
- * + aria-multiline
- * + aria-valuenow
- * + aria-valuemin
- * + aria-valuemax
- * + tabindex
+ * Below is a more detailed breakdown of the attributes handled by ngAria:
  *
- * You can disable individual ARIA attributes by using the {@link ngAria.$ariaProvider#config config} method.
+ * | Directive                                   | Supported Attributes                                                                   |
+ * |---------------------------------------------|----------------------------------------------------------------------------------------|
+ * | {@link ng.directive:ngModel ngModel}        | aria-checked, aria-valuemin, aria-valuemax, aria-valuenow, aria-invalid, aria-required |
+ * | {@link ng.directive:ngDisabled ngDisabled}  | aria-disabled                                                                          |
+ * | {@link ng.directive:ngShow ngShow}          | aria-hidden                                                                            |
+ * | {@link ng.directive:ngHide ngHide}          | aria-hidden                                                                            |
+ * | {@link ng.directive:ngClick ngClick}        | tabindex                                                                               |
+ * | {@link ng.directive:ngDblclick ngDblclick}  | tabindex                                                                               |
+ * | {@link module:ngMessages ngMessages}        | aria-live                                                                              |
+ *
+ * Find out more information about each directive by reading the
+ * {@link guide/accessibility ngAria Developer Guide}.
+ *
+ * ##Example
+ * Using ngDisabled with ngAria:
+ * ```html
+ * <md-checkbox ng-disabled="disabled">
+ * ```
+ * Becomes:
+ * ```html
+ * <md-checkbox ng-disabled="disabled" aria-disabled="true">
+ * ```
+ *
+ * ##Disabling Attributes
+ * It's possible to disable individual attributes added by ngAria with the
+ * {@link ngAria.$ariaProvider#config config} method. For more details, see the
+ * {@link guide/accessibility Developer Guide}.
  */
-
  /* global -ngAriaModule */
 var ngAriaModule = angular.module('ngAria', ['ng']).
                         provider('$aria', $AriaProvider);
@@ -42,10 +58,20 @@ var ngAriaModule = angular.module('ngAria', ['ng']).
  *
  * @description
  *
- * Used for configuring ARIA attributes.
+ * Used for configuring the ARIA attributes injected and managed by ngAria.
+ *
+ * ```js
+ * angular.module('myApp', ['ngAria'], function config($ariaProvider) {
+ *   $ariaProvider.config({
+ *     ariaValue: true,
+ *     tabindex: false
+ *   });
+ * });
+ *```
  *
  * ## Dependencies
  * Requires the {@link ngAria} module to be installed.
+ *
  */
 function $AriaProvider() {
   var config = {
@@ -108,7 +134,41 @@ function $AriaProvider() {
    *
    * @description
    *
-   * Contains helper methods for applying ARIA attributes to HTML
+   * The $aria service contains helper methods for applying common
+   * [ARIA](http://www.w3.org/TR/wai-aria/) attributes to HTML directives.
+   *
+   * ngAria injects common accessibility attributes that tell assistive technologies when HTML
+   * elements are enabled, selected, hidden, and more. To see how this is performed with ngAria,
+   * let's review a code snippet from ngAria itself:
+   *
+   *```js
+   * ngAriaModule.directive('ngDisabled', ['$aria', function($aria) {
+   *   return $aria.$$watchExpr('ngDisabled', 'aria-disabled');
+   * }])
+   *```
+   * Shown above, the ngAria module creates a directive with the same signature as the
+   * traditional `ng-disabled` directive. But this ngAria version is dedicated to
+   * solely managing accessibility attributes. The internal `$aria` service is used to watch the
+   * boolean attribute `ngDisabled`. If it has not been explicitly set by the developer,
+   * `aria-disabled` is injected as an attribute with its value synchronized to the value in
+   * `ngDisabled`.
+   *
+   * Because ngAria hooks into the `ng-disabled` directive, developers do not have to do
+   * anything to enable this feature. The `aria-disabled` attribute is automatically managed
+   * simply as a silent side-effect of using `ng-disabled` with the ngAria module.
+   *
+   * The full list of directives that interface with ngAria:
+   * * **ngModel**
+   * * **ngShow**
+   * * **ngHide**
+   * * **ngClick**
+   * * **ngDblclick**
+   * * **ngMessages**
+   * * **ngDisabled**
+   *
+   * Read the {@link guide/accessibility ngAria Developer Guide} for a thorough explanation of each
+   * directive.
+   *
    *
    * ## Dependencies
    * Requires the {@link ngAria} module to be installed.
