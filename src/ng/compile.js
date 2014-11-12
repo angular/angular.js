@@ -2425,7 +2425,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           i;
 
       if ($rootElement && (i = indexOf.call($rootElement, firstElementToRemove)) !== -1) {
-        $rootElement.splice(i, removeCount, newNode);
+        if (removeCount === 1) {
+          $rootElement[i] = newNode;
+        } else {
+          $rootElement.splice(i, removeCount, newNode);
+        }
 
         // If the replaced element is also the jQuery .context then replace it
         // .context is a deprecated jQuery api, so we should set it only when jQuery set it
@@ -2477,7 +2481,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       //Modify elementsToRemove jqLite/Array replacing all content with the newnode
-      elementsToRemove.splice(0, removeCount, newNode);
+      if (removeCount === 1) {
+        elementsToRemove[0] = newNode;
+      } else {
+        elementsToRemove.splice(0, removeCount, newNode);
+      }
     }
 
 
