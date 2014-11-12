@@ -12,7 +12,7 @@ assistive technologies used by persons with disabilities.
 
 ##Including ngAria
 
-Using ngAria is as simple as requiring the ngAria module in your application. ngAria hooks into
+Using {@link ngAria ngAria} is as simple as requiring the ngAria module in your application. ngAria hooks into
 standard AngularJS directives and quietly injects accessibility support into your application
 at runtime.
 
@@ -20,6 +20,15 @@ at runtime.
 angular.module('myApp', ['ngAria'])...
 ```
 
+###Using ngAria
+Most of what ngAria does is only visible "under the hood". To see the module in action, once you've
+added it as a dependency, you can test a few things:
+ * Using your favorite element inspector, look for ngAria attributes in your own code.
+ * Test using your keyboard to ensure `tabindex` is used correctly.
+ * Fire up a screen reader such as VoiceOver to listen for ARIA support.
+[Helpful screen reader tips.](http://webaim.org/articles/screenreader_testing/)
+
+##Supported directives
 Currently, ngAria interfaces with the following directives:
 
  * <a href="#ngmodel">ngModel</a>
@@ -31,7 +40,7 @@ Currently, ngAria interfaces with the following directives:
 
 <h2 id="ngmodel">ngModel</h2>
 
-Most of ngAria's heavy lifting happens in the [ngModel](https://docs.angularjs.org/api/ng/directive/ngModel)
+Most of ngAria's heavy lifting happens in the {@link ngModel ngModel}
 directive.  For elements using ngModel, special attention is paid by ngAria if that element also
 has a a role or type of `checkbox`, `radio`, `range` or `textbox`.
 
@@ -47,15 +56,80 @@ attributes (if they have not been explicitly specified by the developer):
 
 ###Example
 
-```html
-<md-checkbox ng-model="val" required>
-```
-
-Becomes:
-
-```html
-<md-checkbox ng-model="val" required aria-required="true" tabIndex="0">
-```
+<example module="ngAria_ngModelExample" deps="angular-aria.js">
+ <file name="index.html">
+  <style>
+    [role=checkbox] {
+      cursor: pointer;
+      display: inline-block;
+    }
+    [role=checkbox] .icon:before {
+      content: '\2610';
+      display: inline-block;
+      font-size: 2em;
+      line-height: 1;
+      vertical-align: middle;
+      speak: none;
+    }
+    [role=checkbox].active .icon:before {
+      content: '\2611';
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+  </style>
+ <div>
+ <form ng-controller="formsController">
+  <some-checkbox role="checkbox" ng-model="checked" ng-class="{active: checked}"
+    ng-disabled="isDisabled" ng-click="toggleCheckbox()"
+    aria-label="Custom Checkbox" show-attrs>
+    <span class="icon" aria-hidden="true"></span>
+    Custom Checkbox
+  </some-checkbox>
+ </form>
+ </div>
+ <script>
+  var app = angular.module('ngAria_ngModelExample', ['ngAria'])
+  .controller('formsController', function($scope){
+    $scope.checked = false;
+    $scope.toggleCheckbox = function(){
+      $scope.checked = !$scope.checked;
+    }
+  })
+  .directive('someCheckbox', function(){
+    return {
+      restrict: 'E',
+      link: function($scope, $el, $attrs) {
+        $el.on('keypress', function(event){
+          event.preventDefault();
+          if(event.keyCode === 32 || event.keyCode === 13){
+            $scope.toggleCheckbox();
+            $scope.$apply();
+          }
+        });
+      }
+    }
+  })
+  .directive('showAttrs', function() {
+    return function($scope, $el, $attrs) {
+      var pre = document.createElement('pre');
+      $el.after(pre);
+      $scope.$watch(function() {
+        var $attrs = {};
+        Array.prototype.slice.call($el[0].attributes, 0).forEach(function(item) {
+          if (item.name !== 'show-$attrs') {
+            $attrs[item.name] = item.value;
+          }
+        });
+        return $attrs;
+      }, function(newAttrs, oldAttrs) {
+        pre.textContent = JSON.stringify(newAttrs, null, 2);
+      }, true);
+    }
+  });
+ </script>
+ </file>
+</example>
 
 ngAria will also add `tabIndex`, ensuring custom elements with these roles will be reachable from
 the keyboard. It is still up to **you** as a developer to **ensure custom controls will be
@@ -106,6 +180,24 @@ screen reader users won't accidentally focus on "mystery elements". Managing tab
 child control can be complex and affect performance, so it’s best to just stick with the default
 `display: none` CSS. See the [fourth rule of ARIA use](http://www.w3.org/TR/aria-in-html/#fourth-rule-of-aria-use).
 
+###Example
+```css
+.ng-hide {
+  display: block;
+  opacity: 0;
+}
+```
+```html
+<div ng-show="false" class="ng-hide" aria-hidden="true"></div>
+```
+
+Becomes:
+
+```html
+<div ng-show="true" aria-hidden="false"></div>
+```
+*Note: Child links, buttons or other interactive controls must also be removed from the tab order.*
+
 <h2 id="nghide">ngHide</h2>
 
 >The [ngHide](https://docs.angularjs.org/api/ng/directive/ngHide) directive shows or hides the
@@ -116,12 +208,22 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 `aria-hidden` on the directive when it is hidden or shown, but the content is already hidden with
 `display: none`. See explanation for <a href="#ngshow">ngShow</a> when overriding the default CSS.
 
-<h2 id="ngclick">ngClick and ngDblClick</h2>
-If `ngClick` or `ngDblClick` is encountered, ngAria will add `tabIndex` if it isn't there already.
-Even with this, you must currently still add `ng-keypress` to non-interactive elements such as
-`<div>` or `<taco-button>` to enable keyboard access. Conversation is
-[currently ongoing](https://github.com/angular/angular.js/issues/9254) about whether ngAria
-should also bind `ng-keypress` to be more useful.
+<h2 id="ngclick-and-ngdblclick">ngClick and ngDblclick</h2>
+If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex` if it isn't there already.
+Even with this, you must currently still add `ng-keypress` to non-interactive elements such as `div`
+or `taco-button` to enable keyboard access. Conversation is currently ongoing about whether ngAria
+should also bind `ng-keypress`.
+
+<h3>Example</h3>
+```html
+<div ng-click="toggleMenu()"></div>
+```
+
+Becomes:
+```html
+<div ng-click="toggleMenu()" tabindex="0"></div>
+```
+*Note: ngAria still requires `ng-keypress` to be added manually to non-native controls like divs.*
 
 <h2 id="ngmessages">ngMessages</h2>
 
@@ -129,20 +231,105 @@ The new ngMessages module makes it easy to display form validation or other mess
 sequencing and animation. To expose these visual messages to screen readers,
 ngAria injects `aria-live="polite"`, causing them to be read aloud any time a message is shown,
 regardless of the user's focus location.
+###Example
 
-* * *
+```html
+<div ng-messages="myForm.myName.$error">
+  <div ng-message="required">You did not enter a field</div>
+  <div ng-message="maxlength">Your field is too long</div>
+</div>
+```
+
+Becomes:
+
+```html
+<div ng-messages="myForm.myName.$error" aria-live="polite">
+  <div ng-message="required">You did not enter a field</div>
+  <div ng-message="maxlength">Your field is too long</div>
+</div>
+```
 
 ##Disabling attributes
 The attribute magic of ngAria may not work for every scenario. To disable individual attributes,
-you can use the {@link ngAria.$ariaProvider#config config} method:
+you can use the {@link ngAria.$ariaProvider#config config} method. Just keep in mind this will
+tell ngAria to ignore the attribute globally.
 
-```
-angular.module('myApp', ['ngAria'], function config($ariaProvider) {
-  $ariaProvider.config({
-    tabindex: false
+<example module="ngAria_ngDisabledExample" deps="angular-aria.js">
+ <file name="index.html">
+  <style>
+    [role=checkbox] {
+      cursor: pointer;
+      display: inline-block;
+    }
+    [role=checkbox] .icon:before {
+      content: '\2610';
+      display: inline-block;
+      font-size: 2em;
+      line-height: 1;
+      vertical-align: middle;
+      speak: none;
+    }
+    [role=checkbox].active .icon:before {
+      content: '\2611';
+    }
+  </style>
+ <form ng-controller="formsController">
+  <div ng-model="someModel" show-attrs>
+    Div with ngModel and aria-invalid disabled
+  </div>
+  <div role="checkbox" ng-model="checked" ng-class="{active: checked}"
+    aria-label="Custom Checkbox" ng-click="toggleCheckbox()" some-checkbox show-attrs>
+    <span class="icon" aria-hidden="true"></span>
+    Custom Checkbox for comparison
+  </div>
+ </form>
+ <script>
+  angular.module('ngAria_ngDisabledExample', ['ngAria'], function config($ariaProvider) {
+    $ariaProvider.config({
+      ariaInvalid: false,
+      tabindex: true
+    });
+  })
+  .controller('formsController', function($scope){
+    $scope.checked = false;
+    $scope.toggleCheckbox = function(){
+      $scope.checked = !$scope.checked;
+    }
+  })
+  .directive('someCheckbox', function(){
+    return {
+      restrict: 'A',
+      link: function($scope, $el, $attrs) {
+        $el.on('keypress', function(event){
+          event.preventDefault();
+          if(event.keyCode === 32 || event.keyCode === 13){
+            $scope.toggleCheckbox();
+            $scope.$apply();
+          }
+        });
+      }
+    }
+  })
+  .directive('showAttrs', function() {
+    return function(scope, el, attrs) {
+      var pre = document.createElement('pre');
+      el.after(pre);
+      scope.$watch(function() {
+        var attrs = {};
+        Array.prototype.slice.call(el[0].attributes, 0).forEach(function(item) {
+          if (item.name !== 'show-attrs') {
+            attrs[item.name] = item.value;
+          }
+        });
+        return attrs;
+      }, function(newAttrs, oldAttrs) {
+        pre.textContent = JSON.stringify(newAttrs, null, 2);
+      }, true);
+    }
   });
-});
-```
+ </script>
+ </file>
+</example>
 
 ##Common Accessibility Patterns
 
@@ -171,6 +358,7 @@ Accessibility best practices that apply to web apps in general also apply to Ang
 
  * [Using ARIA in HTML](http://www.w3.org/TR/aria-in-html/)
  * [AngularJS Accessibility at ngEurope](https://www.youtube.com/watch?v=dmYDggEgU-s&list=UUEGUP3TJJfMsEM_1y8iviSQ)
+ * [Testing with Screen Readers](http://webaim.org/articles/screenreader_testing/)
  * [Chrome Accessibility Developer Tools](https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb?hl=en)
  * [W3C Accessibility Testing](http://www.w3.org/wiki/Accessibility_testing)
  * [WebAIM](http://webaim.org)

@@ -161,6 +161,27 @@ or JavaScript callbacks.
   </tr>
 </table>
 
+## {@link ngAria ngAria}
+
+Use ngAria to inject common accessibility attributes into directives and improve the experience for users with disabilities.
+
+<div class="alert alert-info">Include the **angular-aria.js** file and set ngAria as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      {@link ngAria#service Services}
+    </td>
+    <td>
+      <p>
+          The {@link ngAria.$aria $aria} service contains helper methods for applying ARIA attributes to HTML.
+      <p>
+      <p>
+          {@link ngAria.$ariaProvider $ariaProvider} is used for configuring ARIA attributes.
+      </p>
+    </td>
+  </tr>
+</table>
 
 ## {@link ngResource ngResource}
 
