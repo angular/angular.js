@@ -172,9 +172,11 @@ function $RouteProvider() {
   /**
    * @ngdoc property
    * @name $routeProvider#caseInsensitiveMatch
+   * @description
    *
-   * @property {boolean} caseInsensitiveMatch Value of the `caseInsensitiveMatch` property
-   *  for newly defined routes. Defaults to `false`.
+   * A boolean property indicating if routes defined
+   * using this provider should be matched using a case sensitive
+   * algorithm. Defaults to `false`.
    */
   this.caseInsensitiveMatch = false;
 
