@@ -128,6 +128,10 @@ Once you have Node.js installed on your machine you can download the tool depend
 ```
 npm install
 ```
+<div class="alert alert-warn">If you are in a windows installation you may get an error: 
+Error: ENOENT, stat 'C:\Users\YOUR_NAME\AppData\Roaming\npm'" it means the npm folder was not created. 
+Just create it manually to fix the problem
+</div>
 
 This command will download the following tools, into the `node_modules` directory:
 
