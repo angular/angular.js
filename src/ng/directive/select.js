@@ -623,6 +623,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   updateLabelMap(labelMap, existingOption.label, false);
                   updateLabelMap(labelMap, option.label, true);
                   lastElement.text(existingOption.label = option.label);
+                  msie && lastElement.attr('label', existingOption.label);
                 }
                 if (existingOption.id !== option.id) {
                   lastElement.val(existingOption.id = option.id);
@@ -653,6 +654,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                       .prop('selected', option.selected)
                       .attr('selected', option.selected)
                       .text(option.label);
+                  msie && element.attr('label', option.label);
                 }
 
                 existingOptions.push(existingOption = {
