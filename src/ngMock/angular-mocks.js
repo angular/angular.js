@@ -454,17 +454,17 @@ angular.mock.$LogProvider = function() {
  * @returns {promise} A promise which will be notified on each iteration.
  */
 angular.mock.$IntervalProvider = function() {
-  this.$get = ['$rootScope', '$q',
-       function($rootScope,   $q) {
+  this.$get = ['$browser', '$rootScope', '$q', '$$q',
+       function($browser,   $rootScope,   $q,   $$q) {
     var repeatFns = [],
         nextRepeatId = 0,
         now = 0;
 
     var $interval = function(fn, delay, count, invokeApply) {
-      var deferred = $q.defer(),
-          promise = deferred.promise,
-          iteration = 0,
-          skipApply = (angular.isDefined(invokeApply) && !invokeApply);
+      var iteration = 0,
+          skipApply = (angular.isDefined(invokeApply) && !invokeApply),
+          deferred = (skipApply ? $$q : $q).defer(),
+          promise = deferred.promise;
 
       count = (angular.isDefined(count)) ? count : 0;
       promise.then(null, null, fn);
@@ -487,7 +487,11 @@ angular.mock.$IntervalProvider = function() {
           }
         }
 
-        if (!skipApply) $rootScope.$apply();
+        if (skipApply) {
+          $browser.defer.flush();
+        } else {
+          $rootScope.$apply();
+        }
       }
 
       repeatFns.push({
