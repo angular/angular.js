@@ -1320,6 +1320,23 @@ describe('select', function() {
       expect(scope.selected).toBe(scope.values[0]);
     });
 
+    // bug fix #9621
+    it('should update the label property', function() {
+      // ng-options="value.name for value in values"
+      // ng-model="selected"
+      createSingleSelect();
+
+      scope.$apply(function() {
+        scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
+        scope.selected = scope.values[0];
+      });
+
+      var options = element.find('option');
+      expect(options.eq(0).prop('label')).toEqual('A');
+      expect(options.eq(1).prop('label')).toEqual('B');
+      expect(options.eq(2).prop('label')).toEqual('C');
+    });
+
     describe('binding', function() {
 
       it('should bind to scope value', function() {
