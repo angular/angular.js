@@ -20,6 +20,13 @@ describe('Filter: orderBy', function() {
     expect(orderBy([2, 1, 3], ['-'])).toEqual([3, 2, 1]);
   });
 
+  it('should maintain order in an array of objects if no predicate is provided', function() {
+    expect(orderBy([{a: 1}, {b: 2}, {c: 3}])).toEqualData([{a: 1}, {b: 2}, {c: 3}]);
+	expect(orderBy([{a: 1}, {b: 2}, {c: 3}], '')).toEqualData([{a: 1}, {b: 2}, {c: 3}]);
+	expect(orderBy([{a: 1}, {b: 2}, {c: 3}], [])).toEqualData([{a: 1}, {b: 2}, {c: 3}]);
+	expect(orderBy([{a: 1}, {b: 2}, {c: 3}], [''])).toEqualData([{a: 1}, {b: 2}, {c: 3}]);
+  });
+
   it('shouldSortArrayInReverse', function() {
     expect(orderBy([{a:15}, {a:2}], 'a', true)).toEqualData([{a:15}, {a:2}]);
     expect(orderBy([{a:15}, {a:2}], 'a', "T")).toEqualData([{a:15}, {a:2}]);
