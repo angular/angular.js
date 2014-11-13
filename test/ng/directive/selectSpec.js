@@ -38,8 +38,28 @@ describe('select', function() {
         };
 
         return equals(expectedValues, actualValues);
+      },
+
+      toEqualOption: function(value, text, label) {
+        var errors = [];
+        if (this.actual.attr('value') !== value) {
+          errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "' + value + '"');
+        }
+        if (text && this.actual.text() !== text) {
+          errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "' + value + '"');
+        }
+        if (label && this.actual.attr('label') !== label) {
+          errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "' + value + '"');
+        }
+
+        this.message = function() {
+          return errors.join('\n');
+        };
+
+        return errors.length === 0;
       }
     });
+
   });
 
 
@@ -756,9 +776,9 @@ describe('select', function() {
 
         var options = element.find('option');
         expect(options.length).toEqual(3);
-        expect(sortedHtml(options[0])).toEqual('<option value="?"></option>');
-        expect(sortedHtml(options[1])).toEqual('<option value="10">ten</option>');
-        expect(sortedHtml(options[2])).toEqual('<option value="20">twenty</option>');
+        expect(options.eq(0)).toEqualOption('?', '');
+        expect(options.eq(1)).toEqualOption('10', 'ten');
+        expect(options.eq(2)).toEqualOption('20', 'twenty');
       });
 
       it('should preserve value even when reference has changed (single&array)', function() {
@@ -1047,9 +1067,9 @@ describe('select', function() {
 
       var options = element.find('option');
       expect(options.length).toEqual(3);
-      expect(sortedHtml(options[0])).toEqual('<option value="0">A</option>');
-      expect(sortedHtml(options[1])).toEqual('<option value="1">B</option>');
-      expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
+      expect(options.eq(0)).toEqualOption('0', 'A');
+      expect(options.eq(1)).toEqualOption('1', 'B');
+      expect(options.eq(2)).toEqualOption('2', 'C');
     });
 
     it('should render zero as a valid display value', function() {
@@ -1062,9 +1082,9 @@ describe('select', function() {
 
       var options = element.find('option');
       expect(options.length).toEqual(3);
-      expect(sortedHtml(options[0])).toEqual('<option value="0">0</option>');
-      expect(sortedHtml(options[1])).toEqual('<option value="1">1</option>');
-      expect(sortedHtml(options[2])).toEqual('<option value="2">2</option>');
+      expect(options.eq(0)).toEqualOption('0', '0');
+      expect(options.eq(1)).toEqualOption('1', '1');
+      expect(options.eq(2)).toEqualOption('2', '2');
     });
 
 
@@ -1081,9 +1101,9 @@ describe('select', function() {
 
       var options = element.find('option');
       expect(options.length).toEqual(3);
-      expect(sortedHtml(options[0])).toEqual('<option value="blue">blue</option>');
-      expect(sortedHtml(options[1])).toEqual('<option value="green">green</option>');
-      expect(sortedHtml(options[2])).toEqual('<option value="red">red</option>');
+      expect(options.eq(0)).toEqualOption('blue', 'blue');
+      expect(options.eq(1)).toEqualOption('green', 'green');
+      expect(options.eq(2)).toEqualOption('red', 'red');
       expect(options[2].selected).toEqual(true);
 
       scope.$apply(function() {
@@ -1103,7 +1123,7 @@ describe('select', function() {
       });
 
       expect(element.find('option').length).toEqual(1); // because we add special empty option
-      expect(sortedHtml(element.find('option')[0])).toEqual('<option value="?"></option>');
+      expect(element.find('option')).toEqualOption('?','');
 
       scope.$apply(function() {
         scope.values.push({name:'A'});
@@ -1111,15 +1131,15 @@ describe('select', function() {
       });
 
       expect(element.find('option').length).toEqual(1);
-      expect(sortedHtml(element.find('option')[0])).toEqual('<option value="0">A</option>');
+      expect(element.find('option')).toEqualOption('0', 'A');
 
       scope.$apply(function() {
         scope.values.push({name:'B'});
       });
 
       expect(element.find('option').length).toEqual(2);
-      expect(sortedHtml(element.find('option')[0])).toEqual('<option value="0">A</option>');
-      expect(sortedHtml(element.find('option')[1])).toEqual('<option value="1">B</option>');
+      expect(element.find('option').eq(0)).toEqualOption('0', 'A');
+      expect(element.find('option').eq(1)).toEqualOption('1', 'B');
     });
 
 
@@ -1138,15 +1158,15 @@ describe('select', function() {
       });
 
       expect(element.find('option').length).toEqual(2);
-      expect(sortedHtml(element.find('option')[0])).toEqual('<option value="0">A</option>');
-      expect(sortedHtml(element.find('option')[1])).toEqual('<option value="1">B</option>');
+      expect(element.find('option').eq(0)).toEqualOption('0', 'A');
+      expect(element.find('option').eq(1)).toEqualOption('1', 'B');
 
       scope.$apply(function() {
         scope.values.pop();
       });
 
       expect(element.find('option').length).toEqual(1);
-      expect(sortedHtml(element.find('option')[0])).toEqual('<option value="0">A</option>');
+      expect(element.find('option')).toEqualOption('0', 'A');
 
       scope.$apply(function() {
         scope.values.pop();
@@ -1198,9 +1218,9 @@ describe('select', function() {
 
       var options = element.find('option');
       expect(options.length).toEqual(3);
-      expect(sortedHtml(options[0])).toEqual('<option value="0">B</option>');
-      expect(sortedHtml(options[1])).toEqual('<option value="1">C</option>');
-      expect(sortedHtml(options[2])).toEqual('<option value="2">D</option>');
+      expect(options.eq(0)).toEqualOption('0', 'B');
+      expect(options.eq(1)).toEqualOption('1', 'C');
+      expect(options.eq(2)).toEqualOption('2', 'D');
     });
 
 
@@ -1244,7 +1264,7 @@ describe('select', function() {
 
       var options = element.find('option');
       expect(options.length).toEqual(1);
-      expect(sortedHtml(options[0])).toEqual('<option value="regularProperty">visible</option>');
+      expect(options.eq(0)).toEqualOption('regularProperty', 'visible');
     });
 
     it('should allow expressions over multiple lines', function() {
@@ -1268,8 +1288,8 @@ describe('select', function() {
 
       var options = element.find('option');
       expect(options.length).toEqual(3);
-      expect(sortedHtml(options[1])).toEqual('<option value="0">2</option>');
-      expect(sortedHtml(options[2])).toEqual('<option value="1">3</option>');
+      expect(options.eq(1)).toEqualOption('0', '2');
+      expect(options.eq(2)).toEqualOption('1', '3');
     });
 
     it('should not update selected property of an option element on digest with no change event',
@@ -1426,8 +1446,8 @@ describe('select', function() {
 
         var options = element.find('option');
         expect(options.length).toEqual(2);
-        expect(sortedHtml(options[0])).toEqual('<option value="0">C</option>');
-        expect(sortedHtml(options[1])).toEqual('<option value="1">B</option>');
+        expect(options.eq(0)).toEqualOption('0', 'C');
+        expect(options.eq(1)).toEqualOption('1', 'B');
       });
 
 
@@ -1447,8 +1467,8 @@ describe('select', function() {
 
         var options = element.find('option');
         expect(options.length).toEqual(2);
-        expect(sortedHtml(options[0])).toEqual('<option value="a">C</option>');
-        expect(sortedHtml(options[1])).toEqual('<option value="b">B</option>');
+        expect(options.eq(0)).toEqualOption('a', 'C');
+        expect(options.eq(1)).toEqualOption('b', 'B');
       });
 
 
