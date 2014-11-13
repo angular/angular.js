@@ -934,6 +934,209 @@ describe('NgModelController', function() {
   });
 });
 
+describe('initialization', function() {
+  var formElm, inputElm, ctrl, scope, $compile, $sniffer, $compileProvider, changeInputValueTo;
+
+  function compileInput(inputHtml) {
+    inputElm = jqLite(inputHtml);
+    formElm = jqLite('<form name="form"></form>');
+    formElm.append(inputElm);
+    $compile(formElm)(scope);
+    ctrl = inputElm.controller('ngModel');
+    scope.$digest();
+  }
+
+  function addValidator(validity, shouldObserve) {
+    if (!isDefined(shouldObserve)) {
+      shouldObserve = true;
+    }
+
+    $compileProvider.directive('obs', function() {
+      return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModelCtrl) {
+
+          ngModelCtrl.$validators.obs = isFunction(validity) ? validity : function(value) {
+            return validity;
+          };
+
+          if (shouldObserve) {
+            attrs.$observe('obs', function() {
+              ngModelCtrl.$validate();
+            });
+          }
+        }
+      };
+
+    });
+  }
+
+  function addFormatter(formatFunction) {
+    $compileProvider.directive('format', function() {
+      return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ctrl) {
+
+          ctrl.$formatters.push(formatFunction);
+        }
+      };
+
+    });
+  }
+
+  function addParser(parseFunction) {
+    $compileProvider.directive('parse', function() {
+      return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ctrl) {
+
+          ctrl.$parsers.push(parseFunction);
+        }
+      };
+
+    });
+  }
+
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
+
+  beforeEach(inject(function(_$compile_, _$rootScope_, _$sniffer_) {
+    $compile = _$compile_;
+    $sniffer = _$sniffer_;
+    scope = _$rootScope_;
+
+    changeInputValueTo = function(value) {
+      inputElm.val(value);
+      browserTrigger(inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
+    };
+  }));
+
+  afterEach(function() {
+    dealoc(formElm);
+  });
+
+  // https://github.com/angular/angular.js/issues/9959
+  it('should not change model of type number to string with validator using observer', function() {
+    addValidator(true);
+    scope.value = 12345;
+    scope.attr = 'mock';
+    scope.ngChangeSpy = jasmine.createSpy();
+
+    compileInput('<input type="text" name="input" ng-model="value"' +
+      'ng-change="ngChangeSpy()" obs="{{attr}}" />');
+
+    expect(scope.value).toBe(12345);
+    expect(scope.ngChangeSpy).not.toHaveBeenCalled();
+  });
+
+  //https://github.com/angular/angular.js/issues/9063
+  it('should not set a null model that is invalid to undefined', function() {
+    addValidator(false);
+    scope.value = null;
+    scope.required = true;
+    compileInput('<input type="text" name="textInput" ng-model="value"' +
+      'ng-required="required" obs="{{attr}}" />');
+
+    expect(inputElm).toBeInvalid();
+    expect(scope.value).toBe(null);
+    expect(scope.form.textInput.$error.obs).toBeTruthy();
+  });
+
+  //https://github.com/angular/angular.js/issues/9996
+  it('should not change an undefined model that uses ng-required and formatters and parsers', function() {
+    addParser(function(viewValue) {
+      return null;
+    });
+    addFormatter(function(modelValue) {
+      return '';
+    });
+
+    scope.ngChangeSpy = jasmine.createSpy();
+    compileInput('<input type="text" parse format name="textInput" ng-model="value"' +
+      'ng-required="undefinedProp" ng-change="ngChangeSpy()" />');
+
+    expect(inputElm).toBeValid();
+    expect(scope.value).toBeUndefined();
+    expect(scope.ngChangeSpy).not.toHaveBeenCalled();
+  });
+
+  // https://github.com/angular/angular.js/issues/10025
+  it('should not change a model that uses custom $formatters and $parsers', function() {
+    addValidator(true);
+    addFormatter(function(modelValue) {
+      return 'abc';
+    });
+    addParser(function(viewValue) {
+      return 'xyz';
+    });
+    scope.value = 'abc';
+    scope.attr = 'mock';
+    compileInput('<input type="text" parse format name="textInput" ng-model="value"' +
+      'obs="{{attr}}" />');
+
+    expect(inputElm).toBeValid();
+    expect(scope.value).toBe('abc');
+  });
+
+  describe('$validate', function() {
+
+    // Sanity test: since a parse error sets the modelValue to undefined, the
+    // $$rawModelValue will always be undefined, hence $validate does not have
+    // a 'good' value to update
+    it('should not update a model that has a parse error', function() {
+      scope.value = 'abc';
+      addParser(function() {
+        return undefined;
+      });
+
+      addValidator(true, false);
+
+      compileInput('<input type="text" name="textInput" obs parse ng-model="value"/>');
+      expect(inputElm).toBeValid();
+      expect(scope.value).toBe('abc');
+
+      changeInputValueTo('xyz');
+      expect(inputElm).toBeInvalid();
+      expect(scope.value).toBeUndefined();
+      expect(ctrl.$error.parse).toBe(true);
+
+      ctrl.$validate();
+      expect(inputElm).toBeInvalid();
+      expect(scope.value).toBeUndefined();
+    });
+
+    it('should restore the last valid modelValue when a validator becomes valid', function() {
+      scope.value = 'abc';
+      scope.count = 0;
+
+      addValidator(function() {
+        scope.count++;
+        dump('count', scope.count);
+        return scope.count === 1 ? true : scope.count === 2 ? false : true;
+      });
+
+      compileInput('<input type="text" name="textInput" obs ng-model="value"/>');
+      expect(inputElm).toBeValid();
+      expect(scope.value).toBe('abc');
+      expect(ctrl.$viewValue).toBe('abc');
+
+      ctrl.$validate();
+      scope.$digest();
+      expect(inputElm).toBeInvalid();
+      expect(scope.value).toBeUndefined();
+      expect(ctrl.$viewValue).toBe('abc');
+
+      ctrl.$validate();
+      scope.$digest();
+      expect(inputElm).toBeValid();
+      expect(scope.value).toBe('abc');
+    });
+
+
+  });
+});
+
 describe('ngModel', function() {
   var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
@@ -1348,6 +1551,16 @@ describe('input', function() {
     expect(scope.form.$$renameControl).not.toHaveBeenCalled();
   });
 
+  it('should not invoke viewChangeListeners before input is touched', function() {
+    scope.value = 1;
+    var change = scope.change = jasmine.createSpy('change');
+    var element = $compile('<div><div ng-repeat="i in [1]">' +
+      '<input type="text" ng-model="value" maxlength="1" ng-change="change()" />' +
+      '</div></div>')(scope);
+    scope.$digest();
+    expect(change).not.toHaveBeenCalled();
+    dealoc(element);
+  });
 
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
@@ -2264,6 +2477,14 @@ describe('input', function() {
       expect(inputElm).toBeValid();
       expect(scope.form.input.$error.minlength).not.toBe(true);
     });
+
+    it('should validate when the model is initalized as a number', function() {
+      scope.value = 12345;
+      compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
+      expect(scope.value).toBe(12345);
+      expect(scope.form.input.$error.minlength).toBeUndefined();
+    });
+
   });
 
 
@@ -2360,6 +2581,14 @@ describe('input', function() {
       scope.value = '12345';
       compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
       expect(scope.value).toBe('12345');
+    });
+
+    // This works both for string formatter and toString() in validator
+    it('should validate when the model is initalized as a number', function() {
+      scope.value = 12345;
+      compileInput('<input type="text" name="input" ng-model="value" maxlength="10" />');
+      expect(scope.value).toBe(12345);
+      expect(scope.form.input.$error.maxlength).toBeUndefined();
     });
 
   });

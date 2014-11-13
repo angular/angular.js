@@ -1956,13 +1956,40 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * @description
    * Runs each of the registered validators (first synchronous validators and then asynchronous validators).
+   * If the validity changes to invalid, the model will be set to undefined, unless ngModelOptions.allowInvalid
+   * is `true`. If the validity changes to valid, it will set the model to the last available valid
+   * modelValue.
    */
   this.$validate = function() {
     // ignore $validate before model is initialized
     if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
       return;
     }
-    this.$$parseAndValidate();
+
+    var viewValue = ctrl.$$lastCommittedViewValue;
+    var modelValue = ctrl.$$rawModelValue;
+
+    var prevValid = ctrl.$valid;
+    var prevModelValue = ctrl.$modelValue;
+
+    var allowInvalid = ctrl.$options && ctrl.$options.allowInvalid;
+
+    ctrl.$$runValidators(undefined, modelValue, viewValue, function(allValid) {
+      // If there was no change in validity, don't update the model
+      // This prevents changing an invalid modelValue to undefined
+      if (!allowInvalid && prevValid !== allValid) {
+        // Note: Don't check ctrl.$valid here, as we could have
+        // external validators (e.g. calculated on the server),
+        // that just call $setValidity and need the model value
+        // to calculate their validity.
+        ctrl.$modelValue = allValid ? modelValue : undefined;
+
+        if (ctrl.$modelValue !== prevModelValue) {
+          ctrl.$$writeModelToScope();
+        }
+      }
+    });
+
   };
 
   this.$$runValidators = function(parseValid, modelValue, viewValue, doneCallback) {
@@ -2110,6 +2137,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
     var prevModelValue = ctrl.$modelValue;
     var allowInvalid = ctrl.$options && ctrl.$options.allowInvalid;
+    ctrl.$$rawModelValue = modelValue;
     if (allowInvalid) {
       ctrl.$modelValue = modelValue;
       writeToModelIfNeeded();
@@ -2234,7 +2262,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     // if scope model value and ngModel value are out of sync
     // TODO(perf): why not move this to the action fn?
     if (modelValue !== ctrl.$modelValue) {
-      ctrl.$modelValue = modelValue;
+      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
