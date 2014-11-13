@@ -139,6 +139,23 @@ describe('NgModelController', function() {
     });
   });
 
+  describe('setDirty', function() {
+
+    it('should set control to its dirty state', function() {
+      expect(ctrl.$pristine).toBe(true);
+      expect(ctrl.$dirty).toBe(false);
+
+      ctrl.$setDirty();
+      expect(ctrl.$pristine).toBe(false);
+      expect(ctrl.$dirty).toBe(true);
+    });
+
+    it('should set parent form to its dirty state', function() {
+      ctrl.$setDirty();
+      expect(parentFormCtrl.$setDirty).toHaveBeenCalled();
+    });
+  });
+
   describe('setUntouched', function() {
 
     it('should set control to its untouched state', function() {
