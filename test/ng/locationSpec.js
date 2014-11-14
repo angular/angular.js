@@ -639,6 +639,18 @@ describe('$location', function() {
     };
   }
 
+  describe('location watch', function() {
+    beforeEach(initService({supportHistory: true}));
+    beforeEach(inject(initBrowser({url:'http://new.com/a/b#'})));
+
+    it('should not update browser if only the empty hash fragment is cleared by updating the search', inject(function($rootScope, $browser, $location) {
+      $browser.url('http://new.com/a/b#');
+      var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+      $rootScope.$digest();
+      expect($browserUrl).not.toHaveBeenCalled();
+    }));
+  });
+
   describe('wiring', function() {
 
     beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
@@ -1224,7 +1236,7 @@ describe('$location', function() {
     });
 
 
-    it('should not rewrite full url links do different domain', function() {
+    it('should not rewrite full url links to different domain', function() {
       configureService({linkHref: 'http://www.dot.abc/a?b=c', html5Mode: true});
       inject(
         initBrowser(),
@@ -1290,7 +1302,7 @@ describe('$location', function() {
 
 
     it ('should not rewrite links when rewriting links is disabled', function() {
-      configureService('/a?b=c', true, true, '', 'some content', false);
+      configureService({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
