@@ -36,7 +36,7 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
  */
 function $RouteProvider() {
   function inherit(parent, extra) {
-    return angular.extend(new (angular.extend(function() {}, {prototype:parent}))(), extra);
+    return angular.extend(Object.create(parent), extra);
   }
 
   var routes = {};
