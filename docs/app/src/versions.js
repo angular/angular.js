@@ -1,7 +1,10 @@
+"use strict";
+
 angular.module('versions', [])
 
 .controller('DocsVersionsCtrl', ['$scope', '$location', '$window', 'NG_VERSIONS', function($scope, $location, $window, NG_VERSIONS) {
   $scope.docs_version  = NG_VERSIONS[0];
+  $scope.docs_versions = NG_VERSIONS;
 
   for(var i=0, minor = NaN; i < NG_VERSIONS.length; i++) {
     var version = NG_VERSIONS[i];
@@ -13,9 +16,8 @@ angular.module('versions', [])
     minor = version.minor;
   }
 
-  $scope.docs_versions = NG_VERSIONS;
   $scope.getGroupName = function(v) {
-    return v.isLatest ? 'Latest' : (v.isStable ? 'Stable' : 'Unstable');
+    return v.isLatest ? 'Latest' : ('v' + v.major + '.' + v.minor + '.x');
   };
 
   $scope.jumpToDocsVersion = function(version) {
