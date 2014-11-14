@@ -776,7 +776,8 @@ function $RootScopeProvider() {
                         logMsg = (isFunction(watch.exp))
                             ? 'fn: ' + (watch.exp.name || watch.exp.toString())
                             : watch.exp;
-                        logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
+                        logMsg += '; newVal: ' + toJson(value, false, {suppressExceptions: true}) +
+                            '; oldVal: ' + toJson(last, false, {suppressExceptions: true});
                         watchLog[logIdx].push(logMsg);
                       }
                     } else if (watch === lastDirtyWatch) {
@@ -810,7 +811,7 @@ function $RootScopeProvider() {
             throw $rootScopeMinErr('infdig',
                 '{0} $digest() iterations reached. Aborting!\n' +
                 'Watchers fired in the last 5 iterations: {1}',
-                TTL, toJson(watchLog));
+                TTL, toJson(watchLog, false, {suppressExceptions: true}));
           }
 
         } while (dirty || asyncQueue.length);

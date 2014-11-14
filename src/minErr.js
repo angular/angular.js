@@ -59,7 +59,7 @@ function minErr(module, ErrorConstructor) {
         } else if (typeof arg === 'undefined') {
           return 'undefined';
         } else if (typeof arg !== 'string') {
-          return toJson(arg);
+          return toJson(arg, false, {suppressExceptions: true});
         }
         return arg;
       }
