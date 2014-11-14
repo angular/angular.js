@@ -967,8 +967,20 @@ function toJsonReplacer(key, value) {
  * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
  * @returns {string|undefined} JSON-ified string representing `obj`.
  */
-function toJson(obj, pretty) {
+function toJson(obj, pretty, options) {
   if (typeof obj === 'undefined') return undefined;
+
+  if (!options) options = {};
+
+  if (options.suppressExceptions) {
+    try {
+      return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
+    } catch (e) {
+      // in case JSON.stringify throws, suppress error and return undefined
+      return undefined;
+    }
+  }
+
   return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
 }
 
