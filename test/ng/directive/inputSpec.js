@@ -484,72 +484,75 @@ describe('NgModelController', function() {
 
   });
 
-  describe('validations pipeline', function() {
+  describe('validation', function() {
 
-    it('should perform validations when $validate() is called', function() {
-      scope.$apply('value = ""');
+    describe('$validate', function() {
+      it('should perform validations when $validate() is called', function() {
+        scope.$apply('value = ""');
 
-      var validatorResult = false;
-      ctrl.$validators.someValidator = function(value) {
-        return validatorResult;
-      };
+        var validatorResult = false;
+        ctrl.$validators.someValidator = function(value) {
+          return validatorResult;
+        };
 
-      ctrl.$validate();
+        ctrl.$validate();
 
-      expect(ctrl.$valid).toBe(false);
+        expect(ctrl.$valid).toBe(false);
 
-      validatorResult = true;
-      ctrl.$validate();
+        validatorResult = true;
+        ctrl.$validate();
 
-      expect(ctrl.$valid).toBe(true);
-    });
-
-    it('should always perform validations using the parsed model value', function() {
-      var captures;
-      ctrl.$validators.raw = function() {
-        captures = arguments;
-        return captures[0];
-      };
-
-      ctrl.$parsers.push(function(value) {
-        return value.toUpperCase();
+        expect(ctrl.$valid).toBe(true);
       });
 
-      ctrl.$setViewValue('my-value');
+    describe('view -> model update', function() {
+      it('should always perform validations using the parsed model value', function() {
+        var captures;
+        ctrl.$validators.raw = function() {
+          captures = arguments;
+          return captures[0];
+        };
 
-      expect(captures).toEqual(['MY-VALUE', 'my-value']);
-    });
+        ctrl.$parsers.push(function(value) {
+          return value.toUpperCase();
+        });
 
-    it('should always perform validations using the formatted view value', function() {
-      var captures;
-      ctrl.$validators.raw = function() {
-        captures = arguments;
-        return captures[0];
-      };
+        ctrl.$setViewValue('my-value');
 
-      ctrl.$formatters.push(function(value) {
-        return value + '...';
+        expect(captures).toEqual(['MY-VALUE', 'my-value']);
       });
 
-      scope.$apply('value = "matias"');
+      it('should always perform validations using the formatted view value', function() {
+        var captures;
+        ctrl.$validators.raw = function() {
+          captures = arguments;
+          return captures[0];
+        };
 
-      expect(captures).toEqual(['matias', 'matias...']);
-    });
+        ctrl.$formatters.push(function(value) {
+          return value + '...';
+        });
 
-    it('should only perform validations if the view value is different', function() {
-      var count = 0;
-      ctrl.$validators.countMe = function() {
-        count++;
-      };
+        scope.$apply('value = "matias"');
 
-      ctrl.$setViewValue('my-value');
-      expect(count).toBe(1);
+        expect(captures).toEqual(['matias', 'matias...']);
+      });
 
-      ctrl.$setViewValue('my-value');
-      expect(count).toBe(1);
+      it('should only perform validations if the view value is different', function() {
+        var count = 0;
+        ctrl.$validators.countMe = function() {
+          count++;
+        };
 
-      ctrl.$setViewValue('your-value');
-      expect(count).toBe(2);
+        ctrl.$setViewValue('my-value');
+        expect(count).toBe(1);
+
+        ctrl.$setViewValue('my-value');
+        expect(count).toBe(1);
+
+        ctrl.$setViewValue('your-value');
+        expect(count).toBe(2);
+      });
     });
 
     it('should perform validations twice each time the model value changes within a digest', function() {
