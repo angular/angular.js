@@ -551,6 +551,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 lastElement = existingOption.element;
                 if (existingOption.label !== option.label) {
                   lastElement.text(existingOption.label = option.label);
+                  lastElement.prop('label', existingOption.label);
                 }
                 if (existingOption.id !== option.id) {
                   lastElement.val(existingOption.id = option.id);
@@ -580,6 +581,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                       .val(option.id)
                       .prop('selected', option.selected)
                       .attr('selected', option.selected)
+                      .prop('label', option.label)
                       .text(option.label);
                 }
 
