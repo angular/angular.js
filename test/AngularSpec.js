@@ -1219,6 +1219,33 @@ describe('angular', function() {
     it('should serialize undefined as undefined', function() {
       expect(toJson(undefined)).toEqual(undefined);
     });
+
+    it('should allow JSON.stringify to throw exceptions by default', function() {
+      // create objects with references to each other (circular reference)
+      // passing such object to JSON.stringify throws a TypeError
+      var a = {}, b = {test: a};
+      a.test = b;
+
+      // prepare toJson function with correct arguments for this test
+      var toJsonSuppressedTest = toJson.bind(undefined, a);
+
+      // it should throw a TypeError
+      expect(toJsonSuppressedTest).toThrow();
+    });
+
+    it('should not throw exceptions if suppressExceptions option is passed', function() {
+      // create objects with references to each other (circular reference)
+      // passing such object to JSON.stringify throws a TypeError
+      var a = {}, b = {test: a};
+      a.test = b;
+
+      // prepare toJson function with correct arguments for this test
+      var toJsonSuppressedTest = toJson.bind(undefined, a, false, {suppressExceptions: true});
+
+      // it shouldn't throw a TypeError and it should return undefined
+      expect(toJsonSuppressedTest).not.toThrow();
+      expect(toJsonSuppressedTest()).toBeUndefined();
+    });
   });
 
   describe('isElement', function() {
