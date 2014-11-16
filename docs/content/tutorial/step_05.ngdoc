@@ -209,8 +209,7 @@ isolated from the work done in other tests.
 * We called the injected `$controller` function passing the name of the `PhoneListCtrl` controller
 and the created scope as parameters.
 
-Because our code now uses the `$http` service to fetch the phone list data in our controller, before
-we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an
+Because our code now uses the `$http` service to fetch the phone list data in our controller, we also need to tell the testing harness to expect an
 incoming request from the controller. To do this we:
 
 * Request `$httpBackend` service to be injected into our `beforeEach` function. This is a mock
