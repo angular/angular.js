@@ -931,7 +931,7 @@ describe('$location', function() {
       initService({html5Mode:true,hashPrefix: '!!',supportHistory: false});
       inject(
         initBrowser({url:'http://domain.com/base/index.html#!!/a/b',basePath: '/base/index.html'}),
-        function($rootScope, $location,  $browser) {
+        function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!!/a/b');
           $location.path('/new');
           $location.search({a: true});

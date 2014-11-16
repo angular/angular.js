@@ -11,6 +11,7 @@
     "bower": "~1.3.9",
     "browserstacktunnel-wrapper": "~1.3.1",
     "canonical-path": "0.0.2",
+    "cheerio": "^0.17.0",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.10.0",
     "event-stream": "~3.1.0",
@@ -37,6 +38,8 @@
     "gulp-util": "^3.0.1",
     "jasmine-node": "~1.14.5",
     "jasmine-reporters": "~1.0.1",
+    "jscs": "^1.8.1",
+    "jscs-jsdoc": "^0.1.0",
     "jshint-stylish": "~1.0.0",
     "karma": "^0.12.0",
     "karma-browserstack-launcher": "0.1.1",
@@ -60,8 +63,7 @@
     "semver": "~4.0.3",
     "shelljs": "~0.3.0",
     "sorted-object": "^1.0.0",
-    "stringmap": "^0.2.2",
-    "cheerio": "^0.17.0"
+    "stringmap": "^0.2.2"
   },
   "licenses": [
     {

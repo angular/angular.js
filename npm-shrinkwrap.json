@@ -3951,6 +3951,119 @@
         }
       }
     },
+    "jscs": {
+      "version": "1.8.1",
+      "dependencies": {
+        "colors": {
+          "version": "1.0.3"
+        },
+        "commander": {
+          "version": "2.5.0"
+        },
+        "esprima": {
+          "version": "1.2.2"
+        },
+        "esprima-harmony-jscs": {
+          "version": "1.1.0-dev-harmony"
+        },
+        "exit": {
+          "version": "0.1.2"
+        },
+        "glob": {
+          "version": "4.0.6",
+          "dependencies": {
+            "graceful-fs": {
+              "version": "3.0.4"
+            },
+            "inherits": {
+              "version": "2.0.1"
+            },
+            "once": {
+              "version": "1.3.1",
+              "dependencies": {
+                "wrappy": {
+                  "version": "1.0.1"
+                }
+              }
+            }
+          }
+        },
+        "minimatch": {
+          "version": "1.0.0",
+          "dependencies": {
+            "lru-cache": {
+              "version": "2.5.0"
+            },
+            "sigmund": {
+              "version": "1.0.0"
+            }
+          }
+        },
+        "strip-json-comments": {
+          "version": "1.0.2"
+        },
+        "vow": {
+          "version": "0.4.7"
+        },
+        "vow-fs": {
+          "version": "0.3.3",
+          "dependencies": {
+            "node-uuid": {
+              "version": "1.4.0"
+            },
+            "vow": {
+              "version": "0.4.4"
+            },
+            "vow-queue": {
+              "version": "0.4.1"
+            },
+            "glob": {
+              "version": "3.2.8",
+              "dependencies": {
+                "minimatch": {
+                  "version": "0.2.14",
+                  "dependencies": {
+                    "lru-cache": {
+                      "version": "2.5.0"
+                    },
+                    "sigmund": {
+                      "version": "1.0.0"
+                    }
+                  }
+                },
+                "inherits": {
+                  "version": "2.0.1"
+                }
+              }
+            }
+          }
+        },
+        "xmlbuilder": {
+          "version": "2.4.5",
+          "dependencies": {
+            "lodash-node": {
+              "version": "2.4.1"
+            }
+          }
+        },
+        "supports-color": {
+          "version": "1.2.0"
+        }
+      }
+    },
+    "jscs-jsdoc": {
+      "version": "0.1.0",
+      "dependencies": {
+        "comment-parser": {
+          "version": "0.2.2",
+          "from": "git://github.com/zxqfox/comment-parser#jscs-jsdoc",
+          "resolved": "git://github.com/zxqfox/comment-parser#d99a658dd9e28501ecc823b1f8ded730d1e6539d"
+        },
+        "jsdoctypeparser": {
+          "version": "1.1.3"
+        }
+      }
+    },
     "jshint-stylish": {
       "version": "1.0.0",
       "dependencies": {

@@ -476,7 +476,7 @@ angular.module('ngAnimate', ['ng'])
 
     $provide.decorator('$animate',
         ['$delegate', '$$q', '$injector', '$sniffer', '$rootElement', '$$asyncCallback', '$rootScope', '$document', '$templateRequest',
- function($delegate,   $$q,   $injector,   $sniffer,   $rootElement,   $$asyncCallback,   $rootScope,   $document,   $templateRequest) {
+ function($delegate, $$q, $injector, $sniffer, $rootElement, $$asyncCallback, $rootScope, $document, $templateRequest) {
 
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
@@ -1577,7 +1577,7 @@ angular.module('ngAnimate', ['ng'])
     }]);
 
     $animateProvider.register('', ['$window', '$sniffer', '$timeout', '$$animateReflow',
-                           function($window,   $sniffer,   $timeout,   $$animateReflow) {
+                           function($window, $sniffer, $timeout, $$animateReflow) {
       // Detect proper transitionend/animationend event names.
       var CSS_PREFIX = '', TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMATIONEND_EVENT;
 

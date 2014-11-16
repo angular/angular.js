@@ -455,7 +455,7 @@ angular.mock.$LogProvider = function() {
  */
 angular.mock.$IntervalProvider = function() {
   this.$get = ['$browser', '$rootScope', '$q', '$$q',
-       function($browser,   $rootScope,   $q,   $$q) {
+       function($browser, $rootScope, $q, $$q) {
     var repeatFns = [],
         nextRepeatId = 0,
         now = 0;
@@ -783,7 +783,7 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
     });
 
     $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser',
-                            function($delegate,   $$asyncCallback,   $timeout,   $browser) {
+                            function($delegate, $$asyncCallback, $timeout, $browser) {
       var animate = {
         queue: [],
         cancel: $delegate.cancel,
