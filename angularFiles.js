@@ -5,6 +5,7 @@ var angularFiles = {
     'src/minErr.js',
     'src/Angular.js',
     'src/loader.js',
+    'src/stringify.js',
     'src/AngularPublic.js',
     'src/jqLite.js',
     'src/apis.js',
@@ -73,6 +74,7 @@ var angularFiles = {
   ],
 
   'angularLoader': [
+    'stringify.js',
     'src/minErr.js',
     'src/loader.js'
   ],

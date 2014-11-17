@@ -19,6 +19,7 @@
     "angularModule": false,
     "nodeName_": false,
     "uid": false,
+    "toDebugString": false,
 
     "REGEX_STRING_REGEXP" : false,
     "lowercase": false,
