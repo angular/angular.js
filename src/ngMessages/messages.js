@@ -1,4 +1,5 @@
 'use strict';
+// jscs:disable jsDoc
 
 /**
  * @ngdoc module

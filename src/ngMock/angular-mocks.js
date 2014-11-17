@@ -103,7 +103,7 @@ angular.mock.$Browser = function() {
    * @description
    * Flushes all pending requests and executes the defer callbacks.
    *
-   * @param {number=} number of milliseconds to flush. See {@link #defer.now}
+   * @param {number=} delay number of milliseconds to flush. See {@link #defer.now}
    */
   self.defer.flush = function(delay) {
     if (angular.isDefined(delay)) {
@@ -1125,6 +1125,7 @@ angular.mock.$HttpBackendProvider = function() {
  *   - passing through (delegating request to real backend) is enabled
  *   - auto flushing is enabled
  *
+ * @param {Object=} $rootScope
  * @param {Object=} $delegate Real $httpBackend instance (allow passing through if specified)
  * @param {Object=} $browser Auto-flushing enabled if specified
  * @return {Object} Instance of $httpBackend mock

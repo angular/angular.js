@@ -603,7 +603,7 @@ var escapeForRegexp = function(s) {
  * @description
  * Determines if a reference is a DOM element (or wrapped jQuery element).
  *
- * @param {*} value Reference to check.
+ * @param {*} node Reference to check.
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
@@ -1021,7 +1021,7 @@ function startingTag(element) {
  * Tries to decode the URI component without throwing an exception.
  *
  * @private
- * @param str value potential URI component to check.
+ * @param {string} value potential URI component to check.
  * @returns {boolean} True if `value` can be decoded
  * with the decodeURIComponent function.
  */
@@ -1421,7 +1421,7 @@ function reloadWithDebugInfo() {
  * @description
  * Get the testability service for the instance of Angular on the given
  * element.
- * @param {DOMElement} element DOM element which is the root of angular application.
+ * @param {DOMElement} rootElement DOM element which is the root of angular application.
  */
 function getTestability(rootElement) {
   return angular.element(rootElement).injector().get('$$testability');
@@ -1548,7 +1548,7 @@ function getter(obj, path, bindFnToScope) {
 
 /**
  * Return the DOM siblings between the first and last node in the given array.
- * @param {Array} array like object
+ * @param {Array} nodes array like object
  * @returns {jqLite} jqLite collection containing the nodes
  */
 function getBlockNodes(nodes) {

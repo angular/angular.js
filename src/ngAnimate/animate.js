@@ -1218,7 +1218,7 @@ angular.module('ngAnimate', ['ng'])
          * @name $animate#cancel
          * @kind function
          *
-         * @param {Promise} animationPromise The animation promise that is returned when an animation is started.
+         * @param {Promise} promise The animation promise that is returned when an animation is started.
          *
          * @description
          * Cancels the provided animation.

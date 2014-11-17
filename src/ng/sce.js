@@ -149,9 +149,9 @@ function $SceDelegateProvider() {
    * @description
    * Sets/Gets the whitelist of trusted resource URLs.
    */
-  this.resourceUrlWhitelist = function(value) {
+  this.resourceUrlWhitelist = function(whitelist) {
     if (arguments.length) {
-      resourceUrlWhitelist = adjustMatchers(value);
+      resourceUrlWhitelist = adjustMatchers(whitelist);
     }
     return resourceUrlWhitelist;
   };
@@ -272,7 +272,7 @@ function $SceDelegateProvider() {
      *
      * @param {string} type The kind of context in which this value is safe for use.  e.g. url,
      *   resourceUrl, html, js and css.
-     * @param {*} value The value that that should be considered trusted/safe.
+     * @param {*} trustedValue The value that that should be considered trusted/safe.
      * @returns {*} A value that can be used to stand in for the provided `value` in places
      * where Angular expects a $sce.trustAs() return value.
      */
@@ -308,7 +308,7 @@ function $SceDelegateProvider() {
      * If the passed parameter is not a value that had been returned by {@link
      * ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}, returns it as-is.
      *
-     * @param {*} value The result of a prior {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}
+     * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs`}
      *      call or anything else.
      * @returns {*} The `value` that was originally provided to {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} if `value` is the result of such a call.  Otherwise, returns
@@ -765,7 +765,7 @@ function $SceProvider() {
      * *result*)}
      *
      * @param {string} type The kind of SCE context in which this result will be used.
-     * @param {string} expression String expression to compile.
+     * @param {string} expr String expression to compile.
      * @returns {function(context, locals)} a function which represents the compiled expression:
      *
      *    * `context` – `{object}` – an object against which any expressions embedded in the strings

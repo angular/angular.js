@@ -1,4 +1,7 @@
 {
+  "additionalRules": [
+    "node_modules/jscs-jsdoc/lib/rules/*.js"
+  ],
   "excludeFiles": ["src/ngLocale/**"],
   "disallowKeywords": ["with"],
   "disallowMixedSpacesAndTabs": true,
@@ -21,6 +24,9 @@
   "disallowSpacesInsideParentheses": true,
   "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,
+  "jsDoc": {
+    "checkParamNames": true
+  },
   "requireCommaBeforeLineBreak": true,
   "requireLineFeedAtFileEnd": true,
   "requireSpaceAfterBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||"],
