@@ -1349,6 +1349,18 @@ describe('input', function() {
   });
 
 
+  it('should not invoke viewChangeListeners before input is touched', function() {
+    scope.value = 1;
+    var change = scope.change = jasmine.createSpy('change');
+    var element = $compile('<div><div ng-repeat="i in [1]">' +
+          '<input type="text" ng-model="value" maxlength="1" ng-change="change()" />' +
+        '</div></div>')(scope);
+    scope.$digest();
+    expect(change).not.toHaveBeenCalled();
+    dealoc(element);
+  });
+
+
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', inject(function($sniffer) {
       $sniffer.android = false;
