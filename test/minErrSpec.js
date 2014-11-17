@@ -60,6 +60,13 @@ describe('minErr', function() {
         toMatch(/^\[test:26\] false: false; zero: 0; null: null; undefined: undefined; emptyStr: /);
   });
 
+  it('should handle arguments that are objects with cyclic references', function() {
+    var a = { b: { } };
+    a.b.a = a;
+
+    var myError = testError('26', 'a is {0}', a);
+    expect(myError.message).toMatch(/a is {"b":{"a":"<<already seen>>"}}/);
+  });
 
   it('should preserve interpolation markers when fewer arguments than needed are provided', function() {
     // this way we can easily see if we are passing fewer args than needed
