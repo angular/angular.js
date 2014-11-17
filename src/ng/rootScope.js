@@ -353,11 +353,13 @@ function $RootScopeProvider() {
        *    - `newVal` contains the current value of the `watchExpression`
        *    - `oldVal` contains the previous value of the `watchExpression`
        *    - `scope` refers to the current scope
-       * @param {boolean=} objectEquality Compare for object equality using {@link angular.equals} instead of
-       *     comparing for reference equality.
+       * @param {boolean=|function()} objectEquality Compare for object equality using {@link angular.equals} instead of
+       *     comparing for reference equality. If a function is passed, it will be used as a replacement for {@link angular.equals}.
+       * @param {function()} copier Replacement function for {@link angular.copy} to save value into oldVal for next
+            change event.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $watch: function(watchExp, listener, objectEquality) {
+      $watch: function(watchExp, listener, objectEquality, copier) {
         var get = $parse(watchExp);
 
         if (get.$$watchDelegate) {
@@ -370,7 +372,9 @@ function $RootScopeProvider() {
               last: initWatchVal,
               get: get,
               exp: watchExp,
-              eq: !!objectEquality
+              eq: !!objectEquality,
+              equals: isFunction(objectEquality) ? objectEquality : equals,
+              copy: isFunction(copier) ? copier : copy
             };
 
         lastDirtyWatch = null;
@@ -763,12 +767,12 @@ function $RootScopeProvider() {
                   if (watch) {
                     if ((value = watch.get(current)) !== (last = watch.last) &&
                         !(watch.eq
-                            ? equals(value, last)
+                            ? watch.equals(value, last)
                             : (typeof value === 'number' && typeof last === 'number'
                                && isNaN(value) && isNaN(last)))) {
                       dirty = true;
                       lastDirtyWatch = watch;
-                      watch.last = watch.eq ? copy(value, null) : value;
+                      watch.last = watch.eq ? watch.copy(value, null) : value;
                       watch.fn(value, ((last === initWatchVal) ? value : last), current);
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
