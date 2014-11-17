@@ -18,6 +18,7 @@
     "angularModule": false,
     "nodeName_": false,
     "uid": false,
+    "toDebugString": false,
 
     "lowercase": false,
     "uppercase": false,
