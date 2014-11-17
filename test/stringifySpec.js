@@ -7,9 +7,11 @@ describe('toDebugString', function() {
     expect(toDebugString({a:{b:'c'}})).toEqual('{"a":{"b":"c"}}');
     expect(toDebugString(function fn() { var a = 10; })).toEqual('function fn()');
     expect(toDebugString()).toEqual('undefined');
-    var a = { };
+
+    // circular references
+    var a = {};
     a.a = a;
-    expect(toDebugString(a)).toEqual('{"a":"<<already seen>>"}');
-    expect(toDebugString([a,a])).toEqual('[{"a":"<<already seen>>"},"<<already seen>>"]');
+    expect(toDebugString(a)).toEqual('{"a":{"a":"..."}}');
+    expect(toDebugString([a,a])).toEqual('[{"a":{"a":"..."}},{"a":{"a":"..."}}]');
   });
 });
