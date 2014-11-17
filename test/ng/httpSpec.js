@@ -816,6 +816,16 @@ describe('$http', function() {
       });
 
 
+      it('should handle empty response header', function() {
+        $httpBackend.expect('GET', '/url', undefined)
+            .respond(200, '', { 'Custom-Empty-Response-Header': '' });
+        $http.get('/url').success(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[2]('custom-empty-response-Header')).toBe('');
+      });
+
+
       it('should have delete()', function() {
         $httpBackend.expect('DELETE', '/url').respond('');
         $http['delete']('/url');

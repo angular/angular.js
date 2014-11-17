@@ -63,7 +63,8 @@ function headersGetter(headers) {
     if (!headersObj) headersObj =  parseHeaders(headers);
 
     if (name) {
-      return headersObj[lowercase(name)] || null;
+      name = lowercase(name);
+      return name in headersObj ? headersObj[name] : null;
     }
 
     return headersObj;
