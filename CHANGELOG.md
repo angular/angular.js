@@ -1,3 +1,50 @@
+<a name="1.3.3"></a>
+# 1.3.3 undersea-arithmetic (2014-11-17)
+
+
+## Bug Fixes
+
+- **$http:** don't parse single space responses as JSON
+  ([6f19a6fd](https://github.com/angular/angular.js/commit/6f19a6fd33ab72d3908e3418fba47ee8e1598fa6),
+   [#9907](https://github.com/angular/angular.js/issues/9907))
+- **minErr:** stringify non-JSON compatible objects in error messages
+  ([cf43ccdf](https://github.com/angular/angular.js/commit/cf43ccdf9b8665a2fd5d6aa52f80cb2d7c9bb7e2),
+   [#10085](https://github.com/angular/angular.js/issues/10085))
+- **$rootScope:** handle cyclic references in scopes when creating error messages
+  ([e80053d9](https://github.com/angular/angular.js/commit/e80053d91fd7c722e092a23d326384de2e552eb6),
+   [#10085](https://github.com/angular/angular.js/issues/10085))
+- **ngRepeat:** support cyclic object references in error messages
+  ([fa12c3c8](https://github.com/angular/angular.js/commit/fa12c3c86af7965d1b9d9a5dd3434755e9e04635),
+   [#9838](https://github.com/angular/angular.js/issues/9838), [#10065](https://github.com/angular/angular.js/issues/10065), [#10085](https://github.com/angular/angular.js/issues/10085))
+- **ngMock:** call $interval callbacks even when invokeApply is false
+  ([d81ff888](https://github.com/angular/angular.js/commit/d81ff8885b77f70c6417d7be3124d86d07447375),
+   [#10032](https://github.com/angular/angular.js/issues/10032))
+- **ngPattern:** match behaviour of native HTML pattern attribute
+  ([85eb9660](https://github.com/angular/angular.js/commit/85eb9660ef67c24d5104a6a1921bedad0bd1b57e),
+   [#9881](https://github.com/angular/angular.js/issues/9881), [#9888](https://github.com/angular/angular.js/issues/9888))
+- **select:** ensure the label attribute is updated in Internet Explorer
+  ([6604c236](https://github.com/angular/angular.js/commit/6604c2361427fba8c43a39dc2e92197390dfbdbe),
+   [#9621](https://github.com/angular/angular.js/issues/9621), [#10042](https://github.com/angular/angular.js/issues/10042))
+
+
+## Features
+
+- **$location:** allow to location to be changed during $locationChangeStart
+  ([a9352c19](https://github.com/angular/angular.js/commit/a9352c19ce33f0393d6581547c7ea8dfc2a8b78f),
+   [#9607](https://github.com/angular/angular.js/issues/9607), [#9678](https://github.com/angular/angular.js/issues/9678))
+- **$routeProvider:** allow setting caseInsensitiveMatch on the provider
+  ([0db573b7](https://github.com/angular/angular.js/commit/0db573b7493f76abd94ff65ce660017d617e865b),
+   [#6477](https://github.com/angular/angular.js/issues/6477), [#9873](https://github.com/angular/angular.js/issues/9873))
+
+
+## Performance Improvements
+
+- **orderBy:** copy array with slice instead of for loop
+  ([8eabc546](https://github.com/angular/angular.js/commit/8eabc5463c795d87f37e5a9eacbbb14435024061),
+   [#9942](https://github.com/angular/angular.js/issues/9942))
+
+
+
 <a name="1.3.2"></a>
 # 1.3.2 cardiovasculatory-magnification (2014-11-07)
 
