@@ -122,19 +122,14 @@ function filterFilter() {
     var predicateFn;
 
     switch (typeof expression) {
-      case 'object':
-        // Replace `{$: 'xyz'}` with `'xyz'` and fall through
-        var keys = Object.keys(expression);
-        if ((keys.length === 1) && (keys[0] === '$')) expression = expression.$;
-        // jshint -W086
-      case 'boolean':
-      case 'number':
-      case 'string':
-        // jshint +W086
-        predicateFn = createPredicateFn(expression, comparator);
-        break;
       case 'function':
         predicateFn = expression;
+        break;
+      case 'boolean':
+      case 'number':
+      case 'object':
+      case 'string':
+        predicateFn = createPredicateFn(expression, comparator);
         break;
       default:
         return array;
@@ -152,8 +147,8 @@ function createPredicateFn(expression, comparator) {
     comparator = equals;
   } else if (!isFunction(comparator)) {
     comparator = function(actual, expected) {
-      actual = ('' + actual).toLowerCase();
-      expected = ('' + expected).toLowerCase();
+      actual = lowercase('' + actual);
+      expected = lowercase('' + expected);
       return actual.indexOf(expected) !== -1;
     };
   }
@@ -165,15 +160,15 @@ function createPredicateFn(expression, comparator) {
   return predicateFn;
 }
 
-function deepCompare(actual, expected, comparator) {
+function deepCompare(actual, expected, comparator, keyWasDollar) {
   var actualType = typeof actual;
   var expectedType = typeof expected;
 
-  if (expectedType === 'function') {
-    return expected(actual);
-  } else if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
+  if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
     return !deepCompare(actual, expected.substring(1), comparator);
   } else if (actualType === 'array') {
+    // In case `actual` is an array, consider it a match
+    // if any of it's items matches `expected`
     return actual.some(function(item) {
       return deepCompare(item, expected, comparator);
     });
@@ -181,16 +176,28 @@ function deepCompare(actual, expected, comparator) {
 
   switch (actualType) {
     case 'object':
-      if (expectedType === 'object') {
-        return Object.keys(expected).every(function(key) {
-          var actualVal = (key === '$') ? actual : actual[key];
-          var expectedVal = expected[key];
-          return deepCompare(actualVal, expectedVal, comparator);
-        });
+      var key;
+      if (keyWasDollar || (expectedType !== 'object')) {
+        for (key in actual) {
+          if ((key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator)) {
+            return true;
+          }
+        }
+        return false;
       } else {
-        return Object.keys(actual).some(function(key) {
-          return (key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator);
-        });
+        for (key in expected) {
+          var expectedVal = expected[key];
+          if (isFunction(expectedVal)) {
+            continue;
+          }
+
+          var keyIsDollar = key === '$';
+          var actualVal = keyIsDollar ? actual : actual[key];
+          if (!deepCompare(actualVal, expectedVal, comparator, keyIsDollar)) {
+            return false;
+          }
+        }
+        return true;
       }
       break;
     default:
