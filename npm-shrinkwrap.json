@@ -1395,7 +1395,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.5",
+      "version": "0.10.7",
       "dependencies": {
         "catharsis": {
           "version": "0.7.1"
@@ -1454,7 +1454,7 @@
           "version": "1.2.2"
         },
         "estraverse": {
-          "version": "1.5.1"
+          "version": "1.7.1"
         },
         "glob": {
           "version": "3.2.11",
@@ -1465,16 +1465,16 @@
           }
         },
         "htmlparser2": {
-          "version": "3.7.3",
+          "version": "3.8.2",
           "dependencies": {
             "domhandler": {
-              "version": "2.2.0"
+              "version": "2.3.0"
             },
             "domutils": {
               "version": "1.5.0"
             },
             "domelementtype": {
-              "version": "1.1.1"
+              "version": "1.1.3"
             },
             "readable-stream": {
               "version": "1.1.13",
@@ -1528,7 +1528,7 @@
               "dependencies": {
                 "fsevents": {
                   "version": "0.2.1",
-                  "from": "fsevents@git://github.com/pipobscure/fsevents#7dcdf9fa3f8956610fd6f69f72c67bace2de7138",
+                  "from": "git://github.com/pipobscure/fsevents#7dcdf9fa3f8956610fd6f69f72c67bace2de7138",
                   "resolved": "git://github.com/pipobscure/fsevents#7dcdf9fa3f8956610fd6f69f72c67bace2de7138",
                   "dependencies": {
                     "nan": {
@@ -1596,7 +1596,7 @@
                   "version": "0.0.10",
                   "dependencies": {
                     "combined-stream": {
-                      "version": "0.0.5",
+                      "version": "0.0.7",
                       "dependencies": {
                         "delayed-stream": {
                           "version": "0.0.5"
