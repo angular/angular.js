@@ -184,7 +184,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
           whensExpFns = {},
           startSymbol = $interpolate.startSymbol(),
           endSymbol = $interpolate.endSymbol(),
-          isWhen = /^when(Minus)?(.+)$/;
+          isWhen = /^when(Minus)?./;
 
       forEach(attr, function(expression, attributeName) {
         if (isWhen.test(attributeName)) {
