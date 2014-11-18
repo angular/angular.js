@@ -1374,10 +1374,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      * Looks for directives on the given node and adds them to the directive collection which is
      * sorted.
      *
-     * @param node Node to search.
-     * @param directives An array to which the directives are added to. This array is sorted before
+     * @param {Node} node Node to search.
+     * @param {Array} directives An array to which the directives are added to. This array is sorted before
      *        the function returns.
-     * @param attrs The shared attrs object which is used to populate the normalized attributes.
+     * @param {Object} attrs The shared attrs object which is used to populate the normalized attributes.
      * @param {number=} maxPriority Max directive priority.
      */
     function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
@@ -1469,9 +1469,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     /**
      * Given a node with an directive-start it collects all of the siblings until it finds
      * directive-end.
-     * @param node
-     * @param attrStart
-     * @param attrEnd
+     * @param {Node} node
+     * @param {String} attrStart
+     * @param {String} attrEnd
      * @returns {*}
      */
     function groupScan(node, attrStart, attrEnd) {
@@ -1501,9 +1501,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     /**
      * Wrapper for linking function which converts normal linking function into a grouped
      * linking function.
-     * @param linkFn
-     * @param attrStart
-     * @param attrEnd
+     * @param {Function} linkFn
+     * @param {String} attrStart
+     * @param {String} attrEnd
      * @returns {Function}
      */
     function groupElementsLinkFnWrapper(linkFn, attrStart, attrEnd) {
@@ -2493,7 +2493,7 @@ var PREFIX_REGEXP = /^((?:x|data)[\:\-_])/i;
  *   data-my:directive
  *
  * Also there is special case for Moz prefix starting with upper case letter.
- * @param name Name to normalize
+ * @param {String} name Name to normalize
  */
 function directiveNormalize(name) {
   return camelCase(name.replace(PREFIX_REGEXP, ''));

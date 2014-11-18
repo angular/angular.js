@@ -25,7 +25,8 @@
   "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,
   "jsDoc": {
-    "checkParamNames": true
+    "checkParamNames": true,
+    "requireParamTypes": true
   },
   "requireCommaBeforeLineBreak": true,
   "requireLineFeedAtFileEnd": true,

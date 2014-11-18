@@ -181,8 +181,8 @@ function $RouteProvider() {
   this.caseInsensitiveMatch = false;
 
    /**
-    * @param path {string} path
-    * @param opts {Object} options
+    * @param {string} path
+    * @param {Object} opts
     * @return {?Object}
     *
     * @description
@@ -505,8 +505,8 @@ function $RouteProvider() {
     /////////////////////////////////////////////////////
 
     /**
-     * @param on {string} current url
-     * @param route {Object} route regexp to match the url against
+     * @param {string} on current url
+     * @param {Object} route route regexp to match the url against
      * @return {?Object}
      *
      * @description

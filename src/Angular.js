@@ -310,8 +310,8 @@ function nextUid() {
 
 /**
  * Set or clear the hashkey for an object.
- * @param obj object
- * @param h the hashkey (!truthy to delete the hashkey)
+ * @param {Object} obj
+ * @param {String} h the hashkey (!truthy to delete the hashkey)
  */
 function setHashKey(obj, h) {
   if (h) {
@@ -613,7 +613,7 @@ function isElement(node) {
 }
 
 /**
- * @param str 'key1,key2,...'
+ * @param {String} str 'key1,key2,...'
  * @returns {object} in the form of {key1:true, key2:true, ...}
  */
 function makeMap(str) {

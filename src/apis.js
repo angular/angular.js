@@ -9,7 +9,7 @@
  *  object is either result of calling $$hashKey function on the object or uniquely generated id,
  *         that is also assigned to the $$hashKey property of the object.
  *
- * @param obj
+ * @param {String|Number|Object|Function} obj
  * @returns {string} hash string such that the same input will have the same hash string.
  *         The resulting string key is in 'type:hashKey' format.
  */
@@ -48,15 +48,15 @@ function HashMap(array, isolatedUid) {
 HashMap.prototype = {
   /**
    * Store key value pair
-   * @param key key to store can be any type
-   * @param value value to store can be any type
+   * @param {*} key to store can be any type
+   * @param {*} value to store can be any type
    */
   put: function(key, value) {
     this[hashKey(key, this.nextUid)] = value;
   },
 
   /**
-   * @param key
+   * @param {*} key
    * @returns {Object} the value for the key
    */
   get: function(key) {
@@ -65,7 +65,7 @@ HashMap.prototype = {
 
   /**
    * Remove the key/value pair
-   * @param key
+   * @param {*} key
    */
   remove: function(key) {
     var value = this[key = hashKey(key, this.nextUid)];
