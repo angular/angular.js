@@ -26,7 +26,7 @@ function defaultHttpResponseTransform(data, headers) {
  * @returns {Object} Parsed headers as key value object
  */
 function parseHeaders(headers) {
-  var parsed = {}, key, val, i;
+  var parsed = createMap(), key, val, i;
 
   if (!headers) return parsed;
 
@@ -64,7 +64,7 @@ function headersGetter(headers) {
 
     if (name) {
       name = lowercase(name);
-      return Object.prototype.hasOwnProperty.call(headersObj, name) ? headersObj[name] : null;
+      return hasOwnProperty.call(headersObj, name) ? headersObj[name] : null;
     }
 
     return headersObj;
