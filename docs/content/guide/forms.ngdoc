@@ -139,7 +139,9 @@ the view using the standard binding primitives.
 
 This allows us to extend the above example with these features:
 
-- Custom error message displayed upon interacting (touching) a field or submitting the form
+- Custom error message displayed after interacting with a control (i.e. `$touched`)
+- Custom error message displayed upon submitting the form even if user didn't interact with a control (i.e. `$submitted`)
+
 
 <example module="formExample">
   <file name="index.html">
