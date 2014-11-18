@@ -64,7 +64,7 @@ function headersGetter(headers) {
 
     if (name) {
       name = lowercase(name);
-      return headersObj.hasOwnProperty(name) ? headersObj[name] : null;
+      return Object.prototype.hasOwnProperty.call(headersObj, name) ? headersObj[name] : null;
     }
 
     return headersObj;
