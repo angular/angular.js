@@ -4,36 +4,7 @@
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
-      xhr, fakeDocument, callback,
-      fakeTimeoutId = 0;
-
-  // TODO(vojta): should be replaced by $defer mock
-  function fakeTimeout(fn, delay) {
-    fakeTimeout.fns.push(fn);
-    fakeTimeout.delays.push(delay);
-    fakeTimeout.ids.push(++fakeTimeoutId);
-    return fakeTimeoutId;
-  }
-
-  fakeTimeout.fns = [];
-  fakeTimeout.delays = [];
-  fakeTimeout.ids = [];
-  fakeTimeout.flush = function() {
-    var len = fakeTimeout.fns.length;
-    fakeTimeout.delays = [];
-    fakeTimeout.ids = [];
-    while (len--) fakeTimeout.fns.shift()();
-  };
-  fakeTimeout.cancel = function(id) {
-    var i = fakeTimeout.ids.indexOf(id);
-    if (i >= 0) {
-      fakeTimeout.fns.splice(i, 1);
-      fakeTimeout.delays.splice(i, 1);
-      fakeTimeout.ids.splice(i, 1);
-      return true;
-    }
-    return false;
-  };
+      xhr, fakeDocument, callback;
 
 
   beforeEach(inject(function($injector) {
@@ -57,7 +28,7 @@ describe('$httpBackend', function() {
         })
       }
     };
-    $backend = createHttpBackend($browser, createMockXhr, fakeTimeout, callbacks, fakeDocument);
+    $backend = createHttpBackend($browser, createMockXhr, $browser.defer, callbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -154,7 +125,7 @@ describe('$httpBackend', function() {
     xhr = MockXhr.$$lastInstance;
     spyOn(xhr, 'abort');
 
-    fakeTimeout.flush();
+    $browser.defer.flush();
     expect(xhr.abort).toHaveBeenCalledOnce();
 
     xhr.status = 0;
@@ -171,9 +142,9 @@ describe('$httpBackend', function() {
     xhr = MockXhr.$$lastInstance;
     spyOn(xhr, 'abort');
 
-    expect(fakeTimeout.delays[0]).toBe(2000);
+    expect($browser.deferredFns[0].time).toBe(2000);
 
-    fakeTimeout.flush();
+    $browser.defer.flush();
     expect(xhr.abort).toHaveBeenCalledOnce();
 
     xhr.status = 0;
@@ -227,13 +198,13 @@ describe('$httpBackend', function() {
     xhr = MockXhr.$$lastInstance;
     spyOn(xhr, 'abort');
 
-    expect(fakeTimeout.delays[0]).toBe(2000);
+    expect($browser.deferredFns[0].time).toBe(2000);
 
     xhr.status = 200;
     xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
 
-    expect(fakeTimeout.delays.length).toBe(0);
+    expect($browser.deferredFns.length).toBe(0);
     expect(xhr.abort).not.toHaveBeenCalled();
   });
 
@@ -342,12 +313,12 @@ describe('$httpBackend', function() {
 
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback, null, 2000);
       expect(fakeDocument.$$scripts.length).toBe(1);
-      expect(fakeTimeout.delays[0]).toBe(2000);
+      expect($browser.deferredFns[0].time).toBe(2000);
 
       var script = fakeDocument.$$scripts.shift(),
         callbackId = script.src.match(SCRIPT_URL)[2];
 
-      fakeTimeout.flush();
+      $browser.defer.flush();
       expect(fakeDocument.$$scripts.length).toBe(0);
       expect(callback).toHaveBeenCalledOnce();
 
