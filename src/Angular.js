@@ -262,7 +262,7 @@ function forEach(obj, iterator, context) {
         obj.forEach(iterator, context, obj);
     } else {
       for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (hasOwnProperty.call(obj, key)) {
           iterator.call(context, obj[key], key, obj);
         }
       }
@@ -754,7 +754,7 @@ function copy(source, destination, stackSource, stackDest) {
         });
       }
       for (var key in source) {
-        if (source.hasOwnProperty(key)) {
+        if (hasOwnProperty.call(source, key)) {
           result = copy(source[key], null, stackSource, stackDest);
           if (isObject(source[key])) {
             stackSource.push(source[key]);
@@ -854,7 +854,7 @@ function equals(o1, o2) {
           keySet[key] = true;
         }
         for (key in o2) {
-          if (!keySet.hasOwnProperty(key) &&
+          if (!hasOwnProperty.call(keySet, key) &&
               key.charAt(0) !== '$' &&
               o2[key] !== undefined &&
               !isFunction(o2[key])) return false;
