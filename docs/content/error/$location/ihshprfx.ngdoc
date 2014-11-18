@@ -8,10 +8,10 @@ This error occurs when {@link ng.$location $location} service is configured to u
 For example if you configure `$location` service with prefix `'!'`:
 ```
 myApp.config(function($locationProvider) {
-  $locationProvider.prefix('!');
+  $locationProvider.hashPrefix('!');
 });
 ```
 
-If you enter the app at url `http:/myapp.com/#/myView` this error will be throw.
+If you enter the app at url `http://myapp.com/#/myView` this error will be thrown.
 
-The correct url for this configuration is `http:/myapp.com/#!/myView` (note the `'!'` after `'#'` symbol).
+The correct url for this configuration is `http://myapp.com/#!/myView` (note the `'!'` after `'#'` symbol).
