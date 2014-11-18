@@ -148,10 +148,11 @@ describe("$animate", function() {
       $rootScope.$digest();
       assertColor('blue');
 
-      $animate.leave(element, 'off', {
-        to: { color: 'blue' }
+      $animate.leave(element, {
+        to: { color: 'yellow' }
       });
-      assertColor('blue'); //nothing should happen the element is gone anyway
+      $rootScope.$digest();
+      assertColor('yellow');
 
       function assertColor(color) {
         expect(element[0].style.color).toBe(color);
