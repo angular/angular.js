@@ -136,6 +136,19 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should respect the nesting level of "$"', function() {
+    var items = [{supervisor: 'me', person: {name: 'Annet', email: 'annet@example.com'}},
+                 {supervisor: 'me', person: {name: 'Billy', email: 'me@billy.com'}},
+                 {supervisor: 'me', person: {name: 'Joan', email: 'joan@example.net'}},
+                 {supervisor: 'me', person: {name: 'John', email: 'john@example.com'}},
+                 {supervisor: 'me', person: {name: 'Rita', email: 'rita@example.com'}}];
+    var expr = {$: {$: 'me'}};
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)).toEqual([items[1]]);
+  });
+
+
   it('should support boolean properties', function() {
     var items = [{name: 'tom', current: true},
                  {name: 'demi', current: false},
@@ -156,23 +169,146 @@ describe('Filter: filter', function() {
   });
 
 
-  it('should not consider the expression\'s inherited properties', function() {
-    Object.prototype.noop = noop;
+  it('should ignore function properties in items', function() {
+    // Own function properties
+    var items = [
+      {text: 'hello', func: noop},
+      {text: 'goodbye'},
+      {text: 'kittens'},
+      {text: 'puppies'}
+    ];
+    var expr = {text: 'hello'};
 
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+    expect(filter(items, expr, true).length).toBe(1);
+    expect(filter(items, expr, true)[0]).toBe(items[0]);
+
+    // Inherited function proprties
+    function Item(text) {
+        this.text = text;
+    }
+    Item.prototype.func = noop;
+
+    items = [
+      new Item('hello'),
+      new Item('goodbye'),
+      new Item('kittens'),
+      new Item('puppies')
+    ];
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+    expect(filter(items, expr, true).length).toBe(1);
+    expect(filter(items, expr, true)[0]).toBe(items[0]);
+  });
+
+
+  it('should ignore function properties in expression', function() {
+    // Own function properties
     var items = [
       {text: 'hello'},
       {text: 'goodbye'},
       {text: 'kittens'},
       {text: 'puppies'}
     ];
+    var expr = {text: 'hello', func: noop};
 
-    expect(filter(items, {text: 'hell'}).length).toBe(1);
-    expect(filter(items, {text: 'hell'})[0]).toBe(items[0]);
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+    expect(filter(items, expr, true).length).toBe(1);
+    expect(filter(items, expr, true)[0]).toBe(items[0]);
 
-    expect(filter(items, 'hell').length).toBe(1);
-    expect(filter(items, 'hell')[0]).toBe(items[0]);
+    // Inherited function proprties
+    function Expr(text) {
+        this.text = text;
+    }
+    Expr.prototype.func = noop;
 
-    delete(Object.prototype.noop);
+    expr = new Expr('hello');
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+    expect(filter(items, expr, true).length).toBe(1);
+    expect(filter(items, expr, true)[0]).toBe(items[0]);
+  });
+
+
+  it('should consider inherited properties in items', function() {
+    function Item(text) {
+      this.text = text;
+    }
+    Item.prototype.doubleL = 'maybe';
+
+    var items = [
+      new Item('hello'),
+      new Item('goodbye'),
+      new Item('kittens'),
+      new Item('puppies')
+    ];
+    var expr = {text: 'hello', doubleL: 'perhaps'};
+
+    expect(filter(items, expr).length).toBe(0);
+    expect(filter(items, expr, true).length).toBe(0);
+
+    expr = {text: 'hello', doubleL: 'maybe'};
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+    expect(filter(items, expr, true).length).toBe(1);
+    expect(filter(items, expr, true)[0]).toBe(items[0]);
+  });
+
+
+  it('should consider inherited properties in expression', function() {
+    function Expr(text) {
+      this.text = text;
+    }
+    Expr.prototype.doubleL = true;
+
+    var items = [
+      {text: 'hello', doubleL: true},
+      {text: 'goodbye'},
+      {text: 'kittens'},
+      {text: 'puppies'}
+    ];
+    var expr = new Expr('e');
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+
+    expr = new Expr('hello');
+
+    expect(filter(items, expr, true).length).toBe(1);
+    expect(filter(items, expr)[0]).toBe(items[0]);
+  });
+
+
+  it('should not be affected by `Object.prototype` when using a string expression', function() {
+    Object.prototype.someProp = 'oo';
+
+    var items = [
+      createMap(),
+      createMap(),
+      createMap(),
+      createMap()
+    ];
+    items[0].someProp = 'hello';
+    items[1].someProp = 'goodbye';
+    items[2].someProp = 'kittens';
+    items[3].someProp = 'puppies';
+
+    // Affected by `Object.prototype`
+    expect(filter(items, {}).length).toBe(1);
+    expect(filter(items, {})[0]).toBe(items[1]);
+
+    expect(filter(items, {$: 'll'}).length).toBe(0);
+
+    // Not affected by `Object.prototype`
+    expect(filter(items, 'll').length).toBe(1);
+    expect(filter(items, 'll')[0]).toBe(items[0]);
+
+    delete Object.prototype.someProp;
   });
 
 
