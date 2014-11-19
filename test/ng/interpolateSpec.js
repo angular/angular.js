@@ -58,6 +58,74 @@ describe('$interpolate', function() {
     expect($interpolate("Hello, world!{{bloop}}")()).toBe("Hello, world!");
   }));
 
+  describe('watching', function() {
+    it('should be watchable with any input types', inject(function($interpolate, $rootScope) {
+      var lastVal;
+      $rootScope.$watch($interpolate('{{i}}'), function(val) {
+        lastVal = val;
+      });
+      $rootScope.$apply();
+      expect(lastVal).toBe('');
+
+      $rootScope.i = null;
+      $rootScope.$apply();
+      expect(lastVal).toBe('');
+
+      $rootScope.i = '';
+      $rootScope.$apply();
+      expect(lastVal).toBe('');
+
+      $rootScope.i = 0;
+      $rootScope.$apply();
+      expect(lastVal).toBe('0');
+
+      $rootScope.i = [0];
+      $rootScope.$apply();
+      expect(lastVal).toBe('[0]');
+
+      $rootScope.i = {a: 1, b: 2};
+      $rootScope.$apply();
+      expect(lastVal).toBe('{"a":1,"b":2}');
+    }));
+
+    it('should be watchable with literal values', inject(function($interpolate, $rootScope) {
+      var lastVal;
+      $rootScope.$watch($interpolate('{{1}}{{"2"}}{{true}}{{[false]}}{{ {a: 2} }}'), function(val) {
+        lastVal = val;
+      });
+      $rootScope.$apply();
+      expect(lastVal).toBe('12true[false]{"a":2}');
+
+      expect($rootScope.$countWatchers()).toBe(0);
+    }));
+
+    it('should respect one-time bindings for each individual expression', inject(function($interpolate, $rootScope) {
+      var calls = [];
+      $rootScope.$watch($interpolate('{{::a | limitTo:1}} {{::s}} {{::i | number}}'), function(val) {
+        calls.push(val);
+      });
+
+      $rootScope.$apply();
+      expect(calls.length).toBe(1);
+
+      $rootScope.a = [1];
+      $rootScope.$apply();
+      expect(calls.length).toBe(2);
+      expect(calls[1]).toBe('[1]  ');
+
+      $rootScope.a = [0];
+      $rootScope.$apply();
+      expect(calls.length).toBe(2);
+
+      $rootScope.i = $rootScope.a = 123;
+      $rootScope.s = 'str!';
+      $rootScope.$apply();
+      expect(calls.length).toBe(3);
+      expect(calls[2]).toBe('[1] str! 123');
+
+      expect($rootScope.$countWatchers()).toBe(0);
+    }));
+  });
 
   describe('interpolation escaping', function() {
     var obj;
