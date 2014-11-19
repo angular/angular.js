@@ -1624,7 +1624,9 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
  * DOM events. Such DOM related logic should be provided by other directives which make use of
  * `NgModelController` for data-binding.
  *
- * ## Custom Control Example
+ *
+ * @example
+ * ### Custom Control Example
  * This example shows how to use `NgModelController` with a custom control to achieve
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
  * collaborate together to achieve the desired result.
