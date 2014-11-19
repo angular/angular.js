@@ -94,7 +94,12 @@
   ([8eabc546](https://github.com/angular/angular.js/commit/8eabc5463c795d87f37e5a9eacbbb14435024061),
    [#9942](https://github.com/angular/angular.js/issues/9942))
 
+## Breaking Changes
 
+- **$parse:** due to [fbad2805](https://github.com/angular/angular.js/commit/fbad2805703569058a4a860747b0e2d8aee36bdf),
+    you can't use characters that have special meaning in AngularJS expressions (ex.: `.` or `-`)
+    as part of filter's name. Before this commit custom filters could contain special characters
+    (like a dot) in their name but this wasn't intentional.
 
 <a name="1.3.2"></a>
 # 1.3.2 cardiovasculatory-magnification (2014-11-07)
