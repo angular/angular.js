@@ -576,6 +576,12 @@ describe('browser', function() {
       expect(browser.url('http://any.com')).toBe(browser);
     });
 
+    it('should return $browser to allow chaining even if the previous and current URLs and states match', function() {
+      expect(browser.url('http://any.com').url('http://any.com')).toBe(browser);
+      var state = { any: 'foo' };
+      expect(browser.url('http://any.com', false, state).url('http://any.com', false, state)).toBe(browser);
+      expect(browser.url('http://any.com', true, state).url('http://any.com', true, state)).toBe(browser);
+    });
 
     it('should decode single quotes to work around FF bug 407273', function() {
       fakeWindow.location.href = "http://ff-bug/?single%27quote";
