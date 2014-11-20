@@ -134,6 +134,9 @@ function filterFilter() {
     if (comparatorType !== 'function') {
       if (comparatorType === 'boolean' && comparator) {
         comparator = function(obj, text) {
+          if (typeof obj === "number") {
+            text = parseInt(text);
+          }
           return angular.equals(obj, text);
         };
       } else {
