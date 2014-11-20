@@ -96,8 +96,14 @@ function publish {
     # don't publish every build to npm
     if [ "${NEW_VERSION/+sha}" = "$NEW_VERSION" ] ; then
       if [ "${NEW_VERSION/-}" = "$NEW_VERSION" ] ; then
-        # publish releases as "latest"
-        npm publish
+        if [[ $NEW_VERSION =~ ^1\.2\.[0-9]+$ ]] ; then
+          # publish 1.2.x releases with the appropriate tag
+          # this ensures that `npm install` by default will not grab `1.2.x` releases
+          npm publish --tag=1.2.x
+        else
+          # publish releases as "latest"
+          npm publish
+        fi
       else
         # publish prerelease builds with the beta tag
         npm publish --tag=beta
