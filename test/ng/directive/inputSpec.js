@@ -2102,7 +2102,7 @@ describe('input', function() {
       expect(inputElm.val()).toBe('a');
     });
 
-    it('should always try to invoke a model if getterSetter is true', function() {
+    it('should try to invoke a function model if getterSetter is true', function() {
       compileInput(
         '<input type="text" ng-model="name" ' +
           'ng-model-options="{ getterSetter: true }" />');
@@ -2117,6 +2117,12 @@ describe('input', function() {
       expect(inputElm.val()).toBe('b');
       expect(spy).toHaveBeenCalledWith('a');
       expect(scope.name).toBe(spy);
+    });
+
+    it('should assign to non-function models if getterSetter is true', function() {
+      compileInput(
+        '<input type="text" ng-model="name" ' +
+          'ng-model-options="{ getterSetter: true }" />');
 
       scope.name = 'c';
       changeInputValueTo('d');
@@ -2134,6 +2140,35 @@ describe('input', function() {
       compileInput(
         '<input type="text" ng-model="accessor(user, \'name\')" ' +
           'ng-model-options="{ getterSetter: true }" />');
+    });
+
+    it('should invoke a model in the correct context if getterSetter is true', function() {
+      compileInput(
+        '<input type="text" ng-model="someService.getterSetter" ' +
+          'ng-model-options="{ getterSetter: true }" />');
+
+      scope.someService = {
+        value: 'a',
+        getterSetter: function(newValue) {
+          this.value = newValue || this.value;
+          return this.value;
+        }
+      };
+      spyOn(scope.someService, 'getterSetter').andCallThrough();
+      scope.$apply();
+
+      expect(inputElm.val()).toBe('a');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
+      expect(scope.someService.value).toBe('a');
+
+      changeInputValueTo('b');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith('b');
+      expect(scope.someService.value).toBe('b');
+
+      scope.someService.value = 'c';
+      scope.$apply();
+      expect(inputElm.val()).toBe('c');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
     });
 
     it('should assign invalid values to the scope if allowInvalid is true', function() {
