@@ -37,7 +37,17 @@ function ensureSafeMemberName(name, fullExpression) {
   return name;
 }
 
-function compileStatementsCall(statements) {
+function compileStatementsCall(csp, statements) {
+  if (csp) {
+    return function $parseStatements(self, locals) {
+      var value;
+      for (var i = 0, ii = statements.length; i < ii; i++) {
+        value = statements[i](self, locals);
+      }
+      return value;
+    };
+  }
+
   var args = [], body = [], fnName;
   for (var i = 0, ii = statements.length; i < ii; i++) {
     fnName = "s" + i;
@@ -502,7 +512,7 @@ Parser.prototype = {
         // TODO(size): maybe we should not support multiple statements?
         return (statements.length === 1)
             ? statements[0]
-            : compileStatementsCall(statements);
+            : compileStatementsCall(this.options.csp, statements);
       }
     }
   },
