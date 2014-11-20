@@ -1,3 +1,54 @@
+<a name="1.2.27"></a>
+# 1.2.27 prime-factorization (2014-11-20)
+
+
+## Bug Fixes
+
+- **$animate:** clear the GCS cache even when no animation is detected
+  ([f619d032](https://github.com/angular/angular.js/commit/f619d032c932752313c646b5295bad8a68ef3871),
+   [#8813](https://github.com/angular/angular.js/issues/8813))
+- **$browser:**
+  - Cache `location.href` only during page reload phase
+  ([434d7a09](https://github.com/angular/angular.js/commit/434d7a09039151c1e627ac156213905d06b7df10),
+   [#9235](https://github.com/angular/angular.js/issues/9235), [#9470](https://github.com/angular/angular.js/issues/9470))
+  - don’t use history api when only the hash changes
+  ([a6e6438d](https://github.com/angular/angular.js/commit/a6e6438dae1ed92b29608d0b8830b0a7fbb624ef),
+   [#9423](https://github.com/angular/angular.js/issues/9423), [#9424](https://github.com/angular/angular.js/issues/9424))
+  - handle async href on url change in <=IE9
+  ([fe7d9ded](https://github.com/angular/angular.js/commit/fe7d9dedaa5ec3b3f56d9eb9c513cf99e40121ce),
+   [#9235](https://github.com/angular/angular.js/issues/9235))
+- **$http:** add missing shortcut methods and missing docs
+  ([ec4fe1bc](https://github.com/angular/angular.js/commit/ec4fe1bcab6f981103a10f860a3a00122aa78607),
+   [#9180](https://github.com/angular/angular.js/issues/9180), [#9321](https://github.com/angular/angular.js/issues/9321))
+- **$location:**
+  - revert erroneous logic and backport refactorings from master
+  ([1ee9b4ef](https://github.com/angular/angular.js/commit/1ee9b4ef5e4a795061d3aa19adefdeb7e0209eeb),
+   [#8492](https://github.com/angular/angular.js/issues/8492))
+  - allow 0 in path() and hash()
+  ([f807d7ab](https://github.com/angular/angular.js/commit/f807d7ab4ebd18899154528ea9ed50d5bc25c57a))
+- **$parse:** add quick check for Function constructor in fast path
+  ([756640f5](https://github.com/angular/angular.js/commit/756640f5aa8f3fd0084bff50534e23976a6fff00))
+- **$parse, events:** prevent accidental misuse of properties on $event
+  ([4d0614fd](https://github.com/angular/angular.js/commit/4d0614fd0da12c5783dfb4956c330edac87e62fe),
+   [#9969](https://github.com/angular/angular.js/issues/9969))
+- **ngMock:** $httpBackend should match data containing Date objects correctly
+  ([1426b029](https://github.com/angular/angular.js/commit/1426b02980badfd322eb960d71bfb1a14d657847),
+   [#5127](https://github.com/angular/angular.js/issues/5127))
+- **orderBy:** sort by identity if no predicate is given
+  ([45b896a1](https://github.com/angular/angular.js/commit/45b896a16abbcbfcdfb9a95c2d10c76a805b57cc),
+   [#5847](https://github.com/angular/angular.js/issues/5847), [#4579](https://github.com/angular/angular.js/issues/4579), [#9403](https://github.com/angular/angular.js/issues/9403))
+- **select:** ensure the label attribute is updated in Internet Explorer
+  ([16833d0f](https://github.com/angular/angular.js/commit/16833d0fb6585117e9978d1accc3ade83e22e797),
+   [#9621](https://github.com/angular/angular.js/issues/9621), [#10042](https://github.com/angular/angular.js/issues/10042))
+
+
+## Performance Improvements
+
+- **orderBy:** copy array with slice instead of for loop
+  ([409bcb38](https://github.com/angular/angular.js/commit/409bcb3810a1622178268f7ff7f4130887a1a3dc),
+   [#9942](https://github.com/angular/angular.js/issues/9942))
+
+
 <a name="1.3.3"></a>
 # 1.3.3 undersea-arithmetic (2014-11-17)
 
