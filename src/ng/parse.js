@@ -37,6 +37,20 @@ function ensureSafeMemberName(name, fullExpression) {
   return name;
 }
 
+function compileStatementsCall(statements) {
+  var args = [], body = [], fnName;
+  for (var i = 0, ii = statements.length; i < ii; i++) {
+    fnName = "s" + i;
+    args.push(fnName);
+    body.push(fnName + "(self, locals)");
+  }
+  var fullBody = "return function (self, locals){return " + body.join(",") + "}";
+  /* jshint -W054 */
+  var helper = new Function(args.join(","), fullBody);
+  /* jshint +W054 */
+  return helper.apply(null, statements);
+}
+
 function ensureSafeObject(obj, fullExpression) {
   // nifty check if obj is Function that is fast and works across iframes and other contexts
   if (obj) {
@@ -488,13 +502,7 @@ Parser.prototype = {
         // TODO(size): maybe we should not support multiple statements?
         return (statements.length === 1)
             ? statements[0]
-            : function $parseStatements(self, locals) {
-                var value;
-                for (var i = 0, ii = statements.length; i < ii; i++) {
-                  value = statements[i](self, locals);
-                }
-                return value;
-              };
+            : compileStatementsCall(statements);
       }
     }
   },
