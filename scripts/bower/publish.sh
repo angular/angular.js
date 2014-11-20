@@ -99,7 +99,7 @@ function publish {
         if [[ $NEW_VERSION =~ ^1\.2\.[0-9]+$ ]] ; then
           # publish 1.2.x releases with the appropriate tag
           # this ensures that `npm install` by default will not grab `1.2.x` releases
-          npm publish --tag=1.2.x
+          npm publish --tag=old
         else
           # publish releases as "latest"
           npm publish
