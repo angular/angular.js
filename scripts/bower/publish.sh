@@ -71,6 +71,8 @@ function prepare {
     cd $TMP_DIR/bower-$repo
     replaceJsonProp "bower.json" "version" ".*" "$NEW_VERSION"
     replaceJsonProp "bower.json" "angular.*" ".*" "$NEW_VERSION"
+    replaceJsonProp "package.json" "version" ".*" "$NEW_VERSION"
+    replaceJsonProp "package.json" "angular.*" ".*" "$NEW_VERSION"
 
     git add -A
 
