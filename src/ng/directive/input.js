@@ -1342,9 +1342,11 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
     element[0].checked = ctrl.$viewValue;
   };
 
-  // Override the standard `$isEmpty` because a value of `false` means empty in a checkbox.
+  // Override the standard `$isEmpty` because the $viewValue of an empty checkbox is always set to `false`
+  // This is because of the parser below, which compares the `$modelValue` with `trueValue` to convert
+  // it to a boolean.
   ctrl.$isEmpty = function(value) {
-    return value !== trueValue;
+    return value === false;
   };
 
   ctrl.$formatters.push(function(value) {
