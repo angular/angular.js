@@ -155,23 +155,11 @@ function filterFilter() {
 
     var search = function(obj, text) {
       if (typeof text === 'string' && text.charAt(0) === '!') {
-        if (typeof obj !== typeof text) {
-          text = text.substr(1);
-          switch (typeof obj) {
-            case 'number':
-              if (!isNaN(parseFloat(text))) {
-                text = parseFloat(text);
-              }
-              break;
-            case 'boolean':
-              if (text === 'true' || text === 'false') {
-                text = text == 'false' ? !text : !!text;
-              }
-            }
-            return !search(obj, text);
-        } else {
-          return !search(obj, text.substr(1));
+        text = text.substr(1);
+        if (typeof obj !== typeof text && typeof obj === 'number') {
+            text = parseFloat(text);
         }
+        return !search(obj, text);
       }
       switch (typeof obj) {
         case 'boolean':

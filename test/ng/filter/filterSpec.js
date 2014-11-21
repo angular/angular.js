@@ -168,14 +168,6 @@ describe('Filter: filter', function() {
       expect(filter(items, '!' + 1.123, true).length).toBe(2);
     });
 
-    it('should support negation operator on boolean with strict comparison', function() {
-      var items = [true, false];
-
-      expect(filter(items, '!' + true, true).length).toBe(1);
-      expect(filter(items, '!' + true, true)[0]).toEqual(items[1]);
-    });
-
-
     it('and use the function given to compare values', function() {
       var items = [
         {key: 1, nonkey: 1},
