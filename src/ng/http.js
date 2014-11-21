@@ -351,8 +351,8 @@ function $HttpProvider() {
      *
      * To explicitly remove a header automatically added via $httpProvider.defaults.headers on a per request basis,
      * Use the `headers` property, setting the desired header to `undefined`. For example:
-     * 
-     * ```
+     *
+     * ```js
      * var req = {
      *  method: 'POST',
      *  url: 'http://example.com',
@@ -361,7 +361,7 @@ function $HttpProvider() {
      *  },
      *  data: { test: 'test' },
      * }
-     * 
+     *
      * $http(req).success(function(){...}).error(function(){...});
      * ```
      *
