@@ -156,7 +156,7 @@ function filterFilter() {
     var search = function(obj, text) {
       if (typeof text === 'string' && text.charAt(0) === '!') {
         text = text.substr(1);
-        if (typeof obj !== typeof text && typeof obj === 'number') {
+        if (typeof obj !== typeof text && angular.isNumber(obj)) {
             text = parseFloat(text);
         }
         return !search(obj, text);
