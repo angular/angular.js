@@ -134,9 +134,6 @@ function filterFilter() {
     if (comparatorType !== 'function') {
       if (comparatorType === 'boolean' && comparator) {
         comparator = function(obj, text) {
-          if (typeof obj === "number") {
-            text = parseInt(text);
-          }
           return angular.equals(obj, text);
         };
       } else {
@@ -158,7 +155,23 @@ function filterFilter() {
 
     var search = function(obj, text) {
       if (typeof text === 'string' && text.charAt(0) === '!') {
-        return !search(obj, text.substr(1));
+        if (typeof obj !== typeof text) {
+          text = text.substr(1);
+          switch (typeof obj) {
+            case 'number':
+              if (!isNaN(parseFloat(text))) {
+                text = parseFloat(text);
+              }
+              break;
+            case 'boolean':
+              if (text === 'true' || text === 'false') {
+                text = text == 'false' ? !text : !!text;
+              }
+            }
+            return !search(obj, text);
+        } else {
+          return !search(obj, text.substr(1));
+        }
       }
       switch (typeof obj) {
         case 'boolean':
