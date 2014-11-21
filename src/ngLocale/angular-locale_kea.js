@@ -36,7 +36,7 @@ $provide.value("$locale", {
     ],
     "MONTH": [
       "Janeru",
-      "Fevereru",
+      "Febreru",
       "Marsu",
       "Abril",
       "Maiu",
@@ -59,7 +59,7 @@ $provide.value("$locale", {
     ],
     "SHORTMONTH": [
       "Jan",
-      "Fev",
+      "Feb",
       "Mar",
       "Abr",
       "Mai",
@@ -73,8 +73,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d 'di' MMMM 'di' y",
     "longDate": "d 'di' MMMM 'di' y",
-    "medium": "d 'di' MMM 'di' y HH:mm:ss",
-    "mediumDate": "d 'di' MMM 'di' y",
+    "medium": "d MMM y HH:mm:ss",
+    "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
     "short": "d/M/y HH:mm",
     "shortDate": "d/M/y",
@@ -83,7 +83,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "CVE",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": ".",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {
         "gSize": 3,
@@ -103,9 +103,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": "\u00a4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": "\u00a4"
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },

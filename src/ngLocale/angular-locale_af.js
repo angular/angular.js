@@ -40,9 +40,9 @@ $provide.value("$locale", {
       "Sa"
     ],
     "SHORTMONTH": [
-      "Jan",
-      "Feb",
-      "Mar",
+      "Jan.",
+      "Feb.",
+      "Mrt.",
       "Apr",
       "Mei",
       "Jun",
@@ -53,7 +53,7 @@ $provide.value("$locale", {
       "Nov",
       "Des"
     ],
-    "fullDate": "EEEE dd MMMM y",
+    "fullDate": "EEEE, dd MMMM y",
     "longDate": "dd MMMM y",
     "medium": "dd MMM y h:mm:ss a",
     "mediumDate": "dd MMM y",

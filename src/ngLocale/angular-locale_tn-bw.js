@@ -82,7 +82,7 @@ $provide.value("$locale", {
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "P",
-    "DECIMAL_SEP": ",",
+    "DECIMAL_SEP": ".",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {

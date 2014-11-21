@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a. m.",
-      "p. m."
+      "a.\u00a0m.",
+      "p.\u00a0m."
     ],
     "DAY": [
       "domingo",
@@ -25,7 +25,7 @@ $provide.value("$locale", {
       "junio",
       "julio",
       "agosto",
-      "septiembre",
+      "setiembre",
       "octubre",
       "noviembre",
       "diciembre"
@@ -48,24 +48,24 @@ $provide.value("$locale", {
       "jun.",
       "jul.",
       "ago.",
-      "sept.",
+      "set.",
       "oct.",
       "nov.",
       "dic."
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "d/M/y H:mm:ss",
-    "mediumDate": "d/M/y",
-    "mediumTime": "H:mm:ss",
-    "short": "d/MM/yy H:mm",
+    "medium": "d 'de' MMM 'de' y h:mm:ss a",
+    "mediumDate": "d 'de' MMM 'de' y",
+    "mediumTime": "h:mm:ss a",
+    "short": "d/MM/yy h:mm a",
     "shortDate": "d/MM/yy",
-    "shortTime": "H:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "S/.",
-    "DECIMAL_SEP": ",",
-    "GROUP_SEP": ".",
+    "DECIMAL_SEP": ".",
+    "GROUP_SEP": ",",
     "PATTERNS": [
       {
         "gSize": 3,
@@ -84,10 +84,10 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-",
-        "negSuf": "\u00a0\u00a4",
-        "posPre": "",
-        "posSuf": "\u00a0\u00a4"
+        "negPre": "\u00a4-",
+        "negSuf": "",
+        "posPre": "\u00a4",
+        "posSuf": ""
       }
     ]
   },

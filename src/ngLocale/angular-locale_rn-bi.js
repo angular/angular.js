@@ -26,7 +26,7 @@ $provide.value("$locale", {
       "Z.MW."
     ],
     "DAY": [
-      "Ku w'indwi",
+      "Ku w\u2019indwi",
       "Ku wa mbere",
       "Ku wa kabiri",
       "Ku wa gatatu",

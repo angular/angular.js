@@ -71,8 +71,8 @@ $provide.value("$locale", {
       "\u043d\u043e\u0435\u043c.",
       "\u0434\u0435\u043a."
     ],
-    "fullDate": "EEEE, dd MMMM y '\u0433'.",
-    "longDate": "dd MMMM y '\u0433'.",
+    "fullDate": "EEEE, dd MMMM y",
+    "longDate": "dd MMMM y",
     "medium": "dd.M.y HH:mm:ss",
     "mediumDate": "dd.M.y",
     "mediumTime": "HH:mm:ss",

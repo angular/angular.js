@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a. m.",
-      "p. m."
+      "a.\u00a0m.",
+      "p.\u00a0m."
     ],
     "DAY": [
       "domingo",
@@ -25,7 +25,7 @@ $provide.value("$locale", {
       "junio",
       "julio",
       "agosto",
-      "septiembre",
+      "setiembre",
       "octubre",
       "noviembre",
       "diciembre"
@@ -48,19 +48,19 @@ $provide.value("$locale", {
       "jun.",
       "jul.",
       "ago.",
-      "sept.",
+      "set.",
       "oct.",
       "nov.",
       "dic."
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "dd-MM-y H:mm:ss",
+    "medium": "dd-MM-y h:mm:ss a",
     "mediumDate": "dd-MM-y",
-    "mediumTime": "H:mm:ss",
-    "short": "dd-MM-yy H:mm",
+    "mediumTime": "h:mm:ss a",
+    "short": "dd-MM-yy h:mm a",
     "shortDate": "dd-MM-yy",
-    "shortTime": "H:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "$",

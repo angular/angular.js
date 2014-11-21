@@ -4,17 +4,17 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "\u0a2a\u0a42.\u0a26\u0a41.",
+      "\u0a2c\u0a3e.\u0a26\u0a41."
     ],
     "DAY": [
       "\u0a10\u0a24\u0a35\u0a3e\u0a30",
       "\u0a38\u0a4b\u0a2e\u0a35\u0a3e\u0a30",
       "\u0a2e\u0a70\u0a17\u0a32\u0a35\u0a3e\u0a30",
-      "\u0a2c\u0a41\u0a27\u0a35\u0a3e\u0a30",
+      "\u0a2c\u0a41\u0a71\u0a27\u0a35\u0a3e\u0a30",
       "\u0a35\u0a40\u0a30\u0a35\u0a3e\u0a30",
       "\u0a38\u0a3c\u0a41\u0a71\u0a15\u0a30\u0a35\u0a3e\u0a30",
-      "\u0a38\u0a3c\u0a28\u0a40\u0a35\u0a3e\u0a30"
+      "\u0a38\u0a3c\u0a28\u0a3f\u0a71\u0a1a\u0a30\u0a35\u0a3e\u0a30"
     ],
     "MONTH": [
       "\u0a1c\u0a28\u0a35\u0a30\u0a40",
@@ -31,27 +31,27 @@ $provide.value("$locale", {
       "\u0a26\u0a38\u0a70\u0a2c\u0a30"
     ],
     "SHORTDAY": [
-      "\u0a10\u0a24.",
-      "\u0a38\u0a4b\u0a2e.",
-      "\u0a2e\u0a70\u0a17\u0a32.",
-      "\u0a2c\u0a41\u0a27.",
-      "\u0a35\u0a40\u0a30.",
-      "\u0a38\u0a3c\u0a41\u0a71\u0a15\u0a30.",
-      "\u0a38\u0a3c\u0a28\u0a40."
+      "\u0a10\u0a24",
+      "\u0a38\u0a4b\u0a2e",
+      "\u0a2e\u0a70\u0a17\u0a32",
+      "\u0a2c\u0a41\u0a71\u0a27",
+      "\u0a35\u0a40\u0a30",
+      "\u0a38\u0a3c\u0a41\u0a71\u0a15\u0a30",
+      "\u0a38\u0a3c\u0a28\u0a3f\u0a71\u0a1a\u0a30"
     ],
     "SHORTMONTH": [
-      "\u0a1c\u0a28\u0a35\u0a30\u0a40",
-      "\u0a2b\u0a3c\u0a30\u0a35\u0a30\u0a40",
+      "\u0a1c\u0a28",
+      "\u0a2b\u0a3c\u0a30",
       "\u0a2e\u0a3e\u0a30\u0a1a",
-      "\u0a05\u0a2a\u0a4d\u0a30\u0a48\u0a32",
+      "\u0a05\u0a2a\u0a4d\u0a30\u0a48",
       "\u0a2e\u0a08",
       "\u0a1c\u0a42\u0a28",
-      "\u0a1c\u0a41\u0a32\u0a3e\u0a08",
-      "\u0a05\u0a17\u0a38\u0a24",
-      "\u0a38\u0a24\u0a70\u0a2c\u0a30",
-      "\u0a05\u0a15\u0a24\u0a42\u0a2c\u0a30",
-      "\u0a28\u0a35\u0a70\u0a2c\u0a30",
-      "\u0a26\u0a38\u0a70\u0a2c\u0a30"
+      "\u0a1c\u0a41\u0a32\u0a3e",
+      "\u0a05\u0a17",
+      "\u0a38\u0a24\u0a70",
+      "\u0a05\u0a15\u0a24\u0a42",
+      "\u0a28\u0a35\u0a70",
+      "\u0a26\u0a38\u0a70"
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

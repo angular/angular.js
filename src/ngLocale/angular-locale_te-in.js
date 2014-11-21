@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "[AM]",
+      "[PM]"
     ],
     "DAY": [
       "\u0c06\u0c26\u0c3f\u0c35\u0c3e\u0c30\u0c02",
@@ -20,7 +20,7 @@ $provide.value("$locale", {
       "\u0c1c\u0c28\u0c35\u0c30\u0c3f",
       "\u0c2b\u0c3f\u0c2c\u0c4d\u0c30\u0c35\u0c30\u0c3f",
       "\u0c2e\u0c3e\u0c30\u0c4d\u0c1a\u0c3f",
-      "\u0c0e\u0c2a\u0c4d\u0c30\u0c3f\u0c32\u0c4d",
+      "\u0c0f\u0c2a\u0c4d\u0c30\u0c3f\u0c32\u0c4d",
       "\u0c2e\u0c47",
       "\u0c1c\u0c42\u0c28\u0c4d",
       "\u0c1c\u0c41\u0c32\u0c48",
@@ -53,10 +53,10 @@ $provide.value("$locale", {
       "\u0c28\u0c35\u0c02",
       "\u0c21\u0c3f\u0c38\u0c46\u0c02"
     ],
-    "fullDate": "d MMMM y EEEE",
-    "longDate": "d MMMM y",
-    "medium": "d MMM y h:mm:ss a",
-    "mediumDate": "d MMM y",
+    "fullDate": "d, MMMM y, EEEE",
+    "longDate": "d MMMM, y",
+    "medium": "d MMM, y h:mm:ss a",
+    "mediumDate": "d MMM, y",
     "mediumTime": "h:mm:ss a",
     "short": "dd-MM-yy h:mm a",
     "shortDate": "dd-MM-yy",
@@ -68,7 +68,7 @@ $provide.value("$locale", {
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
-        "gSize": 3,
+        "gSize": 2,
         "lgSize": 3,
         "maxFrac": 3,
         "minFrac": 0,
@@ -79,7 +79,7 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gSize": 3,
+        "gSize": 2,
         "lgSize": 3,
         "maxFrac": 2,
         "minFrac": 2,
