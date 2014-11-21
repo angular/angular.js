@@ -2290,6 +2290,22 @@ describe('input', function() {
   });
 
 
+  it('should render the $viewValue when $modelValue is empty', function() {
+    compileInput('<input type="text" ng-model="value" />');
+
+    var ctrl = inputElm.controller('ngModel');
+
+    ctrl.$modelValue = null;
+
+    expect(ctrl.$isEmpty(ctrl.$modelValue)).toBe(true);
+
+    ctrl.$viewValue = 'abc';
+    ctrl.$render();
+
+    expect(inputElm.val()).toBe('abc');
+  });
+
+
   describe('pattern', function() {
 
     it('should validate in-lined pattern', function() {
