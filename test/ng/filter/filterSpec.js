@@ -168,6 +168,14 @@ describe('Filter: filter', function() {
       expect(filter(items, '!' + 1.123, true).length).toBe(2);
     });
 
+    it('should support negation operator on int wrapped as a string', function() {
+      var items = ['1', '11'];
+
+      expect(filter(items, '!1', true).length).toBe(1);
+      expect(filter(items, '!1', true)[0]).toEqual(items[1]);
+      expect(filter(items, '!1.123', true).length).toBe(2);
+    });
+
     it('and use the function given to compare values', function() {
       var items = [
         {key: 1, nonkey: 1},
