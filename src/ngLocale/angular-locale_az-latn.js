@@ -36,7 +36,7 @@ $provide.value("$locale", {
       "\u00c7.A.",
       "\u00c7.",
       "C.A.",
-      "C",
+      "C.",
       "\u015e."
     ],
     "SHORTMONTH": [

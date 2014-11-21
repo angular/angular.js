@@ -23,7 +23,7 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
       "pre podne",
-      "popodne"
+      "po podne"
     ],
     "DAY": [
       "nedelja",

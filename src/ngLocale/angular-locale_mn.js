@@ -53,8 +53,8 @@ $provide.value("$locale", {
       "11-\u0440 \u0441\u0430\u0440",
       "12-\u0440 \u0441\u0430\u0440"
     ],
-    "fullDate": "EEEE, y '\u043e\u043d\u044b' MMMM '\u0441\u0430\u0440\u044b\u043d' dd",
-    "longDate": "y '\u043e\u043d\u044b' MMMM '\u0441\u0430\u0440\u044b\u043d' d",
+    "fullDate": "EEEE, y '\u043e\u043d\u044b' MM '\u0441\u0430\u0440\u044b\u043d' d",
+    "longDate": "y '\u043e\u043d\u044b' MM '\u0441\u0430\u0440\u044b\u043d' d",
     "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",

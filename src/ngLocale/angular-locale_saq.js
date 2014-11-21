@@ -28,7 +28,7 @@ $provide.value("$locale", {
     "DAY": [
       "Mderot ee are",
       "Mderot ee kuni",
-      "Mderot ee ong'wan",
+      "Mderot ee ong\u2019wan",
       "Mderot ee inet",
       "Mderot ee ile",
       "Mderot ee sapa",
@@ -38,7 +38,7 @@ $provide.value("$locale", {
       "Lapa le obo",
       "Lapa le waare",
       "Lapa le okuni",
-      "Lapa le ong'wan",
+      "Lapa le ong\u2019wan",
       "Lapa le imet",
       "Lapa le ile",
       "Lapa le sapa",

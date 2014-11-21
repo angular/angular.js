@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "dopoludnia",
+      "odpoludnia"
     ],
     "DAY": [
       "nede\u013ea",
@@ -73,11 +73,11 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d.M.y H:mm:ss",
-    "mediumDate": "d.M.y",
+    "medium": "d. M. y H:mm:ss",
+    "mediumDate": "d. M. y",
     "mediumTime": "H:mm:ss",
-    "short": "d.M.y H:mm",
-    "shortDate": "d.M.y",
+    "short": "dd.MM.yy H:mm",
+    "shortDate": "dd.MM.yy",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {

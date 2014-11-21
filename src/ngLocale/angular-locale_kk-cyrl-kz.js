@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "\u0442\u04af\u0441\u043a\u0435 \u0434\u0435\u0439\u0456\u043d",
-      "\u0442\u04af\u0441\u0442\u0435\u043d \u043a\u0435\u0439\u0456\u043d"
+      "\u0442\u0430\u04a3\u0435\u0440\u0442\u0435\u04a3\u0433\u0456",
+      "\u0442\u04af\u0441\u0442\u0435\u043d \u043a\u0435\u0439\u0456\u043d\u0433\u0456"
     ],
     "DAY": [
       "\u0436\u0435\u043a\u0441\u0435\u043d\u0431\u0456",
@@ -31,13 +31,13 @@ $provide.value("$locale", {
       "\u0436\u0435\u043b\u0442\u043e\u049b\u0441\u0430\u043d"
     ],
     "SHORTDAY": [
-      "\u0436\u0441.",
-      "\u0434\u0441.",
-      "\u0441\u0441.",
-      "\u0441\u0440.",
-      "\u0431\u0441.",
-      "\u0436\u043c.",
-      "\u0441\u0431."
+      "\u0436\u0435\u043a",
+      "\u0434\u04af\u0439",
+      "\u0441\u0435\u0439",
+      "\u0441\u04d9\u0440",
+      "\u0431\u0435\u0439",
+      "\u0436\u04b1\u043c\u0430",
+      "\u0441\u0435\u043d"
     ],
     "SHORTMONTH": [
       "\u049b\u0430\u04a3.",
@@ -53,10 +53,10 @@ $provide.value("$locale", {
       "\u049b\u0430\u0440.",
       "\u0436\u0435\u043b\u0442."
     ],
-    "fullDate": "EEEE, d MMMM y '\u0436'.",
-    "longDate": "d MMMM y '\u0436'.",
-    "medium": "dd.MM.y HH:mm:ss",
-    "mediumDate": "dd.MM.y",
+    "fullDate": "EEEE, d MMMM y",
+    "longDate": "d MMMM y",
+    "medium": "y, dd-MMM HH:mm:ss",
+    "mediumDate": "y, dd-MMM",
     "mediumTime": "HH:mm:ss",
     "short": "dd/MM/yy HH:mm",
     "shortDate": "dd/MM/yy",

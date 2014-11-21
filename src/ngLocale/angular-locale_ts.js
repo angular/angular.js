@@ -46,7 +46,7 @@ $provide.value("$locale", {
       "Ndzhati",
       "Nhlangula",
       "Hukuri",
-      "N'wendzamhala"
+      "N\u2019wendzamhala"
     ],
     "SHORTDAY": [
       "Son",
@@ -69,7 +69,7 @@ $provide.value("$locale", {
       "Ndz",
       "Nhl",
       "Huk",
-      "N'w"
+      "N\u2019w"
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",

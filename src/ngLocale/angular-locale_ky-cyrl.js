@@ -4,17 +4,17 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "\u0442\u04af\u0448\u043a\u04e9 \u0447\u0435\u0439\u0438\u043d\u043a\u0438",
-      "\u0442\u04af\u0448\u0442\u04e9\u043d \u043a\u0438\u0439\u0438\u043d\u043a\u0438"
+      "\u0442\u0430\u04a3\u043a\u044b",
+      "\u0442\u04af\u0448\u0442\u04e9\u043d \u043a\u0438\u0439\u0438\u043d"
     ],
     "DAY": [
-      "\u0416\u0435\u043a",
-      "\u0414\u04af\u0439",
-      "\u0428\u0435\u0439",
-      "\u0428\u0430\u0440",
-      "\u0411\u0435\u0439",
-      "\u0416\u0443\u043c",
-      "\u0418\u0448\u043c"
+      "\u0436\u0435\u043a\u0448\u0435\u043c\u0431\u0438",
+      "\u0434\u04af\u0439\u0448\u04e9\u043c\u0431\u04af",
+      "\u0448\u0435\u0439\u0448\u0435\u043c\u0431\u0438",
+      "\u0448\u0430\u0440\u0448\u0435\u043c\u0431\u0438",
+      "\u0431\u0435\u0439\u0448\u0435\u043c\u0431\u0438",
+      "\u0436\u0443\u043c\u0430",
+      "\u0438\u0448\u0435\u043c\u0431\u0438"
     ],
     "MONTH": [
       "\u044f\u043d\u0432\u0430\u0440\u044c",
@@ -31,13 +31,13 @@ $provide.value("$locale", {
       "\u0434\u0435\u043a\u0430\u0431\u0440\u044c"
     ],
     "SHORTDAY": [
-      "\u0416\u043a",
-      "\u0414\u0448",
-      "\u0428\u0435",
-      "\u0428\u0430",
-      "\u0411\u0448",
-      "\u0416\u043c",
-      "\u0418\u0448"
+      "\u0436\u0435\u043a.",
+      "\u0434\u04af\u0439.",
+      "\u0448\u0435\u0439\u0448.",
+      "\u0448\u0430\u0440\u0448.",
+      "\u0431\u0435\u0439\u0448.",
+      "\u0436\u0443\u043c\u0430",
+      "\u0438\u0448\u043c."
     ],
     "SHORTMONTH": [
       "\u044f\u043d\u0432.",
@@ -54,9 +54,9 @@ $provide.value("$locale", {
       "\u0434\u0435\u043a."
     ],
     "fullDate": "EEEE, d-MMMM, y-'\u0436'.",
-    "longDate": "d-MMMM, y-'\u0436'.",
-    "medium": "dd.MM.y HH:mm:ss",
-    "mediumDate": "dd.MM.y",
+    "longDate": "y MMMM d",
+    "medium": "y MMM d HH:mm:ss",
+    "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",

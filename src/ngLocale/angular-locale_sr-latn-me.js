@@ -23,7 +23,7 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
       "pre podne",
-      "popodne"
+      "po podne"
     ],
     "DAY": [
       "nedelja",
@@ -72,7 +72,7 @@ $provide.value("$locale", {
       "dec"
     ],
     "fullDate": "EEEE, dd. MMMM y.",
-    "longDate": "d.MM.y.",
+    "longDate": "dd. MMMM y.",
     "medium": "dd.MM.y. HH.mm.ss",
     "mediumDate": "dd.MM.y.",
     "mediumTime": "HH.mm.ss",
