@@ -1,0 +1,10 @@
+@ngdoc error
+@name $http:badreq
+@fullName Bad Request Configuration
+@description
+
+This error occurs when the request configuration parameter passed to the {@link ng.$http `$http`} service is not an object.  `$http` expects a single parameter, the request configuration object, but received a parameter that was not an object.  The error message should provide additional context such as the actual value of the parameter that was received.  If you passed a string parameter, perhaps you meant to call one of the shorthand methods on `$http` such as `$http.get(…)`, etc.
+
+To resolve this error, make sure you pass a valid request configuration object to `$http`.
+
+For more information, see the {@link ng.$http `$http`} service API documentation.
