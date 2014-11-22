@@ -31,10 +31,11 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
 }
 
 
-function parseAppUrl(relativeUrl, locationObj) {
+function parseAppUrl(relativeUrl, locationObj, fixHashFragmentLinks) {
   var prefixed = (relativeUrl.charAt(0) !== '/');
+  var hashPrefix = (fixHashFragmentLinks && relativeUrl.charAt(0) !== '#') ? '#' : '';
   if (prefixed) {
-    relativeUrl = '/' + relativeUrl;
+    relativeUrl = '/' + hashPrefix + relativeUrl;
   }
   var match = urlResolve(relativeUrl);
   locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
@@ -166,7 +167,7 @@ function LocationHtml5Url(appBase, basePrefix) {
  * @param {string} appBase application base URL
  * @param {string} hashPrefix hashbang prefix
  */
-function LocationHashbangUrl(appBase, hashPrefix) {
+function LocationHashbangUrl(appBase, hashPrefix, fixHashFragmentLinks) {
   var appBaseNoFile = stripFile(appBase);
 
   parseAbsoluteUrl(appBase, this);
@@ -189,7 +190,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
       throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url,
           hashPrefix);
     }
-    parseAppUrl(withoutHashUrl, this);
+    parseAppUrl(withoutHashUrl, this, fixHashFragmentLinks);
 
     this.$$path = removeWindowsDriveName(this.$$path, withoutHashUrl, appBase);
 
@@ -675,7 +676,8 @@ function $LocationProvider() {
         enabled: false,
         requireBase: true,
         rewriteLinks: true
-      };
+      },
+      fixHashFragmentLinks = false;
 
   /**
    * @ngdoc method
@@ -737,6 +739,22 @@ function $LocationProvider() {
   };
 
   /**
+   * @ngdoc method
+   * @name $locationProvider#fixHashFragmentLinks
+   * @description
+   * @param {boolean=} [enable=false] If set to true, will replace hashes in the URL with double hashes
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.fixHashFragmentLinks = function(value) {
+    if (isDefined(value)) {
+      fixHashFragmentLinks = !!value;
+      return this;
+    } else {
+      return fixHashFragmentLinks;
+    }
+  };
+
+  /**
    * @ngdoc event
    * @name $location#$locationChangeStart
    * @eventType broadcast on root scope
@@ -794,7 +812,7 @@ function $LocationProvider() {
       appBase = stripHash(initialUrl);
       LocationMode = LocationHashbangUrl;
     }
-    $location = new LocationMode(appBase, '#' + hashPrefix);
+    $location = new LocationMode(appBase, '#' + hashPrefix, fixHashFragmentLinks);
     $location.$$parseLinkUrl(initialUrl, initialUrl);
 
     $location.$$state = $browser.state();

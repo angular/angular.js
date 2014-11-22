@@ -2151,6 +2151,34 @@ describe('$location', function() {
       expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
 
+    describe('fixHashFragmentLinks(true)',function() {
+      it("should prefix hash url with another hash sign if it did not start with a /", function() {
+        location = new LocationHashbangUrl('http://server/pre/index.html', '#', true);
+
+        location.$$parse('http://server/pre/index.html#not-starting-with-slash');
+        expect(location.url()).toBe('#not-starting-with-slash');
+        expect(location.path()).toBe('');
+        expect(location.hash()).toBe('not-starting-with-slash');
+        expect(location.absUrl()).toBe('http://server/pre/index.html##not-starting-with-slash');
+      });
+
+      it("should not modify the url is it already starts with a /", function() {
+        location = new LocationHashbangUrl('http://server/pre/index.html', '#', true);
+
+        location.$$parse('http://server/pre/index.html#/starting-with-slash');
+        expect(location.url()).toBe('/starting-with-slash');
+        expect(location.path()).toBe('/starting-with-slash');
+        expect(location.hash()).toBe('');
+        expect(location.absUrl()).toBe('http://server/pre/index.html#/starting-with-slash');
+      });
+
+      it("should not append another hash sign if the existing url already starts with a hash sign", function() {
+        location = new LocationHashbangUrl('http://server/pre/index.html', '#', true);
+        location.$$parse('http://server/pre/index.html##digesting-unicorn');
+        expect(location.path()).toBe('');
+        expect(location.hash()).toBe('digesting-unicorn');
+      });
+    });
 
     it('should not strip stuff from path just because it looks like Windows drive when it\'s not',
         function() {
