@@ -1332,7 +1332,7 @@ function angularInit(element, bootstrap) {
  *     following keys are supported:
  *
  *     - `strictDi`: disable automatic function annotation for the application. This is meant to
- *       assist in finding bugs which break minified code.
+ *       assist in finding bugs which break minified code. Defaults to false.
  *
  * @returns {auto.$injector} Returns the newly created injector for this app.
  */
