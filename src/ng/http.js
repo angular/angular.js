@@ -741,6 +741,11 @@ function $HttpProvider() {
         transformRequest: defaults.transformRequest,
         transformResponse: defaults.transformResponse
       };
+
+      if (!isObject(requestConfig)) {
+          throw minErr('$http')('argument','Invalid argument, expected object, received {0}', requestConfig);
+      }
+
       var headers = mergeHeaders(requestConfig);
 
       extend(config, requestConfig);
