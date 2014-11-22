@@ -1,7 +1,5 @@
 angular.module('docsApp', [
-  'ngRoute',
-  'ngSanitize',
-  'ngAnimate',
+  'ngMaterial',
   'DocsController',
   'versionsData',
   'pagesData',
@@ -11,9 +9,7 @@ angular.module('docsApp', [
   'examples',
   'search',
   'tutorials',
-  'versions',
-  'bootstrap',
-  'ui.bootstrap.dropdown'
+  'versions'
 ])
 
 .config(['$locationProvider', function($locationProvider) {
