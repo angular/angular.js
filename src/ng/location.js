@@ -326,7 +326,15 @@ var locationPrototype = {
    *
    * Return full url representation with all segments encoded according to rules specified in
    * [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt).
+   * 
    *
+   * ```js
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
+   * // getter
+   * var absUrl = $location.absUrl();
+   * // => http://example.com/#/some/path?foo=bar&baz=xoxo
+   * ```
+   * 
    * @return {string} full url
    */
   absUrl: locationGetter('$$absUrl'),
@@ -341,6 +349,18 @@ var locationPrototype = {
    * Return url (e.g. `/path?a=b#hash`) when called without any parameter.
    *
    * Change path, search and hash, when called with parameter and return `$location`.
+   *
+   *
+   * ```js
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
+   * // getter
+   * var url = $location.url();
+   * // => /some/path?foo=bar&baz=xoxo
+   *
+   * // setter
+   * var newLocation = $location.url('/test123');
+   * // newLocation.url() => /test123
+   * ```
    *
    * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
    * @return {string} url
@@ -366,6 +386,14 @@ var locationPrototype = {
    *
    * Return protocol of current url.
    *
+   *
+   * ```js
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
+   * // getter
+   * var protocol = $location.protocol();
+   * // => http
+   * ```
+   *
    * @return {string} protocol of current url
    */
   protocol: locationGetter('$$protocol'),
@@ -379,6 +407,14 @@ var locationPrototype = {
    *
    * Return host of current url.
    *
+   *
+   * ```js
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
+   * // getter
+   * var host = $location.host();
+   * // => example.com
+   * ```
+   *
    * @return {string} host of current url.
    */
   host: locationGetter('$$host'),
@@ -391,6 +427,14 @@ var locationPrototype = {
    * This method is getter only.
    *
    * Return port of current url.
+   *
+   *
+   * ```js
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
+   * // getter
+   * var port = $location.port();
+   * // => 80
+   * ```
    *
    * @return {Number} port
    */
@@ -409,6 +453,20 @@ var locationPrototype = {
    *
    * Note: Path should always begin with forward slash (/), this method will add the forward slash
    * if it is missing.
+   *
+   *
+   * ```js
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
+   * // getter
+   * var path = $location.path();
+   * // => /some/path
+   *
+   * // setter
+   * var newLocation = $location.path('/test/new/path');
+   * // newLocation.path() => /test/new/path
+   * newLocation = $location.path('test/new/path/no/forward/slash');
+   * // newLocation.path() => /test/new/path/no/forward/slash
+   * ```
    *
    * @param {(string|number)=} path New path
    * @return {string} path
@@ -507,6 +565,18 @@ var locationPrototype = {
    * Return hash fragment when called without any parameter.
    *
    * Change hash fragment when called with parameter and return `$location`.
+   *
+   *
+   * ```js
+   * // given url http://example.com/some/path?foo=bar&baz=xoxo#hashValue
+   * // getter
+   * var hash = $location.hash();
+   * // => hashValue
+   *
+   * // setter
+   * var newLocation = $location.hash('newHashValue');
+   * // newLocation.hash() => newHashValue
+   * ```
    *
    * @param {(string|number)=} hash New hash fragment
    * @return {string} hash
