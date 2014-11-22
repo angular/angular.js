@@ -178,6 +178,13 @@
  *   For example, if the expression is `increment(amount)` then we can specify the amount value
  *   by calling the `localFn` as `localFn({amount: 22})`.
  *
+ * * `>` or `>attr` - set up a one time binding between a local scope property and the
+ *   parent scope property of name defined via the value of the `attr` attribute. If no `attr`
+ *   name is specified then the attribute name is assumed to be the same as the local name.
+ *   Because the binding is one-time only, if the value changes on the parent, the change will
+ *   not propagate to the isolate scope. Similarly, if the value changes in the local scope, it
+ *   will not update the value in the parent scope.
+ *
  *
  * #### `bindToController`
  * When an isolate scope is used for a component (see above), and `controllerAs` is used, `bindToController: true` will
@@ -713,7 +720,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
 
   function parseIsolateBindings(scope, directiveName) {
-    var LOCAL_REGEXP = /^\s*([@&]|=(\*?))(\??)\s*(\w*)\s*$/;
+    var LOCAL_REGEXP = /^\s*([@&>]|=(\*?))(\??)\s*(\w*)\s*$/;
 
     var bindings = {};
 
@@ -1887,7 +1894,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           forEach(isolateScope.$$isolateBindings = newIsolateScopeDirective.$$isolateBindings, function(definition, scopeName) {
             var attrName = definition.attrName,
                 optional = definition.optional,
-                mode = definition.mode, // @, =, or &
+                mode = definition.mode, // @, =, >, or &
                 lastValue,
                 parentGet, parentSet, compare;
 
@@ -1903,6 +1910,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   // the value is there for use in the link fn
                   isolateBindingContext[scopeName] = $interpolate(attrs[attrName])(scope);
                 }
+                break;
+
+              case '>':
+                if (optional && !attrs[attrName]) {
+                  return;
+                }
+                parentGet = $parse(attrs[attrName]);
+                isolateBindingContext[scopeName] = parentGet(scope);
                 break;
 
               case '=':
