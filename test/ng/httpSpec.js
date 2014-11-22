@@ -285,6 +285,12 @@ describe('$http', function() {
       $http = $h;
     }]));
 
+    it('should throw error if a string is supplied, instead of an object', inject(function($httpBackend, $http) {
+      expect(function() {
+          $http('/url');
+      }).toThrowMinErr('$http','argument');
+    }));
+
     it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
       $httpBackend.expect('GET', '/url').respond('');
       $http({url: '/url'});
