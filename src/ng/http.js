@@ -744,7 +744,7 @@ function $HttpProvider() {
       var headers = mergeHeaders(requestConfig);
 
       if (!angular.isObject(requestConfig)) {
-        throw minErr('$http')('argument', 'Invalid argument, expected object, received {0}', requestConfig);
+        throw minErr('$http')('badarg', 'Invalid argument, expected object, received {0}', requestConfig);
       }
 
       extend(config, requestConfig);
