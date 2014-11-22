@@ -1,0 +1,7 @@
+@ngdoc error
+@name $http:badarg
+@fullName Invalid Argument
+@description
+
+This error occurs when an invalid argument is supplied. The argument may be an unexpected type. The error message
+should provide additional context.
