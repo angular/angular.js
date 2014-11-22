@@ -1009,6 +1009,11 @@ describe('angular', function() {
       expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
     });
+
+    it('should return undefined for elements without the .nodeName property', function() {
+      //some elements, like SVGElementInstance don't have .nodeName property
+      expect(nodeName_({})).toBeUndefined();
+    });
   });
 
 
