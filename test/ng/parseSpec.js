@@ -225,7 +225,7 @@ describe('parser', function() {
     });
   });
 
-  var $filterProvider, scope;
+  var $filterProvider, scope, parse;
 
   beforeEach(module(['$filterProvider', function(filterProvider) {
     $filterProvider = filterProvider;
@@ -242,8 +242,9 @@ describe('parser', function() {
         });
       }, provideLog));
 
-      beforeEach(inject(function($rootScope) {
+      beforeEach(inject(function($rootScope, $parse) {
         scope = $rootScope;
+        parse = $parse;
       }));
 
       it('should parse expressions', function() {
@@ -255,6 +256,12 @@ describe('parser', function() {
         expect(scope.$eval("0--1+1.5")).toEqual(0 - -1 + 1.5);
         expect(scope.$eval("-0--1++2*-3/-4")).toEqual(-0 - -1 + +2 * -3 / -4);
         expect(scope.$eval("1/2*3")).toEqual(1 / 2 * 3);
+      });
+
+      it('should cache function values in one-time expressions', function() {
+        scope.fn = function() { return {foo: 'bar'}; };
+        var expr = parse('::fn()');
+        expect(expr(scope)).toBe(expr(scope));
       });
 
       it('should parse comparison', function() {

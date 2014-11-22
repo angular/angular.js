@@ -338,8 +338,14 @@ Parser.prototype = {
   constructor: Parser,
 
   parse: function(text) {
+    var oneTime = false;
+    if (text.charAt(0) === ':' && text.charAt(1) === ':') {
+      this.oneTime = true;
+      text = text.substring(2);
+    }
     this.text = text;
     this.tokens = this.lexer.lex(text);
+
 
     var value = this.statements();
 
@@ -349,6 +355,7 @@ Parser.prototype = {
 
     value.literal = !!value.literal;
     value.constant = !!value.constant;
+    value.oneTime = oneTime;
 
     return value;
   },
@@ -707,8 +714,14 @@ Parser.prototype = {
     var expressionText = this.text;
     // we can safely reuse the array across invocations
     var args = argsFn.length ? [] : null;
+    var cachedValue = null;
+    var oneTime = this.oneTime;
 
     return function $parseFunctionCall(scope, locals) {
+      if (oneTime && cachedValue) {
+        return cachedValue;
+      }
+
       var context = contextGetter ? contextGetter(scope, locals) : scope;
       var fn = fnGetter(scope, locals, context) || noop;
 
@@ -727,7 +740,7 @@ Parser.prototype = {
             ? fn.apply(context, args)
             : fn(args[0], args[1], args[2], args[3], args[4]);
 
-      return ensureSafeObject(v, expressionText);
+      return cachedValue = ensureSafeObject(v, expressionText);
     };
   },
 
@@ -1043,15 +1056,11 @@ function $ParseProvider() {
           parsedExpression = cache[cacheKey];
 
           if (!parsedExpression) {
-            if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
-              oneTime = true;
-              exp = exp.substring(2);
-            }
-
             var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
             var lexer = new Lexer(parseOptions);
             var parser = new Parser(lexer, $filter, parseOptions);
             parsedExpression = parser.parse(exp);
+            oneTime = parsedExpression.oneTime;
 
             if (parsedExpression.constant) {
               parsedExpression.$$watchDelegate = constantWatchDelegate;
