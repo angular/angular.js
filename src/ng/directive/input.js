@@ -939,7 +939,8 @@ var inputType = {
 };
 
 function stringBasedInputType(ctrl) {
-  ctrl.$formatters.push(function(value) {
+  // Named formatter for external removal
+  ctrl.$formatters.push(function stringBasedInputTypeFormatter(value) {
     return ctrl.$isEmpty(value) ? value : value.toString();
   });
 }
@@ -1727,6 +1728,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$validators = {};
   this.$asyncValidators = {};
   this.$parsers = [];
+  // A map between formatters and function names
+  var formatterMap = {};
   this.$formatters = [];
   this.$viewChangeListeners = [];
   this.$untouched = true;
@@ -1740,6 +1743,27 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$pending = undefined; // keep pending keys here
   this.$name = $interpolate($attr.name || '', false)($scope);
 
+  // Override the push to track functions that are added for external removal
+  this.$formatters.push = function () {
+    for (var i in arguments) {
+      if (arguments[i].name) {
+        formatterMap[arguments[i].name] = arguments[i];
+      }
+    }
+    return Array.prototype.push.apply(this, arguments);
+  };
+  
+  // For external removal of formatter functions that have a name
+  this.$formatters.removeByFnName = function(name) {
+    if (formatterMap[name]) {
+      for (var i in this) {
+        if (this[i] === formatterMap[name]) {
+          this.splice(i, 1);
+        }
+      }
+      delete formatterMap[name];
+    }
+  };
 
   var parsedNgModel = $parse($attr.ngModel),
       pendingDebounce = null,
