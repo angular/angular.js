@@ -120,6 +120,12 @@ describe('filters', function() {
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
     });
+
+    it('should set the default fraction size to the max fraction size of the locale value', inject(function($locale) {
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 1;
+
+      expect(currency(1.07)).toBe('$1.1');
+    }));
   });
 
 
