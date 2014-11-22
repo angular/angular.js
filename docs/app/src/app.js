@@ -1,6 +1,5 @@
 angular.module('docsApp', [
   'ngRoute',
-  'ngCookies',
   'ngSanitize',
   'ngAnimate',
   'DocsController',
