@@ -201,7 +201,7 @@ function isArrayLike(obj) {
     return true;
   }
 
-  return isString(obj) || isArray(obj) || length === 0 ||
+  return isString(obj) || isArray(obj) || (length === 0 && Object.keys(obj).length <= 1) ||
          typeof length === 'number' && length > 0 && (length - 1) in obj;
 }
 
