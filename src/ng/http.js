@@ -743,6 +743,10 @@ function $HttpProvider() {
       };
       var headers = mergeHeaders(requestConfig);
 
+      if (!angular.isObject(requestConfig)) {
+        throw minErr('$http')('badreq', 'Http request configuration must be an object.  Received: {0}', requestConfig);
+      }
+
       extend(config, requestConfig);
       config.headers = headers;
       config.method = uppercase(config.method);
