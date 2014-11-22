@@ -575,6 +575,10 @@ describe('$http', function() {
         expect(parseHeaders('a:\tbb').a).toBe('bb');
         expect(parseHeaders('a: \tbb').a).toBe('bb');
       });
+
+      it('should parse multiple values for the same header', function() {
+        expect(parseHeaders('key:value1\nkey:value2').key).toBe('value1, value2');
+      });
     });
 
 
