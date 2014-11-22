@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function debugDeployment(getVersion) {
+module.exports = function debugDeployment(getComponentPath) {
   return {
     name: 'debug',
     examples: {
@@ -10,27 +10,23 @@ module.exports = function debugDeployment(getVersion) {
       dependencyPath: '../../../'
     },
     scripts: [
-      '../angular.js',
-      '../angular-resource.js',
-      '../angular-route.js',
-      '../angular-cookies.js',
-      '../angular-sanitize.js',
-      '../angular-touch.js',
-      '../angular-animate.js',
-      'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
-      'js/angular-bootstrap/bootstrap.js',
-      'js/angular-bootstrap/dropdown-toggle.js',
-      'components/lunr.js-' + getVersion('lunr.js') + '/lunr.js',
-      'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
-      'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/lang-css.js',
+      getComponentPath('hammerjs', 'hammer.js'),
+      getComponentPath('angular'),
+      getComponentPath('angular-animate'),
+      getComponentPath('angular-aria'),
+      getComponentPath('angular-material'),
+      getComponentPath('angular-sanitize'),
+      getComponentPath('marked', 'lib/marked.js', 'node_modules', 'package.json'),
+      getComponentPath('lunr.js', 'lunr.js'),
+      getComponentPath('google-code-prettify', 'src/prettify.js'),
+      getComponentPath('google-code-prettify', 'src/lang-css.js'),
       'js/versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
       'js/docs.js'
     ],
     stylesheets: [
-      'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.css',
-      'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
+      getComponentPath('angular-material', 'angular-material.css'),
       'css/prettify-theme.css',
       'css/docs.css',
       'css/animations.css'

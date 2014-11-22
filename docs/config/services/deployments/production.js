@@ -21,8 +21,6 @@ module.exports = function productionDeployment(getVersion) {
       cdnUrl + '/angular-touch.min.js',
       cdnUrl + '/angular-animate.min.js',
       'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
-      'js/angular-bootstrap/bootstrap.min.js',
-      'js/angular-bootstrap/dropdown-toggle.min.js',
       'components/lunr.js-' + getVersion('lunr.js') + '/lunr.min.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/lang-css.js',
@@ -32,8 +30,6 @@ module.exports = function productionDeployment(getVersion) {
       'js/docs.min.js'
     ],
     stylesheets: [
-      'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
-      'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
       'css/prettify-theme.css',
       'css/docs.css',
       'css/animations.css'

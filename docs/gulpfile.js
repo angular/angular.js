@@ -77,11 +77,14 @@ gulp.task('assets', ['bower'], function() {
             .pipe(gulp.dest(outputFolder));
         }
       })),
-    copyComponent('bootstrap', '/dist/**/*'),
-    copyComponent('open-sans-fontface'),
+    copyComponent('angular'),
+    copyComponent('angular-animate'),
+    copyComponent('angular-aria'),
+    copyComponent('angular-material'),
+    copyComponent('angular-sanitize'),
+    copyComponent('hammerjs'),
     copyComponent('lunr.js','/*.js'),
     copyComponent('google-code-prettify'),
-    copyComponent('jquery', '/dist/*.js'),
     copyComponent('marked', '/**/*.js', '../node_modules', 'package.json')
   );
 });
