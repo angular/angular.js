@@ -1751,13 +1751,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
 
   var parsedNgModel = $parse($attr.ngModel),
+      parsedNgModelContext = null,
       pendingDebounce = null,
       ctrl = this;
 
   var ngModelGet = function ngModelGet() {
     var modelValue = parsedNgModel($scope);
     if (ctrl.$options && ctrl.$options.getterSetter && isFunction(modelValue)) {
-      modelValue = modelValue();
+      modelValue = modelValue.call(parsedNgModelContext ? parsedNgModelContext($scope) : $scope);
     }
     return modelValue;
   };
@@ -1767,7 +1768,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     if (ctrl.$options && ctrl.$options.getterSetter &&
         isFunction(getterSetter = parsedNgModel($scope))) {
 
-      getterSetter(ctrl.$modelValue);
+      getterSetter.call(parsedNgModelContext ? parsedNgModelContext($scope) : $scope, ctrl.$modelValue);
     } else {
       parsedNgModel.assign($scope, ctrl.$modelValue);
     }
@@ -1776,6 +1777,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$$setOptions = function(options) {
     ctrl.$options = options;
 
+    if (ctrl.$options && ctrl.$options.getterSetter && ctrl.$options.getterSetterContext) {
+      // Use the provided context expression to specify the context used when invoking the
+      // getter/setter function
+      parsedNgModelContext = $parse(ctrl.$options.getterSetterContext);
+    }
     if (!parsedNgModel.assign && (!options || !options.getterSetter)) {
       throw $ngModelMinErr('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
           $attr.ngModel, startingTag($element));

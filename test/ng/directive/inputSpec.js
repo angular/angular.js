@@ -2136,6 +2136,83 @@ describe('input', function() {
           'ng-model-options="{ getterSetter: true }" />');
     });
 
+    it('should try to invoke a model with default context if getterSetter is true and getterSetterContext is not provided', function() {
+      scope.value = 'scopeContext';
+      compileInput(
+        '<input type="text" ng-model="someService.getterSetter" '+
+          'ng-model-options="{ getterSetter: true }" />');
+
+      scope.someService = {
+        value: 'b',
+        getterSetter: function(newValue) {
+          this.value = newValue || this.value;
+          return this.value;
+        }
+      };
+      spyOn(scope.someService, 'getterSetter').andCallThrough();
+      scope.$apply();
+      expect(inputElm.val()).toBe('scopeContext');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
+      expect(scope.someService.value).toBe('b'); // 'this' is not bound to the service w/o ngModelContext
+      expect(scope.value).toBe('scopeContext');
+
+      changeInputValueTo('a');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith('a');
+      expect(scope.someService.value).toBe('b');
+      expect(scope.value).toBe('a');
+
+      scope.someService.value = 'c';
+      scope.$apply();
+      expect(inputElm.val()).toBe('a');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
+      expect(scope.someService.value).toBe('c');
+      expect(scope.value).toBe('a');
+
+      scope.value = 'd';
+      scope.$apply();
+      expect(inputElm.val()).toBe('d');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
+      expect(scope.someService.value).toBe('c');
+      expect(scope.value).toBe('d');
+    });
+
+    it('should try to invoke a model with the provided context if getterSetter is true and getterSetterContext is an expression', function() {
+      compileInput(
+        '<input type="text" ng-model="someService.getterSetter" '+
+          'ng-model-options="{ getterSetter: true, getterSetterContext: \'someService\' }" />');
+
+      scope.someService = {
+        value: 'b',
+        getterSetter: function(newValue) {
+          this.value = newValue || this.value;
+          return this.value;
+        }
+      };
+      spyOn(scope.someService, 'getterSetter').andCallThrough();
+      scope.$apply();
+      expect(inputElm.val()).toBe('b');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
+      expect(scope.someService.value).toBe('b');
+
+      changeInputValueTo('a');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith('a');
+      expect(scope.someService.value).toBe('a');
+
+      scope.someService.value = 'c';
+      scope.$apply();
+      expect(inputElm.val()).toBe('c');
+      expect(scope.someService.getterSetter).toHaveBeenCalledWith();
+      expect(scope.someService.value).toBe('c');
+    });
+
+    it('should fail to parse if getterSetterContext is an invalid expression', function() {
+      expect(function() {
+        compileInput(
+          '<input type="text" ng-model="someService.getterSetter" '+
+            'ng-model-options="{ getterSetter: true, getterSetterContext: \'throw error\' }" />');
+      }).toThrowMinErr("$parse", "syntax", "Syntax Error: Token 'error' is an unexpected token at column 7 of the expression [throw error] starting at [error].");
+    });
+
     it('should assign invalid values to the scope if allowInvalid is true', function() {
       compileInput('<input type="text" name="input" ng-model="value" maxlength="1" ' +
                    'ng-model-options="{allowInvalid: true}" />');
