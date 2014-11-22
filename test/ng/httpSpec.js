@@ -285,6 +285,12 @@ describe('$http', function() {
       $http = $h;
     }]));
 
+    it('should throw error if the request configuration is not an object', inject(function($httpBackend, $http) {
+      expect(function() {
+          $http('/url');
+      }).toThrowMinErr('$http','badreq', 'Http request configuration must be an object.  Received: /url');
+    }));
+
     it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
       $httpBackend.expect('GET', '/url').respond('');
       $http({url: '/url'});
