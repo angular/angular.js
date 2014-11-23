@@ -6542,16 +6542,21 @@ describe('$compile', function() {
       expect(element.attr('href')).toBe('test/test');
     }));
 
-    it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+    it('should work if they are prefixed with x- or data- and different prefixes', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";
-      element = $compile('<span data-ng-attr-test2="{{name}}" x-ng-attr-test3="{{name}}" data-ng:attr-test4="{{name}}"></span>')($rootScope);
+      element = $compile('<span data-ng-attr-test2="{{name}}" x-ng-attr-test3="{{name}}" data-ng:attr-test4="{{name}}" ' +
+        'x_ng-attr-test5="{{name}}" data:ng-attr-test6="{{name}}"></span>')($rootScope);
       expect(element.attr('test2')).toBeUndefined();
       expect(element.attr('test3')).toBeUndefined();
       expect(element.attr('test4')).toBeUndefined();
+      expect(element.attr('test5')).toBeUndefined();
+      expect(element.attr('test6')).toBeUndefined();
       $rootScope.$digest();
       expect(element.attr('test2')).toBe('Misko');
       expect(element.attr('test3')).toBe('Misko');
       expect(element.attr('test4')).toBe('Misko');
+      expect(element.attr('test5')).toBe('Misko');
+      expect(element.attr('test6')).toBe('Misko');
     }));
 
     describe('when an attribute has a dash-separated name', function() {
@@ -6618,6 +6623,35 @@ describe('$compile', function() {
 
   });
 
+
+  describe('when an attribute has an underscore-separated name', function() {
+
+    it('should work with different prefixes', inject(function($compile, $rootScope) {
+      $rootScope.dimensions = "0 0 0 0";
+      element = $compile('<svg ng:attr:view_box="{{dimensions}}"></svg>')($rootScope);
+      expect(element.attr('viewBox')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('viewBox')).toBe('0 0 0 0');
+    }));
+
+    it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+      $rootScope.dimensions = "0 0 0 0";
+      $rootScope.number = 0.42;
+      $rootScope.scale = 1;
+      element = $compile('<svg data-ng-attr-view_box="{{dimensions}}">' +
+        '<filter x-ng-attr-filter_units="{{number}}">' +
+        '<feDiffuseLighting data-ng:attr_surface_scale="{{scale}}">' +
+        '</feDiffuseLighting>' +
+        '<feSpecularLighting x-ng:attr_surface_scale="{{scale}}">' +
+        '</feSpecularLighting></filter></svg>')($rootScope);
+      expect(element.attr('viewBox')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('viewBox')).toBe('0 0 0 0');
+      expect(element.find('filter').attr('filterUnits')).toBe('0.42');
+      expect(element.find('feDiffuseLighting').attr('surfaceScale')).toBe('1');
+      expect(element.find('feSpecularLighting').attr('surfaceScale')).toBe('1');
+    }));
+  });
 
   describe('multi-element directive', function() {
     it('should group on link function', inject(function($compile, $rootScope) {
