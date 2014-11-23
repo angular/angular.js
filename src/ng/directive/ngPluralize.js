@@ -216,7 +216,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
         // In JS `NaN !== NaN`, so we have to exlicitly check.
         if ((count !== lastCount) && !(countIsNaN && isNaN(lastCount))) {
           watchRemover();
-          watchRemover = scope.$watch(whensExpFns[count], updateElementText);
+          watchRemover = scope.$watch(whensExpFns[count] || whensExpFns['other'], updateElementText);
           lastCount = count;
         }
       });
