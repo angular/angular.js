@@ -29,6 +29,10 @@ describe('linky', function() {
       toEqual('my email is &#34;<a href="mailto:me@example.com">me@example.com</a>&#34;');
   });
 
+  it('should handle quotes in the email', function() {
+    expect(linky('foo@"bar.com')).toEqual('<a href="mailto:foo@&#34;bar.com">foo@&#34;bar.com</a>');
+  });
+
   it('should handle target:', function() {
     expect(linky("http://example.com", "_blank")).
       toEqual('<a target="_blank" href="http://example.com">http://example.com</a>');
