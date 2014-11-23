@@ -1310,6 +1310,18 @@ describe('ngMock', function() {
     });
 
 
+    it('should abort requests when timeout passed as a numeric value', inject(function($timeout) {
+      hb.expect('GET', '/url1').respond(200);
+
+      hb('GET', '/url1', null, callback, null, 200);
+      $timeout.flush(300);
+
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      hb.verifyNoOutstandingExpectation();
+      hb.verifyNoOutstandingRequest();
+    }));
+
+
     it('should throw an exception if no response defined', function() {
       hb.when('GET', '/test');
       expect(function() {
