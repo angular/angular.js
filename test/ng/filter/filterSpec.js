@@ -136,6 +136,17 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should respect the depth level of a "$" property', function() {
+    var items = [{person: {name: 'Annet', email: 'annet@example.com'}},
+                 {person: {name: 'Billy', email: 'me@billy.com'}},
+                 {person: {name: 'Joan', email: {home: 'me@joan.com', work: 'joan@example.net'}}}];
+    var expr = {person: {$: 'net'}};
+
+    expect(filter(items, expr).length).toBe(1);
+    expect(filter(items, expr)).toEqual([items[0]]);
+  });
+
+
   it('should respect the nesting level of "$"', function() {
     var items = [{supervisor: 'me', person: {name: 'Annet', email: 'annet@example.com'}},
                  {supervisor: 'me', person: {name: 'Billy', email: 'me@billy.com'}},
@@ -314,6 +325,13 @@ describe('Filter: filter', function() {
 
   describe('should support comparator', function() {
 
+    it('not consider `object === "[object Object]"` in non-strict comparison', function() {
+      var items = [{test: {}}];
+      var expr = '[object';
+      expect(filter(items, expr).length).toBe(0);
+    });
+
+
     it('as equality when true', function() {
       var items = ['misko', 'adam', 'adamson'];
       var expr = 'adam';
@@ -395,7 +413,7 @@ describe('Filter: filter', function() {
         return isString(actual) && isString(expected) && (actual.indexOf(expected) === 0);
       };
 
-      expr = {details: {email: 'admin@example.com', role: 'admn'}};
+      expr = {details: {email: 'admin@example.com', role: 'min'}};
       expect(filter(items, expr, comp)).toEqual([]);
 
       expr = {details: {email: 'admin@example.com', role: 'adm'}};
