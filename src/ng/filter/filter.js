@@ -120,6 +120,7 @@ function filterFilter() {
     if (!isArray(array)) return array;
 
     var predicateFn;
+    var matchAgainstAnyProp;
 
     switch (typeof expression) {
       case 'function':
@@ -127,9 +128,12 @@ function filterFilter() {
         break;
       case 'boolean':
       case 'number':
-      case 'object':
       case 'string':
-        predicateFn = createPredicateFn(expression, comparator);
+        matchAgainstAnyProp = true;
+        //jshint -W086
+      case 'object':
+        //jshint +W086
+        predicateFn = createPredicateFn(expression, comparator, matchAgainstAnyProp);
         break;
       default:
         return array;
@@ -140,13 +144,18 @@ function filterFilter() {
 }
 
 // Helper functions for `filterFilter`
-function createPredicateFn(expression, comparator) {
+function createPredicateFn(expression, comparator, matchAgainstAnyProp) {
   var predicateFn;
 
   if (comparator === true) {
     comparator = equals;
   } else if (!isFunction(comparator)) {
     comparator = function(actual, expected) {
+      if (isObject(actual) || isObject(expected)) {
+        // Prevent an object to be considered equal to a string like `'[object'`
+        return false;
+      }
+
       actual = lowercase('' + actual);
       expected = lowercase('' + expected);
       return actual.indexOf(expected) !== -1;
@@ -154,37 +163,37 @@ function createPredicateFn(expression, comparator) {
   }
 
   predicateFn = function(item) {
-    return deepCompare(item, expression, comparator);
+    return deepCompare(item, expression, comparator, matchAgainstAnyProp);
   };
 
   return predicateFn;
 }
 
-function deepCompare(actual, expected, comparator, keyWasDollar) {
+function deepCompare(actual, expected, comparator, matchAgainstAnyProp) {
   var actualType = typeof actual;
   var expectedType = typeof expected;
 
   if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
-    return !deepCompare(actual, expected.substring(1), comparator);
+    return !deepCompare(actual, expected.substring(1), comparator, matchAgainstAnyProp);
   } else if (actualType === 'array') {
     // In case `actual` is an array, consider it a match
-    // if any of it's items matches `expected`
+    // if ANY of it's items matches `expected`
     return actual.some(function(item) {
-      return deepCompare(item, expected, comparator);
+      return deepCompare(item, expected, comparator, matchAgainstAnyProp);
     });
   }
 
   switch (actualType) {
     case 'object':
       var key;
-      if (keyWasDollar || (expectedType !== 'object')) {
+      if (matchAgainstAnyProp) {
         for (key in actual) {
           if ((key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator)) {
             return true;
           }
         }
         return false;
-      } else {
+      } else if (expectedType === 'object') {
         for (key in expected) {
           var expectedVal = expected[key];
           if (isFunction(expectedVal)) {
@@ -198,13 +207,13 @@ function deepCompare(actual, expected, comparator, keyWasDollar) {
           }
         }
         return true;
+      } else {
+        return comparator(actual, expected);
       }
       break;
+    case 'function':
+      return false;
     default:
-      if (expectedType === 'object') {
-        return false;
-      }
-
       return comparator(actual, expected);
   }
 }
