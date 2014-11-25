@@ -1532,7 +1532,9 @@ var VALID_CLASS = 'ng-valid',
     DIRTY_CLASS = 'ng-dirty',
     UNTOUCHED_CLASS = 'ng-untouched',
     TOUCHED_CLASS = 'ng-touched',
-    PENDING_CLASS = 'ng-pending';
+    PENDING_CLASS = 'ng-pending',
+    UNFOCUSED_CLASS = 'ng-unfocused',
+    FOCUSED_CLASS = 'ng-focused';
 
 /**
  * @ngdoc type
@@ -1620,6 +1622,8 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
  *
  * @property {boolean} $untouched True if control has not lost focus yet.
  * @property {boolean} $touched True if control has lost focus.
+ * @property {boolean} $unfocused True if control is not actively focused on.
+ * @property {boolean} $focused True if control is actively focused on.
  * @property {boolean} $pristine True if user has not interacted with the control yet.
  * @property {boolean} $dirty True if user has already interacted with the control.
  * @property {boolean} $valid True if there is no error.
@@ -1744,6 +1748,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$viewChangeListeners = [];
   this.$untouched = true;
   this.$touched = false;
+  this.$focused = false;
+  this.$unfocused = true;
   this.$pristine = true;
   this.$dirty = false;
   this.$valid = true;
@@ -1939,6 +1945,41 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     ctrl.$touched = true;
     ctrl.$untouched = false;
     $animate.setClass($element, TOUCHED_CLASS, UNTOUCHED_CLASS);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setUnfocused
+   *
+   * @description
+   * Sets the control to its unfocused state.
+   *
+   * This method can be called to remove the `ng-focused` class and set the control to its
+   * unfocused state (`ng-unfocused` class). Upon compilation, a model is set as unfocused
+   * by default, however this function can be used to restore that state if the model has
+   * already been focused by the user.
+   */
+  this.$setUnfocused = function() {
+    ctrl.$focused = false;
+    ctrl.$unfocused = true;
+    $animate.setClass($element, UNFOCUSED_CLASS, FOCUSED_CLASS);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setFocused
+   *
+   * @description
+   * Sets the control to its focused state.
+   *
+   * This method can be called to remove the `ng-unfocused` class and set the control to its
+   * focused state (`ng-focused` class). A model is considered to be focused when the user is
+   * actively focusing on the control element.
+   */
+  this.$setFocused = function() {
+    ctrl.$focused = true;
+    ctrl.$unfocused = false;
+    $animate.setClass($element, FOCUSED_CLASS, UNFOCUSED_CLASS);
   };
 
   /**
@@ -2363,8 +2404,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * - Binding the view into the model, which other directives such as `input`, `textarea` or `select`
  *   require.
  * - Providing validation behavior (i.e. required, number, email, url).
- * - Keeping the state of the control (valid/invalid, dirty/pristine, touched/untouched, validation errors).
- * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`, `ng-touched`, `ng-untouched`) including animations.
+ * - Keeping the state of the control (valid/invalid, dirty/pristine, touched/untouched, focused/unfocused, validation errors).
+ * - Setting related css classes on the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`, `ng-touched`, `ng-untouched`, `ng-focused`, `ng-unfocused`) including animations.
  * - Registering the control with its parent {@link ng.directive:form form}.
  *
  * Note: `ngModel` will try to bind to the property given by evaluating the expression on the
@@ -2404,6 +2445,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *  - `ng-dirty`: the control has been interacted with
  *  - `ng-touched`: the control has been blurred
  *  - `ng-untouched`: the control hasn't been blurred
+ *  - `ng-focused`: the control has been focused on
+ *  - `ng-unfocused`: the control isn't currently focused on
  *  - `ng-pending`: any `$asyncValidators` are unfulfilled
  *
  * Keep in mind that ngAnimate can detect each of these classes when added and removed.
@@ -2551,12 +2594,28 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
           }
 
           element.on('blur', function(ev) {
-            if (modelCtrl.$touched) return;
-
             if ($rootScope.$$phase) {
-              scope.$evalAsync(modelCtrl.$setTouched);
+              scope.$evalAsync(function() {
+                modelCtrl.$setUnfocused();
+                if (modelCtrl.$untouched) {
+                  modelCtrl.$setTouched();
+                }
+              });
             } else {
-              scope.$apply(modelCtrl.$setTouched);
+              scope.$apply(function() {
+                modelCtrl.$setUnfocused();
+                if (modelCtrl.$untouched) {
+                  modelCtrl.$setTouched();
+                }
+              });
+            }
+          });
+
+          element.on('focus', function(ev) {
+            if ($rootScope.$$phase) {
+              scope.$evalAsync(modelCtrl.$setFocused);
+            } else {
+              scope.$apply(modelCtrl.$setFocused);
             }
           });
         }

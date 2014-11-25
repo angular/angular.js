@@ -178,6 +178,28 @@ describe('NgModelController', function() {
     });
   });
 
+  describe('setUnfocused', function() {
+
+    it('should set control to its unfocused state', function() {
+      ctrl.$setFocused();
+
+      ctrl.$setUnfocused();
+      expect(ctrl.$focused).toBe(false);
+      expect(ctrl.$unfocused).toBe(true);
+    });
+  });
+
+  describe('setFocused', function() {
+
+    it('should set control to its focused state', function() {
+      ctrl.$setUnfocused();
+
+      ctrl.$setFocused();
+      expect(ctrl.$focused).toBe(true);
+      expect(ctrl.$unfocused).toBe(false);
+    });
+  });
+
   describe('view -> model', function() {
 
     it('should set the value to $viewValue', function() {
@@ -1073,7 +1095,7 @@ describe('NgModelController', function() {
 describe('ngModel', function() {
   var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
-  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
+  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched, ng-unfocused, ng-focused)',
       inject(function($compile, $rootScope, $sniffer) {
     var element = $compile('<input type="email" ng-model="value" />')($rootScope);
 
@@ -1104,8 +1126,12 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
+    browserTrigger(element, 'focus');
+    expect(element).toBeFocused();
+
     browserTrigger(element, 'blur');
     expect(element).toBeTouched();
+    expect(element).toBeUnfocused();
 
     dealoc(element);
   }));
@@ -1262,7 +1288,7 @@ describe('ngModel', function() {
     dealoc(element);
   }));
 
-  it('should not cause a digest on "blur" event if control is already touched',
+  it('should not call $setTouched on "blur" event if control is already touched',
       inject(function($compile, $rootScope) {
 
     var element = $compile('<form name="myForm">' +
@@ -1272,10 +1298,10 @@ describe('ngModel', function() {
     var control = $rootScope.myForm.myControl;
 
     control.$setTouched();
-    spyOn($rootScope, '$apply');
+    spyOn(control, '$setTouched');
     browserTrigger(inputElm, 'blur');
 
-    expect($rootScope.$apply).not.toHaveBeenCalled();
+    expect(control.$setTouched).not.toHaveBeenCalled();
 
     dealoc(element);
   }));
@@ -1301,6 +1327,40 @@ describe('ngModel', function() {
 
     expect(control.$touched).toBe(true);
     expect(control.$untouched).toBe(false);
+
+    dealoc(element);
+  }));
+
+  it('should call $setUnfocused on "blur" event',
+      inject(function($compile, $rootScope) {
+
+    var element = $compile('<form name="myForm">' +
+                             '<input name="myControl" ng-model="value" >' +
+                           '</form>')($rootScope);
+    var inputElm = element.find('input');
+    var control = $rootScope.myForm.myControl;
+
+    spyOn(control, '$setUnfocused');
+    browserTrigger(inputElm, 'blur');
+
+    expect(control.$setUnfocused).toHaveBeenCalled();
+
+    dealoc(element);
+  }));
+
+  it('should call $setFocused on "focus" event',
+      inject(function($compile, $rootScope) {
+
+    var element = $compile('<form name="myForm">' +
+                             '<input name="myControl" ng-model="value" >' +
+                           '</form>')($rootScope);
+    var inputElm = element.find('input');
+    var control = $rootScope.myForm.myControl;
+
+    spyOn(control, '$setFocused');
+    browserTrigger(inputElm, 'focus');
+
+    expect(control.$setFocused).toHaveBeenCalled();
 
     dealoc(element);
   }));
