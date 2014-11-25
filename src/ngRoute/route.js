@@ -175,7 +175,7 @@ function $RouteProvider() {
    * @description
    *
    * A boolean property indicating if routes defined
-   * using this provider should be matched using a case sensitive
+   * using this provider should be matched using a case insensitive
    * algorithm. Defaults to `false`.
    */
   this.caseInsensitiveMatch = false;
