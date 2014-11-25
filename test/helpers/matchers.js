@@ -43,6 +43,8 @@ beforeEach(function() {
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
     toBeUntouched: cssMatcher('ng-untouched', 'ng-touched'),
     toBeTouched: cssMatcher('ng-touched', 'ng-untouched'),
+    toBeUnfocused: cssMatcher('ng-unfocused', 'ng-focused'),
+    toBeFocused: cssMatcher('ng-focused', 'ng-unfocused'),
     toBeAPromise: function() {
       this.message = valueFn(
           "Expected object " + (this.isNot ? "not " : "") + "to be a promise");
