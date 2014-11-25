@@ -2602,7 +2602,7 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
                 }
               });
             } else {
-              scope.$apply(function () {
+              scope.$apply(function() {
                 modelCtrl.$setUnfocused();
                 if (modelCtrl.$untouched) {
                   modelCtrl.$setTouched();
