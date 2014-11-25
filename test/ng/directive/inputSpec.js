@@ -2606,6 +2606,47 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should only accept empty values when maxlength is 0', function() {
+      compileInput('<input type="text" ng-model="value" ng-maxlength="0" />');
+
+      changeInputValueTo('');
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('a');
+      expect(inputElm).toBeInvalid();
+    });
+
+    it('should accept values of any length when maxlength is negative', function() {
+      compileInput('<input type="text" ng-model="value" ng-maxlength="-1" />');
+
+      changeInputValueTo('');
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('aaaaaaaaaa');
+      expect(inputElm).toBeValid();
+    });
+
+    it('should accept values of any length when maxlength is non-numeric', function() {
+      compileInput('<input type="text" ng-model="value" ng-maxlength="{{maxlength}}" />');
+      changeInputValueTo('aaaaaaaaaa');
+
+      scope.$apply('maxlength = "5"');
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply('maxlength = "abc"');
+      expect(inputElm).toBeValid();
+
+      scope.$apply('maxlength = ""');
+      expect(inputElm).toBeValid();
+
+      scope.$apply('maxlength = null');
+      expect(inputElm).toBeValid();
+
+      scope.someObj = {};
+      scope.$apply('maxlength = someObj');
+      expect(inputElm).toBeValid();
+    });
+
     it('should listen on ng-maxlength when maxlength is observed', function() {
       var value = 0;
       compileInput('<input type="text" ng-model="value" ng-maxlength="max" attr-capture />');
