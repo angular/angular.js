@@ -199,7 +199,7 @@ and compilation process.
 
 <div class="alert alert-success">
 **Best Practice:** In order to avoid collisions with some future standard, it's best to prefix your own
-directive names. For instance, if you created a `<carousel>` directive, it would be problematic if HTML7
+directive names. For instance, if you created a `<carousel>` directive, it would be problematic if HTML5
 introduced the same element. A two or three letter prefix (e.g. `btfCarousel`) works well. Similarly, do
 not prefix your own directives with `ng` or they might conflict with directives included in a future
 version of Angular.
