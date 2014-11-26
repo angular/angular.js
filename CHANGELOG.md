@@ -60,7 +60,7 @@
 
 ## Performance Improvements
 
-- ***:** use Object.create instead of creating temporary constructors
+- use Object.create instead of creating temporary constructors
   ([bf6a79c3](https://github.com/angular/angular.js/commit/bf6a79c3484f474c300b5442ae73483030ef5782),
    [#10058](https://github.com/angular/angular.js/issues/10058))
 
