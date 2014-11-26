@@ -30,7 +30,7 @@ describe('linky', function() {
   });
 
   it('should handle quotes in the email', function() {
-    expect(linky('foo@"bar.com')).toEqual('<a href="mailto:foo@&#34;bar.com">foo@&#34;bar.com</a>');
+    expect(linky('foo@"bar".com')).toEqual('<a href="mailto:foo@&#34;bar&#34;.com">foo@&#34;bar&#34;.com</a>');
   });
 
   it('should handle target:', function() {
