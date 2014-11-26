@@ -266,7 +266,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         // use the `swipe` service, the element will still receive clicks.
         var x = event.clientX;
         var y = event.clientY;
-        var dist = Math.sqrt( Math.pow(x - clickStartX, 2) + Math.pow(y - clickStartY, 2) );
+        var dist = Math.sqrt(Math.pow(x - clickStartX, 2) + Math.pow(y - clickStartY, 2));
         if (dist >= MOVE_TOLERANCE) return;
       }
       scope.$apply(function() {
