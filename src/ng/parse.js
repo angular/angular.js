@@ -722,8 +722,13 @@ Parser.prototype = {
       ensureSafeObject(context, expressionText);
       ensureSafeFunction(fn, expressionText);
 
-      return ensureSafeObject(fn.apply(context, args), expressionText);
-    };
+      // IE doesn't have apply for some native functions
+      var v = fn.apply
+            ? fn.apply(context, args)
+            : fn(args[0], args[1], args[2], args[3], args[4]);
+
+      return ensureSafeObject(v, expressionText);
+      };
   },
 
   // This is used with json array declaration
