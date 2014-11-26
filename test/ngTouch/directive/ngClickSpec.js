@@ -408,6 +408,26 @@ describe('ngClick (touch)', function() {
 
 
   describe('click fallback', function() {
+    it('should not click if the click is too far away', inject(function($rootScope, $compile, $rootElement) {
+      element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+      $rootElement.append(element);
+      $rootScope.$digest();
+
+      expect($rootScope.tapped).toBeUndefined();
+
+      browserTrigger(element, 'mousedown',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+      browserTrigger(element, 'click',{
+        keys: [],
+        x: 400,
+        y: 400
+      });
+
+      expect($rootScope.tapped).toBeUndefined();
+    }));
 
     it('should treat a click as a tap on desktop', inject(function($rootScope, $compile) {
       element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
