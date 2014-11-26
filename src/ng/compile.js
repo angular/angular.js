@@ -1896,7 +1896,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               case '@':
                 attrs.$observe(attrName, function(value) {
                   isolateBindingContext[scopeName] = value;
-				  isolateScope.$setDirty();
+                  isolateScope.$setDirty();
                 });
                 attrs.$$observers[attrName].$$scope = scope;
                 if (attrs[attrName]) {
@@ -1930,7 +1930,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     if (!compare(parentValue, lastValue)) {
                       // parent changed and it has precedence
                       isolateBindingContext[scopeName] = parentValue;
-					  isolateScope.$setDirty();
+                      isolateScope.$setDirty();
                     } else {
                       // if the parent can be assigned then do so
                       parentSet(scope, parentValue = isolateBindingContext[scopeName]);
