@@ -344,7 +344,7 @@ to anchors on the same page without needing to know on which page the user curre
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
 to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
 this case, as it allows Angular to differentiate between the part of the url that is the application
-base and the path that should be handeled by the application.
+base and the path that should be handled by the application.
 
 ### Sending links among different browsers
 
