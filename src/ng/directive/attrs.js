@@ -160,7 +160,7 @@
  *
  * @description
  * Using Angular markup like `{{hash}}` in a `content` attribute doesn't
- * work right: The browser will fetch from the URL with the literal
+ * work right: bots will fetch from the URL with the literal
  * text `{{hash}}` until Angular replaces the expression inside
  * `{{hash}}`. The `ngContent` directive solves this problem.
  *
