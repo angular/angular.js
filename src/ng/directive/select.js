@@ -209,10 +209,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       };
 
 
-      self.removeOption = function(value) {
+      self.removeOption = function(value, anySelected) {
         if (this.hasOption(value)) {
           delete optionsMap[value];
-          if (ngModelCtrl.$viewValue == value) {
+          if (ngModelCtrl.$viewValue == value && !anySelected) {
             this.renderUnknownOption(value);
           }
         }
@@ -683,7 +683,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               if (count > 0) {
                 selectCtrl.addOption(label);
               } else if (count < 0) {
-                selectCtrl.removeOption(label);
+                selectCtrl.removeOption(label, anySelected);
               }
             });
           }

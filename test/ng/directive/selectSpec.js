@@ -233,6 +233,30 @@ describe('select', function() {
         expect(scope.robot).toBe('');
       });
 
+      it('should not add the empty string when an option is selected and options are set in a timeout', inject(function($timeout) {
+
+        compile('<select ng-model="simpleModel" ng-options="opt.id as opt.label for opt in simpleOpts">' +
+                    '</select>');
+
+        scope.$apply(function() {
+          scope.simpleModel = 0;
+        });
+
+        $timeout(function() {
+          scope.simpleOpts = [
+            {id: 0, label: 'x'},
+            {id: 1, label: 'y'}
+          ];
+        }, 0);
+
+        $timeout.flush();
+
+        var options = element.find('option');
+
+        expect(options.length).toEqual(2);
+        expect(options.eq(0)).toEqualOption('0', 'x');
+        expect(options.eq(1)).toEqualOption('1', 'y');
+      }));
 
       describe('interactions with repeated options', function() {
 
