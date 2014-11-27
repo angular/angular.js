@@ -83,7 +83,7 @@ To make your Angular application work on IE please make sure that:
          </body>
        </html>
      ```
-  5. Use `ng-style` tags instead of `style="{{ someCss }}"`. The later works in Chrome and Firefox
+  5. Use `ng-style` tags instead of `style="{{ someCss }}"`. The latter works in Chrome and Firefox
      but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
 
 
