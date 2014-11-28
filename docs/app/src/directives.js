@@ -10,13 +10,13 @@ angular.module('directives', [])
   return function link(scope, element) {
     element.on('click', function(event) {
       $location.hash('');
-      scope.$apply($anchorScroll);
+      $anchorScroll();
     });
   };
 }])
 
 
-.directive('code', function() {
+.directive('code', ['$window', function($window) {
   return {
     restrict: 'E',
     terminal: true,
@@ -25,10 +25,10 @@ angular.module('directives', [])
       var match = /lang-(\S+)/.exec(element[0].className);
       var lang = match && match[1];
       var html = element.html();
-      element.html(window.prettyPrintOne(html, lang, linenums));
+      element.html($window.prettyPrintOne(html, lang, linenums));
     }
   };
-})
+}])
 
 .directive('scrollYOffsetElement', ['$anchorScroll', function($anchorScroll) {
   return function(scope, element) {

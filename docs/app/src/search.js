@@ -15,25 +15,21 @@ angular.module('search', [])
         angular.forEach(hits, function(hit) {
           var area = hit.area;
 
-          var limit = (area == 'api') ? 40 : 14;
+          var limit = (area === 'api') ? 40 : 14;
           results[area] = results[area] || [];
           if(results[area].length < limit) {
             results[area].push(hit);
           }
         });
 
-        var totalAreas = 0;
-        for(var i in results) {
-          ++totalAreas;
-        }
+        var totalAreas = Object.keys(results).length;
         if(totalAreas > 0) {
           $scope.colClassName = 'cols-' + totalAreas;
         }
         $scope.hasResults = totalAreas > 0;
         $scope.results = results;
       });
-    }
-    else {
+    } else {
       clearResults();
     }
     if(!$scope.$$phase) $scope.$apply();
@@ -65,16 +61,17 @@ angular.module('search', [])
 
 
 .controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch',
-        function($scope, $location, docsSearch) {
-  docsSearch($location.path().split(/[\/\.:]/).pop()).then(function(results) {
-    $scope.results = {};
-    angular.forEach(results, function(result) {
-      var area = $scope.results[result.area] || [];
-      area.push(result);
-      $scope.results[result.area] = area;
+  function($scope, $location, docsSearch) {
+    docsSearch($location.path().split(/[\/\.:]/).pop()).then(function(results) {
+      $scope.results = {};
+      angular.forEach(results, function(result) {
+        var area = $scope.results[result.area] || [];
+        area.push(result);
+        $scope.results[result.area] = area;
+      });
     });
-  });
-}])
+  }
+])
 
 
 .provider('docsSearch', function() {
@@ -82,9 +79,9 @@ angular.module('search', [])
   // This version of the service builds the index in the current thread,
   // which blocks rendering and other browser activities.
   // It should only be used where the browser does not support WebWorkers
-  function localSearchFactory($http, $timeout, NG_PAGES) {
+  function localSearchFactory($http, $log, $timeout, NG_PAGES) {
 
-    console.log('Using Local Search Index');
+    $log.log('Using Local Search Index');
 
     // Create the lunr index
     var index = lunr(function() {
@@ -121,14 +118,14 @@ angular.module('search', [])
       });
     };
   }
-  localSearchFactory.$inject = ['$http', '$timeout', 'NG_PAGES'];
+  localSearchFactory.$inject = ['$http', '$log', '$timeout', 'NG_PAGES'];
 
   // This version of the service builds the index in a WebWorker,
   // which does not block rendering and other browser activities.
   // It should only be used where the browser does support WebWorkers
-  function webWorkerSearchFactory($q, $rootScope, NG_PAGES) {
+  function webWorkerSearchFactory($log, $q, $rootScope, NG_PAGES) {
 
-    console.log('Using WebWorker Search Index')
+    $log.log('Using WebWorker Search Index');
 
     var searchIndex = $q.defer();
     var results;
@@ -163,14 +160,15 @@ angular.module('search', [])
       return searchIndex.promise.then(function() {
 
         results = $q.defer();
-        worker.postMessage({ q: q });
+        worker.postMessage({q: q});
         return results.promise;
       });
     };
   }
-  webWorkerSearchFactory.$inject = ['$q', '$rootScope', 'NG_PAGES'];
+  webWorkerSearchFactory.$inject = ['$log', '$q', '$rootScope', 'NG_PAGES'];
 
   return {
+    // TODO(gkalpak): Would be nice to use `$window` (e.g. for easier testing)
     $get: window.Worker ? webWorkerSearchFactory : localSearchFactory
   };
 })
@@ -188,31 +186,47 @@ angular.module('search', [])
         scope.$eval(attrs.focused + '=false');
       });
     });
+    // TODO(gkalpak): Do we need this if we first register the listeners
+    //                and the call `.focus()` ?
     scope.$eval(attrs.focused + '=true');
   };
 })
 
-.directive('docsSearchInput', ['$document',function($document) {
+.directive('docsSearchInput', ['$document', function($document) {
+  var doc = $document[0];
+  var body = angular.element(doc.body);
+
   return function(scope, element, attrs) {
     var ESCAPE_KEY_KEYCODE = 27,
         FORWARD_SLASH_KEYCODE = 191;
-    angular.element($document[0].body).on('keydown', function(event) {
+
+    element.on('keydown', onInputKeydown);
+    body.on('keydown', onBodyKeydown);
+
+    // Since we are attaching a listener to <body>,
+    // it is a good idea to detach it upon scope destruction
+    // (Not likely to happen with the current implemetation, but...things change.)
+    scope.$on('$destroy', function() {
+      body.off('keydown', onBodyKeydown);
+    });
+
+    function onBodyKeydown(event) {
       var input = element[0];
-      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
+      if ((event.keyCode === FORWARD_SLASH_KEYCODE) && (doc.activeElement !== input)) {
         event.stopPropagation();
         event.preventDefault();
         input.focus();
       }
-    });
+    }
 
-    element.on('keydown', function(event) {
-      if(event.keyCode == ESCAPE_KEY_KEYCODE) {
+    function onInputKeydown(event) {
+      if (event.keyCode === ESCAPE_KEY_KEYCODE) {
         event.stopPropagation();
         event.preventDefault();
         scope.$apply(function() {
           scope.hideResults();
         });
       }
-    });
+    }
   };
 }]);
