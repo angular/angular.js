@@ -2,7 +2,7 @@ angular.module('examples', [])
 
 .factory('formPostData', ['$document', function($document) {
   return function(url, fields) {
-    /**
+    /*
      * Form previously posted to target="_blank", but pop-up blockers were causing this to not work.
      * If a user chose to bypass pop-up blocker one time and click the link, they would arrive at
      * a new default plnkr, not a plnkr with the desired template.
@@ -48,7 +48,7 @@ angular.module('examples', [])
               // The manifests provide the production index file but Plunkr wants
               // a straight index.html
               if (filename === "index-production.html") {
-                filename = "index.html"
+                filename = "index.html";
               }
 
               return {
