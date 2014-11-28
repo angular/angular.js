@@ -25,13 +25,13 @@ angular.module('DocsController', [])
     $window._gaq.push(['_trackPageview', pagePath]);
   });
 
-  $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
+  $scope.$watch(function docsPathWatch() { return $location.path(); }, function docsPathWatchAction(path) {
 
     path = path.replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
 
-    currentPage = $scope.currentPage = NG_PAGES[path];
+    var currentPage = $scope.currentPage = NG_PAGES[path];
 
-    if ( currentPage ) {
+    if (currentPage) {
       $scope.partialPath = 'partials/' + path + '.html';
       $scope.currentArea = NG_NAVIGATION[currentPage.area];
       var pathParts = currentPage.path.split('/');
