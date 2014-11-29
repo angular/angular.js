@@ -200,6 +200,14 @@ describe('filters', function() {
       expect(number(-1e-6, 6)).toEqual('-0.000001');
       expect(number(-1e-7, 6)).toEqual('-0.000000');
     });
+
+    it('should filter exponentially small numbers when no fraction specified', function() {
+      expect(number(1e-10)).toEqual('0.000');
+      expect(number(0.0000000001)).toEqual('0.000');
+
+      expect(number(-1e-10)).toEqual('0.000');
+      expect(number(-0.0000000001)).toEqual('0.000');
+    });
   });
 
   describe('json', function() {
