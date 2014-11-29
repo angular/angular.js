@@ -16,16 +16,24 @@ describe('$templateRequest', function() {
     expect(content).toBe('<div>abc</div>');
   }));
 
-  it('should cache the request using $templateCache to prevent extra downloads',
-    inject(function($rootScope, $templateRequest, $templateCache) {
+  it('should cache the request to prevent extra downloads',
+    inject(function($rootScope, $templateRequest, $httpBackend) {
 
-    $templateCache.put('tpl.html', 'matias');
+    $httpBackend.expectGET('tpl.html').respond('matias');
 
-    var content;
-    $templateRequest('tpl.html').then(function(html) { content = html; });
+    var content = [];
+    function tplRequestCb(html) {
+      content.push(html);
+    }
 
+    $templateRequest('tpl.html').then(tplRequestCb);
+    $httpBackend.flush();
+
+    $templateRequest('tpl.html').then(tplRequestCb);
     $rootScope.$digest();
-    expect(content).toBe('matias');
+
+    expect(content[0]).toBe('matias');
+    expect(content[1]).toBe('matias');
   }));
 
   it('should throw an error when the template is not found',
