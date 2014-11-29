@@ -85,8 +85,10 @@ describe('filters', function() {
     });
 
     it('should format numbers that round to zero as nonnegative', function() {
-      var num = formatNumber(-0.01, pattern, ',', '.', 1);
-      expect(num).toBe('0.0');
+      expect(formatNumber(-0.01, pattern, ',', '.', 1)).toBe('0.0');
+      expect(formatNumber(-1e-10, pattern, ',', '.', 1)).toBe('0.0');
+      expect(formatNumber(-0.0001, pattern, ',', '.', 3)).toBe('0.000');
+      expect(formatNumber(-0.0000001, pattern, ',', '.', 6)).toBe('0.000000');
     });
   });
 
@@ -195,10 +197,12 @@ describe('filters', function() {
       expect(number(1e-50, 0)).toEqual('0');
       expect(number(1e-6, 6)).toEqual('0.000001');
       expect(number(1e-7, 6)).toEqual('0.000000');
+      expect(number(9e-7, 6)).toEqual('0.000001');
 
       expect(number(-1e-50, 0)).toEqual('0');
       expect(number(-1e-6, 6)).toEqual('-0.000001');
-      expect(number(-1e-7, 6)).toEqual('-0.000000');
+      expect(number(-1e-7, 6)).toEqual('0.000000');
+      expect(number(-1e-8, 9)).toEqual('-0.000000010');
     });
   });
 
