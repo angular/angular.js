@@ -5,7 +5,7 @@ module.exports = function(config, specificOptions) {
     frameworks: ['jasmine'],
     autoWatch: true,
     logLevel: config.LOG_INFO,
-    logColors: true,
+    logColors: false,
     browsers: ['Chrome'],
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
@@ -45,7 +45,7 @@ module.exports = function(config, specificOptions) {
       'SL_Safari': {
         base: 'SauceLabs',
         browserName: 'safari',
-        platform: 'OS X 10.9',
+        platform: 'OS X 10.10',
         version: '7'
       },
       'SL_IE_9': {
@@ -57,7 +57,7 @@ module.exports = function(config, specificOptions) {
       'SL_IE_10': {
         base: 'SauceLabs',
         browserName: 'internet explorer',
-        platform: 'Windows 2012',
+        platform: 'Windows 10 technical preview',
         version: '10'
       },
       'SL_IE_11': {
