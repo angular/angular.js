@@ -11,7 +11,7 @@
  * make the link go to the wrong URL if the user clicks it before
  * Angular has a chance to replace the `{{hash}}` markup with its
  * value. Until Angular replaces the markup the link will be broken
- * and will most likely return a 404 error. The `ngHref` directive 
+ * and will most likely return a 404 error. The `ngHref` directive
  * solves this problem.
  *
  * The wrong way to write it:
