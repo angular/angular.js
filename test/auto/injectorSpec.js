@@ -238,7 +238,11 @@ describe('injector', function() {
 
 
     it('should publish annotate API', function() {
-      expect(injector.annotate).toBe(annotate);
+      expect(angular.mock.$$annotate).toBe(annotate);
+      spyOn(angular.mock, '$$annotate').andCallThrough();
+      function fn() {}
+      injector.annotate(fn);
+      expect(angular.mock.$$annotate).toHaveBeenCalledWith(fn);
     });
   });
 
