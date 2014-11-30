@@ -68,7 +68,7 @@ our application. Other "partial templates" are then included into this layout te
 the current "route" — the view that is currently displayed to the user.
 
 Application routes in Angular are declared via the {@link ngRoute.$routeProvider $routeProvider},
-which is the provider of the {@link ngRoute.$route $route service}. This service makes it easy to
+which is the provider of the {@link ngRoute.$route $route} service. This service makes it easy to
 wire together controllers, view templates, and the current URL location in the browser. Using this
 feature we can implement [deep linking](http://en.wikipedia.org/wiki/Deep_linking), which lets us
 utilize the browser's history (back and forward navigation) and bookmarks.
