@@ -2047,7 +2047,9 @@ angular.mock.e2e.$httpBackendDecorator =
  *
  * In addition to all the regular `Scope` methods, the following helper methods are available:
  */
-angular.mock.$RootScopeDecorator = function($delegate) {
+$RootScopeDecorator.$inject = ['$delegate'];
+angular.mock.$RootScopeDecorator = $RootScopeDecorator;
+function $RootScopeDecorator($delegate) {
 
   var $rootScopePrototype = Object.getPrototypeOf($delegate);
 
@@ -2119,7 +2121,7 @@ angular.mock.$RootScopeDecorator = function($delegate) {
 
     return count;
   }
-};
+}
 
 
 if (window.jasmine || window.mocha) {
