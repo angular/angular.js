@@ -784,8 +784,8 @@ forEach({
       handle = expandoStore.handle = createEventHandler(element, events);
     }
 
-    var contains = Node.prototype.contains || function (node, arg) {
-      return !!(node.compareDocumentPosition(arg) & 16);
+    var contains = Node.prototype.contains || function (arg) {
+      return !!(this.compareDocumentPosition(arg) & 16);
     };
 
     // http://jsperf.com/string-indexof-vs-split
@@ -808,7 +808,7 @@ forEach({
             var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
-            if (!related || (related !== target && !contains(target, related))) {
+            if (!related || (related !== target && !contains.call(target, related))) {
               handle(event, type);
             }
           });
