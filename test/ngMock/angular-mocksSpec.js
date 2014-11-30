@@ -787,6 +787,39 @@ describe('ngMock', function() {
             expect(testFn.$$hashKey).toBeUndefined();
           });
         });
+
+        describe('$inject cleanup', function() {
+          function testFn() {
+
+          }
+
+          it('should add $inject when invoking test function', inject(function($injector) {
+            $injector.invoke(testFn);
+            expect(testFn.$inject).toBeDefined();
+          }));
+
+          it('should cleanup $inject after previous test', function() {
+            expect(testFn.$inject).toBeUndefined();
+          });
+
+          it('should add $inject when annotating test function', inject(function($injector) {
+            $injector.annotate(testFn);
+            expect(testFn.$inject).toBeDefined();
+          }));
+
+          it('should cleanup $inject after previous test', function() {
+            expect(testFn.$inject).toBeUndefined();
+          });
+
+          it('should invoke an already annotated function', inject(function($injector) {
+            testFn.$inject = [];
+            $injector.invoke(testFn);
+          }));
+
+          it('should not cleanup $inject after previous test', function() {
+            expect(testFn.$inject).toBeDefined();
+          });
+        });
       });
 
       describe('in DSL', function() {
