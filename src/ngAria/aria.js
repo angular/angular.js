@@ -26,7 +26,7 @@
  * | {@link ng.directive:ngDisabled ngDisabled}  | aria-disabled                                                                          |
  * | {@link ng.directive:ngShow ngShow}          | aria-hidden                                                                            |
  * | {@link ng.directive:ngHide ngHide}          | aria-hidden                                                                            |
- * | {@link ng.directive:ngClick ngClick}        | tabindex                                                                               |
+ * | {@link ng.directive:ngClick ngClick}        | tabindex, keypress event                                                               |
  * | {@link ng.directive:ngDblclick ngDblclick}  | tabindex                                                                               |
  * | {@link module:ngMessages ngMessages}        | aria-live                                                                              |
  *
@@ -82,7 +82,8 @@ function $AriaProvider() {
     ariaInvalid: true,
     ariaMultiline: true,
     ariaValue: true,
-    tabindex: true
+    tabindex: true,
+    bindKeypress: true
   };
 
   /**
@@ -99,6 +100,7 @@ function $AriaProvider() {
    *  - **ariaMultiline** – `{boolean}` – Enables/disables aria-multiline tags
    *  - **ariaValue** – `{boolean}` – Enables/disables aria-valuemin, aria-valuemax and aria-valuenow tags
    *  - **tabindex** – `{boolean}` – Enables/disables tabindex tags
+   *  - **bindKeypress** – `{boolean}` – Enables/disables keypress event binding on ng-click
    *
    * @description
    * Enables/disables various ARIA attributes
@@ -183,13 +185,6 @@ function $AriaProvider() {
   };
 }
 
-var ngAriaTabindex = ['$aria', function($aria) {
-  return function(scope, elem, attr) {
-    if ($aria.config('tabindex') && !elem.attr('tabindex')) {
-      elem.attr('tabindex', 0);
-    }
-  };
-}];
 
 ngAriaModule.directive('ngShow', ['$aria', function($aria) {
   return $aria.$$watchExpr('ngShow', 'aria-hidden', true);
@@ -309,5 +304,28 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
     }
   };
 })
-.directive('ngClick', ngAriaTabindex)
-.directive('ngDblclick', ngAriaTabindex);
+.directive('ngClick',['$aria', function($aria) {
+  return {
+    restrict: 'A',
+    link: function(scope, elem, attr) {
+      if ($aria.config('tabindex') && !elem.attr('tabindex')) {
+        elem.attr('tabindex', 0);
+      }
+
+      if ($aria.config('bindKeypress') && !elem.attr('ng-keypress')) {
+        elem.on('keypress', function(event) {
+          if (event.keyCode === 32 || event.keyCode === 13) {
+            scope.$eval(attr.ngClick);
+          }
+        });
+      }
+    }
+  };
+}])
+.directive('ngDblclick', ['$aria', function($aria) {
+  return function(scope, elem, attr) {
+    if ($aria.config('tabindex') && !elem.attr('tabindex')) {
+      elem.attr('tabindex', 0);
+    }
+  };
+}]);
