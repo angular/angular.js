@@ -155,7 +155,11 @@ function filterFilter() {
 
     var search = function(obj, text) {
       if (typeof text === 'string' && text.charAt(0) === '!') {
-        return !search(obj, text.substr(1));
+        text = text.substr(1);
+        if (typeof obj !== typeof text && angular.isNumber(obj)) {
+            text = parseFloat(text);
+        }
+        return !search(obj, text);
       }
       switch (typeof obj) {
         case 'boolean':
