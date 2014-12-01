@@ -220,7 +220,9 @@ describe('injector', function() {
 
 
     it('should publish annotate API', function() {
-      expect(injector.annotate).toBe(annotate);
+      function fn() {}
+      expect(injector.annotate(fn)).toEqual([]);
+      expect(fn.$inject).toEqual([]);
     });
   });
 
