@@ -1,3 +1,34 @@
+<a name="1.3.5"></a>
+# 1.3.5 cybernetic-mercantilism (2014-12-01)
+
+
+## Bug Fixes
+
+- **$templateRequest:** propagate rejection reason when ignoreRequestError flag is set
+  ([f6458826](https://github.com/angular/angular.js/commit/f6458826ac974914597a10b0ffdeee3c5d2c62ef),
+   [#10266](https://github.com/angular/angular.js/issues/10266))
+- **$httpBackend:** allow canceling request with falsy timeoutId
+  ([719d5c5f](https://github.com/angular/angular.js/commit/719d5c5fa59ae1617691a0dca02da861fcf5f933),
+   [#10177](https://github.com/angular/angular.js/issues/10177))
+- **linky:** encode all double quotes when serializing email addresses
+  ([2ec8d1ff](https://github.com/angular/angular.js/commit/2ec8d1ffc04e06a39cb1b74a8d675da38e0a1c6b),
+   [#10090](https://github.com/angular/angular.js/issues/10090))
+- **ngMock:**
+  - annotate $RootScopeDecorator
+  ([9a83f9d2](https://github.com/angular/angular.js/commit/9a83f9d2fabe0a259c283b7f7cd935e4b36e2b5d),
+   [#10273](https://github.com/angular/angular.js/issues/10273), [#10275](https://github.com/angular/angular.js/issues/10275), [#10277](https://github.com/angular/angular.js/issues/10277))
+  - respond did not always take a statusText argument
+  ([08cd5c19](https://github.com/angular/angular.js/commit/08cd5c19c7a5116e7e74691391fc5e28bfae4521),
+   [#8270](https://github.com/angular/angular.js/issues/8270))
+- **select:**
+  - use strict compare when removing option from ctrl
+  ([9fa73cb4](https://github.com/angular/angular.js/commit/9fa73cb4e7190b4d00b65f2f8f9f7d37607308ba),
+   [#9714](https://github.com/angular/angular.js/issues/9714), [#10115](https://github.com/angular/angular.js/issues/10115), [#10203](https://github.com/angular/angular.js/issues/10203))
+  - fix several issues when moving options between groups
+  ([30694c80](https://github.com/angular/angular.js/commit/30694c802763d46d6787f7298f47dfef53ed4229),
+   [#10166](https://github.com/angular/angular.js/issues/10166))
+
+
 <a name="1.3.4"></a>
 # 1.3.4 highfalutin-petroglyph (2014-11-24)
 
