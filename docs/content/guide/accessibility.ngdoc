@@ -31,12 +31,12 @@ added it as a dependency, you can test a few things:
 ##Supported directives
 Currently, ngAria interfaces with the following directives:
 
- * <a href="#ngmodel">ngModel</a>
- * <a href="#ngdisabled">ngDisabled</a>
- * <a href="#ngshow">ngShow</a>
- * <a href="#nghide">ngHide</a>
- * <a href="#ngclick-and-ngdblclick">ngClick</a>
- * <a href="#ngclick-and-ngdblclick">ngDblClick</a>
+ * {@link guide/accessibility#ngmodel ngModel}
+ * {@link guide/accessibility#ngdisabled ngDisabled}
+ * {@link guide/accessibility#ngshow ngShow}
+ * {@link guide/accessibility#nghide ngHide}
+ * {@link guide/accessibility#ngclick ngClick}
+ * {@link guide/accessibility#ngdblclick ngDblClick}
 
 <h2 id="ngmodel">ngModel</h2>
 
@@ -206,9 +206,9 @@ shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
 
 The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redundant. It toggles
 `aria-hidden` on the directive when it is hidden or shown, but the content is already hidden with
-`display: none`. See explanation for <a href="#ngshow">ngShow</a> when overriding the default CSS.
+`display: none`. See explanation for {@link guide/accessibility#ngshow ngShow} when overriding the default CSS.
 
-<h2 id="ngclick-and-ngdblclick">ngClick and ngDblclick</h2>
+<h2><span id="ngclick">ngClick</span> and <span id="ngdblclick">ngDblclick</span></h2>
 If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex` if it isn't there already.
 Even with this, you must currently still add `ng-keypress` to non-interactive elements such as `div`
 or `taco-button` to enable keyboard access. Conversation is currently ongoing about whether ngAria
