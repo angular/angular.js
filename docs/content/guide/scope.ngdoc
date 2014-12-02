@@ -345,7 +345,7 @@ access on JavaScript object.
 Dirty checking can be done with three strategies: By reference, by collection contents, and by value. The strategies differ in the kinds of changes they detect, and in their performance characteristics.
 
    - Watching *by reference* ({@link
-      ng.$rootScope.Scope#$watch scope.$watch} `(watchExpression, listener)`) detects a change when the whole value returned by the watch expression switches to a new value. If the value is an array or an object, changes inside it are not detected. This is the most efficient stategy.
+      ng.$rootScope.Scope#$watch scope.$watch} `(watchExpression, listener)`) detects a change when the whole value returned by the watch expression switches to a new value. If the value is an array or an object, changes inside it are not detected. This is the most efficient strategy.
    - Watching *collection contents* ({@link
       ng.$rootScope.Scope#$watchCollection scope.$watchCollection} `(watchExpression, listener)`) detects changes that occur inside an array or an object: When items are added, removed, or reordered. The detection is shallow - it does not reach into nested collections. Watching collection contents is more expensive than watching by reference, because copies of the collection contents need to be maintained. However, the strategy attempts to minimize the amount of copying required.
    - Watching *by value* ({@link
