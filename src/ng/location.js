@@ -555,7 +555,7 @@ var locationPrototype = {
    *
    *
    * ```js
-   * // given url http://example.com/some/path?foo=bar&baz=xoxo#hashValue
+   * // given url http://example.com/#/some/path?foo=bar&baz=xoxo#hashValue
    * var hash = $location.hash();
    * // => "hashValue"
    * ```
