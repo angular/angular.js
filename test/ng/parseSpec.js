@@ -508,10 +508,17 @@ describe('parser', function() {
       });
 
       it('should evaluate function call from a return value', function() {
-        scope.val = 33;
-        scope.getter = function() { return function() { return this.val; }; };
+        scope.getter = function() { return function() { return 33; }; };
         expect(scope.$eval("getter()()")).toBe(33);
       });
+
+      // There is no "strict mode" in IE9
+      if (!msie || msie > 9) {
+        it('should set no context to functions returned by other functions', function() {
+          scope.getter = function() { return function() { expect(this).toBeUndefined(); }; };
+          scope.$eval("getter()()");
+        });
+      }
 
       it('should evaluate multiplication and division', function() {
         scope.taxRate =  8;
