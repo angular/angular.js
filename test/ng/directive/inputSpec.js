@@ -1066,6 +1066,56 @@ describe('NgModelController', function() {
 
       dealoc(element);
     }));
+
+    it('should always use the most recent $viewValue for validation', function() {
+      ctrl.$parsers.push(function(value) {
+        if (value && value.substr(-1) === 'b') {
+          value = 'a';
+          ctrl.$setViewValue(value);
+          ctrl.$render();
+        }
+
+        return value;
+      });
+
+      ctrl.$validators.mock = function(modelValue) {
+        return true;
+      };
+
+      spyOn(ctrl.$validators, 'mock').andCallThrough();
+
+      ctrl.$setViewValue('ab');
+
+      expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'a');
+      expect(ctrl.$validators.mock.calls.length).toEqual(2);
+    });
+
+    it('should validate even if the modelValue did not change', function() {
+      ctrl.$parsers.push(function(value) {
+        if (value && value.substr(-1) === 'b') {
+          value = 'a';
+        }
+
+        return value;
+      });
+
+      ctrl.$validators.mock = function(modelValue) {
+        return true;
+      };
+
+      spyOn(ctrl.$validators, 'mock').andCallThrough();
+
+      ctrl.$setViewValue('a');
+
+      expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'a');
+      expect(ctrl.$validators.mock.calls.length).toEqual(1);
+
+      ctrl.$setViewValue('ab');
+
+      expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'ab');
+      expect(ctrl.$validators.mock.calls.length).toEqual(2);
+    });
+
   });
 });
 
