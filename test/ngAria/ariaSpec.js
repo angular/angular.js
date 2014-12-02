@@ -481,6 +481,54 @@ describe('$aria', function() {
     });
   });
 
+  describe('accessible actions', function() {
+    beforeEach(injectScopeAndCompiler);
+
+    var clickFn;
+
+    it('should a trigger click from the keyboard', function() {
+      scope.someAction = function() {};
+      compileInput('<div ng-click="someAction()" tabindex="0"></div>');
+      clickFn = spyOn(scope, 'someAction');
+
+      element.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).toHaveBeenCalled();
+    });
+
+    it('should not override existing ng-keypress', function() {
+      scope.someOtherAction = function() {};
+      var keypressFn = spyOn(scope, 'someOtherAction');
+
+      scope.someAction = function() {};
+      clickFn = spyOn(scope, 'someAction');
+      compileInput('<div ng-click="someAction()" ng-keypress="someOtherAction()" tabindex="0"></div>');
+
+      element.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).not.toHaveBeenCalled();
+      expect(keypressFn).toHaveBeenCalled();
+    });
+  });
+
+  describe('actions when bindKeypress set to false', function() {
+    beforeEach(configAriaProvider({
+      bindKeypress: false
+    }));
+    beforeEach(injectScopeAndCompiler);
+
+    it('should not a trigger click from the keyboard', function() {
+      scope.someAction = function() {};
+      var clickFn = spyOn(scope, 'someAction');
+
+      element = $compile('<div ng-click="someAction()" tabindex="0">></div>')(scope);
+
+      element.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).not.toHaveBeenCalled();
+    });
+  });
+
   describe('tabindex when disabled', function() {
     beforeEach(configAriaProvider({
       tabindex: false
