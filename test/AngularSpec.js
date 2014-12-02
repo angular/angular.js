@@ -1189,7 +1189,7 @@ describe('angular', function() {
     });
 
 
-    iit('should format objects pretty', function() {
+    it('should format objects pretty', function() {
       expect(toJson({a: 1, b: 2}, true)).
           toBe('{\n  "a": 1,\n  "b": 2\n}');
       expect(toJson({a: {b: 2}}, true)).
@@ -1200,6 +1200,8 @@ describe('angular', function() {
           toBe('{"a":1,"b":2}');
       expect(toJson({a: 1, b: 2}, 1)).
           toBe('{\n "a": 1,\n "b": 2\n}');
+      expect(toJson({a: 1, b: 2}, {})).
+          toBe('{\n  "a": 1,\n  "b": 2\n}');
     });
 
 
