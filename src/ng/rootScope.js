@@ -1076,7 +1076,7 @@ function $RootScopeProvider() {
 
         function $applyAsyncExpression() {
           scope.$eval(expr);
-          this.$$dirty = true;
+          scope.$$dirty = true;
         }
       },
 
