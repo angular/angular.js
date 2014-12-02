@@ -784,6 +784,7 @@ forEach({
       handle = expandoStore.handle = createEventHandler(element, events);
     }
 
+    // IE9-11 has no method "contains" in SVG element and in Node.prototype. Bug #10259.
     var contains = Node.prototype.contains || function (arg) {
       return !!(this.compareDocumentPosition(arg) & 16);
     };
