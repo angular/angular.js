@@ -731,6 +731,7 @@ function $RootScopeProvider() {
             next, current, target = this,
             watchLog = [],
             logIdx, logMsg, asyncTask;
+        this.$$dirty = true;
 
         beginPhase('$digest');
         // Check for changes to browser url that happened in sync before the call to $digest
@@ -1042,6 +1043,7 @@ function $RootScopeProvider() {
         } finally {
           clearPhase();
           try {
+            this.$$dirty = true;
             $rootScope.$digest();
           } catch (e) {
             $exceptionHandler(e);
@@ -1074,6 +1076,7 @@ function $RootScopeProvider() {
 
         function $applyAsyncExpression() {
           scope.$eval(expr);
+          this.$$dirty = true;
         }
       },
 
