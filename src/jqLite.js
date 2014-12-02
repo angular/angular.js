@@ -241,6 +241,14 @@ function jqLiteParseHTML(html, context) {
   return [];
 }
 
+
+// IE9-11 has no method "contains" in SVG element and in Node.prototype. Bug #10259.
+var jqLiteContains = Node.prototype.contains || function(arg) {
+  // jshint bitwise: false
+  return !!(this.compareDocumentPosition(arg) & 16);
+  // jshint bitwise: true
+};
+
 /////////////////////////////////////////////
 function JQLite(element) {
   if (element instanceof JQLite) {
@@ -826,7 +834,7 @@ forEach({
             var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
-            if (!related || (related !== target && !target.contains(related))) {
+            if (!related || (related !== target && !jqLiteContains.call(target, related))) {
               handle(event, type);
             }
           });
