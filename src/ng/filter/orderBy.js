@@ -164,12 +164,12 @@ function orderByFilter($parse) {
       var t1 = typeof v1;
       var t2 = typeof v2;
       if (t1 === t2 && t1 === "object") {
-        t1 = typeof (v1 = v1.valueOf());
-        t2 = typeof (v2 = v2.valueOf());
+        t1 = typeof (v1.valueOf ? v1 = v1.valueOf() : v1);
+        t2 = typeof (v2.valueOf ? v2 = v2.valueOf() : v2);
         if (t1 === t2 && t1 === "object") {
-          t1 = typeof (v1 = v1.toString());
-          t2 = typeof (v2 = v2.toString());
-          if (t1 === t2 && v1 === v2) return 0;
+          t1 = typeof (v1.toString ? v1 = v1.toString() : v1);
+          t2 = typeof (v2.toString ? v2 = v2.toString() : v2);
+          if (t1 === t2 && v1 === v2 || t1 === "object") return 0;
         }
       }
       if (t1 === t2) {

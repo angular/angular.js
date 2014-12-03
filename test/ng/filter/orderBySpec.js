@@ -115,6 +115,16 @@ describe('Filter: orderBy', function() {
       ];
       expect(orderBy(array)).toEqualData(array);
     });
+
+
+    it('should not reverse array of objects with null prototype and no predicate', function() {
+      var array = [2,1,4,3].map(function(id) {
+        var obj = Object.create(null);
+        obj.id = id;
+        return obj;
+      });
+      expect(orderBy(array)).toEqualData(array);
+    });
   });
 
 
@@ -230,6 +240,16 @@ describe('Filter: orderBy', function() {
         { id: 4 },
         { id: 3 }
       ];
+      expect(orderBy(array)).toEqualData(array);
+    });
+
+
+    it('should not reverse array of objects with null prototype and no predicate', function() {
+      var array = [2,1,4,3].map(function(id) {
+        var obj = Object.create(null);
+        obj.id = id;
+        return obj;
+      });
       expect(orderBy(array)).toEqualData(array);
     });
   });
