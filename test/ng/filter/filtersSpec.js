@@ -235,7 +235,7 @@ describe('filters', function() {
     var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
     var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
     var earlyDate = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
-    var secondWeek = new angular.mock.TzDate(+5, '2013-01-11T12:00:00.000Z'); //Friday Jan 11, 2012
+    var secondWeek = new angular.mock.TzDate(+5, '2013-01-13T12:00:00.000Z'); //Sunday Jan 13, 2013
     var date;
 
     beforeEach(inject(function($filter) {
