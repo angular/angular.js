@@ -731,8 +731,8 @@ function $RootScopeProvider() {
             next, current, target = this,
             watchLog = [],
             logIdx, logMsg, asyncTask;
-        
-		this.$$dirty = true;
+
+        this.$$dirty = true;
 
         beginPhase('$digest');
         // Check for changes to browser url that happened in sync before the call to $digest
