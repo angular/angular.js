@@ -183,16 +183,25 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    */
   this.$$parse = function(url) {
     var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
-    var withoutHashUrl = withoutBaseUrl.charAt(0) == '#'
-        ? beginsWith(hashPrefix, withoutBaseUrl)
-        : (this.$$html5)
-          ? withoutBaseUrl
-          : '';
+    var withoutHashUrl;
 
-    if (!isString(withoutHashUrl)) {
-      throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url,
-          hashPrefix);
+    if (withoutBaseUrl.charAt(0) === '#') {
+
+      // The rest of the url starts with a hash so we have
+      // got either a hashbang path or a plain hash fragment
+      withoutHashUrl = beginsWith(hashPrefix, withoutBaseUrl);
+      if (isUndefined(withoutHashUrl)) {
+        // There was no hashbang prefix so we just have a hash fragment
+        withoutHashUrl = withoutBaseUrl;
+      }
+
+    } else {
+      // There was no hashbang path nor hash fragment:
+      // If we are in HTML5 mode we use what is left as the path;
+      // Otherwise we ignore what is left
+      withoutHashUrl = this.$$html5 ? withoutBaseUrl : '';
     }
+
     parseAppUrl(withoutHashUrl, this);
 
     this.$$path = removeWindowsDriveName(this.$$path, withoutHashUrl, appBase);

@@ -554,10 +554,24 @@ describe('$location', function() {
     });
 
 
-    it('should throw error when invalid hashbang prefix given', function() {
-      expect(function() {
-        url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrowMinErr('$location', 'ihshprfx', 'Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+    it('should insert default hashbang if a hash is given with no hashbang prefix', function() {
+
+      url.$$parse('http://www.server.org:1234/base#/path');
+      expect(url.absUrl()).toBe('http://www.server.org:1234/base#!#%2Fpath');
+      expect(url.hash()).toBe('/path');
+      expect(url.path()).toBe('');
+
+      url.$$parse('http://www.server.org:1234/base#');
+      expect(url.absUrl()).toBe('http://www.server.org:1234/base');
+      expect(url.hash()).toBe('');
+      expect(url.path()).toBe('');
+    });
+
+    it('should ignore extra path segments if no hashbang is given', function() {
+      url.$$parse('http://www.server.org:1234/base/extra/path');
+      expect(url.absUrl()).toBe('http://www.server.org:1234/base');
+      expect(url.path()).toBe('');
+      expect(url.hash()).toBe('');
     });
 
 
