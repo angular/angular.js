@@ -731,7 +731,6 @@ function $RootScopeProvider() {
             next, current, target = this,
             watchLog = [],
             logIdx, logMsg, asyncTask;
-
         this.$$dirty = true;
 
         beginPhase('$digest');
