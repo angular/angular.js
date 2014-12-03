@@ -70,8 +70,8 @@ function $SnifferProvider() {
         if (event == 'input' && msie == 9) return false;
 
         if (isUndefined(eventSupport[event])) {
-          var divElm = document.createElement('div');
-          eventSupport[event] = 'on' + event in divElm;
+          var elm = document.createElement('input');
+          eventSupport[event] = 'on' + event in elm;
         }
 
         return eventSupport[event];

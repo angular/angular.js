@@ -25,12 +25,12 @@ describe('$sniffer', function() {
 
 
   describe('hasEvent', function() {
-    var mockDocument, mockDivElement, $sniffer;
+    var mockDocument, mockElement, $sniffer;
 
     beforeEach(function() {
       mockDocument = {createElement: jasmine.createSpy('createElement')};
       mockDocument.createElement.andCallFake(function(elm) {
-        if (elm === 'div') return mockDivElement;
+        if (elm === 'input') return mockElement;
       });
 
       $sniffer = sniffer({}, mockDocument);
@@ -38,21 +38,21 @@ describe('$sniffer', function() {
 
 
     it('should return true if "onchange" is present in a div element', function() {
-      mockDivElement = {onchange: noop};
+      mockElement = {onchange: noop};
 
       expect($sniffer.hasEvent('change')).toBe(true);
     });
 
 
     it('should return false if "oninput" is not present in a div element', function() {
-      mockDivElement = {};
+      mockElement = {};
 
       expect($sniffer.hasEvent('input')).toBe(false);
     });
 
 
     it('should only create the element once', function() {
-      mockDivElement = {};
+      mockElement = {};
 
       $sniffer.hasEvent('change');
       $sniffer.hasEvent('change');
@@ -64,7 +64,7 @@ describe('$sniffer', function() {
 
     it('should claim that IE9 doesn\'t have support for "oninput"', function() {
       // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
-      mockDivElement = {oninput: noop};
+      mockElement = {oninput: noop};
 
       expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
     });

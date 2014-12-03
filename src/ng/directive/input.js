@@ -1018,14 +1018,25 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       }
     };
 
+    element.on('keypress', function(event) {
+      var key = event.keyCode,
+          multiline = event.target.nodeName.toLowerCase() === 'textarea';
+
+      // ignore
+      //    escape          enter
+      if (key === 27 || (key === 13 && !multiline)) return;
+
+      deferListener(event);
+    });
+
     element.on('keydown', function(event) {
       var key = event.keyCode;
 
-      // ignore
-      //    command            modifiers                   arrows
-      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
-
-      deferListener(event);
+      // only fire listener for a few extra keys not captured by "keypress"
+      //  backspace      delete
+      if (key === 8 || key === 46) {
+        deferListener(event);
+      }
     });
 
     // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
