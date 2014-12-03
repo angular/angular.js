@@ -170,18 +170,18 @@ function orderByFilter($parse) {
       if (t1 === t2 && t1 === "object") {
         // If types are both numbers, emulate abstract ToPrimitive() operation
         // in order to get primitive values suitable for comparison
-        t1 = typeof (v1 = v1.valueOf());
-        t2 = typeof (v2 = v2.valueOf());
+        t1 = typeof (v1.valueOf ? v1 = v1.valueOf() : v1);
+        t2 = typeof (v2.valueOf ? v2 = v2.valueOf() : v2);
         if (t1 === t2 && t1 === "object") {
           // Object.prototype.valueOf will return the original object, by
           // default. If we do not receive a primitive value, use ToString()
           // instead.
-          t1 = typeof (v1 = v1.toString());
-          t2 = typeof (v2 = v2.toString());
+          t1 = typeof (v1.toString ? v1 = v1.toString() : v1);
+          t2 = typeof (v2.toString ? v2 = v2.toString() : v2);
 
           // If the end result of toString() for each item is the same, do not
           // perform relational comparison, and do not re-order objects.
-          if (t1 === t2 && v1 === v2) return 0;
+          if (t1 === t2 && v1 === v2 || t1 === "object") return 0;
         }
       }
       if (t1 === t2) {
