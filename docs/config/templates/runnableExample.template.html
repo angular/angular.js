@@ -5,6 +5,9 @@
   <a ng-click="openPlunkr('{$ doc.path $}', $event)" class="btn pull-right">
     <i class="glyphicon glyphicon-edit">&nbsp;</i>
     Edit in Plunker</a>
+  <md-button class="md-raised" ng-click="openPlunkr('{$ doc.path $}')">
+    <md-icon icon="img/material_icons/ic_launch_18dp.png"></md-icon>
+    Edit in Plunker</md-button>
 
   <div class="runnable-example"
       path="{$ doc.example.deployments.default.path $}"
