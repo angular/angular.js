@@ -104,6 +104,17 @@ describe('Filter: orderBy', function() {
         return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
       }).toThrow();
     });
+
+
+    it('should not reverse array of objects with no predicate', function() {
+      var array = [
+        { id: 2 },
+        { id: 1 },
+        { id: 4 },
+        { id: 3 }
+      ];
+      expect(orderBy(array)).toEqualData(array);
+    });
   });
 
 
@@ -209,6 +220,17 @@ describe('Filter: orderBy', function() {
       expect(function() {
         return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
       }).toThrow();
+    });
+
+
+    it('should not reverse array of objects with no predicate', function() {
+      var array = [
+        { id: 2 },
+        { id: 1 },
+        { id: 4 },
+        { id: 3 }
+      ];
+      expect(orderBy(array)).toEqualData(array);
     });
   });
 });
