@@ -1,11 +1,14 @@
 #!/bin/bash
 # Has to be run from project root directory.
 
-# TODO(vojta): normalize paths to lib/$BROWSER_PROVIDER
+
 if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
   echo "Using BrowserStack"
-  ./lib/browser-stack/start-tunnel.sh
-else
+elif [ "$BROWSER_PROVIDER" == "saucelabs" ]; then
   echo "Using SauceLabs"
-  ./lib/sauce/sauce_connect_setup.sh
+else
+  echo "Invalid BROWSER_PROVIDER. Please set env var BROWSER_PROVIDER to 'saucelabs' or 'browserstack'."
+  exit 1
 fi
+
+./lib/${BROWSER_PROVIDER}/start_tunnel.sh
