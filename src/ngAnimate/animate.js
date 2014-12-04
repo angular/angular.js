@@ -473,13 +473,12 @@ angular.module('ngAnimate', ['ng'])
     function isMatchingElement(elm1, elm2) {
       return extractElementNode(elm1) == extractElementNode(elm2);
     }
-
-    var $coreAnimate;
-
+    var $$jqLite;
     $provide.decorator('$animate',
-        ['$delegate', '$$q', '$injector', '$sniffer', '$rootElement', '$$asyncCallback', '$rootScope', '$document', '$templateRequest',
- function($delegate,   $$q,   $injector,   $sniffer,   $rootElement,   $$asyncCallback,   $rootScope,   $document,   $templateRequest) {
-      $coreAnimate = $delegate;
+        ['$delegate', '$$q', '$injector', '$sniffer', '$rootElement', '$$asyncCallback', '$rootScope', '$document', '$templateRequest', '$$jqLite',
+ function($delegate,   $$q,   $injector,   $sniffer,   $rootElement,   $$asyncCallback,   $rootScope,   $document,   $templateRequest,   $$$jqLite) {
+
+      $$jqLite = $$$jqLite;
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       // Wait until all directive and route-related templates are downloaded and
@@ -1382,9 +1381,11 @@ angular.module('ngAnimate', ['ng'])
 
         //the ng-animate class does nothing, but it's here to allow for
         //parent animations to find and cancel child animations when needed
-        $delegate.$$addClassImmediately(element, NG_ANIMATE_CLASS_NAME);
+        $$jqLite.addClass(element, NG_ANIMATE_CLASS_NAME);
         if (options && options.tempClasses) {
-          $delegate.$$addClassImmediately(element, options.tempClasses);
+          forEach(options.tempClasses, function(className) {
+            $$jqLite.addClass(element, className);
+          });
         }
 
         var localAnimationCount = globalAnimationCounter++;
@@ -1460,7 +1461,9 @@ angular.module('ngAnimate', ['ng'])
 
             closeAnimation.hasBeenRun = true;
             if (options && options.tempClasses) {
-              $delegate.$$removeClassImmediately(element, options.tempClasses);
+              forEach(options.tempClasses, function(className) {
+                $$jqLite.removeClass(element, className);
+              });
             }
 
             var data = element.data(NG_ANIMATE_STATE);
@@ -1521,7 +1524,7 @@ angular.module('ngAnimate', ['ng'])
           }
 
           if (removeAnimations || !data.totalActive) {
-            $delegate.$$removeClassImmediately(element, NG_ANIMATE_CLASS_NAME);
+            $$jqLite.removeClass(element, NG_ANIMATE_CLASS_NAME);
             element.removeData(NG_ANIMATE_STATE);
           }
         }
@@ -1762,14 +1765,14 @@ angular.module('ngAnimate', ['ng'])
           var staggerCacheKey = cacheKey + ' ' + staggerClassName;
           var applyClasses = !lookupCache[staggerCacheKey];
 
-          applyClasses && $coreAnimate.$$addClassImmediately(element, staggerClassName);
+          applyClasses && $$jqLite.addClass(element, staggerClassName);
 
           stagger = getElementAnimationDetails(element, staggerCacheKey);
 
-          applyClasses && $coreAnimate.$$removeClassImmediately(element, staggerClassName);
+          applyClasses && $$jqLite.removeClass(element, staggerClassName);
         }
 
-        $coreAnimate.$$addClassImmediately(element, className);
+        $$jqLite.addClass(element, className);
 
         var formerData = element.data(NG_ANIMATE_CSS_DATA_KEY) || {};
         var timings = getElementAnimationDetails(element, eventCacheKey);
@@ -1777,7 +1780,7 @@ angular.module('ngAnimate', ['ng'])
         var animationDuration = timings.animationDuration;
 
         if (structural && transitionDuration === 0 && animationDuration === 0) {
-          $coreAnimate.$$removeClassImmediately(element, className);
+          $$jqLite.removeClass(element, className);
           return false;
         }
 
@@ -1849,7 +1852,7 @@ angular.module('ngAnimate', ['ng'])
         }
 
         if (!staggerTime) {
-          $coreAnimate.$$addClassImmediately(element, activeClassName);
+          $$jqLite.addClass(element, activeClassName);
           if (elementData.blockTransition) {
             blockTransitions(node, false);
           }
@@ -1859,7 +1862,7 @@ angular.module('ngAnimate', ['ng'])
         var timings = getElementAnimationDetails(element, eventCacheKey);
         var maxDuration = Math.max(timings.transitionDuration, timings.animationDuration);
         if (maxDuration === 0) {
-          $coreAnimate.$$removeClassImmediately(element, activeClassName);
+          $$jqLite.removeClass(element, activeClassName);
           animateClose(element, className);
           activeAnimationComplete();
           return;
@@ -1894,7 +1897,7 @@ angular.module('ngAnimate', ['ng'])
 
         var staggerTimeout;
         if (staggerTime > 0) {
-          $coreAnimate.$$addClassImmediately(element, pendingClassName);
+          $$jqLite.addClass(element, pendingClassName);
           staggerTimeout = $timeout(function() {
             staggerTimeout = null;
 
@@ -1905,8 +1908,8 @@ angular.module('ngAnimate', ['ng'])
               blockAnimations(node, false);
             }
 
-            $coreAnimate.$$addClassImmediately(element, activeClassName);
-            $coreAnimate.$$removeClassImmediately(element, pendingClassName);
+            $$jqLite.addClass(element, activeClassName);
+            $$jqLite.removeClass(element, pendingClassName);
 
             if (styles) {
               if (timings.transitionDuration === 0) {
@@ -1933,8 +1936,8 @@ angular.module('ngAnimate', ['ng'])
         // timeout done method.
         function onEnd() {
           element.off(css3AnimationEvents, onAnimationProgress);
-          $coreAnimate.$$removeClassImmediately(element, activeClassName);
-          $coreAnimate.$$removeClassImmediately(element, pendingClassName);
+          $$jqLite.removeClass(element, activeClassName);
+          $$jqLite.removeClass(element, pendingClassName);
           if (staggerTimeout) {
             $timeout.cancel(staggerTimeout);
           }
@@ -2022,7 +2025,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function animateClose(element, className) {
-        $coreAnimate.$$removeClassImmediately(element, className);
+        $$jqLite.removeClass(element, className);
         var data = element.data(NG_ANIMATE_CSS_DATA_KEY);
         if (data) {
           if (data.running) {
