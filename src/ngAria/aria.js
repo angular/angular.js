@@ -193,6 +193,10 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
     return $aria.config(normalizedAttr) && !elem.attr(attr);
   }
 
+  function shouldAttachRole(role, elem) {
+    return !elem.attr('role') && (elem.attr('type') === role) && (elem[0].nodeName !== 'INPUT');
+  }
+
   function getShape(attr, elem) {
     var type = attr.type,
         role = attr.role;
@@ -237,12 +241,18 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
       switch (shape) {
         case 'radio':
         case 'checkbox':
+          if (shouldAttachRole(shape, elem)) {
+            elem.attr('role', shape);
+          }
           if (shouldAttachAttr('aria-checked', 'ariaChecked', elem)) {
             scope.$watch(ngAriaWatchModelValue, shape === 'radio' ?
                 getRadioReaction() : ngAriaCheckboxReaction);
           }
           break;
         case 'range':
+          if (shouldAttachRole(shape, elem)) {
+            elem.attr('role', 'slider');
+          }
           if ($aria.config('ariaValue')) {
             if (attr.min && !elem.attr('aria-valuemin')) {
               elem.attr('aria-valuemin', attr.min);

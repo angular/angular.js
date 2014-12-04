@@ -5,6 +5,10 @@ describe('$aria', function() {
 
   beforeEach(module('ngAria'));
 
+  afterEach(function(){
+    dealoc(element);
+  });
+
   function injectScopeAndCompiler() {
     return inject(function(_$compile_, _$rootScope_) {
       $compile = _$compile_;
@@ -185,6 +189,41 @@ describe('$aria', function() {
       ];
       scope.$apply("val1=true;val2='one';val3='1'");
       expectAriaAttrOnEachElement(element, 'aria-checked', 'userSetValue');
+    });
+  });
+
+  describe('roles for custom inputs', function() {
+    beforeEach(injectScopeAndCompiler);
+
+    it('should add missing role="checkbox" to custom input', function() {
+      scope.$apply('val = true');
+      compileInput('<div type="checkbox" ng-model="val"></div>');
+      expect(element.attr('role')).toBe('checkbox');
+    });
+    it('should not add a role to a native checkbox', function() {
+      scope.$apply('val = true');
+      compileInput('<input type="checkbox" ng-model="val"></div>');
+      expect(element.attr('role')).toBe(undefined);
+    });
+    it('should add missing role="radio" to custom input', function() {
+      scope.$apply('val = true');
+      compileInput('<div type="radio" ng-model="val"></div>');
+      expect(element.attr('role')).toBe('radio');
+    });
+    it('should not add a role to a native radio button', function() {
+      scope.$apply('val = true');
+      compileInput('<input type="radio" ng-model="val"></div>');
+      expect(element.attr('role')).toBe(undefined);
+    });
+    it('should add missing role="slider" to custom input', function() {
+      scope.$apply('val = true');
+      compileInput('<div type="range" ng-model="val"></div>');
+      expect(element.attr('role')).toBe('slider');
+    });
+    it('should not add a role to a native range input', function() {
+      scope.$apply('val = true');
+      compileInput('<input type="range" ng-model="val"></div>');
+      expect(element.attr('role')).toBe(undefined);
     });
   });
 
