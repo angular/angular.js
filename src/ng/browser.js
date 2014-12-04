@@ -277,7 +277,7 @@ function Browser(window, document, $log, $sniffer) {
    * NOTE: this api is intended for use only by the $location service. Please use the
    * {@link ng.$location $location service} to monitor url changes in angular apps.
    *
-   * @param {function(string)} listener Listener function to be called when url changes.
+   * @param {function(string)} callback Listener function to be called when url changes.
    * @return {function(string)} Returns the registered listener fn - handy if the fn is anonymous.
    */
   self.onUrlChange = function(callback) {

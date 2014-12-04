@@ -260,6 +260,7 @@ function callerFile(offset) {
  * Finds all bindings with the substring match of name and returns an
  * array of their values.
  *
+ * @param {Object} windowJquery
  * @param {string} bindExp The name to match
  * @return {Array.<string>} String of binding values
  */

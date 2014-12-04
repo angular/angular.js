@@ -286,8 +286,8 @@ function setupModuleLoader(window) {
            * Use this method to register work which should be performed when the injector is done
            * loading all modules.
            */
-          run: function(block) {
-            runBlocks.push(block);
+          run: function(initializationFn) {
+            runBlocks.push(initializationFn);
             return this;
           }
         };

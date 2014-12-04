@@ -3,7 +3,7 @@
 
 function $IntervalProvider() {
   this.$get = ['$rootScope', '$window', '$q', '$$q',
-       function($rootScope,   $window,   $q,   $$q) {
+       function($rootScope, $window, $q, $$q) {
     var intervals = {};
 
 

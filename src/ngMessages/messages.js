@@ -1,4 +1,5 @@
 'use strict';
+// jscs:disable jsDoc
 
 /**
  * @ngdoc module
@@ -229,7 +230,7 @@ angular.module('ngMessages', [])
     * </example>
     */
   .directive('ngMessages', ['$compile', '$animate', '$templateRequest',
-                   function($compile,    $animate,   $templateRequest) {
+                   function($compile, $animate, $templateRequest) {
     var ACTIVE_CLASS = 'ng-active';
     var INACTIVE_CLASS = 'ng-inactive';
 

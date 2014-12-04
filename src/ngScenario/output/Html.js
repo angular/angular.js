@@ -123,7 +123,7 @@ angular.scenario.output('html', function(context, runner, model) {
   /**
    * Finds the context of a spec block defined by the passed definition.
    *
-   * @param {Object} The definition created by the Describe object.
+   * @param {Object} spec The definition created by the Describe object.
    */
   function findContext(spec) {
     var currentContext = context.find('#specs');
@@ -147,7 +147,7 @@ angular.scenario.output('html', function(context, runner, model) {
   /**
    * Updates the test counter for the status.
    *
-   * @param {string} the status.
+   * @param {string} status the status.
    */
   function updateTotals(status) {
     var legend = context.find('#status-legend .status-' + status);
@@ -159,9 +159,9 @@ angular.scenario.output('html', function(context, runner, model) {
   /**
    * Add an error to a step.
    *
-   * @param {Object} The JQuery wrapped context
-   * @param {function()} fn() that should return the file/line number of the error
-   * @param {Object} the error.
+   * @param {Object} context The JQuery wrapped context
+   * @param {function()} line fn() that should return the file/line number of the error
+   * @param {Object} error the error.
    */
   function addError(context, line, error) {
     context.find('.test-title').append('<pre></pre>');

@@ -413,7 +413,7 @@ var hiddenPre=document.createElement("pre");
 var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
 /**
  * decodes all entities into regular string
- * @param value
+ * @param {string} value
  * @returns {string} A string with decoded entities.
  */
 function decodeEntities(value) {
@@ -441,7 +441,7 @@ function decodeEntities(value) {
  * Escapes all potentially dangerous characters, so that the
  * resulting string can be safely inserted into attribute or
  * element text.
- * @param value
+ * @param {string} value
  * @returns {string} escaped text
  */
 function encodeEntities(value) {

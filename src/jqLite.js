@@ -130,7 +130,7 @@ var jqLiteMinErr = minErr('jqLite');
 /**
  * Converts snake_case to camelCase.
  * Also there is special case for Moz prefix starting with upper case letter.
- * @param name Name to normalize
+ * @param {String} name Name to normalize
  */
 function camelCase(name) {
   return name.

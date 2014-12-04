@@ -127,7 +127,7 @@ angular.scenario.Runner.prototype.iit = function(name, body) {
  *
  * @see Describe.js
  *
- * @param {function()} Callback to execute
+ * @param {function()} body Callback to execute
  */
 angular.scenario.Runner.prototype.beforeEach = function(body) {
   this.currentDescribe.beforeEach(body);
@@ -139,7 +139,7 @@ angular.scenario.Runner.prototype.beforeEach = function(body) {
  *
  * @see Describe.js
  *
- * @param {function()} Callback to execute
+ * @param {function()} body Callback to execute
  */
 angular.scenario.Runner.prototype.afterEach = function(body) {
   this.currentDescribe.afterEach(body);

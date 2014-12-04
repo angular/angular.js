@@ -90,7 +90,7 @@ function $AriaProvider() {
    * @ngdoc method
    * @name $ariaProvider#config
    *
-   * @param {object} config object to enable/disable specific ARIA attributes
+   * @param {object} newConfig object to enable/disable specific ARIA attributes
    *
    *  - **ariaHidden** – `{boolean}` – Enables/disables aria-hidden tags
    *  - **ariaChecked** – `{boolean}` – Enables/disables aria-checked tags

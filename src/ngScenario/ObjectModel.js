@@ -155,7 +155,7 @@ angular.scenario.ObjectModel.prototype.emit = function(eventName) {
  * Computes the path of definition describe blocks that wrap around
  * this spec.
  *
- * @param spec Spec to compute the path for.
+ * @param {Object} spec to compute the path for.
  * @return {Array<Describe>} The describe block path
  */
 angular.scenario.ObjectModel.prototype.getDefinitionPath = function(spec) {
