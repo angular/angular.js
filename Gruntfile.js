@@ -30,14 +30,6 @@ module.exports = function(grunt) {
         benchmarksPath: 'benchmarks'
       }
     },
-    parallel: {
-      travis: {
-        tasks: [
-          util.parallelTask(['test:unit', 'test:promises-aplus', 'tests:docs'], {stream: true}),
-          util.parallelTask(['test:e2e'])
-        ]
-      }
-    },
 
     connect: {
       devserver: {
