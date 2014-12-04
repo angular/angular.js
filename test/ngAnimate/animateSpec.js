@@ -5316,7 +5316,7 @@ describe("ngAnimate", function() {
         //jQuery doesn't handle SVG elements natively. Instead, an add-on library
         //is required which is called jquery.svg.js. Therefore, when jQuery is
         //active here there is no point to test this since it won't work by default.
-        if (!$sniffer.transitions || !_jqLiteMode) return;
+        if (!$sniffer.transitions) return;
 
         ss.addRule('circle.ng-enter', '-webkit-transition:1s linear all;' +
                                               'transition:1s linear all;');
@@ -5336,13 +5336,13 @@ describe("ngAnimate", function() {
 
         var child = element.find('circle');
 
-        expect(child.hasClass('ng-enter')).toBe(true);
-        expect(child.hasClass('ng-enter-active')).toBe(true);
+        expect(jqLiteHasClass(child[0], 'ng-enter')).toBe(true);
+        expect(jqLiteHasClass(child[0], 'ng-enter-active')).toBe(true);
 
         browserTrigger(child, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
 
-        expect(child.hasClass('ng-enter')).toBe(false);
-        expect(child.hasClass('ng-enter-active')).toBe(false);
+        expect(jqLiteHasClass(child[0], 'ng-enter')).toBe(false);
+        expect(jqLiteHasClass(child[0], 'ng-enter-active')).toBe(false);
       }));
 
 
