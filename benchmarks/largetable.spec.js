@@ -9,24 +9,28 @@ describe('test benchmark', function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = beforeDefault;
   });
 
-  it('should be within acceptable limits', function() {
-    var done,result;
-    runs(function() {
-      bpSuite({url: 'base/build/benchmarks/largetable-bp/index-auto.html', variable: 'ngBind', numSamples: 15, iterations: 20, angular: '/base/build/angular.js'}).
-        then(function(r) {
-          result = r;
-          done = true;
-        }).then(null, function(e) { console.error('something went wrong', e); throw e});
-    });
+  ['none','ngBind'].forEach(function(variable){
+    it('should be within acceptable limits', function() {
+      var done,result;
+      runs(function() {
+        bpSuite({url: 'base/build/benchmarks/largetable-bp/index-auto.html', variable: variable, numSamples: 1, iterations: 1, angular: '/base/build/angular.js'}).
+          then(function(r) {
+            result = r;
+            done = true;
+          }).then(null, function(e) { console.error('something went wrong', e); throw e});
+      });
 
-    waitsFor(function() {
-      return done;
-    }, 'benchmark to finish', 90000);
+      waitsFor(function() {
+        return done;
+      }, 'benchmark to finish', 90000);
 
-    runs(function() {
-      console.log(prettyBenchpressLog('largetable', 'ngBind', result));
-      expect(result.$apply.testTime.avg.mean).toBeLessThan(15);
-      expect(result.create.testTime.avg.mean).toBeLessThan(1500);
+      runs(function() {
+        console.log(prettyBenchpressLog('largetable', variable, result));
+        expect(result.$apply.testTime.avg.mean).toBeLessThan(15);
+        expect(result.create.testTime.avg.mean).toBeLessThan(1500);
+      });
     });
-  });
+  })
+
+
 });
