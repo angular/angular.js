@@ -7,12 +7,44 @@ describe('angular', function() {
     dealoc(element);
   });
 
-  describe('case', function() {
+  describe('lowercase', function() {
     it('should change case', function() {
       expect(lowercase('ABC90')).toEqual('abc90');
       expect(manualLowercase('ABC90')).toEqual('abc90');
+    });
+  });
+
+  describe('uppercase', function() {
+    it('should change case', function() {
       expect(uppercase('abc90')).toEqual('ABC90');
       expect(manualUppercase('abc90')).toEqual('ABC90');
+    });
+  });
+
+  describe('camelcase', function() {
+    it('should change case', function() {
+      expect(camelcase('foo-bar')).toEqual('fooBar');
+      expect(camelcase('foo-Bar')).toEqual('fooBar');
+    });
+
+    it('should leave non-dashed strings alone', function() {
+      expect(camelcase('foo')).toBe('foo');
+      expect(camelcase('')).toBe('');
+      expect(camelcase('fooBar')).toBe('fooBar');
+    });
+
+
+    it('should covert dash-separated strings to camelCase', function() {
+      expect(camelcase('foo-bar')).toBe('fooBar');
+      expect(camelcase('foo-bar-baz')).toBe('fooBarBaz');
+      expect(camelcase('foo:bar_baz')).toBe('fooBarBaz');
+    });
+
+
+    it('should covert browser specific css properties', function() {
+      expect(camelcase('-moz-foo-bar')).toBe('MozFooBar');
+      expect(camelcase('-webkit-foo-bar')).toBe('webkitFooBar');
+      expect(camelcase('-webkit-foo-bar')).toBe('webkitFooBar');
     });
   });
 

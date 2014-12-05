@@ -137,6 +137,7 @@ function publishExternalAPI(angular) {
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase,
+    'camelcase': camelcase,
     'callbacks': {counter: 0},
     'getTestability': getTestability,
     '$$minErr': minErr,

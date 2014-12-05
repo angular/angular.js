@@ -24,6 +24,7 @@
     "uppercase": false,
     "manualLowercase": false,
     "manualUppercase": false,
+    "camelcase": false,
     "isArrayLike": false,
     "forEach": false,
     "sortedKeys": false,

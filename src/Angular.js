@@ -19,6 +19,7 @@
   uppercase: true,
   manualLowercase: true,
   manualUppercase: true,
+  camelcase: true,
   nodeName_: true,
   isArrayLike: true,
   forEach: true,
@@ -108,6 +109,8 @@
  */
 
 var REGEX_STRING_REGEXP = /^\/(.+)\/([a-z]*)$/;
+var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+var MOZ_HACK_REGEXP = /^moz([A-Z])/;
 
 // The name of a form control's ValidityState property.
 // This is used so that it's possible for internal tests to create mock ValidityStates.
@@ -160,6 +163,24 @@ if ('i' !== 'I'.toLowerCase()) {
   lowercase = manualLowercase;
   uppercase = manualUppercase;
 }
+
+/**
+ * @ngdoc function
+ * @name angular.camelcase
+ * @module ng
+ * @kind function
+ *
+ * @description Converts the specified string dash-separated to camelcase.
+ * @param {string} string String to be converted to camelcase.
+ * @returns {string} Camelcased string.
+ */
+var camelcase = function(name) {
+  return name.
+    replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+      return offset ? letter.toUpperCase() : letter;
+    }).
+    replace(MOZ_HACK_REGEXP, 'Moz$1');
+};
 
 
 var

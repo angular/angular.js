@@ -1965,30 +1965,6 @@ describe('jqLite', function() {
     });
   });
 
-
-  describe('camelCase', function() {
-    it('should leave non-dashed strings alone', function() {
-      expect(camelCase('foo')).toBe('foo');
-      expect(camelCase('')).toBe('');
-      expect(camelCase('fooBar')).toBe('fooBar');
-    });
-
-
-    it('should covert dash-separated strings to camelCase', function() {
-      expect(camelCase('foo-bar')).toBe('fooBar');
-      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
-      expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
-    });
-
-
-    it('should covert browser specific css properties', function() {
-      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
-      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-    });
-  });
-
-
   describe('jqLiteDocumentLoaded', function() {
 
     function createMockWindow(readyState) {

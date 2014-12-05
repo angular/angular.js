@@ -109,15 +109,8 @@ function $AriaProvider() {
     config = angular.extend(config, newConfig);
   };
 
-  function camelCase(input) {
-    return input.replace(/-./g, function(letter, pos) {
-      return letter[1].toUpperCase();
-    });
-  }
-
-
   function watchExpr(attrName, ariaAttr, negate) {
-    var ariaCamelName = camelCase(ariaAttr);
+    var ariaCamelName = angular.camelcase(ariaAttr);
     return function(scope, elem, attr) {
       if (config[ariaCamelName] && !attr[ariaCamelName]) {
         scope.$watch(attr[attrName], function(boolVal) {
@@ -178,7 +171,7 @@ function $AriaProvider() {
   this.$get = function() {
     return {
       config: function(key) {
-        return config[camelCase(key)];
+        return config[angular.camelcase(key)];
       },
       $$watchExpr: watchExpr
     };
