@@ -1,63 +1,84 @@
-angular.module('search', [])
+angular.module('search', ['ViewUtils'])
 
-.controller('DocsSearchCtrl', ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
-  function clearResults() {
-    $scope.results = [];
-    $scope.colClassName = null;
-    $scope.hasResults = false;
-  }
+.controller('DocsSearchController', ['$scope', '$location', 'docsSearch', 'ViewUtils',
+  function($scope, $location, docsSearch, ViewUtils) {
+    $scope.hideResults = hideResults;
+    $scope.search = search;
+    $scope.submit = submit;
 
-  $scope.search = function(q) {
-    var MIN_SEARCH_LENGTH = 2;
-    if(q.length >= MIN_SEARCH_LENGTH) {
-      docsSearch(q).then(function(hits) {
-        var results = {};
-        angular.forEach(hits, function(hit) {
-          var area = hit.area;
+    // TODO: Probably use some event on the input field, when
+    // https://github.com/angular/material/pull/848 is resolved
+    $scope.$watch('q', search);
 
-          var limit = (area === 'api') ? 40 : 14;
-          results[area] = results[area] || [];
-          if(results[area].length < limit) {
-            results[area].push(hit);
-          }
-        });
+    clearResults();
 
-        var totalAreas = Object.keys(results).length;
-        if(totalAreas > 0) {
-          $scope.colClassName = 'cols-' + totalAreas;
-        }
-        $scope.hasResults = totalAreas > 0;
-        $scope.results = results;
-      });
-    } else {
-      clearResults();
+    function clearResults() {
+      $scope.results = {};
+      $scope.colClassName = null;
+      $scope.hasResults = false;
     }
-    if(!$scope.$$phase) $scope.$apply();
-  };
 
-  $scope.submit = function() {
-    var result;
-    if ($scope.results.api) {
-      result = $scope.results.api[0];
-    } else {
-      for(var i in $scope.results) {
-        result = $scope.results[i][0];
-        if(result) {
-          break;
-        }
+    function hideResults(path) {
+      ViewUtils.closeSidenav('search');
+      clearResults();
+      $scope.q = '';
+
+      if (arguments.length) {
+        $location.path(path);
       }
     }
-    if(result) {
-      $location.path(result.path);
-      $scope.hideResults();
-    }
-  };
 
-  $scope.hideResults = function() {
-    clearResults();
-    $scope.q = '';
-  };
-}])
+    function search(q) {
+      var MIN_SEARCH_LENGTH = 2;
+      q = q || '';
+
+      if (q.length >= MIN_SEARCH_LENGTH) {
+        docsSearch(q).then(function(hits) {
+          var results = {};
+          angular.forEach(hits, function(hit) {
+            var area = hit.area;
+
+            var limit = (area === 'api') ? 40 : 14;
+            results[area] = results[area] || [];
+            if(results[area].length < limit) {
+              results[area].push(hit);
+            }
+          });
+
+          var totalAreas = Object.keys(results).length;
+          if (totalAreas > 0) {
+            // TODO: Use `colClassName` or remove it
+            $scope.colClassName = 'cols-' + totalAreas;
+          }
+          $scope.hasResults = totalAreas > 0;
+          $scope.results = results;
+        });
+      } else {
+        clearResults();
+      }
+
+      // FIXME: Don't use private `$$phase` property
+      if (!$scope.$$phase) $scope.$apply();
+    }
+
+    function submit() {
+      var result;
+
+      if ($scope.results.api) {
+        result = $scope.results.api[0];
+      } else {
+        Object.keys($scope.results).some(function(key) {
+          return (result = $scope.results[key][0]);
+        });
+      }
+
+      if (result) {
+        $location.path(result.path);
+        $scope.hideResults();
+      }
+    }
+  }
+])
 
 
 .controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch',
@@ -173,59 +194,64 @@ angular.module('search', [])
   };
 })
 
-.directive('focused', function($timeout) {
-  return function(scope, element, attrs) {
-    element[0].focus();
-    element.on('focus', function() {
-      scope.$apply(attrs.focused + '=true');
-    });
-    element.on('blur', function() {
-      // have to use $timeout, so that we close the drop-down after the user clicks,
-      // otherwise when the user clicks we process the closing before we process the click.
-      $timeout(function() {
-        scope.$eval(attrs.focused + '=false');
-      });
-    });
-    // TODO(gkalpak): Do we need this if we first register the listeners
-    //                and the call `.focus()` ?
-    scope.$eval(attrs.focused + '=true');
-  };
-})
+// TODO: Do we need this ?
+// .directive('focused', function($timeout) {
+//   return {
+//     link: function(scope, element, attrs) {
+//       element[0].focus();
+//       element.on('focus', function() {
+//         scope.$apply(attrs.focused + '=true');
+//       });
+//       element.on('blur', function() {
+//         // have to use $timeout, so that we close the drop-down after the user clicks,
+//         // otherwise when the user clicks we process the closing before we process the click.
+//         $timeout(function() {
+//           scope.$eval(attrs.focused + '=false');
+//         });
+//       });
+//       // TODO(gkalpak): Do we need this if we first register the listeners
+//       //                and the call `.focus()` ?
+//       scope.$eval(attrs.focused + '=true');
+//     }
+//   };
+// })
 
 .directive('docsSearchInput', ['$document', function($document) {
   var doc = $document[0];
   var body = angular.element(doc.body);
 
-  return function(scope, element, attrs) {
-    var ESCAPE_KEY_KEYCODE = 27,
-        FORWARD_SLASH_KEYCODE = 191;
+  return {
+    link: function(scope, element, attrs) {
+      var ESCAPE_KEY_KEYCODE = 27,
+          FORWARD_SLASH_KEYCODE = 191;
 
-    element.on('keydown', onInputKeydown);
-    body.on('keydown', onBodyKeydown);
+      element.on('keydown', onInputKeydown);
+      body.on('keydown', onBodyKeydown);
 
-    // Since we are attaching a listener to <body>,
-    // it is a good idea to detach it upon scope destruction
-    // (Not likely to happen with the current implemetation, but...things change.)
-    scope.$on('$destroy', function() {
-      body.off('keydown', onBodyKeydown);
-    });
+      // Since we are attaching a listener to <body>,
+      // it is a good idea to detach it upon scope destruction
+      // (Not likely to happen with the current implemetation, but...things change.)
+      scope.$on('$destroy', function() {
+        body.off('keydown', onBodyKeydown);
+      });
 
-    function onBodyKeydown(event) {
-      var input = element[0];
-      if ((event.keyCode === FORWARD_SLASH_KEYCODE) && (doc.activeElement !== input)) {
-        event.stopPropagation();
-        event.preventDefault();
-        input.focus();
+      function onBodyKeydown(event) {
+        var input = element[0];
+        if ((event.keyCode === FORWARD_SLASH_KEYCODE) && (doc.activeElement !== input)) {
+          event.stopPropagation();
+          event.preventDefault();
+          input.focus();
+        }
       }
-    }
 
-    function onInputKeydown(event) {
-      if (event.keyCode === ESCAPE_KEY_KEYCODE) {
-        event.stopPropagation();
-        event.preventDefault();
-        scope.$apply(function() {
-          scope.hideResults();
-        });
+      function onInputKeydown(event) {
+        if (event.keyCode === ESCAPE_KEY_KEYCODE) {
+          event.stopPropagation();
+          event.preventDefault();
+          scope.$apply(function() {
+            scope.hideResults();
+          });
+        }
       }
     }
   };

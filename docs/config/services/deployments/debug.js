@@ -27,6 +27,8 @@ module.exports = function debugDeployment(getComponentPath) {
     ],
     stylesheets: [
       getComponentPath('angular-material', 'angular-material.css'),
+      getComponentPath('angular-material', 'themes/grey-theme.css'),
+      getComponentPath('angular-material', 'themes/red-theme.css'),
       'css/prettify-theme.css',
       'css/docs.css',
       'css/animations.css'

@@ -1,10 +1,12 @@
-angular.module('DocsController', [])
+angular.module('DocsController', ['ViewUtils'])
 
 .controller('DocsController', [
-          '$scope', '$rootScope', '$location', '$window', 'openPlunkr',
+          '$scope', '$rootScope', '$location', '$window', 'openPlunkr', 'ViewUtils',
               'NG_PAGES', 'NG_NAVIGATION', 'NG_VERSION',
-  function($scope, $rootScope, $location, $window, openPlunkr,
+  function($scope, $rootScope, $location, $window, openPlunkr, ViewUtils,
               NG_PAGES, NG_NAVIGATION, NG_VERSION) {
+
+  $scope.vu = ViewUtils;
 
   $scope.openPlunkr = openPlunkr;
 
@@ -53,8 +55,6 @@ angular.module('DocsController', [])
    Initialize
    ***********************************/
 
-  $scope.versionNumber = angular.version.full;
-  $scope.version = angular.version.full + "  " + angular.version.codeName;
   $scope.loading = 0;
 
 
