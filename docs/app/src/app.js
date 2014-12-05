@@ -2,7 +2,10 @@
 
 angular.module('docsApp', [
   'ngMaterial',
+  'HeaderController',
+  'FooterController',
   'DocsController',
+  'ViewUtils',
   'versionsData',
   'pagesData',
   'navData',
@@ -11,7 +14,8 @@ angular.module('docsApp', [
   'examples',
   'search',
   'tutorials',
-  'versions'
+  'versions',
+  'responsiveMenu'
 ])
 
 .config(['$locationProvider', function($locationProvider) {
