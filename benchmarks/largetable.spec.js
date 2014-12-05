@@ -12,7 +12,7 @@ describe('test benchmark', function() {
   it('should be within acceptable limits', function() {
     var done,result;
     runs(function() {
-      bpSuite({url: 'base/benchpress-build/largetable-bp/index-auto.html', variable: 'ngBind', numSamples: 15, iterations: 20, angular: '/base/build/angular.js'}).
+      bpSuite({url: 'base/build/benchmarks/largetable-bp/index-auto.html', variable: 'ngBind', numSamples: 15, iterations: 20, angular: '/base/build/angular.js'}).
         then(function(r) {
           result = r;
           done = true;
@@ -24,7 +24,6 @@ describe('test benchmark', function() {
     }, 'benchmark to finish', 90000);
 
     runs(function() {
-      dump(result);
       console.log(prettyBenchpressLog('largetable', 'ngBind', result));
       expect(result.$apply.testTime.avg.mean).toBeLessThan(15);
       expect(result.create.testTime.avg.mean).toBeLessThan(1500);

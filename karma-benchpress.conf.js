@@ -8,15 +8,16 @@ module.exports = function(config) {
     ],
     frameworks: ['jasmine', 'benchpress'],
     files: [
+      'benchmarks/helpers.js',
       'build/angular.js',
-      'benchpress-build/largetable-bp/*',
-      'test/benchpress/*.js'
+      'build/benchmarks/largetable-bp/*',
+      'benchmarks/*.spec.js'
     ],
     exclude: [
-      'benchpress-build/**/bp.conf.js',
-      'benchpress-build/**/bp.js',
-      'benchpress-build/**/index.html',
-      'benchpress-build/**/bootstrap.min.css'
+      'build/benchmarks/**/bp.conf.js',
+      'build/benchmarks/**/bp.js',
+      'build/benchmarks/**/index.html',
+      'build/benchmarks/**/bootstrap.min.css'
     ],
     reporters: ['progress'],
     port: 9876,
