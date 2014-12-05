@@ -109,16 +109,9 @@ function $AriaProvider() {
     config = angular.extend(config, newConfig);
   };
 
-  function camelCase(input) {
-    return input.replace(/-./g, function(letter, pos) {
-      return letter[1].toUpperCase();
-    });
-  }
-
-
   function watchExpr(attrName, ariaAttr, negate) {
-    var ariaCamelName = camelCase(ariaAttr);
     return function(scope, elem, attr) {
+      var ariaCamelName = attr.$normalize(ariaAttr);
       if (config[ariaCamelName] && !attr[ariaCamelName]) {
         scope.$watch(attr[attrName], function(boolVal) {
           if (negate) {
@@ -178,7 +171,7 @@ function $AriaProvider() {
   this.$get = function() {
     return {
       config: function(key) {
-        return config[camelCase(key)];
+        return config[key];
       },
       $$watchExpr: watchExpr
     };
@@ -194,8 +187,8 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
 }])
 .directive('ngModel', ['$aria', function($aria) {
 
-  function shouldAttachAttr(attr, elem) {
-    return $aria.config(attr) && !elem.attr(attr);
+  function shouldAttachAttr(attr, normalizedAttr, elem) {
+    return $aria.config(normalizedAttr) && !elem.attr(attr);
   }
 
   function getShape(attr, elem) {
@@ -213,7 +206,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
     require: '?ngModel',
     link: function(scope, elem, attr, ngModel) {
       var shape = getShape(attr, elem);
-      var needsTabIndex = shouldAttachAttr('tabindex', elem);
+      var needsTabIndex = shouldAttachAttr('tabindex', 'tabindex', elem);
 
       function ngAriaWatchModelValue() {
         return ngModel.$modelValue;
@@ -241,7 +234,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
       switch (shape) {
         case 'radio':
         case 'checkbox':
-          if (shouldAttachAttr('aria-checked', elem)) {
+          if (shouldAttachAttr('aria-checked', 'ariaChecked', elem)) {
             scope.$watch(ngAriaWatchModelValue, shape === 'radio' ?
                 getRadioReaction() : ngAriaCheckboxReaction);
           }
@@ -262,7 +255,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
           }
           break;
         case 'multiline':
-          if (shouldAttachAttr('aria-multiline', elem)) {
+          if (shouldAttachAttr('aria-multiline', 'ariaMultiline', elem)) {
             elem.attr('aria-multiline', true);
           }
           break;
@@ -272,7 +265,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
         elem.attr('tabindex', 0);
       }
 
-      if (ngModel.$validators.required && shouldAttachAttr('aria-required', elem)) {
+      if (ngModel.$validators.required && shouldAttachAttr('aria-required', 'ariaRequired', elem)) {
         scope.$watch(function ngAriaRequiredWatch() {
           return ngModel.$error.required;
         }, function ngAriaRequiredReaction(newVal) {
@@ -280,7 +273,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
         });
       }
 
-      if (shouldAttachAttr('aria-invalid', elem)) {
+      if (shouldAttachAttr('aria-invalid', 'ariaInvalid', elem)) {
         scope.$watch(function ngAriaInvalidWatch() {
           return ngModel.$invalid;
         }, function ngAriaInvalidReaction(newVal) {
