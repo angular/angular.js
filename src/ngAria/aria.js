@@ -109,13 +109,6 @@ function $AriaProvider() {
     config = angular.extend(config, newConfig);
   };
 
-  function camelCase(input) {
-    return input.replace(/-./g, function(letter, pos) {
-      return letter[1].toUpperCase();
-    });
-  }
-
-
   function watchExpr(attrName, ariaAttr, negate) {
     var ariaCamelName = camelCase(ariaAttr);
     return function(scope, elem, attr) {
