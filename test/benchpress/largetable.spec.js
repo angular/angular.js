@@ -16,18 +16,16 @@ describe('test benchmark', function() {
         then(function(r) {
           result = r;
           done = true;
-        }, function(reason) {
-          console.error('failed because', reason.message);
         }).then(null, function(e) { console.error('something went wrong', e); throw e});
     });
 
     waitsFor(function() {
-      console.log('done?', done)
       return done;
     }, 'benchmark to finish', 90000);
 
     runs(function() {
       dump(result);
+      console.log(prettyBenchpressLog('largetable', 'ngBind', result));
       expect(result.$apply.testTime.avg.mean).toBeLessThan(15);
       expect(result.create.testTime.avg.mean).toBeLessThan(1500);
     });
