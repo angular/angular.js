@@ -2798,6 +2798,16 @@ jQuery. We don't expect that app code actually depends on this accidental featur
 
 ## Breaking Changes
 
+- **$compile:** due to [2ee29c5d](https://github.com/angular/angular.js/commit/2ee29c5da81ffacdc1cabb438f5d125d5e116cb9),
+
+The isolated scope of a component directive no longer leaks into the template
+that contains the instance of the directive.  This means that you can no longer
+access the isolated scope from attributes on the element where the isolated
+directive is defined.
+
+See https://github.com/angular/angular.js/issues/10236 for an example.
+
+
 - **$resource:** due to [d3c50c84](https://github.com/angular/angular.js/commit/d3c50c845671f0f8bcc3f7842df9e2fb1d1b1c40),
 
   If you expected `$resource` to strip these types of properties before,

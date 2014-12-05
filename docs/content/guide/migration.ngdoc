@@ -15,27 +15,67 @@ which drives many of these changes.
 
 # Migrating from 1.2 to 1.3
 
-- **$parse:**
-  - due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
+## Angular Expression Parsing (`$parse` + `$interpolate`)
+
+- due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
 
 You can no longer invoke .bind, .call or .apply on a function in angular expressions.
 This is to disallow changing the behaviour of existing functions
 in an unforseen fashion.
+
   - due to [6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99),
 
 The (deprecated) __proto__ property does not work inside angular expressions
 anymore.
-  - due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
+
+
+- due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
 
 This prevents the use of __{define,lookup}{Getter,Setter}__ inside angular
 expressions. If you really need them for some reason, please wrap/bind them to make them
 less dangerous, then make them available through the scope object.
-  - due to [528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc),
+
+
+- due to [528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc),
 
 This prevents the use of `Object` inside angular expressions.
 If you need Object.keys, make it accessible in the scope.
-- **Angular.copy:** due to [b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
 
+
+- due to [bdfc9c02](https://github.com/angular/angular.js/commit/bdfc9c02d021e08babfbc966a007c71b4946d69d),
+  values 'f', '0', 'false', 'no', 'n', '[]' are no longer
+treated as falsy. Only JavaScript falsy values are now treated as falsy by the
+expression parser; there are six of them: false, null, undefined, NaN, 0 and "".
+
+
+- due to [fa6e411d](https://github.com/angular/angular.js/commit/fa6e411da26824a5bae55f37ce7dbb859653276d),
+  promise unwrapping has been removed. It has been deprecated since 1.2.0-rc.3.
+  It can no longer be turned on.
+  Two methods have been removed:
+  * `$parseProvider.unwrapPromises`
+  * `$parseProvider.logPromiseWarnings`
+
+
+- **$interpolate:** due to [88c2193c](https://github.com/angular/angular.js/commit/88c2193c71954b9e7e7e4bdf636a2b168d36300d),
+  the function returned by `$interpolate`
+  no longer has a `.parts` array set on it.
+
+  Instead it has two arrays:
+  * `.expressions`, an array of the expressions in the
+    interpolated text. The expressions are parsed with
+    `$parse`, with an extra layer converting them to strings
+    when computed
+  * `.separators`, an array of strings representing the
+    separations between interpolations in the text.
+    This array is **always** 1 item longer than the
+    `.expressions` array for easy merging with it
+
+
+
+
+## Miscellaneous Angular helpers
+
+- **Angular.copy:** due to [b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
 
 This changes `angular.copy` so that it applies the prototype of the original
 object to the copied object.  Previously, `angular.copy` would copy properties
@@ -53,17 +93,54 @@ not filter them with `hasOwnProperty`.
 **Be aware that this change also uses a feature that is not compatible with
 IE8.**  If you need this to work on IE8 then you would need to provide a polyfill
 for `Object.create` and `Object.getPrototypeOf`.
-- **core:** due to [bdfc9c02](https://github.com/angular/angular.js/commit/bdfc9c02d021e08babfbc966a007c71b4946d69d),
-  values 'f', '0', 'false', 'no', 'n', '[]' are no longer
-treated as falsy. Only JavaScript falsy values are now treated as falsy by the
-expression parser; there are six of them: false, null, undefined, NaN, 0 and "".
-
-Closes #3969
-Closes #4277
-Closes #7960
 
 
-- **$compile:** due to [2cde927e](https://github.com/angular/angular.js/commit/2cde927e58c8d1588569d94a797e43cdfbcedaf9),
+- **forEach:** due to [55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5),
+  forEach will iterate only over the initial number of items in
+the array. So if items are added to the array during the iteration, these won't
+be iterated over during the initial forEach call.
+
+This change also makes our forEach behave more like Array#forEach.
+
+
+- **angular.toJson:** due to [c054288c](https://github.com/angular/angular.js/commit/c054288c9722875e3595e6e6162193e0fb67a251),
+
+If you expected `toJson` to strip these types of properties before, you will have to
+manually do this yourself now.
+
+
+
+
+
+## jqLite / JQuery
+
+- **jqLite:** due to [a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c),
+  previously it was possible to set jqLite data on Text/Comment
+nodes, but now that is allowed only on Element and Document nodes just like in
+jQuery. We don't expect that app code actually depends on this accidental feature.
+
+
+- **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
+  the jQuery `detach()` method does not trigger the `$destroy` event.
+  If you want to destroy Angular data attached to the element, use `remove()`.
+
+
+
+
+
+## Angular HTML Compiler (`$compile`)
+
+
+- due to [2ee29c5d](https://github.com/angular/angular.js/commit/2ee29c5da81ffacdc1cabb438f5d125d5e116cb9),
+
+The isolated scope of a component directive no longer leaks into the template
+that contains the instance of the directive.  This means that you can no longer
+access the isolated scope from attributes on the element where the isolated
+directive is defined.
+
+See https://github.com/angular/angular.js/issues/10236 for an example.
+
+- due to [2cde927e](https://github.com/angular/angular.js/commit/2cde927e58c8d1588569d94a797e43cdfbcedaf9),
 
 
 Requesting isolate scope and any other scope on a single element is an error.
@@ -77,9 +154,50 @@ If you find that your code is now throwing a `$compile:multidir` error,
 check that you do not have directives on the same element that are trying
 to request both an isolate and a non-isolate scope and fix your code.
 
-Closes #4402
-Closes #4421
-- **NgModel:** due to [1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440),
+
+- due to [eec6394a](https://github.com/angular/angular.js/commit/eec6394a342fb92fba5270eee11c83f1d895e9fb), The `replace` flag for defining directives that
+  replace the element that they are on will be removed in the next major angular version.
+  This feature has difficult semantics (e.g. how attributes are merged) and leads to more
+  problems compared to what it solves. Also, with Web Components it is normal to have
+  custom elements in the DOM.
+
+
+- due to [299b220f](https://github.com/angular/angular.js/commit/299b220f5e05e1d4e26bfd58d0b2fd7329ca76b1),
+  calling `attr.$observe` no longer returns the observer function, but a
+    deregistration function instead. To migrate the code follow the example below:
+
+Before:
+
+    directive('directiveName', function() {
+      return {
+        link: function(scope, elm, attr) {
+          var observer = attr.$observe('someAttr', function(value) {
+            console.log(value);
+          });
+        }
+      };
+    });
+
+After:
+
+    directive('directiveName', function() {
+      return {
+        link: function(scope, elm, attr) {
+          var observer = function(value) {
+            console.log(value);
+          };
+
+          attr.$observe('someAttr', observer);
+        }
+      };
+    });
+
+
+
+
+## Forms, Inputs and ngModel
+
+- due to [1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440),
 
 
 If an expression is used on ng-pattern (such as `ng-pattern="exp"`) or on the
@@ -95,45 +213,70 @@ this limitation, use a regular expression object as the value for the expression
 
     //after
     $scope.exp = /abc/i;
-- **Scope:** due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
+
+
+- **ngModelOptions:** due to [adfc322b](https://github.com/angular/angular.js/commit/adfc322b04a58158fb9697e5b99aab9ca63c80bb),
+
+
+This commit changes the API on `NgModelController`, both semantically and
+in terms of adding and renaming methods.
+
+* `$setViewValue(value)` -
+This method still changes the `$viewValue` but does not immediately commit this
+change through to the `$modelValue` as it did previously.
+Now the value is committed only when a trigger specified in an associated
+`ngModelOptions` directive occurs. If `ngModelOptions` also has a `debounce` delay
+specified for the trigger then the change will also be debounced before being
+committed.
+In most cases this should not have a significant impact on how `NgModelController`
+is used: If `updateOn` includes `default` then `$setViewValue` will trigger
+a (potentially debounced) commit immediately.
+* `$cancelUpdate()` - is renamed to `$rollbackViewValue()` and has the same meaning,
+which is to revert the current `$viewValue` back to the `$lastCommittedViewValue`,
+to cancel any pending debounced updates and to re-render the input.
+
+To migrate code that used `$cancelUpdate()` follow the example below:
+
+Before:
+
+```js
+$scope.resetWithCancel = function (e) {
+  if (e.keyCode == 27) {
+    $scope.myForm.myInput1.$cancelUpdate();
+    $scope.myValue = '';
+  }
+};
+```
+
+After:
+
+```js
+$scope.resetWithCancel = function (e) {
+  if (e.keyCode == 27) {
+    $scope.myForm.myInput1.$rollbackViewValue();
+    $scope.myValue = '';
+  }
+}
+```
+
+- types date, time, datetime-local, month, week now always
+  require a `Date` object as model ([46bd6dc8](https://github.com/angular/angular.js/commit/46bd6dc88de252886d75426efc2ce8107a5134e9),
+   [#5864](https://github.com/angular/angular.js/issues/5864))
+
+
+
+
+
+
+## Scopes and Digests (`$scope`)
+
+- due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
   Scope#$id is now of type number rather than string. Since the
 id is primarily being used for debugging purposes this change should not affect
 anyone.
-- **forEach:** due to [55991e33](https://github.com/angular/angular.js/commit/55991e33af6fece07ea347a059da061b76fc95f5),
-  forEach will iterate only over the initial number of items in
-the array. So if items are added to the array during the iteration, these won't
-be iterated over during the initial forEach call.
 
-This change also makes our forEach behave more like Array#forEach.
-- **jqLite:** due to [a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c),
-  previously it was possible to set jqLite data on Text/Comment
-nodes, but now that is allowed only on Element and Document nodes just like in
-jQuery. We don't expect that app code actually depends on this accidental feature.
 
-- **$resource:** due to [d3c50c84](https://github.com/angular/angular.js/commit/d3c50c845671f0f8bcc3f7842df9e2fb1d1b1c40),
-
-  If you expected `$resource` to strip these types of properties before,
-  you will have to manually do this yourself now.
-
-- **angular.toJson:** due to [c054288c](https://github.com/angular/angular.js/commit/c054288c9722875e3595e6e6162193e0fb67a251),
-
-  If you expected `toJson` to strip these types of properties before,
-  you will have to manually do this yourself now.
-
-- **$compile:** due to [eec6394a](https://github.com/angular/angular.js/commit/eec6394a342fb92fba5270eee11c83f1d895e9fb), The `replace` flag for defining directives that
-  replace the element that they are on will be removed in the next major angular version.
-  This feature has difficult semantics (e.g. how attributes are merged) and leads to more
-  problems compared to what it solves. Also, with Web Components it is normal to have
-  custom elements in the DOM.
-
-- **$parse:** due to [fa6e411d](https://github.com/angular/angular.js/commit/fa6e411da26824a5bae55f37ce7dbb859653276d),
-  promise unwrapping has been removed. It has been deprecated since 1.2.0-rc.3.
-  It can no longer be turned on.
-  Two methods have been removed:
-  * `$parseProvider.unwrapPromises`
-  * `$parseProvider.logPromiseWarnings`
-
-- **Scope:** due to [82f45aee](https://github.com/angular/angular.js/commit/82f45aee5bd84d1cc53fb2e8f645d2263cdaacbc),
+- due to [82f45aee](https://github.com/angular/angular.js/commit/82f45aee5bd84d1cc53fb2e8f645d2263cdaacbc),
   [#7445](https://github.com/angular/angular.js/issues/7445),
   [#7523](https://github.com/angular/angular.js/issues/7523)
   `$broadcast` and `$emit` will now reset the `currentScope` property of the event to
@@ -141,11 +284,11 @@ jQuery. We don't expect that app code actually depends on this accidental featur
   `currentScope` property, it should be migrated to use `targetScope` instead. All of these cases
   should be considered programming bugs.
 
-- **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
-  the jQuery `detach()` method does not trigger the `$destroy` event.
-  If you want to destroy Angular data attached to the element, use `remove()`.
 
 
+
+
+## Server Requests (`$http`, `$resource`)
 - **$http:** due to [ad4336f9](https://github.com/angular/angular.js/commit/ad4336f9359a073e272930f8f9bcd36587a8648f),
 
 
@@ -197,7 +340,24 @@ More details on the new interceptors API (which has been around as of v1.1.4) ca
 {@link $http#interceptors interceptors}
 
 
-- **injector:** due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
+
+- **$httpBackend:** due to [6680b7b9](https://github.com/angular/angular.js/commit/6680b7b97c0326a80bdccaf0a35031e4af641e0e), the JSONP behavior for erroneous and empty responses changed:
+    Previously, a JSONP response was regarded as erroneous if it was empty. Now Angular is listening to the
+    correct events to detect errors, i.e. even empty responses can be successful.
+
+
+- **$resource:** due to [d3c50c84](https://github.com/angular/angular.js/commit/d3c50c845671f0f8bcc3f7842df9e2fb1d1b1c40),
+
+  If you expected `$resource` to strip these types of properties before,
+  you will have to manually do this yourself now.
+
+
+
+
+
+## Modules and Injector (`$inject`)
+
+- due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
 
 Previously, config blocks would be able to control behaviour of provider registration, due to being
 invoked prior to provider registration. Now, provider registration always occurs prior to configuration
@@ -234,66 +394,13 @@ and "$dependentProvider" would have actually accomplished something and changed 
 app. This is no longer possible within a single module.
 
 
-- **ngModelOptions:** due to [adfc322b](https://github.com/angular/angular.js/commit/adfc322b04a58158fb9697e5b99aab9ca63c80bb),
 
 
-This commit changes the API on `NgModelController`, both semantically and
-in terms of adding and renaming methods.
 
-* `$setViewValue(value)` -
-This method still changes the `$viewValue` but does not immediately commit this
-change through to the `$modelValue` as it did previously.
-Now the value is committed only when a trigger specified in an associated
-`ngModelOptions` directive occurs. If `ngModelOptions` also has a `debounce` delay
-specified for the trigger then the change will also be debounced before being
-committed.
-In most cases this should not have a significant impact on how `NgModelController`
-is used: If `updateOn` includes `default` then `$setViewValue` will trigger
-a (potentially debounced) commit immediately.
-* `$cancelUpdate()` - is renamed to `$rollbackViewValue()` and has the same meaning,
-which is to revert the current `$viewValue` back to the `$lastCommittedViewValue`,
-to cancel any pending debounced updates and to re-render the input.
-
-To migrate code that used `$cancelUpdate()` follow the example below:
-
-Before:
-
-```js
-$scope.resetWithCancel = function (e) {
-  if (e.keyCode == 27) {
-    $scope.myForm.myInput1.$cancelUpdate();
-    $scope.myValue = '';
-  }
-};
-```
-
-After:
-
-```js
-$scope.resetWithCancel = function (e) {
-  if (e.keyCode == 27) {
-    $scope.myForm.myInput1.$rollbackViewValue();
-    $scope.myValue = '';
-  }
-}
-```
-
-- **$interpolate:** due to [88c2193c](https://github.com/angular/angular.js/commit/88c2193c71954b9e7e7e4bdf636a2b168d36300d),
-  the function returned by `$interpolate`
-  no longer has a `.parts` array set on it.
-
-  Instead it has two arrays:
-  * `.expressions`, an array of the expressions in the
-    interpolated text. The expressions are parsed with
-    `$parse`, with an extra layer converting them to strings
-    when computed
-  * `.separators`, an array of strings representing the
-    separations between interpolations in the text.
-    This array is **always** 1 item longer than the
-    `.expressions` array for easy merging with it
+## Animation (`ngAnimate`)
 
 
-- **$animate:** due to [1cb8584e](https://github.com/angular/angular.js/commit/1cb8584e8490ecdb1b410a8846c4478c6c2c0e53),
+- due to [1cb8584e](https://github.com/angular/angular.js/commit/1cb8584e8490ecdb1b410a8846c4478c6c2c0e53),
 `$animate` will no longer default the after parameter to the last element of the parent
 container. Instead, when after is not specified, the new element will be inserted as the
 first child of the parent container.
@@ -308,7 +415,7 @@ to:
 
 
 
-- **$animate:** due to [1bebe36a](https://github.com/angular/angular.js/commit/1bebe36aa938890d61188762ed618b1b5e193634),
+- due to [1bebe36a](https://github.com/angular/angular.js/commit/1bebe36aa938890d61188762ed618b1b5e193634),
 
   Any class-based animation code that makes use of transitions
 and uses the setup CSS classes (such as class-add and class-remove) must now
@@ -343,45 +450,13 @@ After:
 Please view the documentation for ngAnimate for more info.
 
 
-- **$compile:** due to [299b220f](https://github.com/angular/angular.js/commit/299b220f5e05e1d4e26bfd58d0b2fd7329ca76b1),
-  calling `attr.$observe` no longer returns the observer function, but a
-    deregistration function instead. To migrate the code follow the example below:
+## Internet Explorer 8
 
-Before:
-
-    directive('directiveName', function() {
-      return {
-        link: function(scope, elm, attr) {
-          var observer = attr.$observe('someAttr', function(value) {
-            console.log(value);
-          });
-        }
-      };
-    });
-
-After:
-
-    directive('directiveName', function() {
-      return {
-        link: function(scope, elm, attr) {
-          var observer = function(value) {
-            console.log(value);
-          };
-
-          attr.$observe('someAttr', observer);
-        }
-      };
-    });
-
-- **$httpBackend:** due to [6680b7b9](https://github.com/angular/angular.js/commit/6680b7b97c0326a80bdccaf0a35031e4af641e0e), the JSONP behavior for erroneous and empty responses changed:
-    Previously, a JSONP response was regarded as erroneous if it was empty. Now Angular is listening to the
-    correct events to detect errors, i.e. even empty responses can be successful.
-
-- **build:** due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
+- due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
   As communicated before, IE8 is no longer supported.
-- **input:** types date, time, datetime-local, month, week now always
-  require a `Date` object as model ([46bd6dc8](https://github.com/angular/angular.js/commit/46bd6dc88de252886d75426efc2ce8107a5134e9),
-   [#5864](https://github.com/angular/angular.js/issues/5864))
+
+
+
 
 
 
