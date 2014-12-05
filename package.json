@@ -6,7 +6,7 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "devDependencies": {
-    "angular-benchpress": "0.x.x",
+    "angular-benchpress": "0.2.0",
     "benchmark": "1.x.x",
     "bower": "~1.3.9",
     "browserstacktunnel-wrapper": "~1.3.1",
@@ -39,8 +39,9 @@
     "jasmine-reporters": "~1.0.1",
     "jshint-stylish": "~1.0.0",
     "karma": "^0.12.0",
+    "karma-benchpress": "0.1.0",
     "karma-browserstack-launcher": "0.1.1",
-    "karma-chrome-launcher": "0.1.5",
+    "karma-chrome-launcher": "0.1.6",
     "karma-firefox-launcher": "0.1.3",
     "karma-jasmine": "0.1.5",
     "karma-junit-reporter": "0.2.2",

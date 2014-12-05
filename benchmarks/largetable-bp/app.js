@@ -12,10 +12,10 @@ app.filter('noop', function() {
   };
 });
 
-app.controller('DataController', function($scope, $rootScope) {
+app.controller('DataController', function($scope, $rootScope, $window) {
   var totalRows = 1000;
   var totalColumns = 20;
-
+  var ctrl = this;
   var data = $scope.data = [];
   $scope.digestDuration = '?';
   $scope.numberOfBindings = totalRows*totalColumns*2 + totalRows + 1;
@@ -37,30 +37,73 @@ app.controller('DataController', function($scope, $rootScope) {
 
   var previousType;
 
-  benchmarkSteps.push({
+  bp.steps.push({
     name: 'destroy',
     fn: function() {
       $scope.$apply(function() {
-        previousType = $scope.benchmarkType;
-        $scope.benchmarkType = 'none';
+        previousType = ctrl.benchmarkType;
+        ctrl.benchmarkType = 'none';
       });
     }
   });
 
-  benchmarkSteps.push({
+  bp.steps.push({
     name: 'create',
     fn: function() {
       $scope.$apply(function() {
-        $scope.benchmarkType = previousType;
+        ctrl.benchmarkType = previousType;
       });
     }
   });
 
-  benchmarkSteps.push({
+  bp.steps.push({
     name: '$apply',
     fn: function() {
       $rootScope.$apply();
     }
+  });
+
+  $scope.$watch(function() {return ctrl.benchmarkType}, function(newVal, oldVal) {
+    bp.variables.select(newVal);
+  });
+
+  bp.variables.addMany([
+    {
+      value: 'none',
+      label: 'none'
+    },
+    { value: 'baselineBinding',
+      label: 'baseline binding'
+    },
+    { value: 'baselineInterpolation',
+      label: 'baseline interpolation'
+    },
+    { value: 'ngBind',
+      label: 'ngBind'
+    },
+    { value: 'ngBindOnce',
+      label: 'ngBindOnce'
+    },
+    { value: 'interpolation',
+      label: 'interpolation'
+    },
+    { value: 'ngBindFn',
+      label: 'ngBind + fnInvocation'
+    },
+    { value: 'interpolationFn',
+      label: 'interpolation + fnInvocation'
+    },
+    { value: 'ngBindFilter',
+      label: 'ngBind + filter'
+    },
+    { value: 'interpolationFilter',
+      label: 'interpolation + filter'
+    }
+  ]);
+  $scope.variableStates = bp.variables.variables;
+  ctrl.benchmarkType = bp.variables.selected? bp.variables.selected.value : undefined;
+  setTimeout(function() {
+    bp.runner.ready();
   });
 });
 
