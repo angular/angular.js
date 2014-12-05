@@ -47,14 +47,16 @@ angular.module('errors', ['ngSanitize'])
     });
   };
 
-  return function (scope, element, attrs) {
-    var search = $location.search(),
-        formatArgs = [attrs.errorDisplay],
-        i;
+  return {
+    link: function(scope, element, attrs) {
+      var search = $location.search(),
+          formatArgs = [attrs.errorDisplay],
+          i;
 
-    for (i = 0; angular.isDefined(search['p'+i]); i++) {
-      formatArgs.push(search['p'+i]);
+      for (i = 0; angular.isDefined(search['p'+i]); i++) {
+        formatArgs.push(search['p'+i]);
+      }
+      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
     }
-    element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
   };
 }]);
