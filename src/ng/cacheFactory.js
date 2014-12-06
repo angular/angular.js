@@ -27,6 +27,7 @@
  * @param {object=} options Options object that specifies the cache behavior. Properties:
  *
  *   - `{number=}` `capacity` — turns the cache into LRU cache.
+ *   - `{boolean=}` `caseInsensitiveKeys` — causes keys to be case-insensitive.
  *
  * @returns {object} Newly created cache object with the following set of methods:
  *
@@ -97,7 +98,8 @@ function $CacheFactoryProvider() {
           capacity = (options && options.capacity) || Number.MAX_VALUE,
           lruHash = {},
           freshEnd = null,
-          staleEnd = null;
+          staleEnd = null,
+          caseInsensitiveKeys = options && !!options.caseInsensitiveKeys;
 
       /**
        * @ngdoc type
@@ -159,6 +161,10 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         put: function(key, value) {
+          if (caseInsensitiveKeys) {
+            key = lowercase(key);
+          }
+
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
@@ -188,6 +194,10 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         get: function(key) {
+          if (caseInsensitiveKeys) {
+            key = lowercase(key);
+          }
+
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
@@ -211,6 +221,10 @@ function $CacheFactoryProvider() {
          * @param {string} key the key of the entry to be removed
          */
         remove: function(key) {
+          if (caseInsensitiveKeys) {
+            key = lowercase(key);
+          }
+
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
@@ -395,8 +409,35 @@ function $CacheFactoryProvider() {
  *
  */
 function $TemplateCacheProvider() {
+
+  var useCaseInsensitiveUrls = false;
+  /**
+   * @ngdoc method
+   * @name $templateCacheProvider#useCaseInsensitiveUrls
+   * @description
+   *
+   * Configure $templateCache service to cache templates by URL case-insensitively.  This allows
+   * templates to be loaded directly into the cache and then retrieved via a controller, directive or
+   * include template reference without requiring the case of the URL to match exactly.
+   *
+   * Defaults to false. If no value is specifed, returns the current configured value.
+   *
+   * @param {boolean=} value If true, templates will be cached by URL case-insensitively.
+   *
+   * @returns {boolean|Object} If a value is specified, returns the $templateCacheProvider for chaining.
+   *    otherwise, returns the current configured value.
+   **/
+  this.useCaseInsensitiveUrls = function(value) {
+    if (isDefined(value)) {
+      useCaseInsensitiveUrls = !!value;
+      return this;
+    }
+    return useCaseInsensitiveUrls;
+  };
+
+
   this.$get = ['$cacheFactory', function($cacheFactory) {
-    return $cacheFactory('templates');
+    return $cacheFactory('templates', {caseInsensitiveKeys: useCaseInsensitiveUrls});
   }];
 }
 
