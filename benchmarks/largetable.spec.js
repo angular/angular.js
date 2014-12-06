@@ -11,6 +11,7 @@ describe('benchmarks', function() {
 
   var benchConfigs = {
     'largetable-bp': {
+      url: 'base/build/benchmarks/largetable-bp/index-auto.html',
       variables: [
         'none',
         'baselineBinding',
@@ -23,16 +24,54 @@ describe('benchmarks', function() {
         'ngBindFilter',
         'interpolationFilter'
       ]
+    },
+    'orderby-bp': {
+      url: 'base/build/benchmarks/orderby-bp/index-auto.html',
+      variables: [
+        'baseline',
+        'orderBy',
+        'orderByArray',
+        'orderByFunction',
+        'orderByArrayFunction'
+      ]
+    },
+    'event-delegation-bp': {
+      url: 'base/build/benchmarks/event-delegation-bp/index-auto.html',
+      variables: [
+        'ngClick',
+        'ngClickNoJqLite',
+        'ngShow',
+        'textInterpolation',
+        'dlgtClick',
+        'noopDir',
+        'noop'
+      ]
+    },
+    'parsed-expressions-bp': {
+      url: 'base/build/benchmarks/parsed-expressions-bp/index-auto.html',
+      variables: [
+        'simplePath'
+        'complexPath',
+        'constructorPath',
+        'fieldAccess',
+        'fieldIndex',
+        'operators',
+        'shortCircuitingOperators',
+        'filters',
+        'functionCalls',
+        'objectLiterals',
+        'arrayLiterals'
+      ]
     }
   };
 
-  Object.keys(benchConfigs).forEach(function(key) {
-    describe(key, function() {
-      benchConfigs[key].variables.forEach(function(variable){
+  Object.keys(benchConfigs).forEach(function(name) {
+    describe(name, function() {
+      benchConfigs[name].variables.forEach(function(variable){
         it('should be within acceptable limits', function() {
           var done,result;
           runs(function() {
-            bpSuite({url: 'base/build/benchmarks/largetable-bp/index-auto.html', variable: variable, numSamples: 1, iterations: 1, angular: '/base/build/angular.js'}).
+            bpSuite({url: benchConfigs[name].url, variable: variable, numSamples: 1, iterations: 1, angular: '/base/build/angular.js'}).
               then(function(r) {
                 result = r;
                 done = true;
@@ -44,7 +83,7 @@ describe('benchmarks', function() {
           }, 'benchmark to finish', 90000);
 
           runs(function() {
-            console.log(prettyBenchpressLog('largetable', variable, result));
+            console.log(prettyBenchpressLog(name, variable, result));
           });
         });
       });
