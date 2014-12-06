@@ -362,6 +362,8 @@ Parser.prototype = {
       primary = this.arrayDeclaration();
     } else if (this.expect('{')) {
       primary = this.object();
+    } else if (this.peek().identifier && this.peek().text in CONSTANTS) {
+      primary = CONSTANTS[this.consume().text];
     } else if (this.peek().identifier) {
       primary = this.identifier();
     } else if (this.peek().constant) {
@@ -464,7 +466,7 @@ Parser.prototype = {
       id += this.consume().text + this.consume().text;
     }
 
-    return CONSTANTS[id] || getterFn(id, this.options, this.text);
+    return getterFn(id, this.options, this.text);
   },
 
   constant: function() {
@@ -654,17 +656,16 @@ Parser.prototype = {
   },
 
   fieldAccess: function(object) {
-    var expression = this.text;
-    var field = this.consume().text;
-    var getter = getterFn(field, this.options, expression);
+    var getter = this.identifier();
 
     return extend(function $parseFieldAccess(scope, locals, self) {
-      return getter(self || object(scope, locals));
+      var o = self || object(scope, locals);
+      return (o == null) ? undefined : getter(o);
     }, {
       assign: function(scope, value, locals) {
         var o = object(scope, locals);
         if (!o) object.assign(scope, o = {});
-        return setter(o, field, value, expression);
+        return getter.assign(o, value);
       }
     });
   },
