@@ -771,7 +771,7 @@ describe('parser', function() {
               scope.$eval('{}.toString.constructor.a = 1');
             }).toThrowMinErr(
                     '$parse', 'isecfn','Referencing Function in Angular expressions is disallowed! ' +
-                    'Expression: {}.toString.constructor.a = 1');
+                    'Expression: toString.constructor.a');
 
             expect(function() {
               scope.$eval('{}.toString["constructor"]["constructor"] = 1');
@@ -1834,6 +1834,19 @@ describe('parser', function() {
             inject(function($rootScope) {
           $rootScope.fn = function() {};
           expect($rootScope.$eval('foo + "bar" + fn()')).toBe('bar');
+        }));
+
+        it('should treat properties named null/undefined as normal properties', inject(function($rootScope) {
+          expect($rootScope.$eval("a.null.undefined.b", {a:{null:{undefined:{b: 1}}}})).toBe(1);
+        }));
+
+        it('should not allow overriding null/undefined keywords', inject(function($rootScope) {
+          expect($rootScope.$eval('null.a', {null: {a: 42}})).toBeUndefined();
+        }));
+
+        it('should allow accessing null/undefined properties on `this`', inject(function($rootScope) {
+          $rootScope.null = {a: 42};
+          expect($rootScope.$eval('this.null.a')).toBe(42);
         }));
       });
     });
