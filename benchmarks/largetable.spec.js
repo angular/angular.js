@@ -50,7 +50,7 @@ describe('benchmarks', function() {
     'parsed-expressions-bp': {
       url: 'base/build/benchmarks/parsed-expressions-bp/index-auto.html',
       variables: [
-        'simplePath'
+        'simplePath',
         'complexPath',
         'constructorPath',
         'fieldAccess',

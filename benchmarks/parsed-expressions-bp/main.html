@@ -6,60 +6,11 @@
       </p>
 
       <ul style="list-style:none">
-        <li>
-          <input type="radio" ng-model="expressionType" value="simplePath" id="simplePath">
-          <label for="simplePath">Simple Paths</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="complexPath" id="complexPath">
-          <label for="complexPath">Complex Paths</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="constructorPath" id="constructorPath">
-          <label for="constructorPath">Constructor Paths</label>
-          ($parse special cases "constructor" for security)
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="fieldAccess" id="fieldAccess">
-          <label for="fieldAccess">Field Accessors</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="fieldIndex" id="fieldIndex">
-          <label for="fieldIndex">Field Indexes</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="operators" id="operators">
-          <label for="operators">Binary/Unary operators</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="shortCircuitingOperators" id="shortCircuitingOperators">
-          <label for="shortCircuitingOperators">AND/OR short-circuiting operators</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="filters" id="filters">
-          <label for="filters">Filters</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="functionCalls" id="functionCalls">
-          <label for="functionCalls">Function calls</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="objectLiterals" id="objectLiterals">
-          <label for="objectLiterals">Object Literals</label>
-        </li>
-
-        <li>
-          <input type="radio" ng-model="expressionType" value="arrayLiterals" id="arrayLiterals">
-          <label for="arrayLiterals">Array Literals</label>
+        <li ng-repeat="state in variableStates">
+          <input type="radio" ng-model="ctrl.benchmarkType" value="{{state.value}}" id="{{state.value}}">
+          <label for="{{state.value}}">
+            {{state.label}}
+          </label>
         </li>
       </ul>
 
@@ -68,7 +19,7 @@
           - ensure each tested expression has at least one variable in it to avoid constant expressions
       -->
 
-      <ul ng-switch="expressionType">
+      <ul ng-switch="ctrl.benchmarkType">
         <li ng-switch-when="simplePath" ng-repeat="(rowIdx, row) in ::data">
           <span bm-pe-watch="rowIdx"></span>
           <span bm-pe-watch="row.index"></span>

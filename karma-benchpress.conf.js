@@ -11,7 +11,7 @@ module.exports = function(config) {
     files: [
       'benchmarks/helpers.js',
       'build/angular.js',
-      'build/benchmarks/largetable-bp/*',
+      'build/benchmarks/**/*',
       'benchmarks/*.spec.js'
     ],
     exclude: [
