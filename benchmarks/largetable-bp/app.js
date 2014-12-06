@@ -63,7 +63,7 @@ app.controller('DataController', function($scope, $rootScope, $window) {
     }
   });
 
-  $scope.$watch(function() {return ctrl.benchmarkType}, function(newVal, oldVal) {
+  $scope.$watch('ctrl.benchmarkType', function(newVal, oldVal) {
     bp.variables.select(newVal);
   });
 
