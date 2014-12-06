@@ -54,4 +54,41 @@ app.controller('DataController', function($rootScope) {
       $rootScope.$apply();
     }
   });
+
+  bp.variables.addMany([
+    {
+      value: 'ngClick',
+      label: 'ngClick'
+    },
+    {
+      value: 'ngClickNoJqLite',
+      label: 'ngClick without jqLite'
+    },
+    {
+      value: 'ngShow',
+      label: 'baseline: ng-show'
+    },
+    {
+      value: 'textInterpolation',
+      label: 'baseline: text interpolation'
+    },
+    {
+      value: 'dlgtClick',
+      label: 'delegate event directive (only compile)'
+    },
+    {
+      value: 'noopDir',
+      label: 'baseline: noop directive (compile and link)'
+    },
+    {
+      value: 'noop',
+      label: 'baseline: no directive'
+    }
+  ]);
+
+  $rootScope.variableStates = bp.variables.variables;
+  this.benchmarkType = bp.variables.selected? bp.variables.selected.value : undefined;
+  setTimeout(function() {
+    bp.runner.ready();
+  });
 });

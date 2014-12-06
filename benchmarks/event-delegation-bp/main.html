@@ -14,13 +14,12 @@ Impact of event delegation.
 </p>
 
 <p>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="ngClick">ngClick</label></div>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="ngClickNoJqLite">ngClick without jqLite</label></div>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="ngShow">baseline: ng-show</label></div>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="textInterpolation">baseline: text interpolation</label></div>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="dlgtClick">delegate event directive (only compile)</label></div>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="noopDir">baseline: noop directive (compile and link)</label></div>
-<div class="radio"><label><input type=radio ng-model="benchmarkType" value="noop">baseline: no directive</label></div>
+  <div class="radio" ng-repeat="state in variableStates">
+    <label>
+      <input type=radio ng-model="benchmarkType" value="{{state.value}}">
+      {{state.label}}
+    </label>
+  </div>
 </p>
 
 <p>
