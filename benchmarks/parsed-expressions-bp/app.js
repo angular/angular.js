@@ -84,4 +84,57 @@ app.controller('DataController', function($scope, $rootScope) {
       }
     }
   });
+
+  bp.variables.addMany([
+    {
+      value: 'simplePath',
+      label: 'Simple Paths'
+    },
+    {
+      value: 'complexPath',
+      label: 'Complex Paths'
+    },
+    {
+      value: 'constructorPath',
+      label: 'Constructor Paths\n($parse special cases "constructor" for security)'
+    },
+    {
+      value: 'fieldAccess',
+      label: 'Field Accessors'
+    },
+    {
+      value: 'fieldIndex',
+      label: 'Field Indexes'
+    },
+    {
+      value: 'operators',
+      label: 'Binary/Unary operators'
+    },
+    {
+      value: 'shortCircuitingOperators',
+      label: 'AND/OR short-circuiting operators'
+    },
+    {
+      value: 'filters',
+      label: 'Filters'
+    },
+    {
+      value: 'functionCalls',
+      label: 'Function calls'
+    },
+    {
+      value: 'objectLiterals',
+      label: 'Object Literals'
+    },
+    {
+      value: 'arrayLiterals',
+      label: 'Array Literals'
+    }
+  ]);
+
+  $rootScope.variableStates = bp.variables.variables;
+  this.benchmarkType = bp.variables.selected? bp.variables.selected.value : undefined;
+  setTimeout(function() {
+    bp.runner.ready();
+  });
 });

@@ -2,24 +2,16 @@
 [ng-cloak] { display: none; }
 </style>
 <div ng-app="largetableBenchmark" ng-cloak>
-  <div ng-controller="DataController">
+  <div ng-controller="DataController as ctrl">
     <div class="container-fluid">
       <p>
       Large table rendered with AngularJS
       </p>
 
-      <div>none: <input type="radio" ng-model="benchmarkType" value="none"></div>
-      <div>baseline binding: <input type="radio" ng-model="benchmarkType" value="baselineBinding"></div>
-      <div>baseline interpolation: <input type="radio" ng-model="benchmarkType" value="baselineInterpolation"></div>
-      <div>ngBind: <input type="radio" ng-model="benchmarkType" value="ngBind"></div>
-      <div>ngBindOnce: <input type="radio" ng-model="benchmarkType" value="ngBindOnce"></div>
-      <div>interpolation: <input type="radio" ng-model="benchmarkType" value="interpolation"></div>
-      <div>ngBind + fnInvocation: <input type="radio" ng-model="benchmarkType" value="ngBindFn"></div>
-      <div>interpolation + fnInvocation: <input type="radio" ng-model="benchmarkType" value="interpolationFn"></div>
-      <div>ngBind + filter: <input type="radio" ng-model="benchmarkType" value="ngBindFilter"></div>
-      <div>interpolation + filter: <input type="radio" ng-model="benchmarkType" value="interpolationFilter"></div>
+      <div ng-repeat="state in variableStates">{{state.label}}: <input type="radio" name="variableState" ng-model="ctrl.benchmarkType" ng-value="state.value"></div>
 
-      <ng-switch on="benchmarkType">
+
+      <ng-switch on="ctrl.benchmarkType">
         <baseline-binding-table ng-switch-when="baselineBinding">
         </baseline-binding-table>
         <baseline-interpolation-table ng-switch-when="baselineInterpolation">
