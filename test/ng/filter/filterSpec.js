@@ -271,7 +271,7 @@ describe('Filter: filter', function() {
     expect(filter(items, expr, true).length).toBe(1);
     expect(filter(items, expr, true)[0]).toBe(items[0]);
 
-    // Inherited function proprties
+    // Inherited function properties
     function Item(text) {
         this.text = text;
     }
@@ -396,6 +396,35 @@ describe('Filter: filter', function() {
     expect(filter(items, 'll')[0]).toBe(items[0]);
 
     delete Object.prototype.someProp;
+  });
+
+
+  it('should throw an error when is not used with an array', function() {
+    var item = {'not': 'array'};
+    expect(function() { filter(item, {}); }).
+      toThrowMinErr('filter', 'notarray', 'Expected array but received: {"not":"array"}');
+
+    item = Object.create(null);
+    expect(function() { filter(item, {}); }).
+      toThrowMinErr('filter', 'notarray', 'Expected array but received: {}');
+
+    item = {
+      toString: null,
+      valueOf: null
+    };
+    expect(function() { filter(item, {}); }).
+      toThrowMinErr('filter', 'notarray', 'Expected array but received: {"toString":null,"valueOf":null}');
+  });
+
+
+  it('should return undefined when the array is undefined', function() {
+    expect(filter(undefined, {})).toBeUndefined();
+  });
+
+
+  it('should return null when the value of the array is null', function() {
+    var item = null;
+    expect(filter(item, {})).toBe(null);
   });
 
 

@@ -1,0 +1,8 @@
+@ngdoc error
+@name filter:notarray
+@fullName Not an array
+@description
+
+This error occurs when {@link ng.filter filter} is not used with an array.
+Filter must be used with an array so a subset of items can be returned.
+The array can be initialized asynchronously so null or undefined won't throw this error.

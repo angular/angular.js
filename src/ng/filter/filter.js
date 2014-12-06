@@ -124,7 +124,13 @@
  */
 function filterFilter() {
   return function(array, expression, comparator) {
-    if (!isArray(array)) return array;
+    if (!isArray(array)) {
+      if (array == null) {
+        return array;
+      } else {
+        throw minErr('filter')('notarray', 'Expected array but received: {0}', array);
+      }
+    }
 
     var predicateFn;
     var matchAgainstAnyProp;
