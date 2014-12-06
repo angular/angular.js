@@ -4211,10 +4211,15 @@ describe('input', function() {
       });
 
       it('should validate even if min value changes on-the-fly', function() {
-        scope.min = 10;
+        scope.min = undefined;
         compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+        expect(inputElm).toBeValid();
 
         changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        scope.min = 10;
+        scope.$digest();
         expect(inputElm).toBeValid();
 
         scope.min = 20;
@@ -4252,10 +4257,15 @@ describe('input', function() {
       });
 
       it('should validate even if the ngMin value changes on-the-fly', function() {
-        scope.min = 10;
+        scope.min = undefined;
         compileInput('<input type="number" ng-model="value" name="alias" ng-min="min" />');
+        expect(inputElm).toBeValid();
 
         changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        scope.min = 10;
+        scope.$digest();
         expect(inputElm).toBeValid();
 
         scope.min = 20;
@@ -4294,10 +4304,15 @@ describe('input', function() {
       });
 
       it('should validate even if max value changes on-the-fly', function() {
-        scope.max = 10;
+        scope.max = undefined;
         compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+        expect(inputElm).toBeValid();
 
         changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 10;
+        scope.$digest();
         expect(inputElm).toBeValid();
 
         scope.max = 0;
@@ -4335,10 +4350,15 @@ describe('input', function() {
       });
 
       it('should validate even if the ngMax value changes on-the-fly', function() {
-        scope.max = 10;
+        scope.max = undefined;
         compileInput('<input type="number" ng-model="value" name="alias" ng-max="max" />');
+        expect(inputElm).toBeValid();
 
         changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 10;
+        scope.$digest();
         expect(inputElm).toBeValid();
 
         scope.max = 0;
