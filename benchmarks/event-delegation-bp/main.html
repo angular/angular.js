@@ -16,7 +16,7 @@ Impact of event delegation.
 <p>
   <div class="radio" ng-repeat="state in variableStates">
     <label>
-      <input type=radio ng-model="benchmarkType" value="{{state.value}}">
+      <input type=radio ng-model="ctrl.benchmarkType" value="{{state.value}}">
       {{state.label}}
     </label>
   </div>
@@ -53,7 +53,7 @@ Results as of 7/31/2014:
 </p>
 
 Debug output:
-<ng-switch on="benchmarkType">
+<ng-switch on="ctrl.benchmarkType">
   <div ng-switch-when="ngClick">
     <div>
       <span ng-repeat="row in ctrl.rows">

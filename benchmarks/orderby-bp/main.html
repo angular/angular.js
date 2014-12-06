@@ -11,7 +11,7 @@
       <p>
         <div class="radio" ng-repeat-start="state in variableStates">
           <label>
-            <input type="radio" ng-model="benchmarkType" value="{{state.value}}">{{state.label}}
+            <input type="radio" ng-model="ctrl.benchmarkType" value="{{state.value}}">{{state.label}}
           </label>
         </div>
         <pre><code>{{state.example}}</code></pre>
@@ -20,7 +20,7 @@
 
 
       Debug output:
-      <ng-switch on="benchmarkType">
+      <ng-switch on="ctrl.benchmarkType">
         <div ng-switch-when="baseline">
           <span ng-repeat="row in ctrl.rows">
             <span ng-bind="row.name"></span>,
