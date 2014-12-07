@@ -1055,6 +1055,16 @@ describe('$http', function() {
           });
 
 
+          it('should ignore leading/trailing whitespace', function() {
+            $httpBackend.expect('GET', '/url').respond('  \n  {"foo":"bar","baz":23}  \r\n  \n  ');
+            $http({method: 'GET', url: '/url'}).success(callback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+            expect(callback.mostRecentCall.args[0]).toEqual({foo: 'bar', baz: 23});
+          });
+
+
           it('should deserialize json numbers when response header contains application/json',
               function() {
             $httpBackend.expect('GET', '/url').respond('123', {'Content-Type': 'application/json'});
@@ -1141,6 +1151,16 @@ describe('$http', function() {
           });
 
 
+          it('should retain security prefix if response is not json', function() {
+            $httpBackend.expect('GET', '/url').respond(')]}\',\n This is not JSON !');
+            $http({method: 'GET', url: '/url'}).success(callback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+            expect(callback.mostRecentCall.args[0]).toEqual(')]}\',\n This is not JSON !');
+          });
+
+
           it('should not attempt to deserialize json when HEAD request', function() {
             //per http spec for Content-Type, HEAD request should return a Content-Type header
             //set to what the content type would have been if a get was sent
@@ -1182,6 +1202,20 @@ describe('$http', function() {
             expect(callback).toHaveBeenCalledOnce();
             expect(callback.mostRecentCall.args[0]).toEqual('{{some}}');
           });
+
+          it('should not deserialize json when the opening and closing brackets do not match',
+            function() {
+              $httpBackend.expect('GET', '/url1').respond('[Code](url): function() {}');
+              $httpBackend.expect('GET', '/url2').respond('{"is": "not"} ["json"]');
+              $http.get('/url1').success(callback);
+              $http.get('/url2').success(callback);
+              $httpBackend.flush();
+
+              expect(callback.calls.length).toBe(2);
+              expect(callback.calls[0].args[0]).toEqual('[Code](url): function() {}');
+              expect(callback.calls[1].args[0]).toEqual('{"is": "not"} ["json"]');
+            }
+          );
         });
 
 
