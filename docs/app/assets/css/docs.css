@@ -1,3 +1,22 @@
+md-sidenav.md-locked-open[flex="20"] {
+    width: 20%;
+}
+
+md-sidenav.md-locked-open[flex="25"] {
+    width: 25%;
+}
+
+md-sidenav.md-locked-open[flex="33"] {
+    width: 33%;
+}
+
+md-toolbar .md-button.toolbar-btn {
+    border-radius: 0;
+    border-right: 1px solid;
+    margin: 2px 0;
+    padding: 10px 15px;
+}
+
 .back-to-top {
     bottom: 10px;
     display: inline-block;
@@ -35,7 +54,7 @@
 }
 
 .md-tile-left .fa {
-    border: 1px solid Red;
+    border: 1px solid #f44336;
     border-radius: 30px;
     padding: 16px;
 }
@@ -77,13 +96,6 @@
     padding: 0;
 }
 
-.toolbar-btn {
-    border-radius: 0 !important;
-    border-right: 1px solid;
-    margin: 2px 0;
-    padding: 10px 15px;
-}
-
 .toolbar-fab {
     position: absolute;
     right: 15px;
@@ -105,18 +117,6 @@
     transform: translate3d(-100%, 0, 0);
 }
 
-#sidenav-search.md-locked-open[flex="20"] {
-    width: 20%;
-}
-
-#sidenav-search.md-locked-open[flex="25"] {
-    width: 25%;
-}
-
-#sidenav-search.md-locked-open[flex="33"] {
-    width: 33%;
-}
-
 #sidenav-toc {
     overflow-x: hidden;
 }
@@ -125,18 +125,6 @@
     bottom: 0;
     position: absolute;
     top: 64px;
-}
-
-#sidenav-toc.md-locked-open[flex="20"] {
-    width: 20%;
-}
-
-#sidenav-toc.md-locked-open[flex="25"] {
-    width: 25%;
-}
-
-#sidenav-toc.md-locked-open[flex="33"] {
-    width: 33%;
 }
 
 #sidenav-toc a:not(.md-primary) {
@@ -159,6 +147,7 @@
 }
 
 #sidenav-toc .md-primary {
+    background-color: rgb(235, 235, 235);
     background-color: rgba(158, 158, 158, 0.2);
     border-radius: 0;
     border-style: solid;

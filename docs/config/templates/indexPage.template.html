@@ -182,6 +182,7 @@
           ng-if="!vu.media('gt-lg')">
         <i class="fa fa-search"></i>
       </md-button>
+
     </md-toolbar>
 
     <!-- BODY -->
@@ -202,13 +203,16 @@
           <md-list layout="column">
             <md-item ng-repeat="navGroup in currentArea.navGroups track by navGroup.name">
               <md-subheader class="tight">
-                <h2><a href="{{navGroup.href}}" ng-class="navClass(navGroup)">{{navGroup.name}}</a></h2>
+                <h2><a href="{{navGroup.href}}" xng-class="navClass(navGroup)">{{navGroup.name}}</a></h2>
               </md-subheader>
               <md-list>
-                <md-item layout="row" ng-class="navClass(navItem)" ng-repeat="navItem in navGroup.navItems">
+                <md-item
+                    layout="row"
+                    xng-class="navClass(navItem)"
+                    ng-repeat="navItem in navGroup.navItems">
                   <md-button
                       flex=""
-                      ng-class="{'md-primary':isCurrentPath(navItem.href)}"
+                      ng-class="{'md-primary':isCurrentPath(navItem.extra.href)}"
                       xng-class="navClass(navItem.extra)"
                       ng-click="vu.closeSidenav('toc')"
                       ng-href="{{navItem.extra.href}}"
@@ -236,8 +240,10 @@
       <!-- LEFT SIDENAV PLACEHOLDER -->
       <div ng-if="vu.media('gt-sm')" flex="{{vu.getFlex('toc')}}"></div>
 
-      <!-- CONTENT -->
+      <!-- CONTENT WRAPPER -->
       <div class="positioned" flex="" layout="column">
+
+        <!-- CONTENT -->
         <md-content flex="">
 
           <!-- TOP ANCHOR -->
@@ -365,6 +371,7 @@
       </md-sidenav>
 
     </div>
+
   </div>
 </body>
 </html>
