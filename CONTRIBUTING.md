@@ -127,7 +127,7 @@ Before you submit your pull request consider the following guidelines:
 
     ```shell
     git rebase master -i
-    git push -f
+    git push origin my-fix-branch -f
     ```
 
 That's it! Thank you for your contribution!
