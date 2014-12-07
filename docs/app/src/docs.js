@@ -12,6 +12,10 @@ angular.module('DocsController', ['ViewUtils'])
 
   $scope.docsVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.version;
 
+  $scope.isCurrentPath = function(path) {
+    return this.currentPage && path && (this.currentPage.path === path);
+  };
+
   $scope.navClass = function(navItem) {
     return {
       active: navItem.href && this.currentPage && this.currentPage.path,

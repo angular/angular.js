@@ -31,7 +31,8 @@ module.exports = function defaultDeployment(getComponentPath) {
       getComponentPath('angular-material', 'themes/red-theme.css'),
       'css/prettify-theme.css',
       'css/docs.css',
-      'css/animations.css'
+      'css/animations.css',
+      'font-awesome/css/font-awesome.css'
     ]
   };
 };
