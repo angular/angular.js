@@ -1,0 +1,33 @@
+@ngdoc error
+@name ngOptions:trkslct
+@fullName Comprehension expression cannot contain both `select as` and `track by` expressions.
+@description
+
+NOTE: This error was introduced in 1.3.0-rc.5, and was removed for 1.3.0-rc.6 in order to
+not break existing apps.
+
+This error occurs when 'ngOptions' is passed a comprehension expression that contains both a
+`select as` expression and a `track by` expression. These two expressions are fundamentally
+incompatible.
+
+ * Example of bad expression: `<select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected">`
+   `values: [{id: 1, label: 'aLabel', subItem: {name: 'aSubItem'}}, {id: 2, label: 'bLabel', subItem: {name: 'bSubItem'}}]`,
+   `$scope.selected = {name: 'aSubItem'};`
+ * track by is always applied to `value`, with purpose to preserve the selection,
+   (to `item` in this case)
+ * To calculate whether an item is selected, `ngOptions` does the following:
+   1. apply `track by` to the values in the array:
+      In the example: [1,2]
+   2. apply `track by` to the already selected value in `ngModel`:
+      In the example: this is not possible, as `track by` refers to `item.id`, but the selected
+      value from `ngModel` is `{name: aSubItem}`.
+
+Here's an example of how to make this example work by using `track by` without `select as`:
+
+```
+<select ng-model="selected" ng-options="item.label for item in values track by item.id">
+```
+
+Note: This would store the whole `item` as the model to `scope.selected` instead of `item.subItem`.
+
+For more information on valid expression syntax, see 'ngOptions' in {@link ng.directive:select select} directive docs.

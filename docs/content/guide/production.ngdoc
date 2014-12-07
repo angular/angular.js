@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Running in Production
+@sortOrder 540
 @description
 
 # Running an AngularJS App in Production
@@ -19,7 +20,7 @@ Where the compiler has created a new scope, the scope and either `ng-scope` or `
 CSS class are attached to the corresponding element. These scope references can then be accessed via
 `element.scope()` and `element.isolateScope()`.
 
-Tools like [Protractor](github.com/angular/protractor) and
+Tools like [Protractor](https://github.com/angular/protractor) and
 [Batarang](https://github.com/angular/angularjs-batarang) need this information to run,
 but you can disable this in production for a significant performance boost with:
 
@@ -39,4 +40,36 @@ angular.reloadWithDebugInfo();
 The page should reload and the debug information should now be available.
 
 For more see the docs pages on {@link ng.$compileProvider#debugInfoEnabled `$compileProvider`}
-and {@link ng/function/angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
+and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
+
+## Strict DI Mode
+
+Using strict di mode in your production application will throw errors when a injectable
+function is not
+{@link di#dependency-annotation annotated explicitly}. Strict di mode is intended to help
+you make sure that your code will work when minified. However, it also will force you to
+make sure that your injectable functions are explicitly annotated which will improve
+angular's performance when injecting dependencies in your injectable functions because it
+doesn't have to dynamically discover a function's dependencies. It is recommended to
+automate the explicit annotation via a tool like
+[ng-annotate](https://github.com/olov/ng-annotate) when you deploy to production (and enable
+strict di mode)
+
+To enable strict di mode, you have two options:
+
+```html
+<div ng-app="myApp" ng-strict-di>
+  <!-- your app here -->
+</div>
+```
+
+or
+
+```js
+angular.bootstrap(document, ['myApp'], {
+  strictDi: true
+});
+```
+
+For more information, see the
+{@link di#using-strict-dependency-injection DI Guide}.

@@ -18,6 +18,7 @@
     "angularModule": false,
     "nodeName_": false,
     "uid": false,
+    "toDebugString": false,
 
     "lowercase": false,
     "uppercase": false,
@@ -54,11 +55,8 @@
     "isPromiseLike": false,
     "makeMap": false,
     "map": false,
-    "size": false,
     "includes": false,
-    "indexOf": false,
     "arrayRemove": false,
-    "isLeafNode": false,
     "copy": false,
     "shallowCopy": false,
     "equals": false,
@@ -120,6 +118,7 @@
     "JQLitePrototype": false,
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
+    "jqLiteDocumentLoaded": false,
 
     /* apis.js */
     "hashKey": false,

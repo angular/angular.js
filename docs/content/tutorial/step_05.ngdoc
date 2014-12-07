@@ -11,7 +11,7 @@ from our server using one of Angular's built-in {@link guide/services services} 
 ng.$http $http}. We will use Angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
-* There are now a list of 20 phones, loaded from the server.
+* There is now a list of 20 phones, loaded from the server.
 
 <div doc-tutorial-reset="5"></div>
 
@@ -166,7 +166,7 @@ Because we started using dependency injection and our controller has dependencie
 controller in our tests is a bit more complicated. We could use the `new` operator and provide the
 constructor with some kind of fake `$http` implementation. However, Angular provides a mock `$http`
 service that we can use in unit tests.  We configure "fake" responses to server requests by calling
-methods on a service called $httpBackend:
+methods on a service called `$httpBackend`:
 
 ```js
 describe('PhoneCat controllers', function() {
@@ -236,7 +236,9 @@ the response is received:
 ```
 
 * We flush the request queue in the browser by calling `$httpBackend.flush()`. This causes the
-promise returned by the `$http` service to be resolved with the trained response.
+promise returned by the `$http` service to be resolved with the trained response. See 
+'Flushing HTTP requests' in the {@link ngMock.$httpBackend mock $httpBackend} documentation for 
+a full explanation of why this is necessary.
 
 * We make the assertions, verifying that the phone model now exists on the scope.
 
@@ -256,8 +258,8 @@ You should now see the following output in the Karma tab:
 
 # Experiments
 
-* At the bottom of `index.html`, add a `<pre>{{phones | json}}</pre>` binding to see the list of phones
-  displayed in json format.
+* At the bottom of `index.html`, add a `<pre>{{phones | filter:query | orderBy:orderProp | json}}</pre>` 
+binding to see the list of phones displayed in json format.  
 
 * In the `PhoneListCtrl` controller, pre-process the http response by limiting the number of phones
 to the first 5 in the list. Use the following code in the `$http` callback:

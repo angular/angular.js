@@ -4,11 +4,11 @@ describe('filters', function() {
 
   var filter;
 
-  beforeEach(inject(function($filter){
+  beforeEach(inject(function($filter) {
     filter = $filter;
   }));
 
-  it('should call the filter when evaluating expression', function(){
+  it('should call the filter when evaluating expression', function() {
     var filter = jasmine.createSpy('myFilter');
     createInjector(['ng', function($filterProvider) {
       $filterProvider.register('myFilter', valueFn(filter));
@@ -73,7 +73,7 @@ describe('filters', function() {
       expect(num).toBe('123.112');
     });
 
-    it('should format the same with string as well as numeric fractionSize', function(){
+    it('should format the same with string as well as numeric fractionSize', function() {
       var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
       num = formatNumber(123.1, pattern, ',', '.', 0);
@@ -82,6 +82,13 @@ describe('filters', function() {
       expect(num).toBe('123.100');
       num = formatNumber(123.1, pattern, ',', '.', 3);
       expect(num).toBe('123.100');
+    });
+
+    it('should format numbers that round to zero as nonnegative', function() {
+      expect(formatNumber(-0.01, pattern, ',', '.', 1)).toBe('0.0');
+      expect(formatNumber(-1e-10, pattern, ',', '.', 1)).toBe('0.0');
+      expect(formatNumber(-0.0001, pattern, ',', '.', 3)).toBe('0.000');
+      expect(formatNumber(-0.0000001, pattern, ',', '.', 6)).toBe('0.000000');
     });
   });
 
@@ -96,12 +103,17 @@ describe('filters', function() {
       expect(currency(0)).toEqual('$0.00');
       expect(currency(-999)).toEqual('($999.00)');
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
+      expect(currency(1234.5678, "USD$", 0)).toEqual('USD$1,235');
     });
 
+    it('should pass through null and undefined to be compatible with one-time binding', function() {
+      expect(currency(undefined)).toBe(undefined);
+      expect(currency(null)).toBe(null);
+    });
 
     it('should return empty string for non-numbers', function() {
-      expect(currency()).toBe('');
       expect(currency('abc')).toBe('');
+      expect(currency({})).toBe('');
     });
 
     it('should handle zero and nearly-zero values properly', function() {
@@ -110,6 +122,12 @@ describe('filters', function() {
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
     });
+
+    it('should set the default fraction size to the max fraction size of the locale value', inject(function($locale) {
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 1;
+
+      expect(currency(1.07)).toBe('$1.1');
+    }));
   });
 
 
@@ -130,13 +148,12 @@ describe('filters', function() {
       expect(number(1234)).toEqual('1,234');
       expect(number(1234.5678)).toEqual('1,234.568');
       expect(number(Number.NaN)).toEqual('');
-      expect(number(null)).toEqual('');
       expect(number({})).toEqual('');
       expect(number([])).toEqual('');
       expect(number(+Infinity)).toEqual('');
       expect(number(-Infinity)).toEqual('');
       expect(number("1234.5678")).toEqual('1,234.568');
-      expect(number(1/0)).toEqual("");
+      expect(number(1 / 0)).toEqual("");
       expect(number(1,        2)).toEqual("1.00");
       expect(number(.1,       2)).toEqual("0.10");
       expect(number(.01,      2)).toEqual("0.01");
@@ -161,6 +178,11 @@ describe('filters', function() {
       expect(number(0,        8)).toEqual("0.00000000");
     });
 
+    it('should pass through null and undefined to be compatible with one-time binding', function() {
+      expect(number(null)).toBe(null);
+      expect(number(undefined)).toBe(undefined);
+    });
+
     it('should filter exponentially large numbers', function() {
       expect(number(1e50)).toEqual('1e+50');
       expect(number(-2e100)).toEqual('-2e+100');
@@ -175,16 +197,21 @@ describe('filters', function() {
       expect(number(1e-50, 0)).toEqual('0');
       expect(number(1e-6, 6)).toEqual('0.000001');
       expect(number(1e-7, 6)).toEqual('0.000000');
+      expect(number(9e-7, 6)).toEqual('0.000001');
 
-      expect(number(-1e-50, 0)).toEqual('-0');
+      expect(number(-1e-50, 0)).toEqual('0');
       expect(number(-1e-6, 6)).toEqual('-0.000001');
-      expect(number(-1e-7, 6)).toEqual('-0.000000');
+      expect(number(-1e-7, 6)).toEqual('0.000000');
+      expect(number(-1e-8, 9)).toEqual('-0.000000010');
     });
   });
 
-  describe('json', function () {
+  describe('json', function() {
     it('should do basic filter', function() {
       expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
+    });
+    it('should allow custom indentation', function() {
+      expect(filter('json')({a:"b"}, 4)).toEqual(toJson({a:"b"}, 4));
     });
   });
 
@@ -277,7 +304,7 @@ describe('filters', function() {
 
     it('should format timezones correctly (as per ISO_8601)', function() {
       //Note: TzDate's first argument is offset, _not_ timezone.
-      var utc       = new angular.mock.TzDate( 0, '2010-09-03T12:05:08.000Z');
+      var utc       = new angular.mock.TzDate(0, '2010-09-03T12:05:08.000Z');
       var eastOfUTC = new angular.mock.TzDate(-5, '2010-09-03T12:05:08.000Z');
       var westOfUTC = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z');
       var eastOfUTCPartial = new angular.mock.TzDate(-5.5, '2010-09-03T12:05:08.000Z');
@@ -376,10 +403,10 @@ describe('filters', function() {
       expect(date('2003-09-10', format)).toEqual('2003-09-10 00-00-00');
     });
 
-    it('should support different degrees of subsecond precision', function () {
+    it('should support different degrees of subsecond precision', function() {
       var format = 'yyyy-MM-dd ss';
 
-      var localDay = new Date(Date.UTC(2003, 9-1, 10, 13, 2, 3, 123)).getDate();
+      var localDay = new Date(Date.UTC(2003, 9 - 1, 10, 13, 2, 3, 123)).getDate();
 
       expect(date('2003-09-10T13:02:03.12345678Z', format)).toEqual('2003-09-' + localDay + ' 03');
       expect(date('2003-09-10T13:02:03.1234567Z', format)).toEqual('2003-09-' + localDay + ' 03');

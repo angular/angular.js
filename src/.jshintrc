@@ -11,6 +11,7 @@
     "jqLite": false,
     "jQuery": false,
     "slice": false,
+    "splice": false,
     "push": false,
     "toString": false,
     "ngMinErr": false,
@@ -18,6 +19,7 @@
     "angularModule": false,
     "nodeName_": false,
     "uid": false,
+    "toDebugString": false,
 
     "REGEX_STRING_REGEXP" : false,
     "lowercase": false,
@@ -53,14 +55,11 @@
     "isBoolean": false,
     "isPromiseLike": false,
     "trim": false,
+    "escapeForRegexp": false,
     "isElement": false,
     "makeMap": false,
-    "map": false,
-    "size": false,
     "includes": false,
-    "indexOf": false,
     "arrayRemove": false,
-    "isLeafNode": false,
     "copy": false,
     "shallowCopy": false,
     "equals": false,
@@ -92,6 +91,15 @@
     "reloadWithDebugInfo": false,
 
     "skipDestroyOnNextJQueryCleanData": true,
+
+    "NODE_TYPE_ELEMENT": false,
+    "NODE_TYPE_TEXT": false,
+    "NODE_TYPE_COMMENT": false,
+    "NODE_TYPE_COMMENT": false,
+    "NODE_TYPE_DOCUMENT": false,
+    "NODE_TYPE_DOCUMENT_FRAGMENT": false,
+
+    "defaultHttpResponseTransform": false,
 
     /* filters.js */
     "getFirstThursdayOfYear": false,
@@ -125,6 +133,8 @@
     "jqLiteAddNodes": false,
     "jqLiteController": false,
     "jqLiteInheritedData": false,
+    "jqLiteBuildFragment": false,
+    "jqLiteParseHTML": false,
     "getBooleanAttrName": false,
     "getAliasedAttrName": false,
     "createEventHandler": false,
@@ -132,6 +142,7 @@
     "addEventListenerFn": false,
     "removeEventListenerFn": false,
     "jqLiteIsTextNode": false,
+    "jqLiteDocumentLoaded": false,
 
     /* apis.js */
     "hashKey": false,

@@ -3,7 +3,7 @@
 exports.config = {
   allScriptsTimeout: 11000,
 
-  baseUrl: 'http://localhost:8000/build/docs/',
+  baseUrl: 'http://localhost:8000/',
 
   framework: 'jasmine',
 
@@ -12,9 +12,9 @@ exports.config = {
 
     // Disable animations so e2e tests run more quickly
     var disableNgAnimate = function() {
-      angular.module('disableNgAnimate', []).run(function($animate) {
+      angular.module('disableNgAnimate', []).run(['$animate', function($animate) {
         $animate.enabled(false);
-      });
+      }]);
     };
 
     browser.addMockModule('disableNgAnimate', disableNgAnimate);

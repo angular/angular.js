@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Introduction
+@sortOrder 100
 @description
 
 
@@ -8,7 +9,7 @@
 AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template
 language and lets you extend HTML's syntax to express your application's components clearly and
 succinctly. Angular's data binding and dependency injection eliminate much of the code you
-currently have to write. And it all happens within the browser, making it
+would otherwise have to write. And it all happens within the browser, making it
 an ideal partner with any server technology.
 
 Angular is what HTML would have been had it been designed for applications. HTML is a great
@@ -32,7 +33,7 @@ browser new syntax through a construct we call directives. Examples include:
   * Data binding, as in `{{}}`.
   * DOM control structures for repeating/hiding DOM fragments.
   * Support for forms and form validation.
-  * Attaching code-behind to DOM elements.
+  * Attaching new behavior to DOM elements, such as DOM event handling.
   * Grouping of HTML into reusable components.
 
 
@@ -102,7 +103,7 @@ Angular frees you from the following pains:
   * **Writing tons of initialization code just to get started:** Typically you need to write a lot
     of plumbing just to get a basic "Hello World" AJAX app working. With Angular you can bootstrap
     your app easily using services, which are auto-injected into your application in a
-    [Guice](http://code.google.com/p/google-guice/)-like dependency-injection style. This allows you
+    [Guice](https://github.com/google/guice)-like dependency-injection style. This allows you
     to get started developing features quickly. As a bonus, you get full control over the
     initialization process in automated tests.
 

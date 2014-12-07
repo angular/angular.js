@@ -71,8 +71,8 @@ $provide.value("$locale", {
       "\u043d\u043e\u0435\u043c.",
       "\u0434\u0435\u043a."
     ],
-    "fullDate": "EEEE, dd MMMM y '\u0433'.",
-    "longDate": "dd MMMM y '\u0433'.",
+    "fullDate": "EEEE, dd MMMM y",
+    "longDate": "dd MMMM y",
     "medium": "dd.M.y HH:mm:ss",
     "mediumDate": "dd.M.y",
     "mediumTime": "HH:mm:ss",
@@ -88,7 +88,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -100,7 +99,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -112,6 +110,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "mk-mk",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 || vf.f % 10 == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 || vf.f % 10 == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

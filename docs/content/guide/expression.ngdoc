@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Expressions
+@sortOrder 270
 @description
 
 # Angular Expressions
@@ -163,10 +164,18 @@ expression. The reason behind this is core to the Angular philosophy that applic
 be in controllers, not the views. If you need a real conditional, loop, or to throw from a view
 expression, delegate to a JavaScript method instead.
 
+## No RegExp creation with literal notation
+
+You can't create regular expressions from within AngularJS expressions. This is to avoid complex
+model transformation logic inside templates. Such logic is better placed in a controller or in a dedicated
+filter where it can be tested properly.
+
 ## `$event`
 
 Directives like {@link ng.directive:ngClick `ngClick`} and {@link ng.directive:ngFocus `ngFocus`}
-expose a `$event` object within the scope of that expression.
+expose a `$event` object within the scope of that expression. The object is an instance of a [jQuery
+Event Object](http://api.jquery.com/category/events/event-object/) when jQuery is present or a
+similar jqLite object.
 
 <example module="eventExampleApp">
   <file name="index.html">
@@ -275,9 +284,9 @@ digest cycle as long as that value is not undefined. If the value of the express
 within the digest loop and later, within the same digest loop, it is set to undefined,
 then the expression is not fulfilled and will remain watched.
 
-  1. Given an expression that starts with `::` when a digest loop is entered and expression
-     is dirty-checked store the value as V
-  2. If V is not undefined mark the result of the expression as stable and schedule a task
+  1. Given an expression that starts with `::`, when a digest loop is entered and expression
+     is dirty-checked, store the value as V
+  2. If V is not undefined, mark the result of the expression as stable and schedule a task
      to deregister the watch for this expression when we exit the digest loop
   3. Process the digest loop as normal
   4. When digest loop is done and all the values have settled process the queue of watch
@@ -311,7 +320,7 @@ someModule.directive('someDirective', function() {
 ```
 
 ```html
-  <div some-directive name=“::myName” color=“My color is {{::myColor}}”></div>
+  <div some-directive name="::myName" color="My color is {{::myColor}}"></div>
 ```
 
 

@@ -14,14 +14,6 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       }
     }
 
-    // Skip tests on IE < 9. These versions of IE don't support createEvent(), and so
-    // we cannot control the (x,y) position of events.
-    // It works fine in IE 8 under manual testing.
-    var msie = +((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
-    if (msie < 9) {
-      return;
-    }
-
     beforeEach(function() {
       module('ngTouch');
     });
@@ -36,11 +28,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, {
-        keys : [],
-        x : 100,
-        y : 20
+        keys: [],
+        x: 100,
+        y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -53,12 +45,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       $rootScope.$digest();
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 20,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 90,
         y: 20
@@ -72,11 +64,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, {
-        keys : [],
-        x : 100,
-        y : 20
+        keys: [],
+        x: 100,
+        y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -89,11 +81,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       $rootScope.$digest();
 
       browserTrigger(element, startEvent, {
-        keys : [],
-        x : 100,
-        y : 20
+        keys: [],
+        x: 100,
+        y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -108,17 +100,17 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 90,
         y: 20
       });
-      browserTrigger(element, moveEvent,{
+      browserTrigger(element, moveEvent, {
         keys: [],
         x: 70,
         y: 200
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -134,12 +126,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 90,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 80,
         y: 20
@@ -155,12 +147,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 20,
         y: 20
       });
-      browserTrigger(element, moveEvent,{
+      browserTrigger(element, moveEvent, {
         keys: [],
         x: 40,
         y: 20
@@ -176,12 +168,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, moveEvent,{
+      browserTrigger(element, moveEvent, {
         keys: [],
         x: 10,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 90,
         y: 20
@@ -201,12 +193,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
         eventFired = true;
       });
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 100,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 20,
         y: 20
@@ -225,12 +217,12 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
         eventFired = true;
       });
 
-      browserTrigger(element, startEvent,{
+      browserTrigger(element, startEvent, {
         keys: [],
         x: 20,
         y: 20
       });
-      browserTrigger(element, endEvent,{
+      browserTrigger(element, endEvent, {
         keys: [],
         x: 100,
         y: 20
@@ -241,5 +233,5 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 };
 
 swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
-swipeTests('mouse', /* restrictBrowers */ false, 'mousedown',  'mousemove', 'mouseup');
+swipeTests('mouse', /* restrictBrowers */ false, 'mousedown', 'mousemove', 'mouseup');
 

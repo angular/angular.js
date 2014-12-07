@@ -1,17 +1,21 @@
 'use strict';
 
-/* global -nullFormCtrl, -SUBMITTED_CLASS */
+/* global -nullFormCtrl, -SUBMITTED_CLASS, addSetValidityMethod: true
+ */
 var nullFormCtrl = {
   $addControl: noop,
+  $$renameControl: nullFormRenameControl,
   $removeControl: noop,
   $setValidity: noop,
-  $$setPending: noop,
   $setDirty: noop,
   $setPristine: noop,
-  $setSubmitted: noop,
-  $$clearControlValidity: noop
+  $setSubmitted: noop
 },
 SUBMITTED_CLASS = 'ng-submitted';
+
+function nullFormRenameControl(control, name) {
+  control.$name = name;
+}
 
 /**
  * @ngdoc type
@@ -21,13 +25,13 @@ SUBMITTED_CLASS = 'ng-submitted';
  * @property {boolean} $dirty True if user has already interacted with the form.
  * @property {boolean} $valid True if all of the containing forms and controls are valid.
  * @property {boolean} $invalid True if at least one containing control or form is invalid.
+ * @property {boolean} $submitted True if user has submitted the form even if its invalid.
  *
- * @property {Object} $error Is an object hash, containing references to all invalid controls or
- *  forms, where:
+ * @property {Object} $error Is an object hash, containing references to controls or
+ *  forms with failing validators, where:
  *
  *  - keys are validation tokens (error names),
- *  - values are arrays of controls or forms that are invalid for given error name.
- *
+ *  - values are arrays of controls or forms that have a failing validator for given error name.
  *
  *  Built-in validation tokens:
  *
@@ -40,6 +44,11 @@ SUBMITTED_CLASS = 'ng-submitted';
  *  - `pattern`
  *  - `required`
  *  - `url`
+ *  - `date`
+ *  - `datetimelocal`
+ *  - `time`
+ *  - `week`
+ *  - `month`
  *
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as the state of them,
@@ -50,17 +59,18 @@ SUBMITTED_CLASS = 'ng-submitted';
  *
  */
 //asks for $scope to fool the BC controller module
-FormController.$inject = ['$element', '$attrs', '$scope', '$animate'];
-function FormController(element, attrs, $scope, $animate) {
+FormController.$inject = ['$element', '$attrs', '$scope', '$animate', '$interpolate'];
+function FormController(element, attrs, $scope, $animate, $interpolate) {
   var form = this,
-      parentForm = element.parent().controller('form') || nullFormCtrl,
-      invalidCount = 0, // used to easily determine if we are valid
-      pendingCount = 0,
-      controls = [],
-      errors = form.$error = {};
+      controls = [];
+
+  var parentForm = form.$$parentForm = element.parent().controller('form') || nullFormCtrl;
 
   // init state
-  form.$name = attrs.name || attrs.ngForm;
+  form.$error = {};
+  form.$$success = {};
+  form.$pending = undefined;
+  form.$name = $interpolate(attrs.name || attrs.ngForm || '')($scope);
   form.$dirty = false;
   form.$pristine = true;
   form.$valid = true;
@@ -68,17 +78,6 @@ function FormController(element, attrs, $scope, $animate) {
   form.$submitted = false;
 
   parentForm.$addControl(form);
-
-  // Setup initial state of the control
-  element.addClass(PRISTINE_CLASS);
-  toggleValidCss(true);
-
-  // convenience method for easy toggling of classes
-  function toggleValidCss(isValid, validationErrorKey) {
-    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $animate.removeClass(element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
-    $animate.addClass(element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
-  }
 
   /**
    * @ngdoc method
@@ -134,6 +133,17 @@ function FormController(element, attrs, $scope, $animate) {
     }
   };
 
+  // Private API: rename a form control
+  form.$$renameControl = function(control, newName) {
+    var oldName = control.$name;
+
+    if (form[oldName] === control) {
+      delete form[oldName];
+    }
+    form[newName] = control;
+    control.$name = newName;
+  };
+
   /**
    * @ngdoc method
    * @name form.FormController#$removeControl
@@ -147,36 +157,16 @@ function FormController(element, attrs, $scope, $animate) {
     if (control.$name && form[control.$name] === control) {
       delete form[control.$name];
     }
+    forEach(form.$pending, function(value, name) {
+      form.$setValidity(name, null, control);
+    });
+    forEach(form.$error, function(value, name) {
+      form.$setValidity(name, null, control);
+    });
 
-    form.$$clearControlValidity(control);
     arrayRemove(controls, control);
   };
 
-  form.$$clearControlValidity = function(control) {
-    forEach(form.$pending, clear);
-    forEach(errors, clear);
-
-    function clear(queue, validationToken) {
-      form.$setValidity(validationToken, true, control);
-    }
-
-    parentForm.$$clearControlValidity(form);
-  };
-
-  form.$$setPending = function(validationToken, control) {
-    var pending = form.$pending && form.$pending[validationToken];
-
-    if (!pending || !includes(pending, control)) {
-      pendingCount++;
-      form.$valid = form.$invalid = undefined;
-      form.$pending = form.$pending || {};
-      if (!pending) {
-        pending = form.$pending[validationToken] = [];
-      }
-      pending.push(control);
-      parentForm.$$setPending(validationToken, form);
-    }
-  };
 
   /**
    * @ngdoc method
@@ -187,72 +177,33 @@ function FormController(element, attrs, $scope, $animate) {
    *
    * This method will also propagate to parent forms.
    */
-  form.$setValidity = function(validationToken, isValid, control) {
-    var queue = errors[validationToken];
-    var pendingChange, pending = form.$pending && form.$pending[validationToken];
-
-    if (pending) {
-      pendingChange = indexOf(pending, control) >= 0;
-      if (pendingChange) {
-        arrayRemove(pending, control);
-        pendingCount--;
-
-        if (pending.length === 0) {
-          delete form.$pending[validationToken];
-        }
-      }
-    }
-
-    var pendingNoMore = form.$pending && pendingCount === 0;
-    if (pendingNoMore) {
-      form.$pending = undefined;
-    }
-
-    if (isValid) {
-      if (queue || pendingChange) {
-        if (queue) {
-          arrayRemove(queue, control);
-        }
-        if (!queue || !queue.length) {
-          if (errors[validationToken]) {
-            invalidCount--;
-          }
-          if (!invalidCount) {
-            if (!form.$pending) {
-              toggleValidCss(isValid);
-              form.$valid = true;
-              form.$invalid = false;
-            }
-          } else if(pendingNoMore) {
-            toggleValidCss(false);
-            form.$valid = false;
-            form.$invalid = true;
-          }
-          errors[validationToken] = false;
-          toggleValidCss(true, validationToken);
-          parentForm.$setValidity(validationToken, true, form);
-        }
-      }
-    } else {
-      if (!form.$pending) {
-        form.$valid = false;
-        form.$invalid = true;
-      }
-
-      if (!invalidCount) {
-        toggleValidCss(isValid);
-      }
-      if (queue) {
-        if (includes(queue, control)) return;
+  addSetValidityMethod({
+    ctrl: this,
+    $element: element,
+    set: function(object, property, control) {
+      var list = object[property];
+      if (!list) {
+        object[property] = [control];
       } else {
-        errors[validationToken] = queue = [];
-        invalidCount++;
-        toggleValidCss(false, validationToken);
-        parentForm.$setValidity(validationToken, false, form);
+        var index = list.indexOf(control);
+        if (index === -1) {
+          list.push(control);
+        }
       }
-      queue.push(control);
-    }
-  };
+    },
+    unset: function(object, property, control) {
+      var list = object[property];
+      if (!list) {
+        return;
+      }
+      arrayRemove(list, control);
+      if (list.length === 0) {
+        delete object[property];
+      }
+    },
+    parentForm: parentForm,
+    $animate: $animate
+  });
 
   /**
    * @ngdoc method
@@ -286,7 +237,7 @@ function FormController(element, attrs, $scope, $animate) {
    * Setting a form back to a pristine state is often useful when we want to 'reuse' a form after
    * saving or resetting it.
    */
-  form.$setPristine = function () {
+  form.$setPristine = function() {
     $animate.setClass(element, PRISTINE_CLASS, DIRTY_CLASS + ' ' + SUBMITTED_CLASS);
     form.$dirty = false;
     form.$pristine = true;
@@ -298,12 +249,31 @@ function FormController(element, attrs, $scope, $animate) {
 
   /**
    * @ngdoc method
+   * @name form.FormController#$setUntouched
+   *
+   * @description
+   * Sets the form to its untouched state.
+   *
+   * This method can be called to remove the 'ng-touched' class and set the form controls to their
+   * untouched state (ng-untouched class).
+   *
+   * Setting a form controls back to their untouched state is often useful when setting the form
+   * back to its pristine state.
+   */
+  form.$setUntouched = function() {
+    forEach(controls, function(control) {
+      control.$setUntouched();
+    });
+  };
+
+  /**
+   * @ngdoc method
    * @name form.FormController#$setSubmitted
    *
    * @description
    * Sets the form to its submitted state.
    */
-  form.$setSubmitted = function () {
+  form.$setSubmitted = function() {
     $animate.addClass(element, SUBMITTED_CLASS);
     form.$submitted = true;
     parentForm.$setSubmitted();
@@ -396,9 +366,6 @@ function FormController(element, attrs, $scope, $animate) {
  * submitted. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
  * to have access to the updated model.
  *
- * @param {string=} name Name of the form. If specified, the form controller will be published into
- *                       related scope, under this name.
- *
  * ## Animation Hooks
  *
  * Animations in ngForm are triggered when any of the associated CSS classes are added and removed.
@@ -475,6 +442,8 @@ function FormController(element, attrs, $scope, $animate) {
       </file>
     </example>
  *
+ * @param {string=} name Name of the form. If specified, the form controller will be published into
+ *                       related scope, under this name.
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {
@@ -482,10 +451,14 @@ var formDirectiveFactory = function(isNgForm) {
       name: 'form',
       restrict: isNgForm ? 'EAC' : 'E',
       controller: FormController,
-      compile: function() {
+      compile: function ngFormCompile(formElement) {
+        // Setup initial state of the control
+        formElement.addClass(PRISTINE_CLASS).addClass(VALID_CLASS);
+
         return {
-          pre: function(scope, formElement, attr, controller) {
-            if (!attr.action) {
+          pre: function ngFormPreLink(scope, formElement, attr, controller) {
+            // if `action` attr is not present on the form, prevent the default action (submission)
+            if (!('action' in attr)) {
               // we can't use jq events because if a form is destroyed during submission the default
               // action is not prevented. see #1238
               //
@@ -498,9 +471,7 @@ var formDirectiveFactory = function(isNgForm) {
                   controller.$setSubmitted();
                 });
 
-                event.preventDefault
-                  ? event.preventDefault()
-                  : event.returnValue = false; // IE
+                event.preventDefault();
               };
 
               addEventListenerFn(formElement[0], 'submit', handleFormSubmission);
@@ -514,21 +485,26 @@ var formDirectiveFactory = function(isNgForm) {
               });
             }
 
-            var parentFormCtrl = formElement.parent().controller('form'),
-                alias = attr.name || attr.ngForm;
+            var parentFormCtrl = controller.$$parentForm,
+                alias = controller.$name;
 
             if (alias) {
               setter(scope, alias, controller, alias);
-            }
-            if (parentFormCtrl) {
-              formElement.on('$destroy', function() {
-                parentFormCtrl.$removeControl(controller);
-                if (alias) {
-                  setter(scope, alias, undefined, alias);
-                }
-                extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+              attr.$observe(attr.name ? 'name' : 'ngForm', function(newValue) {
+                if (alias === newValue) return;
+                setter(scope, alias, undefined, alias);
+                alias = newValue;
+                setter(scope, alias, controller, alias);
+                parentFormCtrl.$$renameControl(controller, alias);
               });
             }
+            formElement.on('$destroy', function() {
+              parentFormCtrl.$removeControl(controller);
+              if (alias) {
+                setter(scope, alias, undefined, alias);
+              }
+              extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+            });
           }
         };
       }

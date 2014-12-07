@@ -12,10 +12,14 @@ describe('event directives', function() {
   describe('ngSubmit', function() {
 
     it('should get called on form submit', inject(function($rootScope, $compile) {
-      element = $compile('<form action="" ng-submit="submitted = true">' +
+      element = $compile('<form action="/foo" ng-submit="submitted = true">' +
         '<input type="submit"/>' +
         '</form>')($rootScope);
       $rootScope.$digest();
+
+      // prevent submit within the test harness
+      element.on('submit', function(e) { e.preventDefault(); });
+
       expect($rootScope.submitted).not.toBeDefined();
 
       browserTrigger(element.children()[0]);
@@ -29,10 +33,14 @@ describe('event directives', function() {
         }
       };
 
-      element = $compile('<form action="" ng-submit="formSubmission($event)">' +
+      element = $compile('<form action="/foo" ng-submit="formSubmission($event)">' +
         '<input type="submit"/>' +
         '</form>')($rootScope);
       $rootScope.$digest();
+
+      // prevent submit within the test harness
+      element.on('submit', function(e) { e.preventDefault(); });
+
       expect($rootScope.formSubmitted).not.toBeDefined();
 
       browserTrigger(element.children()[0]);
@@ -42,18 +50,30 @@ describe('event directives', function() {
 
   describe('focus', function() {
 
-    it('should call the listener asynchronously during $apply',
-        inject(function($rootScope, $compile) {
-      element = $compile('<input type="text" ng-focus="focus()">')($rootScope);
-      $rootScope.focus = jasmine.createSpy('focus');
+    describe('call the listener asynchronously during $apply', function() {
+      function run(scope) {
+        inject(function($compile) {
+          element = $compile('<input type="text" ng-focus="focus()">')(scope);
+          scope.focus = jasmine.createSpy('focus');
 
-      $rootScope.$apply(function() {
-        element.triggerHandler('focus');
-        expect($rootScope.focus).not.toHaveBeenCalled();
-      });
+          scope.$apply(function() {
+            element.triggerHandler('focus');
+            expect(scope.focus).not.toHaveBeenCalled();
+          });
 
-      expect($rootScope.focus).toHaveBeenCalledOnce();
-    }));
+          expect(scope.focus).toHaveBeenCalledOnce();
+        });
+      }
+
+      it('should call the listener with non isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new());
+      }));
+
+      it('should call the listener with isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new(true));
+      }));
+
+    });
 
     it('should call the listener synchronously inside of $apply if outside of $apply',
         inject(function($rootScope, $compile) {
@@ -70,20 +90,51 @@ describe('event directives', function() {
 
   });
 
+  describe('security', function() {
+    it('should allow access to the $event object', inject(function($rootScope, $compile) {
+      var scope = $rootScope.$new();
+      element = $compile('<button ng-click="e = $event">BTN</button>')(scope);
+      element.triggerHandler('click');
+      expect(scope.e.target).toBe(element[0]);
+    }));
+
+    it('should block access to DOM nodes (e.g. exposed via $event)', inject(function($rootScope, $compile) {
+      var scope = $rootScope.$new();
+      element = $compile('<button ng-click="e = $event.target">BTN</button>')(scope);
+      expect(function() {
+        element.triggerHandler('click');
+      }).toThrowMinErr(
+              '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is disallowed! ' +
+              'Expression: e = $event.target');
+    }));
+  });
+
   describe('blur', function() {
 
-    it('should call the listener asynchronously during $apply',
-        inject(function($rootScope, $compile) {
-      element = $compile('<input type="text" ng-blur="blur()">')($rootScope);
-      $rootScope.blur = jasmine.createSpy('blur');
+    describe('call the listener asynchronously during $apply', function() {
+      function run(scope) {
+        inject(function($compile) {
+          element = $compile('<input type="text" ng-blur="blur()">')(scope);
+          scope.blur = jasmine.createSpy('blur');
 
-      $rootScope.$apply(function() {
-        element.triggerHandler('blur');
-        expect($rootScope.blur).not.toHaveBeenCalled();
-      });
+          scope.$apply(function() {
+            element.triggerHandler('blur');
+            expect(scope.blur).not.toHaveBeenCalled();
+          });
 
-      expect($rootScope.blur).toHaveBeenCalledOnce();
-    }));
+          expect(scope.blur).toHaveBeenCalledOnce();
+        });
+      }
+
+      it('should call the listener with non isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new());
+      }));
+
+      it('should call the listener with isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new(true));
+      }));
+
+    });
 
     it('should call the listener synchronously inside of $apply if outside of $apply',
         inject(function($rootScope, $compile) {

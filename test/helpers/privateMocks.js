@@ -11,19 +11,19 @@ function createMockStyleSheet(doc, wind) {
   var ss = doc.styleSheets[doc.styleSheets.length - 1];
 
   return {
-    addRule : function(selector, styles) {
+    addRule: function(selector, styles) {
       try {
         ss.insertRule(selector + '{ ' + styles + '}', 0);
       }
-      catch(e) {
+      catch (e) {
         try {
           ss.addRule(selector, styles);
         }
-        catch(e2) {}
+        catch (e2) {}
       }
     },
 
-    destroy : function() {
+    destroy: function() {
       head.removeChild(node);
     }
   };

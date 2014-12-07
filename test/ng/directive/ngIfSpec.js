@@ -1,49 +1,49 @@
 'use strict';
 
-describe('ngIf', function () {
+describe('ngIf', function() {
   var $scope, $compile, element, $compileProvider;
 
   beforeEach(module(function(_$compileProvider_) {
     $compileProvider = _$compileProvider_;
   }));
-  beforeEach(inject(function ($rootScope, _$compile_) {
+  beforeEach(inject(function($rootScope, _$compile_) {
     $scope = $rootScope.$new();
     $compile = _$compile_;
     element = $compile('<div></div>')($scope);
   }));
 
-  afterEach(function () {
+  afterEach(function() {
     dealoc(element);
   });
 
   function makeIf() {
-    forEach(arguments, function (expr) {
+    forEach(arguments, function(expr) {
       element.append($compile('<div class="my-class" ng-if="' + expr + '"><div>Hi</div></div>')($scope));
     });
     $scope.$apply();
   }
 
-  it('should immediately remove the element if condition is falsy', function () {
+  it('should immediately remove the element if condition is falsy', function() {
     makeIf('false', 'undefined', 'null', 'NaN', '\'\'', '0');
     expect(element.children().length).toBe(0);
   });
 
-  it('should leave the element if condition is true', function () {
+  it('should leave the element if condition is true', function() {
     makeIf('true');
     expect(element.children().length).toBe(1);
   });
 
-  it('should leave the element if the condition is a non-empty string', function () {
+  it('should leave the element if the condition is a non-empty string', function() {
     makeIf('\'f\'', '\'0\'', '\'false\'', '\'no\'', '\'n\'', '\'[]\'');
     expect(element.children().length).toBe(6);
   });
 
-  it('should leave the element if the condition is an object', function () {
+  it('should leave the element if the condition is an object', function() {
     makeIf('[]', '{}');
     expect(element.children().length).toBe(2);
   });
 
-  it('should not add the element twice if the condition goes from true to true', function () {
+  it('should not add the element twice if the condition goes from true to true', function() {
     $scope.hello = 'true1';
     makeIf('hello');
     expect(element.children().length).toBe(1);
@@ -51,7 +51,7 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(1);
   });
 
-  it('should not recreate the element if the condition goes from true to true', function () {
+  it('should not recreate the element if the condition goes from true to true', function() {
     $scope.hello = 'true1';
     makeIf('hello');
     element.children().data('flag', true);
@@ -59,7 +59,7 @@ describe('ngIf', function () {
     expect(element.children().data('flag')).toBe(true);
   });
 
-  it('should create then remove the element if condition changes', function () {
+  it('should create then remove the element if condition changes', function() {
     $scope.hello = true;
     makeIf('hello');
     expect(element.children().length).toBe(1);
@@ -67,7 +67,7 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(0);
   });
 
-  it('should create a new scope every time the expression evaluates to true', function () {
+  it('should create a new scope every time the expression evaluates to true', function() {
     $scope.$apply('value = true');
     element.append($compile(
       '<div ng-if="value"><span ng-init="value=false"></span></div>'
@@ -96,7 +96,7 @@ describe('ngIf', function () {
     expect(destroyed).toBe(true);
   });
 
-  it('should play nice with other elements beside it', function () {
+  it('should play nice with other elements beside it', function() {
     $scope.values = [1, 2, 3, 4];
     element.append($compile(
       '<div ng-repeat="i in values"></div>' +
@@ -235,7 +235,7 @@ describe('ngIf and transcludes', function() {
   });
 });
 
-describe('ngIf animations', function () {
+describe('ngIf animations', function() {
   var body, element, $rootElement;
 
   function html(content) {
@@ -255,7 +255,7 @@ describe('ngIf animations', function () {
     };
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
   });
@@ -288,7 +288,7 @@ describe('ngIf animations', function () {
   );
 
   it('should fire off the leave animation',
-    inject(function ($compile, $rootScope, $animate) {
+    inject(function($compile, $rootScope, $animate) {
       var item;
       var $scope = $rootScope.$new();
       element = $compile(html(
@@ -323,7 +323,7 @@ describe('ngIf animations', function () {
         return $delegate;
       });
     });
-    inject(function ($compile, $rootScope, $animate) {
+    inject(function($compile, $rootScope, $animate) {
       var item;
       var $scope = $rootScope.$new();
       element = $compile(html(

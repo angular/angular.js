@@ -9,10 +9,10 @@
  * Fetches, compiles and includes an external HTML fragment.
  *
  * By default, the template URL is restricted to the same domain and protocol as the
- * application document. This is done by calling {@link ng.$sce#getTrustedResourceUrl
+ * application document. This is done by calling {@link $sce#getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols
  * you may either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
- * [wrap them](ng.$sce#trustAsResourceUrl) as trusted values. Refer to Angular's {@link
+ * {@link $sce#trustAsResourceUrl wrap them} as trusted values. Refer to Angular's {@link
  * ng.$sce Strict Contextual Escaping}.
  *
  * In addition, the browser's
@@ -150,6 +150,9 @@
  * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted every time the ngInclude content is requested.
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src URL of content to load.
  */
 
 
@@ -159,6 +162,9 @@
  * @eventType emit on the current ngInclude scope
  * @description
  * Emitted every time the ngInclude content is reloaded.
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src URL of content to load.
  */
 
 
@@ -168,6 +174,9 @@
  * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted when a template HTTP request yields an erronous response (status < 200 || status > 299)
+ *
+ * @param {Object} angularEvent Synthetic event object.
+ * @param {String} src URL of content to load.
  */
 var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce',
                   function($templateRequest,   $anchorScroll,   $animate,   $sce) {
@@ -189,15 +198,15 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
             currentElement;
 
         var cleanupLastIncludeContent = function() {
-          if(previousElement) {
+          if (previousElement) {
             previousElement.remove();
             previousElement = null;
           }
-          if(currentScope) {
+          if (currentScope) {
             currentScope.$destroy();
             currentScope = null;
           }
-          if(currentElement) {
+          if (currentElement) {
             $animate.leave(currentElement).then(function() {
               previousElement = null;
             });
@@ -236,15 +245,15 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
               currentScope = newScope;
               currentElement = clone;
 
-              currentScope.$emit('$includeContentLoaded');
+              currentScope.$emit('$includeContentLoaded', src);
               scope.$eval(onloadExp);
             }, function() {
               if (thisChangeId === changeCounter) {
                 cleanupLastIncludeContent();
-                scope.$emit('$includeContentError');
+                scope.$emit('$includeContentError', src);
               }
             });
-            scope.$emit('$includeContentRequested');
+            scope.$emit('$includeContentRequested', src);
           } else {
             cleanupLastIncludeContent();
             ctrl.template = null;
@@ -267,6 +276,18 @@ var ngIncludeFillContentDirective = ['$compile',
       priority: -400,
       require: 'ngInclude',
       link: function(scope, $element, $attr, ctrl) {
+        if (/SVG/.test($element[0].toString())) {
+          // WebKit: https://bugs.webkit.org/show_bug.cgi?id=135698 --- SVG elements do not
+          // support innerHTML, so detect this here and try to generate the contents
+          // specially.
+          $element.empty();
+          $compile(jqLiteBuildFragment(ctrl.template, document).childNodes)(scope,
+              function namespaceAdaptedClone(clone) {
+            $element.append(clone);
+          }, {futureParentElement: $element});
+          return;
+        }
+
         $element.html(ctrl.template);
         $compile($element.contents())(scope);
       }

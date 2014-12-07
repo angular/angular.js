@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="docsApp" ng-controller="DocsController">
+<html lang="en" ng-app="docsApp" ng-strict-di ng-controller="DocsController">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
@@ -56,15 +56,6 @@
       }
     })();
 
-
-    // force page reload when new update is available
-    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
-      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-        window.applicationCache.swapCache();
-        window.location.reload();
-      }
-    }, false);
-
     // GA asynchronous tracker
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8594346-3']);
@@ -79,13 +70,13 @@
 </head>
 <body>
   <div id="wrapper">
-    <header class="header header-fixed">
+    <header scroll-y-offset-element class="header header-fixed">
       <section class="navbar navbar-inverse docs-navbar-primary" ng-controller="DocsSearchCtrl">
         <div class="container">
           <div class="row">
             <div class="col-md-9 header-branding">
               <a class="brand navbar-brand" href="http://angularjs.org">
-                <img class="logo" src="img/angularjs-for-header-only.svg">
+                <img width="117" height="30" class="logo" ng-src="img/angularjs-for-header-only.svg">
               </a>
               <ul class="nav navbar-nav">
                 <li class="divider-vertical"></li>
@@ -155,9 +146,6 @@
         </div>
         <div class="search-results-container" ng-show="hasResults">
           <div class="container">
-            <a href="" ng-click="hideResults()" class="search-close">
-              <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
-            </a>
             <div class="search-results-frame">
               <div ng-repeat="(key, value) in results" class="search-results-group" ng-class="colClassName + ' col-group-' + key">
                 <h4 class="search-results-group-heading">{{ key }}</h4>
@@ -168,6 +156,9 @@
                 </div>
               </div>
             </div>
+            <a href="" ng-click="hideResults()" class="search-close">
+              <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
+            </a>
           </div>
         </div>
       </section>
@@ -219,7 +210,7 @@
         </div>
         <div class="grid-right">
           <div id="loading" ng-show="loading">Loading...</div>
-          <div ng-hide="loading" ng-include="currentPage.outputPath || 'Error404.html'" onload="afterPartialLoaded()"  autoscroll></div>
+          <div ng-hide="loading" ng-include="partialPath" autoscroll></div>
         </div>
       </div>
     </section>

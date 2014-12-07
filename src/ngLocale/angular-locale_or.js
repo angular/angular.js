@@ -18,10 +18,10 @@ $provide.value("$locale", {
     ],
     "MONTH": [
       "\u0b1c\u0b3e\u0b28\u0b41\u0b06\u0b30\u0b40",
-      "\u0b2b\u0b47\u0b2c\u0b4d\u0b30\u0b41\u0b5f\u0b3e\u0b30\u0b40",
+      "\u0b2b\u0b47\u0b2c\u0b43\u0b06\u0b30\u0b40",
       "\u0b2e\u0b3e\u0b30\u0b4d\u0b1a\u0b4d\u0b1a",
       "\u0b05\u0b2a\u0b4d\u0b30\u0b47\u0b32",
-      "\u0b2e\u0b47",
+      "\u0b2e\u0b07",
       "\u0b1c\u0b41\u0b28",
       "\u0b1c\u0b41\u0b32\u0b3e\u0b07",
       "\u0b05\u0b17\u0b37\u0b4d\u0b1f",
@@ -41,10 +41,10 @@ $provide.value("$locale", {
     ],
     "SHORTMONTH": [
       "\u0b1c\u0b3e\u0b28\u0b41\u0b06\u0b30\u0b40",
-      "\u0b2b\u0b47\u0b2c\u0b4d\u0b30\u0b41\u0b5f\u0b3e\u0b30\u0b40",
+      "\u0b2b\u0b47\u0b2c\u0b43\u0b06\u0b30\u0b40",
       "\u0b2e\u0b3e\u0b30\u0b4d\u0b1a\u0b4d\u0b1a",
       "\u0b05\u0b2a\u0b4d\u0b30\u0b47\u0b32",
-      "\u0b2e\u0b47",
+      "\u0b2e\u0b07",
       "\u0b1c\u0b41\u0b28",
       "\u0b1c\u0b41\u0b32\u0b3e\u0b07",
       "\u0b05\u0b17\u0b37\u0b4d\u0b1f",
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "or",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

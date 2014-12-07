@@ -100,13 +100,6 @@
  *     For example: `item in items` is equivalent to `item in items track by $id(item)`. This implies that the DOM elements
  *     will be associated by item identity in the array.
  *
- *   * `variable in expression as alias_expression` – You can also provide an optional alias expression which will then store the
- *     intermediate results of the repeater after the filters have been applied. Typically this is used to render a special message
- *     when a filter is active on the repeater, but the filtered result set is empty.
- *
- *     For example: `item in items | filter:x as results` will store the fragment of the repeated items as `results`, but only after
- *     the items have been processed through the filter.
- *
  *     For example: `item in items track by $id(item)`. A built in `$id()` function can be used to assign a unique
  *     `$$hashKey` property to each item in the array. This property is then used as a key to associated DOM elements
  *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
@@ -118,6 +111,13 @@
  *
  *     For example: `item in items | filter:searchText track by item.id` is a pattern that might be used to apply a filter
  *     to items in conjunction with a tracking expression.
+ *
+ *   * `variable in expression as alias_expression` – You can also provide an optional alias expression which will then store the
+ *     intermediate results of the repeater after the filters have been applied. Typically this is used to render a special message
+ *     when a filter is active on the repeater, but the filtered result set is empty.
+ *
+ *     For example: `item in items | filter:x as results` will store the fragment of the repeated items as `results`, but only after
+ *     the items have been processed through the filter.
  *
  * @example
  * This example initializes the scope to a list of names and
@@ -278,10 +278,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
       if (trackByExp) {
         trackByExpGetter = $parse(trackByExp);
       } else {
-        trackByIdArrayFn = function (key, value) {
+        trackByIdArrayFn = function(key, value) {
           return hashKey(value);
         };
-        trackByIdObjFn = function (key) {
+        trackByIdObjFn = function(key) {
           return key;
         };
       }
@@ -361,11 +361,12 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextBlockOrder[index] = block;
             } else if (nextBlockMap[trackById]) {
               // if collision detected. restore lastBlockMap and throw an error
-              forEach(nextBlockOrder, function (block) {
+              forEach(nextBlockOrder, function(block) {
                 if (block && block.scope) lastBlockMap[block.id] = block;
               });
-              throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
-                  expression, trackById);
+              throw ngRepeatMinErr('dupes',
+                  "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}",
+                  expression, trackById, value);
             } else {
               // new never before seen block
               nextBlockOrder[index] = {id: trackById, scope: undefined, clone: undefined};
@@ -378,7 +379,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             block = lastBlockMap[blockKey];
             elementsToRemove = getBlockNodes(block.clone);
             $animate.leave(elementsToRemove);
-            if (elementsToRemove[0].parent) {
+            if (elementsToRemove[0].parentNode) {
               // if the element was not removed yet because of pending animation, mark it as deleted
               // so that we can ignore it later
               for (index = 0, length = elementsToRemove.length; index < length; index++) {
@@ -416,8 +417,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               $transclude(function ngRepeatTransclude(clone, scope) {
                 block.scope = scope;
                 // http://jsperf.com/clone-vs-createcomment
-                var endNode = ngRepeatEndComment.cloneNode();
+                var endNode = ngRepeatEndComment.cloneNode(false);
                 clone[clone.length++] = endNode;
+
+                // TODO(perf): support naked previousNode in `enter` to avoid creation of jqLite wrapper?
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = endNode;
                 // Note: We only need the first/last node of the cloned nodes.

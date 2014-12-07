@@ -19,7 +19,7 @@
  * Note that when an element is removed using `ngIf` its scope is destroyed and a new scope
  * is created when the element is restored.  The scope created within `ngIf` inherits from
  * its parent scope using
- * [prototypal inheritance](https://github.com/angular/angular.js/wiki/The-Nuances-of-Scope-Prototypal-Inheritance).
+ * [prototypal inheritance](https://github.com/angular/angular.js/wiki/Understanding-Scopes#javascript-prototypal-inheritance).
  * An important implication of this is if `ngModel` is used within `ngIf` to bind to
  * a javascript primitive defined in the parent scope. In this case any modifications made to the
  * variable within the child scope will override (hide) the value in the parent scope.
@@ -33,8 +33,8 @@
  * and `leave` effects.
  *
  * @animations
- * enter - happens just after the ngIf contents change and a new DOM element is created and injected into the ngIf container
- * leave - happens just before the ngIf contents are removed from the DOM
+ * enter - happens just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container
+ * leave - happens just before the `ngIf` contents are removed from the DOM
  *
  * @element ANY
  * @scope
@@ -49,7 +49,7 @@
       Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
       Show when checked:
       <span ng-if="checked" class="animate-if">
-        I'm removed when the checkbox is unchecked.
+        This is removed when the checkbox is unchecked.
       </span>
     </file>
     <file name="animations.css">
@@ -84,13 +84,13 @@ var ngIfDirective = ['$animate', function($animate) {
     terminal: true,
     restrict: 'A',
     $$tlb: true,
-    link: function ($scope, $element, $attr, ctrl, $transclude) {
+    link: function($scope, $element, $attr, ctrl, $transclude) {
         var block, childScope, previousElements;
         $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
 
           if (value) {
             if (!childScope) {
-              $transclude(function (clone, newScope) {
+              $transclude(function(clone, newScope) {
                 childScope = newScope;
                 clone[clone.length++] = document.createComment(' end ngIf: ' + $attr.ngIf + ' ');
                 // Note: We only need the first/last node of the cloned nodes.
@@ -103,15 +103,15 @@ var ngIfDirective = ['$animate', function($animate) {
               });
             }
           } else {
-            if(previousElements) {
+            if (previousElements) {
               previousElements.remove();
               previousElements = null;
             }
-            if(childScope) {
+            if (childScope) {
               childScope.$destroy();
               childScope = null;
             }
-            if(block) {
+            if (block) {
               previousElements = getBlockNodes(block.clone);
               $animate.leave(previousElements).then(function() {
                 previousElements = null;

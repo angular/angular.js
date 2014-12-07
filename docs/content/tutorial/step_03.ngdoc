@@ -95,7 +95,7 @@ describe('PhoneCat App', function() {
     });
 
 
-    it('should filter the phone list as user types into the search box', function() {
+    it('should filter the phone list as a user types into the search box', function() {
 
       var phoneList = element.all(by.repeater('phone in phones'));
       var query = element(by.model('query'));
@@ -120,7 +120,7 @@ really is that easy to set up any functional, readable, end-to-end test.
 ### Running End to End Tests with Protractor
 Even though the syntax of this test looks very much like our controller unit test written with
 Jasmine, the end-to-end test uses APIs of [Protractor](https://github.com/angular/protractor). Read
-about the Protractor APIs at https://github.com/angular/protractor/blob/master/docs/api.md.
+about the Protractor APIs at http://angular.github.io/protractor/#/api.
 
 Much like Karma is the test runner for unit tests, we use Protractor to run end-to-end tests.
 Try it with `npm run protractor`. End-to-end tests are slow, so unlike with unit tests, Protractor
@@ -159,7 +159,7 @@ Let's see how we can get the current value of the `query` model to appear in the
         var phoneList = element.all(by.repeater('phone in phones'));
         var query = element(by.model('query'));
     
-        it('should filter the phone list as user types into the search box', function() {
+        it('should filter the phone list as a user types into the search box', function() {
           expect(phoneList.count()).toBe(3);
     
           query.sendKeys('nexus');

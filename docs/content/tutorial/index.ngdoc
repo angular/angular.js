@@ -110,12 +110,13 @@ suggested solution is to also install the `nodejs-legacy` apt package, which ren
 `nodejs`.
 
 ```
-apt-get install nodejs-legacy
+apt-get install nodejs-legacy npm
 nodejs --version
+npm --version
 ```
 
 
-<div class="alert alert-info">If you need to run a different versions of node.js
+<div class="alert alert-info">If you need to run different versions of node.js
   in your local environment, consider installing
   <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
     Node Version Manager (nvm)

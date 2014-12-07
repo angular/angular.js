@@ -1,5 +1,6 @@
 @ngdoc overview
 @name Filters
+@sortOrder 280
 @description
 
 A filter formats the value of an expression for display to the user. They can be used in view templates,
@@ -86,12 +87,21 @@ This factory function should return a new filter function which takes the input 
 as the first argument. Any filter arguments are passed in as additional arguments to the filter
 function.
 
+The filter function should be a [pure function](http://en.wikipedia.org/wiki/Pure_function), which
+means that it should be stateless and idempotent. Angular relies on these properties and executes
+the filter only when the inputs to the function change.
+
+<div class="alert alert-warning">
+**Note:** filter names must be valid angular expression identifiers, such as `uppercase` or `orderBy`.
+Names with special characters, such as hyphens and dots, are not allowed.
+</div>
+
 The following sample filter reverses a text string. In addition, it conditionally makes the
 text upper-case.
 
-<example module="myReverseModule">
+<example module="myReverseFilterApp">
   <file name="index.html">
-    <div ng-controller="Controller">
+    <div ng-controller="MyController">
       <input ng-model="greeting" type="text"><br>
       No filter: {{greeting}}<br>
       Reverse: {{greeting|reverse}}<br>
@@ -100,7 +110,7 @@ text upper-case.
   </file>
 
   <file name="script.js">
-    angular.module('myReverseModule', [])
+    angular.module('myReverseFilterApp', [])
       .filter('reverse', function() {
         return function(input, uppercase) {
           input = input || '';
@@ -115,11 +125,52 @@ text upper-case.
           return out;
         };
       })
-      .controller('Controller', ['$scope', function($scope) {
+      .controller('MyController', ['$scope', function($scope) {
         $scope.greeting = 'hello';
       }]);
   </file>
 </example>
+
+
+## Stateful filters
+
+It is strongly discouraged to write filters that are stateful, because the execution of those can't
+be optimized by Angular, which often leads to performance issues. Many stateful filters can be
+converted into stateless filters just by exposing the hidden state as a model and turning it into an
+argument for the filter.
+
+If you however do need to write a stateful filter, you have to mark the filter as `$stateful`, which
+means that it will be executed one or more times during the each `$digest` cycle.
+
+<example module="myStatefulFilterApp">
+  <file name="index.html">
+    <div ng-controller="MyController">
+      Input: <input ng-model="greeting" type="text"><br>
+      Decoration: <input ng-model="decoration.symbol" type="text"><br>
+      No filter: {{greeting}}<br>
+      Decorated: {{greeting | decorate}}<br>
+    </div>
+  </file>
+
+  <file name="script.js">
+    angular.module('myStatefulFilterApp', [])
+      .filter('decorate', ['decoration', function(decoration) {
+
+        function decorateFilter(input) {
+          return decoration.symbol + input + decoration.symbol;
+        }
+        decorateFilter.$stateful = true;
+
+        return decorateFilter;
+      }])
+      .controller('MyController', ['$scope', 'decoration', function($scope, decoration) {
+        $scope.greeting = 'hello';
+        $scope.decoration = decoration;
+      }])
+      .value('decoration', {symbol: '*'});
+  </file>
+</example>
+
 
 ## Testing custom filters
 

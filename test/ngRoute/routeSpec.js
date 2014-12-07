@@ -1,7 +1,8 @@
 'use strict';
 
 describe('$route', function() {
-  var $httpBackend;
+  var $httpBackend,
+      element;
 
   beforeEach(module('ngRoute'));
 
@@ -17,6 +18,87 @@ describe('$route', function() {
       $httpBackend.when('GET', '404.html').respond('not found');
     };
   }));
+
+  afterEach(function() {
+    dealoc(element);
+  });
+
+  it('should allow cancellation via $locationChangeStart via $routeChangeStart', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/Edit', {
+        id: 'edit', template: 'Some edit functionality'
+      });
+      $routeProvider.when('/Home', {
+        id: 'home'
+      });
+    });
+    module(provideLog);
+    inject(function($route, $location, $rootScope, $compile, log) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.id === 'home' && current.scope.unsavedChanges) {
+          event.preventDefault();
+        }
+      });
+      element = $compile('<div><div ng-view></div></div>')($rootScope);
+      $rootScope.$apply(function() {
+        $location.path('/Edit');
+      });
+      $rootScope.$on('$routeChangeSuccess', log.fn('routeChangeSuccess'));
+      $rootScope.$on('$locationChangeSuccess', log.fn('locationChangeSuccess'));
+
+      // aborted route change
+      $rootScope.$apply(function() {
+        $route.current.scope.unsavedChanges = true;
+      });
+      $rootScope.$apply(function() {
+        $location.path('/Home');
+      });
+      expect($route.current.id).toBe('edit');
+      expect($location.path()).toBe('/Edit');
+      expect(log).toEqual([]);
+
+      // successful route change
+      $rootScope.$apply(function() {
+        $route.current.scope.unsavedChanges = false;
+      });
+      $rootScope.$apply(function() {
+        $location.path('/Home');
+      });
+      expect($route.current.id).toBe('home');
+      expect($location.path()).toBe('/Home');
+      expect(log).toEqual(['locationChangeSuccess', 'routeChangeSuccess']);
+    });
+  });
+
+  it('should allow redirects while handling $routeChangeStart', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some', {
+        id: 'some', template: 'Some functionality'
+      });
+      $routeProvider.when('/redirect', {
+        id: 'redirect'
+      });
+    });
+    module(provideLog);
+    inject(function($route, $location, $rootScope, $compile, log) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.id === 'some') {
+          $location.path('/redirect');
+        }
+      });
+      $compile('<div><div ng-view></div></div>')($rootScope);
+      $rootScope.$on('$routeChangeStart', log.fn('routeChangeStart'));
+      $rootScope.$on('$routeChangeError', log.fn('routeChangeError'));
+      $rootScope.$on('$routeChangeSuccess', log.fn('routeChangeSuccess'));
+      $rootScope.$apply(function() {
+        $location.path('/some');
+      });
+
+      expect($route.current.id).toBe('redirect');
+      expect($location.path()).toBe('/redirect');
+      expect(log).toEqual(['routeChangeStart', 'routeChangeStart', 'routeChangeSuccess']);
+    });
+  });
 
   it('should route and fire change event', function() {
     var log = '',
@@ -185,6 +267,31 @@ describe('$route', function() {
     });
   });
 
+  it('should allow configuring caseInsensitiveMatch on the route provider level', function() {
+    module(function($routeProvider) {
+      $routeProvider.caseInsensitiveMatch = true;
+      $routeProvider.when('/Blank', {template: 'blank'});
+      $routeProvider.otherwise({template: 'other'});
+    });
+    inject(function($route, $location, $rootScope) {
+      $location.path('/bLaNk');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('blank');
+    });
+  });
+
+  it('should allow overriding provider\'s caseInsensitiveMatch setting on the route level', function() {
+    module(function($routeProvider) {
+      $routeProvider.caseInsensitiveMatch = true;
+      $routeProvider.when('/Blank', {template: 'blank', caseInsensitiveMatch: false});
+      $routeProvider.otherwise({template: 'other'});
+    });
+    inject(function($route, $location, $rootScope) {
+      $location.path('/bLaNk');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('other');
+    });
+  });
 
   it('should not change route when location is canceled', function() {
     module(function($routeProvider) {
@@ -219,13 +326,13 @@ describe('$route', function() {
       expect($route.current).toBeUndefined();
     }));
 
-    it('matches literal *', inject(function($route, $location, $rootScope) {
+    it('matches literal .', inject(function($route, $location, $rootScope) {
       $location.path('/$testX23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
     }));
 
-    it('matches literal .', inject(function($route, $location, $rootScope) {
+    it('matches literal *', inject(function($route, $location, $rootScope) {
       $location.path('/$test.23/foooo(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
@@ -242,6 +349,21 @@ describe('$route', function() {
       $rootScope.$digest();
       expect($route.current).toBeDefined();
     }));
+
+    it("should use route params inherited from prototype chain", function() {
+      function BaseRoute() {}
+      BaseRoute.prototype.templateUrl = 'foo.html';
+
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', new BaseRoute());
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect($route.current.templateUrl).toBe('foo.html');
+      });
+    });
   });
 
 
@@ -314,7 +436,7 @@ describe('$route', function() {
 
 
   it('should chain whens and otherwise', function() {
-    module(function($routeProvider){
+    module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'foo.html'}).
           otherwise({templateUrl: 'bar.html'}).
           when('/baz', {templateUrl: 'baz.html'});
@@ -380,7 +502,7 @@ describe('$route', function() {
     it('should handle unknown routes with "otherwise" route definition', function() {
       function NotFoundCtrl() {}
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/foo', {templateUrl: 'foo.html'});
         $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
       });
@@ -411,7 +533,7 @@ describe('$route', function() {
 
 
     it('should update $route.current and $route.next when default route is matched', function() {
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/foo', {templateUrl: 'foo.html'});
         $routeProvider.otherwise({templateUrl: '404.html'});
       });
@@ -481,7 +603,7 @@ describe('$route', function() {
 
 
   describe('events', function() {
-    it('should not fire $after/beforeRouteChange during bootstrap (if no route)', function() {
+    it('should not fire $routeChangeStart/Success during bootstrap (if no route)', function() {
       var routeChangeSpy = jasmine.createSpy('route change');
 
       module(function($routeProvider) {
@@ -498,6 +620,10 @@ describe('$route', function() {
         $location.path('/no-route-here');
         $rootScope.$digest();
         expect(routeChangeSpy).not.toHaveBeenCalled();
+
+        $location.path('/one');
+        $rootScope.$digest();
+        expect(routeChangeSpy).toHaveBeenCalled();
       });
     });
 
@@ -602,7 +728,7 @@ describe('$route', function() {
         $routeProvider.when('/foo', { templateUrl: 'http://example.com/foo.html' });
       });
 
-      inject(function ($route, $location, $rootScope) {
+      inject(function($route, $location, $rootScope) {
         $location.path('/foo');
         expect(function() {
           $rootScope.$digest();
@@ -617,7 +743,7 @@ describe('$route', function() {
         $sceDelegateProvider.resourceUrlWhitelist([/^http:\/\/example\.com\/foo\.html$/]);
       });
 
-      inject(function ($route, $location, $rootScope) {
+      inject(function($route, $location, $rootScope) {
         $httpBackend.whenGET('http://example.com/foo.html').respond('FOO BODY');
         $location.path('/foo');
         $rootScope.$digest();
@@ -688,7 +814,7 @@ describe('$route', function() {
     });
 
 
-    it('should throw an error when a template is empty or not found', function() {
+    it('should throw an error when a template is not found', function() {
       module(function($routeProvider, $exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');
         $routeProvider.
@@ -710,7 +836,7 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain("[$compile:tpload] Failed to load template: r2.html");
+        expect($exceptionHandler.errors.length).toBe(0);
 
         $httpBackend.expectGET('r3.html').respond('abc');
         $location.path('/r3');
@@ -745,7 +871,7 @@ describe('$route', function() {
 
 
   it('should match route with and without trailing slash', function() {
-    module(function($routeProvider){
+    module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'foo.html'});
       $routeProvider.when('/bar/', {templateUrl: 'bar.html'});
     });
@@ -848,6 +974,29 @@ describe('$route', function() {
     });
 
 
+    it('should properly interpolate optional and eager route vars ' +
+       'when redirecting from path with trailing slash', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo/:id?/:subid?', {templateUrl: 'foo.html'});
+        $routeProvider.when('/bar/:id*/:subid', {templateUrl: 'bar.html'});
+      });
+
+      inject(function($location, $rootScope, $route) {
+        $location.path('/foo/id1/subid2/');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/foo/id1/subid2');
+        expect($route.current.templateUrl).toEqual('foo.html');
+
+        $location.path('/bar/id1/extra/subid2/');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/bar/id1/extra/subid2');
+        expect($route.current.templateUrl).toEqual('bar.html');
+      });
+    });
+
+
     it('should allow custom redirectTo function to be used', function() {
       function customRedirectFn(routePathParams, path, search) {
         expect(routePathParams).toEqual({id: 'id3'});
@@ -856,7 +1005,7 @@ describe('$route', function() {
         return '/custom';
       }
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id', {redirectTo: customRedirectFn});
       });
@@ -883,7 +1032,7 @@ describe('$route', function() {
 
         expect($location.path()).toEqual('/bar/id3');
         expect($browserUrl.mostRecentCall.args)
-            .toEqual(['http://server/#/bar/id3?extra=eId', true]);
+            .toEqual(['http://server/#/bar/id3?extra=eId', true, null]);
       });
     });
   });
@@ -1050,7 +1199,7 @@ describe('$route', function() {
         return 'foo.html';
       }
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id', {templateUrl: customTemplateUrlFn});
       });

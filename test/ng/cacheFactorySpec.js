@@ -164,7 +164,7 @@ describe('$cacheFactory', function() {
         cache.put('foo', 'bar');
         cache.destroy();
 
-        expect(function() { cache.get('foo'); } ).toThrow();
+        expect(function() { cache.get('foo'); }).toThrow();
         expect(function() { cache.get('neverexisted'); }).toThrow();
         expect(function() { cache.put('foo', 'bar'); }).toThrow();
 
@@ -181,7 +181,7 @@ describe('$cacheFactory', function() {
       var cache = $cacheFactory('cache1', {capacity: 5});
       expect(cache.info().size).toBe(0);
 
-      for (var i=0; i<5; i++) {
+      for (var i = 0; i < 5; i++) {
         cache.put('id' + i, i);
       }
 

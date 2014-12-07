@@ -6,47 +6,54 @@
  * @requires $rootScope
  *
  * @description
- * A promise/deferred implementation inspired by [Kris Kowal's Q](https://github.com/kriskowal/q).
+ * A service that helps you run functions asynchronously, and use their return values (or exceptions)
+ * when they are done processing.
  *
- * $q can be used in two fashions --- One, which is more similar to Kris Kowal's Q or jQuery's Deferred
- * implementations, the other resembles ES6 promises to some degree.
+ * This is an implementation of promises/deferred objects inspired by
+ * [Kris Kowal's Q](https://github.com/kriskowal/q).
+ *
+ * $q can be used in two fashions --- one which is more similar to Kris Kowal's Q or jQuery's Deferred
+ * implementations, and the other which resembles ES6 promises to some degree.
  *
  * # $q constructor
  *
  * The streamlined ES6 style promise is essentially just using $q as a constructor which takes a `resolver`
- * function as the first argument). This is similar to the native Promise implementation from ES6 Harmony,
+ * function as the first argument. This is similar to the native Promise implementation from ES6 Harmony,
  * see [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
  *
- * While the constructor-style use is supported, not all of the supporting methods from Harmony promises are
+ * While the constructor-style use is supported, not all of the supporting methods from ES6 Harmony promises are
  * available yet.
  *
  * It can be used like so:
  *
  * ```js
- * return $q(function(resolve, reject) {
- *   // perform some asynchronous operation, resolve or reject the promise when appropriate.
- *   setInterval(function() {
- *     if (pollStatus > 0) {
- *       resolve(polledValue);
- *     } else if (pollStatus < 0) {
- *       reject(polledValue);
- *     } else {
- *       pollStatus = pollAgain(function(value) {
- *         polledValue = value;
- *       });
- *     }
- *   }, 10000);
- * }).
- *   then(function(value) {
- *     // handle success
+ *   // for the purpose of this example let's assume that variables `$q` and `okToGreet`
+ *   // are available in the current lexical scope (they could have been injected or passed in).
+ *
+ *   function asyncGreet(name) {
+ *     // perform some asynchronous operation, resolve or reject the promise when appropriate.
+ *     return $q(function(resolve, reject) {
+ *       setTimeout(function() {
+ *         if (okToGreet(name)) {
+ *           resolve('Hello, ' + name + '!');
+ *         } else {
+ *           reject('Greeting ' + name + ' is not allowed.');
+ *         }
+ *       }, 1000);
+ *     });
+ *   }
+ *
+ *   var promise = asyncGreet('Robin Hood');
+ *   promise.then(function(greeting) {
+ *     alert('Success: ' + greeting);
  *   }, function(reason) {
- *     // handle failure
+ *     alert('Failed: ' + reason);
  *   });
  * ```
  *
- * Note, progress/notify callbacks are not currently supported via the ES6-style interface.
+ * Note: progress/notify callbacks are not currently supported via the ES6-style interface.
  *
- * However, the more traditional CommonJS style usage is still available, and documented below.
+ * However, the more traditional CommonJS-style usage is still available, and documented below.
  *
  * [The CommonJS Promise proposal](http://wiki.commonjs.org/wiki/Promises) describes a promise as an
  * interface for interacting with an object that represents the result of an action that is
@@ -56,7 +63,7 @@
  * asynchronous programming what `try`, `catch` and `throw` keywords are to synchronous programming.
  *
  * ```js
- *   // for the purpose of this example let's assume that variables `$q`, `scope` and `okToGreet`
+ *   // for the purpose of this example let's assume that variables `$q` and `okToGreet`
  *   // are available in the current lexical scope (they could have been injected or passed in).
  *
  *   function asyncGreet(name) {
@@ -134,20 +141,16 @@
  *
  *   This method *returns a new promise* which is resolved or rejected via the return value of the
  *   `successCallback`, `errorCallback`. It also notifies via the return value of the
- *   `notifyCallback` method. The promise can not be resolved or rejected from the notifyCallback
+ *   `notifyCallback` method. The promise cannot be resolved or rejected from the notifyCallback
  *   method.
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
- * - `finally(callback)` – allows you to observe either the fulfillment or rejection of a promise,
+ * - `finally(callback, notifyCallback)` – allows you to observe either the fulfillment or rejection of a promise,
  *   but to do so without modifying the final value. This is useful to release resources or do some
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
  *   specification](https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback) for
  *   more information.
- *
- *   Because `finally` is a reserved word in JavaScript and reserved keywords are not supported as
- *   property names by ES3, you'll need to invoke the method like `promise['finally'](callback)` to
- *   make your code IE8 and Android 2.x compatible.
  *
  * # Chaining promises
  *
@@ -204,7 +207,7 @@
  *  ```
  *
  * @param {function(function, function)} resolver Function which is responsible for resolving or
- *   rejecting the newly created promise. The first parameteter is a function which resolves the
+ *   rejecting the newly created promise. The first parameter is a function which resolves the
  *   promise, the second parameter is a function which rejects the promise.
  *
  * @returns {Promise} The newly created promise.
@@ -315,7 +318,7 @@ function qFactory(nextTick, exceptionHandler) {
         } else {
           promise.reject(state.value);
         }
-      } catch(e) {
+      } catch (e) {
         promise.reject(e);
         exceptionHandler(e);
       }
@@ -365,7 +368,7 @@ function qFactory(nextTick, exceptionHandler) {
           this.promise.$$state.status = 1;
           scheduleProcessQueue(this.promise.$$state);
         }
-      } catch(e) {
+      } catch (e) {
         fns[1](e);
         exceptionHandler(e);
       }
@@ -393,7 +396,7 @@ function qFactory(nextTick, exceptionHandler) {
             callback = callbacks[i][3];
             try {
               result.notify(isFunction(callback) ? callback(progress) : progress);
-            } catch(e) {
+            } catch (e) {
               exceptionHandler(e);
             }
           }
@@ -458,7 +461,7 @@ function qFactory(nextTick, exceptionHandler) {
     var callbackOutput = null;
     try {
       if (isFunction(callback)) callbackOutput = callback();
-    } catch(e) {
+    } catch (e) {
       return makePromise(e, false);
     }
     if (isPromiseLike(callbackOutput)) {

@@ -150,7 +150,7 @@ __`test/e2e/scenarios.js`:__
 ...
     it('should be possible to control phone order via the drop down select box', function() {
 
-      var phoneNameColumn = element.all(by.repeater('phone in phones').column('{{phone.name}}'));
+      var phoneNameColumn = element.all(by.repeater('phone in phones').column('phone.name'));
       var query = element(by.model('query'));
 
       function getNames() {
@@ -182,7 +182,7 @@ You can now rerun `npm run protractor` to see the tests run.
 # Experiments
 
 * In the `PhoneListCtrl` controller, remove the statement that sets the `orderProp` value and
-you'll see that Angular will temporarily add a new "unknown" option to the drop-down list and the
+you'll see that Angular will temporarily add a new blank ("unknown") option to the drop-down list and the
 ordering will default to unordered/natural order.
 
 * Add an `{{orderProp}}` binding into the `index.html` template to display its current value as

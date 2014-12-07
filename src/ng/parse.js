@@ -5,7 +5,7 @@ var $parseMinErr = minErr('$parse');
 // Sandboxing Angular Expressions
 // ------------------------------
 // Angular expressions are generally considered safe because these expressions only have direct
-// access to $scope and locals. However, one can obtain the ability to execute arbitrary JS code by
+// access to `$scope` and locals. However, one can obtain the ability to execute arbitrary JS code by
 // obtaining a reference to native JS functions such as the Function constructor.
 //
 // As an example, consider the following Angular expression:
@@ -14,7 +14,7 @@ var $parseMinErr = minErr('$parse');
 //
 // This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits
 // against the expression language, but not to prevent exploits that were enabled by exposing
-// sensitive JavaScript or browser apis on Scope. Exposing such objects on a Scope is never a good
+// sensitive JavaScript or browser APIs on Scope. Exposing such objects on a Scope is never a good
 // practice and therefore we are not even trying to protect against interaction with an object
 // explicitly exposed in this way.
 //
@@ -22,6 +22,8 @@ var $parseMinErr = minErr('$parse');
 // window or some DOM object that has a reference to window is published onto a Scope.
 // Similarly we prevent invocations of function known to be dangerous, as well as assignments to
 // native objects.
+//
+// See https://docs.angularjs.org/guide/security
 
 
 function ensureSafeMemberName(name, fullExpression) {
@@ -30,7 +32,7 @@ function ensureSafeMemberName(name, fullExpression) {
       || name === "__proto__") {
     throw $parseMinErr('isecfld',
         'Attempting to access a disallowed field in Angular expressions! '
-        +'Expression: {0}', fullExpression);
+        + 'Expression: {0}', fullExpression);
   }
   return name;
 }
@@ -80,13 +82,26 @@ function ensureSafeFunction(obj, fullExpression) {
   }
 }
 
+//Keyword constants
+var CONSTANTS = createMap();
+forEach({
+  'null': function() { return null; },
+  'true': function() { return true; },
+  'false': function() { return false; },
+  'undefined': function() {}
+}, function(constantGetter, name) {
+  constantGetter.constant = constantGetter.literal = constantGetter.sharedGetter = true;
+  CONSTANTS[name] = constantGetter;
+});
+
+//Not quite a constant, but can be lex/parsed the same
+CONSTANTS['this'] = function(self) { return self; };
+CONSTANTS['this'].sharedGetter = true;
+
+
+//Operators - will be wrapped by binaryFn/unaryFn/assignment/filter
 var OPERATORS = extend(createMap(), {
-    /* jshint bitwise : false */
-    'null':function(){return null;},
-    'true':function(){return true;},
-    'false':function(){return false;},
-    undefined:noop,
-    '+':function(self, locals, a,b){
+    '+':function(self, locals, a, b) {
       a=a(self, locals); b=b(self, locals);
       if (isDefined(a)) {
         if (isDefined(b)) {
@@ -94,32 +109,30 @@ var OPERATORS = extend(createMap(), {
         }
         return a;
       }
-      return isDefined(b)?b:undefined;},
-    '-':function(self, locals, a,b){
+      return isDefined(b) ? b : undefined;},
+    '-':function(self, locals, a, b) {
           a=a(self, locals); b=b(self, locals);
-          return (isDefined(a)?a:0)-(isDefined(b)?b:0);
+          return (isDefined(a) ? a : 0) - (isDefined(b) ? b : 0);
         },
-    '*':function(self, locals, a,b){return a(self, locals)*b(self, locals);},
-    '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
-    '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
-    '^':function(self, locals, a,b){return a(self, locals)^b(self, locals);},
-    '=':noop,
-    '===':function(self, locals, a, b){return a(self, locals)===b(self, locals);},
-    '!==':function(self, locals, a, b){return a(self, locals)!==b(self, locals);},
-    '==':function(self, locals, a,b){return a(self, locals)==b(self, locals);},
-    '!=':function(self, locals, a,b){return a(self, locals)!=b(self, locals);},
-    '<':function(self, locals, a,b){return a(self, locals)<b(self, locals);},
-    '>':function(self, locals, a,b){return a(self, locals)>b(self, locals);},
-    '<=':function(self, locals, a,b){return a(self, locals)<=b(self, locals);},
-    '>=':function(self, locals, a,b){return a(self, locals)>=b(self, locals);},
-    '&&':function(self, locals, a,b){return a(self, locals)&&b(self, locals);},
-    '||':function(self, locals, a,b){return a(self, locals)||b(self, locals);},
-    '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
-//    '|':function(self, locals, a,b){return a|b;},
-    '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
-    '!':function(self, locals, a){return !a(self, locals);}
+    '*':function(self, locals, a, b) {return a(self, locals) * b(self, locals);},
+    '/':function(self, locals, a, b) {return a(self, locals) / b(self, locals);},
+    '%':function(self, locals, a, b) {return a(self, locals) % b(self, locals);},
+    '===':function(self, locals, a, b) {return a(self, locals) === b(self, locals);},
+    '!==':function(self, locals, a, b) {return a(self, locals) !== b(self, locals);},
+    '==':function(self, locals, a, b) {return a(self, locals) == b(self, locals);},
+    '!=':function(self, locals, a, b) {return a(self, locals) != b(self, locals);},
+    '<':function(self, locals, a, b) {return a(self, locals) < b(self, locals);},
+    '>':function(self, locals, a, b) {return a(self, locals) > b(self, locals);},
+    '<=':function(self, locals, a, b) {return a(self, locals) <= b(self, locals);},
+    '>=':function(self, locals, a, b) {return a(self, locals) >= b(self, locals);},
+    '&&':function(self, locals, a, b) {return a(self, locals) && b(self, locals);},
+    '||':function(self, locals, a, b) {return a(self, locals) || b(self, locals);},
+    '!':function(self, locals, a) {return !a(self, locals);},
+
+    //Tokenized as operators but parsed as assignment/filters
+    '=':true,
+    '|':true
 });
-/* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
 
@@ -129,54 +142,41 @@ var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'
 /**
  * @constructor
  */
-var Lexer = function (options) {
+var Lexer = function(options) {
   this.options = options;
 };
 
 Lexer.prototype = {
   constructor: Lexer,
 
-  lex: function (text) {
+  lex: function(text) {
     this.text = text;
     this.index = 0;
-    this.ch = undefined;
     this.tokens = [];
 
     while (this.index < this.text.length) {
-      this.ch = this.text.charAt(this.index);
-      if (this.is('"\'')) {
-        this.readString(this.ch);
-      } else if (this.isNumber(this.ch) || this.is('.') && this.isNumber(this.peek())) {
+      var ch = this.text.charAt(this.index);
+      if (ch === '"' || ch === "'") {
+        this.readString(ch);
+      } else if (this.isNumber(ch) || ch === '.' && this.isNumber(this.peek())) {
         this.readNumber();
-      } else if (this.isIdent(this.ch)) {
+      } else if (this.isIdent(ch)) {
         this.readIdent();
-      } else if (this.is('(){}[].,;:?')) {
-        this.tokens.push({
-          index: this.index,
-          text: this.ch
-        });
+      } else if (this.is(ch, '(){}[].,;:?')) {
+        this.tokens.push({index: this.index, text: ch});
         this.index++;
-      } else if (this.isWhitespace(this.ch)) {
+      } else if (this.isWhitespace(ch)) {
         this.index++;
       } else {
-        var ch2 = this.ch + this.peek();
+        var ch2 = ch + this.peek();
         var ch3 = ch2 + this.peek(2);
-        var fn = OPERATORS[this.ch];
-        var fn2 = OPERATORS[ch2];
-        var fn3 = OPERATORS[ch3];
-        if (fn3) {
-          this.tokens.push({index: this.index, text: ch3, fn: fn3});
-          this.index += 3;
-        } else if (fn2) {
-          this.tokens.push({index: this.index, text: ch2, fn: fn2});
-          this.index += 2;
-        } else if (fn) {
-          this.tokens.push({
-            index: this.index,
-            text: this.ch,
-            fn: fn
-          });
-          this.index += 1;
+        var op1 = OPERATORS[ch];
+        var op2 = OPERATORS[ch2];
+        var op3 = OPERATORS[ch3];
+        if (op1 || op2 || op3) {
+          var token = op3 ? ch3 : (op2 ? ch2 : ch);
+          this.tokens.push({index: this.index, text: token, operator: true});
+          this.index += token.length;
         } else {
           this.throwError('Unexpected next character ', this.index, this.index + 1);
         }
@@ -185,8 +185,8 @@ Lexer.prototype = {
     return this.tokens;
   },
 
-  is: function(chars) {
-    return chars.indexOf(this.ch) !== -1;
+  is: function(ch, chars) {
+    return chars.indexOf(ch) !== -1;
   },
 
   peek: function(i) {
@@ -195,7 +195,7 @@ Lexer.prototype = {
   },
 
   isNumber: function(ch) {
-    return ('0' <= ch && ch <= '9');
+    return ('0' <= ch && ch <= '9') && typeof ch === "string";
   },
 
   isWhitespace: function(ch) {
@@ -248,98 +248,28 @@ Lexer.prototype = {
       }
       this.index++;
     }
-    number = 1 * number;
     this.tokens.push({
       index: start,
       text: number,
       constant: true,
-      fn: function() { return number; }
+      value: Number(number)
     });
   },
 
   readIdent: function() {
-    var parser = this;
-
-    var ident = '';
     var start = this.index;
-
-    var lastDot, peekIndex, methodName, ch;
-
     while (this.index < this.text.length) {
-      ch = this.text.charAt(this.index);
-      if (ch === '.' || this.isIdent(ch) || this.isNumber(ch)) {
-        if (ch === '.') lastDot = this.index;
-        ident += ch;
-      } else {
+      var ch = this.text.charAt(this.index);
+      if (!(this.isIdent(ch) || this.isNumber(ch))) {
         break;
       }
       this.index++;
     }
-
-    //check if the identifier ends with . and if so move back one char
-    if (lastDot && ident[ident.length - 1] === '.') {
-      this.index--;
-      ident = ident.slice(0, -1);
-      lastDot = ident.lastIndexOf('.');
-      if (lastDot === -1) {
-        lastDot = undefined;
-      }
-    }
-
-    //check if this is not a method invocation and if it is back out to last dot
-    if (lastDot) {
-      peekIndex = this.index;
-      while (peekIndex < this.text.length) {
-        ch = this.text.charAt(peekIndex);
-        if (ch === '(') {
-          methodName = ident.substr(lastDot - start + 1);
-          ident = ident.substr(0, lastDot - start);
-          this.index = peekIndex;
-          break;
-        }
-        if (this.isWhitespace(ch)) {
-          peekIndex++;
-        } else {
-          break;
-        }
-      }
-    }
-
-
-    var token = {
+    this.tokens.push({
       index: start,
-      text: ident
-    };
-
-    var fn = OPERATORS[ident];
-
-    if (fn) {
-      token.fn = fn;
-      token.constant = true;
-    } else {
-      var getter = getterFn(ident, this.options, this.text);
-      // TODO(perf): consider exposing the getter reference
-      token.fn = extend(function $parsePathGetter(self, locals) {
-        return getter(self, locals);
-      }, {
-        assign: function(self, value) {
-          return setter(self, ident, value, parser.text);
-        }
-      });
-    }
-
-    this.tokens.push(token);
-
-    if (methodName) {
-      this.tokens.push({
-        index: lastDot,
-        text: '.'
-      });
-      this.tokens.push({
-        index: lastDot + 1,
-        text: methodName
-      });
-    }
+      text: this.text.slice(start, this.index),
+      identifier: true
+    });
   },
 
   readString: function(quote) {
@@ -370,9 +300,8 @@ Lexer.prototype = {
         this.tokens.push({
           index: start,
           text: rawString,
-          string: string,
           constant: true,
-          fn: function() { return string; }
+          value: string
         });
         return;
       } else {
@@ -385,25 +314,30 @@ Lexer.prototype = {
 };
 
 
+function isConstant(exp) {
+  return exp.constant;
+}
+
 /**
  * @constructor
  */
-var Parser = function (lexer, $filter, options) {
+var Parser = function(lexer, $filter, options) {
   this.lexer = lexer;
   this.$filter = $filter;
   this.options = options;
 };
 
-Parser.ZERO = extend(function () {
+Parser.ZERO = extend(function() {
   return 0;
 }, {
+  sharedGetter: true,
   constant: true
 });
 
 Parser.prototype = {
   constructor: Parser,
 
-  parse: function (text) {
+  parse: function(text) {
     this.text = text;
     this.tokens = this.lexer.lex(text);
 
@@ -419,7 +353,7 @@ Parser.prototype = {
     return value;
   },
 
-  primary: function () {
+  primary: function() {
     var primary;
     if (this.expect('(')) {
       primary = this.filterChain();
@@ -428,16 +362,12 @@ Parser.prototype = {
       primary = this.arrayDeclaration();
     } else if (this.expect('{')) {
       primary = this.object();
+    } else if (this.peek().identifier) {
+      primary = this.identifier();
+    } else if (this.peek().constant) {
+      primary = this.constant();
     } else {
-      var token = this.expect();
-      primary = token.fn;
-      if (!primary) {
-        this.throwError('not a primary expression', token);
-      }
-      if (token.constant) {
-        primary.constant = true;
-        primary.literal = true;
-      }
+      this.throwError('not a primary expression', this.peek());
     }
 
     var next, context;
@@ -471,8 +401,11 @@ Parser.prototype = {
   },
 
   peek: function(e1, e2, e3, e4) {
-    if (this.tokens.length > 0) {
-      var token = this.tokens[0];
+    return this.peekAhead(0, e1, e2, e3, e4);
+  },
+  peekAhead: function(i, e1, e2, e3, e4) {
+    if (this.tokens.length > i) {
+      var token = this.tokens[i];
       var t = token.text;
       if (t === e1 || t === e2 || t === e3 || t === e4 ||
           (!e1 && !e2 && !e3 && !e4)) {
@@ -482,7 +415,7 @@ Parser.prototype = {
     return false;
   },
 
-  expect: function(e1, e2, e3, e4){
+  expect: function(e1, e2, e3, e4) {
     var token = this.peek(e1, e2, e3, e4);
     if (token) {
       this.tokens.shift();
@@ -491,33 +424,57 @@ Parser.prototype = {
     return false;
   },
 
-  consume: function(e1){
-    if (!this.expect(e1)) {
+  consume: function(e1) {
+    if (this.tokens.length === 0) {
+      throw $parseMinErr('ueoe', 'Unexpected end of expression: {0}', this.text);
+    }
+
+    var token = this.expect(e1);
+    if (!token) {
       this.throwError('is unexpected, expecting [' + e1 + ']', this.peek());
     }
+    return token;
   },
 
-  unaryFn: function(fn, right) {
-    return extend(function(self, locals) {
+  unaryFn: function(op, right) {
+    var fn = OPERATORS[op];
+    return extend(function $parseUnaryFn(self, locals) {
       return fn(self, locals, right);
     }, {
-      constant:right.constant
+      constant:right.constant,
+      inputs: [right]
     });
   },
 
-  ternaryFn: function(left, middle, right){
-    return extend(function(self, locals){
-      return left(self, locals) ? middle(self, locals) : right(self, locals);
-    }, {
-      constant: left.constant && middle.constant && right.constant
-    });
-  },
-
-  binaryFn: function(left, fn, right) {
-    return extend(function(self, locals) {
+  binaryFn: function(left, op, right, isBranching) {
+    var fn = OPERATORS[op];
+    return extend(function $parseBinaryFn(self, locals) {
       return fn(self, locals, left, right);
     }, {
-      constant:left.constant && right.constant
+      constant: left.constant && right.constant,
+      inputs: !isBranching && [left, right]
+    });
+  },
+
+  identifier: function() {
+    var id = this.consume().text;
+
+    //Continue reading each `.identifier` unless it is a method invocation
+    while (this.peek('.') && this.peekAhead(1).identifier && !this.peekAhead(2, '(')) {
+      id += this.consume().text + this.consume().text;
+    }
+
+    return CONSTANTS[id] || getterFn(id, this.options, this.text);
+  },
+
+  constant: function() {
+    var value = this.consume().value;
+
+    return extend(function $parseConstant() {
+      return value;
+    }, {
+      constant: true,
+      literal: true
     });
   },
 
@@ -531,13 +488,10 @@ Parser.prototype = {
         // TODO(size): maybe we should not support multiple statements?
         return (statements.length === 1)
             ? statements[0]
-            : function(self, locals) {
+            : function $parseStatements(self, locals) {
                 var value;
-                for (var i = 0; i < statements.length; i++) {
-                  var statement = statements[i];
-                  if (statement) {
-                    value = statement(self, locals);
-                  }
+                for (var i = 0, ii = statements.length; i < ii; i++) {
+                  value = statements[i](self, locals);
                 }
                 return value;
               };
@@ -548,18 +502,14 @@ Parser.prototype = {
   filterChain: function() {
     var left = this.expression();
     var token;
-    while (true) {
-      if ((token = this.expect('|'))) {
-        left = this.binaryFn(left, token.fn, this.filter());
-      } else {
-        return left;
-      }
+    while ((token = this.expect('|'))) {
+      left = this.filter(left);
     }
+    return left;
   },
 
-  filter: function() {
-    var token = this.expect();
-    var fn = this.$filter(token.text);
+  filter: function(inputFn) {
+    var fn = this.$filter(this.consume().text);
     var argsFn;
     var args;
 
@@ -571,7 +521,10 @@ Parser.prototype = {
       }
     }
 
-    return valueFn(function $parseFilter(self, locals, input) {
+    var inputs = [inputFn].concat(argsFn || []);
+
+    return extend(function $parseFilter(self, locals) {
+      var input = inputFn(self, locals);
       if (args) {
         args[0] = input;
 
@@ -584,6 +537,9 @@ Parser.prototype = {
       }
 
       return fn(input);
+    }, {
+      constant: !fn.$stateful && inputs.every(isConstant),
+      inputs: !fn.$stateful && inputs
     });
   },
 
@@ -601,9 +557,11 @@ Parser.prototype = {
             this.text.substring(0, token.index) + '] can not be assigned to', token);
       }
       right = this.ternary();
-      return function(scope, locals) {
+      return extend(function $parseAssignment(scope, locals) {
         return left.assign(scope, right(scope, locals), locals);
-      };
+      }, {
+        inputs: [left, right]
+      });
     }
     return left;
   },
@@ -614,33 +572,34 @@ Parser.prototype = {
     var token;
     if ((token = this.expect('?'))) {
       middle = this.assignment();
-      if ((token = this.expect(':'))) {
-        return this.ternaryFn(left, middle, this.assignment());
-      } else {
-        this.throwError('expected :', token);
+      if (this.consume(':')) {
+        var right = this.assignment();
+
+        return extend(function $parseTernary(self, locals) {
+          return left(self, locals) ? middle(self, locals) : right(self, locals);
+        }, {
+          constant: left.constant && middle.constant && right.constant
+        });
       }
-    } else {
-      return left;
     }
+
+    return left;
   },
 
   logicalOR: function() {
     var left = this.logicalAND();
     var token;
-    while (true) {
-      if ((token = this.expect('||'))) {
-        left = this.binaryFn(left, token.fn, this.logicalAND());
-      } else {
-        return left;
-      }
+    while ((token = this.expect('||'))) {
+      left = this.binaryFn(left, token.text, this.logicalAND(), true);
     }
+    return left;
   },
 
   logicalAND: function() {
     var left = this.equality();
     var token;
-    if ((token = this.expect('&&'))) {
-      left = this.binaryFn(left, token.fn, this.logicalAND());
+    while ((token = this.expect('&&'))) {
+      left = this.binaryFn(left, token.text, this.equality(), true);
     }
     return left;
   },
@@ -648,8 +607,8 @@ Parser.prototype = {
   equality: function() {
     var left = this.relational();
     var token;
-    if ((token = this.expect('==','!=','===','!=='))) {
-      left = this.binaryFn(left, token.fn, this.equality());
+    while ((token = this.expect('==','!=','===','!=='))) {
+      left = this.binaryFn(left, token.text, this.relational());
     }
     return left;
   },
@@ -657,8 +616,8 @@ Parser.prototype = {
   relational: function() {
     var left = this.additive();
     var token;
-    if ((token = this.expect('<', '>', '<=', '>='))) {
-      left = this.binaryFn(left, token.fn, this.relational());
+    while ((token = this.expect('<', '>', '<=', '>='))) {
+      left = this.binaryFn(left, token.text, this.additive());
     }
     return left;
   },
@@ -667,7 +626,7 @@ Parser.prototype = {
     var left = this.multiplicative();
     var token;
     while ((token = this.expect('+','-'))) {
-      left = this.binaryFn(left, token.fn, this.multiplicative());
+      left = this.binaryFn(left, token.text, this.multiplicative());
     }
     return left;
   },
@@ -676,7 +635,7 @@ Parser.prototype = {
     var left = this.unary();
     var token;
     while ((token = this.expect('*','/','%'))) {
-      left = this.binaryFn(left, token.fn, this.unary());
+      left = this.binaryFn(left, token.text, this.unary());
     }
     return left;
   },
@@ -686,18 +645,18 @@ Parser.prototype = {
     if (this.expect('+')) {
       return this.primary();
     } else if ((token = this.expect('-'))) {
-      return this.binaryFn(Parser.ZERO, token.fn, this.unary());
+      return this.binaryFn(Parser.ZERO, token.text, this.unary());
     } else if ((token = this.expect('!'))) {
-      return this.unaryFn(token.fn, this.unary());
+      return this.unaryFn(token.text, this.unary());
     } else {
       return this.primary();
     }
   },
 
   fieldAccess: function(object) {
-    var parser = this;
-    var field = this.expect().text;
-    var getter = getterFn(field, this.options, this.text);
+    var expression = this.text;
+    var field = this.consume().text;
+    var getter = getterFn(field, this.options, expression);
 
     return extend(function $parseFieldAccess(scope, locals, self) {
       return getter(self || object(scope, locals));
@@ -705,13 +664,13 @@ Parser.prototype = {
       assign: function(scope, value, locals) {
         var o = object(scope, locals);
         if (!o) object.assign(scope, o = {});
-        return setter(o, field, value, parser.text);
+        return setter(o, field, value, expression);
       }
     });
   },
 
   objectIndex: function(obj) {
-    var parser = this;
+    var expression = this.text;
 
     var indexFn = this.expression();
     this.consume(']');
@@ -721,15 +680,15 @@ Parser.prototype = {
           i = indexFn(self, locals),
           v;
 
-      ensureSafeMemberName(i, parser.text);
+      ensureSafeMemberName(i, expression);
       if (!o) return undefined;
-      v = ensureSafeObject(o[i], parser.text);
+      v = ensureSafeObject(o[i], expression);
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
+        var key = ensureSafeMemberName(indexFn(self, locals), expression);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
-        var o = ensureSafeObject(obj(self, locals), parser.text);
+        var o = ensureSafeObject(obj(self, locals), expression);
         if (!o) obj.assign(self, o = {});
         return o[key] = value;
       }
@@ -750,90 +709,87 @@ Parser.prototype = {
     var args = argsFn.length ? [] : null;
 
     return function $parseFunctionCall(scope, locals) {
-      var context = contextGetter ? contextGetter(scope, locals) : scope;
+      var context = contextGetter ? contextGetter(scope, locals) : isDefined(contextGetter) ? undefined : scope;
       var fn = fnGetter(scope, locals, context) || noop;
 
       if (args) {
         var i = argsFn.length;
         while (i--) {
-          args[i] = argsFn[i](scope, locals);
+          args[i] = ensureSafeObject(argsFn[i](scope, locals), expressionText);
         }
       }
 
       ensureSafeObject(context, expressionText);
       ensureSafeFunction(fn, expressionText);
 
-      // IE stupidity! (IE doesn't have apply for some native functions)
+      // IE doesn't have apply for some native functions
       var v = fn.apply
             ? fn.apply(context, args)
             : fn(args[0], args[1], args[2], args[3], args[4]);
 
       return ensureSafeObject(v, expressionText);
-    };
+      };
   },
 
   // This is used with json array declaration
-  arrayDeclaration: function () {
+  arrayDeclaration: function() {
     var elementFns = [];
-    var allConstant = true;
     if (this.peekToken().text !== ']') {
       do {
         if (this.peek(']')) {
           // Support trailing commas per ES5.1.
           break;
         }
-        var elementFn = this.expression();
-        elementFns.push(elementFn);
-        if (!elementFn.constant) {
-          allConstant = false;
-        }
+        elementFns.push(this.expression());
       } while (this.expect(','));
     }
     this.consume(']');
 
-    return extend(function(self, locals) {
+    return extend(function $parseArrayLiteral(self, locals) {
       var array = [];
-      for (var i = 0; i < elementFns.length; i++) {
+      for (var i = 0, ii = elementFns.length; i < ii; i++) {
         array.push(elementFns[i](self, locals));
       }
       return array;
     }, {
       literal: true,
-      constant: allConstant
+      constant: elementFns.every(isConstant),
+      inputs: elementFns
     });
   },
 
-  object: function () {
-    var keyValues = [];
-    var allConstant = true;
+  object: function() {
+    var keys = [], valueFns = [];
     if (this.peekToken().text !== '}') {
       do {
         if (this.peek('}')) {
           // Support trailing commas per ES5.1.
           break;
         }
-        var token = this.expect(),
-        key = token.string || token.text;
-        this.consume(':');
-        var value = this.expression();
-        keyValues.push({key: key, value: value});
-        if (!value.constant) {
-          allConstant = false;
+        var token = this.consume();
+        if (token.constant) {
+          keys.push(token.value);
+        } else if (token.identifier) {
+          keys.push(token.text);
+        } else {
+          this.throwError("invalid key", token);
         }
+        this.consume(':');
+        valueFns.push(this.expression());
       } while (this.expect(','));
     }
     this.consume('}');
 
-    return extend(function(self, locals) {
+    return extend(function $parseObjectLiteral(self, locals) {
       var object = {};
-      for (var i = 0; i < keyValues.length; i++) {
-        var keyValue = keyValues[i];
-        object[keyValue.key] = keyValue.value(self, locals);
+      for (var i = 0, ii = valueFns.length; i < ii; i++) {
+        object[keys[i]] = valueFns[i](self, locals);
       }
       return object;
     }, {
       literal: true,
-      constant: allConstant
+      constant: valueFns.every(isConstant),
+      inputs: valueFns
     });
   }
 };
@@ -844,11 +800,12 @@ Parser.prototype = {
 //////////////////////////////////////////////////
 
 function setter(obj, path, setValue, fullExp) {
+  ensureSafeObject(obj, fullExp);
 
   var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
     key = ensureSafeMemberName(element.shift(), fullExp);
-    var propertyObj = obj[key];
+    var propertyObj = ensureSafeObject(obj[key], fullExp);
     if (!propertyObj) {
       propertyObj = {};
       obj[key] = propertyObj;
@@ -856,56 +813,76 @@ function setter(obj, path, setValue, fullExp) {
     obj = propertyObj;
   }
   key = ensureSafeMemberName(element.shift(), fullExp);
-  ensureSafeObject(obj, fullExp);
   ensureSafeObject(obj[key], fullExp);
   obj[key] = setValue;
   return setValue;
 }
 
-var getterFnCache = createMap();
+var getterFnCacheDefault = createMap();
+var getterFnCacheExpensive = createMap();
+
+function isPossiblyDangerousMemberName(name) {
+  return name == 'constructor';
+}
 
 /**
  * Implementation of the "Black Hole" variant from:
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
  */
-function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
+function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, expensiveChecks) {
   ensureSafeMemberName(key0, fullExp);
   ensureSafeMemberName(key1, fullExp);
   ensureSafeMemberName(key2, fullExp);
   ensureSafeMemberName(key3, fullExp);
   ensureSafeMemberName(key4, fullExp);
+  var eso = function(o) {
+    return ensureSafeObject(o, fullExp);
+  };
+  var eso0 = (expensiveChecks || isPossiblyDangerousMemberName(key0)) ? eso : identity;
+  var eso1 = (expensiveChecks || isPossiblyDangerousMemberName(key1)) ? eso : identity;
+  var eso2 = (expensiveChecks || isPossiblyDangerousMemberName(key2)) ? eso : identity;
+  var eso3 = (expensiveChecks || isPossiblyDangerousMemberName(key3)) ? eso : identity;
+  var eso4 = (expensiveChecks || isPossiblyDangerousMemberName(key4)) ? eso : identity;
 
   return function cspSafeGetter(scope, locals) {
     var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope;
 
     if (pathVal == null) return pathVal;
-    pathVal = pathVal[key0];
+    pathVal = eso0(pathVal[key0]);
 
     if (!key1) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key1];
+    pathVal = eso1(pathVal[key1]);
 
     if (!key2) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key2];
+    pathVal = eso2(pathVal[key2]);
 
     if (!key3) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key3];
+    pathVal = eso3(pathVal[key3]);
 
     if (!key4) return pathVal;
     if (pathVal == null) return undefined;
-    pathVal = pathVal[key4];
+    pathVal = eso4(pathVal[key4]);
 
     return pathVal;
   };
 }
 
-function getterFn(path, options, fullExp) {
-  var fn = getterFnCache[path];
+function getterFnWithEnsureSafeObject(fn, fullExpression) {
+  return function(s, l) {
+    return fn(s, l, ensureSafeObject, fullExpression);
+  };
+}
 
+function getterFn(path, options, fullExp) {
+  var expensiveChecks = options.expensiveChecks;
+  var getterFnCache = (expensiveChecks ? getterFnCacheExpensive : getterFnCacheDefault);
+  var fn = getterFnCache[path];
   if (fn) return fn;
+
 
   var pathKeys = path.split('.'),
       pathKeysLength = pathKeys.length;
@@ -913,13 +890,13 @@ function getterFn(path, options, fullExp) {
   // http://jsperf.com/angularjs-parse-getter/6
   if (options.csp) {
     if (pathKeysLength < 6) {
-      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp);
+      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp, expensiveChecks);
     } else {
-      fn = function(scope, locals) {
+      fn = function cspSafeGetter(scope, locals) {
         var i = 0, val;
         do {
           val = cspSafeGetterFn(pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++],
-                                pathKeys[i++], fullExp)(scope, locals);
+                                pathKeys[i++], fullExp, expensiveChecks)(scope, locals);
 
           locals = undefined; // clear after first iteration
           scope = val;
@@ -929,26 +906,48 @@ function getterFn(path, options, fullExp) {
     }
   } else {
     var code = '';
+    if (expensiveChecks) {
+      code += 's = eso(s, fe);\nl = eso(l, fe);\n';
+    }
+    var needsEnsureSafeObject = expensiveChecks;
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
-      code += 'if(s == null) return undefined;\n' +
-              's='+ (index
+      var lookupJs = (index
                       // we simply dereference 's' on any .dot notation
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
-                      : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key + ';\n';
+                      : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key;
+      if (expensiveChecks || isPossiblyDangerousMemberName(key)) {
+        lookupJs = 'eso(' + lookupJs + ', fe)';
+        needsEnsureSafeObject = true;
+      }
+      code += 'if(s == null) return undefined;\n' +
+              's=' + lookupJs + ';\n';
     });
     code += 'return s;';
 
     /* jshint -W054 */
-    var evaledFnGetter = new Function('s', 'l', code); // s=scope, l=locals
+    var evaledFnGetter = new Function('s', 'l', 'eso', 'fe', code); // s=scope, l=locals, eso=ensureSafeObject
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
+    if (needsEnsureSafeObject) {
+      evaledFnGetter = getterFnWithEnsureSafeObject(evaledFnGetter, fullExp);
+    }
     fn = evaledFnGetter;
   }
 
+  fn.sharedGetter = true;
+  fn.assign = function(self, value) {
+    return setter(self, path, value, path);
+  };
   getterFnCache[path] = fn;
   return fn;
+}
+
+var objectValueOf = Object.prototype.valueOf;
+
+function getValueOf(value) {
+  return isFunction(value.valueOf) ? value.valueOf() : objectValueOf.call(value);
 }
 
 ///////////////////////////////////
@@ -997,30 +996,50 @@ function getterFn(path, options, fullExp) {
 /**
  * @ngdoc provider
  * @name $parseProvider
- * @kind function
  *
  * @description
  * `$parseProvider` can be used for configuring the default behavior of the {@link ng.$parse $parse}
  *  service.
  */
 function $ParseProvider() {
-  var cache = createMap();
+  var cacheDefault = createMap();
+  var cacheExpensive = createMap();
 
-  var $parseOptions = {
-    csp: false
-  };
 
 
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
-    $parseOptions.csp = $sniffer.csp;
+    var $parseOptions = {
+          csp: $sniffer.csp,
+          expensiveChecks: false
+        },
+        $parseOptionsExpensive = {
+          csp: $sniffer.csp,
+          expensiveChecks: true
+        };
 
-    return function $parse(exp, interceptorFn) {
+    function wrapSharedExpression(exp) {
+      var wrapped = exp;
+
+      if (exp.sharedGetter) {
+        wrapped = function $parseWrapper(self, locals) {
+          return exp(self, locals);
+        };
+        wrapped.literal = exp.literal;
+        wrapped.constant = exp.constant;
+        wrapped.assign = exp.assign;
+      }
+
+      return wrapped;
+    }
+
+    return function $parse(exp, interceptorFn, expensiveChecks) {
       var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
         case 'string':
           cacheKey = exp = exp.trim();
 
+          var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
           parsedExpression = cache[cacheKey];
 
           if (!parsedExpression) {
@@ -1029,15 +1048,21 @@ function $ParseProvider() {
               exp = exp.substring(2);
             }
 
-            var lexer = new Lexer($parseOptions);
-            var parser = new Parser(lexer, $filter, $parseOptions);
+            var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
+            var lexer = new Lexer(parseOptions);
+            var parser = new Parser(lexer, $filter, parseOptions);
             parsedExpression = parser.parse(exp);
 
             if (parsedExpression.constant) {
               parsedExpression.$$watchDelegate = constantWatchDelegate;
             } else if (oneTime) {
+              //oneTime is not part of the exp passed to the Parser so we may have to
+              //wrap the parsedExpression before adding a $$watchDelegate
+              parsedExpression = wrapSharedExpression(parsedExpression);
               parsedExpression.$$watchDelegate = parsedExpression.literal ?
                 oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
+            } else if (parsedExpression.inputs) {
+              parsedExpression.$$watchDelegate = inputsWatchDelegate;
             }
 
             cache[cacheKey] = parsedExpression;
@@ -1052,6 +1077,88 @@ function $ParseProvider() {
       }
     };
 
+    function collectExpressionInputs(inputs, list) {
+      for (var i = 0, ii = inputs.length; i < ii; i++) {
+        var input = inputs[i];
+        if (!input.constant) {
+          if (input.inputs) {
+            collectExpressionInputs(input.inputs, list);
+          } else if (list.indexOf(input) === -1) { // TODO(perf) can we do better?
+            list.push(input);
+          }
+        }
+      }
+
+      return list;
+    }
+
+    function expressionInputDirtyCheck(newValue, oldValueOfValue) {
+
+      if (newValue == null || oldValueOfValue == null) { // null/undefined
+        return newValue === oldValueOfValue;
+      }
+
+      if (typeof newValue === 'object') {
+
+        // attempt to convert the value to a primitive type
+        // TODO(docs): add a note to docs that by implementing valueOf even objects and arrays can
+        //             be cheaply dirty-checked
+        newValue = getValueOf(newValue);
+
+        if (typeof newValue === 'object') {
+          // objects/arrays are not supported - deep-watching them would be too expensive
+          return false;
+        }
+
+        // fall-through to the primitive equality check
+      }
+
+      //Primitive or NaN
+      return newValue === oldValueOfValue || (newValue !== newValue && oldValueOfValue !== oldValueOfValue);
+    }
+
+    function inputsWatchDelegate(scope, listener, objectEquality, parsedExpression) {
+      var inputExpressions = parsedExpression.$$inputs ||
+                    (parsedExpression.$$inputs = collectExpressionInputs(parsedExpression.inputs, []));
+
+      var lastResult;
+
+      if (inputExpressions.length === 1) {
+        var oldInputValue = expressionInputDirtyCheck; // init to something unique so that equals check fails
+        inputExpressions = inputExpressions[0];
+        return scope.$watch(function expressionInputWatch(scope) {
+          var newInputValue = inputExpressions(scope);
+          if (!expressionInputDirtyCheck(newInputValue, oldInputValue)) {
+            lastResult = parsedExpression(scope);
+            oldInputValue = newInputValue && getValueOf(newInputValue);
+          }
+          return lastResult;
+        }, listener, objectEquality);
+      }
+
+      var oldInputValueOfValues = [];
+      for (var i = 0, ii = inputExpressions.length; i < ii; i++) {
+        oldInputValueOfValues[i] = expressionInputDirtyCheck; // init to something unique so that equals check fails
+      }
+
+      return scope.$watch(function expressionInputsWatch(scope) {
+        var changed = false;
+
+        for (var i = 0, ii = inputExpressions.length; i < ii; i++) {
+          var newInputValue = inputExpressions[i](scope);
+          if (changed || (changed = !expressionInputDirtyCheck(newInputValue, oldInputValueOfValues[i]))) {
+            oldInputValueOfValues[i] = newInputValue && getValueOf(newInputValue);
+          }
+        }
+
+        if (changed) {
+          lastResult = parsedExpression(scope);
+        }
+
+        return lastResult;
+      }, listener, objectEquality);
+    }
+
     function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
@@ -1062,7 +1169,7 @@ function $ParseProvider() {
           listener.apply(this, arguments);
         }
         if (isDefined(value)) {
-          scope.$$postDigest(function () {
+          scope.$$postDigest(function() {
             if (isDefined(lastValue)) {
               unwatch();
             }
@@ -1072,23 +1179,24 @@ function $ParseProvider() {
     }
 
     function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
-      var unwatch;
+      var unwatch, lastValue;
       return unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
       }, function oneTimeListener(value, old, scope) {
+        lastValue = value;
         if (isFunction(listener)) {
           listener.call(this, value, old, scope);
         }
         if (isAllDefined(value)) {
-          scope.$$postDigest(function () {
-            if(isAllDefined(value)) unwatch();
+          scope.$$postDigest(function() {
+            if (isAllDefined(lastValue)) unwatch();
           });
         }
       }, objectEquality);
 
       function isAllDefined(value) {
         var allDefined = true;
-        forEach(value, function (val) {
+        forEach(value, function(val) {
           if (!isDefined(val)) allDefined = false;
         });
         return allDefined;
@@ -1109,15 +1217,34 @@ function $ParseProvider() {
 
     function addInterceptor(parsedExpression, interceptorFn) {
       if (!interceptorFn) return parsedExpression;
+      var watchDelegate = parsedExpression.$$watchDelegate;
 
-      var fn = function interceptedExpression(scope, locals) {
+      var regularWatch =
+          watchDelegate !== oneTimeLiteralWatchDelegate &&
+          watchDelegate !== oneTimeWatchDelegate;
+
+      var fn = regularWatch ? function regularInterceptedExpression(scope, locals) {
+        var value = parsedExpression(scope, locals);
+        return interceptorFn(value, scope, locals);
+      } : function oneTimeInterceptedExpression(scope, locals) {
         var value = parsedExpression(scope, locals);
         var result = interceptorFn(value, scope, locals);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
         return isDefined(value) ? result : value;
       };
-      fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+
+      // Propagate $$watchDelegates other then inputsWatchDelegate
+      if (parsedExpression.$$watchDelegate &&
+          parsedExpression.$$watchDelegate !== inputsWatchDelegate) {
+        fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+      } else if (!interceptorFn.$stateful) {
+        // If there is an interceptor, but no watchDelegate then treat the interceptor like
+        // we treat filters - it is assumed to be a pure function unless flagged with $stateful
+        fn.$$watchDelegate = inputsWatchDelegate;
+        fn.inputs = [parsedExpression];
+      }
+
       return fn;
     }
   }];

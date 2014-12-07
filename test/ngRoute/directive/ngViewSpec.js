@@ -12,7 +12,7 @@ describe('ngView', function() {
   }));
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -56,7 +56,7 @@ describe('ngView', function() {
   });
 
 
-  it('should not instantiate the associated controller when an empty template is downloaded', function() {
+  it('should instantiate the associated controller when an empty template is downloaded', function() {
     var log = [], controllerScope,
         Ctrl = function($scope) {
           controllerScope = $scope;
@@ -73,9 +73,9 @@ describe('ngView', function() {
 
       expect(function() {
         $rootScope.$digest();
-      }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: /tpl.html');
+      }).not.toThrow();
 
-      expect(controllerScope).toBeUndefined();
+      expect(controllerScope).toBeDefined();
     });
   });
 
@@ -528,10 +528,10 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       angular.forEach(element.contents(), function(node) {
-        if(node.nodeType == 3 /* text node */) {
+        if (node.nodeType == 3 /* text node */) {
           expect(angular.element(node).scope()).not.toBe($route.current.scope);
           expect(angular.element(node).controller()).not.toBeDefined();
-        } else if(node.nodeType == 8 /* comment node */) {
+        } else if (node.nodeType == 8 /* comment node */) {
           expect(angular.element(node).scope()).toBe(element.scope());
           expect(angular.element(node).controller()).toBe(element.controller());
         } else {
@@ -673,7 +673,7 @@ describe('ngView animations', function() {
     };
   }));
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(body);
     dealoc(element);
   });
@@ -845,18 +845,8 @@ describe('ngView animations', function() {
       });
     });
 
-    it('should destroy the previous leave animation if a new one takes place', function() {
-      module(function($provide) {
-        $provide.decorator('$animate', function($delegate, $$q) {
-          var emptyPromise = $$q.defer().promise;
-          $delegate.leave = function() {
-            return emptyPromise;
-          };
-          return $delegate;
-        });
-      });
-      inject(function ($compile, $rootScope, $animate, $location) {
-        var item;
+    it('should destroy the previous leave animation if a new one takes place',
+      inject(function($compile, $rootScope, $animate, $location, $timeout) {
         var $scope = $rootScope.$new();
         element = $compile(html(
           '<div>' +
@@ -884,12 +874,12 @@ describe('ngView animations', function() {
         $rootScope.$digest();
 
         expect(destroyed).toBe(true);
-      });
-    });
+      })
+    );
   });
 
 
-  describe('autoscroll', function () {
+  describe('autoscroll', function() {
     var autoScrollSpy;
 
     function spyOnAnchorScroll() {

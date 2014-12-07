@@ -41,9 +41,10 @@ In Angular applications, you move the job of filling page templates with data fr
 ### Other AngularJS Features
 
 * **Animation:** {@link guide/animations Core concepts}, {@link ngAnimate ngAnimate API}, and [Animation in AngularJS 1.2](http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html)
-* **Security:** {@link ng.$sce Strict Contextual Escaping}, {@link ng.directive:ngCsp Content Security Policy}, {@link ngSanitize.$sanitize $sanitize}, [video](https://www.youtube.com/watch?v=18ifoT-Id54)
+* **Security:** {@link guide/security Security Docs}, {@link ng.$sce Strict Contextual Escaping}, {@link ng.directive:ngCsp Content Security Policy}, {@link ngSanitize.$sanitize $sanitize}, [video](https://www.youtube.com/watch?v=18ifoT-Id54)
 * **Internationalization and Localization:** {@link guide/i18n Angular Guide to i18n and l10n}, {@link ng.filter:date date filter}, {@link ng.filter:currency currency filter}, [Creating multilingual support](http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/)
 * **Mobile:** {@link ngTouch Touch events}
+* **Accessibility:** {@link guide/accessibility ngAria}
 
 ### Testing
 
@@ -70,7 +71,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 This is a short list of libraries with specific support and documentation for working with Angular.  You can find a full list of all known Angular external libraries at [ngmodules.org](http://ngmodules.org/).
 
-* **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/)
+* **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/), [angular-localization](http://doshprompt.github.io/angular-localization/)
 * **RESTful services:** [Restangular](https://github.com/mgonto/restangular)
 * **SQL and NoSQL backends:** [BreezeJS](http://www.breezejs.com/), [AngularFire](http://angularfire.com/)
 * **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/), [ngTagsInput](https://github.com/mbenford/ngTagsInput)
@@ -90,11 +91,12 @@ This is a short list of libraries with specific support and documentation for wo
 
 * **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html), [Getting Started with Django Rest Framework and AngularJS](http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html)
 * **FireBase:** [AngularFire](http://angularfire.com/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
-* **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/resources/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
+* **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/developers/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications/), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
 * **Hood.ie:** [60 Minutes to Awesome](http://www.roberthorvick.com/2013/06/30/todomvc-angularjs-hood-ie-60-minutes-to-awesome/)
 * **MEAN Stack: **[Blog post](http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and), [Setup](http://thecodebarbarian.wordpress.com/2013/07/22/introduction-to-the-mean-stack-part-one-setting-up-your-tools/), [GDL Video](https://developers.google.com/live/shows/913996610)
 * **Rails: **[Tutorial](http://coderberry.me/blog/2013/04/22/angularjs-on-rails-4-part-1/), [AngularJS with Rails4](https://shellycloud.com/blog/2013/10/how-to-integrate-angularjs-with-rails-4), [angularjs-rails](https://github.com/hiravgandhi/angularjs-rails)
 * **PHP: **[Building a RESTful web service](http://blog.brunoscopelliti.com/building-a-restful-web-service-with-angularjs-and-php-more-power-with-resource), [End to End with Laravel 4 (video)](http://www.youtube.com/watch?v=hqAyiqUs93c)
+* **Meteor: **[angular-meteor package](https://github.com/Urigo/angular-meteor)
 
 ## Learning Resources
 
@@ -105,6 +107,8 @@ This is a short list of libraries with specific support and documentation for wo
 * [Recipes With AngularJS](http://www.amazon.co.uk/Recipes-Angular-js-Frederik-Dietz-ebook/dp/B00DK95V48) by Frederik Dietz
 * [Developing an AngularJS Edge](http://www.amazon.com/Developing-AngularJS-Edge-Christopher-Hiller-ebook/dp/B00CJLFF8K) by Christopher Hiller
 * [ng-book: The Complete Book on AngularJS](http://ng-book.com/) by Ari Lerner
+* [AngularJS : Novice to Ninja](http://www.amazon.in/AngularJS-Novice-Ninja-Sandeep-Panda/dp/0992279453) by Sandeep Panda
+* [AngularJS UI Development](http://www.amazon.com/AngularJS-UI-Development-Amit-Ghart-ebook/dp/B00OXVAK7A) by Amit Gharat and Matthias Nehlsen
 
 ###Videos:
 * [egghead.io](http://egghead.io/)

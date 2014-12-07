@@ -43,7 +43,7 @@
  * @description
  * Use the `$logProvider` to configure how the application logs messages
  */
-function $LogProvider(){
+function $LogProvider() {
   var debug = true,
       self = this;
 
@@ -63,7 +63,7 @@ function $LogProvider(){
     }
   };
 
-  this.$get = ['$window', function($window){
+  this.$get = ['$window', function($window) {
     return {
       /**
        * @ngdoc method
@@ -108,7 +108,7 @@ function $LogProvider(){
        * @description
        * Write a debug message
        */
-      debug: (function () {
+      debug: (function() {
         var fn = consoleLog('debug');
 
         return function() {

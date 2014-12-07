@@ -25,24 +25,33 @@ function $TemplateRequestProvider() {
       var self = handleRequestFn;
       self.totalPendingRequests++;
 
-      return $http.get(tpl, { cache : $templateCache })
-        .then(function(response) {
-          var html = response.data;
-          if(!html || html.length === 0) {
-            return handleError();
-          }
+      var transformResponse = $http.defaults && $http.defaults.transformResponse;
 
+      if (isArray(transformResponse)) {
+        transformResponse = transformResponse.filter(function(transformer) {
+          return transformer !== defaultHttpResponseTransform;
+        });
+      } else if (transformResponse === defaultHttpResponseTransform) {
+        transformResponse = null;
+      }
+
+      var httpOptions = {
+        cache: $templateCache,
+        transformResponse: transformResponse
+      };
+
+      return $http.get(tpl, httpOptions)
+        .then(function(response) {
           self.totalPendingRequests--;
-          $templateCache.put(tpl, html);
-          return html;
+          return response.data;
         }, handleError);
 
-      function handleError() {
+      function handleError(resp) {
         self.totalPendingRequests--;
         if (!ignoreRequestError) {
           throw $compileMinErr('tpload', 'Failed to load template: {0}', tpl);
         }
-        return $q.reject();
+        return $q.reject(resp);
       }
     }
 

@@ -108,7 +108,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Splices out the allowable region from the list after it has been used.
   function checkAllowableRegions(touchCoordinates, x, y) {
     for (var i = 0; i < touchCoordinates.length; i += 2) {
-      if (hit(touchCoordinates[i], touchCoordinates[i+1], x, y)) {
+      if (hit(touchCoordinates[i], touchCoordinates[i + 1], x, y)) {
         touchCoordinates.splice(i, i + 2);
         return true; // allowable region
       }
@@ -173,7 +173,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     $timeout(function() {
       // Remove the allowable region.
       for (var i = 0; i < touchCoordinates.length; i += 2) {
-        if (touchCoordinates[i] == x && touchCoordinates[i+1] == y) {
+        if (touchCoordinates[i] == x && touchCoordinates[i + 1] == y) {
           touchCoordinates.splice(i, i + 2);
           return;
         }
@@ -213,7 +213,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       tapping = true;
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
-      if(tapElement.nodeType == 3) {
+      if (tapElement.nodeType == 3) {
         tapElement = tapElement.parentNode;
       }
 
@@ -243,7 +243,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       var e = touches[0].originalEvent || touches[0];
       var x = e.clientX;
       var y = e.clientY;
-      var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
+      var dist = Math.sqrt(Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2));
 
       if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
         // Call preventGhostClick so the clickbuster will catch the corresponding click.

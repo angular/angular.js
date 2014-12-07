@@ -55,3 +55,17 @@ angular.module('myModule')
     // This directive definition does not throw unknown provider.
   }]);
 ```
+
+
+Attempting to inject one controller into another will also throw an `Unknown provider` error:
+
+```
+angular.module('myModule', [])
+  .controller('MyFirstController', function() { /* ... */ })
+  .controller('MySecondController', ['MyFirstController', function(MyFirstController) {
+    // This controller throws an unknown provider error because
+    // MyFirstController cannot be injected.
+  }]);
+```
+
+Use the `$controller` service if you want to instantiate controllers yourself.

@@ -1,12 +1,17 @@
-var typeClassFilter = require('dgeni-packages/ngdoc/rendering/filters/type-class');
+"use strict";
+
 var encoder = new require('node-html-encoder').Encoder();
 
-module.exports = {
-  name: 'type',
-  description: 'Replace with markup that displays a nice type',
-  handlerFactory: function() {
-    return function(doc, tagName, tagDescription) {
-      return '<a href="" class="' + typeClassFilter.process(tagDescription) + '">'+encoder.htmlEncode(tagDescription) + '</a>';
-    };
-  }
+/**
+ * @dgService typeInlineTagDef
+ * @description
+ * Replace with markup that displays a nice type
+ */
+module.exports = function typeInlineTagDef(getTypeClass) {
+  return {
+    name: 'type',
+    handler: function(doc, tagName, tagDescription) {
+      return '<a href="" class="' + getTypeClass(tagDescription) + '">'+encoder.htmlEncode(tagDescription) + '</a>';
+    }
+  };
 };

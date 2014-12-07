@@ -10,7 +10,7 @@ describe('a', function() {
   }));
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -22,29 +22,19 @@ describe('a', function() {
 
     element = $compile('<a href="">empty link</a>')($rootScope);
 
-    if (msie < 9) {
+    event = document.createEvent('MouseEvent');
+    event.initMouseEvent(
+      'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
-      event = document.createEventObject();
-      expect(event.returnValue).not.toBeDefined();
-      element[0].fireEvent('onclick', event);
-      expect(event.returnValue).toEqual(false);
+    event.preventDefaultOrg = event.preventDefault;
+    event.preventDefault = function() {
+      preventDefaultCalled = true;
+      if (this.preventDefaultOrg) this.preventDefaultOrg();
+    };
 
-    } else {
+    element[0].dispatchEvent(event);
 
-      event = document.createEvent('MouseEvent');
-      event.initMouseEvent(
-        'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-
-      event.preventDefaultOrg = event.preventDefault;
-      event.preventDefault = function() {
-        preventDefaultCalled = true;
-        if (this.preventDefaultOrg) this.preventDefaultOrg();
-      };
-
-      element[0].dispatchEvent(event);
-
-      expect(preventDefaultCalled).toEqual(true);
-    }
+    expect(preventDefaultCalled).toEqual(true);
 
     expect(document.location.href).toEqual(orgLocation);
   });
@@ -97,30 +87,19 @@ describe('a', function() {
         element = $compile('<svg><a xlink:href="">empty link</a></svg>')($rootScope);
         child = element.children('a');
 
-        if (msie < 9) {
+        event = document.createEvent('MouseEvent');
+        event.initMouseEvent(
+          'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
-          event = document.createEventObject();
-          expect(event.returnValue).not.toBeDefined();
-          child[0].fireEvent('onclick', event);
-          expect(event.returnValue).toEqual(false);
+        event.preventDefaultOrg = event.preventDefault;
+        event.preventDefault = function() {
+          preventDefaultCalled = true;
+          if (this.preventDefaultOrg) this.preventDefaultOrg();
+        };
 
-        } else {
+        child[0].dispatchEvent(event);
 
-          event = document.createEvent('MouseEvent');
-          event.initMouseEvent(
-            'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-
-          event.preventDefaultOrg = event.preventDefault;
-          event.preventDefault = function() {
-            preventDefaultCalled = true;
-            if (this.preventDefaultOrg) this.preventDefaultOrg();
-          };
-
-          child[0].dispatchEvent(event);
-
-          expect(preventDefaultCalled).toEqual(true);
-        }
-
+        expect(preventDefaultCalled).toEqual(true);
         expect(document.location.href).toEqual(orgLocation);
       });
 

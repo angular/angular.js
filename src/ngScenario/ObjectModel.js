@@ -211,7 +211,7 @@ angular.scenario.ObjectModel.Spec.prototype.addStep = function(name) {
  * @return {Object} the step
  */
 angular.scenario.ObjectModel.Spec.prototype.getLastStep = function() {
-  return this.steps[this.steps.length-1];
+  return this.steps[this.steps.length - 1];
 };
 
 /**

@@ -34,7 +34,7 @@ function $$TestabilityProvider() {
         if (dataBinding) {
           forEach(dataBinding, function(bindingName) {
             if (opt_exactMatch) {
-              var matcher = new RegExp('(^|\\s)' + expression + '(\\s|\\||$)');
+              var matcher = new RegExp('(^|\\s)' + escapeForRegexp(expression) + '(\\s|\\||$)');
               if (matcher.test(bindingName)) {
                 matches.push(binding);
               }

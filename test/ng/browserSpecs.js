@@ -1,8 +1,22 @@
 'use strict';
 
-function MockWindow() {
+/* global getHash:true, stripHash:true */
+
+var historyEntriesLength;
+var sniffer = {};
+
+function MockWindow(options) {
+  if (typeof options !== 'object') {
+    options = {};
+  }
   var events = {};
   var timeouts = this.timeouts = [];
+  var locationHref = 'http://server/';
+  var mockWindow = this;
+  var msie = options.msie;
+  var ieState;
+
+  historyEntriesLength = 1;
 
   this.setTimeout = function(fn) {
     return timeouts.push(fn) - 1;
@@ -22,12 +36,7 @@ function MockWindow() {
     events[name].push(listener);
   };
 
-  this.attachEvent = function(name, listener) {
-    this.addEventListener(name.substr(2), listener);
-  };
-
   this.removeEventListener = noop;
-  this.detachEvent = noop;
 
   this.fire = function(name) {
     forEach(events[name], function(fn) {
@@ -36,14 +45,53 @@ function MockWindow() {
   };
 
   this.location = {
-    href: 'http://server/',
-    replace: noop
+    get href() {
+      return locationHref;
+    },
+    set href(value) {
+      locationHref = value;
+      mockWindow.history.state = null;
+      historyEntriesLength++;
+    },
+    get hash() {
+      return getHash(locationHref);
+    },
+    set hash(value) {
+      locationHref = stripHash(locationHref) + '#' + value;
+    },
+    replace: function(url) {
+      locationHref = url;
+      mockWindow.history.state = null;
+    }
   };
 
   this.history = {
-    replaceState: noop,
-    pushState: noop
+    pushState: function() {
+      this.replaceState.apply(this, arguments);
+      historyEntriesLength++;
+    },
+    replaceState: function(state, title, url) {
+      locationHref = url;
+      mockWindow.history.state = copy(state);
+    }
   };
+  // IE 10-11 deserialize history.state on each read making subsequent reads
+  // different object.
+  if (!msie) {
+    this.history.state = null;
+  } else {
+    ieState = null;
+    Object.defineProperty(this.history, 'state', {
+      get: function() {
+        return copy(ieState);
+      },
+      set: function(value) {
+        ieState = value;
+      },
+      configurable: true,
+      enumerable: true
+    });
+  }
 }
 
 function MockDocument() {
@@ -55,7 +103,7 @@ function MockDocument() {
   this.find = function(name) {
     if (name == 'base') {
       return {
-        attr: function(name){
+        attr: function(name) {
           if (name == 'href') {
             return self.basePath;
           } else {
@@ -71,17 +119,14 @@ function MockDocument() {
 
 describe('browser', function() {
   /* global Browser: false */
-  var browser, fakeWindow, fakeDocument, logs, scripts, removedScripts, sniffer;
+  var browser, fakeWindow, fakeDocument, fakeLog, logs, scripts, removedScripts;
 
   beforeEach(function() {
     scripts = [];
     removedScripts = [];
-    sniffer = {history: true, hashchange: true};
+    sniffer = {history: true};
     fakeWindow = new MockWindow();
     fakeDocument = new MockDocument();
-
-    var fakeBody = [{appendChild: function(node){scripts.push(node);},
-                     removeChild: function(node){removedScripts.push(node);}}];
 
     logs = {log:[], warn:[], info:[], error:[]};
 
@@ -91,6 +136,57 @@ describe('browser', function() {
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
     browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+  });
+
+  describe('MockBrowser', function() {
+    describe('historyEntriesLength', function() {
+      it('should increment historyEntriesLength when setting location.href', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.location.href = '/foo';
+        expect(historyEntriesLength).toBe(2);
+      });
+
+      it('should not increment historyEntriesLength when using location.replace', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.location.replace('/foo');
+        expect(historyEntriesLength).toBe(1);
+      });
+
+      it('should increment historyEntriesLength when using history.pushState', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.history.pushState({a: 2}, 'foo', '/bar');
+        expect(historyEntriesLength).toBe(2);
+      });
+
+      it('should not increment historyEntriesLength when using history.replaceState', function() {
+        expect(historyEntriesLength).toBe(1);
+        fakeWindow.history.replaceState({a: 2}, 'foo', '/bar');
+        expect(historyEntriesLength).toBe(1);
+      });
+    });
+
+    describe('in IE', runTests({msie: true}));
+    describe('not in IE', runTests({msie: false}));
+
+    function runTests(options) {
+      return function() {
+        it('should return the same state object on every read', function() {
+          var msie = options.msie;
+
+          fakeWindow = new MockWindow({msie: msie});
+          fakeWindow.location.state = {prop: 'val'};
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+
+          browser.url(fakeWindow.location.href, false, {prop: 'val'});
+          if (msie) {
+            expect(fakeWindow.history.state).not.toBe(fakeWindow.history.state);
+            expect(fakeWindow.history.state).toEqual(fakeWindow.history.state);
+          } else {
+            expect(fakeWindow.history.state).toBe(fakeWindow.history.state);
+          }
+        });
+      };
+    }
   });
 
   it('should contain cookie cruncher', function() {
@@ -236,7 +332,7 @@ describe('browser', function() {
         expect(oldVal).not.toBeDefined();
       });
 
-      it('should escape both name and value', function() {
+      it('should encode both name and value', function() {
         browser.cookies('cookie1=', 'val;ue');
         browser.cookies('cookie2=bar;baz', 'val=ue');
 
@@ -249,7 +345,7 @@ describe('browser', function() {
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
         var i, longVal = '', cookieStr;
 
-        for(i=0; i<4083; i++) {
+        for (i = 0; i < 4083; i++) {
           longVal += 'x';
         }
 
@@ -261,8 +357,8 @@ describe('browser', function() {
 
         browser.cookies('x', longVal + 'xxxx'); //total size 4097-4099, a warning should be logged
         expect(logs.warn).toEqual(
-          [[ "Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
-             "bytes)!" ]]);
+          [["Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
+             "bytes)!"]]);
 
         //force browser to dropped a cookie and make sure that the cache is not out of sync
         browser.cookies('x', 'shortVal');
@@ -279,12 +375,12 @@ describe('browser', function() {
       });
     });
 
-    describe('put via cookies(cookieName, string), if no <base href> ', function () {
-      beforeEach(function () {
+    describe('put via cookies(cookieName, string), if no <base href> ', function() {
+      beforeEach(function() {
         fakeDocument.basePath = undefined;
       });
 
-      it('should default path in cookie to "" (empty string)', function () {
+      it('should default path in cookie to "" (empty string)', function() {
         browser.cookies('cookie', 'bender');
         // This only fails in Safari and IE when cookiePath returns undefined
         // Where it now succeeds since baseHref return '' instead of undefined
@@ -312,7 +408,7 @@ describe('browser', function() {
         expect(browser.cookies()['foo']).toBe('"first"');
       });
 
-      it ('should unescape cookie values that were escaped by puts', function() {
+      it ('should decode cookie values that were encoded by puts', function() {
         document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
         expect(browser.cookies()['cookie2=bar;baz']).toEqual('val=ue');
       });
@@ -324,9 +420,15 @@ describe('browser', function() {
         expect(browser.cookies()['cookie name']).not.toBeDefined();
       });
 
-      it('should unscape special characters in cookie values', function() {
+      it('should decode special characters in cookie values', function() {
         document.cookie = 'cookie_name=cookie_value_%E2%82%AC';
         expect(browser.cookies()['cookie_name']).toEqual('cookie_value_€');
+      });
+
+      it('should not decode cookie values that do not appear to be encoded', function() {
+        // see #9211 - sometimes cookies contain a value that causes decodeURIComponent to throw
+        document.cookie = 'cookie_name=cookie_value_%XX';
+        expect(browser.cookies()['cookie_name']).toEqual('cookie_value_%XX');
       });
     });
 
@@ -445,6 +547,28 @@ describe('browser', function() {
       expect(locationReplace).not.toHaveBeenCalled();
     });
 
+    it('should set location.href and not use pushState when the url only changed in the hash fragment to please IE10/11', function() {
+      sniffer.history = true;
+      browser.url('http://server/#123');
+
+      expect(fakeWindow.location.href).toEqual('http://server/#123');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+    });
+
+    it("should retain the # character when the only change is clearing the hash fragment, to prevent page reload", function() {
+      sniffer.history = true;
+
+      browser.url('http://server/#123');
+      expect(fakeWindow.location.href).toEqual('http://server/#123');
+
+      browser.url('http://server/');
+      expect(fakeWindow.location.href).toEqual('http://server/#');
+
+    });
+
     it('should use location.replace when history.replaceState not available', function() {
       sniffer.history = false;
       browser.url('http://new.org', true);
@@ -456,10 +580,29 @@ describe('browser', function() {
       expect(fakeWindow.location.href).toEqual('http://server/');
     });
 
+
+    it('should use location.replace and not use replaceState when the url only changed in the hash fragment to please IE10/11', function() {
+      sniffer.history = true;
+      browser.url('http://server/#123', true);
+
+      expect(locationReplace).toHaveBeenCalledWith('http://server/#123');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server/');
+    });
+
+
     it('should return $browser to allow chaining', function() {
       expect(browser.url('http://any.com')).toBe(browser);
     });
 
+    it('should return $browser to allow chaining even if the previous and current URLs and states match', function() {
+      expect(browser.url('http://any.com').url('http://any.com')).toBe(browser);
+      var state = { any: 'foo' };
+      expect(browser.url('http://any.com', false, state).url('http://any.com', false, state)).toBe(browser);
+      expect(browser.url('http://any.com', true, state).url('http://any.com', true, state)).toBe(browser);
+    });
 
     it('should decode single quotes to work around FF bug 407273', function() {
       fakeWindow.location.href = "http://ff-bug/?single%27quote";
@@ -473,6 +616,189 @@ describe('browser', function() {
       browser.url(current);
       expect(fakeWindow.location.href).toBe('dontchange');
     });
+
+    it('should not read out location.href if a reload was triggered but still allow to change the url', function() {
+      sniffer.history = false;
+      browser.url('http://server/someOtherUrlThatCausesReload');
+      expect(fakeWindow.location.href).toBe('http://server/someOtherUrlThatCausesReload');
+
+      fakeWindow.location.href = 'http://someNewUrl';
+      expect(browser.url()).toBe('http://server/someOtherUrlThatCausesReload');
+
+      browser.url('http://server/someOtherUrl');
+      expect(browser.url()).toBe('http://server/someOtherUrl');
+      expect(fakeWindow.location.href).toBe('http://server/someOtherUrl');
+    });
+
+    it('assumes that changes to location.hash occur in sync', function() {
+      // This is an asynchronous integration test that changes the
+      // hash in all possible ways and checks
+      // - whether the change to the hash can be read out in sync
+      // - whether the change to the hash can be read out in the hashchange event
+      var realWin = window,
+          $realWin = jqLite(realWin),
+          hashInHashChangeEvent = [];
+
+      runs(function() {
+        $realWin.on('hashchange', hashListener);
+
+        realWin.location.hash = '1';
+        realWin.location.href += '2';
+        realWin.location.replace(realWin.location.href + '3');
+        realWin.location.assign(realWin.location.href + '4');
+
+        expect(realWin.location.hash).toBe('#1234');
+      });
+      waitsFor(function() {
+        return hashInHashChangeEvent.length > 3;
+      });
+      runs(function() {
+        $realWin.off('hashchange', hashListener);
+
+        forEach(hashInHashChangeEvent, function(hash) {
+          expect(hash).toBe('#1234');
+        });
+      });
+
+      function hashListener() {
+        hashInHashChangeEvent.push(realWin.location.hash);
+      }
+    });
+
+  });
+
+  describe('url (when state passed)', function() {
+    var currentHref, pushState, replaceState, locationReplace;
+
+    beforeEach(function() {
+    });
+
+    describe('in IE', runTests({msie: true}));
+    describe('not in IE', runTests({msie: false}));
+
+    function runTests(options) {
+      return function() {
+        beforeEach(function() {
+          sniffer = {history: true};
+
+          fakeWindow = new MockWindow({msie: options.msie});
+          currentHref = fakeWindow.location.href;
+          pushState = spyOn(fakeWindow.history, 'pushState').andCallThrough();
+          replaceState = spyOn(fakeWindow.history, 'replaceState').andCallThrough();
+          locationReplace = spyOn(fakeWindow.location, 'replace').andCallThrough();
+
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          browser.onUrlChange(function() {});
+        });
+
+        it('should change state', function() {
+          browser.url(currentHref, false, {prop: 'val1'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val1'});
+          browser.url(currentHref + '/something', false, {prop: 'val2'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val2'});
+        });
+
+        it('should allow to set falsy states (except `undefined`)', function() {
+          fakeWindow.history.state = {prop: 'val1'};
+          fakeWindow.fire('popstate');
+
+          browser.url(currentHref, false, null);
+          expect(fakeWindow.history.state).toBe(null);
+
+          browser.url(currentHref, false, false);
+          expect(fakeWindow.history.state).toBe(false);
+
+          browser.url(currentHref, false, '');
+          expect(fakeWindow.history.state).toBe('');
+
+          browser.url(currentHref, false, 0);
+          expect(fakeWindow.history.state).toBe(0);
+        });
+
+        it('should treat `undefined` state as `null`', function() {
+          fakeWindow.history.state = {prop: 'val1'};
+          fakeWindow.fire('popstate');
+
+          browser.url(currentHref, false, undefined);
+          expect(fakeWindow.history.state).toBe(null);
+        });
+
+        it('should do pushState with the same URL and a different state', function() {
+          browser.url(currentHref, false, {prop: 'val1'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val1'});
+
+          browser.url(currentHref, false, null);
+          expect(fakeWindow.history.state).toBe(null);
+
+          browser.url(currentHref, false, {prop: 'val2'});
+          browser.url(currentHref, false, {prop: 'val3'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val3'});
+        });
+
+        it('should do pushState with the same URL and deep equal but referentially different state', function() {
+          fakeWindow.history.state = {prop: 'val'};
+          fakeWindow.fire('popstate');
+          expect(historyEntriesLength).toBe(1);
+
+          browser.url(currentHref, false, {prop: 'val'});
+          expect(fakeWindow.history.state).toEqual({prop: 'val'});
+          expect(historyEntriesLength).toBe(2);
+        });
+
+        it('should not do pushState with the same URL and state from $browser.state()', function() {
+          browser.url(currentHref, false, {prop: 'val'});
+
+          pushState.reset();
+          replaceState.reset();
+          locationReplace.reset();
+
+          browser.url(currentHref, false, browser.state());
+          expect(pushState).not.toHaveBeenCalled();
+          expect(replaceState).not.toHaveBeenCalled();
+          expect(locationReplace).not.toHaveBeenCalled();
+        });
+      };
+    }
+  });
+
+  describe('state', function() {
+    var currentHref;
+
+    beforeEach(function() {
+      sniffer = {history: true};
+      currentHref = fakeWindow.location.href;
+    });
+
+    describe('in IE', runTests({msie: true}));
+    describe('not in IE', runTests({msie: false}));
+
+    function runTests(options) {
+      return function() {
+        beforeEach(function() {
+          fakeWindow = new MockWindow({msie: options.msie});
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+        });
+
+        it('should return history.state', function() {
+          browser.url(currentHref, false, {prop: 'val'});
+          expect(browser.state()).toEqual({prop: 'val'});
+          browser.url(currentHref, false, 2);
+          expect(browser.state()).toEqual(2);
+          browser.url(currentHref, false, null);
+          expect(browser.state()).toEqual(null);
+        });
+
+        it('should return null if history.state is undefined', function() {
+          browser.url(currentHref, false, undefined);
+          expect(browser.state()).toBe(null);
+        });
+
+        it('should return the same state object in subsequent invocations in IE', function() {
+          browser.url(currentHref, false, {prop: 'val'});
+          expect(browser.state()).toBe(browser.state());
+        });
+      };
+    }
   });
 
   describe('urlChange', function() {
@@ -496,96 +822,76 @@ describe('browser', function() {
       fakeWindow.location.href = 'http://server/new';
 
       fakeWindow.fire('popstate');
-      expect(callback).toHaveBeenCalledWith('http://server/new');
+      expect(callback).toHaveBeenCalledWith('http://server/new', null);
 
       fakeWindow.fire('hashchange');
       fakeWindow.setTimeout.flush();
       expect(callback).toHaveBeenCalledOnce();
     });
 
-    it('should forward only popstate event when both history and hashchange supported', function() {
+    it('should forward only popstate event when history supported', function() {
       sniffer.history = true;
-      sniffer.hashchange = true;
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';
 
       fakeWindow.fire('popstate');
-      expect(callback).toHaveBeenCalledWith('http://server/new');
+      expect(callback).toHaveBeenCalledWith('http://server/new', null);
 
       fakeWindow.fire('hashchange');
       fakeWindow.setTimeout.flush();
       expect(callback).toHaveBeenCalledOnce();
     });
 
-    it('should forward hashchange event with new url when only hashchange supported', function() {
+    it('should forward hashchange event with new url when history not supported', function() {
       sniffer.history = false;
-      sniffer.hashchange = true;
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';
 
       fakeWindow.fire('hashchange');
-      expect(callback).toHaveBeenCalledWith('http://server/new');
+      expect(callback).toHaveBeenCalledWith('http://server/new', null);
 
       fakeWindow.fire('popstate');
       fakeWindow.setTimeout.flush();
       expect(callback).toHaveBeenCalledOnce();
     });
 
-    it('should use polling when neither history nor hashchange supported', function() {
+    it('should not fire urlChange if changed by browser.url method', function() {
       sniffer.history = false;
-      sniffer.hashchange = false;
       browser.onUrlChange(callback);
+      browser.url('http://new.com');
 
-      fakeWindow.location.href = 'http://server.new';
-      fakeWindow.setTimeout.flush();
-      expect(callback).toHaveBeenCalledWith('http://server.new');
-
-      callback.reset();
-
-      fakeWindow.fire('popstate');
       fakeWindow.fire('hashchange');
       expect(callback).not.toHaveBeenCalled();
     });
 
-    describe('after an initial location change by browser.url method when neither history nor hashchange supported', function() {
+    describe('state handling', function() {
+      var currentHref;
+
       beforeEach(function() {
-        sniffer.history = false;
-        sniffer.hashchange = false;
-        browser.url("http://server.current");
+        sniffer = {history: true};
+        currentHref = fakeWindow.location.href;
       });
 
-      it('should fire callback with the correct URL on location change outside of angular', function() {
-        browser.onUrlChange(callback);
+      describe('in IE', runTests({msie: true}));
+      describe('not in IE', runTests({msie: false}));
 
-        fakeWindow.location.href = 'http://server.new';
-        fakeWindow.setTimeout.flush();
-        expect(callback).toHaveBeenCalledWith('http://server.new');
+      function runTests(options) {
+        return function() {
+          beforeEach(function() {
+            fakeWindow = new MockWindow({msie: options.msie});
+            browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          });
 
-        fakeWindow.fire('popstate');
-        fakeWindow.fire('hashchange');
-        expect(callback).toHaveBeenCalledOnce();
-      });
+          it('should fire onUrlChange listeners only once if both popstate and hashchange triggered', function() {
+            fakeWindow.history.state = {prop: 'val'};
+            browser.onUrlChange(callback);
 
-    });
-
-    it('should not fire urlChange if changed by browser.url method (polling)', function() {
-      sniffer.history = false;
-      sniffer.hashchange = false;
-      browser.onUrlChange(callback);
-      browser.url('http://new.com');
-
-      fakeWindow.setTimeout.flush();
-      expect(callback).not.toHaveBeenCalled();
-    });
-
-    it('should not fire urlChange if changed by browser.url method (hashchange)', function() {
-      sniffer.history = false;
-      sniffer.hashchange = true;
-      browser.onUrlChange(callback);
-      browser.url('http://new.com');
-
-      fakeWindow.fire('hashchange');
-      expect(callback).not.toHaveBeenCalled();
+            fakeWindow.fire('hashchange');
+            fakeWindow.fire('popstate');
+            expect(callback).toHaveBeenCalledOnce();
+          });
+        };
+      }
     });
   });
 
@@ -623,29 +929,156 @@ describe('browser', function() {
 
   describe('integration tests with $location', function() {
 
-    beforeEach(module(function($provide, $locationProvider) {
-      spyOn(fakeWindow.history, 'pushState').andCallFake(function(stateObj, title, newUrl) {
-        fakeWindow.location.href = newUrl;
+    function setup(options) {
+      module(function($provide, $locationProvider) {
+        spyOn(fakeWindow.history, 'pushState').andCallFake(function(stateObj, title, newUrl) {
+          fakeWindow.location.href = newUrl;
+        });
+        spyOn(fakeWindow.location, 'replace').andCallFake(function(newUrl) {
+          fakeWindow.location.href = newUrl;
+        });
+        $provide.value('$browser', browser);
+        browser.pollFns = [];
+
+        sniffer.history = options.history;
+        $provide.value('$sniffer', sniffer);
+
+        $locationProvider.html5Mode(options.html5Mode);
       });
+    }
+
+    describe('update $location when it was changed outside of Angular in sync ' +
+       'before $digest was called', function() {
+
+      it('should work with no history support, no html5Mode', function() {
+        setup({
+          history: false,
+          html5Mode: false
+        });
+        inject(function($rootScope, $location) {
+          $rootScope.$apply(function() {
+            $location.path('/initialPath');
+          });
+          expect(fakeWindow.location.href).toBe('http://server/#/initialPath');
+
+          fakeWindow.location.href = 'http://server/#/someTestHash';
+
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/someTestHash');
+        });
+      });
+
+      it('should work with history support, no html5Mode', function() {
+        setup({
+          history: true,
+          html5Mode: false
+        });
+        inject(function($rootScope, $location) {
+          $rootScope.$apply(function() {
+            $location.path('/initialPath');
+          });
+          expect(fakeWindow.location.href).toBe('http://server/#/initialPath');
+
+          fakeWindow.location.href = 'http://server/#/someTestHash';
+
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/someTestHash');
+        });
+      });
+
+      it('should work with no history support, with html5Mode', function() {
+        setup({
+          history: false,
+          html5Mode: true
+        });
+        inject(function($rootScope, $location) {
+          $rootScope.$apply(function() {
+            $location.path('/initialPath');
+          });
+          expect(fakeWindow.location.href).toBe('http://server/#/initialPath');
+
+          fakeWindow.location.href = 'http://server/#/someTestHash';
+
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/someTestHash');
+        });
+      });
+
+      it('should work with history support, with html5Mode', function() {
+        setup({
+          history: true,
+          html5Mode: true
+        });
+        inject(function($rootScope, $location) {
+          $rootScope.$apply(function() {
+            $location.path('/initialPath');
+          });
+          expect(fakeWindow.location.href).toBe('http://server/initialPath');
+
+          fakeWindow.location.href = 'http://server/someTestHash';
+
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/someTestHash');
+        });
+      });
+
+    });
+
+    it('should not reload the page on every $digest when the page will be reloaded due to url rewrite on load', function() {
+      setup({
+        history: false,
+        html5Mode: true
+      });
+      fakeWindow.location.href = 'http://server/some/deep/path';
+      var changeUrlCount = 0;
+      var _url = browser.url;
+      browser.url = function(newUrl, replace, state) {
+        if (newUrl) {
+          changeUrlCount++;
+        }
+        return _url.call(this, newUrl, replace);
+      };
+      spyOn(browser, 'url').andCallThrough();
+      inject(function($rootScope, $location) {
+        $rootScope.$digest();
+        $rootScope.$digest();
+        $rootScope.$digest();
+        $rootScope.$digest();
+
+        // from $location for rewriting the initial url into a hash url
+        expect(browser.url).toHaveBeenCalledWith('http://server/#/some/deep/path', true);
+        expect(changeUrlCount).toBe(1);
+      });
+
+    });
+  });
+
+  describe('integration test with $rootScope', function() {
+
+    beforeEach(module(function($provide, $locationProvider) {
       $provide.value('$browser', browser);
       browser.pollFns = [];
-
-      $locationProvider.html5Mode(true);
     }));
 
-    it('should update $location when it was changed outside of Angular in sync '+
-       'before $digest was called', function() {
-      inject(function($rootScope, $location) {
-        fakeWindow.history.pushState(null, '', 'http://server/someTestHash');
-
-        // Verify that infinite digest reported in #6976 no longer occurs
-        expect(function() {
-          $rootScope.$digest();
-        }).not.toThrow();
-
-        expect($location.path()).toBe('/someTestHash');
+    it('should not interfere with legacy browser url replace behavior', function() {
+      inject(function($rootScope) {
+        var current = fakeWindow.location.href;
+        var newUrl = 'notyet';
+        sniffer.history = false;
+        expect(historyEntriesLength).toBe(1);
+        browser.url(newUrl, true);
+        expect(browser.url()).toBe(newUrl);
+        expect(historyEntriesLength).toBe(1);
+        $rootScope.$digest();
+        expect(browser.url()).toBe(newUrl);
+        expect(historyEntriesLength).toBe(1);
       });
     });
+
   });
 
 });

@@ -3,7 +3,7 @@
 describe('angular', function() {
   var element;
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
@@ -17,7 +17,7 @@ describe('angular', function() {
   });
 
   describe("copy", function() {
-    it("should return same object", function () {
+    it("should return same object", function() {
       var obj = {};
       var arr = [];
       expect(copy({}, obj)).toBe(obj);
@@ -171,7 +171,7 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
 
-    it('should handle circular references when circularRefs is turned on', function () {
+    it('should handle circular references when circularRefs is turned on', function() {
       var a = {b: {a: null}, self: null, selfs: [null, null, [null]]};
       a.b.a = a;
       a.self = a;
@@ -371,9 +371,6 @@ describe('angular', function() {
 
     it('should correctly test for keys that are present on Object.prototype', function() {
       /* jshint -W001 */
-      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
-      // things like hasOwnProperty even if it is explicitly defined on the actual object!
-      if (msie<=8) return;
       expect(equals({}, {hasOwnProperty: 1})).toBe(false);
       expect(equals({}, {toString: null})).toBe(false);
     });
@@ -392,34 +389,6 @@ describe('angular', function() {
     it('should return false when comparing an object and an array', function() {
       expect(equals({}, [])).toBe(false);
       expect(equals([], {})).toBe(false);
-    });
-  });
-
-  describe('size', function() {
-    it('should return the number of items in an array', function() {
-      expect(size([])).toBe(0);
-      expect(size(['a', 'b', 'c'])).toBe(3);
-    });
-
-    it('should return the number of properties of an object', function() {
-      expect(size({})).toBe(0);
-      expect(size({a:1, b:'a', c:noop})).toBe(3);
-    });
-
-    it('should return the number of own properties of an object', function() {
-      var obj = inherit({protoProp: 'c', protoFn: noop}, {a:1, b:'a', c:noop});
-
-      expect(size(obj)).toBe(5);
-      expect(size(obj, true)).toBe(3);
-    });
-
-    it('should return the string length', function() {
-      expect(size('')).toBe(0);
-      expect(size('abc')).toBe(3);
-    });
-
-    it('should not rely on length property of an object to determine its size', function() {
-      expect(size({length:99})).toBe(1);
     });
   });
 
@@ -610,7 +579,7 @@ describe('angular', function() {
       var args,
           log = [];
 
-      (function(){ args = arguments; }('a', 'b', 'c'));
+      (function() { args = arguments; }('a', 'b', 'c'));
 
       forEach(args, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
@@ -626,7 +595,7 @@ describe('angular', function() {
 
     it('should handle objects with length property as objects', function() {
       var obj = {
-          'foo' : 'bar',
+          'foo': 'bar',
           'length': 2
         },
         log = [];
@@ -654,9 +623,78 @@ describe('angular', function() {
       var log = [];
       var collection = [];
       collection[5] = 'SPARSE';
-      forEach(collection, function (item, index) { log.push(item + index); });
+      forEach(collection, function(item, index) {
+        log.push(item + index);
+      });
       expect(log.length).toBe(1);
       expect(log[0]).toBe('SPARSE5');
+    });
+
+
+    describe('ES spec api compliance', function() {
+
+      function testForEachSpec(expectedSize, collection) {
+        var that = {};
+
+        forEach(collection, function(value, key, collectionArg) {
+          expect(collectionArg).toBe(collection);
+          expect(collectionArg[key]).toBe(value);
+
+          expect(this).toBe(that);
+
+          expectedSize--;
+        }, that);
+
+        expect(expectedSize).toBe(0);
+      }
+
+
+      it('should follow the ES spec when called with array', function() {
+        testForEachSpec(2, [1,2]);
+      });
+
+
+      it('should follow the ES spec when called with arguments', function() {
+        testForEachSpec(2, (function() { return arguments; }(1,2)));
+      });
+
+
+      it('should follow the ES spec when called with string', function() {
+        testForEachSpec(2, '12');
+      });
+
+
+      it('should follow the ES spec when called with jQuery/jqLite', function() {
+        testForEachSpec(2, jqLite("<span>a</span><span>b</span>"));
+      });
+
+
+      it('should follow the ES spec when called with childNodes NodeList', function() {
+        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].childNodes);
+      });
+
+
+      it('should follow the ES spec when called with getElementsByTagName HTMLCollection', function() {
+        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].getElementsByTagName("*"));
+      });
+
+
+      it('should follow the ES spec when called with querySelectorAll HTMLCollection', function() {
+        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].querySelectorAll("*"));
+      });
+
+
+      it('should follow the ES spec when called with JSON', function() {
+        testForEachSpec(2, {a: 1, b: 2});
+      });
+
+
+      it('should follow the ES spec when called with function', function() {
+        function f() {}
+        f.a = 1;
+        f.b = 2;
+        testForEachSpec(2, f);
+      });
     });
   });
 
@@ -734,7 +772,7 @@ describe('angular', function() {
 
     beforeEach(function() {
       element = {
-        hasAttribute: function (name) {
+        hasAttribute: function(name) {
           return !!element[name];
         },
 
@@ -800,11 +838,11 @@ describe('angular', function() {
     });
 
 
-    it('should complain if an element has already been bootstrapped', function () {
+    it('should complain if an element has already been bootstrapped', function() {
       var element = jqLite('<div>bootstrap me!</div>');
       angular.bootstrap(element);
 
-      expect(function () {
+      expect(function() {
         angular.bootstrap(element);
       }).toThrowMatching(
         /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
@@ -814,9 +852,9 @@ describe('angular', function() {
     });
 
 
-    it('should complain if manually bootstrapping a document whose <html> element has already been bootstrapped', function () {
+    it('should complain if manually bootstrapping a document whose <html> element has already been bootstrapped', function() {
       angular.bootstrap(document.getElementsByTagName('html')[0]);
-      expect(function () {
+      expect(function() {
         angular.bootstrap(document);
       }).toThrowMatching(
         /\[ng:btstrpd\] App Already Bootstrapped with this Element 'document'/i
@@ -846,7 +884,7 @@ describe('angular', function() {
 
   describe('angular service', function() {
     it('should override services', function() {
-      module(function($provide){
+      module(function($provide) {
         $provide.value('fake', 'old');
         $provide.value('fake', 'new');
       });
@@ -856,7 +894,7 @@ describe('angular', function() {
     });
 
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
-      expect(angular.injector([function($provide){
+      expect(angular.injector([function($provide) {
         $provide.factory('svc1', function() { return 'svc1'; });
         $provide.factory('svc2', ['svc1', function(s) { return 'svc2-' + s; }]);
       }]).get('svc2')).toEqual('svc2-svc1');
@@ -895,7 +933,7 @@ describe('angular', function() {
   });
 
 
-  describe('isWindow', function () {
+  describe('isWindow', function() {
     it('should return true for the Window object', function() {
       expect(isWindow(window)).toBe(true);
     });
@@ -933,7 +971,7 @@ describe('angular', function() {
       var compile = $compile(template);
       var templateClone = template.clone();
 
-      element = compile($rootScope, function(clone){
+      element = compile($rootScope, function(clone) {
         templateClone = clone;
       });
       $rootScope.$digest();
@@ -964,15 +1002,18 @@ describe('angular', function() {
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
     });
 
-    if (!msie || msie >= 9) {
-      it('should correctly detect node name with "namespace" when xmlns is NOT defined', function() {
-        var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
-                           '<ngtest:foo ngtest:attr="bar"></ng-test>' +
-                         '</div>')[0];
-        expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
-        expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
-      });
-    }
+    it('should correctly detect node name with "namespace" when xmlns is NOT defined', function() {
+      var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
+                         '<ngtest:foo ngtest:attr="bar"></ng-test>' +
+                       '</div>')[0];
+      expect(nodeName_(div.childNodes[0])).toBe('ngtest:foo');
+      expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
+    });
+
+    it('should return undefined for elements without the .nodeName property', function() {
+      //some elements, like SVGElementInstance don't have .nodeName property
+      expect(nodeName_({})).toBeUndefined();
+    });
   });
 
 
@@ -981,7 +1022,7 @@ describe('angular', function() {
       var seen = {};
       var count = 100;
 
-      while(count--) {
+      while (count--) {
         var current = nextUid();
         expect(typeof current).toBe('number');
         expect(seen[current]).toBeFalsy();
@@ -1003,7 +1044,7 @@ describe('angular', function() {
   });
 
   describe('bootstrap', function() {
-    it('should bootstrap app', function(){
+    it('should bootstrap app', function() {
       var element = jqLite('<div>{{1+2}}</div>');
       var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
@@ -1099,8 +1140,8 @@ describe('angular', function() {
   });
 
 
-  describe('startingElementHtml', function(){
-    it('should show starting element tag only', function(){
+  describe('startingElementHtml', function() {
+    it('should show starting element tag only', function() {
       expect(startingTag('<ng-abc x="2A"><div>text</div></ng-abc>')).
           toBe('<ng-abc x="2A">');
     });
@@ -1113,7 +1154,7 @@ describe('angular', function() {
     });
   });
 
-  describe('snake_case', function(){
+  describe('snake_case', function() {
     it('should convert to snake_case', function() {
       expect(snake_case('ABC')).toEqual('a_b_c');
       expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');
@@ -1150,9 +1191,17 @@ describe('angular', function() {
 
     it('should format objects pretty', function() {
       expect(toJson({a: 1, b: 2}, true)).
-          toBeOneOf('{\n  "a": 1,\n  "b": 2\n}', '{\n  "a":1,\n  "b":2\n}');
+          toBe('{\n  "a": 1,\n  "b": 2\n}');
       expect(toJson({a: {b: 2}}, true)).
-          toBeOneOf('{\n  "a": {\n    "b": 2\n  }\n}', '{\n  "a":{\n    "b":2\n  }\n}');
+          toBe('{\n  "a": {\n    "b": 2\n  }\n}');
+      expect(toJson({a: 1, b: 2}, false)).
+          toBe('{"a":1,"b":2}');
+      expect(toJson({a: 1, b: 2}, 0)).
+          toBe('{"a":1,"b":2}');
+      expect(toJson({a: 1, b: 2}, 1)).
+          toBe('{\n "a": 1,\n "b": 2\n}');
+      expect(toJson({a: 1, b: 2}, {})).
+          toBe('{\n  "a": 1,\n  "b": 2\n}');
     });
 
 
@@ -1183,21 +1232,6 @@ describe('angular', function() {
     it('should serialize undefined as undefined', function() {
       expect(toJson(undefined)).toEqual(undefined);
     });
-  });
-
-  describe('msie UA parsing', function() {
-    if (/ Trident\/.*; rv:/.test(window.navigator.userAgent)) {
-      it('should fail when the Trident and the rv versions disagree for IE11+', function() {
-        // When this test fails, we can think about whether we want to use the version from the
-        // Trident token in the UA string or stick with the version from rv: as we currently do.
-        // Refer https://github.com/angular/angular.js/pull/3758#issuecomment-23529245 for the
-        // discussion.
-        var UA = window.navigator.userAgent;
-        var tridentVersion = parseInt((/Trident\/(\d+)/.exec(UA) || [])[1], 10) + 4;
-        var rvVersion = parseInt((/Trident\/.*; rv:(\d+)/.exec(UA) || [])[1], 10);
-        expect(tridentVersion).toBe(rvVersion);
-      });
-    }
   });
 
   describe('isElement', function() {

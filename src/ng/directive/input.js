@@ -8,17 +8,20 @@
   TOUCHED_CLASS: true,
 */
 
+// Regex code is obtained from SO: https://stackoverflow.com/questions/3143070/javascript-regex-iso-datetime#answer-3143231
+var ISO_DATE_REGEXP = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
-var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d))?$/;
+var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
-var TIME_REGEXP = /^(\d\d):(\d\d)(?::(\d\d))?$/;
+var TIME_REGEXP = /^(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
 var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 var $ngModelMinErr = new minErr('ngModel');
+
 var inputType = {
 
   /**
@@ -28,7 +31,6 @@ var inputType = {
    * @description
    * Standard HTML text input with angular data binding, inherited by most of the `input` elements.
    *
-   * *NOTE* Not every feature offered is available for all input types.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -39,10 +41,16 @@ var inputType = {
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of
+   *    any length.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -112,7 +120,10 @@ var inputType = {
      * the HTML5 date input, a text element will be used. In that case, text must be entered in a valid ISO-8601
      * date format (yyyy-MM-dd), for example: `2009-01-06`. Since many
      * modern browsers do not yet support this input type, it is important to provide cues to users on the
-     * expected input format via a placeholder or label. The model must always be a Date object.
+     * expected input format via a placeholder or label.
+     *
+     * The model must always be a Date object, otherwise Angular will throw an error.
+     * Invalid `Date` objects (dates whose `getTime()` is `NaN`) will be rendered as an empty string.
      *
      * The timezone to be used to read/write the `Date` instance in the model can be defined using
      * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
@@ -195,12 +206,15 @@ var inputType = {
 
    /**
     * @ngdoc input
-    * @name input[dateTimeLocal]
+    * @name input[datetime-local]
     *
     * @description
     * Input with datetime validation and transformation. In browsers that do not yet support
     * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
-    * local datetime format (yyyy-MM-ddTHH:mm:ss), for example: `2010-12-28T14:57:00`. The model must be a Date object.
+    * local datetime format (yyyy-MM-ddTHH:mm:ss), for example: `2010-12-28T14:57:00`.
+    *
+    * The model must always be a Date object, otherwise Angular will throw an error.
+    * Invalid `Date` objects (dates whose `getTime()` is `NaN`) will be rendered as an empty string.
     *
     * The timezone to be used to read/write the `Date` instance in the model can be defined using
     * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
@@ -278,8 +292,8 @@ var inputType = {
     </example>
     */
   'datetime-local': createDateInputType('datetimelocal', DATETIMELOCAL_REGEXP,
-      createDateParser(DATETIMELOCAL_REGEXP, ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss']),
-      'yyyy-MM-ddTHH:mm:ss'),
+      createDateParser(DATETIMELOCAL_REGEXP, ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss', 'sss']),
+      'yyyy-MM-ddTHH:mm:ss.sss'),
 
   /**
    * @ngdoc input
@@ -290,6 +304,9 @@ var inputType = {
    * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
    * local time format (HH:mm:ss), for example: `14:57:00`. Model must be a Date object. This binding will always output a
    * Date object to the model of January 1, 1970, or local date `new Date(1970, 0, 1, HH, mm, ss)`.
+   *
+   * The model must always be a Date object, otherwise Angular will throw an error.
+   * Invalid `Date` objects (dates whose `getTime()` is `NaN`) will be rendered as an empty string.
    *
    * The timezone to be used to read/write the `Date` instance in the model can be defined using
    * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
@@ -367,8 +384,8 @@ var inputType = {
    </example>
    */
   'time': createDateInputType('time', TIME_REGEXP,
-      createDateParser(TIME_REGEXP, ['HH', 'mm', 'ss']),
-     'HH:mm:ss'),
+      createDateParser(TIME_REGEXP, ['HH', 'mm', 'ss', 'sss']),
+     'HH:mm:ss.sss'),
 
    /**
     * @ngdoc input
@@ -377,7 +394,10 @@ var inputType = {
     * @description
     * Input with week-of-the-year validation and transformation to Date. In browsers that do not yet support
     * the HTML5 week input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
-    * week format (yyyy-W##), for example: `2013-W02`. The model must always be a Date object.
+    * week format (yyyy-W##), for example: `2013-W02`.
+    *
+    * The model must always be a Date object, otherwise Angular will throw an error.
+    * Invalid `Date` objects (dates whose `getTime()` is `NaN`) will be rendered as an empty string.
     *
     * The timezone to be used to read/write the `Date` instance in the model can be defined using
     * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
@@ -463,8 +483,12 @@ var inputType = {
    * @description
    * Input with month validation and transformation. In browsers that do not yet support
    * the HTML5 month input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
-   * month format (yyyy-MM), for example: `2009-01`. The model must always be a Date object. In the event the model is
-   * not set to the first of the month, the first of that model's month is assumed.
+   * month format (yyyy-MM), for example: `2009-01`.
+   *
+   * The model must always be a Date object, otherwise Angular will throw an error.
+   * Invalid `Date` objects (dates whose `getTime()` is `NaN`) will be rendered as an empty string.
+   * If the model is not set to the first of the month, the next view to model update will set it
+   * to the first of the month.
    *
    * The timezone to be used to read/write the `Date` instance in the model can be defined using
    * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
@@ -553,6 +577,8 @@ var inputType = {
    * Text input with number validation and transformation. Sets the `number` validation
    * error if not a valid number.
    *
+   * The model must always be a number, otherwise Angular will throw an error.
+   *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
@@ -564,10 +590,16 @@ var inputType = {
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of
+   *    any length.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -631,6 +663,12 @@ var inputType = {
    * Text input with URL validation. Sets the `url` validation error key if the content is not a
    * valid URL.
    *
+   * <div class="alert alert-warning">
+   * **Note:** `input[url]` uses a regex to validate urls that is derived from the regex
+   * used in Chromium. If you need stricter validation, you can use `ng-pattern` or modify
+   * the built-in validators (see the {@link guide/forms Forms guide})
+   * </div>
+   *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
@@ -640,10 +678,16 @@ var inputType = {
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of
+   *    any length.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -708,6 +752,12 @@ var inputType = {
    * Text input with email validation. Sets the `email` validation error key if not a valid email
    * address.
    *
+   * <div class="alert alert-warning">
+   * **Note:** `input[email]` uses a regex to validate email addresses that is derived from the regex
+   * used in Chromium. If you need stricter validation (e.g. requiring a top-level domain), you can
+   * use `ng-pattern` or modify the built-in validators (see the {@link guide/forms Forms guide})
+   * </div>
+   *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
@@ -717,10 +767,16 @@ var inputType = {
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
+   *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of
+   *    any length.
+   * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
+   *    that contains the regular expression body that will be converted to a regular expression
+   *    as in the ngPattern directive.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   *    If the expression evaluates to a RegExp object then this is used directly.
+   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
+   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -886,24 +942,19 @@ var inputType = {
   'file': noop
 };
 
-function testFlags(validity, flags) {
-  var i, flag;
-  if (flags) {
-    for (i=0; i<flags.length; ++i) {
-      flag = flags[i];
-      if (validity[flag]) {
-        return true;
-      }
-    }
-  }
-  return false;
+function stringBasedInputType(ctrl) {
+  ctrl.$formatters.push(function(value) {
+    return ctrl.$isEmpty(value) ? value : value.toString();
+  });
 }
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  var validity = element.prop(VALIDITY_STATE_PROPERTY);
-  var placeholder = element[0].placeholder, noevent = {};
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
+}
+
+function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var type = lowercase(element[0].type);
-  ctrl.$$validityState = validity;
 
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
@@ -922,18 +973,13 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   var listener = function(ev) {
+    if (timeout) {
+      $browser.defer.cancel(timeout);
+      timeout = null;
+    }
     if (composing) return;
     var value = element.val(),
         event = ev && ev.type;
-
-    // IE (11 and under) seem to emit an 'input' event if the placeholder value changes.
-    // We don't want to dirty the value when this happens, so we abort here. Unfortunately,
-    // IE also sends input events for other non-input-related things, (such as focusing on a
-    // form control), so this change is not entirely enough to solve this.
-    if (msie && (ev || noevent).type === 'input' && element[0].placeholder !== placeholder) {
-      placeholder = element[0].placeholder;
-      return;
-    }
 
     // By default we will trim the value
     // If the attribute ng-trim exists we will avoid trimming
@@ -942,18 +988,11 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       value = trim(value);
     }
 
-    // If a control is suffering from bad input, browsers discard its value, so it may be
-    // necessary to revalidate even if the control's value is the same empty value twice in
-    // a row.
-    var revalidate = validity && ctrl.$$hasNativeValidators;
-    if (ctrl.$viewValue !== value || (value === '' && revalidate)) {
-      if (scope.$$phase) {
-        ctrl.$setViewValue(value, event, revalidate);
-      } else {
-        scope.$apply(function() {
-          ctrl.$setViewValue(value, event, revalidate);
-        });
-      }
+    // If a control is suffering from bad input (due to native validators), browsers discard its
+    // value, so it may be necessary to revalidate (by calling $setViewValue again) even if the
+    // control's value is the same empty value twice in a row.
+    if (ctrl.$viewValue !== value || (value === '' && ctrl.$$hasNativeValidators)) {
+      ctrl.$setViewValue(value, event);
     }
   };
 
@@ -964,11 +1003,13 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   } else {
     var timeout;
 
-    var deferListener = function(ev) {
+    var deferListener = function(ev, input, origValue) {
       if (!timeout) {
         timeout = $browser.defer(function() {
-          listener(ev);
           timeout = null;
+          if (!input || input.value !== origValue) {
+            listener(ev);
+          }
         });
       }
     };
@@ -980,7 +1021,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       //    command            modifiers                   arrows
       if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
 
-      deferListener(event);
+      deferListener(event, this, this.value);
     });
 
     // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
@@ -998,93 +1039,159 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   };
 }
 
-function weekParser(isoWeek) {
-   if(isDate(isoWeek)) {
-      return isoWeek;
-   }
+function weekParser(isoWeek, existingDate) {
+  if (isDate(isoWeek)) {
+    return isoWeek;
+  }
 
-   if(isString(isoWeek)) {
-      WEEK_REGEXP.lastIndex = 0;
-      var parts = WEEK_REGEXP.exec(isoWeek);
-      if(parts) {
-         var year = +parts[1],
-            week = +parts[2],
-            firstThurs = getFirstThursdayOfYear(year),
-            addDays = (week - 1) * 7;
-         return new Date(year, 0, firstThurs.getDate() + addDays);
+  if (isString(isoWeek)) {
+    WEEK_REGEXP.lastIndex = 0;
+    var parts = WEEK_REGEXP.exec(isoWeek);
+    if (parts) {
+      var year = +parts[1],
+          week = +parts[2],
+          hours = 0,
+          minutes = 0,
+          seconds = 0,
+          milliseconds = 0,
+          firstThurs = getFirstThursdayOfYear(year),
+          addDays = (week - 1) * 7;
+
+      if (existingDate) {
+        hours = existingDate.getHours();
+        minutes = existingDate.getMinutes();
+        seconds = existingDate.getSeconds();
+        milliseconds = existingDate.getMilliseconds();
       }
-   }
 
-   return NaN;
+      return new Date(year, 0, firstThurs.getDate() + addDays, hours, minutes, seconds, milliseconds);
+    }
+  }
+
+  return NaN;
 }
 
 function createDateParser(regexp, mapping) {
-   return function(iso) {
-      var parts, map;
+  return function(iso, date) {
+    var parts, map;
 
-      if(isDate(iso)) {
-         return iso;
+    if (isDate(iso)) {
+      return iso;
+    }
+
+    if (isString(iso)) {
+      // When a date is JSON'ified to wraps itself inside of an extra
+      // set of double quotes. This makes the date parsing code unable
+      // to match the date string and parse it as a date.
+      if (iso.charAt(0) == '"' && iso.charAt(iso.length - 1) == '"') {
+        iso = iso.substring(1, iso.length - 1);
       }
-
-      if(isString(iso)) {
-         regexp.lastIndex = 0;
-         parts = regexp.exec(iso);
-
-         if(parts) {
-            parts.shift();
-            map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0, ss: 0 };
-
-            forEach(parts, function(part, index) {
-               if(index < mapping.length) {
-                  map[mapping[index]] = +part;
-               }
-            });
-            return new Date(map.yyyy, map.MM - 1, map.dd, map.HH, map.mm, map.ss || 0);
-         }
+      if (ISO_DATE_REGEXP.test(iso)) {
+        return new Date(iso);
       }
+      regexp.lastIndex = 0;
+      parts = regexp.exec(iso);
 
-      return NaN;
-   };
+      if (parts) {
+        parts.shift();
+        if (date) {
+          map = {
+            yyyy: date.getFullYear(),
+            MM: date.getMonth() + 1,
+            dd: date.getDate(),
+            HH: date.getHours(),
+            mm: date.getMinutes(),
+            ss: date.getSeconds(),
+            sss: date.getMilliseconds() / 1000
+          };
+        } else {
+          map = { yyyy: 1970, MM: 1, dd: 1, HH: 0, mm: 0, ss: 0, sss: 0 };
+        }
+
+        forEach(parts, function(part, index) {
+          if (index < mapping.length) {
+            map[mapping[index]] = +part;
+          }
+        });
+        return new Date(map.yyyy, map.MM - 1, map.dd, map.HH, map.mm, map.ss || 0, map.sss * 1000 || 0);
+      }
+    }
+
+    return NaN;
+  };
 }
 
 function createDateInputType(type, regexp, parseDate, format) {
-   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
-      badInputChecker(scope, element, attr, ctrl);
-      textInputType(scope, element, attr, ctrl, $sniffer, $browser);
-      var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
+  return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
+    badInputChecker(scope, element, attr, ctrl);
+    baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+    var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
+    var previousDate;
 
-      ctrl.$$parserName = type;
-      ctrl.$parsers.push(function(value) {
-         if (ctrl.$isEmpty(value)) return null;
-         if (regexp.test(value)) {
-            var parsedDate = parseDate(value);
-            if (timezone === 'UTC') {
-              parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
-            }
-            return parsedDate;
-         }
-         return undefined;
-      });
-
-      ctrl.$formatters.push(function(value) {
-         if(isDate(value)) {
-            return $filter('date')(value, format, timezone);
-         }
-         return '';
-      });
-
-      if(attr.min) {
-        ctrl.$validators.min = function(value) {
-          return ctrl.$isEmpty(value) || isUndefined(attr.min) || parseDate(value) >= parseDate(attr.min);
-        };
+    ctrl.$$parserName = type;
+    ctrl.$parsers.push(function(value) {
+      if (ctrl.$isEmpty(value)) return null;
+      if (regexp.test(value)) {
+        // Note: We cannot read ctrl.$modelValue, as there might be a different
+        // parser/formatter in the processing chain so that the model
+        // contains some different data format!
+        var parsedDate = parseDate(value, previousDate);
+        if (timezone === 'UTC') {
+          parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+        }
+        return parsedDate;
       }
+      return undefined;
+    });
 
-      if(attr.max) {
-        ctrl.$validators.max = function(value) {
-          return ctrl.$isEmpty(value) || isUndefined(attr.max) || parseDate(value) <= parseDate(attr.max);
-        };
+    ctrl.$formatters.push(function(value) {
+      if (value && !isDate(value)) {
+        throw $ngModelMinErr('datefmt', 'Expected `{0}` to be a date', value);
       }
-   };
+      if (isValidDate(value)) {
+        previousDate = value;
+        if (previousDate && timezone === 'UTC') {
+          var timezoneOffset = 60000 * previousDate.getTimezoneOffset();
+          previousDate = new Date(previousDate.getTime() + timezoneOffset);
+        }
+        return $filter('date')(value, format, timezone);
+      } else {
+        previousDate = null;
+        return '';
+      }
+    });
+
+    if (isDefined(attr.min) || attr.ngMin) {
+      var minVal;
+      ctrl.$validators.min = function(value) {
+        return !isValidDate(value) || isUndefined(minVal) || parseDate(value) >= minVal;
+      };
+      attr.$observe('min', function(val) {
+        minVal = parseObservedDateValue(val);
+        ctrl.$validate();
+      });
+    }
+
+    if (isDefined(attr.max) || attr.ngMax) {
+      var maxVal;
+      ctrl.$validators.max = function(value) {
+        return !isValidDate(value) || isUndefined(maxVal) || parseDate(value) <= maxVal;
+      };
+      attr.$observe('max', function(val) {
+        maxVal = parseObservedDateValue(val);
+        ctrl.$validate();
+      });
+    }
+
+    function isValidDate(value) {
+      // Invalid Date: getTime() returns NaN
+      return value && !(value.getTime && value.getTime() !== value.getTime());
+    }
+
+    function parseObservedDateValue(val) {
+      return isDefined(val) ? (isDate(val) ? val : parseDate(val)) : undefined;
+    }
+  };
 }
 
 function badInputChecker(scope, element, attr, ctrl) {
@@ -1093,19 +1200,23 @@ function badInputChecker(scope, element, attr, ctrl) {
   if (nativeValidation) {
     ctrl.$parsers.push(function(value) {
       var validity = element.prop(VALIDITY_STATE_PROPERTY) || {};
-      return validity.badInput || validity.typeMismatch ? undefined : value;
+      // Detect bug in FF35 for input[email] (https://bugzilla.mozilla.org/show_bug.cgi?id=1064430):
+      // - also sets validity.badInput (should only be validity.typeMismatch).
+      // - see http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-(type=email)
+      // - can ignore this case as we can still read out the erroneous email...
+      return validity.badInput && !validity.typeMismatch ? undefined : value;
     });
   }
 }
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   ctrl.$$parserName = 'number';
   ctrl.$parsers.push(function(value) {
-    if(ctrl.$isEmpty(value))      return null;
-    if(NUMBER_REGEXP.test(value)) return parseFloat(value);
+    if (ctrl.$isEmpty(value))      return null;
+    if (NUMBER_REGEXP.test(value)) return parseFloat(value);
     return undefined;
   });
 
@@ -1119,22 +1230,44 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     return value;
   });
 
-  if (attr.min) {
+  if (attr.min || attr.ngMin) {
+    var minVal;
     ctrl.$validators.min = function(value) {
-      return ctrl.$isEmpty(value) || isUndefined(attr.min) || value >= parseFloat(attr.min);
+      return ctrl.$isEmpty(value) || isUndefined(minVal) || value >= minVal;
     };
+
+    attr.$observe('min', function(val) {
+      if (isDefined(val) && !isNumber(val)) {
+        val = parseFloat(val, 10);
+      }
+      minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
   }
 
-  if (attr.max) {
+  if (attr.max || attr.ngMax) {
+    var maxVal;
     ctrl.$validators.max = function(value) {
-      return ctrl.$isEmpty(value) || isUndefined(attr.max) || value <= parseFloat(attr.max);
+      return ctrl.$isEmpty(value) || isUndefined(maxVal) || value <= maxVal;
     };
+
+    attr.$observe('max', function(val) {
+      if (isDefined(val) && !isNumber(val)) {
+        val = parseFloat(val, 10);
+      }
+      maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    });
   }
 }
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  badInputChecker(scope, element, attr, ctrl);
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  // Note: no badInputChecker here by purpose as `url` is only a validation
+  // in browsers, i.e. we can always read out input.value even if it is not valid!
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
 
   ctrl.$$parserName = 'url';
   ctrl.$validators.url = function(modelValue, viewValue) {
@@ -1144,8 +1277,10 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 }
 
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  badInputChecker(scope, element, attr, ctrl);
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  // Note: no badInputChecker here by purpose as `url` is only a validation
+  // in browsers, i.e. we can always read out input.value even if it is not valid!
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  stringBasedInputType(ctrl);
 
   ctrl.$$parserName = 'email';
   ctrl.$validators.email = function(modelValue, viewValue) {
@@ -1162,9 +1297,7 @@ function radioInputType(scope, element, attr, ctrl) {
 
   var listener = function(ev) {
     if (element[0].checked) {
-      scope.$apply(function() {
-        ctrl.$setViewValue(attr.value, ev && ev.type);
-      });
+      ctrl.$setViewValue(attr.value, ev && ev.type);
     }
   };
 
@@ -1196,9 +1329,7 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
   var falseValue = parseConstantExpr($parse, scope, 'ngFalseValue', attr.ngFalseValue, false);
 
   var listener = function(ev) {
-    scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked, ev && ev.type);
-    });
+    ctrl.$setViewValue(element[0].checked, ev && ev.type);
   };
 
   element.on('click', listener);
@@ -1207,9 +1338,11 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
     element[0].checked = ctrl.$viewValue;
   };
 
-  // Override the standard `$isEmpty` because a value of `false` means empty in a checkbox.
+  // Override the standard `$isEmpty` because the $viewValue of an empty checkbox is always set to `false`
+  // This is because of the parser below, which compares the `$modelValue` with `trueValue` to convert
+  // it to a boolean.
   ctrl.$isEmpty = function(value) {
-    return value !== trueValue;
+    return value === false;
   };
 
   ctrl.$formatters.push(function(value) {
@@ -1241,7 +1374,8 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
- *    maxlength.
+ *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
+ *    length.
  * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -1257,10 +1391,14 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @restrict E
  *
  * @description
- * HTML input element control with angular data-binding. Input control follows HTML5 input types
- * and polyfills the HTML5 validation behavior for older browsers.
+ * HTML input element control. When used together with {@link ngModel `ngModel`}, it provides data-binding,
+ * input state control, and validation.
+ * Input control follows HTML5 input types and polyfills the HTML5 validation behavior for older browsers.
  *
- * *NOTE* Not every feature offered is available for all input types.
+ * <div class="alert alert-warning">
+ * **Note:** Not every feature offered is available for all input types.
+ * Specifically, data binding and event handling via `ng-model` is unsupported for `input[file]`.
+ * </div>
  *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
@@ -1269,7 +1407,8 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
- *    maxlength.
+ *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
+ *    length.
  * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -1372,10 +1511,12 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
   return {
     restrict: 'E',
     require: ['?ngModel'],
-    link: function(scope, element, attr, ctrls) {
-      if (ctrls[0]) {
-        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
-                                                            $browser, $filter, $parse);
+    link: {
+      pre: function(scope, element, attr, ctrls) {
+        if (ctrls[0]) {
+          (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
+                                                              $browser, $filter, $parse);
+        }
       }
     }
   };
@@ -1394,19 +1535,25 @@ var VALID_CLASS = 'ng-valid',
  * @name ngModel.NgModelController
  *
  * @property {string} $viewValue Actual string value in the view.
- * @property {*} $modelValue The value in the model, that the control is bound to.
+ * @property {*} $modelValue The value in the model that the control is bound to.
  * @property {Array.<Function>} $parsers Array of functions to execute, as a pipeline, whenever
-       the control reads value from the DOM.  Each function is called, in turn, passing the value
-       through to the next. The last return value is used to populate the model.
-       Used to sanitize / convert the value as well as validation. For validation,
-       the parsers should update the validity state using
-       {@link ngModel.NgModelController#$setValidity $setValidity()},
-       and return `undefined` for invalid values.
+       the control reads value from the DOM. The functions are called in array order, each passing
+       its return value through to the next. The last return value is forwarded to the
+       {@link ngModel.NgModelController#$validators `$validators`} collection.
+
+Parsers are used to sanitize / convert the {@link ngModel.NgModelController#$viewValue
+`$viewValue`}.
+
+Returning `undefined` from a parser means a parse error occurred. In that case,
+no {@link ngModel.NgModelController#$validators `$validators`} will run and the `ngModel`
+will be set to `undefined` unless {@link ngModelOptions `ngModelOptions.allowInvalid`}
+is set to `true`. The parse error is stored in `ngModel.$error.parse`.
 
  *
  * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
-       the model value changes. Each function is called, in turn, passing the value through to the
-       next. Used to format / convert values for display in the control and validation.
+       the model value changes. The functions are called in reverse array order, each passing the value through to the
+       next. The last return value is used as the actual DOM value.
+       Used to format / convert values for display in the control.
  * ```js
  * function formatter(value) {
  *   if (value) {
@@ -1436,9 +1583,10 @@ var VALID_CLASS = 'ng-valid',
  *      perform an asynchronous validation (e.g. a HTTP request). The validation function that is provided
  *      is expected to return a promise when it is run during the model validation process. Once the promise
  *      is delivered then the validation status will be set to true when fulfilled and false when rejected.
- *      When the asynchronous validators are trigged, each of the validators will run in parallel and the model
- *      value will only be updated once all validators have been fulfilled. Also, keep in mind that all
- *      asynchronous validators will only run once all synchronous validators have passed.
+ *      When the asynchronous validators are triggered, each of the validators will run in parallel and the model
+ *      value will only be updated once all validators have been fulfilled. As long as an asynchronous validator
+ *      is unfulfilled, its key will be added to the controllers `$pending` property. Also, all asynchronous validators
+ *      will only run once all synchronous validators have passed.
  *
  * Please note that if $http is used then it is important that the server returns a success HTTP response code
  * in order to fulfill the validation and a status level of `4xx` in order to reject the validation.
@@ -1446,25 +1594,25 @@ var VALID_CLASS = 'ng-valid',
  * ```js
  * ngModel.$asyncValidators.uniqueUsername = function(modelValue, viewValue) {
  *   var value = modelValue || viewValue;
+ *
+ *   // Lookup user by username
  *   return $http.get('/api/users/' + value).
- *      then(function() {
- *        //username exists, this means the validator fails
- *        return false;
- *      }, function() {
- *        //username does not exist, therefore this validation is true
+ *      then(function resolved() {
+ *        //username exists, this means validation fails
+ *        return $q.reject('exists');
+ *      }, function rejected() {
+ *        //username does not exist, therefore this validation passes
  *        return true;
  *      });
  * };
  * ```
  *
- * @param {string} name The name of the validator.
- * @param {Function} validationFn The validation function that will be run.
- *
  * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
  *     view value has changed. It is called with no arguments, and its return value is ignored.
  *     This can be used in place of additional $watches against the model value.
  *
- * @property {Object} $error An object hash with all errors as keys.
+ * @property {Object} $error An object hash with all failing validator ids as keys.
+ * @property {Object} $pending An object hash with all pending validator ids as keys.
  *
  * @property {boolean} $untouched True if control has not lost focus yet.
  * @property {boolean} $touched True if control has lost focus.
@@ -1472,17 +1620,22 @@ var VALID_CLASS = 'ng-valid',
  * @property {boolean} $dirty True if user has already interacted with the control.
  * @property {boolean} $valid True if there is no error.
  * @property {boolean} $invalid True if at least one error on the control.
- * @property {Object.<string, boolean>} $pending True if one or more asynchronous validators is still yet to be delivered.
+ * @property {string} $name The name attribute of the control.
  *
  * @description
  *
- * `NgModelController` provides API for the `ng-model` directive. The controller contains
- * services for data-binding, validation, CSS updates, and value formatting and parsing. It
- * purposefully does not contain any logic which deals with DOM rendering or listening to
- * DOM events. Such DOM related logic should be provided by other directives which make use of
- * `NgModelController` for data-binding.
+ * `NgModelController` provides API for the {@link ngModel `ngModel`} directive.
+ * The controller contains services for data-binding, validation, CSS updates, and value formatting
+ * and parsing. It purposefully does not contain any logic which deals with DOM rendering or
+ * listening to DOM events.
+ * Such DOM related logic should be provided by other directives which make use of
+ * `NgModelController` for data-binding to control elements.
+ * Angular provides this DOM logic for most {@link input `input`} elements.
+ * At the end of this page you can find a {@link ngModel.NgModelController#custom-control-example
+ * custom control example} that uses `ngModelController` to bind to `contenteditable` elements.
  *
- * ## Custom Control Example
+ * @example
+ * ### Custom Control Example
  * This example shows how to use `NgModelController` with a custom control to achieve
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
  * collaborate together to achieve the desired result.
@@ -1492,7 +1645,7 @@ var VALID_CLASS = 'ng-valid',
  *
  * We are using the {@link ng.service:$sce $sce} service here and include the {@link ngSanitize $sanitize}
  * module to automatically remove "bad" content like inline event listener (e.g. `<span onclick="...">`).
- * However, as we are using `$sce` the model can still decide to to provide unsafe content if it marks
+ * However, as we are using `$sce` the model can still decide to provide unsafe content if it marks
  * that content using the `$sce` service.
  *
  * <example name="NgModelController" module="customControl" deps="angular-sanitize.js">
@@ -1515,7 +1668,7 @@ var VALID_CLASS = 'ng-valid',
             restrict: 'A', // only activate on element attribute
             require: '?ngModel', // get a hold of NgModelController
             link: function(scope, element, attrs, ngModel) {
-              if(!ngModel) return; // do nothing if no ng-model
+              if (!ngModel) return; // do nothing if no ng-model
 
               // Specify how UI should be updated
               ngModel.$render = function() {
@@ -1524,7 +1677,7 @@ var VALID_CLASS = 'ng-valid',
 
               // Listen for change events to enable binding
               element.on('blur keyup change', function() {
-                scope.$apply(read);
+                scope.$evalAsync(read);
               });
               read(); // initialize
 
@@ -1533,7 +1686,7 @@ var VALID_CLASS = 'ng-valid',
                 var html = element.html();
                 // When we clear the content editable the browser leaves a <br> behind
                 // If strip-br attribute is provided then we strip this out
-                if( attrs.stripBr && html == '<br>' ) {
+                if ( attrs.stripBr && html == '<br>' ) {
                   html = '';
                 }
                 ngModel.$setViewValue(html);
@@ -1575,13 +1728,13 @@ var VALID_CLASS = 'ng-valid',
  *
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope', '$q', '$interpolate',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope, $q, $interpolate) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
+  this.$$rawModelValue = undefined; // stores the parsed modelValue / model set from scope regardless of validity.
   this.$validators = {};
   this.$asyncValidators = {};
-  this.$validators = {};
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
@@ -1591,18 +1744,40 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
-  this.$name = $attr.name;
+  this.$error = {}; // keep invalid keys here
+  this.$$success = {}; // keep valid keys here
+  this.$pending = undefined; // keep pending keys here
+  this.$name = $interpolate($attr.name || '', false)($scope);
 
 
-  var ngModelGet = $parse($attr.ngModel),
-      ngModelSet = ngModelGet.assign,
+  var parsedNgModel = $parse($attr.ngModel),
+      parsedNgModelAssign = parsedNgModel.assign,
+      ngModelGet = parsedNgModel,
+      ngModelSet = parsedNgModelAssign,
       pendingDebounce = null,
       ctrl = this;
 
   this.$$setOptions = function(options) {
     ctrl.$options = options;
+    if (options && options.getterSetter) {
+      var invokeModelGetter = $parse($attr.ngModel + '()'),
+          invokeModelSetter = $parse($attr.ngModel + '($$$p)');
 
-    if (!ngModelSet && (!options || !options.getterSetter)) {
+      ngModelGet = function($scope) {
+        var modelValue = parsedNgModel($scope);
+        if (isFunction(modelValue)) {
+          modelValue = invokeModelGetter($scope);
+        }
+        return modelValue;
+      };
+      ngModelSet = function($scope, newValue) {
+        if (isFunction(parsedNgModel($scope))) {
+          invokeModelSetter($scope, {$$$p: ctrl.$modelValue});
+        } else {
+          parsedNgModelAssign($scope, ctrl.$modelValue);
+        }
+      };
+    } else if (!parsedNgModel.assign) {
       throw $ngModelMinErr('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
           $attr.ngModel, startingTag($element));
     }
@@ -1635,148 +1810,60 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @name ngModel.NgModelController#$isEmpty
    *
    * @description
-   * This is called when we need to determine if the value of the input is empty.
+   * This is called when we need to determine if the value of an input is empty.
    *
    * For instance, the required directive does this to work out if the input has data or not.
+   *
    * The default `$isEmpty` function checks whether the value is `undefined`, `''`, `null` or `NaN`.
    *
    * You can override this for input directives whose concept of being empty is different to the
    * default. The `checkboxInputType` directive does this because in its case a value of `false`
    * implies empty.
    *
-   * @param {*} value Reference to check.
-   * @returns {boolean} True if `value` is empty.
+   * @param {*} value The value of the input to check for emptiness.
+   * @returns {boolean} True if `value` is "empty".
    */
   this.$isEmpty = function(value) {
     return isUndefined(value) || value === '' || value === null || value !== value;
   };
 
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
-      invalidCount = 0, // used to easily determine if we are valid
-      pendingCount = 0, // used to easily determine if there are any pending validations
-      $error = this.$error = {}; // keep invalid keys here
-
-
-  // Setup initial state of the control
-  $element
-    .addClass(PRISTINE_CLASS)
-    .addClass(UNTOUCHED_CLASS);
-  toggleValidCss(true);
-
-  // convenience method for easy toggling of classes
-  function toggleValidCss(isValid, validationErrorKey) {
-    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    $animate.removeClass($element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
-    $animate.addClass($element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
-  }
-
-  this.$$clearValidity = function() {
-    $animate.removeClass($element, PENDING_CLASS);
-    forEach(ctrl.$error, function(val, key) {
-      var validationKey = snake_case(key, '-');
-      $animate.removeClass($element, VALID_CLASS + validationKey);
-      $animate.removeClass($element, INVALID_CLASS + validationKey);
-    });
-
-    // just incase an asnyc validator is still running while
-    // the parser fails
-    if(ctrl.$pending) {
-      ctrl.$$clearPending();
-    }
-
-    invalidCount = 0;
-    $error = ctrl.$error = {};
-
-    parentForm.$$clearControlValidity(ctrl);
-  };
-
-  this.$$clearPending = function() {
-    pendingCount = 0;
-    ctrl.$pending = undefined;
-    $animate.removeClass($element, PENDING_CLASS);
-  };
-
-  this.$$setPending = function(validationErrorKey, promise, currentValue) {
-    ctrl.$pending = ctrl.$pending || {};
-    if (angular.isUndefined(ctrl.$pending[validationErrorKey])) {
-      ctrl.$pending[validationErrorKey] = true;
-      pendingCount++;
-    }
-
-    ctrl.$valid = ctrl.$invalid = undefined;
-    parentForm.$$setPending(validationErrorKey, ctrl);
-
-    $animate.addClass($element, PENDING_CLASS);
-    $animate.removeClass($element, INVALID_CLASS);
-    $animate.removeClass($element, VALID_CLASS);
-
-    //Special-case for (undefined|null|false|NaN) values to avoid
-    //having to compare each of them with each other
-    currentValue = currentValue || '';
-    promise.then(resolve(true), resolve(false));
-
-    function resolve(bool) {
-      return function() {
-        var value = ctrl.$viewValue || '';
-        if (ctrl.$pending && ctrl.$pending[validationErrorKey] && currentValue === value) {
-          pendingCount--;
-          delete ctrl.$pending[validationErrorKey];
-          ctrl.$setValidity(validationErrorKey, bool);
-          if (pendingCount === 0) {
-            ctrl.$$clearPending();
-            ctrl.$$updateValidModelValue(value);
-            ctrl.$$writeModelToScope();
-          }
-        }
-      };
-    }
-  };
+      currentValidationRunId = 0;
 
   /**
    * @ngdoc method
    * @name ngModel.NgModelController#$setValidity
    *
    * @description
-   * Change the validity state, and notifies the form when the control changes validity. (i.e. it
-   * does not notify form if given validator is already marked as invalid).
+   * Change the validity state, and notify the form.
    *
-   * This method can be called within $parsers/$formatters. However, if possible, please use the
-   *        `ngModel.$validators` pipeline which is designed to handle validations with true/false values.
+   * This method can be called within $parsers/$formatters or a custom validation implementation.
+   * However, in most cases it should be sufficient to use the `ngModel.$validators` and
+   * `ngModel.$asyncValidators` collections which will call `$setValidity` automatically.
    *
-   * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
-   *        to `$error[validationErrorKey]=!isValid` so that it is available for data-binding.
+   * @param {string} validationErrorKey Name of the validator. The `validationErrorKey` will be assigned
+   *        to either `$error[validationErrorKey]` or `$pending[validationErrorKey]`
+   *        (for unfulfilled `$asyncValidators`), so that it is available for data-binding.
    *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
    *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
    *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
-   * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
+   * @param {boolean} isValid Whether the current state is valid (true), invalid (false), pending (undefined),
+   *                          or skipped (null). Pending is used for unfulfilled `$asyncValidators`.
+   *                          Skipped is used by Angular when validators do not run because of parse errors and
+   *                          when `$asyncValidators` do not run because any of the `$validators` failed.
    */
-  this.$setValidity = function(validationErrorKey, isValid) {
-
-    // avoid doing anything if the validation value has not changed
-    // jshint -W018
-    if (!ctrl.$pending && $error[validationErrorKey] === !isValid) return;
-    // jshint +W018
-
-    if (isValid) {
-      if ($error[validationErrorKey]) invalidCount--;
-      if (!invalidCount && !pendingCount) {
-        toggleValidCss(true);
-        ctrl.$valid = true;
-        ctrl.$invalid = false;
-      }
-    } else if(!$error[validationErrorKey]) {
-      invalidCount++;
-      if (!pendingCount) {
-        toggleValidCss(false);
-        ctrl.$invalid = true;
-        ctrl.$valid = false;
-      }
-    }
-
-    $error[validationErrorKey] = !isValid;
-    toggleValidCss(isValid, validationErrorKey);
-    parentForm.$setValidity(validationErrorKey, isValid, ctrl);
-  };
+  addSetValidityMethod({
+    ctrl: this,
+    $element: $element,
+    set: function(object, property) {
+      object[property] = true;
+    },
+    unset: function(object, property) {
+      delete object[property];
+    },
+    parentForm: parentForm,
+    $animate: $animate
+  });
 
   /**
    * @ngdoc method
@@ -1785,15 +1872,34 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @description
    * Sets the control to its pristine state.
    *
-   * This method can be called to remove the 'ng-dirty' class and set the control to its pristine
-   * state (ng-pristine class). A model is considered to be pristine when the model has not been changed
-   * from when first compiled within then form.
+   * This method can be called to remove the `ng-dirty` class and set the control to its pristine
+   * state (`ng-pristine` class). A model is considered to be pristine when the control
+   * has not been changed from when first compiled.
    */
-  this.$setPristine = function () {
+  this.$setPristine = function() {
     ctrl.$dirty = false;
     ctrl.$pristine = true;
     $animate.removeClass($element, DIRTY_CLASS);
     $animate.addClass($element, PRISTINE_CLASS);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setDirty
+   *
+   * @description
+   * Sets the control to its dirty state.
+   *
+   * This method can be called to remove the `ng-pristine` class and set the control to its dirty
+   * state (`ng-dirty` class). A model is considered to be dirty when the control has been changed
+   * from when first compiled.
+   */
+  this.$setDirty = function() {
+    ctrl.$dirty = true;
+    ctrl.$pristine = false;
+    $animate.removeClass($element, PRISTINE_CLASS);
+    $animate.addClass($element, DIRTY_CLASS);
+    parentForm.$setDirty();
   };
 
   /**
@@ -1803,8 +1909,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @description
    * Sets the control to its untouched state.
    *
-   * This method can be called to remove the 'ng-touched' class and set the control to its
-   * untouched state (ng-untouched class). Upon compilation, a model is set as untouched
+   * This method can be called to remove the `ng-touched` class and set the control to its
+   * untouched state (`ng-untouched` class). Upon compilation, a model is set as untouched
    * by default, however this function can be used to restore that state if the model has
    * already been touched by the user.
    */
@@ -1821,10 +1927,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @description
    * Sets the control to its touched state.
    *
-   * This method can be called to remove the 'ng-untouched' class and set the control to its
-   * touched state (ng-touched class). A model is considered to be touched when the user has
-   * first interacted (focussed) on the model input element and then shifted focus away (blurred)
-   * from the input element.
+   * This method can be called to remove the `ng-untouched` class and set the control to its
+   * touched state (`ng-touched` class). A model is considered to be touched when the user has
+   * first focused the control element and then shifted focus away from the control (blur event).
    */
   this.$setTouched = function() {
     ctrl.$touched = true;
@@ -1858,13 +1963,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *     angular.module('cancel-update-example', [])
    *
    *     .controller('CancelUpdateController', ['$scope', function($scope) {
-   *       $scope.resetWithCancel = function (e) {
+   *       $scope.resetWithCancel = function(e) {
    *         if (e.keyCode == 27) {
    *           $scope.myForm.myInput1.$rollbackViewValue();
    *           $scope.myValue = '';
    *         }
    *       };
-   *       $scope.resetWithoutCancel = function (e) {
+   *       $scope.resetWithoutCancel = function(e) {
    *         if (e.keyCode == 27) {
    *           $scope.myValue = '';
    *         }
@@ -1902,58 +2007,141 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @name ngModel.NgModelController#$validate
    *
    * @description
-   * Runs each of the registered validators (first synchronous validators and then asynchronous validators).
+   * Runs each of the registered validators (first synchronous validators and then
+   * asynchronous validators).
+   * If the validity changes to invalid, the model will be set to `undefined`,
+   * unless {@link ngModelOptions `ngModelOptions.allowInvalid`} is `true`.
+   * If the validity changes to valid, it will set the model to the last available valid
+   * modelValue, i.e. either the last parsed value or the last value set from the scope.
    */
   this.$validate = function() {
-    // ignore $validate before model initialized
-    if (ctrl.$modelValue !== ctrl.$modelValue) {
+    // ignore $validate before model is initialized
+    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
       return;
     }
 
-    var prev = ctrl.$modelValue;
-    ctrl.$$runValidators(ctrl.$$invalidModelValue || ctrl.$modelValue, ctrl.$viewValue);
-    if (prev !== ctrl.$modelValue) {
-      ctrl.$$writeModelToScope();
-    }
-  };
+    var viewValue = ctrl.$$lastCommittedViewValue;
+    // Note: we use the $$rawModelValue as $modelValue might have been
+    // set to undefined during a view -> model update that found validation
+    // errors. We can't parse the view here, since that could change
+    // the model although neither viewValue nor the model on the scope changed
+    var modelValue = ctrl.$$rawModelValue;
 
-  this.$$runValidators = function(modelValue, viewValue) {
-    // this is called in the event if incase the input value changes
-    // while a former asynchronous validator is still doing its thing
-    if(ctrl.$pending) {
-      ctrl.$$clearPending();
-    }
+    // Check if the there's a parse error, so we don't unset it accidentially
+    var parserName = ctrl.$$parserName || 'parse';
+    var parserValid = ctrl.$error[parserName] ? false : undefined;
 
-    var continueValidation = validate(ctrl.$validators, function(validator, result) {
-      ctrl.$setValidity(validator, result);
+    var prevValid = ctrl.$valid;
+    var prevModelValue = ctrl.$modelValue;
+
+    var allowInvalid = ctrl.$options && ctrl.$options.allowInvalid;
+
+    ctrl.$$runValidators(parserValid, modelValue, viewValue, function(allValid) {
+      // If there was no change in validity, don't update the model
+      // This prevents changing an invalid modelValue to undefined
+      if (!allowInvalid && prevValid !== allValid) {
+        // Note: Don't check ctrl.$valid here, as we could have
+        // external validators (e.g. calculated on the server),
+        // that just call $setValidity and need the model value
+        // to calculate their validity.
+        ctrl.$modelValue = allValid ? modelValue : undefined;
+
+        if (ctrl.$modelValue !== prevModelValue) {
+          ctrl.$$writeModelToScope();
+        }
+      }
     });
 
-    if (continueValidation) {
-      validate(ctrl.$asyncValidators, function(validator, result) {
-        if (!isPromiseLike(result)) {
-          throw $ngModelMinErr("$asyncValidators",
-            "Expected asynchronous validator to return a promise but got '{0}' instead.", result);
-        }
-        ctrl.$$setPending(validator, result, modelValue);
-      });
-    }
-
-    ctrl.$$updateValidModelValue(modelValue);
-
-    function validate(validators, callback) {
-      var status = true;
-      forEach(validators, function(fn, name) {
-        var result = fn(modelValue, viewValue);
-        callback(name, result);
-        status = status && result;
-      });
-      return status;
-    }
   };
 
-  this.$$updateValidModelValue = function(modelValue) {
-    ctrl.$modelValue         = ctrl.$valid ? modelValue : undefined;
-    ctrl.$$invalidModelValue = ctrl.$valid ? undefined : modelValue;
+  this.$$runValidators = function(parseValid, modelValue, viewValue, doneCallback) {
+    currentValidationRunId++;
+    var localValidationRunId = currentValidationRunId;
+
+    // check parser error
+    if (!processParseErrors(parseValid)) {
+      validationDone(false);
+      return;
+    }
+    if (!processSyncValidators()) {
+      validationDone(false);
+      return;
+    }
+    processAsyncValidators();
+
+    function processParseErrors(parseValid) {
+      var errorKey = ctrl.$$parserName || 'parse';
+      if (parseValid === undefined) {
+        setValidity(errorKey, null);
+      } else {
+        setValidity(errorKey, parseValid);
+        if (!parseValid) {
+          forEach(ctrl.$validators, function(v, name) {
+            setValidity(name, null);
+          });
+          forEach(ctrl.$asyncValidators, function(v, name) {
+            setValidity(name, null);
+          });
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function processSyncValidators() {
+      var syncValidatorsValid = true;
+      forEach(ctrl.$validators, function(validator, name) {
+        var result = validator(modelValue, viewValue);
+        syncValidatorsValid = syncValidatorsValid && result;
+        setValidity(name, result);
+      });
+      if (!syncValidatorsValid) {
+        forEach(ctrl.$asyncValidators, function(v, name) {
+          setValidity(name, null);
+        });
+        return false;
+      }
+      return true;
+    }
+
+    function processAsyncValidators() {
+      var validatorPromises = [];
+      var allValid = true;
+      forEach(ctrl.$asyncValidators, function(validator, name) {
+        var promise = validator(modelValue, viewValue);
+        if (!isPromiseLike(promise)) {
+          throw $ngModelMinErr("$asyncValidators",
+            "Expected asynchronous validator to return a promise but got '{0}' instead.", promise);
+        }
+        setValidity(name, undefined);
+        validatorPromises.push(promise.then(function() {
+          setValidity(name, true);
+        }, function(error) {
+          allValid = false;
+          setValidity(name, false);
+        }));
+      });
+      if (!validatorPromises.length) {
+        validationDone(true);
+      } else {
+        $q.all(validatorPromises).then(function() {
+          validationDone(allValid);
+        }, noop);
+      }
+    }
+
+    function setValidity(name, isValid) {
+      if (localValidationRunId === currentValidationRunId) {
+        ctrl.$setValidity(name, isValid);
+      }
+    }
+
+    function validationDone(allValid) {
+      if (localValidationRunId === currentValidationRunId) {
+
+        doneCallback(allValid);
+      }
+    }
   };
 
   /**
@@ -1967,61 +2155,79 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * event defined in `ng-model-options`. this method is rarely needed as `NgModelController`
    * usually handles calling this in response to input events.
    */
-  this.$commitViewValue = function(revalidate) {
+  this.$commitViewValue = function() {
     var viewValue = ctrl.$viewValue;
 
     $timeout.cancel(pendingDebounce);
-    if (!revalidate && ctrl.$$lastCommittedViewValue === viewValue) {
+
+    // If the view value has not changed then we should just exit, except in the case where there is
+    // a native validator on the element. In this case the validation state may have changed even though
+    // the viewValue has stayed empty.
+    if (ctrl.$$lastCommittedViewValue === viewValue && (viewValue !== '' || !ctrl.$$hasNativeValidators)) {
       return;
     }
     ctrl.$$lastCommittedViewValue = viewValue;
 
     // change to dirty
     if (ctrl.$pristine) {
-      ctrl.$dirty = true;
-      ctrl.$pristine = false;
-      $animate.removeClass($element, PRISTINE_CLASS);
-      $animate.addClass($element, DIRTY_CLASS);
-      parentForm.$setDirty();
+      this.$setDirty();
     }
+    this.$$parseAndValidate();
+  };
 
-    var hasBadInput, modelValue = viewValue;
-    for(var i = 0; i < ctrl.$parsers.length; i++) {
-      modelValue = ctrl.$parsers[i](modelValue);
-      if(isUndefined(modelValue)) {
-        hasBadInput = true;
-        break;
+  this.$$parseAndValidate = function() {
+    var viewValue = ctrl.$$lastCommittedViewValue;
+    var modelValue = viewValue;
+    var parserValid = isUndefined(modelValue) ? undefined : true;
+
+    if (parserValid) {
+      for (var i = 0; i < ctrl.$parsers.length; i++) {
+        modelValue = ctrl.$parsers[i](modelValue);
+        if (isUndefined(modelValue)) {
+          parserValid = false;
+          break;
+        }
       }
     }
+    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+      // ctrl.$modelValue has not been touched yet...
+      ctrl.$modelValue = ngModelGet($scope);
+    }
+    var prevModelValue = ctrl.$modelValue;
+    var allowInvalid = ctrl.$options && ctrl.$options.allowInvalid;
+    ctrl.$$rawModelValue = modelValue;
 
-    var parserName = ctrl.$$parserName || 'parse';
-    if (hasBadInput) {
-      ctrl.$$invalidModelValue = ctrl.$modelValue = undefined;
-      ctrl.$$clearValidity();
-      ctrl.$setValidity(parserName, false);
-      ctrl.$$writeModelToScope();
-    } else if (ctrl.$modelValue !== modelValue &&
-                (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
-      ctrl.$setValidity(parserName, true);
-      ctrl.$$runValidators(modelValue, viewValue);
-      ctrl.$$writeModelToScope();
+    if (allowInvalid) {
+      ctrl.$modelValue = modelValue;
+      writeToModelIfNeeded();
+    }
+
+    // Pass the $$lastCommittedViewValue here, because the cached viewValue might be out of date.
+    // This can happen if e.g. $setViewValue is called from inside a parser
+    ctrl.$$runValidators(parserValid, modelValue, ctrl.$$lastCommittedViewValue, function(allValid) {
+      if (!allowInvalid) {
+        // Note: Don't check ctrl.$valid here, as we could have
+        // external validators (e.g. calculated on the server),
+        // that just call $setValidity and need the model value
+        // to calculate their validity.
+        ctrl.$modelValue = allValid ? modelValue : undefined;
+        writeToModelIfNeeded();
+      }
+    });
+
+    function writeToModelIfNeeded() {
+      if (ctrl.$modelValue !== prevModelValue) {
+        ctrl.$$writeModelToScope();
+      }
     }
   };
 
   this.$$writeModelToScope = function() {
-    var getterSetter;
-
-    if (ctrl.$options && ctrl.$options.getterSetter &&
-        isFunction(getterSetter = ngModelGet($scope))) {
-
-      getterSetter(ctrl.$modelValue);
-    } else {
-      ngModelSet($scope, ctrl.$modelValue);
-    }
+    ngModelSet($scope, ctrl.$modelValue);
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
         listener();
-      } catch(e) {
+      } catch (e) {
         $exceptionHandler(e);
       }
     });
@@ -2067,23 +2273,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {string} value Value from the view.
    * @param {string} trigger Event that triggered the update.
    */
-  this.$setViewValue = function(value, trigger, revalidate) {
+  this.$setViewValue = function(value, trigger) {
     ctrl.$viewValue = value;
     if (!ctrl.$options || ctrl.$options.updateOnDefault) {
-      ctrl.$$debounceViewValueCommit(trigger, revalidate);
+      ctrl.$$debounceViewValueCommit(trigger);
     }
   };
 
-  this.$$debounceViewValueCommit = function(trigger, revalidate) {
+  this.$$debounceViewValueCommit = function(trigger) {
     var debounceDelay = 0,
         options = ctrl.$options,
         debounce;
 
-    if(options && isDefined(options.debounce)) {
+    if (options && isDefined(options.debounce)) {
       debounce = options.debounce;
-      if(isNumber(debounce)) {
+      if (isNumber(debounce)) {
         debounceDelay = debounce;
-      } else if(isNumber(debounce[trigger])) {
+      } else if (isNumber(debounce[trigger])) {
         debounceDelay = debounce[trigger];
       } else if (isNumber(debounce['default'])) {
         debounceDelay = debounce['default'];
@@ -2093,38 +2299,45 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     $timeout.cancel(pendingDebounce);
     if (debounceDelay) {
       pendingDebounce = $timeout(function() {
-        ctrl.$commitViewValue(revalidate);
+        ctrl.$commitViewValue();
       }, debounceDelay);
+    } else if ($rootScope.$$phase) {
+      ctrl.$commitViewValue();
     } else {
-      ctrl.$commitViewValue(revalidate);
+      $scope.$apply(function() {
+        ctrl.$commitViewValue();
+      });
     }
   };
 
   // model -> value
+  // Note: we cannot use a normal scope.$watch as we want to detect the following:
+  // 1. scope value is 'a'
+  // 2. user enters 'b'
+  // 3. ng-change kicks in and reverts scope value to 'a'
+  //    -> scope value did not change since the last digest as
+  //       ng-change executes in apply phase
+  // 4. view should be changed back to 'a'
   $scope.$watch(function ngModelWatch() {
     var modelValue = ngModelGet($scope);
 
-    if (ctrl.$options && ctrl.$options.getterSetter && isFunction(modelValue)) {
-      modelValue = modelValue();
-    }
-
     // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== modelValue &&
-        (isUndefined(ctrl.$$invalidModelValue) || ctrl.$$invalidModelValue != modelValue)) {
+    // TODO(perf): why not move this to the action fn?
+    if (modelValue !== ctrl.$modelValue) {
+      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
 
       var viewValue = modelValue;
-      while(idx--) {
+      while (idx--) {
         viewValue = formatters[idx](viewValue);
       }
-
-      ctrl.$$runValidators(modelValue, viewValue);
-
       if (ctrl.$viewValue !== viewValue) {
         ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
         ctrl.$render();
+
+        ctrl.$$runValidators(undefined, modelValue, viewValue, noop);
       }
     }
 
@@ -2138,6 +2351,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * @name ngModel
  *
  * @element input
+ * @priority 1
  *
  * @description
  * The `ngModel` directive binds an `input`,`select`, `textarea` (or custom form control) to a
@@ -2159,7 +2373,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *
  * For best practices on using `ngModel`, see:
  *
- *  - [https://github.com/angular/angular.js/wiki/Understanding-Scopes]
+ *  - [Understanding Scopes](https://github.com/angular/angular.js/wiki/Understanding-Scopes)
  *
  * For basic examples, how to use `ngModel`, see:
  *
@@ -2171,7 +2385,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *    - {@link input[email] email}
  *    - {@link input[url] url}
  *    - {@link input[date] date}
- *    - {@link input[dateTimeLocal] dateTimeLocal}
+ *    - {@link input[datetime-local] datetime-local}
  *    - {@link input[time] time}
  *    - {@link input[month] month}
  *    - {@link input[week] week}
@@ -2182,10 +2396,15 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * The following CSS classes are added and removed on the associated input/select/textarea element
  * depending on the validity of the model.
  *
- *  - `ng-valid` is set if the model is valid.
- *  - `ng-invalid` is set if the model is invalid.
- *  - `ng-pristine` is set if the model is pristine.
- *  - `ng-dirty` is set if the model is dirty.
+ *  - `ng-valid`: the model is valid
+ *  - `ng-invalid`: the model is invalid
+ *  - `ng-valid-[key]`: for each valid key added by `$setValidity`
+ *  - `ng-invalid-[key]`: for each invalid key added by `$setValidity`
+ *  - `ng-pristine`: the control hasn't been interacted with yet
+ *  - `ng-dirty`: the control has been interacted with
+ *  - `ng-touched`: the control has been blurred
+ *  - `ng-untouched`: the control hasn't been blurred
+ *  - `ng-pending`: any `$asyncValidators` are unfulfilled
  *
  * Keep in mind that ngAnimate can detect each of these classes when added and removed.
  *
@@ -2279,7 +2498,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
          .controller('ExampleController', ['$scope', function($scope) {
            var _name = 'Brian';
            $scope.user = {
-             name: function (newName) {
+             name: function(newName) {
                if (angular.isDefined(newName)) {
                  _name = newName;
                }
@@ -2290,46 +2509,61 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
      </file>
  * </example>
  */
-var ngModelDirective = function() {
+var ngModelDirective = ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     require: ['ngModel', '^?form', '^?ngModelOptions'],
     controller: NgModelController,
-    link: {
-      pre: function(scope, element, attr, ctrls) {
-        var modelCtrl = ctrls[0],
-            formCtrl = ctrls[1] || nullFormCtrl;
+    // Prelink needs to run before any input directive
+    // so that we can set the NgModelOptions in NgModelController
+    // before anyone else uses it.
+    priority: 1,
+    compile: function ngModelCompile(element) {
+      // Setup initial state of the control
+      element.addClass(PRISTINE_CLASS).addClass(UNTOUCHED_CLASS).addClass(VALID_CLASS);
 
-        modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
+      return {
+        pre: function ngModelPreLink(scope, element, attr, ctrls) {
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
 
-        // notify others, especially parent forms
-        formCtrl.$addControl(modelCtrl);
+          modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
 
-        scope.$on('$destroy', function() {
-          formCtrl.$removeControl(modelCtrl);
-        });
-      },
-      post: function(scope, element, attr, ctrls) {
-        var modelCtrl = ctrls[0];
-        if (modelCtrl.$options && modelCtrl.$options.updateOn) {
-          element.on(modelCtrl.$options.updateOn, function(ev) {
-            scope.$apply(function() {
+          // notify others, especially parent forms
+          formCtrl.$addControl(modelCtrl);
+
+          attr.$observe('name', function(newValue) {
+            if (modelCtrl.$name !== newValue) {
+              formCtrl.$$renameControl(modelCtrl, newValue);
+            }
+          });
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        },
+        post: function ngModelPostLink(scope, element, attr, ctrls) {
+          var modelCtrl = ctrls[0];
+          if (modelCtrl.$options && modelCtrl.$options.updateOn) {
+            element.on(modelCtrl.$options.updateOn, function(ev) {
               modelCtrl.$$debounceViewValueCommit(ev && ev.type);
             });
+          }
+
+          element.on('blur', function(ev) {
+            if (modelCtrl.$touched) return;
+
+            if ($rootScope.$$phase) {
+              scope.$evalAsync(modelCtrl.$setTouched);
+            } else {
+              scope.$apply(modelCtrl.$setTouched);
+            }
           });
         }
-
-        element.on('blur', function(ev) {
-          if (modelCtrl.$touched) return;
-
-          scope.$apply(function() {
-            modelCtrl.$setTouched();
-          });
-        });
-      }
+      };
     }
   };
-};
+}];
 
 
 /**
@@ -2439,8 +2673,8 @@ var patternDirective = function() {
 
       var regexp, patternExp = attr.ngPattern || attr.pattern;
       attr.$observe('pattern', function(regex) {
-        if(isString(regex) && regex.length > 0) {
-          regex = new RegExp(regex);
+        if (isString(regex) && regex.length > 0) {
+          regex = new RegExp('^' + regex + '$');
         }
 
         if (regex && !regex.test) {
@@ -2468,13 +2702,14 @@ var maxlengthDirective = function() {
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
 
-      var maxlength = 0;
+      var maxlength = -1;
       attr.$observe('maxlength', function(value) {
-        maxlength = int(value) || 0;
+        var intVal = int(value);
+        maxlength = isNaN(intVal) ? -1 : intVal;
         ctrl.$validate();
       });
-      ctrl.$validators.maxlength = function(value) {
-        return ctrl.$isEmpty(value) || value.length <= maxlength;
+      ctrl.$validators.maxlength = function(modelValue, viewValue) {
+        return (maxlength < 0) || ctrl.$isEmpty(modelValue) || (viewValue.length <= maxlength);
       };
     }
   };
@@ -2492,8 +2727,8 @@ var minlengthDirective = function() {
         minlength = int(value) || 0;
         ctrl.$validate();
       });
-      ctrl.$validators.minlength = function(value) {
-        return ctrl.$isEmpty(value) || value.length >= minlength;
+      ctrl.$validators.minlength = function(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || viewValue.length >= minlength;
       };
     }
   };
@@ -2585,6 +2820,7 @@ var minlengthDirective = function() {
 var ngListDirective = function() {
   return {
     restrict: 'A',
+    priority: 100,
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
       // We want to control whitespace trimming so we use this convoluted approach
@@ -2632,12 +2868,17 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  * @name ngValue
  *
  * @description
- * Binds the given expression to the value of `input[select]` or `input[radio]`, so
- * that when the element is selected, the `ngModel` of that element is set to the
- * bound value.
+ * Binds the given expression to the value of `<option>` or {@link input[radio] `input[radio]`},
+ * so that when the element is selected, the {@link ngModel `ngModel`} of that element is set to
+ * the bound value.
  *
- * `ngValue` is useful when dynamically generating lists of radio buttons using `ng-repeat`, as
- * shown below.
+ * `ngValue` is useful when dynamically generating lists of radio buttons using
+ * {@link ngRepeat `ngRepeat`}, as shown below.
+ *
+ * Likewise, `ngValue` can be used to generate `<option>` elements for
+ * the {@link select `select`} element. In that case however, only strings are supported
+ * for the `value `attribute, so the resulting `ngModel` will always be a string.
+ * Support for `select` models with non-string values is available via `ngOptions`.
  *
  * @element input
  * @param {string=} ngValue angular expression, whose value will be bound to the `value` attribute
@@ -2722,14 +2963,18 @@ var ngValueDirective = function() {
  * `submit` event. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
  * to have access to the updated model.
  *
+ * `ngModelOptions` has an effect on the element it's declared on and its descendants.
+ *
  * @param {Object} ngModelOptions options to apply to the current model. Valid keys are:
- *   - `updateOn`: string specifying which event should be the input bound to. You can set several
+ *   - `updateOn`: string specifying which event should the input be bound to. You can set several
  *     events using an space delimited list. There is a special event called `default` that
  *     matches the default events belonging of the control.
  *   - `debounce`: integer value which contains the debounce model update value in milliseconds. A
  *     value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
  *     custom value for each event. For example:
  *     `ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
+ *   - `allowInvalid`: boolean value which indicates that the model can be set with values that did
+ *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
        `ngModel` as getters/setters.
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
@@ -2763,7 +3008,7 @@ var ngValueDirective = function() {
         .controller('ExampleController', ['$scope', function($scope) {
           $scope.user = { name: 'say', data: '' };
 
-          $scope.cancel = function (e) {
+          $scope.cancel = function(e) {
             if (e.keyCode == 27) {
               $scope.userForm.userName.$rollbackViewValue();
             }
@@ -2837,7 +3082,7 @@ var ngValueDirective = function() {
         .controller('ExampleController', ['$scope', function($scope) {
           var _name = 'Brian';
           $scope.user = {
-            name: function (newName) {
+            name: function(newName) {
               return angular.isDefined(newName) ? (_name = newName) : _name;
             }
           };
@@ -2865,3 +3110,107 @@ var ngModelOptionsDirective = function() {
     }]
   };
 };
+
+// helper methods
+function addSetValidityMethod(context) {
+  var ctrl = context.ctrl,
+      $element = context.$element,
+      classCache = {},
+      set = context.set,
+      unset = context.unset,
+      parentForm = context.parentForm,
+      $animate = context.$animate;
+
+  classCache[INVALID_CLASS] = !(classCache[VALID_CLASS] = $element.hasClass(VALID_CLASS));
+
+  ctrl.$setValidity = setValidity;
+
+  function setValidity(validationErrorKey, state, options) {
+    if (state === undefined) {
+      createAndSet('$pending', validationErrorKey, options);
+    } else {
+      unsetAndCleanup('$pending', validationErrorKey, options);
+    }
+    if (!isBoolean(state)) {
+      unset(ctrl.$error, validationErrorKey, options);
+      unset(ctrl.$$success, validationErrorKey, options);
+    } else {
+      if (state) {
+        unset(ctrl.$error, validationErrorKey, options);
+        set(ctrl.$$success, validationErrorKey, options);
+      } else {
+        set(ctrl.$error, validationErrorKey, options);
+        unset(ctrl.$$success, validationErrorKey, options);
+      }
+    }
+    if (ctrl.$pending) {
+      cachedToggleClass(PENDING_CLASS, true);
+      ctrl.$valid = ctrl.$invalid = undefined;
+      toggleValidationCss('', null);
+    } else {
+      cachedToggleClass(PENDING_CLASS, false);
+      ctrl.$valid = isObjectEmpty(ctrl.$error);
+      ctrl.$invalid = !ctrl.$valid;
+      toggleValidationCss('', ctrl.$valid);
+    }
+
+    // re-read the state as the set/unset methods could have
+    // combined state in ctrl.$error[validationError] (used for forms),
+    // where setting/unsetting only increments/decrements the value,
+    // and does not replace it.
+    var combinedState;
+    if (ctrl.$pending && ctrl.$pending[validationErrorKey]) {
+      combinedState = undefined;
+    } else if (ctrl.$error[validationErrorKey]) {
+      combinedState = false;
+    } else if (ctrl.$$success[validationErrorKey]) {
+      combinedState = true;
+    } else {
+      combinedState = null;
+    }
+    toggleValidationCss(validationErrorKey, combinedState);
+    parentForm.$setValidity(validationErrorKey, combinedState, ctrl);
+  }
+
+  function createAndSet(name, value, options) {
+    if (!ctrl[name]) {
+      ctrl[name] = {};
+    }
+    set(ctrl[name], value, options);
+  }
+
+  function unsetAndCleanup(name, value, options) {
+    if (ctrl[name]) {
+      unset(ctrl[name], value, options);
+    }
+    if (isObjectEmpty(ctrl[name])) {
+      ctrl[name] = undefined;
+    }
+  }
+
+  function cachedToggleClass(className, switchValue) {
+    if (switchValue && !classCache[className]) {
+      $animate.addClass($element, className);
+      classCache[className] = true;
+    } else if (!switchValue && classCache[className]) {
+      $animate.removeClass($element, className);
+      classCache[className] = false;
+    }
+  }
+
+  function toggleValidationCss(validationErrorKey, isValid) {
+    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+
+    cachedToggleClass(VALID_CLASS + validationErrorKey, isValid === true);
+    cachedToggleClass(INVALID_CLASS + validationErrorKey, isValid === false);
+  }
+}
+
+function isObjectEmpty(obj) {
+  if (obj) {
+    for (var prop in obj) {
+      return false;
+    }
+  }
+  return true;
+}

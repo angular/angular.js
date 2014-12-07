@@ -57,8 +57,8 @@ afterEach(function() {
 
     cache = angular.element.cache;
 
-    forEachSorted(cache, function (expando, key) {
-      angular.forEach(expando.data, function (value, key) {
+    forEachSorted(cache, function(expando, key) {
+      angular.forEach(expando.data, function(value, key) {
         count++;
         if (value && value.$element) {
           dump('LEAK', key, value.$id, sortedHtml(value.$element));
@@ -87,7 +87,7 @@ afterEach(function() {
 
   function forEachSorted(obj, iterator, context) {
     var keys = sortedKeys(obj);
-    for ( var i = 0; i < keys.length; i++) {
+    for (var i = 0; i < keys.length; i++) {
       iterator.call(context, obj[keys[i]], keys[i]);
     }
     return keys;
@@ -123,7 +123,7 @@ function dealoc(obj) {
     // element.contentWindow.document) and both properties are null for IFRAMES that aren't attached
     // to a document.
     var children = element[0].childNodes || [];
-    for ( var i = 0; i < children.length; i++) {
+    for (var i = 0; i < children.length; i++) {
       cleanup(angular.element(children[i]));
     }
   }
@@ -152,7 +152,7 @@ function sortedHtml(element, showNgClass) {
 
     if (node.nodeName == "#text") {
       html += node.nodeValue.
-        replace(/&(\w+[&;\W])?/g, function(match, entity){return entity?match:'&amp;';}).
+        replace(/&(\w+[&;\W])?/g, function(match, entity) {return entity ? match : '&amp;';}).
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
     } else if (node.nodeName == "#comment") {
@@ -169,26 +169,26 @@ function sortedHtml(element, showNgClass) {
       if (className) {
         attrs.push(' class="' + className + '"');
       }
-      for(var i=0; i<attributes.length; i++) {
-        if (i>0 && attributes[i] == attributes[i-1])
+      for (var i = 0; i < attributes.length; i++) {
+        if (i > 0 && attributes[i] == attributes[i - 1])
           continue; //IE9 creates dupes. Ignore them!
 
         var attr = attributes[i];
-        if(attr.name.match(/^ng[\:\-]/) ||
+        if (attr.name.match(/^ng[\:\-]/) ||
             (attr.value || attr.value === '') &&
-            attr.value !='null' &&
-            attr.value !='auto' &&
-            attr.value !='false' &&
-            attr.value !='inherit' &&
-            (attr.value !='0' || attr.name =='value') &&
-            attr.name !='loop' &&
-            attr.name !='complete' &&
-            attr.name !='maxLength' &&
-            attr.name !='size' &&
-            attr.name !='class' &&
-            attr.name !='start' &&
-            attr.name !='tabIndex' &&
-            attr.name !='style' &&
+            attr.value != 'null' &&
+            attr.value != 'auto' &&
+            attr.value != 'false' &&
+            attr.value != 'inherit' &&
+            (attr.value != '0' || attr.name == 'value') &&
+            attr.name != 'loop' &&
+            attr.name != 'complete' &&
+            attr.name != 'maxLength' &&
+            attr.name != 'size' &&
+            attr.name != 'class' &&
+            attr.name != 'start' &&
+            attr.name != 'tabIndex' &&
+            attr.name != 'style' &&
             attr.name.substr(0, 6) != 'jQuery') {
           // in IE we need to check for all of these.
           if (/ng\d+/.exec(attr.name) ||
@@ -211,18 +211,18 @@ function sortedHtml(element, showNgClass) {
       if (node.style) {
         var style = [];
         if (node.style.cssText) {
-          forEach(node.style.cssText.split(';'), function(value){
+          forEach(node.style.cssText.split(';'), function(value) {
             value = trim(value);
             if (value) {
               style.push(lowercase(value));
             }
           });
         }
-        for(var css in node.style){
+        for (var css in node.style) {
           var value = node.style[css];
-          if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
+          if (isString(value) && isString(css) && css != 'cssText' && value && (1 * css != css)) {
             var text = lowercase(css + ': ' + value);
-            if (value != 'false' && indexOf(style, text) == -1) {
+            if (value != 'false' && style.indexOf(text) == -1) {
               style.push(text);
             }
           }
@@ -230,7 +230,7 @@ function sortedHtml(element, showNgClass) {
         style.sort();
         var tmp = style;
         style = [];
-        forEach(tmp, function(value){
+        forEach(tmp, function(value) {
           if (!value.match(/^max[^\-]/))
             style.push(value);
         });
@@ -240,7 +240,7 @@ function sortedHtml(element, showNgClass) {
       }
       html += '>';
       var children = node.childNodes;
-      for(var j=0; j<children.length; j++) {
+      for (var j = 0; j < children.length; j++) {
         toString(children[j]);
       }
       html += '</' + node.nodeName.toLowerCase() + '>';
@@ -323,16 +323,19 @@ function provideLog($provide) {
 }
 
 function pending() {
-  dump('PENDING');
+  window.dump('PENDING');
 }
 
 function trace(name) {
-  dump(new Error(name).stack);
+  window.dump(new Error(name).stack);
 }
 
-var karmaDump = dump;
-window.dump = function () {
-  karmaDump.apply(undefined, map(arguments, function(arg) {
+var karmaDump = window.dump || function() {
+  window.console.log.apply(window.console, arguments);
+};
+
+window.dump = function() {
+  karmaDump.apply(undefined, Array.prototype.map.call(arguments, function(arg) {
     return angular.mock.dump(arg);
   }));
 };

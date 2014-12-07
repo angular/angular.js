@@ -53,8 +53,8 @@ $provide.value("$locale", {
       "11-\u0440 \u0441\u0430\u0440",
       "12-\u0440 \u0441\u0430\u0440"
     ],
-    "fullDate": "EEEE, y '\u043e\u043d\u044b' MMMM '\u0441\u0430\u0440\u044b\u043d' dd",
-    "longDate": "y '\u043e\u043d\u044b' MMMM '\u0441\u0430\u0440\u044b\u043d' d",
+    "fullDate": "EEEE, y '\u043e\u043d\u044b' MM '\u0441\u0430\u0440\u044b\u043d' d",
+    "longDate": "y '\u043e\u043d\u044b' MM '\u0441\u0430\u0440\u044b\u043d' d",
     "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "mn",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

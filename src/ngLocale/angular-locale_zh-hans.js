@@ -63,14 +63,13 @@ $provide.value("$locale", {
     "shortTime": "ah:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u00a5",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "zh-hans",
-  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -58,8 +58,8 @@ $provide.value("$locale", {
     "medium": "d MMM y h:mm:ss a",
     "mediumDate": "d MMM y",
     "mediumTime": "h:mm:ss a",
-    "short": "d/M/y h:mm a",
-    "shortDate": "d/M/y",
+    "short": "d/M/yy h:mm a",
+    "shortDate": "d/M/yy",
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
@@ -70,7 +70,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +81,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +92,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "km",
-  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

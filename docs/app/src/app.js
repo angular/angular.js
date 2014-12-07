@@ -6,6 +6,7 @@ angular.module('docsApp', [
   'DocsController',
   'versionsData',
   'pagesData',
+  'navData',
   'directives',
   'errors',
   'examples',
@@ -13,11 +14,9 @@ angular.module('docsApp', [
   'tutorials',
   'versions',
   'bootstrap',
-  'bootstrapPrettify',
   'ui.bootstrap.dropdown'
 ])
 
-
-.config(function($locationProvider) {
+.config(['$locationProvider', function($locationProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
-});
+}]);

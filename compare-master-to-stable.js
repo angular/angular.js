@@ -145,7 +145,7 @@ then(allInSeries(function (branch) {
         line = line.split(' ');
         var sha = line.shift();
         var msg = line.join(' ');
-        return sha + (msg.toLowerCase().indexOf('fix') === -1 ? '   ' : ' * ') + msg;
+        return sha + ((/fix\([^\)]+\):/i.test(msg))  ? ' * ' : '   ') + msg;
       });
       branch.log = log.map(function (line) {
         return line.substr(41);

@@ -22,7 +22,12 @@ function readSymbols() {
     .then(function(content) {
       var currencySymbols = closureI18nExtractor.extractCurrencySymbols(content);
       return qfs.read(__dirname + '/../closure/numberSymbols.js', 'b').then(function(content) {
-          closureI18nExtractor.extractNumberSymbols(content, localeInfo, currencySymbols);
+          var numberSymbols = content;
+          return qfs.read(__dirname + '/../closure/numberSymbolsExt.js', 'b')
+            .then(function(content) {
+              numberSymbols += content;
+              return closureI18nExtractor.extractNumberSymbols(numberSymbols, localeInfo, currencySymbols);
+            });
         });
       });
 
@@ -75,7 +80,7 @@ function writeLocaleFiles() {
     var filename = NG_LOCALE_DIR + 'angular-locale_' + correctedLocaleId + '.js'
     console.log('Writing ' + filename);
     return qfs.write(filename, content)
-        .then(function () {
+        .then(function() {
           console.log('Wrote ' + filename);
           ++num_files;
         });

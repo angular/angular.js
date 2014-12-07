@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Dependency Injection
+@sortOrder 250
 @description
 
 # Dependency Injection
@@ -10,12 +11,226 @@ their dependencies.
 The Angular injector subsystem is in charge of creating components, resolving their dependencies,
 and providing them to other components as requested.
 
+
+## Using Dependency Injection
+
+DI is pervasive throughout Angular. You can use it when defining components or when providing `run`
+and `config` blocks for a module.
+
+- Components such as services, directives, filters, and animations are defined by an injectable
+factory method or constructor function. These components can be injected with "service" and "value"
+components as dependencies.
+
+- Controllers are defined by a constructor function, which can be injected with any of the "service"
+and "value" components as dependencies, but they can also be provided with special dependencies. See
+{@link di#controllers Controllers} below for a list of these special dependencies.
+
+- The `run` method accepts a function, which can be injected with "service", "value" and "constant"
+components as dependencies. Note that you cannot inject "providers" into `run` blocks.
+
+- The `config` method accepts a function, which can be injected with "provider" and "constant"
+components as dependencies. Note that you cannot inject "service" or "value" components into
+configuration.
+
+See {@link module#module-loading-dependencies Modules} for more details about `run` and `config`
+blocks.
+
+
+### Factory Methods
+
+The way you define a directive, service, or filter is with a factory function.
+The factory methods are registered with modules. The recommended way of declaring factories is:
+
+```js
+angular.module('myModule', [])
+  .factory('serviceId', ['depService', function(depService) {
+    // ...
+  }])
+  .directive('directiveName', ['depService', function(depService) {
+    // ...
+  }])
+  .filter('filterName', ['depService', function(depService) {
+    // ...
+  }]);
+```
+
+### Module Methods
+
+We can specify functions to run at configuration and run time for a module by calling the `config`
+and `run` methods. These functions are injectable with dependencies just like the factory functions
+above.
+
+```js
+angular.module('myModule', [])
+  .config(['depProvider', function(depProvider) {
+    // ...
+  }])
+  .run(['depService', function(depService) {
+    // ...
+  }]);
+```
+
+### Controllers
+
+Controllers are "classes" or "constructor functions" that are responsible for providing the
+application behavior that supports the declarative markup in the template. The recommended way of
+declaring Controllers is using the array notation:
+
+```js
+someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
+  ...
+  $scope.aMethod = function() {
+    ...
+  }
+  ...
+}]);
+```
+
+Unlike services, there can be many instances of the same type of controller in an application.
+
+Moreover, additional dependencies are made available to Controllers:
+
+* {@link scope `$scope`}: Controllers are associated with an element in the DOM and so are
+  provided with access to the {@link scope scope}. Other components (like services) only have
+  access to the {@link $rootScope `$rootScope`} service.
+* {@link ngRoute.$routeProvider#when resolves}: If a controller is instantiated as part of a route,
+  then any values that are resolved as part of the route are made available for injection into the
+  controller.
+
+
+## Dependency Annotation
+
+Angular invokes certain functions (like service factories and controllers) via the injector.
+You need to annotate these functions so that the injector knows what services to inject into
+the function. There are three ways of annotating your code with service name information:
+
+- Using the inline array annotation (preferred)
+- Using the `$inject` property annotation
+- Implicitly from the function parameter names (has caveats)
+
+### Inline Array Annotation
+
+This is the preferred way to annotate application components. This is how the examples in the
+documentation are written.
+
+For example:
+
+```js
+someModule.controller('MyController', ['$scope', 'greeter', function($scope, greeter) {
+  // ...
+}]);
+```
+
+Here we pass an array whose elements consist of a list of strings (the names of the dependencies)
+followed by the function itself.
+
+When using this type of annotation, take care to keep the annotation array in sync with the
+parameters in the function declaration.
+
+### `$inject` Property Annotation
+
+To allow the minifiers to rename the function parameters and still be able to inject the right services,
+the function needs to be annotated with the `$inject` property. The `$inject` property is an array
+of service names to inject.
+
+```js
+var MyController = function($scope, greeter) {
+  // ...
+}
+MyController.$inject = ['$scope', 'greeter'];
+someModule.controller('MyController', MyController);
+```
+
+In this scenario the ordering of the values in the `$inject` array must match the ordering of the
+parameters in `MyController`.
+
+Just like with the array annotation, you'll need to take care to keep the `$inject` in sync with
+the parameters in the function declaration.
+
+### Implicit Annotation
+
+<div class="alert alert-danger">
+**Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming&#41;)
+your code, your service names will get renamed and break your app.
+</div>
+
+The simplest way to get hold of the dependencies is to assume that the function parameter names
+are the names of the dependencies.
+
+```js
+someModule.controller('MyController', function($scope, greeter) {
+  // ...
+});
+```
+
+Given a function the injector can infer the names of the services to inject by examining the
+function declaration and extracting the parameter names. In the above example `$scope`, and
+`greeter` are two services which need to be injected into the function.
+
+One advantage of this approach is that there's no array of names to keep in sync with the
+function parameters. You can also freely reorder dependencies.
+
+However this method will not work with JavaScript minifiers/obfuscators because of how they
+rename parameters.
+
+Tools like [ng-annotate](https://github.com/olov/ng-annotate) let you use implicit dependency
+annotations in your app and automatically add inline array annotations prior to minifying.
+If you decide to take this approach, you probably want to use `ng-strict-di`.
+
+Because of these caveats, we recommend avoiding this style of annotation.
+
+
+## Using Strict Dependency Injection
+
+You can add an `ng-strict-di` directive on the same element as `ng-app` to opt into strict DI mode:
+
+```html
+<!doctype html>
+<html ng-app="myApp" ng-strict-di>
+<body>
+  I can add: {{ 1 + 2 }}.
+  <script src="angular.js"></script>
+</body>
+</html>
+```
+
+Strict mode throws an error whenever a service tries to use implicit annotations.
+
+Consider this module, which includes a `willBreak` service that uses implicit DI:
+
+```js
+angular.module('myApp', [])
+  .factory('willBreak', function($rootScope) {
+    // $rootScope is implicitly injected
+  })
+  .run(['willBreak', function(willBreak) {
+    // Angular will throw when this runs
+  }]);
+```
+
+When the `willBreak` service is instantiated, Angular will throw an error because of strict mode.
+This is useful when using a tool like [ng-annotate](https://github.com/olov/ng-annotate) to
+ensure that all of your application components have annotations.
+
+If you're using manual bootstrapping, you can also use strict DI by providing `strictDi: true` in
+the optional config argument:
+
+```js
+angular.bootstrap(document, ['myApp'], {
+  strictDi: true
+});
+```
+
+
+
+## Why Dependency Injection?
+
+This section motivates and explains Angular's use of DI. For how to use DI, see above.
+
 For in-depth discussion about DI, see
 [Dependency Injection](http://en.wikipedia.org/wiki/Dependency_injection) at Wikipedia,
 [Inversion of Control](http://martinfowler.com/articles/injection.html) by Martin Fowler,
 or read about DI in your favorite software design pattern book.
-
-## DI in a Nutshell
 
 There are only three ways a component (object or function) can get a hold of its dependencies:
 
@@ -116,186 +331,7 @@ controller ever knowing about the injector.
 This is the best outcome. The application code simply declares the dependencies it needs, without
 having to deal with the injector. This setup does not break the Law of Demeter.
 
-
-## Dependency Annotation
-
-**How does the injector know what components need to be injected?**
-
-The application developer needs to provide annotation information that the injector uses in order
-to resolve the dependencies. Throughout Angular, certain API functions are invoked using the
-injector, as per the API documentation. The injector needs to know what services to inject into
-the function. There are three equivalent ways of annotating your code with service name
-information:
-
-- Implicitly from the function parameter names
-- Using the `$inject` property annotation
-- Using the inline array annotation
-
-These can be used interchangeably as you see fit and are equivalent.
-
-### Implicit Dependencies
-
-The simplest way to get hold of the dependencies is to assume that the function parameter names
-are the names of the dependencies.
-
-```js
-function MyController($scope, greeter) {
-  // ...
-}
-```
-
-Given a function the injector can infer the names of the services to inject by examining the
-function declaration and extracting the parameter names. In the above example `$scope`, and
-`greeter` are two services which need to be injected into the function.
-
-While straightforward, this method will not work with JavaScript minifiers/obfuscators as they
-rename the method parameter names. This makes this way of annotating only useful for
-[pretotyping](http://www.pretotyping.org/), and demo applications.
-
-### `$inject` Property Annotation
-
-To allow the minifiers to rename the function parameters and still be able to inject the right services,
-the function needs to be annotated with the `$inject` property. The `$inject` property is an array
-of service names to inject.
-
-```js
-var MyController = function(renamed$scope, renamedGreeter) {
-  ...
-}
-MyController['$inject'] = ['$scope', 'greeter'];
-```
-
-In this scenario the ordering of the values in the `$inject` array must match the ordering of the
-arguments to inject. Using the above code snippet as an example, `$scope` will be injected into
-`renamed$scope` and `greeter` into `renamedGreeter`. Care must be taken that the `$inject`
-annotation is kept in sync with the actual arguments in the function declaration.
-
-This method of annotation is useful for controller declarations since it assigns the annotation
-information with the function.
-
-### Inline Array Annotation
-
-Sometimes using the `$inject` annotation style is not convenient such as when annotating
-directives or services defined inline by a factory function.
-
-For example:
-
-```js
-someModule.factory('greeter', function($window) {
-  // ...
-});
-```
-
-Results in code bloat due to needing a temporary variable:
-
-```js
-var greeterFactory = function(renamed$window) {
-  // ...
-};
-
-greeterFactory.$inject = ['$window'];
-
-someModule.factory('greeter', greeterFactory);
-```
-
-For this reason the third annotation style is provided as well.
-
-```js
-someModule.factory('greeter', ['$window', function(renamed$window) {
-  // ...
-}]);
-```
-
-Here, instead of simply providing the factory function, we pass an array whose elements consist of
-a list of strings (the names of the dependencies) followed by the function itself.
-
-Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
-where injection is supported.
-
-## Where Can I Use DI?
-
-DI is pervasive throughout Angular. You can use it when defining components or when providing `run`
-and `config` blocks for a module.
-
-- Components such as services, directives, filters and animations are defined by an injectable factory
-method or constructor function.  These components can be injected with "service" and "value"
-components as dependencies.
-
-- The `run` method accepts a function, which can be injected with "service", "value" and "constant"
-components as dependencies. Note that you cannot inject "providers" into `run` blocks.
-
-- The `config` method accepts a function, which can be injected with "provider" and "constant"
-components as dependencies.  Note that you cannot inject "service" or "value" components into
-configuration
-
-- Controllers are defined by a constructor function, which can be injected with any of the "service"
-and "value" components as dependencies, but they can also be provided with special dependencies. See
-{@link di#controllers Controllers} below for a list of these special dependencies.
-
-See {@link module#module-loading-dependencies Modules} for more details about injecting dependencies
-into `run` and `config` blocks.
-
-
-### Factory Methods
-
-Factory methods are responsible for creating most objects in Angular. Examples are directives,
-services, and filters. The factory methods are registered with the module, and the recommended way
-of declaring factories is:
-
-```js
-angular.module('myModule', [])
-  .factory('serviceId', ['depService', function(depService) {
-    ...
-  }])
-  .directive('directiveName', ['depService', function(depService) {
-    ...
-  }])
-  .filter('filterName', ['depService', function(depService) {
-    ...
-  }]);
-```
-
-### Module Methods
-
-We can specify functions to run at configuration and run time for a module by calling the `run` and
-`config` methods. These functions are injectable with dependencies just like the factory functions
-above.
-
-```js
-angular.module('myModule', [])
-  .config(['depProvider', function(depProvider){
-    ...
-  }])
-  .run(['depService', function(depService) {
-    ...
-  }]);
-```
-
-### Controllers
-
-Controllers are "classes" or "constructor functions" that are responsible for providing the
-application behavior that supports the declarative markup in the template. The recommended way of
-declaring Controllers is using the array notation:
-
-```js
-someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
-  ...
-  $scope.aMethod = function() {
-    ...
-  }
-  ...
-}]);
-```
-
-This avoids the creation of global functions for controllers and also protects against minification.
-
-Controllers are special in that, unlike services, there can be many instances of them in the
-application. For example, there would be one instance for every `ng-controller` directive in the template.
-
-Moreover, additional dependencies are made available to Controllers:
-
-* {@link scope `$scope`}: Controllers are always associated with a point in the DOM and so are provided with
-  access to the {@link scope scope} at that point. Other components, such as services only have access to the
-  singleton {@link $rootScope} service.
-* {@link $route} resolves: If a controller is instantiated as part of a route, then any values that
-  are resolved as part of the route are made available for injection into the controller.
+<div class="alert alert-info">
+**Note:** Angular uses
+[**constructor injection**](http://misko.hevery.com/2009/02/19/constructor-injection-vs-setter-injection/).
+</div>
