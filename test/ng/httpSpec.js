@@ -991,6 +991,15 @@ describe('$http', function() {
           $http({ method: 'POST', url: '/url', data: blob });
         });
 
+        it('should ignore FormData objects', function() {
+          if (!window.FormData) return;
+
+          var formData = new FormData();
+          formData.append('angular', 'is great');
+
+          $httpBackend.expect('POST', '/url', '[object FormData]').respond('');
+          $http({ method: 'POST', url: '/url', data: formData });
+        });
 
         it('should have access to request headers', function() {
           $httpBackend.expect('POST', '/url', 'header1').respond(200);

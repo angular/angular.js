@@ -51,6 +51,7 @@
     "isWindow": false,
     "isScope": false,
     "isFile": false,
+    "isFormData": false,
     "isBlob": false,
     "isBoolean": false,
     "isPromiseLike": false,
