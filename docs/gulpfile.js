@@ -82,6 +82,7 @@ gulp.task('assets', ['bower'], function() {
     copyComponent('angular-aria'),
     copyComponent('angular-material'),
     copyComponent('angular-sanitize'),
+    copyComponent('jquery', '/dist/*.js'),
     copyComponent('hammerjs'),
     copyComponent('lunr.js','/*.js'),
     copyComponent('google-code-prettify'),
