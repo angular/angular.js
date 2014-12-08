@@ -45,6 +45,7 @@
   isWindow: true,
   isScope: true,
   isFile: true,
+  isFormData: true,
   isBlob: true,
   isBoolean: true,
   isPromiseLike: true,
@@ -563,6 +564,11 @@ function isScope(obj) {
 
 function isFile(obj) {
   return toString.call(obj) === '[object File]';
+}
+
+
+function isFormData(obj) {
+  return toString.call(obj) === '[object FormData]';
 }
 
 
