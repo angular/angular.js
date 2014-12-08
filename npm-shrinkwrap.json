@@ -89,7 +89,7 @@
             },
             "qs": {
               "version": "2.2.4"
-            },
+            },//.
             "range-parser": {
               "version": "1.0.2"
             },
