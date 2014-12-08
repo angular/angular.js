@@ -1,6 +1,13 @@
 describe("DocsController", function() {
   var $scope;
 
+  // FIXME: Fake `ngMaterial` module to pass tests (because `ngMaterial` is not loaded by karma).
+  //        PROPER FIX NEEDED !!!
+  angular.
+      module('ngMaterial', []).
+      value('$mdMedia', {}).
+      value('$mdSidenav', {});
+
   angular.module('fake', [])
     .value('openPlunkr', function() {})
     .value('NG_PAGES', {})
