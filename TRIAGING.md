@@ -55,7 +55,11 @@ This process based on the idea of minimizing user pain
     * inconvenience - causes ugly/boilerplate code in apps
 1. Label `component: *`
     * In rare cases, it's ok to have multiple components.
-1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. Apply to issues where the problem and solution are well defined in the comments, and it's not too complex.
+1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. In addition to applying this label, you must:
+    * Leave a comment explaining the problem and solution so someone can easily finish it.
+    * Assign the issue to yourself.
+    * Give feedback on PRs addressing this issue.
+    * You are responsible for mentoring contributors helping with this issue.
 1. Label `origin: google` for issues from Google
 1. Assign a milestone:
    * Backlog - triaged fixes and features, should be the default choice
