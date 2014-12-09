@@ -111,7 +111,7 @@ function shallowClearAndCopy(src, dst) {
  *   example, if the `defaultParam` object is `{someParam: '@someProp'}` then the value of `someParam`
  *   will be `data.someProp`.
  *
- * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend
+ * @param {Object.<Object>=} actions Hash with declaration of custom actions that should extend
  *   the default set of resource actions. The declaration should be created in the format of {@link
  *   ng.$http#usage $http.config}:
  *
