@@ -1,3 +1,104 @@
+<a name="1.3.6"></a>
+# 1.3.6 robofunky-danceblaster (2014-12-08)
+
+
+## Bug Fixes
+
+- **$browser:** prevent infinite digests when clearing the hash of a url
+  ([10ac5948](https://github.com/angular/angular.js/commit/10ac5948097e2c8eaead238603d29ee580dc8273),
+   [#9629](https://github.com/angular/angular.js/issues/9629), [#9635](https://github.com/angular/angular.js/issues/9635), [#10228](https://github.com/angular/angular.js/issues/10228), [#10308](https://github.com/angular/angular.js/issues/10308))
+- **$location:**
+  - allow hash fragments with hashPrefix in hash-bang location urls
+  ([2dc34a96](https://github.com/angular/angular.js/commit/2dc34a969956eea680be4c8d9f800556d110996a),
+   [#9629](https://github.com/angular/angular.js/issues/9629), [#9635](https://github.com/angular/angular.js/issues/9635), [#10228](https://github.com/angular/angular.js/issues/10228), [#10308](https://github.com/angular/angular.js/issues/10308))
+  - strip off empty hash segments when comparing
+  ([e93710fe](https://github.com/angular/angular.js/commit/e93710fe0e4fb05ceee59a04f290692a5bec5d20),
+   [#9635](https://github.com/angular/angular.js/issues/9635))
+- **$parse:** Follow JavaScript context for unbound functions
+  ([429938da](https://github.com/angular/angular.js/commit/429938da1f45b8a649b8c77762fb0ae59b6d0cea))
+- **filterFilter:**
+  - don't match primitive sub-expressions against any prop
+  ([a75537d4](https://github.com/angular/angular.js/commit/a75537d461c92e3455e372ff5005bf0cad2d2e95))
+  - ignore function properties and account for inherited properties
+  ([5ced914c](https://github.com/angular/angular.js/commit/5ced914cc8625008e6249d5ac5942d5822287cc0),
+   [#9984](https://github.com/angular/angular.js/issues/9984))
+  - correctly handle deep expression objects
+  ([f7cf8460](https://github.com/angular/angular.js/commit/f7cf846045b1e2fb39c62e304c61b44d5c805e31),
+   [#7323](https://github.com/angular/angular.js/issues/7323), [#9698](https://github.com/angular/angular.js/issues/9698), [#9757](https://github.com/angular/angular.js/issues/9757))
+- **http:** preserve config object when resolving from cache
+  ([facfec98](https://github.com/angular/angular.js/commit/facfec98412c0bb8678d578bade05ffef06a9e84),
+   [#9004](https://github.com/angular/angular.js/issues/9004), [#9030](https://github.com/angular/angular.js/issues/9030))
+- **inputs:** ignoring input events in IE caused by placeholder changes or focus/blur on inputs with placeholders
+  ([55d9db56](https://github.com/angular/angular.js/commit/55d9db56a6f7d29b16f8393612648080c6d535d6),
+   [#9265](https://github.com/angular/angular.js/issues/9265))
+- **linky:** make urls starting with www. links, like markdown
+  ([915a891a](https://github.com/angular/angular.js/commit/915a891ad4cdcaa5e47e976db8f4d402d230be77),
+   [#10290](https://github.com/angular/angular.js/issues/10290))
+- **ngAnimate:** do not use jQuery class API
+  ([40a537c2](https://github.com/angular/angular.js/commit/40a537c25f70ad556a41bb2d00ea3e257410e9af),
+   [#10024](https://github.com/angular/angular.js/issues/10024), [#10329](https://github.com/angular/angular.js/issues/10329))
+- **ngMock:** allow numeric timeouts in $httpBackend mock
+  ([acb066e8](https://github.com/angular/angular.js/commit/acb066e84a10483e1025eed295352b66747dbb8a),
+   [#4891](https://github.com/angular/angular.js/issues/4891))
+- **ngModelController:** always use the most recent viewValue for validation
+  ([2d6a0a1d](https://github.com/angular/angular.js/commit/2d6a0a1dc1e7125cab2e30244e35e97e11802843),
+   [#10126](https://github.com/angular/angular.js/issues/10126), [#10299](https://github.com/angular/angular.js/issues/10299))
+- **ngSanitize:** exclude smart quotes at the end of the link
+  ([7c6be43e](https://github.com/angular/angular.js/commit/7c6be43e83590798cffef63d076fb79d5296fba2),
+   [#7307](https://github.com/angular/angular.js/issues/7307))
+- **ngmodel:** fixing many keys incorrectly marking inputs as dirty
+  ([d21dff21](https://github.com/angular/angular.js/commit/d21dff21ed8beb015ad911f11d57cceb56fc439f))
+- **numberFilter:** numbers rounding to zero shouldn't be negative
+  ([96c61fe7](https://github.com/angular/angular.js/commit/96c61fe756d7d3db011818bf0925e3d86ffff8ce),
+   [#10278](https://github.com/angular/angular.js/issues/10278))
+- **orderBy:**
+  - make object-to-primtiive behaviour work for objects with null prototype
+  ([3aa57528](https://github.com/angular/angular.js/commit/3aa5752894419b4638d5c934879258fa6a1c0d07))
+  - maintain order in array of objects when predicate is not provided
+  ([8bfeddb5](https://github.com/angular/angular.js/commit/8bfeddb5d671017f4a21b8b46334ac816710b143),
+   [#9566](https://github.com/angular/angular.js/issues/9566), [#9747](https://github.com/angular/angular.js/issues/9747), [#10311](https://github.com/angular/angular.js/issues/10311))
+- **parse:** fix operators associativity
+  ([ed1243ff](https://github.com/angular/angular.js/commit/ed1243ffc7c2cb4bd5b4dece597597db8eb08e34))
+
+
+## Features
+
+- **$$jqLite:** export jqLite as a private service
+  ([f2e7f875](https://github.com/angular/angular.js/commit/f2e7f875e2ad4b271c4e72ebd3860f905132eed9))
+- **$injector:** print caller name in "unknown provider" errors (when available)
+  ([013b522c](https://github.com/angular/angular.js/commit/013b522c9e690665aecb0e0f656e4557a673ec09),
+   [#8135](https://github.com/angular/angular.js/issues/8135), [#9721](https://github.com/angular/angular.js/issues/9721))
+- **jsonFilter:** add optional arg to define custom indentation
+  ([1191edba](https://github.com/angular/angular.js/commit/1191edba4eaa15f675fa4ed047949a150843971b),
+   [#9771](https://github.com/angular/angular.js/issues/9771))
+- **ngAria:** bind keypress on ng-click w/ option
+  ([5481e2cf](https://github.com/angular/angular.js/commit/5481e2cfcd4d136a1c7f45cd4ce0fa1a8a15074d),
+   [#10288](https://github.com/angular/angular.js/issues/10288))
+
+
+## Breaking Changes
+
+- **$location:** due to [2dc34a96](https://github.com/angular/angular.js/commit/2dc34a969956eea680be4c8d9f800556d110996a),
+ 
+
+We no longer throw an `ihshprfx` error if the URL after the base path
+contains only a hash fragment.  Previously, if the base URL was `http://abc.com/base/`
+and the hashPrefix is `!` then trying to parse `http://abc.com/base/#some-fragment`
+would have thrown an error. Now we simply assume it is a normal fragment and
+that the path is empty, resulting `$location.absUrl() === "http://abc.com/base/#!/#some-fragment"`.
+
+This should not break any applications, but you can no longer rely on receiving the
+`ihshprfx` error for paths that have the syntax above. It is actually more similar
+to what currently happens for invalid extra paths anyway:  If the base URL
+and hashPrfix are set up as above, then `http://abc.com/base/other/path` does not
+throw an error but just ignores the extra path: `http://abc.com/base`.
+
+Closes #9629
+Closes #9635
+Closes #10228
+Closes #10308
+
+
 <a name="1.3.5"></a>
 # 1.3.5 cybernetic-mercantilism (2014-12-01)
 
