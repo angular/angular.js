@@ -742,7 +742,7 @@ function $RootScopeProvider() {
           while (asyncQueue.length) {
             try {
               asyncTask = asyncQueue.shift();
-              asyncTask.scope.$eval(asyncTask.expression);
+              asyncTask.scope.$eval(asyncTask.expression, asyncTask.locals);
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -957,8 +957,9 @@ function $RootScopeProvider() {
        *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
        *
+       * @param {(object)=} locals Local variables object, useful for overriding values in scope.
        */
-      $evalAsync: function(expr) {
+      $evalAsync: function(expr, locals) {
         // if we are outside of an $digest loop and this is the first time we are scheduling async
         // task also schedule async auto-flush
         if (!$rootScope.$$phase && !asyncQueue.length) {
@@ -969,7 +970,7 @@ function $RootScopeProvider() {
           });
         }
 
-        asyncQueue.push({scope: this, expression: expr});
+        asyncQueue.push({scope: this, expression: expr, locals: locals});
       },
 
       $$postDigest: function(fn) {
