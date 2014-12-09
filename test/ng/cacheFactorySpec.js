@@ -57,7 +57,7 @@ describe('$cacheFactory', function() {
 
     describe('put, get & remove', function() {
 
-      it('should add cache entries via add and retrieve them via get', inject(function($cacheFactory) {
+      it('should add cache entries via put and retrieve them via get', inject(function($cacheFactory) {
         cache.put('key1', 'bar');
         cache.put('key2', {bar:'baz'});
 
@@ -174,6 +174,42 @@ describe('$cacheFactory', function() {
     });
   });
 
+
+  describe('cache with case-insensitive keys', function() {
+    var cache;
+
+    beforeEach(inject(function($cacheFactory) {
+      cache = $cacheFactory('test', {caseInsensitiveKeys: true});
+    }));
+
+
+    describe('put, get & remove', function() {
+
+      it('should add cache entries via put and retrieve them via get', inject(function($cacheFactory) {
+        cache.put('key1', 'bar');
+        cache.put('key2', {bar:'baz'});
+
+        expect(cache.get('KEY2')).toEqual({bar:'baz'});
+        expect(cache.get('KEY1')).toBe('bar');
+      }));
+
+
+      it('should remove entries via remove', inject(function($cacheFactory) {
+        cache.put('k1', 'foo');
+        cache.put('k2', 'bar');
+
+        cache.remove('K2');
+
+        expect(cache.get('K1')).toBe('foo');
+        expect(cache.get('K2')).toBeUndefined();
+
+        cache.remove('K1');
+
+        expect(cache.get('K1')).toBeUndefined();
+        expect(cache.get('K2')).toBeUndefined();
+      }));
+    });
+  });
 
   describe('LRU cache', function() {
 
@@ -327,5 +363,26 @@ describe('$cacheFactory', function() {
         expect(cache.get('id3')).toBe(3);
       }));
     });
+  });
+});
+
+
+describe('$templateCache', function() {
+
+  it('should be case sensitive by default', inject(function($templateCache) {
+    $templateCache.put('key', 'value');
+    expect($templateCache.get('key')).toEqual('value');
+    expect($templateCache.get('KEY')).toBeUndefined();
+  }));
+
+
+  module(function($templateCacheProvider) {
+    $templateCacheProvider.useCaseInsensitiveUrls(true);
+
+    it('should support insensitive keys', inject(function($templateCache) {
+      $templateCache.put('key', 'value');
+      expect($templateCache.get('key')).toEqual('value');
+      expect($templateCache.get('KEY')).toEqual('value');
+    }));
   });
 });
