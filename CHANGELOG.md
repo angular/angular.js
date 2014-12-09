@@ -93,11 +93,6 @@ to what currently happens for invalid extra paths anyway:  If the base URL
 and hashPrfix are set up as above, then `http://abc.com/base/other/path` does not
 throw an error but just ignores the extra path: `http://abc.com/base`.
 
-Closes #9629
-Closes #9635
-Closes #10228
-Closes #10308
-
 
 <a name="1.3.5"></a>
 # 1.3.5 cybernetic-mercantilism (2014-12-01)
