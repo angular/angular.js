@@ -450,6 +450,45 @@ After:
 Please view the documentation for ngAnimate for more info.
 
 
+## Testing
+
+- due to [85880a64](https://github.com/angular/angular.js/commit/85880a64900fa22a61feb926bf52de0965332ca5), some deprecated features of
+Protractor tests no longer work.
+
+`by.binding(descriptor)` no longer allows using the surrounding interpolation
+markers in the descriptor (the default interpolation markers are `{{}}`).
+Previously, these were optional.
+
+Before:
+
+    var el = element(by.binding('{{foo}}'));
+
+After:
+
+    var el = element(by.binding('foo'));
+
+Prefixes `ng_` and `x-ng-` are no longer allowed for models. Use `ng-model`.
+
+`by.repeater` cannot find elements by row and column which are not children of
+the row. For example, if your template is
+
+    <div ng-repeat="foo in foos">{{foo.name}}</div>
+
+Before:
+
+    var el = element(by.repeater('foo in foos').row(2).column('foo.name'))
+
+After:
+
+You may either enclose `{{foo.name}}` in a child element
+
+    <div ng-repeat="foo in foos"><span>{{foo.name}}</span></div>
+
+or simply use:
+
+    var el = element(by.repeater('foo in foos').row(2))
+
+
 ## Internet Explorer 8
 
 - due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
