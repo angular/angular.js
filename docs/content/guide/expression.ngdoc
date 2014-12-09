@@ -298,14 +298,16 @@ then the expression is not fulfilled and will remain watched.
 
 ### How to benefit from one-time binding
 
-When interpolating text or attributes. If the expression, once set, will not change
-then it is a candidate for one-time expression.
+If the expression will not change once set, it is a candidate for one-time binding. 
+Here are three example cases.
+
+When interpolating text or attributes:
 
 ```html
   <div name="attr: {{::color}}">text: {{::name}}</div>
 ```
 
-When using a directive with bidirectional binding and the parameters will not change
+When using a directive with bidirectional binding and the parameters will not change:
 
 ```js
 someModule.directive('someDirective', function() {
@@ -324,7 +326,7 @@ someModule.directive('someDirective', function() {
 ```
 
 
-When using a directive that takes an expression
+When using a directive that takes an expression:
 
 ```html
 <ul>
