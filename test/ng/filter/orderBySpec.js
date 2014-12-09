@@ -125,6 +125,22 @@ describe('Filter: orderBy', function() {
       });
       expect(orderBy(array)).toEqualData(array);
     });
+
+
+    it('should sort nulls as Array.prototype.sort', function() {
+      var array = [
+        { id: 2 },
+        null,
+        { id: 3 },
+        null
+      ];
+      expect(orderBy(array)).toEqualData([
+        { id: 2 },
+        { id: 3 },
+        null,
+        null
+      ]);
+    });
   });
 
 
@@ -251,6 +267,22 @@ describe('Filter: orderBy', function() {
         return obj;
       });
       expect(orderBy(array)).toEqualData(array);
+    });
+
+
+    it('should sort nulls as Array.prototype.sort', function() {
+      var array = [
+      { id: 2 },
+      null,
+      { id: 3 },
+      null
+      ];
+      expect(orderBy(array)).toEqualData([
+        { id: 2 },
+        { id: 3 },
+        null,
+        null
+      ]);
     });
   });
 });
