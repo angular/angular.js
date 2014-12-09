@@ -1243,6 +1243,13 @@ describe('Scope', function() {
       expect($rootScope.log).toBe('12');
     }));
 
+    it('should allow passing locals to the expression', inject(function($rootScope) {
+      $rootScope.log = '';
+      $rootScope.$evalAsync('log = log + a', {a: 1});
+      $rootScope.$digest();
+      expect($rootScope.log).toBe('1');
+    }));
+
     it('should run async expressions in their proper context', inject(function($rootScope) {
       var child = $rootScope.$new();
       $rootScope.ctx = 'root context';
