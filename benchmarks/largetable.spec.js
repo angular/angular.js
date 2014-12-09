@@ -71,7 +71,7 @@ describe('benchmarks', function() {
         it('should be within acceptable limits', function() {
           var done,result;
           runs(function() {
-            bpSuite({url: benchConfigs[name].url, variable: variable, numSamples: 1, iterations: 1, angular: '/base/build/angular.js'}).
+            bpSuite({url: benchConfigs[name].url, variable: variable, numSamples: 20, iterations: 25, angular: '/base/build/angular.js'}).
               then(function(r) {
                 result = r;
                 done = true;
