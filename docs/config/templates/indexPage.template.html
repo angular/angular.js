@@ -69,31 +69,7 @@
   </script>
 </head>
 <body>
-<!--
-    <header scroll-y-offset-element class="header header-fixed">
-      <section class="sup-header">
-        <div class="container main-grid main-header-grid">
-          <div class="grid-left">
-            <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-              <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by getGroupName(v) for v in docs_versions"
-                      ng-model="docs_version"
-                      ng-change="jumpToDocsVersion(docs_version)"
-                      class="docs-version-jump">
-              </select>
-            </div>
-          </div>
-          <div class="grid-right">
-            <ul class="nav-breadcrumb">
-              <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
-                <span class="divider"> /</span>
-                <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </header>
--->
+
   <div class="viewport" layout="column" layout-fill>
 
     <!-- HEADER -->
@@ -201,6 +177,18 @@
           ng-attr-flex="{{vu.getFlex('toc')}}">
         <md-content>
           <md-list layout="column">
+            <md-item>
+              <md-subheader class="tight">
+                <h2>Version Picker</h2>
+              </md-subheader>
+              <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
+                <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by getGroupName(v) for v in docs_versions"
+                        ng-model="docs_version"
+                        ng-change="jumpToDocsVersion(docs_version)"
+                        class="docs-version-jump">
+                </select>
+              </div>
+            </md-item>
             <md-item ng-repeat="navGroup in currentArea.navGroups track by navGroup.name">
               <md-subheader class="tight">
                 <h2><a href="{{navGroup.href}}" xng-class="navClass(navGroup)">{{navGroup.name}}</a></h2>
@@ -251,6 +239,19 @@
 
           <!-- LOADER -->
           <div id="loading" ng-show="loading">Loading...</div>
+
+          <!-- Breadcrumb Back Button -->
+          <div ng-if="breadcrumb.length > 1" layout="row">
+            <md-button
+                class="md-primary md-raised back-breadcrumb"
+                href="{{breadcrumb[breadcrumb.length-2].url}}"
+                md-theme="red"
+                ng-mouseenter="bttHovered=true"
+                ng-mouseleave="bttHovered=false"
+                ng-style="{opacity:bttHovered?'1.0':null}">
+                Back to {{breadcrumb[breadcrumb.length-2].name}}
+            </md-button>
+          </div>
 
           <!-- MAIN CONTENT AREA -->
           <md-content
