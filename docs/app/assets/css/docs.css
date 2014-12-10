@@ -17,6 +17,14 @@ md-toolbar .md-button.toolbar-btn {
     padding: 10px 15px;
 }
 
+.back-breadcrumb {
+    opacity: 0.1;
+    padding: 5px;
+    margin-top: 5px;
+    margin-left: 5px;
+    z-index: 3;
+}
+
 .back-to-top {
     bottom: 10px;
     display: inline-block;
