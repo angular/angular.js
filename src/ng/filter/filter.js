@@ -169,17 +169,18 @@ function createPredicateFn(expression, comparator, matchAgainstAnyProp) {
   return predicateFn;
 }
 
-function deepCompare(actual, expected, comparator, matchAgainstAnyProp) {
+function deepCompare(actual, expected, comparator, matchAgainstAnyProp, temporaryAnyProp) {
   var actualType = typeof actual;
   var expectedType = typeof expected;
+  var nextMatchAgainstAnyProp = matchAgainstAnyProp && !temporaryAnyProp;
 
   if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
-    return !deepCompare(actual, expected.substring(1), comparator, matchAgainstAnyProp);
+    return !deepCompare(actual, expected.substring(1), comparator, nextMatchAgainstAnyProp);
   } else if (actualType === 'array') {
     // In case `actual` is an array, consider it a match
     // if ANY of it's items matches `expected`
     return actual.some(function(item) {
-      return deepCompare(item, expected, comparator, matchAgainstAnyProp);
+      return deepCompare(item, expected, comparator, nextMatchAgainstAnyProp);
     });
   }
 
@@ -188,7 +189,7 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp) {
       var key;
       if (matchAgainstAnyProp) {
         for (key in actual) {
-          if ((key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator)) {
+          if ((key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator, nextMatchAgainstAnyProp)) {
             return true;
           }
         }
@@ -202,7 +203,7 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp) {
 
           var keyIsDollar = key === '$';
           var actualVal = keyIsDollar ? actual : actual[key];
-          if (!deepCompare(actualVal, expectedVal, comparator, keyIsDollar)) {
+          if (!deepCompare(actualVal, expectedVal, comparator, keyIsDollar, keyIsDollar)) {
             return false;
           }
         }

@@ -28,6 +28,13 @@ describe('Filter: filter', function() {
     expect(filter(items, "I don't exist").length).toBe(0);
   });
 
+  it('should filter deep object by string', function() {
+    var items = [{person: {name: 'Annet', email: 'annet@example.com'}},
+                 {person: {name: 'Billy', email: 'me@billy.com'}},
+                 {person: {name: 'Joan', email: {home: 'me@joan.com', work: 'joan@example.net'}}}];
+    expect(filter(items, 'me@joan').length).toBe(1);
+    expect(filter(items, 'joan@example').length).toBe(1);
+  });
 
   it('should not read $ properties', function() {
     expect(''.charAt(0)).toBe(''); // assumption
