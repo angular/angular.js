@@ -191,6 +191,7 @@ describe('Filter: orderBy', function() {
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['a', 'b'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['b', 'a'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['+b', '-a'])).toEqualData([{a:15, b:1}, {a:2, b:1}]);
+      expect(orderBy([{a:15, b:null}, {a:2, b:null}], ['-b'])).toEqualData([{a:15, b:null}, {a:2, b:null}]);
     });
 
 

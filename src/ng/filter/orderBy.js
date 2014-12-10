@@ -186,6 +186,7 @@ function orderByFilter($parse) {
     }
 
     function compare(v1, v2) {
+      if (v1 === null && v2 === null) return 0;
       var t1 = typeof v1;
       var t2 = typeof v2;
       if (t1 === t2 && t1 === "object") {
