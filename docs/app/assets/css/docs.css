@@ -36,6 +36,16 @@ md-toolbar .md-button.toolbar-btn {
     text-align: justify;
 }
 
+.content-area a {
+  color: #428BCA;
+  text-decoration: none;
+}
+
+.content-area a:hover, a:focus {
+  color: #2A6496;
+  text-decoration: underline;
+}
+
 .footer {
     font-size: 0.7em;
 }
