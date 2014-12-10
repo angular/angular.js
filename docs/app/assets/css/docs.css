@@ -37,13 +37,13 @@ md-toolbar .md-button.toolbar-btn {
 }
 
 .content-area a {
-  color: #428BCA;
-  text-decoration: none;
+    color: #428BCA;
+    text-decoration: none;
 }
 
 .content-area a:hover, a:focus {
-  color: #2A6496;
-  text-decoration: underline;
+    color: #2A6496;
+    text-decoration: underline;
 }
 
 .footer {
