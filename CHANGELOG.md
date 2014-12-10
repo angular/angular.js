@@ -7,6 +7,9 @@
 - **$browser:** prevent infinite digests when clearing the hash of a url
   ([10ac5948](https://github.com/angular/angular.js/commit/10ac5948097e2c8eaead238603d29ee580dc8273),
    [#9629](https://github.com/angular/angular.js/issues/9629), [#9635](https://github.com/angular/angular.js/issues/9635), [#10228](https://github.com/angular/angular.js/issues/10228), [#10308](https://github.com/angular/angular.js/issues/10308))
+- **$http:** preserve config object when resolving from cache
+  ([facfec98](https://github.com/angular/angular.js/commit/facfec98412c0bb8678d578bade05ffef06a9e84),
+   [#9004](https://github.com/angular/angular.js/issues/9004), [#9030](https://github.com/angular/angular.js/issues/9030))
 - **$location:**
   - allow hash fragments with hashPrefix in hash-bang location urls
   ([2dc34a96](https://github.com/angular/angular.js/commit/2dc34a969956eea680be4c8d9f800556d110996a),
@@ -14,7 +17,10 @@
   - strip off empty hash segments when comparing
   ([e93710fe](https://github.com/angular/angular.js/commit/e93710fe0e4fb05ceee59a04f290692a5bec5d20),
    [#9635](https://github.com/angular/angular.js/issues/9635))
-- **$parse:** Follow JavaScript context for unbound functions
+- **$parse:** 
+  - fix operators associativity
+  ([ed1243ff](https://github.com/angular/angular.js/commit/ed1243ffc7c2cb4bd5b4dece597597db8eb08e34))
+  - follow JavaScript context for unbound functions
   ([429938da](https://github.com/angular/angular.js/commit/429938da1f45b8a649b8c77762fb0ae59b6d0cea))
 - **filterFilter:**
   - don't match primitive sub-expressions against any prop
@@ -25,9 +31,6 @@
   - correctly handle deep expression objects
   ([f7cf8460](https://github.com/angular/angular.js/commit/f7cf846045b1e2fb39c62e304c61b44d5c805e31),
    [#7323](https://github.com/angular/angular.js/issues/7323), [#9698](https://github.com/angular/angular.js/issues/9698), [#9757](https://github.com/angular/angular.js/issues/9757))
-- **http:** preserve config object when resolving from cache
-  ([facfec98](https://github.com/angular/angular.js/commit/facfec98412c0bb8678d578bade05ffef06a9e84),
-   [#9004](https://github.com/angular/angular.js/issues/9004), [#9030](https://github.com/angular/angular.js/issues/9030))
 - **inputs:** ignoring input events in IE caused by placeholder changes or focus/blur on inputs with placeholders
   ([55d9db56](https://github.com/angular/angular.js/commit/55d9db56a6f7d29b16f8393612648080c6d535d6),
    [#9265](https://github.com/angular/angular.js/issues/9265))
@@ -40,14 +43,15 @@
 - **ngMock:** allow numeric timeouts in $httpBackend mock
   ([acb066e8](https://github.com/angular/angular.js/commit/acb066e84a10483e1025eed295352b66747dbb8a),
    [#4891](https://github.com/angular/angular.js/issues/4891))
-- **ngModelController:** always use the most recent viewValue for validation
+- **ngModel:**
+  - always use the most recent viewValue for validation
   ([2d6a0a1d](https://github.com/angular/angular.js/commit/2d6a0a1dc1e7125cab2e30244e35e97e11802843),
    [#10126](https://github.com/angular/angular.js/issues/10126), [#10299](https://github.com/angular/angular.js/issues/10299))
+  - fixing many keys incorrectly marking inputs as dirty
+  ([d21dff21](https://github.com/angular/angular.js/commit/d21dff21ed8beb015ad911f11d57cceb56fc439f))
 - **ngSanitize:** exclude smart quotes at the end of the link
   ([7c6be43e](https://github.com/angular/angular.js/commit/7c6be43e83590798cffef63d076fb79d5296fba2),
    [#7307](https://github.com/angular/angular.js/issues/7307))
-- **ngmodel:** fixing many keys incorrectly marking inputs as dirty
-  ([d21dff21](https://github.com/angular/angular.js/commit/d21dff21ed8beb015ad911f11d57cceb56fc439f))
 - **numberFilter:** numbers rounding to zero shouldn't be negative
   ([96c61fe7](https://github.com/angular/angular.js/commit/96c61fe756d7d3db011818bf0925e3d86ffff8ce),
    [#10278](https://github.com/angular/angular.js/issues/10278))
@@ -57,8 +61,6 @@
   - maintain order in array of objects when predicate is not provided
   ([8bfeddb5](https://github.com/angular/angular.js/commit/8bfeddb5d671017f4a21b8b46334ac816710b143),
    [#9566](https://github.com/angular/angular.js/issues/9566), [#9747](https://github.com/angular/angular.js/issues/9747), [#10311](https://github.com/angular/angular.js/issues/10311))
-- **parse:** fix operators associativity
-  ([ed1243ff](https://github.com/angular/angular.js/commit/ed1243ffc7c2cb4bd5b4dece597597db8eb08e34))
 
 
 ## Features
