@@ -161,6 +161,7 @@ function orderByFilter($parse) {
           : comp;
     }
     function compare(v1, v2) {
+      if (v1 === null && v2 === null) return 0;
       var t1 = typeof v1;
       var t2 = typeof v2;
       // Prepare values for Abstract Relational Comparison
