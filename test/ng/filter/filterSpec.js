@@ -143,14 +143,14 @@ describe('Filter: filter', function() {
   });
 
 
-  it('should respect the depth level of a "$" property', function() {
+  it('should match the same level and deeper of a "$" property', function() {
     var items = [{person: {name: 'Annet', email: 'annet@example.com'}},
                  {person: {name: 'Billy', email: 'me@billy.com'}},
                  {person: {name: 'Joan', email: {home: 'me@joan.com', work: 'joan@example.net'}}}];
     var expr = {person: {$: 'net'}};
 
-    expect(filter(items, expr).length).toBe(1);
-    expect(filter(items, expr)).toEqual([items[0]]);
+    expect(filter(items, expr).length).toBe(2);
+    expect(filter(items, expr)).toEqual([items[0], items[2]]);
   });
 
 

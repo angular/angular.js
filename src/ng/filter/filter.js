@@ -120,7 +120,6 @@ function filterFilter() {
     if (!isArray(array)) return array;
 
     var predicateFn;
-    var matchAgainstAnyProp;
 
     switch (typeof expression) {
       case 'function':
@@ -129,11 +128,8 @@ function filterFilter() {
       case 'boolean':
       case 'number':
       case 'string':
-        matchAgainstAnyProp = true;
-        //jshint -W086
       case 'object':
-        //jshint +W086
-        predicateFn = createPredicateFn(expression, comparator, matchAgainstAnyProp);
+        predicateFn = createPredicateFn(expression, comparator);
         break;
       default:
         return array;
@@ -144,7 +140,7 @@ function filterFilter() {
 }
 
 // Helper functions for `filterFilter`
-function createPredicateFn(expression, comparator, matchAgainstAnyProp) {
+function createPredicateFn(expression, comparator) {
   var predicateFn;
 
   if (comparator === true) {
@@ -163,38 +159,32 @@ function createPredicateFn(expression, comparator, matchAgainstAnyProp) {
   }
 
   predicateFn = function(item) {
-    return deepCompare(item, expression, comparator, matchAgainstAnyProp);
+    return deepCompare(item, expression, comparator);
   };
 
   return predicateFn;
 }
 
-function deepCompare(actual, expected, comparator, matchAgainstAnyProp, temporaryAnyProp) {
+function deepCompare(actual, expected, comparator) {
   var actualType = typeof actual;
   var expectedType = typeof expected;
-  var nextMatchAgainstAnyProp = matchAgainstAnyProp && !temporaryAnyProp;
 
   if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
-    return !deepCompare(actual, expected.substring(1), comparator, nextMatchAgainstAnyProp);
-  } else if (actualType === 'array') {
+    return !deepCompare(actual, expected.substring(1), comparator);
+  }
+
+  if (actualType === 'array') {
     // In case `actual` is an array, consider it a match
     // if ANY of it's items matches `expected`
     return actual.some(function(item) {
-      return deepCompare(item, expected, comparator, nextMatchAgainstAnyProp);
+      return deepCompare(item, expected, comparator);
     });
   }
 
   switch (actualType) {
     case 'object':
       var key;
-      if (matchAgainstAnyProp) {
-        for (key in actual) {
-          if ((key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator, nextMatchAgainstAnyProp)) {
-            return true;
-          }
-        }
-        return false;
-      } else if (expectedType === 'object') {
+      if (expectedType === 'object') {
         for (key in expected) {
           var expectedVal = expected[key];
           if (isFunction(expectedVal)) {
@@ -202,14 +192,25 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp, temporar
           }
 
           var keyIsDollar = key === '$';
-          var actualVal = keyIsDollar ? actual : actual[key];
-          if (!deepCompare(actualVal, expectedVal, comparator, keyIsDollar, keyIsDollar)) {
-            return false;
+          if (keyIsDollar) {
+            if (!matchAnyProp(actual, expectedVal, comparator)) {
+              return false;
+            }
+          } else {
+            var actualVal = actual[key];
+            if (!deepCompare(actualVal, expectedVal, comparator)) {
+              return false;
+            }
           }
         }
         return true;
       } else {
-        return comparator(actual, expected);
+        for (key in actual) {
+          if ((key.charAt(0) !== '$') && deepCompare(actual[key], expected, comparator)) {
+            return true;
+          }
+        }
+        return false;
       }
       break;
     case 'function':
@@ -217,4 +218,17 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp, temporar
     default:
       return comparator(actual, expected);
   }
+}
+
+function matchAnyProp(actual, expected, comparator) {
+  if (typeof actual !== 'object') {
+    throw new Error('actual must be an object but was ' + typeof actual);
+  }
+
+  for (var key in actual) {
+    if (deepCompare(actual[key], expected, comparator)) {
+      return true;
+    }
+  }
+  return false;
 }
