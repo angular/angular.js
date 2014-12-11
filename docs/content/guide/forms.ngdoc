@@ -293,7 +293,7 @@ after last change.
 
 Angular provides basic implementation for most common HTML5 {@link ng.directive:input input}
 types: ({@link input[text] text}, {@link input[number] number}, {@link input[url] url},
-{@link input[email] email}, {@link input[radio] radio}, {@link input[checkbox] checkbox}),
+{@link input[email] email}, {@link input[date] date}, {@link input[radio] radio}, {@link input[checkbox] checkbox}),
 as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`,
 `min`, `max`).
 
