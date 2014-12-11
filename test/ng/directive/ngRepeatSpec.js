@@ -146,6 +146,16 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:swe|shyam:set|');
   });
 
+  it('should iterate over an object/map and not strip keys that begin with $', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, value) in items">{{key}}:{{value}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'$1 - $10':'low price', '$11 - $20':'high price'};
+    scope.$digest();
+    expect(element.text()).toEqual('$1 - $10:low price|$11 - $20:high price|');
+  });
+
   it('should iterate over an object/map with identical values', function() {
     element = $compile(
       '<ul>' +
@@ -688,7 +698,7 @@ describe('ngRepeat', function() {
         '<ul>' +
             '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$first}}-{{$middle}}-{{$last}}|</li>' +
             '</ul>')(scope);
-    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$$toBeFilteredOut': 'xxxx'};
     scope.$digest();
     expect(element.text()).
         toEqual('doug:d:true-false-false|' +
@@ -703,7 +713,7 @@ describe('ngRepeat', function() {
         '<ul>' +
             '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$even}}-{{$odd}}|</li>' +
             '</ul>')(scope);
-    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$$toBeFilteredOut': 'xxxx'};
     scope.$digest();
     expect(element.text()).
         toEqual('doug:d:true-false|' +
