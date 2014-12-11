@@ -17,7 +17,7 @@
   - strip off empty hash segments when comparing
   ([e93710fe](https://github.com/angular/angular.js/commit/e93710fe0e4fb05ceee59a04f290692a5bec5d20),
    [#9635](https://github.com/angular/angular.js/issues/9635))
-- **$parse:** 
+- **$parse:**
   - fix operators associativity
   ([ed1243ff](https://github.com/angular/angular.js/commit/ed1243ffc7c2cb4bd5b4dece597597db8eb08e34))
   - follow JavaScript context for unbound functions
@@ -81,7 +81,7 @@
 ## Breaking Changes
 
 - **$location:** due to [2dc34a96](https://github.com/angular/angular.js/commit/2dc34a969956eea680be4c8d9f800556d110996a),
- 
+
 
 We no longer throw an `ihshprfx` error if the URL after the base path
 contains only a hash fragment.  Previously, if the base URL was `http://abc.com/base/`
@@ -94,6 +94,34 @@ This should not break any applications, but you can no longer rely on receiving 
 to what currently happens for invalid extra paths anyway:  If the base URL
 and hashPrfix are set up as above, then `http://abc.com/base/other/path` does not
 throw an error but just ignores the extra path: `http://abc.com/base`.
+
+
+- **filterFilter:** due to [a75537d4](https://github.com/angular/angular.js/commit/a75537d461c92e3455e372ff5005bf0cad2d2e95),
+
+  Named properties in the expression object will only match against properties on the **same level**.
+  Previously, named string properties would match against properties on the same level **or deeper**.
+
+    Before:
+
+    ```js
+    arr = filterFilter([{level1: {level2: 'test'}}], {level1: 'test'});   // arr.length -> 1
+    ```
+
+    After:
+
+    ```js
+    arr = filterFilter([{level1: {level2: 'test'}}], {level1: 'test'});   // arr.length -> 0
+    ```
+
+    In order to match deeper nested properties, you have to either match the depth level of the
+    property or use the special `$` key (which still matches properties on the same level
+    **or deeper**). E.g.:
+
+    ```js
+    // Both examples below have `arr.length === 1`
+    arr = filterFilter([{level1: {level2: 'test'}}], {level1: {level2: 'test'}});
+    arr = filterFilter([{level1: {level2: 'test'}}], {$: 'test'});
+    ```
 
 
 <a name="1.3.5"></a>
