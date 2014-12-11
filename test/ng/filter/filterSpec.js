@@ -163,14 +163,30 @@ describe('Filter: filter', function() {
   });
 
 
-  it('should respect the depth level of a "$" property', function() {
-    var items = [{person: {name: 'Annet', email: 'annet@example.com'}},
-                 {person: {name: 'Billy', email: 'me@billy.com'}},
-                 {person: {name: 'Joan', email: {home: 'me@joan.com', work: 'joan@example.net'}}}];
-    var expr = {person: {$: 'net'}};
+  it('should match named properties only against named properties on the same level', function() {
+    var expr = {person: {name: 'John'}};
+    var items = [{person: 'John'},                                  // No match (1 level higher)
+                 {person: {name: 'John'}},                          // Match (same level)
+                 {person: {name: {first: 'John', last: 'Doe'}}}];   // No match (1 level deeper)
 
     expect(filter(items, expr).length).toBe(1);
-    expect(filter(items, expr)).toEqual([items[0]]);
+    expect(filter(items, expr)).toEqual([items[1]]);
+  });
+
+
+  it('should match any properties on same or deeper level for given "$" property', function() {
+    var items = [{level1: 'test', foo1: 'bar1'},
+                 {level1: {level2: 'test', foo2:'bar2'}, foo1: 'bar1'},
+                 {level1: {level2: {level3: 'test', foo3: 'bar3'}, foo2: 'bar2'}, foo1: 'bar1'}];
+
+    expect(filter(items, {$: 'ES'}).length).toBe(3);
+    expect(filter(items, {$: 'ES'})).toEqual([items[0], items[1], items[2]]);
+
+    expect(filter(items, {level1: {$: 'ES'}}).length).toBe(2);
+    expect(filter(items, {level1: {$: 'ES'}})).toEqual([items[1], items[2]]);
+
+    expect(filter(items, {level1: {level2: {$: 'ES'}}}).length).toBe(1);
+    expect(filter(items, {level1: {level2: {$: 'ES'}}})).toEqual([items[2]]);
   });
 
 
