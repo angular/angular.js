@@ -1504,6 +1504,40 @@ describe('$location', function() {
       );
     });
 
+    it('should not rewrite when right click pressed', function() {
+      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          var rightClick;
+          if (document.createEvent) {
+            rightClick = document.createEvent('MouseEvents');
+            rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
+                                      false, false, false, 2, null);
+
+            link.dispatchEvent(rightClick);
+          } else if (document.createEventObject) { // for IE
+            rightClick = document.createEventObject();
+            rightClick.type = 'click';
+            rightClick.cancelBubble = true;
+            rightClick.detail = 1;
+            rightClick.screenX = 10;
+            rightClick.screenY = 10;
+            rightClick.clientX = 10;
+            rightClick.clientY = 10;
+            rightClick.ctrlKey = false;
+            rightClick.altKey = false;
+            rightClick.shiftKey = false;
+            rightClick.metaKey = false;
+            rightClick.button = 2;
+            link.fireEvent('onclick', rightClick);
+          }
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
 
     it('should not mess up hash urls when clicking on links in hashbang mode', function() {
       var base;
