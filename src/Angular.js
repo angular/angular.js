@@ -913,25 +913,36 @@ function equals(o1, o2) {
 }
 
 var csp = function() {
-  if (isDefined(csp.isActive_)) return csp.isActive_;
+	if (isDefined(csp.isActive_)) return csp.isActive_;
 
-  var active = !!(document.querySelector('[ng-csp]') ||
-                  document.querySelector('[data-ng-csp]'));
+	var active = !!(document.querySelector('[ng-csp]') ||
+		document.querySelector('[data-ng-csp]'));
 
-  if (!active) {
-    try {
-      /* jshint -W031, -W054 */
-      new Function('');
-      /* jshint +W031, +W054 */
-    } catch (e) {
-      active = true;
-    }
-  }
+	if (!active) {
+		try {
+			/* jshint -W031, -W054 */
+			new Function('');
+			/* jshint +W031, +W054 */
+		} catch (e) {
+			active = true;
+		}
+	}
 
-  return (csp.isActive_ = active);
+	return (csp.isActive_ = active);
 };
 
+var jq = function() {
+	if (isDefined(jq.name_)) return jq.name_;
 
+	var el = document.querySelector('[ng-jq]') || document.querySelector('[data-ng-jq]');
+	var name = null;
+
+	if (el) {
+		name = el.getAttribute('ng-jq') || el.getAttribute('data-ng-jq') || '';
+	}
+
+	return (jq.name_ = name);
+};
 
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
@@ -1448,7 +1459,7 @@ function bindJQuery() {
   }
 
   // bind to jQuery if present;
-  jQuery = window.jQuery;
+	jQuery = jq()?window[jq()]:window.jQuery;
   // Use jQuery if it exists with proper functionality, otherwise default to us.
   // Angular 1.2+ requires jQuery 1.7+ for on()/off() support.
   // Angular 1.3+ technically requires at least jQuery 2.1+ but it may work with older
