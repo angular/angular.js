@@ -196,7 +196,7 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp) {
       } else if (expectedType === 'object') {
         for (key in expected) {
           var expectedVal = expected[key];
-          if (isFunction(expectedVal)) {
+          if (isFunction(expectedVal) || isUndefined(expectedVal)) {
             continue;
           }
 
