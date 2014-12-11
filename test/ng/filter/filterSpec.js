@@ -48,6 +48,18 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should filter when property is undefined', function() {
+    var items = [{name: 'a'}, {name: 'abc'}];
+    expect(filter(items, {name: undefined})).toEqual([{name: 'a'}, {name: 'abc'}]);
+  });
+
+
+  it('should filter when a deep property is undefined', function() {
+    var items = [{name: 'a'}, {name: 'abc'}, {deep: {name: 'abc'}}];
+    expect(filter(items, {deep: {name: undefined}})).toEqual([{deep: {name: 'abc'}}]);
+  });
+
+
   it('should take function as predicate', function() {
     var items = [{name: 'a'}, {name: 'abc', done: true}];
     expect(filter(items, function(i) {return i.done;}).length).toBe(1);
