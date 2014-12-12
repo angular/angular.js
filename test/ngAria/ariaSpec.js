@@ -509,6 +509,23 @@ describe('$aria', function() {
       expect(clickFn).not.toHaveBeenCalled();
       expect(keypressFn).toHaveBeenCalled();
     });
+
+    it('should update bindings when keypress handled', function() {
+      compileInput('<div ng-click="text = \'clicked!\'">{{text}}</div>');
+      expect(element.text()).toBe('');
+      spyOn(scope.$root, '$digest').andCallThrough();
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('clicked!');
+      expect(scope.$root.$digest).toHaveBeenCalledOnce();
+    });
+
+    it('should pass $event to ng-click handler as local', function() {
+      compileInput('<div ng-click="event = $event">{{event.type}}' +
+                   '{{event.keyCode}}</div>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('keypress13');
+    });
   });
 
   describe('actions when bindKeypress set to false', function() {
