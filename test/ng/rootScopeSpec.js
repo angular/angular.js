@@ -764,6 +764,17 @@ describe('Scope', function() {
           expect(log.empty()).toEqual([{newVal: {b: {}, c: 'B'}, oldVal: {a: [], b: {}, c: 'B'}}]);
         });
 
+
+        it('should ignore properties beginning with $', function() {
+          $rootScope.obj = {};
+          $rootScope.$digest();
+          expect(log.empty()).toEqual([{newVal: {}, oldVal: {}, identical: true}]);
+          $rootScope.obj = {$private: "private"};
+          $rootScope.$digest();
+          expect(log.empty()).toEqual([]);
+        });
+
+
         it('should not infinitely digest when current value is NaN', function() {
           $rootScope.obj = {a: NaN};
           expect(function() {
