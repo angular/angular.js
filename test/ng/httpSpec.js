@@ -1232,6 +1232,19 @@ describe('$http', function() {
           expect(callback.mostRecentCall.args[0]).toBe('header1');
         });
 
+        it('should have access to response status', function() {
+          $httpBackend.expect('GET', '/url').respond(200, 'response', {h1: 'header1'});
+          $http.get('/url', {
+            transformResponse: function(data, headers, status) {
+              return status;
+            }
+          }).success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe(200);
+        });
+
 
         it('should pipeline more functions', function() {
           function first(d, h) {return d + '-first' + ':' + h('h1');}
