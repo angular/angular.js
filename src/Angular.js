@@ -1459,7 +1459,7 @@ function bindJQuery() {
   }
 
   // bind to jQuery if present;
-	jQuery = jq()?window[jq()]:window.jQuery;
+	jQuery = jq() !== null?window[jq()]:window.jQuery;
   // Use jQuery if it exists with proper functionality, otherwise default to us.
   // Angular 1.2+ requires jQuery 1.7+ for on()/off() support.
   // Angular 1.3+ technically requires at least jQuery 2.1+ but it may work with older
