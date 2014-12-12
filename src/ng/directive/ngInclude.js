@@ -180,14 +180,15 @@
  */
 var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce', '$compile',
                   function($templateRequest,   $anchorScroll,   $animate,   $sce, $compile) {
+
+  var linkFns = {};
+
   return {
     restrict: 'ECA',
     priority: 400,
     terminal: true,
     transclude: 'element',
-    controller: function() {
-      this.linkFns = {};
-    },
+    controller: noop,
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
@@ -234,7 +235,7 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
               ctrl.template = response;
 
               // Compile and cache the template
-              ctrl.linkFn = ctrl.linkFns[src] = ctrl.linkFns[src] || $compile(jqLiteBuildFragment(ctrl.template, document).childNodes);
+              ctrl.linkFn = linkFns[src] = linkFns[src] || $compile(jqLiteBuildFragment(ctrl.template, document).childNodes);
 
               // Note: This will also link all children of ng-include that were contained in the original
               // html. If that content contains controllers, ... they could pollute/change the scope.
