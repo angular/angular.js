@@ -233,6 +233,37 @@ describe('ngInclude', function() {
     dealoc($rootScope);
   }));
 
+  it('should only compile each template once', function() {
+
+    module(function($provide) {
+      $provide.decorator('$compile', function($delegate) {
+        return jasmine.createSpy('$compile').andCallFake($delegate);
+      });
+    });
+    inject(function($rootScope, $httpBackend, $compile) {
+      element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
+      $compile.reset();
+      $httpBackend.expect('GET', 'myUrl').respond('my partial');
+
+      $rootScope.url = 'myUrl';
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.text()).toEqual('my partial');
+
+      $rootScope.url = null;
+      $rootScope.$digest();
+      expect(element.text()).toEqual('');
+
+      $rootScope.url = 'myUrl';
+      $rootScope.$digest();
+      expect(element.text()).toEqual('my partial');
+      expect($compile.calls.length).toEqual(1);
+
+      dealoc($rootScope);
+    });
+  });
+
+
 
   it('should clear content when error during xhr request',
       inject(function($httpBackend, $compile, $rootScope) {
