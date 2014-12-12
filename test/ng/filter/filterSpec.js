@@ -65,6 +65,33 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should match primitive array values against top-level `$` property in object expression',
+    function() {
+      var items, expr;
+
+      items = ['something', 'something else', 'another thing'];
+      expr = {$: 'some'};
+      expect(filter(items, expr).length).toBe(2);
+      expect(filter(items, expr)).toEqual([items[0], items[1]]);
+
+      items = [{val: 'something'}, {val: 'something else'}, {val: 'another thing'}];
+      expr = {$: 'some'};
+      expect(filter(items, expr).length).toBe(2);
+      expect(filter(items, expr)).toEqual([items[0], items[1]]);
+
+      items = [123, 456, 789];
+      expr = {$: 1};
+      expect(filter(items, expr).length).toBe(1);
+      expect(filter(items, expr)).toEqual([items[0]]);
+
+      items = [true, false, 'true'];
+      expr = {$: true, ignored: 'false'};
+      expect(filter(items, expr).length).toBe(2);
+      expect(filter(items, expr)).toEqual([items[0], items[2]]);
+    }
+  );
+
+
   it('should take object as predicate', function() {
     var items = [{first: 'misko', last: 'hevery'},
                  {first: 'adam', last: 'abrons'}];
