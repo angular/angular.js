@@ -273,7 +273,7 @@ Use ngSanitize to securely parse and manipulate HTML data in your application.
 
 ## {@link ngMock ngMock}
 
-Use ngMock to inject and mock modules, factories, services and providers within your unit tests
+Use ngMock to inject and mock modules, factories, services and providers within your unit tests.
 
 <div class="alert alert-info">Include the **angular-mocks.js** file into your test runner for this to work.</div>
 
