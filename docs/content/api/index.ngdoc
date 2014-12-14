@@ -148,7 +148,7 @@ or JavaScript callbacks.
       {@link ngAnimate CSS-based animations}
     </td>
     <td>
-      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined the animation can be triggered by referencing the CSS class within the HTML template code.
+      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined, the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
   <tr>
@@ -156,7 +156,7 @@ or JavaScript callbacks.
       {@link ngAnimate JS-based animations}
     </td>
     <td>
-      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
+      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered, the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
 </table>
