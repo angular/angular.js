@@ -3577,6 +3577,22 @@ describe('$compile', function() {
       });
     });
 
+    it('should be able to interpolate attribute names which are present in Object.prototype', function() {
+      var attrs;
+      module(function() {
+        directive('attrExposer', valueFn({
+          link: function($scope, $element, $attrs) {
+            attrs = $attrs;
+          }
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        $compile('<div attr-exposer to-string="{{1 + 1}}">')($rootScope);
+        $rootScope.$apply();
+        expect(attrs.toString).toBe('2');
+      });
+    });
+
 
     it('should not initialize scope value if optional expression binding is not passed', inject(function($compile) {
       compile('<div my-component></div>');
