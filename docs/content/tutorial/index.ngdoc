@@ -160,7 +160,7 @@ globally and run directly from a terminal/command prompt. You don't need to do t
 tutorial, but if you decide you do want to run them directly, you can install these modules globally
 using, `sudo npm install -g ...`.
 
-For instance to install the Bower command line executable you would do:
+For instance, to install the Bower command line executable you would do:
 
 ```
 sudo npm install -g bower
