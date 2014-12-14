@@ -1051,10 +1051,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               // support ngAttr attribute binding
               ngAttrName = directiveNormalize(name);
               if (isNgAttr = NG_ATTR_BINDING.test(ngAttrName)) {
-                name = name.replace(PREFIX_REGEXP, '')
-                  .substr(8).replace(/_(.)/g, function(match, letter) {
-                    return letter.toUpperCase();
-                  });
+                name = snake_case(ngAttrName.substr(6), '-');
               }
 
               var directiveNName = ngAttrName.replace(/(Start|End)$/, '');
