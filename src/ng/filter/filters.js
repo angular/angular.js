@@ -273,7 +273,8 @@ function getFirstThursdayOfYear(year) {
 function getThursdayThisWeek(datetime) {
     return new Date(datetime.getFullYear(), datetime.getMonth(),
       // 4 = index of Thursday
-      datetime.getDate() + (4 - datetime.getDay()));
+      //ISO8601 mandates that a week starts on Monday. Making Sunday 7 instead of 0.
+      datetime.getDate() + 4 - (datetime.getDay() || 7));
 }
 
 function weekGetter(size) {
