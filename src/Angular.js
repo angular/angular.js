@@ -912,36 +912,36 @@ function equals(o1, o2) {
   return false;
 }
 
-var csp = function() {
-	if (isDefined(csp.isActive_)) return csp.isActive_;
+var csp = function () {
+  if (isDefined(csp.isActive_)) return csp.isActive_;
 
-	var active = !!(document.querySelector('[ng-csp]') ||
-		document.querySelector('[data-ng-csp]'));
+  var active = !!(document.querySelector('[ng-csp]') ||
+    document.querySelector('[data-ng-csp]'));
 
-	if (!active) {
-		try {
-			/* jshint -W031, -W054 */
-			new Function('');
-			/* jshint +W031, +W054 */
-		} catch (e) {
-			active = true;
-		}
-	}
+  if (!active) {
+    try {
+      /* jshint -W031, -W054 */
+      new Function('');
+      /* jshint +W031, +W054 */
+    } catch (e) {
+      active = true;
+    }
+  }
 
-	return (csp.isActive_ = active);
+  return (csp.isActive_ = active);
 };
 
-var jq = function() {
-	if (isDefined(jq.name_)) return jq.name_;
+var jq = function () {
+  if (isDefined(jq.name_)) return jq.name_;
 
-	var el = document.querySelector('[ng-jq]') || document.querySelector('[data-ng-jq]');
-	var name = null;
+  var el = document.querySelector('[ng-jq]') || document.querySelector('[data-ng-jq]');
+  var name = null;
 
-	if (el) {
-		name = el.getAttribute('ng-jq') || el.getAttribute('data-ng-jq') || '';
-	}
+  if (el) {
+    name = el.getAttribute('ng-jq') || el.getAttribute('data-ng-jq') || '';
+  }
 
-	return (jq.name_ = name);
+  return (jq.name_ = name);
 };
 
 function concat(array1, array2, index) {
@@ -1459,7 +1459,7 @@ function bindJQuery() {
   }
 
   // bind to jQuery if present;
-	jQuery = jq() !== null?window[jq()]:window.jQuery;
+  jQuery = jq() !== null ? window[jq()] : window.jQuery;
   // Use jQuery if it exists with proper functionality, otherwise default to us.
   // Angular 1.2+ requires jQuery 1.7+ for on()/off() support.
   // Angular 1.3+ technically requires at least jQuery 2.1+ but it may work with older
@@ -1478,7 +1478,7 @@ function bindJQuery() {
     // are passed through jQuery.cleanData. Monkey-patch this method to fire
     // the $destroy event on all removed nodes.
     originalCleanData = jQuery.cleanData;
-    jQuery.cleanData = function(elems) {
+    jQuery.cleanData = function (elems) {
       if (!skipDestroyOnNextJQueryCleanData) {
         for (var i = 0, elem; (elem = elems[i]) != null; i++) {
           jQuery(elem).triggerHandler('$destroy');
