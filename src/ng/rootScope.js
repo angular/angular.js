@@ -1023,16 +1023,26 @@ function $RootScopeProvider() {
        */
       $apply: function(expr) {
         var abortApply = false;
+        var scopeForDigest = $rootScope;
+        var currentScope = this;
+
         try {
           beginPhase('$apply');
-          return this.$eval(expr, {$abortApply: function() {abortApply = true;}});
+          return this.$eval(expr, {
+            $abortApply: function() {
+              abortApply = true;
+            },
+            $partialDigest: function(scope) {
+              scopeForDigest = scope || currentScope;
+            }
+          });
         } catch (e) {
           $exceptionHandler(e);
         } finally {
           clearPhase();
           if (!abortApply) {
             try {
-              $rootScope.$digest();
+              scopeForDigest.$digest();
             } catch (e) {
               $exceptionHandler(e);
               throw e;
