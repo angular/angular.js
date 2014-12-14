@@ -912,11 +912,11 @@ function equals(o1, o2) {
   return false;
 }
 
-var csp = function () {
+var csp = function() {
   if (isDefined(csp.isActive_)) return csp.isActive_;
 
   var active = !!(document.querySelector('[ng-csp]') ||
-    document.querySelector('[data-ng-csp]'));
+                  document.querySelector('[data-ng-csp]'));
 
   if (!active) {
     try {
@@ -931,10 +931,11 @@ var csp = function () {
   return (csp.isActive_ = active);
 };
 
-var jq = function () {
+var jq = function() {
   if (isDefined(jq.name_)) return jq.name_;
 
-  var el = document.querySelector('[ng-jq]') || document.querySelector('[data-ng-jq]');
+  var el = document.querySelector('[ng-jq]') ||
+           document.querySelector('[data-ng-jq]');
   var name = null;
 
   if (el) {
