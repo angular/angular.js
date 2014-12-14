@@ -26,8 +26,16 @@ Angular expressions are like JavaScript expressions with the following differenc
   * **Forgiving:** In JavaScript, trying to evaluate undefined properties generates `ReferenceError`
     or `TypeError`. In Angular, expression evaluation is forgiving to `undefined` and `null`.
 
-  * **No Control Flow Statements:** you cannot use the following in an Angular expression:
+  * **No Control Flow Statements:** You cannot use the following in an Angular expression:
     conditionals, loops, or exceptions.
+	
+  * **No Function Declarations:** You cannot decleare functions in an Angular expression.
+    Even inside `ng-init` directive
+	
+  * **No RegExp Creation With Literal Notation:** You cannot create regular expressions 
+    in an Angular expression.
+	
+  * **No Comma And Void Operators:** You cannot use `,` or `void` in an Angular expression.
 
   * **Filters:** You can use {@link guide/filter filters} within expressions to format data before
     displaying it.
@@ -164,11 +172,11 @@ expression. The reason behind this is core to the Angular philosophy that applic
 be in controllers, not the views. If you need a real conditional, loop, or to throw from a view
 expression, delegate to a JavaScript method instead.
 
-## No RegExp creation with literal notation
+## No function declarations or RegExp creation with literal notation
 
-You can't create regular expressions from within AngularJS expressions. This is to avoid complex
-model transformation logic inside templates. Such logic is better placed in a controller or in a dedicated
-filter where it can be tested properly.
+You can't declare functions or create regular expressions from within AngularJS expressions. This is
+to avoid complex model transformation logic inside templates. Such logic is better placed in a 
+controller or in a dedicated filter where it can be tested properly.
 
 ## `$event`
 
