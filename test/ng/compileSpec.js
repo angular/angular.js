@@ -3809,6 +3809,180 @@ describe('$compile', function() {
         expect(controllerCalled).toBe(true);
       });
     });
+
+
+    it('should throw noctrl when missing controller', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('noCtrl', valueFn({
+          templateUrl: 'test.html',
+          scope: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          controllerAs: 'test',
+          bindToController: true
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          $compile('<div no-ctrl>')($rootScope);
+        }).toThrowMinErr('$compile', 'noctrl',
+            'Cannot bind to controller without directive \'noCtrl\'s controller.');
+      });
+    });
+
+
+    it('should throw noctrl when missing controllerAs label', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('noCtrl', valueFn({
+          templateUrl: 'test.html',
+          scope: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          controller: function() {},
+          bindToController: true
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          $compile('<div no-ctrl>')($rootScope);
+        }).toThrowMinErr('$compile', 'noctrl',
+        'Cannot bind to controller without directive \'noCtrl\'s controller.');
+      });
+    });
+
+
+    it('should throw noctrl when missing controller label', function() {
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {});
+        $compileProvider.directive('noCtrl', valueFn({
+          templateUrl: 'test.html',
+          scope: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          controller: 'myCtrl',
+          bindToController: true
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          $compile('<div no-ctrl>')($rootScope);
+        }).toThrowMinErr('$compile', 'noctrl',
+        'Cannot bind to controller without directive \'noCtrl\'s controller.');
+      });
+    });
+
+
+    it('should bind to controller via object notation (isolate scope)', function() {
+      var controllerCalled = false;
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {
+          expect(this.data).toEqualData({
+            'foo': 'bar',
+            'baz': 'biz'
+          });
+          expect(this.str).toBe('Hello, world!');
+          expect(this.fn()).toBe('called!');
+          controllerCalled = true;
+        });
+        $compileProvider.directive('fooDir', valueFn({
+          templateUrl: 'test.html',
+          bindToController: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          scope: {},
+          controller: 'myCtrl as myCtrl'
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test.html', '<p>isolate</p>');
+        $rootScope.fn = valueFn('called!');
+        $rootScope.whom = 'world';
+        $rootScope.remoteData = {
+          'foo': 'bar',
+          'baz': 'biz'
+        };
+        element = $compile('<div foo-dir dir-data="remoteData" ' +
+        'dir-str="Hello, {{whom}}!" ' +
+        'dir-fn="fn()"></div>')($rootScope);
+        $rootScope.$digest();
+        expect(controllerCalled).toBe(true);
+      });
+    });
+
+
+    it('should bind to controller via object notation (new scope)', function() {
+      var controllerCalled = false;
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {
+          expect(this.data).toEqualData({
+            'foo': 'bar',
+            'baz': 'biz'
+          });
+          expect(this.str).toBe('Hello, world!');
+          expect(this.fn()).toBe('called!');
+          controllerCalled = true;
+        });
+        $compileProvider.directive('fooDir', valueFn({
+          templateUrl: 'test.html',
+          bindToController: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          scope: true,
+          controller: 'myCtrl as myCtrl'
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test.html', '<p>isolate</p>');
+        $rootScope.fn = valueFn('called!');
+        $rootScope.whom = 'world';
+        $rootScope.remoteData = {
+          'foo': 'bar',
+          'baz': 'biz'
+        };
+        element = $compile('<div foo-dir dir-data="remoteData" ' +
+        'dir-str="Hello, {{whom}}!" ' +
+        'dir-fn="fn()"></div>')($rootScope);
+        $rootScope.$digest();
+        expect(controllerCalled).toBe(true);
+      });
+    });
+
+
+    it('should put controller in scope when labelled but not using controllerAs', function() {
+      var controllerCalled = false;
+      var myCtrl;
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {
+          controllerCalled = true;
+          myCtrl = this;
+        });
+        $compileProvider.directive('fooDir', valueFn({
+          templateUrl: 'test.html',
+          bindToController: {},
+          scope: true,
+          controller: 'myCtrl as theCtrl'
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test.html', '<p>isolate</p>');
+        element = $compile('<div foo-dir>')($rootScope);
+        $rootScope.$digest();
+        expect(controllerCalled).toBe(true);
+        var childScope = element.children().scope();
+        expect(childScope).not.toBe($rootScope);
+        expect(childScope.theCtrl).toBe(myCtrl);
+      });
+    });
   });
 
 
