@@ -153,6 +153,9 @@
     "urlResolve": false,
     "urlIsSameOrigin": false,
 
+    /* ng/controller.js */
+    "identifierForController": false,
+
     /* ng/compile.js */
     "directiveNormalize": false,
 

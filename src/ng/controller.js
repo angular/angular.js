@@ -1,5 +1,15 @@
 'use strict';
 
+var CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
+function identifierForController(controller, ident) {
+  if (ident && isString(ident)) return ident;
+  if (isString(controller)) {
+    var match = CNTRL_REG.exec(controller);
+    if (match) return match[3];
+  }
+}
+
+
 /**
  * @ngdoc provider
  * @name $controllerProvider
@@ -12,9 +22,7 @@
  */
 function $ControllerProvider() {
   var controllers = {},
-      globals = false,
-      CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
-
+      globals = false;
 
   /**
    * @ngdoc method
