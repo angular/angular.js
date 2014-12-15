@@ -55,7 +55,7 @@ behaviour is undefined.
 
 
 <a name="1.2.28"></a>
-# finnish-disembarkation (2014-12-15)
+# 1.2.28 finnish-disembarkation (2014-12-15)
 
 
 ## Bug Fixes
