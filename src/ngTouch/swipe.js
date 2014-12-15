@@ -69,7 +69,7 @@ ngTouch.factory('$swipe', [function() {
      * @name $swipe#bind
      *
      * @description
-     * The main method of `$swipe`. It takes an element to be watched for swipe motions, and an
+     * The main method of `$swipe`. It takes an element to be watched for swipe motions and an
      * object containing event handlers.
      * The pointer types that should be used can be specified via the optional
      * third argument, which is an array of strings `'mouse'` and `'touch'`. By default,
