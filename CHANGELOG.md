@@ -1,3 +1,59 @@
+<a name="1.3.7"></a>
+# 1.3.7 leaky-obstruction (2014-12-15)
+
+
+## Bug Fixes
+
+- **$compile:** use `createMap()` for `$$observe` listeners when initialized from attr interpolation
+  ([8e28bb4c](https://github.com/angular/angular.js/commit/8e28bb4c2f6d015dfe1cec7755f1ca9b0ecef1f8))
+- **$http:**
+  - only parse as JSON when opening/closing brackets match
+  ([b9bdbe61](https://github.com/angular/angular.js/commit/b9bdbe615cc4070d2233ff06830a4c6fb1217cda),
+   [#10349](https://github.com/angular/angular.js/issues/10349), [#10357](https://github.com/angular/angular.js/issues/10357))
+  - don't convert FormData objects to JSON
+  ([40258838](https://github.com/angular/angular.js/commit/40258838031604feecb862afdc6f1f503d80ce4a),
+   [#10373](https://github.com/angular/angular.js/issues/10373))
+- **$parse:** a chain of field accessors should use a single `getterFn`
+  ([c90ad968](https://github.com/angular/angular.js/commit/c90ad96808be350526516626205c3a7d1da79024))
+- **ngRepeat:** allow extra whitespaces in `(key,value)` part of micro-syntax
+  ([ef640cbc](https://github.com/angular/angular.js/commit/ef640cbc2af5794c987e75472c12e63a59590044),
+   [#6827](https://github.com/angular/angular.js/issues/6827), [#6833](https://github.com/angular/angular.js/issues/6833))
+- **orderBy:** do not try to call `valueOf`/`toString` on `null`
+  ([a097aa95](https://github.com/angular/angular.js/commit/a097aa95b7c78beab6d1b7d521c25f7d9d7843d9),
+   [#10385](https://github.com/angular/angular.js/issues/10385), [#10386](https://github.com/angular/angular.js/issues/10386))
+
+
+## Features
+
+- **$compile:** add support for `ng-attr` with camelCased attributes
+  ([d8e37078](https://github.com/angular/angular.js/commit/d8e37078600089839f82f0e84022f1087e1fd3f2),
+   [#9845](https://github.com/angular/angular.js/issues/9845), [#10194](https://github.com/angular/angular.js/issues/10194))
+- **$http:** pass response status code to data transform functions
+  ([1b740974](https://github.com/angular/angular.js/commit/1b740974f5eb373bed04071d51f908ced7c5a8e5),
+   [#10324](https://github.com/angular/angular.js/issues/10324), [#6734](https://github.com/angular/angular.js/issues/6734), [#10440](https://github.com/angular/angular.js/issues/10440))
+- **$rootScope:** allow passing `locals` argument to `$evalAsync`
+  ([9b96cea4](https://github.com/angular/angular.js/commit/9b96cea462676d123e1b2dd852aedbe3da8fa4a0),
+   [#10390](https://github.com/angular/angular.js/issues/10390))
+
+
+## Performance Improvements
+
+- **$compile:** only re-`$interpolate` attribute values at link time if changed since compile
+  ([9ae0c01c](https://github.com/angular/angular.js/commit/9ae0c01c2bcaff2f3906eec574f9c6ed8abde14a))
+
+
+## Breaking Changes
+
+- **orderBy:** due to [a097aa95](https://github.com/angular/angular.js/commit/a097aa95b7c78beab6d1b7d521c25f7d9d7843d9),
+
+Previously, if either value being compared in the orderBy comparator was null or undefined, the
+order would, incorrectly, not change. Now, this order behaves more like Array.prototype.sort, which
+by default pushes `null` behind objects, due to `n` occurring after `[` (the first characters of their
+stringified forms) in ASCII / Unicode. If `toString` is customized, or does not exist, the
+behaviour is undefined.
+
+
+
 <a name="1.3.6"></a>
 # 1.3.6 robofunky-danceblaster (2014-12-08)
 
