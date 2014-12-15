@@ -177,7 +177,7 @@ for example, only a portion of the view needs to be controlled by Angular.
 
 To examine the scope in the debugger:
 
-  1. right click on the element of interest in your browser and select 'inspect element'. You
+  1. Right click on the element of interest in your browser and select 'inspect element'. You
   should see the browser debugger with the element you clicked on highlighted.
 
   2. The debugger allows you to access the currently selected element in the console as `$0`
