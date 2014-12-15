@@ -16,8 +16,8 @@ about the phones in the catalog.
 
 ## Data
 
-Note that the `phones.json` file contains unique ids and image urls for each of the phones. The
-urls point to the `app/img/phones/` directory.
+Note that the `phones.json` file contains unique IDs and image URLs for each of the phones. The
+URLs point to the `app/img/phones/` directory.
 
 __`app/phones/phones.json`__ (sample snippet):
 
@@ -59,7 +59,7 @@ the element attribute.
 We also added phone images next to each record using an image tag with the {@link
 ng.directive:ngSrc ngSrc} directive. That directive prevents the
 browser from treating the Angular `{{ expression }}` markup literally, and initiating a request to
-invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
+invalid URL `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
 specified an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`).
 Using the `ngSrc` directive prevents the browser from making an http request to an invalid location.
 
