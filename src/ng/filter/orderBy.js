@@ -130,9 +130,7 @@ function orderByFilter($parse) {
         }
         if (predicate === '') {
           // Effectively no predicate was passed so we compare identity
-          return reverseComparator(function(a, b) {
-            return compare(a, b);
-          }, descending);
+          return reverseComparator(compare, descending);
         }
         get = $parse(predicate);
         if (get.constant) {
