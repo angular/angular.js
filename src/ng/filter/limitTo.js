@@ -106,8 +106,7 @@ function limitToFilter() {
       }
     }
 
-    var out = [],
-      i, n;
+    var i, n;
 
     // if abs(limit) exceeds maximum length, trim it
     if (limit > input.length)
@@ -119,14 +118,13 @@ function limitToFilter() {
       i = 0;
       n = limit;
     } else {
+      // zero and NaN check on limit - return empty array
+      if (!limit) return [];
+
       i = input.length + limit;
       n = input.length;
     }
 
-    for (; i < n; i++) {
-      out.push(input[i]);
-    }
-
-    return out;
+    return input.slice(i, n);
   };
 }
