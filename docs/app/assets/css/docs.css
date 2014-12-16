@@ -1,11 +1,17 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto:500,400,300);
-
-@font-face {
+body {
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 }
 
-body {
-  font-family: Roboto, Arial, serif;
+h1 {
+  font-size: 40px;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 400;
 }
 
 md-sidenav.md-locked-open[flex="20"] {
