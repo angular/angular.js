@@ -32,7 +32,8 @@ module.exports = function productionDeployment(getVersion) {
     stylesheets: [
       'css/prettify-theme.css',
       'css/docs.css',
-      'css/animations.css'
+      'css/animations.css',
+      '//fonts.googleapis.com/css?family=Roboto:400,400italic,500,700'
     ]
   };
 };
