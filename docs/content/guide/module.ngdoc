@@ -243,7 +243,7 @@ Small, structured modules help keep unit tests concise and focused.
 
 <div class="did you know...">
 Each module can only be loaded once per injector.
-Usually an Angular app has only one injector and modules are only loaded once.
+Usually an Angular app has only one injector, and modules are only loaded once.
 Each test has its own injector and modules are loaded multiple times.
 </div>
 
