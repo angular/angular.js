@@ -32,7 +32,8 @@ module.exports = function defaultDeployment(getComponentPath) {
       'css/prettify-theme.css',
       'css/docs.css',
       'css/animations.css',
-      'font-awesome/css/font-awesome.css'
+      'font-awesome/css/font-awesome.css',
+      'http://fonts.googleapis.com/css?family=Roboto:400,400italic,500,700'
     ]
   };
 };
