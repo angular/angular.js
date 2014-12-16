@@ -6,7 +6,7 @@
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
 comes with almost no help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
-Angular which makes testing your Angular applications easy. So there is no excuse for not testing.
+Angular which make testing your Angular applications easy. With Angular, there is no excuse for not testing.
 
 ## Separation of Concerns
 
@@ -20,13 +20,13 @@ related pieces such as the DOM elements, or making any XHR calls to fetch the da
 
 While this may seem obvious it can be very difficult to call an individual function on a
 typical project. The reason is that the developers often mix concerns resulting in a
-piece of code which does everything. It makes an XHR request, it sorts the response data and then it
+piece of code which does everything. It makes an XHR request, it sorts the response data, and then it
 manipulates the DOM.
 
-With Angular we try to make it easy for you to do the right thing, and so we
-provide dependency injection for your XHR requests, which can be mocked, and we provide abstractions which
-allow you to test your model without having to resort to manipulating the DOM. The test can then
-assert that the data has been sorted without having to create or look at the state of the DOM or
+With Angular, we try to make it easy for you to do the right thing. For your XHR requests, we
+provide dependency injection, so your requests can be simulated. For the DOM, we abstract it, so you can
+test your model without having to manipulate the DOM directly. Your tests can then
+assert that the data has been sorted without having to create or look at the state of the DOM or to
 wait for any XHR requests to return data. The individual sort function can be tested in isolation.
 
 ## With great power comes great responsibility
