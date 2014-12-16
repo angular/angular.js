@@ -32,6 +32,10 @@
  *    If the predicate is missing or empty then it defaults to `'+'`.
  *
  * @param {boolean=} reverse Reverse the order of the array.
+ * @param {function(object1, object2, defaultCompare)} compare The custom compare function to use.
+ *    Should return -1 if object2 is bigger than object1. 0 if the same. 1 if object2 is smaller than
+ *    object1. The third variable is the default compare function which can be reused. It accepts
+ *    object1, and object2 as parameter.
  * @returns {Array} Sorted copy of the source array.
  *
  * @example
@@ -47,6 +51,16 @@
                   {name:'Adam', phone:'555-5678', age:35},
                   {name:'Julie', phone:'555-8765', age:29}];
              $scope.predicate = '-age';
+             $scope.ladiesFirst = function(name1, name2, defaultComparator) {
+               if (name1 === 'Julie' || name1 === 'Mary') {
+                 return -1;
+               }
+               if (name2 === 'Julie' || name2 === 'Mary') {
+                 return 1;
+               }
+               return defaultComparator(name1, name2);
+             };
+             $scope.customSort;
            }]);
        </script>
        <div ng-controller="ExampleController">
@@ -55,12 +69,13 @@
          [ <a href="" ng-click="predicate=''">unsorted</a> ]
          <table class="friend">
            <tr>
-             <th><a href="" ng-click="predicate = 'name'; reverse=false">Name</a>
-                 (<a href="" ng-click="predicate = '-name'; reverse=false">^</a>)</th>
-             <th><a href="" ng-click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
-             <th><a href="" ng-click="predicate = 'age'; reverse=!reverse">Age</a></th>
+             <th><a href="" ng-click="predicate = 'name'; reverse=false; customSort = null">Name</a>
+                 (<a href="" ng-click="predicate = '-name'; reverse=false; customSort = null">^</a>)</th>
+             <th><a href="" ng-click="predicate = 'phone'; reverse=!reverse; customSort = null">Phone Number</a></th>
+             <th><a href="" ng-click="predicate = 'age'; reverse=!reverse; customSort = null">Age</a></th>
+             <th><a href="" ng-click="predicate = 'name'; reverse=false; customSort = ladiesFirst">Ladies First</a></th>
            </tr>
-           <tr ng-repeat="friend in friends | orderBy:predicate:reverse">
+           <tr ng-repeat="friend in friends | orderBy:predicate:reverse:customSort">
              <td>{{friend.name}}</td>
              <td>{{friend.phone}}</td>
              <td>{{friend.age}}</td>
@@ -86,6 +101,7 @@
               (<a href="" ng-click="order('-name',false)">^</a>)</th>
             <th><a href="" ng-click="reverse=!reverse;order('phone', reverse)">Phone Number</a></th>
             <th><a href="" ng-click="reverse=!reverse;order('age',reverse)">Age</a></th>
+            <th><a href="" ng-click="reverse=false;order('name',reverse, ladiesFirst)">Ladies First</a></th>
           </tr>
           <tr ng-repeat="friend in friends">
             <td>{{friend.name}}</td>
@@ -107,8 +123,17 @@
             { name: 'Adam',    phone: '555-5678',    age: 35 },
             { name: 'Julie',   phone: '555-8765',    age: 29 }
           ];
-          $scope.order = function(predicate, reverse) {
-            $scope.friends = orderBy($scope.friends, predicate, reverse);
+          $scope.ladiesFirst = function(name1, name2, defaultComparator) {
+            if (name1 === 'Julie' || name1 === 'Mary') {
+              return -1;
+            }
+            if (name2 === 'Julie' || name2 === 'Mary') {
+              return 1;
+            }
+            return defaultComparator(name1, name2);
+          };
+          $scope.order = function(predicate, reverse, customSort) {
+            $scope.friends = orderBy($scope.friends, predicate, reverse, customSort);
           };
           $scope.order('-age',false);
         }]);
@@ -117,9 +142,10 @@
  */
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse) {
-  return function(array, sortPredicate, reverseOrder) {
+  return function(array, sortPredicate, reverseOrder, compare) {
     if (!(isArrayLike(array))) return array;
     sortPredicate = isArray(sortPredicate) ? sortPredicate : [sortPredicate];
+    compare = isFunction(compare) ? compare : defaultCompare;
     if (sortPredicate.length === 0) { sortPredicate = ['+']; }
     sortPredicate = sortPredicate.map(function(predicate) {
       var descending = false, get = predicate || identity;
@@ -131,19 +157,19 @@ function orderByFilter($parse) {
         if (predicate === '') {
           // Effectively no predicate was passed so we compare identity
           return reverseComparator(function(a, b) {
-            return compare(a, b);
+            return compare(a, b, defaultCompare);
           }, descending);
         }
         get = $parse(predicate);
         if (get.constant) {
           var key = get();
           return reverseComparator(function(a, b) {
-            return compare(a[key], b[key]);
+            return compare(a[key], b[key], defaultCompare);
           }, descending);
         }
       }
       return reverseComparator(function(a, b) {
-        return compare(get(a),get(b));
+        return compare(get(a), get(b), defaultCompare);
       }, descending);
     });
     return slice.call(array).sort(reverseComparator(comparator, reverseOrder));
@@ -155,6 +181,7 @@ function orderByFilter($parse) {
       }
       return 0;
     }
+
     function reverseComparator(comp, descending) {
       return descending
           ? function(a, b) {return comp(b,a);}
@@ -185,7 +212,7 @@ function orderByFilter($parse) {
       return '';
     }
 
-    function compare(v1, v2) {
+    function defaultCompare(v1, v2) {
       var t1 = typeof v1;
       var t2 = typeof v2;
       if (t1 === t2 && t1 === "object") {

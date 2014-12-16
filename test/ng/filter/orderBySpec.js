@@ -105,7 +105,6 @@ describe('Filter: orderBy', function() {
       }).toThrow();
     });
 
-
     it('should not reverse array of objects with no predicate', function() {
       var array = [
         { id: 2 },
@@ -116,7 +115,6 @@ describe('Filter: orderBy', function() {
       expect(orderBy(array)).toEqualData(array);
     });
 
-
     it('should not reverse array of objects with null prototype and no predicate', function() {
       var array = [2,1,4,3].map(function(id) {
         var obj = Object.create(null);
@@ -125,7 +123,6 @@ describe('Filter: orderBy', function() {
       });
       expect(orderBy(array)).toEqualData(array);
     });
-
 
     it('should sort nulls as Array.prototype.sort', function() {
       var array = [
@@ -140,6 +137,40 @@ describe('Filter: orderBy', function() {
         null,
         null
       ]);
+    });
+
+    it('should use a custom compare function', function() {
+      function localeCompareTo(v1, v2) {
+        return v1.localeCompare(v2);
+      }
+
+      function landCompare(v1, v2, defaultCompare) {
+        if (v1 === 'Dreamland') {
+          return -1;
+        }
+        if (v2 === 'Dreamland') {
+          return 1;
+        }
+        return defaultCompare(v1, v2);
+      }
+
+      expect(orderBy(['abc', 'äbc', 'öpq', 'opq'], null, false, localeCompareTo))
+        .toEqualData(['abc', 'äbc', 'opq', 'öpq']);
+      expect(orderBy(['abc', 'äbc', 'öpq', 'opq'], null, true, localeCompareTo))
+        .toEqualData(['öpq', 'opq', 'äbc', 'abc']);
+      expect(orderBy([
+              {'text': 'abc'},
+              {'text': 'äbc'},
+              {'text': 'öpq'},
+              {'text': 'opq'}],
+              'text', false, localeCompareTo))
+        .toEqualData([
+              {'text': 'abc'},
+              {'text': 'äbc'},
+              {'text': 'opq'},
+              {'text': 'öpq'}]);
+      expect(orderBy(['Germany', 'United States', 'Dreamland', 'Badland'], null, false, landCompare))
+        .toEqualData(['Dreamland', 'Badland', 'Germany', 'United States']);
     });
   });
 
