@@ -12,13 +12,6 @@
    [#8945](https://github.com/angular/angular.js/issues/8945), [#8964](https://github.com/angular/angular.js/issues/8964), [#5946](https://github.com/angular/angular.js/issues/5946), [#10090](https://github.com/angular/angular.js/issues/10090), [#9256](https://github.com/angular/angular.js/issues/9256))
 
 
-## Features
-
-- **$compile:** add support for `ng-attr` with camelCased attributes
-  ([a1e7eb63](https://github.com/angular/angular.js/commit/a1e7eb63606fdc78b22168a1cfe0f676e3f65059),
-   [#9845](https://github.com/angular/angular.js/issues/9845), [#10194](https://github.com/angular/angular.js/issues/10194))
-
-
 
 <a name="1.2.27"></a>
 # 1.2.27 prime-factorization (2014-11-20)
