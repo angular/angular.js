@@ -6,7 +6,7 @@
 # E2E Testing
 
 <div class="alert alert-danger">
-**Note:** In the past, end to end testing could be done with a deprecated tool called
+**Note:** In the past, end-to-end testing could be done with a deprecated tool called
 [Angular Scenario Runner](http://code.angularjs.org/1.2.16/docs/guide/e2e-testing). That tool
 is now in maintenance mode.
 </div>
@@ -14,7 +14,7 @@ is now in maintenance mode.
 As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
 verify the correctness of new features, catch bugs and notice regressions. End to end tests
 are the first line of defense for catching bugs, but sometimes issues come up with integration
-between components which can't be captured in a unit test. End to end tests are made to find
+between components which can't be captured in a unit test. End-to-end tests are made to find
 these problems.
 
 We have built [Protractor](https://github.com/angular/protractor), an end
@@ -23,7 +23,7 @@ Angular application.
 
 ## Using Protractor
 
-Protractor is a [Node.js](http://nodejs.org) program, and runs end to end tests that are also
+Protractor is a [Node.js](http://nodejs.org) program, and runs end-to-end tests that are also
 written in JavaScript and run with node. Protractor uses [WebDriver](https://code.google.com/p/selenium/wiki/GettingStarted)
 to control browsers and simulate user actions.
 
@@ -76,8 +76,8 @@ filter the list of items.
 
 ## Example
 See the [angular-seed](https://github.com/angular/angular-seed) project for more examples, or look
-at the embedded examples in the Angular documentation (For example, [$http](http://docs.angularjs.org/api/ng/service/$http)
-has an end to end test in the example under the `protractor.js` tag).
+at the embedded examples in the Angular documentation (For example, {@link $http $http}
+has an end-to-end test in the example under the `protractor.js` tag).
 
 ## Caveats
 
