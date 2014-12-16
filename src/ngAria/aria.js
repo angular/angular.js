@@ -308,7 +308,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
       if ($aria.config('bindKeypress') && !elem.attr('ng-keypress')) {
         elem.on('keypress', function(event) {
           if (event.keyCode === 32 || event.keyCode === 13) {
-            scope.$eval(attr.ngClick);
+            scope.$eval(attr.ngClick, {$event: event});
           }
         });
       }
