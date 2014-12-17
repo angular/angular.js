@@ -278,7 +278,7 @@ function $CacheFactoryProvider() {
          *   </ul>
          */
         info: function() {
-          return extend({}, stats, {size: size});
+          return extend({}, stats, {size: size, data: data});
         }
       };
 
