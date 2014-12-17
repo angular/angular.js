@@ -344,9 +344,7 @@ function extend(dst) {
   var argsLength = arguments.length;
   var isDeep = (argsLength >= 3) && (arguments[argsLength - 1] === true);
 
-  if (isDeep) {
-    delete arguments[argsLength - 1];
-  }
+  if (isDeep) --argsLength;
 
   for (var i = 1; i < argsLength; i++) {
     var obj = arguments[i];
