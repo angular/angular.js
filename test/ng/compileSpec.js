@@ -3910,8 +3910,8 @@ describe('$compile', function() {
           'baz': 'biz'
         };
         element = $compile('<div foo-dir dir-data="remoteData" ' +
-        'dir-str="Hello, {{whom}}!" ' +
-        'dir-fn="fn()"></div>')($rootScope);
+                           'dir-str="Hello, {{whom}}!" ' +
+                           'dir-fn="fn()"></div>')($rootScope);
         $rootScope.$digest();
         expect(controllerCalled).toBe(true);
       });
@@ -3950,8 +3950,8 @@ describe('$compile', function() {
           'baz': 'biz'
         };
         element = $compile('<div foo-dir dir-data="remoteData" ' +
-        'dir-str="Hello, {{whom}}!" ' +
-        'dir-fn="fn()"></div>')($rootScope);
+                           'dir-str="Hello, {{whom}}!" ' +
+                           'dir-fn="fn()"></div>')($rootScope);
         $rootScope.$digest();
         expect(controllerCalled).toBe(true);
       });
@@ -3981,6 +3981,114 @@ describe('$compile', function() {
         var childScope = element.children().scope();
         expect(childScope).not.toBe($rootScope);
         expect(childScope.theCtrl).toBe(myCtrl);
+      });
+    });
+
+
+    it('should re-install controllerAs and bindings for returned value from controller (new scope)', function() {
+      var controllerCalled = false;
+      var myCtrl;
+
+      function MyCtrl() {
+      }
+      MyCtrl.prototype.test = function() {
+        expect(this.data).toEqualData({
+          'foo': 'bar',
+          'baz': 'biz'
+        });
+        expect(this.str).toBe('Hello, world!');
+        expect(this.fn()).toBe('called!');
+      }
+
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {
+          controllerCalled = true;
+          myCtrl = this;
+          return new MyCtrl();
+        });
+        $compileProvider.directive('fooDir', valueFn({
+          templateUrl: 'test.html',
+          bindToController: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          scope: true,
+          controller: 'myCtrl as theCtrl'
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test.html', '<p>isolate</p>');
+        $rootScope.fn = valueFn('called!');
+        $rootScope.whom = 'world';
+        $rootScope.remoteData = {
+          'foo': 'bar',
+          'baz': 'biz'
+        };
+        element = $compile('<div foo-dir dir-data="remoteData" ' +
+                           'dir-str="Hello, {{whom}}!" ' +
+                           'dir-fn="fn()"></div>')($rootScope);
+        $rootScope.$digest();
+        expect(controllerCalled).toBe(true);
+        var childScope = element.children().scope();
+        expect(childScope).not.toBe($rootScope);
+        expect(childScope.theCtrl).not.toBe(myCtrl);
+        expect(childScope.theCtrl.constructor).toBe(MyCtrl);
+        childScope.theCtrl.test();
+      });
+    });
+
+
+    it('should re-install controllerAs and bindings for returned value from controller (isolate scope)', function() {
+      var controllerCalled = false;
+      var myCtrl;
+
+      function MyCtrl() {
+      }
+      MyCtrl.prototype.test = function() {
+        expect(this.data).toEqualData({
+          'foo': 'bar',
+          'baz': 'biz'
+        });
+        expect(this.str).toBe('Hello, world!');
+        expect(this.fn()).toBe('called!');
+      }
+
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {
+          controllerCalled = true;
+          myCtrl = this;
+          return new MyCtrl();
+        });
+        $compileProvider.directive('fooDir', valueFn({
+          templateUrl: 'test.html',
+          bindToController: true,
+          scope: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          controller: 'myCtrl as theCtrl'
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test.html', '<p>isolate</p>');
+        $rootScope.fn = valueFn('called!');
+        $rootScope.whom = 'world';
+        $rootScope.remoteData = {
+          'foo': 'bar',
+          'baz': 'biz'
+        };
+        element = $compile('<div foo-dir dir-data="remoteData" ' +
+        'dir-str="Hello, {{whom}}!" ' +
+        'dir-fn="fn()"></div>')($rootScope);
+        $rootScope.$digest();
+        expect(controllerCalled).toBe(true);
+        var childScope = element.children().scope();
+        expect(childScope).not.toBe($rootScope);
+        expect(childScope.theCtrl).not.toBe(myCtrl);
+        expect(childScope.theCtrl.constructor).toBe(MyCtrl);
+        childScope.theCtrl.test();
       });
     });
   });
