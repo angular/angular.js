@@ -225,13 +225,16 @@ describe('angular', function() {
     });
 
     it('should perform deep extend when last argument is true', function() {
-      var src = { foo: { bar: 'foobar' }},
+      var src = { foo: { bar: 'foobar', age: 10, nothing: null, undef: void 0 }},
           dst = { foo: { bazz: 'foobazz' }};
       extend(dst, src, true);
       expect(dst).toEqual({
         foo: {
           bar: 'foobar',
-          bazz: 'foobazz'
+          bazz: 'foobazz',
+          age: 10,
+          nothing: null,
+          undef: void 0
         }
       });
     });
