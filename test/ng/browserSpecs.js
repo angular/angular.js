@@ -45,26 +45,37 @@ function MockWindow(options) {
     });
   };
 
-  this.location = {
-    get href() {
-      return locationHref;
-    },
-    set href(value) {
+  //IE8 hack. defineProperty doesn't work with POJS, just with certain DOM elements
+  this.location = document.createElement('div');
+  this.location.href = {};
+  this.location.hash = {};
+  this.location.replace = function(url) {
+    locationHref = url;
+    mockWindow.history.state = null;
+  };
+  Object.defineProperty(this.location, 'href', {
+    enumerable: false,
+    configurable: true,
+    set: function(value) {
       locationHref = value;
       mockWindow.history.state = null;
       historyEntriesLength++;
     },
-    get hash() {
-      return getHash(locationHref);
-    },
-    set hash(value) {
+    get: function() {
+      return locationHref;
+    }
+  });
+
+  Object.defineProperty(this.location, 'hash', {
+    enumerable: false,
+    configurable: true,
+    set: function(value) {
       locationHref = stripHash(locationHref) + '#' + value;
     },
-    replace: function(url) {
-      locationHref = url;
-      mockWindow.history.state = null;
+    get: function() {
+      return getHash(locationHref);
     }
-  };
+  });
 
   this.history = {
     replaceState: noop,
@@ -115,7 +126,6 @@ describe('browser', function() {
                    warn: function() { logs.warn.push(slice.call(arguments)); },
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
-
     browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
   });
 
