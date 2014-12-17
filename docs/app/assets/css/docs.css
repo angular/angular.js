@@ -1,3 +1,19 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 85%;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: 225%;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 185%;
+  font-weight: 400;
+}
+
 md-sidenav.md-locked-open[flex="20"] {
     width: 20%;
 }
