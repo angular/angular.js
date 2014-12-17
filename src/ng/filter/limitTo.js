@@ -15,7 +15,8 @@
  * @param {string|number} limit The length of the returned array or string. If the `limit` number
  *     is positive, `limit` number of items from the beginning of the source array/string are copied.
  *     If the number is negative, `limit` number  of items from the end of the source array/string
- *     are copied. The `limit` will be trimmed if it exceeds `array.length`
+ *     are copied. The `limit` will be trimmed if it exceeds `array.length`. If `limit` is undefined,
+ *     the input will be returned unchanged.
  * @returns {Array|string} A new sub-array or substring of length `limit` or less if input array
  *     had less than `limit` elements.
  *
@@ -97,13 +98,10 @@ function limitToFilter() {
       limit = int(limit);
     }
 
+    if (isNaN(limit)) return input;
+
     if (isString(input)) {
-      //NaN check on limit
-      if (limit) {
-        return limit >= 0 ? input.slice(0, limit) : input.slice(limit, input.length);
-      } else {
-        return "";
-      }
+      return limit >= 0 ? input.slice(0, limit) : input.slice(limit, input.length);
     }
 
     var i, n;
@@ -118,7 +116,7 @@ function limitToFilter() {
       i = 0;
       n = limit;
     } else {
-      // zero and NaN check on limit - return empty array
+      // zero check on limit - return empty array
       if (!limit) return [];
 
       i = input.length + limit;
