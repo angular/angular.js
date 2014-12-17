@@ -1373,15 +1373,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (nodeLinkFn.scope) {
               childScope = scope.$new();
               compile.$$addScopeInfo(jqLite(node), childScope);
-              var onDestroyed = nodeLinkFn.$$onScopeDestroyed;
-              if (onDestroyed) {
-                nodeLinkFn.$$onScopeDestroyed = null;
-                childScope.$on('$destroyed', function() {
-                  for (var i=0, ii = onDestroyed.length; i < ii; ++i) {
-                    onDestroyed[i]();
-                  }
-                  onDestroyed = null;
-                });
+              var destroyBindings = nodeLinkFn.$$destroyBindings;
+              if (destroyBindings) {
+                nodeLinkFn.$$destroyBindings = null;
+                childScope.$on('$destroyed', destroyBindings);
               }
             } else {
               childScope = scope;
@@ -1955,18 +1950,29 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (controllers) {
           // Initialize bindToController bindings for new/isolate scopes
           var scopeDirective = newIsolateScopeDirective || newScopeDirective;
+          var bindings;
+          var controllerForBindings;
           if (scopeDirective && controllers[scopeDirective.name]) {
-            var bindings = scopeDirective.$$bindings.bindToController;
+            bindings = scopeDirective.$$bindings.bindToController;
             controller = controllers[scopeDirective.name];
 
             if (controller && controller.identifier && bindings) {
-              thisLinkFn.$$onScopeDestroyed =
+              controllerForBindings = controller;
+              thisLinkFn.$$destroyBindings =
                   initializeDirectiveBindings(scope, attrs, controller.instance,
                                               bindings, scopeDirective);
             }
           }
           forEach(controllers, function(controller) {
-            controller();
+            var result = controller();
+            if (result !== controller.instance &&
+                controller === controllerForBindings) {
+              // Remove and re-install bindToController bindings
+              thisLinkFn.$$destroyBindings();
+              thisLinkFn.$$destroyBindings =
+                  initializeDirectiveBindings(scope, attrs, result,
+                                              bindings, scopeDirective);
+            }
           });
           controllers = null;
         }
@@ -2558,12 +2564,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             } else {
               unwatch = scope.$watch($parse(attrs[attrName], parentValueWatch), null, parentGet.literal);
             }
-            if (newScope) {
-              newScope.$on('$destroy', unwatch);
-            } else {
-              onNewScopeDestroyed = (onNewScopeDestroyed || []);
-              onNewScopeDestroyed.push(unwatch);
-            }
+            onNewScopeDestroyed = (onNewScopeDestroyed || []);
+            onNewScopeDestroyed.push(unwatch);
             break;
 
           case '&':
@@ -2574,7 +2576,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             break;
         }
       });
-      return onNewScopeDestroyed;
+      var destroyBindings = onNewScopeDestroyed ? function destroyBindings() {
+        for (var i = 0, ii = onNewScopeDestroyed.length; i < ii; ++i) {
+          onNewScopeDestroyed[i]();
+        }
+      } : noop;
+      if (newScope && destroyBindings !== noop) {
+        newScope.$on('$destroy', destroyBindings);
+        return noop;
+      }
+      return destroyBindings;
     }
   }];
 }
