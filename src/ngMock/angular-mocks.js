@@ -1276,7 +1276,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * @param {string|RegExp|function(string)} url HTTP url or function that receives the url
    *   and returns true if the url match the current definition.
    * @param {(Object|function(Object))=} headers HTTP headers.
-   * @returns {requestHandler} Returns an object with `respond` method that control how a matched
+   * @returns {requestHandler} Returns an object with `respond` method that controls how a matched
    * request is handled. You can save this object for later use and invoke `respond` again in
    * order to change how a matched request is handled.
    */
