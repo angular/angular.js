@@ -333,7 +333,7 @@ function setHashKey(obj, h) {
  * Extends the destination object `dst` by copying own enumerable properties from the `src` object(s)
  * to `dst`. You can specify multiple `src` objects. If you want to preserve original objects, you can do so
  * by passing an empty object as the target: `var object = angular.extend({}, object1, object2)`.
- * Note: Keep in mind that `angular.extend` does not support recursive merge (deep copy).
+ * Note: Pass `true` in as the last argument to perform a recursive merge (deep copy).
  *
  * @param {Object} dst Destination object.
  * @param {...Object} src Source object(s).
@@ -341,14 +341,26 @@ function setHashKey(obj, h) {
  */
 function extend(dst) {
   var h = dst.$$hashKey;
+  var argsLength = arguments.length;
+  var isDeep = (argsLength >= 3) && (arguments[argsLength - 1] === true);
 
-  for (var i = 1, ii = arguments.length; i < ii; i++) {
+  if (isDeep) {
+    delete arguments[argsLength - 1];
+  }
+
+  for (var i = 1; i < argsLength; i++) {
     var obj = arguments[i];
     if (obj) {
       var keys = Object.keys(obj);
       for (var j = 0, jj = keys.length; j < jj; j++) {
         var key = keys[j];
-        dst[key] = obj[key];
+        var src = obj[key];
+        
+        if (isDeep) { 
+          src = extend(dst[key], src, true);
+        }
+        
+        dst[key] = src;
       }
     }
   }

@@ -223,6 +223,18 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+
+    it('should perform deep extend when last argument is true', function() {
+      var src = { foo: { bar: 'foobar' }},
+          dst = { foo: { bazz: 'foobazz' }};
+      extend(dst, src, true);
+      expect(dst).toEqual({
+        foo: {
+          bar: 'foobar',
+          bazz: 'foobazz'
+        }
+      });
+    });
   });
 
   describe('shallow copy', function() {
