@@ -1838,7 +1838,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {(Object|function(Object))=} headers HTTP headers or function that receives http header
  *   object and returns true if the headers match the current definition.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  *
  *  - respond –
  *    `{function([status,] data[, headers, statusText])
@@ -1861,7 +1861,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string|RegExp} url HTTP url.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 
 /**
@@ -1874,7 +1874,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string|RegExp} url HTTP url.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 
 /**
@@ -1887,7 +1887,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string|RegExp} url HTTP url.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 
 /**
@@ -1901,7 +1901,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {(string|RegExp)=} data HTTP request body.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 
 /**
@@ -1915,7 +1915,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {(string|RegExp)=} data HTTP request body.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 
 /**
@@ -1929,7 +1929,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {(string|RegExp)=} data HTTP request body.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 
 /**
@@ -1941,7 +1941,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * @param {string|RegExp} url HTTP url.
  * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
- *   control how a matched request is handled.
+ *   controls how a matched request is handled.
  */
 angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator =
