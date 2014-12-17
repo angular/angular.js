@@ -356,7 +356,7 @@ function extend(dst) {
         var key = keys[j];
         var src = obj[key];
         
-        if (isDeep) { 
+        if (isDeep && isObject(dst[key])) { 
           src = extend(dst[key], src, true);
         }
         
