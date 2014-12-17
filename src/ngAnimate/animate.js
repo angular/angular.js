@@ -833,7 +833,8 @@ angular.module('ngAnimate', ['ng'])
        * promise that was returned when the animation was started.
        *
        * ```js
-       * var promise = $animate.addClass(element, 'super-long-animation').then(function() {
+       * var promise = $animate.addClass(element, 'super-long-animation');
+       * promise.then(function() {
        *   //this will still be called even if cancelled
        * });
        *
