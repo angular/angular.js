@@ -97,7 +97,7 @@ __`app/index.html`.__
   ...
 
   <!-- jQuery is used for JavaScript animations (include this before angular.js) -->
-  <script src="bower_components/jquery/jquery.js"></script>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
 
   ...
 
