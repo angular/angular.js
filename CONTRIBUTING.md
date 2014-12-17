@@ -62,9 +62,9 @@ If you're just making a small change, don't worry about filing an issue first. U
 Before you submit your issue search the archive, maybe your question was already answered.
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
+By doing so, it will help us to spend more and efforts fixing issues and adding new
+features. Be sure to check that your issue has not already been reported previously. 
+Providing the following information will increase the chances of your issue being dealt with quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Motivation for or Use Case** - explain why this is a bug for you
