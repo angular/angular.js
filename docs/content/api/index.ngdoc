@@ -128,7 +128,7 @@ Use ngRoute to enable URL routing to your application. The ngRoute module suppor
 
 ## {@link ngAnimate ngAnimate}
 
-Use ngAnimate to enable animation features into your application. Various core ng directives will provide
+Use ngAnimate to enable animation features within your application. Various core ng directives will provide
 animation hooks into your application when ngAnimate is included. Animations are defined by using CSS transitions/animations
 or JavaScript callbacks.
 
