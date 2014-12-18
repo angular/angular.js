@@ -29,8 +29,8 @@ Angular expressions are like JavaScript expressions with the following differenc
   * **No Control Flow Statements:** You cannot use the following in an Angular expression:
     conditionals, loops, or exceptions.
 	
-  * **No Function Declarations:** You cannot decleare functions in an Angular expression.
-    Even inside `ng-init` directive
+  * **No Function Declarations:** You cannot declare functions in an Angular expression,
+    even inside `ng-init` directive.
 	
   * **No RegExp Creation With Literal Notation:** You cannot create regular expressions 
     in an Angular expression.
