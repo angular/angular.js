@@ -382,6 +382,7 @@ describe('angular', function() {
       expect(hashKey(dst)).not.toEqual(hashKey(src));
     });
 
+
     it('should retain the previous $$hashKey', function() {
       var src,dst,h;
       src = {};
@@ -395,6 +396,7 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
 
+
     it('should work when extending with itself', function() {
       var src,dst,h;
       dst = src = {};
@@ -404,6 +406,74 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
   });
+
+
+  describe('merge', function() {
+    it('should recursively copy objects into dst from left to right', function() {
+      var dst = { foo: { bar: 'foobar' }};
+      var src1 = { foo: { bazz: 'foobazz' }};
+      var src2 = { foo: { bozz: 'foobozz' }};
+      merge(dst, src1, src2);
+      expect(dst).toEqual({
+        foo: {
+          bar: 'foobar',
+          bazz: 'foobazz',
+          bozz: 'foobozz'
+        }
+      });
+    });
+
+
+    it('should replace primitives with objects', function() {
+      var dst = { foo: "bloop" };
+      var src = { foo: { bar: { baz: "bloop" }}};
+      merge(dst, src);
+      expect(dst).toEqual({
+        foo: {
+          bar: {
+            baz: "bloop"
+          }
+        }
+      });
+    });
+
+
+    it('should replace null values in destination with objects', function() {
+      var dst = { foo: null };
+      var src = { foo: { bar: { baz: "bloop" }}};
+      merge(dst, src);
+      expect(dst).toEqual({
+        foo: {
+          bar: {
+            baz: "bloop"
+          }
+        }
+      });
+    });
+
+
+    it('should copy references to functions by value rather than merging', function() {
+      function fn() {}
+      var dst = { foo: 1 };
+      var src = { foo: fn };
+      merge(dst, src);
+      expect(dst).toEqual({
+        foo: fn
+      });
+    });
+
+
+    it('should create a new array if destination property is a non-object and source property is an array', function() {
+      var dst = { foo: NaN };
+      var src = { foo: [1,2,3] };
+      merge(dst, src);
+      expect(dst).toEqual({
+        foo: [1,2,3]
+      });
+      expect(dst.foo).not.toBe(src.foo);
+    });
+  });
+
 
   describe('shallow copy', function() {
     it('should make a copy', function() {
