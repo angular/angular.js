@@ -231,7 +231,7 @@ describe('angular', function() {
       expect(dst).toEqual({
         foo: {
           bar: 'foobar',
-          bazz: 'foobazz',
+          bazz: 'foobazz'
         }
       });
       expect(dst.foo.$$hashKey).toBeUndefined();

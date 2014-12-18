@@ -359,8 +359,8 @@ function extend(dst) {
     for (var j = 0, jj = keys.length; j < jj; j++) {
       var key = keys[j];
       var src = obj[key];
-        
-      if (isDeep && isObject(src)) { 
+
+      if (isDeep && isObject(src)) {
         if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
         extend(dst[key], src, 0xFACECAFE);
       } else {
