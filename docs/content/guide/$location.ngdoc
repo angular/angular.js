@@ -5,9 +5,9 @@
 
 # What does it do?
 
-The `$location` service parses the URL in the browser address bar (based on the [window.location](https://developer.mozilla.org/en/window.location)) and makes the URL available to
-your application. Changes to the URL in the address bar are reflected into $location service and
-changes to $location are reflected into the browser address bar.
+The `$location` service parses the URL in the browser address bar (based on [`window.location`](https://developer.mozilla.org/en/window.location)) and makes the URL available to
+your application. Changes to the URL in the address bar are reflected into the `$location` service and
+changes to `$location` are reflected into the browser address bar.
 
 **The $location service:**
 
@@ -21,7 +21,7 @@ changes to $location are reflected into the browser address bar.
 - Represents the URL object as a set of methods (protocol, host, port, path, search, hash).
 
 
-## Comparing $location to window.location
+## Comparing `$location` to `window.location`
 
 <table class="table">
 <thead>
@@ -68,7 +68,7 @@ changes to $location are reflected into the browser address bar.
 </tbody>
 </table>
 
-## When should I use $location?
+## When should I use `$location`?
 Any time your application needs to react to a change in the current URL or if you want to change
 the current URL in the browser.
 
@@ -85,7 +85,7 @@ others customizing the configuration can enable new features.
 Once the `$location` service is instantiated, you can interact with it via jQuery-style getter and
 setter methods that allow you to get or change the current URL in the browser.
 
-## $location service configuration
+## `$location` service configuration
 
 To configure the `$location` service, retrieve the
 {@link ng.$locationProvider $locationProvider} and set the parameters as follows:
@@ -835,7 +835,7 @@ angular.module('locationExample', [])
 
 # Related API
 
-* {@link ng.$location $location API}
+* {@link ng.$location `$location` API}
 
 
 
