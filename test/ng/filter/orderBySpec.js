@@ -79,6 +79,16 @@ describe('Filter: orderBy', function() {
               { a:new Date('01/01/2014'), b:3 }]);
     });
 
+    it('should compare timestamps when sorting dates', function() {
+      expect(orderBy([
+        new Date('01/01/2015'),
+        new Date('01/01/2014')
+      ])).toEqualData([
+        new Date('01/01/2014'),
+        new Date('01/01/2015')
+      ]);
+    });
+
 
     it('should use function', function() {
       expect(
