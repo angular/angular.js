@@ -35,6 +35,7 @@
     "extend": false,
     "toInt": false,
     "inherit": false,
+    "merge": false,
     "noop": false,
     "identity": false,
     "valueFn": false,
