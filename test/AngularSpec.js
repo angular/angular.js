@@ -225,18 +225,66 @@ describe('angular', function() {
     });
 
     it('should perform deep extend when last argument is true', function() {
-      var src = { foo: { bar: 'foobar', age: 10, nothing: null, undef: void 0 }},
+      var src = { foo: { bar: 'foobar' }},
           dst = { foo: { bazz: 'foobazz' }};
       extend(dst, src, true);
       expect(dst).toEqual({
         foo: {
           bar: 'foobar',
           bazz: 'foobazz',
-          age: 10,
-          nothing: null,
-          undef: void 0
         }
       });
+      expect(dst.foo.$$hashKey).toBeUndefined();
+    });
+
+
+    it('should replace primitives with objects when deep extending', function() {
+      var dst = { foo: "bloop" };
+      var src = { foo: { bar: { baz: "bloop" }}};
+      extend(dst, src, true);
+      expect(dst).toEqual({
+        foo: {
+          bar: {
+            baz: "bloop"
+          }
+        }
+      });
+    });
+
+
+    it('should replace null values with objects when deep extending', function() {
+      var dst = { foo: null };
+      var src = { foo: { bar: { baz: "bloop" }}};
+      extend(dst, src, true);
+      expect(dst).toEqual({
+        foo: {
+          bar: {
+            baz: "bloop"
+          }
+        }
+      });
+    });
+
+
+    it('should not deep extend function-valued sources when deep extending', function() {
+      function fn() {}
+      var dst = { foo: 1 };
+      var src = { foo: fn };
+      extend(dst, src, true);
+      expect(dst).toEqual({
+        foo: fn
+      });
+    });
+
+
+    it('should create a new array if destination property is a non-object and source property is an array when deep-extending', function() {
+      var dst = { foo: NaN };
+      var src = { foo: [1,2,3] };
+      extend(dst, src, true);
+      expect(dst).toEqual({
+        foo: [1,2,3]
+      });
+      expect(dst.foo).not.toBe(src.foo);
     });
   });
 

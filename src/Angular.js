@@ -333,37 +333,43 @@ function setHashKey(obj, h) {
  * Extends the destination object `dst` by copying own enumerable properties from the `src` object(s)
  * to `dst`. You can specify multiple `src` objects. If you want to preserve original objects, you can do so
  * by passing an empty object as the target: `var object = angular.extend({}, object1, object2)`.
- * Note: Pass `true` in as the last argument to perform a recursive merge (deep copy).
  *
  * @param {Object} dst Destination object.
  * @param {...Object} src Source object(s).
+ * @param {boolean=} deep if the last parameter is set to `true`, objects are recursively merged
+ *    (deep copy). Defaults to `false`.
  * @returns {Object} Reference to `dst`.
  */
 function extend(dst) {
   var h = dst.$$hashKey;
   var argsLength = arguments.length;
-  var isDeep = (argsLength >= 3) && (arguments[argsLength - 1] === true);
+  var isDeep = false;
+  if (argsLength >= 3) {
+    var maybeIsDeep = arguments[argsLength - 1];
+    // Secret code to use deep extend without adding hash keys to destination object properties!
+    if (maybeIsDeep === true || maybeIsDeep === 0xFACECAFE) isDeep = maybeIsDeep;
+  }
 
   if (isDeep) --argsLength;
 
   for (var i = 1; i < argsLength; i++) {
     var obj = arguments[i];
-    if (obj) {
-      var keys = Object.keys(obj);
-      for (var j = 0, jj = keys.length; j < jj; j++) {
-        var key = keys[j];
-        var src = obj[key];
+    if (!isObject(obj) && !isFunction(obj)) continue;
+    var keys = Object.keys(obj);
+    for (var j = 0, jj = keys.length; j < jj; j++) {
+      var key = keys[j];
+      var src = obj[key];
         
-        if (isDeep && isObject(dst[key])) { 
-          src = extend(dst[key], src, true);
-        }
-        
+      if (isDeep && isObject(src)) { 
+        if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
+        extend(dst[key], src, 0xFACECAFE);
+      } else {
         dst[key] = src;
       }
     }
   }
 
-  setHashKey(dst, h);
+  if (isDeep !== 0xFACECAFE) setHashKey(dst, h);
   return dst;
 }
 
