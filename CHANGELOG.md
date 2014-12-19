@@ -1,3 +1,31 @@
+<a name="1.3.8"></a>
+# 1.3.8 prophetic-narwhal (2014-12-19)
+
+
+## Bug Fixes
+- **filterFilter:**
+  - make `$` match properties on deeper levels as well
+  ([bd28c74c](https://github.com/angular/angular.js/commit/bd28c74c1d91c477a86f10fe36576cba0249e6ef),
+   [#10401](https://github.com/angular/angular.js/issues/10401))
+  - let expression object `{$: '...'}` also match primitive items
+  ([fb2c5858](https://github.com/angular/angular.js/commit/fb2c58589758744c0eef8c2ead3dbcf27a5cf200),
+   [#10428](https://github.com/angular/angular.js/issues/10428))
+- **ngAria:** trigger digest on `ng-click` via keypress, pass `$event` to expression
+  ([924e68c7](https://github.com/angular/angular.js/commit/924e68c7d522a1086969f3583d0ce87e59110bc5),
+   [#10442](https://github.com/angular/angular.js/issues/10442), [#10443](https://github.com/angular/angular.js/issues/10443), [#10447](https://github.com/angular/angular.js/issues/10447))
+- **orderBy:** compare timestamps when sorting date objects
+  ([661f6d9e](https://github.com/angular/angular.js/commit/661f6d9ecf1459ce3b2794c3cde373e17ae83972),
+   [#10512](https://github.com/angular/angular.js/issues/10512), [#10516](https://github.com/angular/angular.js/issues/10516))
+
+
+## Performance Improvements
+
+- **limitTo:** replace for loop with slice
+  ([cd77c089](https://github.com/angular/angular.js/commit/cd77c089ba2f4b94ccc74f32f0ffa9fb70851c02))
+
+
+
+
 <a name="1.3.7"></a>
 # 1.3.7 leaky-obstruction (2014-12-15)
 
