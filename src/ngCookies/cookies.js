@@ -25,6 +25,10 @@ angular.module('ngCookies', ['ng']).
    * @description
    * Provides read/write access to browser's cookies.
    *
+   * <div class="alert alert-error">
+   * **Note:** The $cookies service is deprecated. Please use the $cookieStore service instead.
+   * </div>
+   *
    * Only a simple Object is exposed and by adding or removing properties to/from this object, new
    * cookies are created/deleted at the end of current $eval.
    * The object's properties can only be strings.
@@ -169,6 +173,33 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
+         * @name $cookieStore#getRaw
+         *
+         * @description
+         * Returns the value of given cookie key
+         *
+         * @param {string} key Id to use for lookup.
+         * @returns {string} Raw cookie value.
+         */
+        getRaw: function(key) {
+          return $browser.cookies()[key];
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookieStore#getAll
+         *
+         * @description
+         * Returns a key value object with all the cookies
+         *
+         * @returns {Object} All cookies
+         */
+        getAll: function() {
+          return $browser.cookies();
+        },
+
+        /**
+         * @ngdoc method
          * @name $cookieStore#put
          *
          * @description
@@ -190,6 +221,21 @@ angular.module('ngCookies', ['ng']).
          */
         put: function(key, value, options) {
           $browser.cookies(key, angular.toJson(value), options);
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookieStore#putRaw
+         *
+         * @description
+         * Sets a value for given cookie key
+         *
+         * @param {string} key Id for the `value`.
+         * @param {string} value Raw value to be stored.
+         * @param {Object=} options Options object.
+         */
+        putRaw: function(key, value, options) {
+          $browser.cookies(key, value, options);
         },
 
         /**

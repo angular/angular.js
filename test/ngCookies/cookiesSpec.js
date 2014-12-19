@@ -145,4 +145,19 @@ describe('$cookieStore', function() {
     $cookieStore.put('name', 'value', {path: '/a/b'});
     expect($browser.cookies).toHaveBeenCalledWith('name', '"value"', {path: '/a/b'});
   }));
+
+  it('should put cookie value without serializing', inject(function($cookieStore, $browser) {
+    $cookieStore.putRaw('name', 'value');
+    expect($browser.cookies()).toEqual({'name': 'value'});
+  }));
+
+  it('should get cookie value without deserializing', inject(function($cookieStore, $browser) {
+    $browser.cookies('name', 'value');
+    expect($cookieStore.getRaw('name')).toEqual('value');
+  }));
+
+  it('should get all the cookies', inject(function($cookieStore, $browser) {
+    $browser.cookies('name', 'value');
+    expect($cookieStore.getAll()).toEqual({name: 'value'});
+  }));
 });
