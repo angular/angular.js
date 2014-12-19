@@ -139,4 +139,10 @@ describe('$cookieStore', function() {
     $browser.cookieHash['blankCookie'] = '';
     expect($cookieStore.get("blankCookie")).toEqual('');
   }));
+
+  it('should pass options on put', inject(function($cookieStore, $browser) {
+    spyOn($browser, 'cookies');
+    $cookieStore.put('name', 'value', {path: '/a/b'});
+    expect($browser.cookies).toHaveBeenCalledWith('name', '"value"', {path: '/a/b'});
+  }));
 });

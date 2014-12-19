@@ -176,9 +176,20 @@ angular.module('ngCookies', ['ng']).
          *
          * @param {string} key Id for the `value`.
          * @param {Object} value Value to be stored.
+         * @param {Object=} options Object with options that need to be stored for the cookie.
+         *    The object may have following properties:
+         *
+         *    - **path** - `{string}` - The cookie will be available only for this path and its
+         *      sub-paths. By default, this would be the URL that appears in your base tag.
+         *    - **domain** - `{string}` - The cookie will be available only for this domain and
+         *      its sub-domains. For obvious security reasons the user agent will not accept the
+         *      cookie if the current domain is not a sub domain or equals to the requested domain.
+         *    - **expires** - `{string|Date}` - String of the form "Wdy, DD Mon YYYY HH:MM:SS GMT"
+         *      or a Date object indicating the exact date/time this cookie will expire.
+         *    - **secure** - `{boolean}` - The cookie will be available only in secured connection.
          */
-        put: function(key, value) {
-          $browser.cookies(key, angular.toJson(value));
+        put: function(key, value, options) {
+          $browser.cookies(key, angular.toJson(value), options);
         },
 
         /**
