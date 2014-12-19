@@ -488,12 +488,24 @@ describe('$aria', function() {
 
     it('should a trigger click from the keyboard', function() {
       scope.someAction = function() {};
-      compileInput('<div ng-click="someAction()" tabindex="0"></div>');
+
+      var elements = $compile('<section>' +
+                  '<div class="div-click" ng-click="someAction(\'div\')" tabindex="0"></div>' +
+                  '<ul><li ng-click="someAction( \'li\')" tabindex="0"></li></ul>' +
+                  '</section>')(scope);
+
+      scope.$digest();
+
       clickFn = spyOn(scope, 'someAction');
 
-      element.triggerHandler({type: 'keypress', keyCode: 32});
+      var divElement = elements.find('div');
+      var liElement = elements.find('li');
 
-      expect(clickFn).toHaveBeenCalled();
+      divElement.triggerHandler({type: 'keypress', keyCode: 32});
+      liElement.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).toHaveBeenCalledWith('div');
+      expect(clickFn).toHaveBeenCalledWith('li');
     });
 
     it('should not override existing ng-keypress', function() {
@@ -526,6 +538,13 @@ describe('$aria', function() {
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('keypress13');
     });
+
+    it('should not bind keypress to elements not in the default config', function() {
+      compileInput('<button ng-click="event = $event">{{event.type}}{{event.keyCode}}</button>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('');
+    });
   });
 
   describe('actions when bindKeypress set to false', function() {
@@ -534,11 +553,11 @@ describe('$aria', function() {
     }));
     beforeEach(injectScopeAndCompiler);
 
-    it('should not a trigger click from the keyboard', function() {
+    it('should not a trigger click', function() {
       scope.someAction = function() {};
       var clickFn = spyOn(scope, 'someAction');
 
-      element = $compile('<div ng-click="someAction()" tabindex="0">></div>')(scope);
+      element = $compile('<div ng-click="someAction()" tabindex="0"></div>')(scope);
 
       element.triggerHandler({type: 'keypress', keyCode: 32});
 
