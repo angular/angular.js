@@ -462,6 +462,66 @@ describe('browser', function() {
       expect(browser.cookies()).toEqual({'existingCookie':'existingValue'});
     });
 
+    describe('cookie options', function() {
+      function getLastCookieAssignment(key) {
+        return fakeDocument[0].cookie
+                  .split(';')
+                  .reduce(function(prev, value) {
+                    var pair = value.split('=', 2);
+                    if (pair[0] === key) {
+                      if (prev === undefined) {
+                        return pair[1] === undefined ? true : pair[1];
+                      } else {
+                        throw 'duplicate key in cookie string';
+                      }
+                    } else {
+                      return prev;
+                    }
+                  }, undefined);
+      }
+
+      beforeEach(function() {
+        fakeDocument[0] = {cookie: ''};
+        fakeDocument.basePath = '/a/b';
+        browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+      });
+
+      it('should use baseHref as default path', function() {
+        browser.cookies('name', 'value');
+        expect(getLastCookieAssignment('path')).toBe('/a/b');
+      });
+
+      it('should accept path option', function() {
+        browser.cookies('name', 'value', {path: '/c/d'});
+        expect(getLastCookieAssignment('path')).toBe('/c/d');
+      });
+
+      it('should accept domain option', function() {
+        browser.cookies('name', 'value', {domain: '.example.com'});
+        expect(getLastCookieAssignment('domain')).toBe('.example.com');
+      });
+
+      it('should accept secure option', function() {
+        browser.cookies('name', 'value', {secure: true});
+        expect(getLastCookieAssignment('secure')).toBe(true);
+      });
+
+      it('should accept expires option on set', function() {
+        browser.cookies('name', 'value', {expires: 'Fri, 19 Dec 2014 00:00:00 GMT'});
+        expect(getLastCookieAssignment('expires')).toMatch(/^Fri, 19 Dec 2014 00:00:00 (UTC|GMT)$/);
+      });
+
+      it('should always use epoch time as expire time on remove', function() {
+        browser.cookies('name', undefined, {expires: 'Fri, 19 Dec 2014 00:00:00 GMT'});
+        expect(getLastCookieAssignment('expires')).toMatch(/^Thu, 0?1 Jan 1970 00:00:00 (UTC|GMT)$/);
+      });
+
+      it('should accept date object as expires option', function() {
+        browser.cookies('name', 'value', {expires: new Date(Date.UTC(1981, 11, 27))});
+        expect(getLastCookieAssignment('expires')).toMatch(/^Sun, 27 Dec 1981 00:00:00 (UTC|GMT)$/);
+      });
+
+    });
   });
 
   describe('poller', function() {
