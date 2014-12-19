@@ -149,7 +149,7 @@ angular.module('ngCookies', ['ng']).
    *   }]);
    * ```
    */
-   factory('$cookieStore', ['$cookies', function($cookies) {
+   factory('$cookieStore', ['$browser', function($browser) {
 
       return {
         /**
@@ -163,7 +163,7 @@ angular.module('ngCookies', ['ng']).
          * @returns {Object} Deserialized cookie value, undefined if the cookie does not exist.
          */
         get: function(key) {
-          var value = $cookies[key];
+          var value = $browser.cookies()[key];
           return value ? angular.fromJson(value) : value;
         },
 
@@ -178,7 +178,7 @@ angular.module('ngCookies', ['ng']).
          * @param {Object} value Value to be stored.
          */
         put: function(key, value) {
-          $cookies[key] = angular.toJson(value);
+          $browser.cookies(key, angular.toJson(value));
         },
 
         /**
@@ -191,7 +191,7 @@ angular.module('ngCookies', ['ng']).
          * @param {string} key Id of the key-value pair to delete.
          */
         remove: function(key) {
-          delete $cookies[key];
+          $browser.cookies(key, undefined);
         }
       };
 
