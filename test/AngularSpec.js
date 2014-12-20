@@ -223,25 +223,29 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+  });
 
-    it('should perform deep extend when last argument is true', function() {
-      var src = { foo: { bar: 'foobar' }},
-          dst = { foo: { bazz: 'foobazz' }};
-      extend(dst, src, true);
+
+  describe('merge', function() {
+    it('should recursively copy objects into dst from left to right', function() {
+      var dst = { foo: { bar: 'foobar' }};
+      var src1 = { foo: { bazz: 'foobazz' }};
+      var src2 = { foo: { bozz: 'foobozz' }};
+      merge(dst, src1, src2);
       expect(dst).toEqual({
         foo: {
           bar: 'foobar',
-          bazz: 'foobazz'
+          bazz: 'foobazz',
+          bozz: 'foobozz'
         }
       });
-      expect(dst.foo.$$hashKey).toBeUndefined();
     });
 
 
-    it('should replace primitives with objects when deep extending', function() {
+    it('should replace primitives with objects', function() {
       var dst = { foo: "bloop" };
       var src = { foo: { bar: { baz: "bloop" }}};
-      extend(dst, src, true);
+      merge(dst, src);
       expect(dst).toEqual({
         foo: {
           bar: {
@@ -252,10 +256,10 @@ describe('angular', function() {
     });
 
 
-    it('should replace null values with objects when deep extending', function() {
+    it('should replace null values in destination with objects', function() {
       var dst = { foo: null };
       var src = { foo: { bar: { baz: "bloop" }}};
-      extend(dst, src, true);
+      merge(dst, src, true);
       expect(dst).toEqual({
         foo: {
           bar: {
@@ -266,27 +270,28 @@ describe('angular', function() {
     });
 
 
-    it('should not deep extend function-valued sources when deep extending', function() {
+    it('should copy references to functions by value rather than merging', function() {
       function fn() {}
       var dst = { foo: 1 };
       var src = { foo: fn };
-      extend(dst, src, true);
+      merge(dst, src);
       expect(dst).toEqual({
         foo: fn
       });
     });
 
 
-    it('should create a new array if destination property is a non-object and source property is an array when deep-extending', function() {
+    it('should create a new array if destination property is a non-object and source property is an array', function() {
       var dst = { foo: NaN };
       var src = { foo: [1,2,3] };
-      extend(dst, src, true);
+      merge(dst, src, true);
       expect(dst).toEqual({
         foo: [1,2,3]
       });
       expect(dst.foo).not.toBe(src.foo);
     });
   });
+
 
   describe('shallow copy', function() {
     it('should make a copy', function() {

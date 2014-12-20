@@ -323,6 +323,32 @@ function setHashKey(obj, h) {
   }
 }
 
+
+function baseExtend(dst, objs, deep) {
+  var h = dst.$$hashKey;
+
+  for (var i = 0, ii = objs.length; i < ii; ++i) {
+    var obj = objs[i];
+    if (!isObject(obj) && !isFunction(obj)) continue;
+    var keys = Object.keys(obj);
+    for (var j = 0, jj = keys.length; j < jj; j++) {
+      var key = keys[j];
+      var src = obj[key];
+
+      if (deep && isObject(src)) {
+        if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
+        baseExtend(dst[key], [src], true);
+      } else {
+        dst[key] = src;
+      }
+    }
+  }
+
+  setHashKey(dst, h);
+  return dst;
+}
+
+
 /**
  * @ngdoc function
  * @name angular.extend
@@ -336,41 +362,33 @@ function setHashKey(obj, h) {
  *
  * @param {Object} dst Destination object.
  * @param {...Object} src Source object(s).
- * @param {boolean=} deep if the last parameter is set to `true`, objects are recursively merged
- *    (deep copy). Defaults to `false`.
  * @returns {Object} Reference to `dst`.
  */
 function extend(dst) {
-  var h = dst.$$hashKey;
-  var argsLength = arguments.length;
-  var isDeep = false;
-  if (argsLength >= 3) {
-    var maybeIsDeep = arguments[argsLength - 1];
-    // Secret code to use deep extend without adding hash keys to destination object properties!
-    if (maybeIsDeep === true || maybeIsDeep === 0xFACECAFE) isDeep = maybeIsDeep;
-  }
+  return baseExtend(dst, slice.call(arguments, 1), false);
+}
 
-  if (isDeep) --argsLength;
 
-  for (var i = 1; i < argsLength; i++) {
-    var obj = arguments[i];
-    if (!isObject(obj) && !isFunction(obj)) continue;
-    var keys = Object.keys(obj);
-    for (var j = 0, jj = keys.length; j < jj; j++) {
-      var key = keys[j];
-      var src = obj[key];
-
-      if (isDeep && isObject(src)) {
-        if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
-        extend(dst[key], src, 0xFACECAFE);
-      } else {
-        dst[key] = src;
-      }
-    }
-  }
-
-  if (isDeep !== 0xFACECAFE) setHashKey(dst, h);
-  return dst;
+/**
+* @ngdoc function
+* @name angular.merge
+* @module ng
+* @kind function
+*
+* @description
+* Deeply extends the destination object `dst` by copying own enumerable properties from the `src` object(s)
+* to `dst`. You can specify multiple `src` objects. If you want to preserve original objects, you can do so
+* by passing an empty object as the target: `var object = angular.merge({}, object1, object2)`.
+*
+* Unlike {@link angular.extend extend()}, `merge()` recursively descends into object properties of source
+* objects, performing a deep copy.
+*
+* @param {Object} dst Destination object.
+* @param {...Object} src Source object(s).
+* @returns {Object} Reference to `dst`.
+*/
+function merge(dst) {
+  return baseExtend(dst, slice.call(arguments, 1), true);
 }
 
 function int(str) {

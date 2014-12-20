@@ -34,6 +34,7 @@
     "nextUid": false,
     "setHashKey": false,
     "extend": false,
+    "merge": false,
     "int": false,
     "inherit": false,
     "noop": false,
