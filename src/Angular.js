@@ -325,14 +325,13 @@ function setHashKey(obj, h) {
 
 
 function baseExtend(dst, objs, deep) {
-  var h = dst.$$hashKey;
-
   for (var i = 0, ii = objs.length; i < ii; ++i) {
     var obj = objs[i];
     if (!isObject(obj) && !isFunction(obj)) continue;
     var keys = Object.keys(obj);
     for (var j = 0, jj = keys.length; j < jj; j++) {
       var key = keys[j];
+      if (key === '$$hashKey') continue;
       var src = obj[key];
 
       if (deep && isObject(src)) {
@@ -344,7 +343,6 @@ function baseExtend(dst, objs, deep) {
     }
   }
 
-  setHashKey(dst, h);
   return dst;
 }
 
