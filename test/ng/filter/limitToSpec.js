@@ -34,20 +34,30 @@ describe('Filter: limitTo', function() {
   });
 
 
-  it('should return an empty array when X cannot be parsed', function() {
-    expect(limitTo(items, 'bogus')).toEqual([]);
-    expect(limitTo(items, 'null')).toEqual([]);
-    expect(limitTo(items, 'undefined')).toEqual([]);
-    expect(limitTo(items, null)).toEqual([]);
-    expect(limitTo(items, undefined)).toEqual([]);
+  it('should return an empty array when X = 0', function() {
+    expect(limitTo(items, 0)).toEqual([]);
+    expect(limitTo(items, '0')).toEqual([]);
   });
 
-  it('should return an empty string when X cannot be parsed', function() {
-    expect(limitTo(str, 'bogus')).toEqual("");
-    expect(limitTo(str, 'null')).toEqual("");
-    expect(limitTo(str, 'undefined')).toEqual("");
-    expect(limitTo(str, null)).toEqual("");
-    expect(limitTo(str, undefined)).toEqual("");
+  it('should return entire array when X cannot be parsed', function() {
+    expect(limitTo(items, 'bogus')).toEqual(items);
+    expect(limitTo(items, 'null')).toEqual(items);
+    expect(limitTo(items, 'undefined')).toEqual(items);
+    expect(limitTo(items, null)).toEqual(items);
+    expect(limitTo(items, undefined)).toEqual(items);
+  });
+
+  it('should return an empty string when X = 0', function() {
+    expect(limitTo(str, 0)).toEqual("");
+    expect(limitTo(str, '0')).toEqual("");
+  });
+
+  it('should return entire string when X cannot be parsed', function() {
+    expect(limitTo(str, 'bogus')).toEqual(str);
+    expect(limitTo(str, 'null')).toEqual(str);
+    expect(limitTo(str, 'undefined')).toEqual(str);
+    expect(limitTo(str, null)).toEqual(str);
+    expect(limitTo(str, undefined)).toEqual(str);
   });
 
 
