@@ -335,14 +335,13 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             trackByIdFn = trackByIdExpFn || trackByIdArrayFn;
           } else {
             trackByIdFn = trackByIdExpFn || trackByIdObjFn;
-            // if object, extract keys, sort them and use to determine order of iteration over obj props
+            // if object, extract keys, in enumeration order, unsorted
             collectionKeys = [];
             for (var itemKey in collection) {
-              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) != '$') {
+              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) !== '$') {
                 collectionKeys.push(itemKey);
               }
             }
-            collectionKeys.sort();
           }
 
           collectionLength = collectionKeys.length;
@@ -438,4 +437,3 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     }
   };
 }];
-

@@ -163,7 +163,7 @@ describe('ngRepeat', function() {
       '</ul>')(scope);
     scope.items = {age:20, wealth:20, prodname: "Bingo", dogname: "Bingo", codename: "20"};
     scope.$digest();
-    expect(element.text()).toEqual('age:20|codename:20|dogname:Bingo|prodname:Bingo|wealth:20|');
+    expect(element.text()).toEqual('age:20|wealth:20|prodname:Bingo|dogname:Bingo|codename:20|');
   });
 
   describe('track by', function() {
@@ -587,7 +587,7 @@ describe('ngRepeat', function() {
       '</ul>')(scope);
     scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
     scope.$digest();
-    expect(element.text()).toEqual('frodo:f:0|misko:m:1|shyam:s:2|');
+    expect(element.text()).toEqual('misko:m:0|shyam:s:1|frodo:f:2|');
   });
 
 
@@ -656,10 +656,10 @@ describe('ngRepeat', function() {
     scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
     scope.$digest();
     expect(element.text()).
-        toEqual('doug:d:true-false-false|' +
-                'frodo:f:false-true-false|' +
-                'misko:m:false-true-false|' +
-                'shyam:s:false-false-true|');
+        toEqual('misko:m:true-false-false|' +
+                'shyam:s:false-true-false|' +
+                'doug:d:false-true-false|' +
+                'frodo:f:false-false-true|');
 
     delete scope.items.doug;
     delete scope.items.frodo;
@@ -681,15 +681,15 @@ describe('ngRepeat', function() {
     scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
     scope.$digest();
     expect(element.text()).
-        toBe('doug:d:true-false|' +
-                'frodo:f:false-true|' +
-                'misko:m:true-false|' +
-                'shyam:s:false-true|');
+        toBe('misko:m:true-false|' +
+                'shyam:s:false-true|' +
+                'doug:d:true-false|' +
+                'frodo:f:false-true|');
 
     delete scope.items.frodo;
     delete scope.items.shyam;
     scope.$digest();
-    expect(element.text()).toBe('doug:d:true-false|misko:m:false-true|');
+    expect(element.text()).toBe('misko:m:true-false|doug:d:false-true|');
   });
 
 
@@ -700,11 +700,12 @@ describe('ngRepeat', function() {
             '</ul>')(scope);
     scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
     scope.$digest();
+
     expect(element.text()).
-        toEqual('doug:d:true-false-false|' +
-        'frodo:f:false-true-false|' +
-        'misko:m:false-true-false|' +
-        'shyam:s:false-false-true|');
+        toEqual('misko:m:true-false-false|' +
+        'shyam:s:false-true-false|' +
+        'doug:d:false-true-false|' +
+        'frodo:f:false-false-true|');
   });
 
 
@@ -716,10 +717,10 @@ describe('ngRepeat', function() {
     scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
     scope.$digest();
     expect(element.text()).
-        toEqual('doug:d:true-false|' +
-        'frodo:f:false-true|' +
-        'misko:m:true-false|' +
-        'shyam:s:false-true|');
+        toEqual('misko:m:true-false|' +
+        'shyam:s:false-true|' +
+        'doug:d:true-false|' +
+        'frodo:f:false-true|');
   });
 
 
