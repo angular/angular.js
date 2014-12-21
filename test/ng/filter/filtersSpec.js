@@ -293,6 +293,10 @@ describe('filters', function() {
 
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+
+      expect(date(earlyDate, "MMMM dd, G y")).
+                      toEqual('September 03,  1');
+
     });
 
     it('should accept negative numbers as strings', function() {
