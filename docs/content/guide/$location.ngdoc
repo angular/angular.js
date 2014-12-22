@@ -358,7 +358,7 @@ legacy browsers and hashbang links in modern browser:
 
 Here you can see two `$location` instances, both in **Html5 mode**, but on different browsers, so
 that you can see the differences. These `$location` services are connected to a fake browsers. Each
-input represents address bar of the browser.
+input represents the address bar of the browser.
 
 Note that when you type hashbang url into first browser (or vice versa) it doesn't rewrite /
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
