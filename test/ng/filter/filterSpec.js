@@ -472,6 +472,29 @@ describe('Filter: filter', function() {
     });
 
 
+    it('should consider custom `toString()` in non-strict comparison', function() {
+      var obj = new Date(1970, 0);
+      var items = [{test: obj}];
+      expect(filter(items, '1970').length).toBe(1);
+      expect(filter(items, 1970).length).toBe(1);
+
+      obj = {};
+      obj.toString = function() { return 'custom'; };
+      items = [{test: obj}];
+      expect(filter(items, 'custom').length).toBe(1);
+    });
+
+
+    it('should not throw on missing `toString()` in non-strict comparison', function() {
+      var obj = Object.create(null);
+      var items = [{test: obj}];
+      expect(function() {
+        filter(items, 'foo');
+      }).not.toThrow();
+      expect(filter(items, 'foo').length).toBe(0);
+    });
+
+
     it('as equality when true', function() {
       var items = ['misko', 'adam', 'adamson'];
       var expr = 'adam';
