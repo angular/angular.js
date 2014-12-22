@@ -390,7 +390,7 @@ of `$sce.trustAsHtml(string)`. When bound to a plain string, the string is sanit
 module is not loaded) and the bound expression evaluates to a value that is not trusted an
 exception is thrown.
 
-When using this directive you can either include `ngSanitize` in your module's dependencis (See the
+When using this directive you can either include `ngSanitize` in your module's dependencies (See the
 example at the {@link ngBindHtml} reference) or use the {@link $sce} service to set the value as
 trusted.
 
@@ -647,10 +647,10 @@ freely available to JavaScript code (as before).
 
 Angular expressions execute in a limited context. They do not have
 direct access to the global scope, `window`, `document` or the Function
-constructor. However, they have direct access to names/properties on
-the scope chain. It has been a long standing best practice to keep
+constructor. However, they have direct access to names/properties on
+the scope chain. It has been a long standing best practice to keep
 sensitive APIs outside of the scope chain (in a closure or your
-controller.) That's easier said that done for two reasons:
+controller.) That's easier said than done for two reasons:
 
 1. JavaScript does not have a notion of private properties so if you need
 someone on the scope chain for JavaScript use, you also expose it to
