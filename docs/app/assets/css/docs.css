@@ -415,7 +415,7 @@ iframe.example {
 
 .main-body-grid .side-navigation {
   position:relative;
-  padding-bottom:120px;
+  padding-bottom:50px;
 }
 
 .main-body-grid .side-navigation.ng-hide {
@@ -656,14 +656,14 @@ ul.events > li {
   }
   .toc-close {
     position: absolute;
-    bottom: -50px;
+    bottom: 5px;
     left: 50%;
     margin-left: -50%;
     text-align: center;
     padding: 5px;
     background: #eee;
     border-radius: 5px;
-    width: 90%;
+    width: 100%;
     border:1px solid #ddd;
     box-shadow:0 0 10px #bbb;
   }
