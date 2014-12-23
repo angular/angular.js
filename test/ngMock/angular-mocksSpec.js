@@ -592,22 +592,42 @@ describe('ngMock', function() {
     }));
 
 
-    it('should log exceptions', module(function($exceptionHandlerProvider) {
-      $exceptionHandlerProvider.mode('log');
-      var $exceptionHandler = $exceptionHandlerProvider.$get();
-      $exceptionHandler('MyError');
-      expect($exceptionHandler.errors).toEqual(['MyError']);
+    it('should log exceptions', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+      inject(function($exceptionHandler) {
+        $exceptionHandler('MyError');
+        expect($exceptionHandler.errors).toEqual(['MyError']);
 
-      $exceptionHandler('MyError', 'comment');
-      expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
-    }));
+        $exceptionHandler('MyError', 'comment');
+        expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
+      });
+    });
 
+    it('should log and rethrow exceptions', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('rethrow');
+      });
+      inject(function($exceptionHandler) {
+        expect(function() { $exceptionHandler('MyError'); }).toThrow('MyError');
+        expect($exceptionHandler.errors).toEqual(['MyError']);
 
-    it('should throw on wrong argument', module(function($exceptionHandlerProvider) {
-      expect(function() {
-        $exceptionHandlerProvider.mode('XXX');
-      }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
-    }));
+        expect(function() { $exceptionHandler('MyError', 'comment'); }).toThrow('MyError');
+        expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
+      });
+    });
+
+    it('should throw on wrong argument', function() {
+      module(function($exceptionHandlerProvider) {
+        expect(function() {
+          $exceptionHandlerProvider.mode('XXX');
+        }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
+      });
+
+      inject(); // Trigger the tests in `module`
+    });
+
   });
 
 
