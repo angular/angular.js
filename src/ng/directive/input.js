@@ -881,6 +881,62 @@ var inputType = {
    */
   'radio': radioInputType,
 
+  /**
+   * @ngdoc input
+   * @name input[range]
+   *
+   * @description
+   * Native range input with number validation and transformation. Sets the `number` validation
+   * to always have a valid number.
+   *
+   * @param {string} ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} min Sets the `min` validation to ensure that the value entered is greater the `min`.
+   * @param {string=} max Sets the `max` validation to ensure that the value entered is lesser than `max`.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+   *    patterns defined as scope expressions.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
+   *
+   * @example
+      <example name="range-input-directive" module="rangeExample">
+        <file name="index.html">
+         <script>
+           angular.module('rangeExample', [])
+             .controller('ExampleController', ['$scope', function($scope) {
+               $scope.value = 50;
+             }]);
+         </script>
+         <form name="myForm" ng-controller="ExampleController">
+           Number: <input type="range" name="input" ng-model="value"
+                          min="0" max="100">
+           <tt>value = {{value}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+          </form>
+        </file>
+        <file name="protractor.js" type="protractor">
+          var value = element(by.binding('value'));
+          var valid = element(by.binding('myForm.input.$valid'));
+          var input = element(by.model('value'));
+
+          it('should initialize to model', function() {
+            expect(value.getText()).toContain('50');
+            expect(valid.getText()).toContain('true');
+          });
+
+          it('should respect the max', function() {
+            input.clear();
+            input.sendKeys('123');
+            expect(value.getText()).toEqual('value = 100');
+            expect(valid.getText()).toContain('true');
+          });
+        </file>
+      </example>
+   */
+  'range': numberInputType,
 
   /**
    * @ngdoc input

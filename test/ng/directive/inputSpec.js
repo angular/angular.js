@@ -3130,6 +3130,662 @@ describe('input', function() {
     });
   });
 
+  describe('range', function() {
+
+    it('should reset the model if view is invalid', function() {
+      compileInput('<input type="range" ng-model="age"/>');
+
+      scope.$apply('age = 100');
+      expect(inputElm.val()).toBe('100');
+
+      try {
+        // to allow non-number values, we have to change type so that
+        // the browser which have number validation will not interfere with
+        // this test. IE8 won't allow it hence the catch.
+        inputElm[0].setAttribute('type', 'text');
+      } catch (e) {}
+
+      changeInputValueTo('100X');
+      expect(inputElm.val()).toBe('100X');
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should render as 50 if null', function() {
+      compileInput('<input type="range" ng-model="age" />');
+
+      scope.$apply('age = null');
+
+      expect(scope.age).toBeNull();
+      expect(inputElm.val()).toEqual('50');
+    });
+
+    it('should come up as 50 when no value specified', function() {
+      compileInput('<input type="range" ng-model="age" />');
+
+      expect(inputElm.val()).toBe('50');
+
+      scope.$apply('age = null');
+
+      expect(scope.age).toBeNull();
+      expect(inputElm.val()).toBe('50');
+    });
+
+
+    it('should parse empty string to 50', function() {
+      compileInput('<input type="range" ng-model="age" />');
+
+      scope.$apply('age = 10');
+
+      changeInputValueTo('');
+      expect(scope.age).toBe(50);
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should only invalidate the model if suffering from bad input when the data is parsed', function() {
+      compileInput('<input type="range" ng-model="age" />', {
+        valid: false,
+        badInput: true
+      });
+
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('this-will-fail-because-of-the-badInput-flag');
+
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should validate with undefined viewValue when $validate() called', function() {
+      compileInput('<input type="range" name="alias" ng-model="value" />');
+
+      scope.form.alias.$validate();
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.alias.$error.number).toBeUndefined();
+    });
+
+
+    it('should throw if the model value is not a number', function() {
+      expect(function() {
+        scope.value = 'one';
+        compileInput('<input type="range" ng-model="value" />');
+      }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
+    });
+
+
+    describe('min', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="range" ng-model="value" name="alias" min="10" />');
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(10);
+        expect(scope.form.alias.$error.min).toBeFalsy();
+
+        changeInputValueTo('100');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(100);
+        expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+
+      it('should validate even if min value changes on-the-fly', function() {
+        scope.min = 10;
+        compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+        changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        scope.min = 20;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.min = '20';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+    describe('ngMin', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="range" ng-model="value" name="alias" ng-min="50" />');
+
+        changeInputValueTo('1');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+
+        changeInputValueTo('100');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(100);
+        expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+
+      it('should validate even if the ngMin value changes on-the-fly', function() {
+        scope.min = 10;
+        compileInput('<input type="range" ng-model="value" name="alias" ng-min="min" />');
+
+        changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        scope.min = 20;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.min = '20';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+
+    describe('max', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="range" ng-model="value" name="alias" max="10" />');
+
+        changeInputValueTo('20');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(10);
+        expect(scope.form.alias.$error.max).toBeFalsy();
+
+        changeInputValueTo('0');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(0);
+        expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate even if max value changes on-the-fly', function() {
+        scope.max = 10;
+        compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 0;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.max = '4';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+    describe('ngMax', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="range" ng-model="value" name="alias" ng-max="5" />');
+
+        changeInputValueTo('20');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeUndefined();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+
+        changeInputValueTo('0');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(0);
+        expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate even if the ngMax value changes on-the-fly', function() {
+        scope.max = 10;
+        compileInput('<input type="range" ng-model="value" name="alias" ng-max="max" />');
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 0;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.max = '4';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+  });
+
+
+  describe('number', function() {
+
+    it('should reset the model if view is invalid', function() {
+      compileInput('<input type="number" ng-model="age"/>');
+
+      scope.$apply('age = 123');
+      expect(inputElm.val()).toBe('123');
+
+      try {
+        // to allow non-number values, we have to change type so that
+        // the browser which have number validation will not interfere with
+        // this test. IE8 won't allow it hence the catch.
+        inputElm[0].setAttribute('type', 'text');
+      } catch (e) {}
+
+      changeInputValueTo('123X');
+      expect(inputElm.val()).toBe('123X');
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should render as blank if null', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply('age = null');
+
+      expect(scope.age).toBeNull();
+      expect(inputElm.val()).toEqual('');
+    });
+
+    it('should come up blank when no value specified', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      expect(inputElm.val()).toBe('');
+
+      scope.$apply('age = null');
+
+      expect(scope.age).toBeNull();
+      expect(inputElm.val()).toBe('');
+    });
+
+
+    it('should parse empty string to null', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply('age = 10');
+
+      changeInputValueTo('');
+      expect(scope.age).toBeNull();
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should only invalidate the model if suffering from bad input when the data is parsed', function() {
+      compileInput('<input type="number" ng-model="age" />', {
+        valid: false,
+        badInput: true
+      });
+
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('this-will-fail-because-of-the-badInput-flag');
+
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should validate number if transition from bad input to empty string', function() {
+      var validity = {
+        valid: false,
+        badInput: true
+      };
+      compileInput('<input type="number" ng-model="age" />', validity);
+      changeInputValueTo('10a');
+      validity.badInput = false;
+      validity.valid = true;
+      changeInputValueTo('');
+      expect(scope.age).toBeNull();
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should validate with undefined viewValue when $validate() called', function() {
+      compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      scope.form.alias.$validate();
+
+      expect(inputElm).toBeValid();
+      expect(scope.form.alias.$error.number).toBeUndefined();
+    });
+
+
+    it('should throw if the model value is not a number', function() {
+      expect(function() {
+        scope.value = 'one';
+        compileInput('<input type="number" ng-model="value" />');
+      }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
+    });
+
+
+    describe('min', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" min="10" />');
+
+        changeInputValueTo('1');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+
+        changeInputValueTo('100');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(100);
+        expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+
+      it('should validate even if min value changes on-the-fly', function() {
+        scope.min = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+
+        changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        scope.min = 20;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.min = '20';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+    describe('ngMin', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" ng-min="50" />');
+
+        changeInputValueTo('1');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+
+        changeInputValueTo('100');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(100);
+        expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+
+      it('should validate even if the ngMin value changes on-the-fly', function() {
+        scope.min = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" ng-min="min" />');
+
+        changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        scope.min = 20;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.min = '20';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.min = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+
+    describe('max', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" max="10" />');
+
+        changeInputValueTo('20');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeUndefined();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+
+        changeInputValueTo('0');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(0);
+        expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate even if max value changes on-the-fly', function() {
+        scope.max = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 0;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.max = '4';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+    describe('ngMax', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" ng-max="5" />');
+
+        changeInputValueTo('20');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeUndefined();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+
+        changeInputValueTo('0');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(0);
+        expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate even if the ngMax value changes on-the-fly', function() {
+        scope.max = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" ng-max="max" />');
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 0;
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = null;
+        scope.$digest();
+        expect(inputElm).toBeValid();
+
+        scope.max = '4';
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+
+        scope.max = 'abc';
+        scope.$digest();
+        expect(inputElm).toBeValid();
+      });
+    });
+
+
+    describe('required', function() {
+
+      it('should be valid even if value is 0', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" required />');
+
+        changeInputValueTo('0');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(0);
+        expect(scope.form.alias.$error.required).toBeFalsy();
+      });
+
+      it('should be valid even if value 0 is set from model', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" required />');
+
+        scope.$apply('value = 0');
+
+        expect(inputElm).toBeValid();
+        expect(inputElm.val()).toBe('0');
+        expect(scope.form.alias.$error.required).toBeFalsy();
+      });
+
+      it('should register required on non boolean elements', function() {
+        compileInput('<div ng-model="value" name="alias" required>');
+
+        scope.$apply("value = ''");
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.required).toBeTruthy();
+      });
+
+      it('should not invalidate number if ng-required=false and viewValue has not been committed', function() {
+        compileInput('<input type="number" ng-model="value" name="alias" ng-required="required">');
+
+        scope.$apply("required = false");
+
+        expect(inputElm).toBeValid();
+      });
+    });
+
+    describe('minlength', function() {
+
+      it('should invalidate values that are shorter than the given minlength', function() {
+        compileInput('<input type="number" ng-model="value" ng-minlength="3" />');
+
+        changeInputValueTo('12');
+        expect(inputElm).toBeInvalid();
+
+        changeInputValueTo('123');
+        expect(inputElm).toBeValid();
+      });
+
+      it('should listen on ng-minlength when minlength is observed', function() {
+        var value = 0;
+        compileInput('<input type="number" ng-model="value" ng-minlength="min" attr-capture />');
+        attrs.$observe('minlength', function(v) {
+          value = int(attrs.minlength);
+        });
+
+        scope.$apply(function() {
+          scope.min = 5;
+        });
+
+        expect(value).toBe(5);
+      });
+
+      it('should observe the standard minlength attribute and register it as a validator on the model', function() {
+        compileInput('<input type="number" name="input" ng-model="value" minlength="{{ min }}" />');
+        scope.$apply(function() {
+          scope.min = 10;
+        });
+
+        changeInputValueTo('12345');
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.input.$error.minlength).toBe(true);
+
+        scope.$apply(function() {
+          scope.min = 5;
+        });
+
+        expect(inputElm).toBeValid();
+        expect(scope.form.input.$error.minlength).not.toBe(true);
+      });
+    });
+
+
+    describe('maxlength', function() {
+
+      it('should invalidate values that are longer than the given maxlength', function() {
+        compileInput('<input type="number" ng-model="value" ng-maxlength="5" />');
+
+        changeInputValueTo('12345678');
+        expect(inputElm).toBeInvalid();
+
+        changeInputValueTo('123');
+        expect(inputElm).toBeValid();
+      });
+
+      it('should listen on ng-maxlength when maxlength is observed', function() {
+        var value = 0;
+        compileInput('<input type="number" ng-model="value" ng-maxlength="max" attr-capture />');
+        attrs.$observe('maxlength', function(v) {
+          value = int(attrs.maxlength);
+        });
+
+        scope.$apply(function() {
+          scope.max = 10;
+        });
+
+        expect(value).toBe(10);
+      });
+
+      it('should observe the standard maxlength attribute and register it as a validator on the model', function() {
+        compileInput('<input type="number" name="input" ng-model="value" maxlength="{{ max }}" />');
+        scope.$apply(function() {
+          scope.max = 1;
+        });
+
+        changeInputValueTo('12345');
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.input.$error.maxlength).toBe(true);
+
+        scope.$apply(function() {
+          scope.max = 6;
+        });
+
+        expect(inputElm).toBeValid();
+        expect(scope.form.input.$error.maxlength).not.toBe(true);
+      });
+    });
+  });
+
   describe('email', function() {
 
     it('should validate e-mail', function() {
