@@ -339,3 +339,67 @@ window.dump = function() {
     return angular.mock.dump(arg);
   }));
 };
+
+function getInputCompileHelper(currentSpec) {
+
+  var helper = {};
+
+  module(function($compileProvider) {
+    $compileProvider.directive('attrCapture', function() {
+      return function(scope, element, $attrs) {
+        helper.attrs = $attrs;
+      };
+    });
+  });
+
+  inject(function($compile, $rootScope, $sniffer) {
+
+    helper.compileInput = function(inputHtml, mockValidity, scope) {
+
+      scope = helper.scope = scope || $rootScope;
+
+      // Create the input element and dealoc when done
+      helper.inputElm = jqLite(inputHtml);
+
+      // Set up mock validation if necessary
+      if (isObject(mockValidity)) {
+        VALIDITY_STATE_PROPERTY = 'ngMockValidity';
+        helper.inputElm.prop(VALIDITY_STATE_PROPERTY, mockValidity);
+        currentSpec.after(function() {
+          VALIDITY_STATE_PROPERTY = 'validity';
+        });
+      }
+
+      // Create the form element and dealoc when done
+      helper.formElm = jqLite('<form name="form"></form>');
+      helper.formElm.append(helper.inputElm);
+
+      // Compile the lot and return the input element
+      $compile(helper.formElm)(scope);
+
+      spyOn(scope.form, '$addControl').andCallThrough();
+      spyOn(scope.form, '$$renameControl').andCallThrough();
+
+      scope.$digest();
+
+      return helper.inputElm;
+    };
+
+    helper.changeInputValueTo = function(value) {
+      helper.inputElm.val(value);
+      browserTrigger(helper.inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
+    };
+
+    helper.changeGivenInputTo = function(inputElm, value) {
+      inputElm.val(value);
+      browserTrigger(inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
+    };
+
+    helper.dealoc = function() {
+      dealoc(helper.inputElm);
+      dealoc(helper.formElm);
+    };
+  });
+
+  return helper;
+}
