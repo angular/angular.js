@@ -751,9 +751,12 @@ own behavior to it.
     angular.module('docsIsoFnBindExample', [])
       .controller('Controller', ['$scope', '$timeout', function($scope, $timeout) {
         $scope.name = 'Tobias';
-        $scope.hideDialog = function () {
+        $scope.message = '';
+        $scope.hideDialog = function (message) {
+          $scope.message = message;
           $scope.dialogIsHidden = true;
           $timeout(function () {
+            $scope.message = '';
             $scope.dialogIsHidden = false;
           }, 2000);
         };
@@ -771,14 +774,15 @@ own behavior to it.
   </file>
   <file name="index.html">
     <div ng-controller="Controller">
-      <my-dialog ng-hide="dialogIsHidden" on-close="hideDialog()">
+      {{message}}
+      <my-dialog ng-hide="dialogIsHidden" on-close="hideDialog(message)">
         Check out the contents, {{name}}!
       </my-dialog>
     </div>
   </file>
   <file name="my-dialog-close.html">
     <div class="alert">
-      <a href class="close" ng-click="close()">&times;</a>
+      <a href class="close" ng-click="close({message: 'closing for now'})">&times;</a>
       <div ng-transclude></div>
     </div>
   </file>
@@ -795,8 +799,14 @@ callback functions to directive behaviors.
 
 When the user clicks the `x` in the dialog, the directive's `close` function is called, thanks to
 `ng-click.`  This call to `close` on the isolated scope actually evaluates the expression
-`hideDialog()` in the context of the original scope, thus running `Controller`'s `hideDialog`
+`hideDialog(message)` in the context of the original scope, thus running `Controller`'s `hideDialog`
 function.
+
+Often it's desirable to pass data from the isolate scope via an expression to the
+parent scope, this can be done by passing a map of local variable names and values into the expression
+wrapper fn. For example, the hideDialog function takes a message to display when the dialog is hidden.
+This is specified in the directive by calling `close({message: 'closing for now'})`. Then the local
+variable `message` will be available within the `on-close` expression.
 
 <div class="alert alert-success">
 **Best Practice:** use `&attr` in the `scope` option when you want your directive
