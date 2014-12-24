@@ -97,4 +97,11 @@ describe('minErr', function() {
     var typeMinErr = minErr('type', TypeError);
     expect(typeMinErr('acode', 'aproblem') instanceof TypeError).toBe(true);
   });
+
+
+  it('should include a properly formatted error reference URL in the message', function() {
+    // to avoid maintaining the root URL in two locations, we only validate the parameters
+    expect(testError('acode', 'aproblem', 'a', 'b', 'value with space').message)
+      .toMatch(/^[\s\S]*\?p0=a&p1=b&p2=value%20with%20space$/);
+  });
 });
