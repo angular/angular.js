@@ -10,8 +10,11 @@ h1 {
 }
 
 h2 {
+  border-top: 1px solid #eee;
   font-size: 185%;
   font-weight: 400;
+  margin-top: 30px;
+  padding-top: 30px;
 }
 
 md-sidenav.md-locked-open[flex="20"] {
