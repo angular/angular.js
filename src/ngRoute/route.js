@@ -202,7 +202,7 @@ function $RouteProvider() {
        path = path
            .replace(/([().])/g, '\\$1')
            .replace(/(\/)?(\\)?:(\w+)([\?\*])?/g, function(_, slash, screening, key, option) {
-               if (screening==='\\'){
+               if (screening === '\\') {
                    return _.replace(/\\/g, '');
                }
 
