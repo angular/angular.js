@@ -197,14 +197,14 @@ Then Angular applies configuration blocks in the same order they were registered
 ## Run Blocks
 
 Run blocks are the closest thing in Angular to the main method. A run block is the code which
-needs to run to kickstart the application. It is executed after all of the service have been
+needs to run to kickstart the application. It is executed after all of the services have been
 configured and the injector has been created. Run blocks typically contain code which is hard
 to unit-test, and for this reason should be declared in isolated modules, so that they can be
 ignored in the unit-tests.
 
 ## Dependencies
 
-Modules can list other modules as their dependencies. Depending on a module implies that required
+Modules can list other modules as their dependencies. Depending on a module implies that the required
 module needs to be loaded before the requiring module is loaded. In other words the configuration
 blocks of the required modules execute before the configuration blocks of the requiring module.
 The same is true for the run blocks. Each module can only be loaded once, even if multiple other
