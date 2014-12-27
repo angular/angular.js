@@ -117,6 +117,106 @@ describe('$log', function() {
     );
   });
 
+  describe("$log.log", function() {
+
+    beforeEach(module(function($logProvider) {
+      $logProvider.logEnabled(false);
+    }));
+
+    it("should skip log output if disabled", inject(function() {
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('warn;info;error;debug;');
+      }
+    ));
+
+  });
+
+  describe("$log.warn", function() {
+
+    beforeEach(module(function($logProvider) {
+      $logProvider.warnEnabled(false);
+    }));
+
+    it("should skip warn output if disabled", inject(function() {
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;info;error;debug;');
+      }
+    ));
+
+  });
+
+  describe("$log.info", function() {
+
+    beforeEach(module(function($logProvider) {
+      $logProvider.infoEnabled(false);
+    }));
+
+    it("should skip info output if disabled", inject(function() {
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;warn;error;debug;');
+      }
+    ));
+
+  });
+
+  describe("$log.error", function() {
+
+    beforeEach(module(function($logProvider) {
+      $logProvider.errorEnabled(false);
+    }));
+
+    it("should skip error output if disabled", inject(function() {
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error,
+                           debug: debug};
+      },
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;warn;info;debug;');
+      }
+    ));
+
+  });
+
   describe("$log.debug", function() {
 
     beforeEach(initService(false));
