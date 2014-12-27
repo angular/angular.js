@@ -21,7 +21,7 @@ multiple views by adding routing, using an Angular module called 'ngRoute'.
 The routing functionality added by this step is provided by angular in the `ngRoute` module, which
 is distributed separately from the core Angular framework.
 
-We are using [Bower][bower] to install client side dependencies.  This step updates the
+We are using [Bower][bower] to install client-side dependencies.  This step updates the
 `bower.json` configuration file to include the new dependency:
 
 ```json
@@ -46,7 +46,7 @@ The new dependency `"angular-route": "~1.3.0"` tells bower to install a version 
 angular-route component that is compatible with version 1.3.x.  We must tell bower to download
 and install this dependency.
 
-If you have bower installed globally then you can run `bower install` but for this project we have
+If you have bower installed globally, then you can run `bower install` but for this project, we have
 preconfigured npm to run bower install for us:
 
 ```
@@ -70,7 +70,7 @@ the current "route" — the view that is currently displayed to the user.
 Application routes in Angular are declared via the {@link ngRoute.$routeProvider $routeProvider},
 which is the provider of the {@link ngRoute.$route $route service}. This service makes it easy to
 wire together controllers, view templates, and the current URL location in the browser. Using this
-feature we can implement [deep linking](http://en.wikipedia.org/wiki/Deep_linking), which lets us
+feature, we can implement [deep linking](http://en.wikipedia.org/wiki/Deep_linking), which lets us
 utilize the browser's history (back and forward navigation) and bookmarks.
 
 
@@ -81,7 +81,7 @@ AngularJS, so it's important for you to understand a thing or two about how it w
 
 When the application bootstraps, Angular creates an injector that will be used to find and inject all
 of the services that are required by your app. The injector itself doesn't know anything about what
-`$http` or `$route` services do, in fact it doesn't even know about the existence of these services
+`$http` or `$route` services do. In fact, the injector doesn't even know about the existence of these services
 unless it is configured with proper module definitions.
 
 The injector only carries out the following steps :
@@ -295,7 +295,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
 
 Again, note that we created a new module called `phonecatControllers`. For small AngularJS
 applications, it's common to create just one module for all of your controllers if there are just a
-few. As your application grows it is quite common to refactor your code into additional modules.
+few. As your application grows, it is quite common to refactor your code into additional modules.
 For larger apps, you will probably want to create separate modules for each major feature of
 your app.
 
@@ -349,7 +349,7 @@ the same binding into the `phone-list.html` template, the binding will work as e
 
 <div style="display: none">
 * In `PhoneCatCtrl`, create a new model called "`hero`" with `this.hero = 'Zoro'`. In
-`PhoneListCtrl` let's shadow it with `this.hero = 'Batman'`, and in `PhoneDetailCtrl` we'll use
+`PhoneListCtrl`, let's shadow it with `this.hero = 'Batman'`. In `PhoneDetailCtrl`, we'll use
 `this.hero = "Captain Proton"`. Then add the `<p>hero = {{hero}}</p>` to all three of our templates
 (`index.html`, `phone-list.html`, and `phone-detail.html`). Open the app and you'll see scope
 inheritance and model property shadowing do some wonders.
