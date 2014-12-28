@@ -224,7 +224,7 @@ describe('validators', function() {
       var value = 0;
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-minlength="min" attr-capture />');
       helper.attrs.$observe('minlength', function(v) {
-        value = int(helper.attrs.minlength);
+        value = toInt(helper.attrs.minlength);
       });
 
       $rootScope.$apply('min = 5');
@@ -318,7 +318,7 @@ describe('validators', function() {
       var value = 0;
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="max" attr-capture />');
       helper.attrs.$observe('maxlength', function(v) {
-        value = int(helper.attrs.maxlength);
+        value = toInt(helper.attrs.maxlength);
       });
 
       $rootScope.$apply('max = 10');

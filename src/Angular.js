@@ -28,7 +28,7 @@
   nextUid: true,
   setHashKey: true,
   extend: true,
-  int: true,
+  toInt: true,
   inherit: true,
   noop: true,
   identity: true,
@@ -357,7 +357,7 @@ function extend(dst) {
   return dst;
 }
 
-function int(str) {
+function toInt(str) {
   return parseInt(str, 10);
 }
 

@@ -2169,7 +2169,7 @@ describe('input', function() {
         var value = 0;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" ng-minlength="min" attr-capture />');
         helper.attrs.$observe('minlength', function(v) {
-          value = int(helper.attrs.minlength);
+          value = toInt(helper.attrs.minlength);
         });
 
         $rootScope.$apply(function() {
@@ -2215,7 +2215,7 @@ describe('input', function() {
         var value = 0;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" ng-maxlength="max" attr-capture />');
         helper.attrs.$observe('maxlength', function(v) {
-          value = int(helper.attrs.maxlength);
+          value = toInt(helper.attrs.maxlength);
         });
 
         $rootScope.$apply(function() {

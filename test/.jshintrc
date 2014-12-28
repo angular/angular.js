@@ -31,7 +31,7 @@
     "nextUid": false,
     "setHashKey": false,
     "extend": false,
-    "int": false,
+    "toInt": false,
     "inherit": false,
     "noop": false,
     "identity": false,
