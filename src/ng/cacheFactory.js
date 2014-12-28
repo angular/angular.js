@@ -159,13 +159,13 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         put: function(key, value) {
+          if (isUndefined(value)) return;
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
             refresh(lruEntry);
           }
 
-          if (isUndefined(value)) return;
           if (!(key in data)) size++;
           data[key] = value;
 
