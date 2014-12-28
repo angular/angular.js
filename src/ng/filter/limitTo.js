@@ -92,7 +92,7 @@ function limitToFilter() {
     if (Math.abs(Number(limit)) === Infinity) {
       limit = Number(limit);
     } else {
-      limit = int(limit);
+      limit = toInt(limit);
     }
     if (isNaN(limit)) return input;
 
