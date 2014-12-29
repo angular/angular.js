@@ -716,9 +716,9 @@ ASTCompiler.prototype = {
       nextId: 0,
       filters: {},
       expensiveChecks: expensiveChecks,
-      closure: {vars: ['clean'], fns: {}},
       fn: {vars: [], body: [], own: {}},
-      assign: {vars: [], body: [], own: {}}
+      assign: {vars: [], body: [], own: {}},
+      inputs: []
     };
     var lastExpression;
     var i;
@@ -728,22 +728,19 @@ ASTCompiler.prototype = {
     var toWatch = useInputs(ast.body) ? ast.body[ast.body.length - 1].expression.toWatch : [];
     forEach(toWatch, function(watch, key) {
       var fnKey = 'fn' + key;
-      self.state.computing = 'closure';
-      watch.fixedId = self.nextId();
-      watch.skipClean = true;
-      self.state.closure.fns[fnKey] = self.state[fnKey] = {vars: [], body: [], own: {}};
+      self.state[fnKey] = {vars: [], body: [], own: {}};
       self.state.computing = fnKey;
-      self.recurse(watch);
-      self.assign('clean', true);
-      self.return(watch.fixedId);
-      watch.skipClean = false;
+      var intoId = self.nextId();
+      self.recurse(watch, intoId);
+      self.return(intoId);
+      self.state.inputs.push(fnKey);
+      watch.watchId = key;
     });
     this.state.computing = 'fn';
     for (i = 0; i < ast.body.length; ++i) {
       if (lastExpression) this.current().body.push(lastExpression, ';');
       this.recurse(ast.body[i].expression, undefined, undefined, function(expr) { lastExpression = expr; });
     }
-    this.assign('clean', false);
     if (lastExpression) this.return(lastExpression);
     var extra = '';
     if (ast.body.length === 1 && isAssignable(ast.body[0].expression)) {
@@ -757,20 +754,17 @@ ASTCompiler.prototype = {
     }
     var fnString =
       // The build and minification steps remove the string "use strict" from the code, but this is done using a regex.
-      // This is a woraround for this until we do a better job at only removing the prefix only when we should.
+      // This is a workaround for this until we do a better job at only removing the prefix only when we should.
       '"' + this.USE + ' ' + this.STRICT + '";\n' +
       this.filterPrefix() +
-      'return function(){' +
-      this.varsPrefix('closure') +
-      'var fn = function(s,l){' +
+      'var fn = function(s,l,i){' +
       this.varsPrefix('fn') +
       this.body('fn') +
       '};' +
       extra +
       this.watchFns() +
       'fn.literal=literal;fn.constant=constant;' +
-      'return fn;' +
-      '};';
+      'return fn;';
 
     var isLiteral = ast.body.length === 1 && (
           ast.body[0].expression.type === AST.Literal ||
@@ -810,10 +804,9 @@ ASTCompiler.prototype = {
 
   watchFns: function() {
     var result = [];
-    var fns = [];
+    var fns = this.state.inputs;
     var self = this;
-    forEach(this.state.closure.fns, function(_, name) {
-      fns.push(name);
+    forEach(fns, function(name) {
       result.push(
         'var ' + name + ' = function(s,l){' +
         self.varsPrefix(name) +
@@ -877,24 +870,24 @@ ASTCompiler.prototype = {
       break;
     case AST.LogicalExpression:
       intoId = intoId || this.nextId();
-      this.if(ast.fixedId && !ast.skipClean ? '!clean' : true, function() {
+      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
         self.recurse(ast.left, intoId);
         self.if(ast.operator === '&&' ? intoId : self.not(intoId), self.lazyRecurse(ast.right, intoId));
         recursionFn(intoId);
         self.assign(ast.fixedId, intoId);
       }, function() {
-        self.assign(intoId, ast.fixedId);
+        self.assign(intoId, self.computedMember('i', ast.watchId));
       });
       break;
     case AST.ConditionalExpression:
       intoId = intoId || this.nextId();
-      this.if(ast.fixedId && !ast.skipClean ? '!clean' : true, function() {
+      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
         self.recurse(ast.test, intoId);
         self.if(intoId, self.lazyRecurse(ast.alternate, intoId), self.lazyRecurse(ast.consequent, intoId));
         recursionFn(intoId);
         self.assign(ast.fixedId, intoId);
       }, function() {
-        self.assign(intoId, ast.fixedId);
+        self.assign(intoId, self.computedMember('i', ast.watchId));
       });
       break;
     case AST.Identifier:
@@ -904,7 +897,7 @@ ASTCompiler.prototype = {
         nameId.computed = false;
         nameId.name = ast.name;
       }
-      this.if(ast.fixedId && !ast.skipClean ? '!clean' : true, function() {
+      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
         ensureSafeMemberName(ast.name);
         self.if(self.not(self.getHasOwnProperty('l', ast.name)),
           function() {
@@ -924,13 +917,13 @@ ASTCompiler.prototype = {
         recursionFn(intoId);
         self.assign(ast.fixedId, intoId);
       }, function() {
-        self.assign(intoId, ast.fixedId);
+        self.assign(intoId, self.computedMember('i', ast.watchId));
       });
       break;
     case AST.MemberExpression:
       left = nameId && (nameId.context = this.nextId()) || this.nextId();
       intoId = intoId || this.nextId();
-      this.if(ast.fixedId && !ast.skipClean ? '!clean' : true, function() {
+      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
         self.recurse(ast.object, left, undefined, function() {
           self.if(self.notNull(left), function() {
             if (ast.computed) {
@@ -966,12 +959,12 @@ ASTCompiler.prototype = {
         }, !!create);
         self.assign(ast.fixedId, intoId);
       }, function() {
-        self.assign(intoId, ast.fixedId);
+        self.assign(intoId, self.computedMember('i', ast.watchId));
       });
       break;
     case AST.CallExpression:
       intoId = intoId || this.nextId();
-      this.if(ast.fixedId && !ast.skipClean ? '!clean' : true, function() {
+      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
         if (ast.filter) {
           right = self.filter(ast.callee.name);
           args = [];
@@ -1011,7 +1004,7 @@ ASTCompiler.prototype = {
         }
         self.assign(ast.fixedId, intoId);
       }, function() {
-        self.assign(intoId, ast.fixedId);
+        self.assign(intoId, self.computedMember('i', ast.watchId));
       });
       break;
     case AST.AssignmentExpression:
@@ -1261,7 +1254,7 @@ ASTInterpreter.prototype = {
           ast.body[0].expression.type === AST.ArrayExpression ||
           ast.body[0].expression.type === AST.ObjectExpression);
     fn.constant = ast.body.length === 1 && ast.body[0].expression.constant;
-    return valueFn(fn);
+    return fn;
   },
 
   recurse: function(ast, context, create) {
@@ -1691,7 +1684,7 @@ function $ParseProvider() {
             expressionFactory = parser.parse(exp);
             cache[cacheKey] = expressionFactory;
           }
-          parsedExpression = expressionFactory();
+          parsedExpression = expressionFactory;
           if (parsedExpression.constant) {
             parsedExpression.$$watchDelegate = constantWatchDelegate;
           } else if (oneTime) {
@@ -1745,7 +1738,7 @@ function $ParseProvider() {
         return scope.$watch(function expressionInputWatch(scope) {
           var newInputValue = inputExpressions(scope);
           if (!expressionInputDirtyCheck(newInputValue, oldInputValue)) {
-            lastResult = parsedExpression(scope);
+            lastResult = parsedExpression(scope, undefined, [newInputValue]);
             oldInputValue = newInputValue && getValueOf(newInputValue);
           }
           return lastResult;
@@ -1768,7 +1761,7 @@ function $ParseProvider() {
         }
 
         if (changed) {
-          lastResult = parsedExpression(scope);
+          lastResult = parsedExpression(scope, undefined, oldInputValueOfValues);
         }
 
         return lastResult;

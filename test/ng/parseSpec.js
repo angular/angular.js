@@ -2710,6 +2710,11 @@ describe('parser', function() {
       });
 
       describe('one-time binding', function() {
+        it('should always use the cache', inject(function($parse) {
+          expect($parse('foo')).toBe($parse('foo'));
+          expect($parse('::foo')).toBe($parse('::foo'));
+        }));
+
         it('should not affect calling the parseFn directly', inject(function($parse, $rootScope) {
           var fn = $parse('::foo');
           $rootScope.$watch(fn);
