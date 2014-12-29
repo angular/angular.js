@@ -33,7 +33,7 @@ templating systems.
 ### Do I need to worry about security holes in AngularJS?
 
 Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
-built-in protection from basic security holes including cross-site scripting and HTML injection
+built-in protection from basic security holes, including cross-site scripting and HTML injection
 attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
 for server-side communication.
 
@@ -52,7 +52,7 @@ Yes. See instructions in {@link downloading}.
 
 We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera 15,
 IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
-Explorer Compatibility} for more details in supporting legacy IE browsers.
+Explorer Compatibility} for more details on supporting legacy IE browsers.
 
 
 ### What's Angular's performance like?
@@ -61,8 +61,8 @@ The startup time heavily depends on your network connection, state of the cache,
 available hardware, but typically we measure bootstrap time in tens or hundreds of milliseconds.
 
 The runtime performance will vary depending on the number and complexity of bindings on the page
-as well as the speed of your backend (for apps that fetch data from the backend). Just for an
-illustration we typically build snappy apps with hundreds or thousands of active bindings.
+as well as the speed of your backend (for apps that fetch data from the backend). For an
+illustration, we typically build snappy apps with hundreds or thousands of active bindings.
 
 
 ### How big is the angular.js file that I need to include?
@@ -88,7 +88,7 @@ but we don't guarantee that.
 
 ### What is testability like in Angular?
 
-Very testable and designed this way from ground up. It has an integrated dependency injection
+Very testable and designed this way from the ground up. It has an integrated dependency injection
 framework, provides mocks for many heavy dependencies (server-side communication). See
 {@link ngMock} for details.
 
@@ -189,7 +189,7 @@ Then whenever a value on a scope changes, all `$watch`es observing that element 
 
 Sometimes, usually when you're writing a custom directive, you will have to define your own `$watch` on a scope value to make the directive react to changes.
 
-On the flip side, sometimes you change a scope value in some code but the app doesn't react to it.
+On the flip side, sometimes you change a scope value in some code, but the app doesn't react to it.
 Angular checks for scope variable changes after pieces of your code have finished running; for example, when `ng-click` calls a function on your scope, Angular will check for changes and react.
 However, some code is outside of Angular and you'll have to call `scope.$apply()` yourself to trigger the update.
 This is most commonly seen in event handlers in custom directives.
