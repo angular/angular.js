@@ -606,6 +606,11 @@ function findConstantAndWatchExpressions(ast, $filter) {
   var allConstants;
   var argsToWatch;
   switch (ast.type) {
+  case AST.Program:
+    forEach(ast.body, function(expr) {
+      findConstantAndWatchExpressions(expr.expression, $filter);
+    });
+    break;
   case AST.Literal:
     ast.constant = true;
     ast.toWatch = [];
@@ -738,17 +743,7 @@ ASTCompiler.prototype = {
       assign: {vars: [], body: [], own: {}},
       inputs: []
     };
-    var lastExpression;
-    forEach(ast.body, function(expression) {
-      findConstantAndWatchExpressions(expression.expression, self.$filter);
-    });
-    this.state.computing = 'fn';
-    this.stage = 'main';
-    forEach(ast.body, function(expression) {
-      if (lastExpression) self.current().body.push(lastExpression, ';');
-      self.recurse(expression.expression, undefined, undefined, function(expr) { lastExpression = expr; });
-    });
-    if (lastExpression) this.return(lastExpression);
+    findConstantAndWatchExpressions(ast, self.$filter);
     var extra = '';
     var assignable;
     this.stage = 'assign';
@@ -770,6 +765,9 @@ ASTCompiler.prototype = {
       self.state.inputs.push(fnKey);
       watch.watchId = key;
     });
+    this.state.computing = 'fn';
+    this.stage = 'main';
+    this.recurse(ast);
     var fnString =
       // The build and minification steps remove the string "use strict" from the code, but this is done using a regex.
       // This is a workaround for this until we do a better job at only removing the prefix only when we should.
@@ -852,6 +850,16 @@ ASTCompiler.prototype = {
     var left, right, self = this, args, expression;
     recursionFn = recursionFn || noop;
     switch (ast.type) {
+    case AST.Program:
+      forEach(ast.body, function(expression, pos) {
+        self.recurse(expression.expression, undefined, undefined, function(expr) { right = expr; });
+        if (pos !== ast.body.length - 1) {
+          self.current().body.push(right, ';');
+        } else {
+          self.return(right);
+        }
+      });
+      break;
     case AST.Literal:
       expression = this.escape(ast.value);
       this.assign(intoId, expression);
@@ -1213,9 +1221,7 @@ ASTInterpreter.prototype = {
     var ast = this.astBuilder.ast(expression);
     this.expression = expression;
     this.expensiveChecks = expensiveChecks;
-    forEach(ast.body, function(expression) {
-      findConstantAndWatchExpressions(expression.expression, self.$filter);
-    });
+    findConstantAndWatchExpressions(ast, self.$filter);
     var expressions = [];
     forEach(ast.body, function(expression) {
       expressions.push(self.recurse(expression.expression));
@@ -1229,6 +1235,13 @@ ASTInterpreter.prototype = {
                });
                return lastValue;
              };
+    var assignable;
+    if ((assignable = assignableAST(ast))) {
+      var assign = this.recurse(assignable);
+      fn.assign = function(scope, value, locals) {
+        return assign(scope, locals, value);
+      };
+    }
     var toWatch = getInputs(ast.body);
     if (toWatch) {
       var inputs = [];
@@ -1236,13 +1249,6 @@ ASTInterpreter.prototype = {
         inputs.push(self.recurse(watch));
       });
       fn.inputs = inputs;
-    }
-    var assignable;
-    if ((assignable = assignableAST(ast))) {
-      var assign = this.recurse(assignable);
-      fn.assign = function(scope, value, locals) {
-        return assign(scope, locals, value);
-      };
     }
     fn.literal = isLiteral(ast);
     fn.constant = isConstant(ast);
