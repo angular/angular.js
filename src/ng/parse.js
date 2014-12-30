@@ -743,6 +743,7 @@ ASTCompiler.prototype = {
       findConstantAndWatchExpressions(expression.expression, self.$filter);
     });
     this.state.computing = 'fn';
+    this.stage = 'main';
     forEach(ast.body, function(expression) {
       if (lastExpression) self.current().body.push(lastExpression, ';');
       self.recurse(expression.expression, undefined, undefined, function(expr) { lastExpression = expr; });
@@ -750,6 +751,7 @@ ASTCompiler.prototype = {
     if (lastExpression) this.return(lastExpression);
     var extra = '';
     var assignable;
+    this.stage = 'assign';
     if ((assignable = assignableAST(ast))) {
       this.state.computing = 'assign';
       var result = this.nextId();
@@ -757,6 +759,7 @@ ASTCompiler.prototype = {
       extra = 'fn.assign=' + this.generateFunction('assign', 's,v,l');
     }
     var toWatch = getInputs(ast.body);
+    self.stage = 'inputs';
     forEach(toWatch, function(watch, key) {
       var fnKey = 'fn' + key;
       self.state[fnKey] = {vars: [], body: [], own: {}};
@@ -796,7 +799,7 @@ ASTCompiler.prototype = {
           plusFn,
           expression);
     /* jshint +W054 */
-    this.state = undefined;
+    this.state = this.stage = undefined;
     fn.literal = isLiteral(ast);
     fn.constant = isConstant(ast);
     return fn;
@@ -896,13 +899,13 @@ ASTCompiler.prototype = {
     case AST.Identifier:
       intoId = intoId || this.nextId();
       if (nameId) {
-        nameId.context = this.assign(this.nextId(), this.getHasOwnProperty('l', ast.name) + '?l:s');
+        nameId.context = self.stage === 'inputs' ? 's' : this.assign(this.nextId(), this.getHasOwnProperty('l', ast.name) + '?l:s');
         nameId.computed = false;
         nameId.name = ast.name;
       }
       this.if(isDefined(ast.watchId) ? '!i' : true, function() {
         ensureSafeMemberName(ast.name);
-        self.if(self.not(self.getHasOwnProperty('l', ast.name)),
+        self.if(self.stage === 'inputs' || self.not(self.getHasOwnProperty('l', ast.name)),
           function() {
             self.if('s', function() {
               if (create && create !== 1) {
