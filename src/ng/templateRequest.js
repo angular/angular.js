@@ -15,7 +15,7 @@ var $compileMinErr = minErr('$compile');
  * @param {string} tpl The HTTP request template URL
  * @param {boolean=} ignoreRequestError Whether or not to ignore the exception when the request fails or the template is empty
  *
- * @return {Promise} the HTTP Promise for the given.
+ * @return {Promise} a promise for the the HTTP response data of the given URL.
  *
  * @property {number} totalPendingRequests total amount of pending template requests being downloaded.
  */
