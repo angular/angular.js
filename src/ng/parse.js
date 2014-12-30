@@ -1655,7 +1655,7 @@ function $ParseProvider() {
         };
 
     return function $parse(exp, interceptorFn, expensiveChecks) {
-      var expressionFactory, parsedExpression, oneTime, cacheKey;
+      var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
         case 'string':
@@ -1663,27 +1663,26 @@ function $ParseProvider() {
           cacheKey = exp;
 
           var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
-          expressionFactory = cache[cacheKey];
+          parsedExpression = cache[cacheKey];
           if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
             oneTime = true;
             exp = exp.substring(2);
           }
 
-          if (!expressionFactory) {
+          if (!parsedExpression) {
             var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
             var lexer = new Lexer(parseOptions);
             var parser = new Parser(lexer, $filter, parseOptions);
-            expressionFactory = parser.parse(exp);
-            cache[cacheKey] = expressionFactory;
-          }
-          parsedExpression = expressionFactory;
-          if (parsedExpression.constant) {
-            parsedExpression.$$watchDelegate = constantWatchDelegate;
-          } else if (oneTime) {
-            parsedExpression.$$watchDelegate = parsedExpression.literal ?
-                oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
-          } else if (parsedExpression.inputs) {
-            parsedExpression.$$watchDelegate = inputsWatchDelegate;
+            parsedExpression = parser.parse(exp);
+            if (parsedExpression.constant) {
+              parsedExpression.$$watchDelegate = constantWatchDelegate;
+            } else if (oneTime) {
+              parsedExpression.$$watchDelegate = parsedExpression.literal ?
+                  oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
+            } else if (parsedExpression.inputs) {
+              parsedExpression.$$watchDelegate = inputsWatchDelegate;
+            }
+            cache[cacheKey] = parsedExpression;
           }
           return addInterceptor(parsedExpression, interceptorFn);
 
