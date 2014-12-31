@@ -274,63 +274,59 @@ describe('$http', function() {
   describe('the instance', function() {
     var $httpBackend, $http, $rootScope;
 
-    beforeEach(inject(['$rootScope', function($rs) {
+    beforeEach(inject(['$httpBackend', '$http', '$rootScope', function($hb, $h, $rs) {
+      $httpBackend = $hb;
+      $http = $h;
       $rootScope = $rs;
-
       spyOn($rootScope, '$apply').andCallThrough();
     }]));
 
-    beforeEach(inject(['$httpBackend', '$http', function($hb, $h) {
-      $httpBackend = $hb;
-      $http = $h;
-    }]));
-
-    it('should throw error if the request configuration is not an object', inject(function($httpBackend, $http) {
+    it('should throw error if the request configuration is not an object', function() {
       expect(function() {
           $http('/url');
       }).toThrowMinErr('$http','badreq', 'Http request configuration must be an object.  Received: /url');
-    }));
+    });
 
-    it('should send GET requests if no method specified', inject(function($httpBackend, $http) {
+    it('should send GET requests if no method specified', function() {
       $httpBackend.expect('GET', '/url').respond('');
       $http({url: '/url'});
-    }));
+    });
 
-    it('should do basic request', inject(function($httpBackend, $http) {
+    it('should do basic request', function() {
       $httpBackend.expect('GET', '/url').respond('');
       $http({url: '/url', method: 'GET'});
-    }));
+    });
 
 
-    it('should pass data if specified', inject(function($httpBackend, $http) {
+    it('should pass data if specified', function() {
       $httpBackend.expect('POST', '/url', 'some-data').respond('');
       $http({url: '/url', method: 'POST', data: 'some-data'});
-    }));
+    });
 
 
     describe('params', function() {
-      it('should do basic request with params and encode', inject(function($httpBackend, $http) {
+      it('should do basic request with params and encode', function() {
         $httpBackend.expect('GET', '/url?a%3D=%3F%26&b=2').respond('');
         $http({url: '/url', params: {'a=':'?&', b:2}, method: 'GET'});
-      }));
+      });
 
 
-      it('should merge params if url contains some already', inject(function($httpBackend, $http) {
+      it('should merge params if url contains some already', function() {
         $httpBackend.expect('GET', '/url?c=3&a=1&b=2').respond('');
         $http({url: '/url?c=3', params: {a:1, b:2}, method: 'GET'});
-      }));
+      });
 
 
-      it('should jsonify objects in params map', inject(function($httpBackend, $http) {
+      it('should jsonify objects in params map', function() {
         $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22:3%7D').respond('');
         $http({url: '/url', params: {a:1, b:{c:3}}, method: 'GET'});
-      }));
+      });
 
 
-      it('should expand arrays in params map', inject(function($httpBackend, $http) {
+      it('should expand arrays in params map', function() {
         $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
         $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
-      }));
+      });
 
 
       it('should not encode @ in url params', function() {
@@ -763,7 +759,7 @@ describe('$http', function() {
         $httpBackend.flush();
       }));
 
-      it('should send execute result if header value is function', inject(function() {
+      it('should send execute result if header value is function', function() {
         var headerConfig = {'Accept': function() { return 'Rewritten'; }};
 
         function checkHeaders(headers) {
@@ -783,7 +779,7 @@ describe('$http', function() {
         $http({url: '/url', method: 'DELETE', headers: headerConfig});
 
         $httpBackend.flush();
-      }));
+      });
 
       it('should check the cache before checking the XSRF cookie', inject(function($browser, $cacheFactory) {
         var testCache = $cacheFactory('testCache'),
