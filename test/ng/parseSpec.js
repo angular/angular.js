@@ -3127,6 +3127,23 @@ describe('parser', function() {
           scope.$digest();
           expect(called).toBe(true);
         }));
+
+        it('should continue with the evaluation of the expression without invoking computed parts',
+            inject(function($parse) {
+          var value = 'foo';
+          var spy = jasmine.createSpy();
+
+          spy.andCallFake(function() { return value; });
+          scope.foo = spy;
+          scope.$watch("foo() | uppercase");
+          scope.$digest();
+          expect(spy.calls.length).toEqual(2);
+          scope.$digest();
+          expect(spy.calls.length).toEqual(3);
+          value = 'bar';
+          scope.$digest();
+          expect(spy.calls.length).toEqual(5);
+        }));
       });
 
       describe('locals', function() {

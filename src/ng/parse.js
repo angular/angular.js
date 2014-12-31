@@ -773,7 +773,7 @@ ASTCompiler.prototype = {
       // This is a workaround for this until we do a better job at only removing the prefix only when we should.
       '"' + this.USE + ' ' + this.STRICT + '";\n' +
       this.filterPrefix() +
-      'var fn=' + this.generateFunction('fn', 's,l,i') +
+      'var fn=' + this.generateFunction('fn', 's,l,a,i') +
       extra +
       this.watchFns() +
       'return fn;';
@@ -1222,6 +1222,22 @@ ASTInterpreter.prototype = {
     this.expression = expression;
     this.expensiveChecks = expensiveChecks;
     findConstantAndWatchExpressions(ast, self.$filter);
+    var assignable;
+    var assign;
+    if ((assignable = assignableAST(ast))) {
+      assign = this.recurse(assignable);
+    }
+    var toWatch = getInputs(ast.body);
+    var inputs;
+    if (toWatch) {
+      inputs = [];
+      forEach(toWatch, function(watch, key) {
+        var input = self.recurse(watch);
+        watch.input = input;
+        inputs.push(input);
+        watch.watchId = key;
+      });
+    }
     var expressions = [];
     forEach(ast.body, function(expression) {
       expressions.push(self.recurse(expression.expression));
@@ -1235,19 +1251,12 @@ ASTInterpreter.prototype = {
                });
                return lastValue;
              };
-    var assignable;
-    if ((assignable = assignableAST(ast))) {
-      var assign = this.recurse(assignable);
+    if (assign) {
       fn.assign = function(scope, value, locals) {
         return assign(scope, locals, value);
       };
     }
-    var toWatch = getInputs(ast.body);
-    if (toWatch) {
-      var inputs = [];
-      forEach(toWatch, function(watch, key) {
-        inputs.push(self.recurse(watch));
-      });
+    if (inputs) {
       fn.inputs = inputs;
     }
     fn.literal = isLiteral(ast);
@@ -1257,9 +1266,12 @@ ASTInterpreter.prototype = {
 
   recurse: function(ast, context, create) {
     var left, right, self = this, args, expression;
+    if (ast.input) {
+      return this.inputs(ast.input, ast.watchId);
+    }
     switch (ast.type) {
     case AST.Literal:
-      return function() { return context ? {context: undefined, name: undefined, value: ast.value} : ast.value; };
+      return this.value(ast.value, context);
     case AST.UnaryExpression:
       right = this.recurse(ast.argument);
       return this['unary' + ast.operator](right, context);
@@ -1280,7 +1292,7 @@ ASTInterpreter.prototype = {
       );
     case AST.Identifier:
       ensureSafeMemberName(ast.name);
-      return function(scope, locals, assign) {
+      return function(scope, locals, assign, inputs) {
         var base = locals && locals.hasOwnProperty(ast.name) ? locals : scope;
         if (self.expensiveChecks || isPossiblyDangerousMemberName(ast.name)) {
           ensureSafeObject(value, self.expression);
@@ -1300,12 +1312,12 @@ ASTInterpreter.prototype = {
       if (!ast.computed) ensureSafeMemberName(ast.property.name, self.expression);
       if (ast.computed) right = this.recurse(ast.property);
       return ast.computed ?
-        function(scope, locals, assign) {
-          var lhs = left(scope, locals, assign);
+        function(scope, locals, assign, inputs) {
+          var lhs = left(scope, locals, assign, inputs);
           var rhs;
           var value;
           if (lhs != null) {
-            rhs = right(scope, locals, assign);
+            rhs = right(scope, locals, assign, inputs);
             ensureSafeMemberName(rhs, self.expression);
             if (create && create !== 1 && lhs && !(rhs in lhs)) {
               lhs[rhs] = {};
@@ -1319,8 +1331,8 @@ ASTInterpreter.prototype = {
             return value;
           }
         } :
-        function(scope, locals, assign) {
-          var lhs = left(scope, locals, assign);
+        function(scope, locals, assign, inputs) {
+          var lhs = left(scope, locals, assign, inputs);
           if (create && create !== 1 && lhs && !(ast.property.name in lhs)) {
             lhs[ast.property.name] = {};
           }
@@ -1342,23 +1354,23 @@ ASTInterpreter.prototype = {
       if (ast.filter) right = this.$filter(ast.callee.name);
       if (!ast.filter) right = this.recurse(ast.callee, true);
       return ast.filter ?
-        function(scope, locals, assign) {
+        function(scope, locals, assign, inputs) {
           var values = [];
           for (var i = 0; i < args.length; ++i) {
-            values.push(args[i](scope, locals, assign));
+            values.push(args[i](scope, locals, assign, inputs));
           }
-          var value = right.apply(undefined, values);
+          var value = right.apply(undefined, values, inputs);
           return context ? {context: undefined, name: undefined, value: value} : value;
         } :
-        function(scope, locals, assign) {
-          var rhs = right(scope, locals, assign);
+        function(scope, locals, assign, inputs) {
+          var rhs = right(scope, locals, assign, inputs);
           var value;
           if (rhs.value != null) {
             ensureSafeObject(rhs.context, self.expression);
             ensureSafeFunction(rhs.value, self.expression);
             var values = [];
             for (var i = 0; i < args.length; ++i) {
-              values.push(ensureSafeObject(args[i](scope, locals, assign), self.expression));
+              values.push(ensureSafeObject(args[i](scope, locals, assign, inputs), self.expression));
             }
             value = ensureSafeObject(rhs.value.apply(rhs.context, values), self.expression);
           }
@@ -1367,9 +1379,9 @@ ASTInterpreter.prototype = {
     case AST.AssignmentExpression:
       left = this.recurse(ast.left, true, 1);
       right = this.recurse(ast.right);
-      return function(scope, locals, assign) {
-        var lhs = left(scope, locals, assign);
-        var rhs = right(scope, locals, assign);
+      return function(scope, locals, assign, inputs) {
+        var lhs = left(scope, locals, assign, inputs);
+        var rhs = right(scope, locals, assign, inputs);
         ensureSafeObject(lhs.value);
         lhs.context[lhs.name] = rhs;
         return context ? {value: rhs} : rhs;
@@ -1379,10 +1391,10 @@ ASTInterpreter.prototype = {
       forEach(ast.elements, function(expr) {
         args.push(self.recurse(expr));
       });
-      return function(scope, locals, assign) {
+      return function(scope, locals, assign, inputs) {
         var value = [];
         for (var i = 0; i < args.length; ++i) {
-          value.push(args[i](scope, locals, assign));
+          value.push(args[i](scope, locals, assign, inputs));
         }
         return context ? {value: value} : value;
       };
@@ -1395,10 +1407,10 @@ ASTInterpreter.prototype = {
                    value: self.recurse(property.value)
         });
       });
-      return function(scope, locals, assign) {
+      return function(scope, locals, assign, inputs) {
         var value = {};
         for (var i = 0; i < args.length; ++i) {
-          value[args[i].key] = args[i].value(scope, locals, assign);
+          value[args[i].key] = args[i].value(scope, locals, assign, inputs);
         }
         return context ? {value: value} : value;
       };
@@ -1407,15 +1419,15 @@ ASTInterpreter.prototype = {
         return context ? {value: scope} : scope;
       };
     case AST.NGValueParameter:
-      return function(scope, locals, assign) {
+      return function(scope, locals, assign, inputs) {
         return context ? {value: assign} : assign;
       };
     }
   },
 
   'unary+': function(argument, context) {
-    return function(scope, locals, assign) {
-      var arg = argument(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = argument(scope, locals, assign, inputs);
       if (arg != null) {
         arg = +arg;
       }
@@ -1423,8 +1435,8 @@ ASTInterpreter.prototype = {
     };
   },
   'unary-': function(argument, context) {
-    return function(scope, locals, assign) {
-      var arg = argument(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = argument(scope, locals, assign, inputs);
       if (arg != null) {
         arg = -arg;
       }
@@ -1432,109 +1444,118 @@ ASTInterpreter.prototype = {
     };
   },
   'unary!': function(argument, context) {
-    return function(scope, locals, assign) {
-      var arg = !argument(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = !argument(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary+': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var lhs = left(scope, locals, assign);
-      var rhs = right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var lhs = left(scope, locals, assign, inputs);
+      var rhs = right(scope, locals, assign, inputs);
       var arg = plusFn(lhs, rhs);
       return context ? {value: arg} : arg;
     };
   },
   'binary-': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var lhs = left(scope, locals, assign);
-      var rhs = right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var lhs = left(scope, locals, assign, inputs);
+      var rhs = right(scope, locals, assign, inputs);
       var arg = (isDefined(lhs) ? lhs : 0) - (isDefined(rhs) ? rhs : 0);
       return context ? {value: arg} : arg;
     };
   },
   'binary*': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) * right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) * right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary/': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) / right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) / right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary%': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) % right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) % right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary===': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) === right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) === right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary!==': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) !== right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) !== right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary==': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) == right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) == right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary!=': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) != right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) != right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary<': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) < right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) < right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary>': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) > right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) > right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary<=': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) <= right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) <= right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary>=': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) >= right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) >= right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary&&': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) && right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) && right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary||': function(left, right, context) {
-    return function(scope, locals, assign) {
-      var arg = left(scope, locals, assign) || right(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = left(scope, locals, assign, inputs) || right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'ternary?:': function(test, alternate, consequent, context) {
-    return function(scope, locals, assign) {
-      var arg = test(scope, locals, assign) ? alternate(scope, locals, assign) : consequent(scope, locals, assign);
+    return function(scope, locals, assign, inputs) {
+      var arg = test(scope, locals, assign, inputs) ? alternate(scope, locals, assign, inputs) : consequent(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
+    };
+  },
+  value: function(value, context) {
+    return function() { return context ? {context: undefined, name: undefined, value: value} : value; };
+  },
+  inputs: function(input, watchId) {
+    return function(scope, value, locals, inputs) {
+      if (inputs) return inputs[watchId];
+      return input(scope, value, locals);
     };
   }
 };
@@ -1735,7 +1756,7 @@ function $ParseProvider() {
         return scope.$watch(function expressionInputWatch(scope) {
           var newInputValue = inputExpressions(scope);
           if (!expressionInputDirtyCheck(newInputValue, oldInputValue)) {
-            lastResult = parsedExpression(scope, undefined, [newInputValue]);
+            lastResult = parsedExpression(scope, undefined, undefined, [newInputValue]);
             oldInputValue = newInputValue && getValueOf(newInputValue);
           }
           return lastResult;
@@ -1758,7 +1779,7 @@ function $ParseProvider() {
         }
 
         if (changed) {
-          lastResult = parsedExpression(scope, undefined, oldInputValueOfValues);
+          lastResult = parsedExpression(scope, undefined, undefined, oldInputValueOfValues);
         }
 
         return lastResult;
