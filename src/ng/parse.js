@@ -657,7 +657,9 @@ function findConstantAndWatchExpressions(ast, $filter) {
     forEach(ast.arguments, function(expr) {
       findConstantAndWatchExpressions(expr, $filter);
       allConstants = allConstants && expr.constant;
-      argsToWatch.push.apply(argsToWatch, expr.toWatch);
+      if (!expr.constant) {
+        argsToWatch.push.apply(argsToWatch, expr.toWatch);
+      }
     });
     ast.constant = allConstants;
     ast.toWatch = ast.filter && isStateless($filter, ast.callee.name) ? argsToWatch : [ast];
@@ -674,7 +676,9 @@ function findConstantAndWatchExpressions(ast, $filter) {
     forEach(ast.elements, function(expr) {
       findConstantAndWatchExpressions(expr, $filter);
       allConstants = allConstants && expr.constant;
-      argsToWatch.push.apply(argsToWatch, expr.toWatch);
+      if (!expr.constant) {
+        argsToWatch.push.apply(argsToWatch, expr.toWatch);
+      }
     });
     ast.constant = allConstants;
     ast.toWatch = argsToWatch;
@@ -685,7 +689,9 @@ function findConstantAndWatchExpressions(ast, $filter) {
     forEach(ast.properties, function(property) {
       findConstantAndWatchExpressions(property.value, $filter);
       allConstants = allConstants && property.value.constant;
-      argsToWatch.push.apply(argsToWatch, property.value.toWatch);
+      if (!property.value.constant) {
+        argsToWatch.push.apply(argsToWatch, property.value.toWatch);
+      }
     });
     ast.constant = allConstants;
     ast.toWatch = argsToWatch;
