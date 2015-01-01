@@ -818,7 +818,7 @@ ASTCompiler.prototype = {
     var fns = this.state.inputs;
     var self = this;
     forEach(fns, function(name) {
-      result.push('var ' + name + '=' + self.generateFunction(name, 's,l'));
+      result.push('var ' + name + '=' + self.generateFunction(name, 's'));
     });
     if (fns.length) {
       result.push('fn.inputs=[' + fns.join(',') + '];');
@@ -835,7 +835,6 @@ ASTCompiler.prototype = {
 
   filterPrefix: function() {
     var parts = [];
-    var checks = [];
     var self = this;
     forEach(this.state.filters, function(id, filter) {
       parts.push(id + '=$filter(' + self.escape(filter) + ')');
