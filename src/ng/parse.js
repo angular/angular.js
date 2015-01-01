@@ -1309,7 +1309,10 @@ ASTInterpreter.prototype = {
       };
     case AST.MemberExpression:
       left = this.recurse(ast.object, false, !!create);
-      if (!ast.computed) ensureSafeMemberName(ast.property.name, self.expression);
+      if (!ast.computed) {
+        ensureSafeMemberName(ast.property.name, self.expression);
+        right = ast.property.name;
+      }
       if (ast.computed) right = this.recurse(ast.property);
       return ast.computed ?
         function(scope, locals, assign, inputs) {
@@ -1333,15 +1336,15 @@ ASTInterpreter.prototype = {
         } :
         function(scope, locals, assign, inputs) {
           var lhs = left(scope, locals, assign, inputs);
-          if (create && create !== 1 && lhs && !(ast.property.name in lhs)) {
-            lhs[ast.property.name] = {};
+          if (create && create !== 1 && lhs && !(right in lhs)) {
+            lhs[right] = {};
           }
-          var value = lhs != null ? lhs[ast.property.name] : undefined;
-          if (self.expensiveChecks || isPossiblyDangerousMemberName(ast.property.name)) {
+          var value = lhs != null ? lhs[right] : undefined;
+          if (self.expensiveChecks || isPossiblyDangerousMemberName(right)) {
             ensureSafeObject(value, self.expression);
           }
           if (context) {
-            return {context: lhs, name: ast.property.name, value: value};
+            return {context: lhs, name: right, value: value};
           } else {
             return value;
           }
