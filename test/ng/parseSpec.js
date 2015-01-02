@@ -1701,6 +1701,21 @@ describe('parser', function() {
         expect(scope.$eval("1/2*3")).toEqual(1 / 2 * 3);
       });
 
+      it('should parse unary', function() {
+        expect(scope.$eval("+1")).toEqual(+1);
+        expect(scope.$eval("-1")).toEqual(-1);
+        expect(scope.$eval("+'1'")).toEqual(+'1');
+        expect(scope.$eval("-'1'")).toEqual(-'1');
+        expect(scope.$eval("+undefined")).toEqual(0);
+        expect(scope.$eval("-undefined")).toEqual(0);
+        expect(scope.$eval("+null")).toEqual(+null);
+        expect(scope.$eval("-null")).toEqual(-null);
+        expect(scope.$eval("+false")).toEqual(+false);
+        expect(scope.$eval("-false")).toEqual(-false);
+        expect(scope.$eval("+true")).toEqual(+true);
+        expect(scope.$eval("-true")).toEqual(-true);
+      });
+
       it('should parse comparison', function() {
         /* jshint -W041 */
         expect(scope.$eval("false")).toBeFalsy();

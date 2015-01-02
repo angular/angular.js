@@ -872,7 +872,7 @@ ASTCompiler.prototype = {
       break;
     case AST.UnaryExpression:
       this.recurse(ast.argument, undefined, undefined, function(expr) { right = expr; });
-      expression = ast.operator + '(' + right + ')';
+      expression = ast.operator + '(' + this.ifDefined(right, 0) + ')';
       this.assign(intoId, expression);
       recursionFn(expression);
       break;
@@ -1436,8 +1436,10 @@ ASTInterpreter.prototype = {
   'unary+': function(argument, context) {
     return function(scope, locals, assign, inputs) {
       var arg = argument(scope, locals, assign, inputs);
-      if (arg != null) {
+      if (isDefined(arg)) {
         arg = +arg;
+      } else {
+        arg = 0;
       }
       return context ? {value: arg} : arg;
     };
@@ -1445,8 +1447,10 @@ ASTInterpreter.prototype = {
   'unary-': function(argument, context) {
     return function(scope, locals, assign, inputs) {
       var arg = argument(scope, locals, assign, inputs);
-      if (arg != null) {
+      if (isDefined(arg)) {
         arg = -arg;
+      } else {
+        arg = 0;
       }
       return context ? {value: arg} : arg;
     };
