@@ -92,6 +92,39 @@ describe('Filter: filter', function() {
   );
 
 
+  it('should match items with array properties containing one or more matching items', function() {
+      var items, expr;
+
+      items = [
+        {tags: ['web', 'html', 'css', 'js']},
+        {tags: ['hybrid', 'html', 'css', 'js', 'ios', 'android']},
+        {tags: ['mobile', 'ios', 'android']}
+      ];
+      expr = {tags: 'html'};
+      expect(filter(items, expr).length).toBe(2);
+      expect(filter(items, expr)).toEqual([items[0], items[1]]);
+
+      items = [
+        {nums: [1, 345, 12]},
+        {nums: [0, 46, 78]},
+        {nums: [123, 4, 67]}
+      ];
+      expr = {nums: 12};
+      expect(filter(items, expr).length).toBe(2);
+      expect(filter(items, expr)).toEqual([items[0], items[2]]);
+
+      items = [
+        {customers: [{name: 'John'}, {name: 'Elena'}, {name: 'Bill'}]},
+        {customers: [{name: 'Sam'}, {name: 'Klara'}, {name: 'Bill'}]},
+        {customers: [{name: 'Molli'}, {name: 'Elena'}, {name: 'Lora'}]}
+      ];
+      expr = {customers: {name: 'Bill'}};
+      expect(filter(items, expr).length).toBe(2);
+      expect(filter(items, expr)).toEqual([items[0], items[1]]);
+    }
+  );
+
+
   it('should take object as predicate', function() {
     var items = [{first: 'misko', last: 'hevery'},
                  {first: 'adam', last: 'abrons'}];
