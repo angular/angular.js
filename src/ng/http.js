@@ -615,7 +615,7 @@ function $HttpProvider() {
      *    - **data** – `{string|Object}` – Data to be sent as the request message data.
      *    - **headers** – `{Object}` – Map of strings or functions which return strings representing
      *      HTTP headers to send to the server. If the return value of a function is null, the
-     *      header will not be sent.
+     *      header will not be sent. Functions accept a config object as an argument.
      *    - **xsrfHeaderName** – `{string}` – Name of HTTP header to populate with the XSRF token.
      *    - **xsrfCookieName** – `{string}` – Name of cookie containing the XSRF token.
      *    - **transformRequest** –
@@ -834,12 +834,12 @@ function $HttpProvider() {
           : $q.reject(resp);
       }
 
-      function executeHeaderFns(headers) {
+      function executeHeaderFns(headers, config) {
         var headerContent, processedHeaders = {};
 
         forEach(headers, function(headerFn, header) {
           if (isFunction(headerFn)) {
-            headerContent = headerFn();
+            headerContent = headerFn(config);
             if (headerContent != null) {
               processedHeaders[header] = headerContent;
             }
@@ -873,7 +873,7 @@ function $HttpProvider() {
         }
 
         // execute if header value is a function for merged headers
-        return executeHeaderFns(reqHeaders);
+        return executeHeaderFns(reqHeaders, shallowCopy(config));
       }
     }
 
