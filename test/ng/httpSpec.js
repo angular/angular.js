@@ -781,6 +781,34 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should expose a config object to header functions', function() {
+        var config = {
+          foo: 'Rewritten',
+          headers: {'Accept': function(config) {
+            return config.foo;
+          }}
+        };
+
+        $httpBackend.expect('GET', '/url', undefined, {Accept: 'Rewritten'}).respond('');
+        $http.get('/url', config);
+        $httpBackend.flush();
+      });
+
+      it('should not allow modifications to a config object in header functions', function() {
+        var config = {
+          headers: {'Accept': function(config) {
+            config.foo = 'bar';
+            return 'Rewritten';
+          }}
+        };
+
+        $httpBackend.expect('GET', '/url', undefined, {Accept: 'Rewritten'}).respond('');
+        $http.get('/url', config);
+        $httpBackend.flush();
+
+        expect(config.foo).toBeUndefined();
+      });
+
       it('should check the cache before checking the XSRF cookie', inject(function($browser, $cacheFactory) {
         var testCache = $cacheFactory('testCache'),
             executionOrder = [];
