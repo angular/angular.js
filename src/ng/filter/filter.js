@@ -186,7 +186,7 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp, dontMatc
 
   if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
     return !deepCompare(actual, expected.substring(1), comparator, matchAgainstAnyProp);
-  } else if (actualType === 'array') {
+  } else if (isArray(actual)) {
     // In case `actual` is an array, consider it a match
     // if ANY of it's items matches `expected`
     return actual.some(function(item) {
