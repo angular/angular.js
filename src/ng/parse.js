@@ -668,7 +668,7 @@ function findConstantAndWatchExpressions(ast, $filter) {
     findConstantAndWatchExpressions(ast.left, $filter);
     findConstantAndWatchExpressions(ast.right, $filter);
     ast.constant = ast.left.constant && ast.right.constant;
-    ast.toWatch = ast.right.toWatch;
+    ast.toWatch = [ast];
     break;
   case AST.ArrayExpression:
     allConstants = true;
@@ -704,8 +704,8 @@ function findConstantAndWatchExpressions(ast, $filter) {
 }
 
 function getInputs(body) {
-  if (!body.length) return;
-  var lastExpression = body[body.length - 1].expression;
+  if (body.length != 1) return;
+  var lastExpression = body[0].expression;
   var candidate = lastExpression.toWatch;
   if (candidate.length !== 1) return candidate;
   return candidate[0] !== lastExpression ? candidate : undefined;
