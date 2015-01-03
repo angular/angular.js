@@ -3159,6 +3159,51 @@ describe('parser', function() {
           scope.$digest();
           expect(spy.calls.length).toEqual(5);
         }));
+
+        it('should invoke all statements in multi-statement expressions', inject(function($parse) {
+          var lastVal = NaN;
+          var listener = function(val) { lastVal = val; };
+
+          scope.setBarToOne = false;
+          scope.bar = 0;
+          scope.two = 2;
+          scope.foo = function() { if (scope.setBarToOne) scope.bar = 1; };
+          scope.$watch("foo(); bar + two", listener);
+
+          scope.$digest();
+          expect(lastVal).toBe(2);
+
+          scope.bar = 2;
+          scope.$digest();
+          expect(lastVal).toBe(4);
+
+          scope.setBarToOne = true;
+          scope.$digest();
+          expect(lastVal).toBe(3);
+        }));
+
+        it('should watch the left side of assignments', inject(function($parse) {
+          var lastVal = NaN;
+          var listener = function(val) { lastVal = val; };
+
+          var objA = {};
+          var objB = {};
+
+          scope.$watch("curObj.value = input", noop);
+
+          scope.curObj = objA;
+          scope.input = 1;
+          scope.$digest();
+          expect(objA.value).toBe(scope.input);
+
+          scope.curObj = objB;
+          scope.$digest();
+          expect(objB.value).toBe(scope.input);
+
+          scope.input = 2;
+          scope.$digest();
+          expect(objB.value).toBe(scope.input);
+        }));
       });
 
       describe('locals', function() {
