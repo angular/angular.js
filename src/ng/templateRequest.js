@@ -49,7 +49,8 @@ function $TemplateRequestProvider() {
       function handleError(resp) {
         self.totalPendingRequests--;
         if (!ignoreRequestError) {
-          throw $compileMinErr('tpload', 'Failed to load template: {0}', tpl);
+          throw $compileMinErr('tpload', 'Failed to load template: {0} (HTTP status: {1} {2})',
+            tpl, resp.status, resp.statusText);
         }
         return $q.reject(resp);
       }
