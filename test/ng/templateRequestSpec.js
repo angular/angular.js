@@ -39,7 +39,7 @@ describe('$templateRequest', function() {
   it('should throw an error when the template is not found',
     inject(function($rootScope, $templateRequest, $httpBackend) {
 
-    $httpBackend.expectGET('tpl.html').respond(404);
+    $httpBackend.expectGET('tpl.html').respond(404, '', {}, 'Not found');
 
     $templateRequest('tpl.html');
 
@@ -48,7 +48,7 @@ describe('$templateRequest', function() {
     expect(function() {
       $rootScope.$digest();
       $httpBackend.flush();
-    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html');
+    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html (HTTP status: 404 Not found)');
   }));
 
   it('should not throw when the template is not found and ignoreRequestError is true',
