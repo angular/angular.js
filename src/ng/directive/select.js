@@ -1,6 +1,116 @@
 'use strict';
 
+/* global jqLiteRemove */
+
 var ngOptionsMinErr = minErr('ngOptions');
+
+
+var noopNgModelController = { $setViewValue: noop, $render: noop };
+
+/**
+ * @ngdoc type
+ * @name  select.SelectController
+ * @description
+ * The controller for the `<select>` directive. This provides support for reading
+ * and writing the selected value(s) of the control and also coordinates dynamically
+ * added `<option>` elements, perhaps by an `ngRepeat` directive.
+ */
+var SelectController =
+        ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
+
+  var self = this,
+      optionsMap = new HashMap();
+
+  // If the ngModel doesn't get provided then provide a dummy noop version to prevent errors
+  self.ngModelCtrl = noopNgModelController;
+
+  // The "unknown" option is one that is prepended to the list if the viewValue
+  // does not match any of the options. When it is rendered the value of the unknown
+  // option is '? XXX ?' where XXX is the hashKey of the value that is not known.
+  //
+  // We can't just jqLite('<option>') since jqLite is not smart enough
+  // to create it in <select> and IE barfs otherwise.
+  self.unknownOption = jqLite(document.createElement('option'));
+  self.renderUnknownOption = function(val) {
+    var unknownVal = '? ' + hashKey(val) + ' ?';
+    self.unknownOption.val(unknownVal);
+    $element.prepend(self.unknownOption);
+    $element.val(unknownVal);
+  };
+
+  $scope.$on('$destroy', function() {
+    // disable unknown option so that we don't do work when the whole select is being destroyed
+    self.renderUnknownOption = noop;
+  });
+
+  self.removeUnknownOption = function() {
+    if (self.unknownOption.parent()) self.unknownOption.remove();
+  };
+
+  // Here we find the option that represents the "empty" value, i.e. the option with a value
+  // of `""`.  This option needs to be accessed (to select it directly) when setting the value
+  // of the select to `""` because IE9 will not automatically select the option.
+  //
+  // Additionally, the `ngOptions` directive uses this option to allow the application developer
+  // to provide their own custom "empty" option when the viewValue does not match any of the
+  // option values.
+  for (var i = 0, children = $element.children(), ii = children.length; i < ii; i++) {
+    if (children[i].value === '') {
+      self.emptyOption = children.eq(i);
+      break;
+    }
+  }
+
+  // Read the value of the select control, the implementation of this changes depending
+  // upon whether the select can have multiple values and whether ngOptions is at work.
+  self.readValue = function readSingleValue() {
+    self.removeUnknownOption();
+    return $element.val();
+  };
+
+
+  // Write the value to the select control, the implementation of this changes depending
+  // upon whether the select can have multiple values and whether ngOptions is at work.
+  self.writeValue = function writeSingleValue(value) {
+    if (self.hasOption(value)) {
+      self.removeUnknownOption();
+      $element.val(value);
+      if (value === '') self.emptyOption.prop('selected', true); // to make IE9 happy
+    } else {
+      if (isUndefined(value) && self.emptyOption) {
+        $element.val('');
+      } else {
+        self.renderUnknownOption(value);
+      }
+    }
+  };
+
+
+  // Tell the select control that an option, with the given value, has been added
+  self.addOption = function(value) {
+    assertNotHasOwnProperty(value, '"option value"');
+    var count = optionsMap.get(value) || 0;
+    optionsMap.put(value, count + 1);
+  };
+
+  // Tell the select control that an option, with the given value, has been removed
+  self.removeOption = function(value) {
+    var count = optionsMap.get(value);
+    if (count) {
+      if (count === 1) {
+        optionsMap.remove(value);
+      } else {
+        optionsMap.put(value, count - 1);
+      }
+    }
+  };
+
+  // Check whether the select control has an option matching the given value
+  self.hasOption = function(value) {
+    return !!optionsMap.get(value);
+  };
+}];
+
 /**
  * @ngdoc directive
  * @name select
@@ -9,7 +119,184 @@ var ngOptionsMinErr = minErr('ngOptions');
  * @description
  * HTML `SELECT` element with angular data-binding.
  *
- * # `ngOptions`
+ * In many cases, `ngRepeat` can be used on `<option>` elements instead of `ngOptions` to achieve a
+ * similar result. However, `ngOptions` provides some benefits such as reducing memory and
+ * increasing speed by not creating a new scope for each repeated instance, as well as providing
+ * more flexibility in how the `<select>`'s model is assigned via the `select` **`as`** part of the
+ * comprehension expression. `ngOptions` should be used when the `<select>` model needs to be bound
+ *  to a non-string value. This is because an option element can only be bound to string values at
+ * present.
+ *
+ * When an item in the `<select>` menu is selected, the array element or object property
+ * represented by the selected option will be bound to the model identified by the `ngModel`
+ * directive.
+ *
+ * If the viewValue contains a value that doesn't match any of the options then the control
+ * will automatically add an "unknown" option, which it then removes when this is resolved.
+ *
+ * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
+ * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
+ * option. See example below for demonstration.
+ *
+ * <div class="alert alert-warning">
+ * **Note:** `ngModel` compares by reference, not value. This is important when binding to an
+ * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/).
+ * </div>
+ *
+ */
+var selectDirective = function() {
+  var lastView;
+
+  return {
+    restrict: 'E',
+    require: ['select', '?ngModel'],
+    controller: SelectController,
+    link: function(scope, element, attr, ctrls) {
+
+      // if ngModel is not defined, we don't need to do anything
+      var ngModelCtrl = ctrls[1];
+      if (!ngModelCtrl) return;
+
+      var selectCtrl = ctrls[0];
+
+      selectCtrl.ngModelCtrl = ngModelCtrl;
+
+      // We delegate rendering to the `writeValue` method, which can be changed
+      // if the select can have multiple selected values or if the options are being
+      // generated by `ngOptions`
+      ngModelCtrl.$render = function() {
+        selectCtrl.writeValue(ngModelCtrl.$viewValue);
+      };
+
+      // When the selected item(s) changes we delegate getting the value of the select control
+      // to the `readValue` method, which can be changed if the select can have multiple
+      // selected values or if the options are being generated by `ngOptions`
+      element.on('change', function() {
+        scope.$apply(function() {
+          ngModelCtrl.$setViewValue(selectCtrl.readValue());
+        });
+      });
+
+      // If the select allows multiple values then we need to modify how we read and write
+      // values from and to the control; also what it means for the value to be empty and
+      // we have to add an extra watch since ngModel doesn't work well with arrays - it
+      // doesn't trigger rendering if only an item in the array changes.
+      if (attr.multiple) {
+
+        // Read value now needs to check each option to see if it is selected
+        selectCtrl.readValue = function readMultipleValue() {
+          var array = [];
+          forEach(element.find('option'), function(option) {
+            if (option.selected) {
+              array.push(option.value);
+            }
+          });
+          return array;
+        };
+
+        // Write value now needs to set the selected property of each matching option
+        selectCtrl.writeValue = function writeMultipleValue(value) {
+          var items = new HashMap(value);
+          forEach(element.find('option'), function(option) {
+            option.selected = isDefined(items.get(option.value));
+          });
+        };
+
+        // we have to do it on each watch since ngModel watches reference, but
+        // we need to work of an array, so we need to see if anything was inserted/removed
+        scope.$watch(function selectMultipleWatch() {
+          if (!equals(lastView, ngModelCtrl.$viewValue)) {
+            lastView = shallowCopy(ngModelCtrl.$viewValue);
+            ngModelCtrl.$render();
+          }
+        });
+
+        // If we are a multiple select then value is now a collection
+        // so the meaning of $isEmpty changes
+        ngModelCtrl.$isEmpty = function(value) {
+          return !value || value.length === 0;
+        };
+
+      }
+    }
+  };
+};
+
+
+// The option directive is purely designed to communicate the existence (or lack of)
+// of dynamically created (and destroyed) option elements to their containing select
+// directive via its controller.
+var optionDirective = ['$interpolate', function($interpolate) {
+
+  function chromeHack(optionElement) {
+    // Workaround for https://code.google.com/p/chromium/issues/detail?id=381459
+    // Adding an <option selected="selected"> element to a <select required="required"> should
+    // automatically select the new element
+    if (optionElement[0].hasAttribute('selected')) {
+      optionElement[0].selected = true;
+    }
+  }
+
+  return {
+    restrict: 'E',
+    priority: 100,
+    compile: function(element, attr) {
+
+      // If the value attribute is not defined then we fall back to the
+      // text content of the option element, which may be interpolated
+      if (isUndefined(attr.value)) {
+        var interpolateFn = $interpolate(element.text(), true);
+        if (!interpolateFn) {
+          attr.$set('value', element.text());
+        }
+      }
+
+      return function(scope, element, attr) {
+
+        // This is an optimization over using ^^ since we don't want to have to search
+        // all the way to the root of the DOM for every single option element
+        var selectCtrlName = '$selectController',
+            parent = element.parent(),
+            selectCtrl = parent.data(selectCtrlName) ||
+              parent.parent().data(selectCtrlName); // in case we are in optgroup
+
+        // Only update trigger option updates if this is an option within a `select`
+        // that also has `ngModel` attached
+        if (selectCtrl && selectCtrl.ngModelCtrl) {
+
+          if (interpolateFn) {
+            scope.$watch(interpolateFn, function interpolateWatchAction(newVal, oldVal) {
+              attr.$set('value', newVal);
+              if (oldVal !== newVal) {
+                selectCtrl.removeOption(oldVal);
+              }
+              selectCtrl.addOption(newVal, element);
+              selectCtrl.ngModelCtrl.$render();
+              chromeHack(element);
+            });
+          } else {
+            selectCtrl.addOption(attr.value, element);
+            selectCtrl.ngModelCtrl.$render();
+            chromeHack(element);
+          }
+
+          element.on('$destroy', function() {
+            selectCtrl.removeOption(attr.value);
+            selectCtrl.ngModelCtrl.$render();
+          });
+        }
+      };
+    }
+  };
+}];
+
+
+/**
+ * @ngdoc directive
+ * @name ngOptions
+ * @restrict A
+ *
+ * @description
  *
  * The `ngOptions` attribute can be used to dynamically generate a list of `<option>`
  * elements for the `<select>` element using the array or object obtained by evaluating the
@@ -185,592 +472,409 @@ var ngOptionsMinErr = minErr('ngOptions');
     </example>
  */
 
-var ngOptionsDirective = valueFn({
-  restrict: 'A',
-  terminal: true
-});
-
 // jshint maxlen: false
-var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                          //000011111111110000000000022222222220000000000000000000003333333333000000000000004444444444444440000000005555555555555550000000666666666666666000000000000000777777777700000000000000000008888888888
-  var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/,
-      nullModelCtrl = {$setViewValue: noop};
+var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
+                        // 1: value expression (valueFn)
+                        // 2: label expression (displayFn)
+                        // 3: group by expression (groupByFn)
+                        // 4: array item variable name
+                        // 5: object item key variable name
+                        // 6: object item value variable name
+                        // 7: collection expression
+                        // 8: track by expression
 // jshint maxlen: 100
 
+
+var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
+
+  function parseOptionsExpression(optionsExp, selectElement, scope) {
+
+    var match = optionsExp.match(NG_OPTIONS_REGEXP);
+    if (!(match)) {
+      throw ngOptionsMinErr('iexp',
+        "Expected expression in form of " +
+        "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+        " but got '{0}'. Element: {1}",
+        optionsExp, startingTag(selectElement));
+    }
+
+    // Extract the parts from the ngOptions expression
+
+    // The variable name for the value of the item in the collection
+    var valueName = match[4] || match[6];
+    // The variable name for the key of the item in the collection
+    var keyName = match[5];
+
+    // An expression that generates the viewValue for an option if there is a label expression
+    var selectAs = / as /.test(match[0]) && match[1];
+    // An expression that is used to track the id of each object in the options collection
+    var trackBy = match[8];
+    // An expression that generates the viewValue for an option if there is no label expression
+    var valueFn = $parse(match[2] ? match[1] : valueName);
+    var selectAsFn = selectAs && $parse(selectAs);
+    var viewValueFn = selectAsFn || valueFn;
+    var trackByFn = trackBy ? $parse(trackBy) :
+                              function getHashOfValue(value) { return hashKey(value); };
+    var displayFn = $parse(match[2] || match[1]);
+    var groupByFn = $parse(match[3] || '');
+    var valuesFn = $parse(match[7]);
+
+    var locals = {};
+    var getLocals = keyName ? function(value, key) {
+      locals[keyName] = key;
+      locals[valueName] = value;
+      return locals;
+    } : function(value) {
+      locals[valueName] = value;
+      return locals;
+    };
+
+
+    function Option(selectValue, viewValue, label, group) {
+      this.selectValue = selectValue;
+      this.viewValue = viewValue;
+      this.label = label;
+      this.group = group;
+    }
+
+    return {
+      getWatchables: function() {
+        // Create a collection of things that we would like to watch (watchedArray)
+        // so that they can all be watched using a single $watchCollection
+        // that only runs the handler once if anything changes
+        var watchedArray = [];
+
+        var values = valuesFn(scope) || [];
+
+        Object.keys(values).forEach(function getWatchable(key) {
+          var locals = getLocals(values[key], key);
+          var label = displayFn(scope, locals);
+          var selectValue = viewValueFn(scope, locals);
+          watchedArray.push(selectValue);
+          watchedArray.push(label);
+        });
+        return watchedArray;
+      },
+
+      getOptions: function() {
+
+        var optionItems = [];
+        var selectValueMap = {};
+
+        // The option values were already computed in the `getWatchables` fn,
+        // which must have been called to trigger `getOptions`
+        var optionValues = valuesFn(scope) || [];
+
+        var keys = Object.keys(optionValues);
+        keys.forEach(function getOption(key) {
+
+          // Ignore "angular" properties that start with $ or $$
+          if (key.charAt(0) === '$') return;
+
+          var value = optionValues[key];
+          var locals = getLocals(value, key);
+          var viewValue = viewValueFn(scope, locals);
+          var selectValue = trackByFn(viewValue, locals);
+          var label = displayFn(scope, locals);
+          var group = groupByFn(scope, locals);
+          var optionItem = new Option(selectValue, viewValue, label, group);
+
+          optionItems.push(optionItem);
+          selectValueMap[selectValue] = optionItem;
+        });
+
+        return {
+          items: optionItems,
+          selectValueMap: selectValueMap,
+          getOptionFromViewValue: function(value) {
+            return selectValueMap[trackByFn(value, getLocals(value))];
+          }
+        };
+      }
+    };
+  }
+
+
+  // we can't just jqLite('<option>') since jqLite is not smart enough
+  // to create it in <select> and IE barfs otherwise.
+  var optionTemplate = document.createElement('option'),
+      optGroupTemplate = document.createElement('optgroup');
+
   return {
-    restrict: 'E',
+    restrict: 'A',
+    terminal: true,
     require: ['select', '?ngModel'],
-    controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
-      var self = this,
-          optionsMap = {},
-          ngModelCtrl = nullModelCtrl,
-          nullOption,
-          unknownOption;
+    link: function(scope, selectElement, attr, ctrls) {
+
+      // if ngModel is not defined, we don't need to do anything
+      var ngModelCtrl = ctrls[1];
+      if (!ngModelCtrl) return;
+
+      var selectCtrl = ctrls[0];
+      var multiple = attr.multiple;
+
+      var emptyOption = selectCtrl.emptyOption;
+      var providedEmptyOption = !!emptyOption;
+
+      var unknownOption = jqLite(optionTemplate.cloneNode(false));
+      unknownOption.val('?');
+
+      var options;
+      var ngOptions = parseOptionsExpression(attr.ngOptions, selectElement, scope);
 
 
-      self.databound = $attrs.ngModel;
+      var renderEmptyOption = function() {
+        if (!providedEmptyOption) {
+          selectElement.prepend(emptyOption);
+        }
+        selectElement.val('');
+        emptyOption.prop('selected', true); // needed for IE
+        emptyOption.attr('selected', true);
+      };
 
-
-      self.init = function(ngModelCtrl_, nullOption_, unknownOption_) {
-        ngModelCtrl = ngModelCtrl_;
-        nullOption = nullOption_;
-        unknownOption = unknownOption_;
+      var removeEmptyOption = function() {
+        if (!providedEmptyOption) {
+          emptyOption.remove();
+        }
       };
 
 
-      self.addOption = function(value, element) {
-        assertNotHasOwnProperty(value, '"option value"');
-        optionsMap[value] = true;
+      var renderUnknownOption = function() {
+        selectElement.prepend(unknownOption);
+        selectElement.val('?');
+        unknownOption.prop('selected', true); // needed for IE
+        unknownOption.attr('selected', true);
+      };
 
-        if (ngModelCtrl.$viewValue == value) {
-          $element.val(value);
-          if (unknownOption.parent()) unknownOption.remove();
-        }
-        // Workaround for https://code.google.com/p/chromium/issues/detail?id=381459
-        // Adding an <option selected="selected"> element to a <select required="required"> should
-        // automatically select the new element
-        if (element && element[0].hasAttribute('selected')) {
-          element[0].selected = true;
-        }
+      var removeUnknownOption = function() {
+        unknownOption.remove();
       };
 
 
-      self.removeOption = function(value) {
-        if (this.hasOption(value)) {
-          delete optionsMap[value];
-          if (ngModelCtrl.$viewValue === value) {
-            this.renderUnknownOption(value);
+      selectCtrl.writeValue = function writeNgOptionsValue(value) {
+        if (multiple) {
+
+          options.items.forEach(function(option) {
+            option.element.selected = false;
+          });
+
+          if (value) {
+            value.forEach(function(item) {
+              var option = options.getOptionFromViewValue(item);
+              if (option) option.element.selected = true;
+            });
+          }
+
+        } else {
+          var option = options.getOptionFromViewValue(value);
+
+          if (option) {
+            if (selectElement[0].value !== option.selectValue) {
+              removeUnknownOption();
+              removeEmptyOption();
+
+              selectElement[0].value = option.selectValue;
+              option.element.selected = true;
+              option.element.setAttribute('selected', 'selected');
+            }
+          } else {
+            if (value === null || providedEmptyOption) {
+              removeUnknownOption();
+              renderEmptyOption();
+            } else {
+              removeEmptyOption();
+              renderUnknownOption();
+            }
           }
         }
       };
 
 
-      self.renderUnknownOption = function(val) {
-        var unknownVal = '? ' + hashKey(val) + ' ?';
-        unknownOption.val(unknownVal);
-        $element.prepend(unknownOption);
-        $element.val(unknownVal);
-        unknownOption.prop('selected', true); // needed for IE
-      };
+      selectCtrl.readValue = function readNgOptionsValue() {
 
+        if (multiple) {
 
-      self.hasOption = function(value) {
-        return optionsMap.hasOwnProperty(value);
-      };
+          return selectElement.val().map(function(selectedKey) {
+            var option = options.selectValueMap[selectedKey];
+            return option.viewValue;
+          });
 
-      $scope.$on('$destroy', function() {
-        // disable unknown option so that we don't do work when the whole select is being destroyed
-        self.renderUnknownOption = noop;
-      });
-    }],
+        } else {
 
-    link: function(scope, element, attr, ctrls) {
-      // if ngModel is not defined, we don't need to do anything
-      if (!ctrls[1]) return;
-
-      var selectCtrl = ctrls[0],
-          ngModelCtrl = ctrls[1],
-          multiple = attr.multiple,
-          optionsExp = attr.ngOptions,
-          nullOption = false, // if false, user will not be able to select it (used by ngOptions)
-          emptyOption,
-          renderScheduled = false,
-          // we can't just jqLite('<option>') since jqLite is not smart enough
-          // to create it in <select> and IE barfs otherwise.
-          optionTemplate = jqLite(document.createElement('option')),
-          optGroupTemplate =jqLite(document.createElement('optgroup')),
-          unknownOption = optionTemplate.clone();
-
-      // find "null" option
-      for (var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
-        if (children[i].value === '') {
-          emptyOption = nullOption = children.eq(i);
-          break;
+          var option = options.selectValueMap[selectElement.val()];
+          removeEmptyOption();
+          removeUnknownOption();
+          return option ? option.viewValue : null;
         }
-      }
+      };
 
-      selectCtrl.init(ngModelCtrl, nullOption, unknownOption);
 
-      // required validator
       if (multiple) {
         ngModelCtrl.$isEmpty = function(value) {
           return !value || value.length === 0;
         };
       }
 
-      if (optionsExp) setupAsOptions(scope, element, ngModelCtrl);
-      else if (multiple) setupAsMultiple(scope, element, ngModelCtrl);
-      else setupAsSingle(scope, element, ngModelCtrl, selectCtrl);
 
+      if (providedEmptyOption) {
 
-      ////////////////////////////
+        // we need to remove it before calling selectElement.empty() because otherwise IE will
+        // remove the label from the element. wtf?
+        emptyOption.remove();
 
+        // compile the element since there might be bindings in it
+        $compile(emptyOption)(scope);
 
-
-      function setupAsSingle(scope, selectElement, ngModelCtrl, selectCtrl) {
-        ngModelCtrl.$render = function() {
-          var viewValue = ngModelCtrl.$viewValue;
-
-          if (selectCtrl.hasOption(viewValue)) {
-            if (unknownOption.parent()) unknownOption.remove();
-            selectElement.val(viewValue);
-            if (viewValue === '') emptyOption.prop('selected', true); // to make IE9 happy
-          } else {
-            if (isUndefined(viewValue) && emptyOption) {
-              selectElement.val('');
-            } else {
-              selectCtrl.renderUnknownOption(viewValue);
-            }
-          }
-        };
-
-        selectElement.on('change', function() {
-          scope.$apply(function() {
-            if (unknownOption.parent()) unknownOption.remove();
-            ngModelCtrl.$setViewValue(selectElement.val());
-          });
-        });
+        // remove the class, which is added automatically because we recompile the element and it
+        // becomes the compilation root
+        emptyOption.removeClass('ng-scope');
+      } else {
+        emptyOption = jqLite(optionTemplate.cloneNode(false));
       }
 
-      function setupAsMultiple(scope, selectElement, ctrl) {
-        var lastView;
-        ctrl.$render = function() {
-          var items = new HashMap(ctrl.$viewValue);
-          forEach(selectElement.find('option'), function(option) {
-            option.selected = isDefined(items.get(option.value));
-          });
-        };
+      // We need to do this here to ensure that the options object is defined
+      // when we first hit it in writeNgOptionsValue
+      updateOptions();
 
-        // we have to do it on each watch since ngModel watches reference, but
-        // we need to work of an array, so we need to see if anything was inserted/removed
-        scope.$watch(function selectMultipleWatch() {
-          if (!equals(lastView, ctrl.$viewValue)) {
-            lastView = shallowCopy(ctrl.$viewValue);
-            ctrl.$render();
-          }
-        });
+      // We will re-render the option elements if the option values or labels change
+      scope.$watchCollection(ngOptions.getWatchables, updateOptions);
 
-        selectElement.on('change', function() {
-          scope.$apply(function() {
-            var array = [];
-            forEach(selectElement.find('option'), function(option) {
-              if (option.selected) {
-                array.push(option.value);
-              }
-            });
-            ctrl.$setViewValue(array);
-          });
-        });
-      }
+      // ------------------------------------------------------------------ //
 
-      function setupAsOptions(scope, selectElement, ctrl) {
-        var match;
 
-        if (!(match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-          throw ngOptionsMinErr('iexp',
-            "Expected expression in form of " +
-            "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
-            " but got '{0}'. Element: {1}",
-            optionsExp, startingTag(selectElement));
-        }
-
-        var displayFn = $parse(match[2] || match[1]),
-            valueName = match[4] || match[6],
-            selectAs = / as /.test(match[0]) && match[1],
-            selectAsFn = selectAs ? $parse(selectAs) : null,
-            keyName = match[5],
-            groupByFn = $parse(match[3] || ''),
-            valueFn = $parse(match[2] ? match[1] : valueName),
-            valuesFn = $parse(match[7]),
-            track = match[8],
-            trackFn = track ? $parse(match[8]) : null,
-            trackKeysCache = {},
-            // This is an array of array of existing option groups in DOM.
-            // We try to reuse these if possible
-            // - optionGroupsCache[0] is the options with no option group
-            // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-            optionGroupsCache = [[{element: selectElement, label:''}]],
-            //re-usable object to represent option's locals
-            locals = {};
-
-        if (nullOption) {
-          // compile the element since there might be bindings in it
-          $compile(nullOption)(scope);
-
-          // remove the class, which is added automatically because we recompile the element and it
-          // becomes the compilation root
-          nullOption.removeClass('ng-scope');
-
-          // we need to remove it before calling selectElement.empty() because otherwise IE will
-          // remove the label from the element. wtf?
-          nullOption.remove();
-        }
-
-        // clear contents, we'll add what's needed based on the model
-        selectElement.empty();
-
-        selectElement.on('change', selectionChanged);
-
-        ctrl.$render = render;
-
-        scope.$watchCollection(valuesFn, scheduleRendering);
-        scope.$watchCollection(getLabels, scheduleRendering);
-
-        if (multiple) {
-          scope.$watchCollection(function() { return ctrl.$modelValue; }, scheduleRendering);
-        }
-
-        // ------------------------------------------------------------------ //
-
-        function callExpression(exprFn, key, value) {
-          locals[valueName] = value;
-          if (keyName) locals[keyName] = key;
-          return exprFn(scope, locals);
-        }
-
-        function selectionChanged() {
-          scope.$apply(function() {
-            var collection = valuesFn(scope) || [];
-            var viewValue;
-            if (multiple) {
-              viewValue = [];
-              forEach(selectElement.val(), function(selectedKey) {
-                  selectedKey = trackFn ? trackKeysCache[selectedKey] : selectedKey;
-                viewValue.push(getViewValue(selectedKey, collection[selectedKey]));
-              });
-            } else {
-              var selectedKey = trackFn ? trackKeysCache[selectElement.val()] : selectElement.val();
-              viewValue = getViewValue(selectedKey, collection[selectedKey]);
-            }
-            ctrl.$setViewValue(viewValue);
-            render();
-          });
-        }
-
-        function getViewValue(key, value) {
-          if (key === '?') {
-            return undefined;
-          } else if (key === '') {
-            return null;
-          } else {
-            var viewValueFn = selectAsFn ? selectAsFn : valueFn;
-            return callExpression(viewValueFn, key, value);
-          }
-        }
-
-        function getLabels() {
-          var values = valuesFn(scope);
-          var toDisplay;
-          if (values && isArray(values)) {
-            toDisplay = new Array(values.length);
-            for (var i = 0, ii = values.length; i < ii; i++) {
-              toDisplay[i] = callExpression(displayFn, i, values[i]);
-            }
-            return toDisplay;
-          } else if (values) {
-            // TODO: Add a test for this case
-            toDisplay = {};
-            for (var prop in values) {
-              if (values.hasOwnProperty(prop)) {
-                toDisplay[prop] = callExpression(displayFn, prop, values[prop]);
-              }
-            }
-          }
-          return toDisplay;
-        }
-
-        function createIsSelectedFn(viewValue) {
-          var selectedSet;
-          if (multiple) {
-            if (trackFn && isArray(viewValue)) {
-
-              selectedSet = new HashMap([]);
-              for (var trackIndex = 0; trackIndex < viewValue.length; trackIndex++) {
-                // tracking by key
-                selectedSet.put(callExpression(trackFn, null, viewValue[trackIndex]), true);
-              }
-            } else {
-              selectedSet = new HashMap(viewValue);
-            }
-          } else if (trackFn) {
-            viewValue = callExpression(trackFn, null, viewValue);
-          }
-
-          return function isSelected(key, value) {
-            var compareValueFn;
-            if (trackFn) {
-              compareValueFn = trackFn;
-            } else if (selectAsFn) {
-              compareValueFn = selectAsFn;
-            } else {
-              compareValueFn = valueFn;
-            }
-
-            if (multiple) {
-              return isDefined(selectedSet.remove(callExpression(compareValueFn, key, value)));
-            } else {
-              return viewValue === callExpression(compareValueFn, key, value);
-            }
-          };
-        }
-
-        function scheduleRendering() {
-          if (!renderScheduled) {
-            scope.$$postDigest(render);
-            renderScheduled = true;
-          }
-        }
-
-        /**
-         * A new labelMap is created with each render.
-         * This function is called for each existing option with added=false,
-         * and each new option with added=true.
-         * - Labels that are passed to this method twice,
-         * (once with added=true and once with added=false) will end up with a value of 0, and
-         * will cause no change to happen to the corresponding option.
-         * - Labels that are passed to this method only once with added=false will end up with a
-         * value of -1 and will eventually be passed to selectCtrl.removeOption()
-         * - Labels that are passed to this method only once with added=true will end up with a
-         * value of 1 and will eventually be passed to selectCtrl.addOption()
-        */
-        function updateLabelMap(labelMap, label, added) {
-          labelMap[label] = labelMap[label] || 0;
-          labelMap[label] += (added ? 1 : -1);
-        }
-
-        function render() {
-          renderScheduled = false;
-
-          // Temporary location for the option groups before we render them
-          var optionGroups = {'':[]},
-              optionGroupNames = [''],
-              optionGroupName,
-              optionGroup,
-              option,
-              existingParent, existingOptions, existingOption,
-              viewValue = ctrl.$viewValue,
-              values = valuesFn(scope) || [],
-              keys = keyName ? sortedKeys(values) : values,
-              key,
-              value,
-              groupLength, length,
-              groupIndex, index,
-              labelMap = {},
-              selected,
-              isSelected = createIsSelectedFn(viewValue),
-              anySelected = false,
-              lastElement,
-              element,
-              label,
-              optionId;
-
-          trackKeysCache = {};
-
-          // We now build up the list of options we need (we merge later)
-          for (index = 0; length = keys.length, index < length; index++) {
-            key = index;
-            if (keyName) {
-              key = keys[index];
-              if (key.charAt(0) === '$') continue;
-            }
-            value = values[key];
-
-            optionGroupName = callExpression(groupByFn, key, value) || '';
-            if (!(optionGroup = optionGroups[optionGroupName])) {
-              optionGroup = optionGroups[optionGroupName] = [];
-              optionGroupNames.push(optionGroupName);
-            }
-
-            selected = isSelected(key, value);
-            anySelected = anySelected || selected;
-
-            label = callExpression(displayFn, key, value); // what will be seen by the user
-
-            // doing displayFn(scope, locals) || '' overwrites zero values
-            label = isDefined(label) ? label : '';
-            optionId = trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index);
-            if (trackFn) {
-              trackKeysCache[optionId] = key;
-            }
-
-            optionGroup.push({
-              // either the index into array or key from object
-              id: optionId,
-              label: label,
-              selected: selected                   // determine if we should be selected
-            });
-          }
-          if (!multiple) {
-            if (nullOption || viewValue === null) {
-              // insert null option if we have a placeholder, or the model is null
-              optionGroups[''].unshift({id:'', label:'', selected:!anySelected});
-            } else if (!anySelected) {
-              // option could not be found, we have to insert the undefined item
-              optionGroups[''].unshift({id:'?', label:'', selected:true});
-            }
-          }
-
-          // Now we need to update the list of DOM nodes to match the optionGroups we computed above
-          for (groupIndex = 0, groupLength = optionGroupNames.length;
-               groupIndex < groupLength;
-               groupIndex++) {
-            // current option group name or '' if no group
-            optionGroupName = optionGroupNames[groupIndex];
-
-            // list of options for that group. (first item has the parent)
-            optionGroup = optionGroups[optionGroupName];
-
-            if (optionGroupsCache.length <= groupIndex) {
-              // we need to grow the optionGroups
-              existingParent = {
-                element: optGroupTemplate.clone().attr('label', optionGroupName),
-                label: optionGroup.label
-              };
-              existingOptions = [existingParent];
-              optionGroupsCache.push(existingOptions);
-              selectElement.append(existingParent.element);
-            } else {
-              existingOptions = optionGroupsCache[groupIndex];
-              existingParent = existingOptions[0];  // either SELECT (no group) or OPTGROUP element
-
-              // update the OPTGROUP label if not the same.
-              if (existingParent.label != optionGroupName) {
-                existingParent.element.attr('label', existingParent.label = optionGroupName);
-              }
-            }
-
-            lastElement = null;  // start at the beginning
-            for (index = 0, length = optionGroup.length; index < length; index++) {
-              option = optionGroup[index];
-              if ((existingOption = existingOptions[index + 1])) {
-                // reuse elements
-                lastElement = existingOption.element;
-                if (existingOption.label !== option.label) {
-                  updateLabelMap(labelMap, existingOption.label, false);
-                  updateLabelMap(labelMap, option.label, true);
-                  lastElement.text(existingOption.label = option.label);
-                  lastElement.prop('label', existingOption.label);
-                }
-                if (existingOption.id !== option.id) {
-                  lastElement.val(existingOption.id = option.id);
-                }
-                // lastElement.prop('selected') provided by jQuery has side-effects
-                if (lastElement[0].selected !== option.selected) {
-                  lastElement.prop('selected', (existingOption.selected = option.selected));
-                  if (msie) {
-                    // See #7692
-                    // The selected item wouldn't visually update on IE without this.
-                    // Tested on Win7: IE9, IE10 and IE11. Future IEs should be tested as well
-                    lastElement.prop('selected', existingOption.selected);
-                  }
-                }
-              } else {
-                // grow elements
-
-                // if it's a null option
-                if (option.id === '' && nullOption) {
-                  // put back the pre-compiled element
-                  element = nullOption;
-                } else {
-                  // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
-                  // in this version of jQuery on some browser the .text() returns a string
-                  // rather then the element.
-                  (element = optionTemplate.clone())
-                      .val(option.id)
-                      .prop('selected', option.selected)
-                      .attr('selected', option.selected)
-                      .prop('label', option.label)
-                      .text(option.label);
-                }
-
-                existingOptions.push(existingOption = {
-                    element: element,
-                    label: option.label,
-                    id: option.id,
-                    selected: option.selected
-                });
-                updateLabelMap(labelMap, option.label, true);
-                if (lastElement) {
-                  lastElement.after(element);
-                } else {
-                  existingParent.element.append(element);
-                }
-                lastElement = element;
-              }
-            }
-            // remove any excessive OPTIONs in a group
-            index++; // increment since the existingOptions[0] is parent element not OPTION
-            while (existingOptions.length > index) {
-              option = existingOptions.pop();
-              updateLabelMap(labelMap, option.label, false);
-              option.element.remove();
-            }
-          }
-          // remove any excessive OPTGROUPs from select
-          while (optionGroupsCache.length > groupIndex) {
-            // remove all the labels in the option group
-            optionGroup = optionGroupsCache.pop();
-            for (index = 1; index < optionGroup.length; ++index) {
-              updateLabelMap(labelMap, optionGroup[index].label, false);
-            }
-            optionGroup[0].element.remove();
-          }
-          forEach(labelMap, function(count, label) {
-            if (count > 0) {
-              selectCtrl.addOption(label);
-            } else if (count < 0) {
-              selectCtrl.removeOption(label);
-            }
-          });
-        }
-      }
-    }
-  };
-}];
-
-var optionDirective = ['$interpolate', function($interpolate) {
-  var nullSelectCtrl = {
-    addOption: noop,
-    removeOption: noop
-  };
-
-  return {
-    restrict: 'E',
-    priority: 100,
-    compile: function(element, attr) {
-      if (isUndefined(attr.value)) {
-        var interpolateFn = $interpolate(element.text(), true);
-        if (!interpolateFn) {
-          attr.$set('value', element.text());
+      function updateOptionElement(option, element) {
+        option.element = element;
+        if (option.value !== element.value) element.value = option.selectValue;
+        if (option.label !== element.label) {
+          element.label = option.label;
+          element.textContent = option.label;
         }
       }
 
-      return function(scope, element, attr) {
-        var selectCtrlName = '$selectController',
-            parent = element.parent(),
-            selectCtrl = parent.data(selectCtrlName) ||
-              parent.parent().data(selectCtrlName); // in case we are in optgroup
-
-        if (!selectCtrl || !selectCtrl.databound) {
-          selectCtrl = nullSelectCtrl;
-        }
-
-        if (interpolateFn) {
-          scope.$watch(interpolateFn, function interpolateWatchAction(newVal, oldVal) {
-            attr.$set('value', newVal);
-            if (oldVal !== newVal) {
-              selectCtrl.removeOption(oldVal);
-            }
-            selectCtrl.addOption(newVal, element);
-          });
+      function addOrReuseElement(parent, current, type, templateElement) {
+        var element;
+        // Check whether we can reuse the next element
+        if (current && lowercase(current.nodeName) === type) {
+          // The next element is the right type so reuse it
+          element = current;
         } else {
-          selectCtrl.addOption(attr.value, element);
+          // The next element is not the right type so create a new one
+          element = templateElement.cloneNode(false);
+          if (!current) {
+            // There are no more elements so just append it to the select
+            parent.appendChild(element);
+          } else {
+            // The next element is not a group so insert the new one
+            parent.insertBefore(element, current);
+          }
+        }
+        return element;
+      }
+
+
+      function removeExcessElements(current) {
+        var next;
+        while (current) {
+          next = current.nextSibling;
+          jqLiteRemove(current);
+          current = next;
+        }
+      }
+
+
+      function skipEmptyAndUnknownOptions(current) {
+        var emptyOption_ = emptyOption && emptyOption[0];
+        var unknownOption_ = unknownOption && unknownOption[0];
+
+        if (emptyOption_ || unknownOption_) {
+          while (current &&
+                (current === emptyOption_ ||
+                current === unknownOption_)) {
+            current = current.nextSibling;
+          }
+        }
+        return current;
+      }
+
+
+      function updateOptions() {
+
+        options = ngOptions.getOptions();
+        var groupMap = {};
+        var currentElement = selectElement[0].firstChild;
+
+        // Ensure that the empty option is always there if it was explicitly provided
+        if (providedEmptyOption) {
+          selectElement.prepend(emptyOption);
         }
 
-        element.on('$destroy', function() {
-          selectCtrl.removeOption(attr.value);
+        currentElement = skipEmptyAndUnknownOptions(currentElement);
+
+        options.items.forEach(function updateOption(option) {
+          var group;
+          var groupElement;
+          var optionElement;
+
+          if (option.group) {
+
+            // This option is to live in a group
+            // See if we have already created this group
+            group = groupMap[option.group];
+
+            if (!group) {
+
+              // We have not already created this group
+              groupElement = addOrReuseElement(selectElement[0],
+                                               currentElement,
+                                               'optgroup',
+                                               optGroupTemplate);
+              // Move to the next element
+              currentElement = groupElement.nextSibling;
+
+              // Update the label on the group element
+              groupElement.label = option.group;
+
+              // Store it for use later
+              group = groupMap[option.group] = {
+                groupElement: groupElement,
+                currentOptionElement: groupElement.firstChild
+              };
+
+            }
+
+            // So now we have a group for this option we add the option to the group
+            optionElement = addOrReuseElement(group.groupElement,
+                                              group.currentOptionElement,
+                                              'option',
+                                              optionTemplate);
+            updateOptionElement(option, optionElement);
+            // Move to the next element
+            group.currentOptionElement = optionElement.nextSibling;
+
+          } else {
+
+            // This option is not in a group
+            optionElement = addOrReuseElement(selectElement[0],
+                                              currentElement,
+                                              'option',
+                                              optionTemplate);
+            updateOptionElement(option, optionElement);
+            // Move to the next element
+            currentElement = optionElement.nextSibling;
+          }
         });
-      };
+
+
+        // Now remove all excess options and group
+        Object.keys(groupMap).forEach(function(key) {
+          removeExcessElements(groupMap[key].currentOptionElement);
+        });
+        removeExcessElements(currentElement);
+
+        ngModelCtrl.$render();
+      }
+
     }
   };
 }];
