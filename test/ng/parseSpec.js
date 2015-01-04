@@ -3225,6 +3225,23 @@ describe('parser', function() {
           expect($parse('a[0][0].b')({a: [[{b: 'scope'}]]}, {b: 'locals'})).toBe('scope');
           expect($parse('a[0].b.c')({a: [{b: {c: 'scope'}}] }, {b: {c: 'locals'} })).toBe('scope');
         }));
+
+        it('should assign directly to locals when the local property exists', inject(function($parse) {
+          var s = {}, l = {};
+
+          $parse("a = 1")(s, l);
+          expect(s.a).toBe(1);
+          expect(l.a).toBeUndefined();
+
+          l.a = 2;
+          $parse("a = 0")(s, l);
+          expect(s.a).toBe(1);
+          expect(l.a).toBe(0);
+
+          $parse("toString = 1")(s, l);
+          expect(isFunction(s.toString)).toBe(true);
+          expect(l.toString).toBe(1);
+        }));
       });
 
       describe('literal', function() {

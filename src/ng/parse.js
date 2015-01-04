@@ -1298,7 +1298,7 @@ ASTInterpreter.prototype = {
     case AST.Identifier:
       ensureSafeMemberName(ast.name);
       return function(scope, locals, assign, inputs) {
-        var base = locals && locals.hasOwnProperty(ast.name) ? locals : scope;
+        var base = locals && (ast.name in locals) ? locals : scope;
         if (self.expensiveChecks || isPossiblyDangerousMemberName(ast.name)) {
           ensureSafeObject(value, self.expression);
         }
