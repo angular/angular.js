@@ -78,6 +78,19 @@ describe('jqLite', function() {
     });
 
 
+    it('should properly handle dash-delimited node names', function() {
+      var nodes = jqLite('<custom-element>Hello, world !</custom-element>');
+      expect(nodes.length).toBe(1);
+      expect(nodeName_(nodes)).toBe('custom-element');
+      expect(nodes.html()).toBe('Hello, world !');
+
+      nodes = jqLite('<tr-custom>Hello, world !</tr-custom>');
+      expect(nodes.length).toBe(1);
+      expect(nodeName_(nodes)).toBe('tr-custom');
+      expect(nodes.html()).toBe('Hello, world !');
+    });
+
+
     it('should allow creation of comment tags', function() {
       var nodes = jqLite('<!-- foo -->');
       expect(nodes.length).toBe(1);
