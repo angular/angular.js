@@ -2804,6 +2804,13 @@ describe('parser', function() {
         }));
 
         describe('literal expressions', function() {
+          it('should mark an empty expressions as literal', inject(function($parse) {
+            expect($parse('').literal).toBe(true);
+            expect($parse('   ').literal).toBe(true);
+            expect($parse('::').literal).toBe(true);
+            expect($parse('::    ').literal).toBe(true);
+          }));
+
           it('should only become stable when all the properties of an object have defined values', inject(function($parse, $rootScope, log) {
             var fn = $parse('::{foo: foo, bar: bar}');
             $rootScope.$watch(fn, function(value) { log(value); }, true);
@@ -3274,6 +3281,13 @@ describe('parser', function() {
       });
 
       describe('constant', function() {
+        it('should mark an empty expressions as constant', inject(function($parse) {
+          expect($parse('').constant).toBe(true);
+          expect($parse('   ').constant).toBe(true);
+          expect($parse('::').constant).toBe(true);
+          expect($parse('::    ').constant).toBe(true);
+        }));
+
         it('should mark scalar value expressions as constant', inject(function($parse) {
           expect($parse('12.3').constant).toBe(true);
           expect($parse('"string"').constant).toBe(true);

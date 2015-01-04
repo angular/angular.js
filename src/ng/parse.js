@@ -607,9 +607,12 @@ function findConstantAndWatchExpressions(ast, $filter) {
   var argsToWatch;
   switch (ast.type) {
   case AST.Program:
+    allConstants = true;
     forEach(ast.body, function(expr) {
       findConstantAndWatchExpressions(expr.expression, $filter);
+      allConstants = allConstants && expr.expression.constant;
     });
+    ast.constant = allConstants;
     break;
   case AST.Literal:
     ast.constant = true;
@@ -722,14 +725,15 @@ function assignableAST(ast) {
 }
 
 function isLiteral(ast) {
-  return ast.body.length === 1 && (
+  return ast.body.length === 0 ||
+      ast.body.length === 1 && (
       ast.body[0].expression.type === AST.Literal ||
       ast.body[0].expression.type === AST.ArrayExpression ||
       ast.body[0].expression.type === AST.ObjectExpression);
 }
 
 function isConstant(ast) {
-  return ast.body.length === 1 && ast.body[0].expression.constant;
+  return ast.constant;
 }
 
 function ASTCompiler(astBuilder, $filter) {
