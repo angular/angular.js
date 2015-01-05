@@ -459,7 +459,7 @@ function dateFilter($locale) {
       date = new Date(date);
     }
 
-    if (!isDate(date)) {
+    if (!isDate(date) || !isFinite(date.getTime())) {
       return date;
     }
 
