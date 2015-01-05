@@ -247,6 +247,11 @@ describe('filters', function() {
       expect(date('')).toEqual('');
     });
 
+    it('should ignore invalid dates', function() {
+      var invalidDate = new Date('abc');
+      expect(date(invalidDate)).toBe(invalidDate);
+    });
+
     it('should do basic filter', function() {
       expect(date(noon)).toEqual(date(noon, 'mediumDate'));
       expect(date(noon, '')).toEqual(date(noon, 'mediumDate'));
