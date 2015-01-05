@@ -42,6 +42,7 @@ function $TemplateRequestProvider() {
 
       return $http.get(tpl, httpOptions)
         .then(function(response) {
+          $templateCache.put(tpl, response.data);
           self.totalPendingRequests--;
           return response.data;
         }, handleError);
