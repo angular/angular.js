@@ -22,22 +22,37 @@
          angular.module('windowExample', [])
            .controller('ExampleController', ['$scope', '$window', function($scope, $window) {
              $scope.greeting = 'Hello, World!';
-             $scope.doGreeting = function(greeting) {
-               $window.alert(greeting);
+             $scope.doGreeting = function() {
+               $window.alert($scope.greeting);
+               $scope.greeting = '';
              };
            }]);
        </script>
        <div ng-controller="ExampleController">
          <input type="text" ng-model="greeting" />
-         <button ng-click="doGreeting(greeting)">ALERT</button>
+         <button ng-click="doGreeting()">ALERT</button>
        </div>
      </file>
      <file name="protractor.js" type="protractor">
-      it('should display the greeting in the input box', function() {
-       element(by.model('greeting')).sendKeys('Hello, E2E Tests');
-       // If we click the button it will block the test runner
-       // element(':button').click();
-      });
+       beforeEach(module(function($provide) {
+         // Mock $window
+         $provide.decorator('$window', function($delegate) {
+           // Use the original window as a prototype for the mock in end-to-end
+           // tests so that the parts of Angular that interact with the browser
+           // via $window won't break.
+           var decoratedWindow = Object.create($delegate);
+           // The browser's implementation of the alert function blocks the test
+           // runner, so replace it in the mock.
+           decoratedWindow.alert = this.alert = jasmine.createSpy('alert');
+           return decoratedWindow;
+         });
+       }));
+       it('should clear the input field after alert', function() {
+         element(by.model('greeting')).sendKeys('Hello, E2E Tests');
+         element(':button').click();
+         expect(this.alert).toHaveBeenCalled();
+         expect(element(by.model('greeting')).val()).toBe('');
+       });
      </file>
    </example>
  */
