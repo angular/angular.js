@@ -22,12 +22,12 @@ describe('$routeParams', function() {
     });
   });
 
-  it('should not publish screened param into a service', function () {
-    module(function ($routeProvider) {
+  it('should not publish screened param into a service', function() {
+    module(function($routeProvider) {
       $routeProvider.when('/bar/\\:barId', {});
     });
 
-    inject(function ($rootScope, $route, $location, $routeParams) {
+    inject(function($rootScope, $route, $location, $routeParams) {
       $location.path('/bar/123');
       $rootScope.$digest();
       expect($routeParams).toEqual({barId: undefined});
