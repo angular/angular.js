@@ -97,7 +97,7 @@ function classDirective(name, selector) {
 
     function arrayClasses(classVal) {
       if (isArray(classVal)) {
-        return classVal;
+        return classVal.join(' ').split(' ');
       } else if (isString(classVal)) {
         return classVal.split(' ');
       } else if (isObject(classVal)) {
