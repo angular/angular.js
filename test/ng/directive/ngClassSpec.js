@@ -88,6 +88,16 @@ describe('ngClass', function() {
   }));
 
 
+  it('should support adding multiple classes via a space delimited string inside an array', inject(function($rootScope, $compile) {
+    element = $compile('<div class="existing" ng-class="[\'A B\', \'C\']"></div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.hasClass('existing')).toBeTruthy();
+    expect(element.hasClass('A')).toBeTruthy();
+    expect(element.hasClass('B')).toBeTruthy();
+    expect(element.hasClass('C')).toBeTruthy();
+  }));
+
+
   it('should preserve class added post compilation with pre-existing classes', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
