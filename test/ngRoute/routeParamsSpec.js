@@ -22,6 +22,18 @@ describe('$routeParams', function() {
     });
   });
 
+  it('should not publish screened param into a service', function () {
+    module(function ($routeProvider) {
+      $routeProvider.when('/bar/\\:barId', {});
+    });
+
+    inject(function ($rootScope, $route, $location, $routeParams) {
+      $location.path('/bar/123');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({barId: undefined});
+    });
+  });
+
   it('should correctly extract the params when a param name is part of the route',  function() {
     module(function($routeProvider) {
       $routeProvider.when('/bar/:foo/:bar', {});
