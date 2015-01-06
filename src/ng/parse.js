@@ -644,9 +644,7 @@ Parser.prototype = {
 
   unary: function() {
     var token;
-    if (this.expect('+')) {
-      return this.primary();
-    } else if ((token = this.expect('-'))) {
+    if ((token = this.expect('-', '+'))) {
       return this.binaryFn(Parser.ZERO, token.text, this.unary());
     } else if ((token = this.expect('!'))) {
       return this.unaryFn(token.text, this.unary());

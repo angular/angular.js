@@ -247,7 +247,7 @@ describe('parser', function() {
       }));
 
       it('should parse expressions', function() {
-        /*jshint -W006, -W007 */
+        /*jshint -W006, -W007, -W018 */
         expect(scope.$eval("-1")).toEqual(-1);
         expect(scope.$eval("1 + 2.5")).toEqual(3.5);
         expect(scope.$eval("1 + -2.5")).toEqual(-1.5);
@@ -255,6 +255,12 @@ describe('parser', function() {
         expect(scope.$eval("0--1+1.5")).toEqual(0 - -1 + 1.5);
         expect(scope.$eval("-0--1++2*-3/-4")).toEqual(-0 - -1 + +2 * -3 / -4);
         expect(scope.$eval("1/2*3")).toEqual(1 / 2 * 3);
+        expect(scope.$eval("-+0")).toBe(-+0);
+        expect(scope.$eval("-!0")).toBe(-!0);
+        expect(scope.$eval("+!0")).toBe(+!0);
+        expect(scope.$eval("+-+-+-0")).toBe(+-+-+-0);
+        expect(scope.$eval("+(+1)")).toEqual(+(+1));
+        expect(scope.$eval("!+!-+-+!-!!!!0")).toBe(!+!-+-+!-!!!!0);
       });
 
       it('should parse comparison', function() {
@@ -659,6 +665,11 @@ describe('parser', function() {
       it('should evaluate sum with undefined', function() {
         expect(scope.$eval('1+undefined')).toEqual(1);
         expect(scope.$eval('undefined+1')).toEqual(1);
+      });
+
+      it('should evaluate unary negate/add of undefined', function() {
+        expect(scope.$eval('+undefined')).toEqual(0);
+        expect(scope.$eval('-undefined')).toEqual(0);
       });
 
       it('should throw exception on non-closed bracket', function() {
