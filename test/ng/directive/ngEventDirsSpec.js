@@ -105,7 +105,7 @@ describe('event directives', function() {
         element.triggerHandler('click');
       }).toThrowMinErr(
               '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is disallowed! ' +
-              'Expression: e = $event.target');
+              'Expression: $event.target');
     }));
   });
 

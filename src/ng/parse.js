@@ -831,14 +831,14 @@ function isPossiblyDangerousMemberName(name) {
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
  */
-function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, expensiveChecks) {
+function cspSafeGetterFn(key0, key1, key2, key3, key4, path, fullExp, expensiveChecks) {
   ensureSafeMemberName(key0, fullExp);
   ensureSafeMemberName(key1, fullExp);
   ensureSafeMemberName(key2, fullExp);
   ensureSafeMemberName(key3, fullExp);
   ensureSafeMemberName(key4, fullExp);
   var eso = function(o) {
-    return ensureSafeObject(o, fullExp);
+    return ensureSafeObject(o, path);
   };
   var eso0 = (expensiveChecks || isPossiblyDangerousMemberName(key0)) ? eso : identity;
   var eso1 = (expensiveChecks || isPossiblyDangerousMemberName(key1)) ? eso : identity;
@@ -872,9 +872,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, expensiveChecks)
   };
 }
 
-function getterFnWithEnsureSafeObject(fn, fullExpression) {
+function getterFnWithEnsureSafeObject(fn, path) {
   return function(s, l) {
-    return fn(s, l, ensureSafeObject, fullExpression);
+    return fn(s, l, ensureSafeObject, path);
   };
 }
 
@@ -891,13 +891,13 @@ function getterFn(path, options, fullExp) {
   // http://jsperf.com/angularjs-parse-getter/6
   if (options.csp) {
     if (pathKeysLength < 6) {
-      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp, expensiveChecks);
+      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], path, fullExp, expensiveChecks);
     } else {
       fn = function cspSafeGetter(scope, locals) {
         var i = 0, val;
         do {
           val = cspSafeGetterFn(pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++],
-                                pathKeys[i++], fullExp, expensiveChecks)(scope, locals);
+                                pathKeys[i++], path, fullExp, expensiveChecks)(scope, locals);
 
           locals = undefined; // clear after first iteration
           scope = val;
@@ -908,7 +908,7 @@ function getterFn(path, options, fullExp) {
   } else {
     var code = '';
     if (expensiveChecks) {
-      code += 's = eso(s, fe);\nl = eso(l, fe);\n';
+      code += 's = eso(s, p);\nl = eso(l, p);\n';
     }
     var needsEnsureSafeObject = expensiveChecks;
     forEach(pathKeys, function(key, index) {
@@ -919,7 +919,7 @@ function getterFn(path, options, fullExp) {
                       // but if we are first then we check locals first, and if so read it first
                       : '((l&&l.hasOwnProperty("' + key + '"))?l:s)') + '.' + key;
       if (expensiveChecks || isPossiblyDangerousMemberName(key)) {
-        lookupJs = 'eso(' + lookupJs + ', fe)';
+        lookupJs = 'eso(' + lookupJs + ', p)';
         needsEnsureSafeObject = true;
       }
       code += 'if(s == null) return undefined;\n' +
@@ -928,11 +928,11 @@ function getterFn(path, options, fullExp) {
     code += 'return s;';
 
     /* jshint -W054 */
-    var evaledFnGetter = new Function('s', 'l', 'eso', 'fe', code); // s=scope, l=locals, eso=ensureSafeObject
+    var evaledFnGetter = new Function('s', 'l', 'eso', 'p', code); // s=scope, l=locals, eso=ensureSafeObject, p=path
     /* jshint +W054 */
     evaledFnGetter.toString = valueFn(code);
     if (needsEnsureSafeObject) {
-      evaledFnGetter = getterFnWithEnsureSafeObject(evaledFnGetter, fullExp);
+      evaledFnGetter = getterFnWithEnsureSafeObject(evaledFnGetter, path);
     }
     fn = evaledFnGetter;
   }

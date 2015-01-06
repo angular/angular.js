@@ -742,7 +742,7 @@ describe('parser', function() {
               scope.$eval('{}.toString.constructor');
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                    'Expression: {}.toString.constructor');
+                    'Expression: toString.constructor');
 
           });
 
@@ -761,7 +761,7 @@ describe('parser', function() {
               scope.$eval('{}.toString.constructor("alert(1)")');
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                    'Expression: {}.toString.constructor("alert(1)")');
+                    'Expression: constructor');
 
           });
 
@@ -1141,6 +1141,20 @@ describe('parser', function() {
               ')()' +
               '');
           }).toThrow();
+        });
+
+        it('should not output another expression when throwing from shared sub expressions', function() {
+          expect(function() { scope.$eval('1 + {}.toString.constructor'); })
+            .toThrowMinErr(
+              '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+              'Expression: toString.constructor'
+            );
+
+          expect(function() { scope.$eval('2 + {}.toString.constructor'); })
+            .toThrowMinErr(
+              '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+              'Expression: toString.constructor'
+            );
         });
       });
 
