@@ -2,9 +2,10 @@ angular.
     module('HeaderController', []).
     controller('HeaderController', HeaderController);
 
-HeaderController.$inject = [];
 function HeaderController() {
-  this.learnItems = [
+  var vm = this;
+
+  vm.learnItems = [
     {label: 'Why AngularJS?', url: '//angularjs.org/'},
     {label: 'Watch', url: '//www.youtube.com/user/angularjs'},
     {label: 'Tutorial', url: 'tutorial'},
@@ -13,7 +14,7 @@ function HeaderController() {
     {label: 'FAQ', url: 'misc/faq'}
   ];
 
-  this.developItems = [
+  vm.developItems = [
     {label: 'Why AngularJS?', url: '//angularjs.org/'},
     {label: 'Tutorial', url: 'tutorial'},
     {label: 'Developer Guide', url: 'guide'},
@@ -23,7 +24,7 @@ function HeaderController() {
     {label: 'Download', url: '//code.angularjs.org/'}
   ];
 
-  this.discussItems = [
+  vm.discussItems = [
     {label: 'Blog', url: '//blog.angularjs.org'},
     {label: 'Mailing List', url: '//groups.google.com/group/angular'},
     {label: 'Chat Room', url: '//webchat.freenode.net/?channels=angularjs&uio=d4'},
