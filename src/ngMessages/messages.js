@@ -380,7 +380,7 @@ angular.module('ngMessages', [])
               });
             }
           },
-          detach: function(now) {
+          detach: function() {
             if (element) {
               $animate.leave(element);
               element = null;
