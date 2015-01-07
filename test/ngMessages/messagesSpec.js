@@ -41,7 +41,40 @@ describe('ngMessages', function() {
     expect(element.text()).toContain('Message is set');
   }));
 
-  it('should use the data attribute when an element directive is used',
+  it('should render the same message if multiple message keys match', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-messages="col">' +
+                       '  <div ng-message="one, two, three">Message is set</div>' +
+                       '</div>')($rootScope);
+    $rootScope.$digest();
+
+    expect(element.text()).not.toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { one: true };
+    });
+
+    expect(element.text()).toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { two: true, one: false };
+    });
+
+    expect(element.text()).toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { three: true, two: false };
+    });
+
+    expect(element.text()).toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { three: false };
+    });
+
+    expect(element.text()).not.toContain('Message is set');
+  }));
+
+  it('should use the when attribute when an element directive is used',
     inject(function($rootScope, $compile) {
 
     element = $compile('<ng-messages for="col">' +
@@ -56,6 +89,111 @@ describe('ngMessages', function() {
     });
 
     expect(element.text()).toContain('Message is set');
+  }));
+
+  it('should render the same message if multiple message keys match based on the when attribute', inject(function($rootScope, $compile) {
+    element = $compile('<ng-messages for="col">' +
+                       '  <ng-message when=" one two three ">Message is set</div>' +
+                       '</ng-messages>')($rootScope);
+    $rootScope.$digest();
+
+    expect(element.text()).not.toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { one: true };
+    });
+
+    expect(element.text()).toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { two: true, one: false };
+    });
+
+    expect(element.text()).toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { three: true, two: false };
+    });
+
+    expect(element.text()).toContain('Message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { three: false };
+    });
+
+    expect(element.text()).not.toContain('Message is set');
+  }));
+
+  it('should allow a dynamic expression to be set when ng-message-exp is used',
+    inject(function($rootScope, $compile) {
+
+    element = $compile('<div ng-messages="col">' +
+                       '  <div ng-message-exp="variable">Message is crazy</div>' +
+                       '</div>')($rootScope);
+    $rootScope.$digest();
+
+    expect(element.text()).not.toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.variable = 'error';
+      $rootScope.col = { error: true };
+    });
+
+    expect(element.text()).toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { error: false, failure: true };
+    });
+
+    expect(element.text()).not.toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.variable = ['failure'];
+    });
+
+    expect(element.text()).toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.variable = null;
+    });
+
+    expect(element.text()).not.toContain('Message is crazy');
+  }));
+
+  it('should allow a dynamic expression to be set when the when-exp attribute is used',
+    inject(function($rootScope, $compile) {
+
+    element = $compile('<ng-messages for="col">' +
+                       '  <ng-message when-exp="variable">Message is crazy</ng-message>' +
+                       '</ng-messages>')($rootScope);
+    $rootScope.$digest();
+
+    expect(element.text()).not.toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.variable = 'error, failure';
+      $rootScope.col = { error: true };
+    });
+
+    expect(element.text()).toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { error: false, failure: true };
+    });
+
+    expect(element.text()).toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.variable = [];
+    });
+
+    expect(element.text()).not.toContain('Message is crazy');
+
+    $rootScope.$apply(function() {
+      $rootScope.variable = null;
+    });
+
+    expect(element.text()).not.toContain('Message is crazy');
   }));
 
   they('should render empty when $prop is used as a collection value',
@@ -189,6 +327,65 @@ describe('ngMessages', function() {
     expect(element.hasClass('ng-inactive')).toBe(false);
   }));
 
+  it('should automatically re-render the messages when other directives dynmically change them',
+    inject(function($rootScope, $compile) {
+
+    element = $compile('<div ng-messages="col">' +
+                       '  <div ng-message="primary">Enter something</div>' +
+                       '  <div ng-repeat="item in items">' +
+                       '    <div ng-message-exp="item.name">{{ item.text }}</div>' +
+                       '  </div>' +
+                       '</div>')($rootScope);
+
+    $rootScope.$apply(function() {
+      $rootScope.col = {};
+      $rootScope.items = [
+        { text: 'Your age is incorrect', name: 'age' },
+        { text: 'You\'re too tall man!', name: 'height' },
+        { text: 'Your hair is too long', name: 'hair' }
+      ];
+    });
+
+    expect(messageChildren().length).toBe(0);
+    expect(trim(element.text())).toEqual("");
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { hair: true };
+    });
+
+    expect(messageChildren().length).toBe(1);
+    expect(trim(element.text())).toEqual("Your hair is too long");
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { age: true, hair: true};
+    });
+
+    expect(messageChildren().length).toBe(1);
+    expect(trim(element.text())).toEqual("Your age is incorrect");
+
+    $rootScope.$apply(function() {
+      // remove the age!
+      $rootScope.items.shift();
+    });
+
+    expect(messageChildren().length).toBe(1);
+    expect(trim(element.text())).toEqual("Your hair is too long");
+
+    $rootScope.$apply(function() {
+      // remove the hair!
+      $rootScope.items.length = 0;
+      $rootScope.col.primary = true;
+    });
+
+    expect(messageChildren().length).toBe(1);
+    expect(trim(element.text())).toEqual("Enter something");
+
+    function messageChildren() {
+      return element[0].querySelectorAll('[ng-message], [ng-message-exp]');
+    }
+  }));
+
+
   it('should render animations when the active/inactive classes are added/removed', function() {
     module('ngAnimate');
     module('ngAnimateMock');
@@ -219,10 +416,12 @@ describe('ngMessages', function() {
 
   describe('when including templates', function() {
     they('should load a remote template using $prop',
-      {'<div ng-messages ng-messages-include="...">':
-          '<div ng-messages="data" ng-messages-include="abc.html"></div>',
-       '<ng-messages include="...">':
-          '<ng-messages for="data" include="abc.html"></ng-messages>'},
+      {'<div ng-messages-include="...">': '<div ng-messages="data">' +
+                                            '<div ng-messages-include="abc.html"></div>' +
+                                          '</div>',
+       '<ng-messages-include src="...">': '<ng-messages for="data">' +
+                                            '<ng-messages-include src="abc.html"></ng-messages-include>' +
+                                          '</ng-messages>'},
     function(html) {
       inject(function($compile, $rootScope, $templateCache) {
         $templateCache.put('abc.html', '<div ng-message="a">A</div>' +
@@ -259,7 +458,7 @@ describe('ngMessages', function() {
 
       expect($templateCache.get('tpl')).toBeUndefined();
 
-      element = $compile('<div ng-messages="data" ng-messages-include="tpl"></div>')($rootScope);
+      element = $compile('<div ng-messages="data"><div ng-messages-include="tpl"></div></div>')($rootScope);
 
       $rootScope.$digest();
       $httpBackend.flush();
@@ -270,9 +469,11 @@ describe('ngMessages', function() {
     it('should re-render the messages after download without an extra digest',
       inject(function($rootScope, $compile, $httpBackend) {
 
-      $httpBackend.expect('GET', 'my-messages').respond(201,'<div ng-message="required">You did not enter a value</div>');
+      $httpBackend.expect('GET', 'my-messages').respond(201,
+        '<div ng-message="required">You did not enter a value</div>');
 
-      element = $compile('<div ng-messages="data" ng-messages-include="my-messages">' +
+      element = $compile('<div ng-messages="data">' +
+                         '  <div ng-messages-include="my-messages"></div>' +
                          '  <div ng-message="failed">Your value is that of failure</div>' +
                          '</div>')($rootScope);
 
@@ -287,20 +488,22 @@ describe('ngMessages', function() {
       expect(trim(element.text())).toEqual("Your value is that of failure");
 
       $httpBackend.flush();
+      $rootScope.$digest();
 
       expect(element.children().length).toBe(1);
       expect(trim(element.text())).toEqual("You did not enter a value");
     }));
 
-    it('should allow for overriding the remote template messages within the element',
+    it('should allow for overriding the remote template messages within the element depending on where the remote template is placed',
       inject(function($compile, $rootScope, $templateCache) {
 
       $templateCache.put('abc.html', '<div ng-message="a">A</div>' +
                                      '<div ng-message="b">B</div>' +
                                      '<div ng-message="c">C</div>');
 
-      element = $compile('<div ng-messages="data" ng-messages-include="abc.html">' +
+      element = $compile('<div ng-messages="data">' +
                          '  <div ng-message="a">AAA</div>' +
+                         '  <div ng-messages-include="abc.html"></div>' +
                          '  <div ng-message="c">CCC</div>' +
                          '</div>')($rootScope);
 
@@ -332,50 +535,7 @@ describe('ngMessages', function() {
       });
 
       expect(element.children().length).toBe(1);
-      expect(trim(element.text())).toEqual("CCC");
-    }));
-
-    it('should retain the order of the remote template\'s messages when overriding within the element',
-      inject(function($compile, $rootScope, $templateCache) {
-
-      $templateCache.put('abc.html', '<div ng-message="c">C</div>' +
-                                     '<div ng-message="a">A</div>' +
-                                     '<div ng-message="b">B</div>');
-
-      element = $compile('<div ng-messages="data" ng-messages-include="abc.html">' +
-                         '  <div ng-message="a">AAA</div>' +
-                         '  <div ng-message="c">CCC</div>' +
-                         '</div>')($rootScope);
-
-      $rootScope.$apply(function() {
-        $rootScope.data = {
-          'a': 1,
-          'b': 2,
-          'c': 3
-        };
-      });
-
-      expect(element.children().length).toBe(1);
-      expect(trim(element.text())).toEqual("CCC");
-
-      $rootScope.$apply(function() {
-        $rootScope.data = {
-          'a': 1,
-          'b': 2
-        };
-      });
-
-      expect(element.children().length).toBe(1);
-      expect(trim(element.text())).toEqual("AAA");
-
-      $rootScope.$apply(function() {
-        $rootScope.data = {
-          'b': 3
-        };
-      });
-
-      expect(element.children().length).toBe(1);
-      expect(trim(element.text())).toEqual("B");
+      expect(trim(element.text())).toEqual("C");
     }));
 
   });
@@ -412,9 +572,9 @@ describe('ngMessages', function() {
                                      '<div ng-message="y">Y</div>' +
                                      '<div ng-message="z">Z</div>');
 
-      element = $compile('<div ng-messages="data" ' +
-                         'ng-messages-multiple="true" ' +
-                         'ng-messages-include="xyz.html"></div>')($rootScope);
+      element = $compile('<div ng-messages="data" ng-messages-multiple="true">' +
+                           '<div ng-messages-include="xyz.html"></div>' +
+                         '</div>')($rootScope);
 
       $rootScope.$apply(function() {
         $rootScope.data = {
@@ -442,11 +602,10 @@ describe('ngMessages', function() {
                                      '<div ng-message="y">Y</div>' +
                                      '<div ng-message="z">Z</div>');
 
-      element = $compile('<div ng-messages="data" ' +
-                              'ng-messages-multiple="true" ' +
-                              'ng-messages-include="xyz.html">' +
-                                '<div ng-message="y">YYY</div>' +
-                                '<div ng-message="z">ZZZ</div>' +
+      element = $compile('<div ng-messages="data" ng-messages-multiple="true">' +
+                            '<div ng-message="y">YYY</div>' +
+                            '<div ng-message="z">ZZZ</div>' +
+                            '<div ng-messages-include="xyz.html"></div>' +
                          '</div>')($rootScope);
 
       $rootScope.$apply(function() {
@@ -458,14 +617,14 @@ describe('ngMessages', function() {
       });
 
       expect(element.children().length).toBe(2);
-      expect(s(element.text())).toEqual("XZZZ");
+      expect(s(element.text())).toEqual("ZZZX");
 
       $rootScope.$apply(function() {
         $rootScope.data.y = {};
       });
 
       expect(element.children().length).toBe(3);
-      expect(s(element.text())).toEqual("XYYYZZZ");
+      expect(s(element.text())).toEqual("YYYZZZX");
     }));
   });
 });
