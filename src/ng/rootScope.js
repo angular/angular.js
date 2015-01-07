@@ -133,6 +133,7 @@ function $RootScopeProvider() {
                      this.$$childHead = this.$$childTail = null;
       this.$root = this;
       this.$$destroyed = false;
+      this.$$suspended = false;
       this.$$listeners = {};
       this.$$listenerCount = {};
       this.$$isolateBindings = null;
@@ -751,7 +752,7 @@ function $RootScopeProvider() {
 
           traverseScopesLoop:
           do { // "traverse the scopes" loop
-            if ((watchers = current.$$watchers)) {
+            if ((watchers = !current.$$suspended && current.$$watchers)) {
               // process our watches
               length = watchers.length;
               while (length--) {
@@ -794,7 +795,7 @@ function $RootScopeProvider() {
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
             // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead ||
+            if (!(next = (!current.$$suspended && current.$$childHead ||
                 (current !== target && current.$$nextSibling)))) {
               while (current !== target && !(next = current.$$nextSibling)) {
                 current = current.$parent;
@@ -825,6 +826,35 @@ function $RootScopeProvider() {
         }
       },
 
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$suspend
+       * @kind function
+       *
+       * @description
+       * Suspend watchers of this scope subtree so that they will not be invoked during digest.
+       *
+       * This can be used to optimize your application when you know that running those watchers
+       * is redundant.
+       */
+      $suspend: function() {
+        this.$$suspended = true;
+      },
+
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$resume
+       * @kind function
+       *
+       * @description
+       * Resume watchers of this scope subtree in case it was suspended.
+       *
+       * It is recommended to digest on this scope after it is resumed to catch any modifications
+       * that might have happened while it was suspended.
+       */
+      $resume: function() {
+        this.$$suspended = false;
+      },
 
       /**
        * @ngdoc event
