@@ -165,7 +165,7 @@ encoded.
 
 `$location` service has two configuration modes which control the format of the URL in the browser
 address bar: **Hashbang mode** (the default) and the **HTML5 mode** which is based on using the
-HTML5 [History API](http://www.w3.org/TR/html5/introduction.html#history-0). Applications use the same API in
+HTML5 [history API](http://www.w3.org/TR/html5/browsers.html#history). Applications use the same API in
 both modes and the `$location` service will work with appropriate URL segments and browser APIs to
 facilitate the browser URL change and history management.
 
@@ -247,7 +247,7 @@ it('should show example', inject(
 
 In HTML5 mode, the `$location` service getters and setters interact with the browser URL address
 through the HTML5 history API. This allows for use of regular URL path and search segments,
-instead of their hashbang equivalents. If the HTML5 History API is not supported by a browser, the
+instead of their hashbang equivalents. If the HTML5 history API is not supported by a browser, the
 `$location` service will fall back to using the hashbang URLs automatically. This frees you from
 having to worry about whether the browser displaying your app supports the history API  or not; the
 `$location` service transparently uses the best available option.
