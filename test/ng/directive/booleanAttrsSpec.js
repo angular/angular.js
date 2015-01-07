@@ -42,6 +42,22 @@ describe('boolean attr directives', function() {
   }));
 
 
+  it('should not bind checked when ngModel is present', inject(function($rootScope, $compile) {
+    // test for https://github.com/angular/angular.js/issues/10662
+    element = $compile('<input type="checkbox" ng-model="value" ng-false-value="\'false\'" ' +
+      'ng-true-value="\'true\'" ng-checked="value" />')($rootScope);
+    $rootScope.value = 'true';
+    $rootScope.$digest();
+    expect(element[0].checked).toBe(true);
+    browserTrigger(element, 'click');
+    expect(element[0].checked).toBe(false);
+    expect($rootScope.value).toBe('false');
+    browserTrigger(element, 'click');
+    expect(element[0].checked).toBe(true);
+    expect($rootScope.value).toBe('true');
+  }));
+
+
   it('should bind selected', inject(function($rootScope, $compile) {
     element = $compile('<select><option value=""></option><option ng-selected="isSelected">Greetings!</option></select>')($rootScope);
     jqLite(document.body).append(element);
