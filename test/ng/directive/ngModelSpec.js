@@ -1733,6 +1733,34 @@ describe('ngModelOptions attributes', function() {
   });
 
 
+  it('should allow sharing options between multiple inputs', function() {
+    $rootScope.options = {updateOn: 'default'};
+    var inputElm = helper.compileInput(
+        '<input type="text" ng-model="name1" name="alias1" ' +
+          'ng-model-options="options"' +
+        '/>' +
+        '<input type="text" ng-model="name2" name="alias2" ' +
+          'ng-model-options="options"' +
+        '/>');
+
+    helper.changeGivenInputTo(inputElm.eq(0), 'a');
+    helper.changeGivenInputTo(inputElm.eq(1), 'b');
+    expect($rootScope.name1).toEqual('a');
+    expect($rootScope.name2).toEqual('b');
+  });
+
+
+  it('should hold a copy of the options object', function() {
+    $rootScope.options = {updateOn: 'default'};
+    var inputElm = helper.compileInput(
+        '<input type="text" ng-model="name" name="alias" ' +
+          'ng-model-options="options"' +
+        '/>');
+    expect($rootScope.options).toEqual({updateOn: 'default'});
+    expect($rootScope.form.alias.$options).not.toBe($rootScope.options);
+  });
+
+
   it('should allow overriding the model update trigger event on checkboxes', function() {
     var inputElm = helper.compileInput(
         '<input type="checkbox" ng-model="checkbox" ' +
