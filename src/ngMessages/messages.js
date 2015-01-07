@@ -1,5 +1,13 @@
 'use strict';
 
+/* jshint ignore:start */
+// this code is in the core, but not in angular-messages.js
+var isArray = angular.isArray;
+var forEach = angular.forEach;
+var isString = angular.isString;
+var jqLite = angular.element;
+/* jshint ignore:end */
+
 /**
  * @ngdoc module
  * @name ngMessages
@@ -12,8 +20,8 @@
  * `ngMessage` directives are designed to handle the complexity, inheritance and priority
  * sequencing based on the order of how the messages are defined in the template.
  *
- * Currently, the ngMessages module only contains the code for the `ngMessages`
- * and `ngMessage` directives.
+ * Currently, the ngMessages module only contains the code for the `ngMessages`, `ngMessagesInclude`
+ * `ngMessage` and `ngMessageExp` directives.
  *
  * # Usage
  * The `ngMessages` directive listens on a key/value collection which is set on the ngMessages attribute.
@@ -26,7 +34,9 @@
  *   <input type="text" ng-model="field" name="myField" required minlength="5" />
  *   <div ng-messages="myForm.myField.$error">
  *     <div ng-message="required">You did not enter a field</div>
- *     <div ng-message="minlength">The value entered is too short</div>
+ *     <div ng-message="minlength, maxlength">
+ *       Your email must be between 5 and 100 characters long
+ *     </div>
  *   </div>
  * </form>
  * ```
@@ -52,7 +62,11 @@
  * ngMessages directive to make this happen.
  *
  * ```html
+ * <!-- attribute-style usage -->
  * <div ng-messages="myForm.myField.$error" ng-messages-multiple>...</div>
+ *
+ * <!-- element-style usage -->
+ * <ng-messages for="myForm.myField.$error" multiple>...</ng-messages>
  * ```
  *
  * ## Reusing and Overriding Messages
@@ -65,7 +79,10 @@
  *   <div ng-message="required">This field is required</div>
  *   <div ng-message="minlength">This field is too short</div>
  * </script>
- * <div ng-messages="myForm.myField.$error" ng-messages-include="error-messages"></div>
+ *
+ * <div ng-messages="myForm.myField.$error">
+ *   <div ng-messages-include="error-messages"></div>
+ * </div>
  * ```
  *
  * However, including generic messages may not be useful enough to match all input fields, therefore,
@@ -87,12 +104,17 @@
  *          minlength="5"
  *          required />
  *
- *   <div ng-messages="myForm.myEmail.$error" ng-messages-include="my-custom-messages">
+ *   <!-- any ng-message elements that appear BEFORE the ng-messages-include will
+ *        override the messages present in the ng-messages-include template -->
+ *   <div ng-messages="myForm.myEmail.$error">
  *     <!-- this required message has overridden the template message -->
  *     <div ng-message="required">You did not enter your email address</div>
  *
  *     <!-- this is a brand new message and will appear last in the prioritization -->
  *     <div ng-message="email">Your email address is invalid</div>
+ *
+ *     <!-- and here are the generic error messages -->
+ *     <div ng-messages-include="error-messages"></div>
  *   </div>
  * </form>
  * ```
@@ -102,10 +124,65 @@
  * email addresses, date fields, autocomplete inputs, etc...), specialized error messages can be applied
  * while more generic messages can be used to handle other, more general input errors.
  *
+ * ## Dynamic Messaging
+ * ngMessages also supports using expressions to dynamically change key values. Using arrays and
+ * repeaters to list messages is also supported. This means that the code below will be able to
+ * fully adapt itself and display the appropriate message when any of the expression data changes:
+ *
+ * ```html
+ * <form name="myForm">
+ *   <input type="email"
+ *          name="myEmail"
+ *          ng-model="email"
+ *          minlength="5"
+ *          required />
+ *
+ *   <div ng-messages="myForm.myEmail.$error">
+ *     <div ng-message="required">You did not enter your email address</div>
+ *     <div ng-repeat="errorMessage in errorMessages">
+ *       <!-- use ng-message-exp for a message whose key is given by an expression -->
+ *       <div ng-message-exp="errorMessage.type">{{ errorMessage.text }}</div>
+ *     </div>
+ *   </div>
+ * </form>
+ * ```
+ *
+ * The `errorMessage.type` expression can be a string value or it can be an array so
+ * that multiple errors can be associated with a single error message:
+ *
+ * ```html
+ *  <input type="email"
+ *         ng-model="data.email"
+ *         name="myEmail"
+ *         ng-minlength="5"
+ *         ng-maxlength="100"
+ *         required />
+ *   <div ng-messages="myForm.myEmail.$error">
+ *     <div ng-message-exp="'required'">You did not enter your email address</div>
+ *     <div ng-message-exp="['minlength', 'maxlength]">
+ *       Your email must be between 5 and 100 characters long
+ *     </div>
+ *   </div>
+ * ```
+ *
+ * Feel free to use other structural directives such as ng-if and ng-switch to further control
+ * what messages are active and when. Be careful, if you place ng-message on the same element
+ * as these structural directives, Angular may not be able to determine if a message is active
+ * or not. Therefore it is best to place the ng-message on a child element of the structural
+ * directive.
+ *
+ * ```html
+ * <div ng-messages="myForm.myEmail.$error">
+ *   <div ng-if="showRequiredError">
+ *     <div ng-message="required">Please enter something</div>
+ *   </div>
+ * </div>
+ * ```
+ *
  * ## Animations
- * If the `ngAnimate` module is active within the application then both the `ngMessages` and
- * `ngMessage` directives will trigger animations whenever any messages are added and removed
- * from the DOM by the `ngMessages` directive.
+ * If the `ngAnimate` module is active within the application then the `ngMessages`, `ngMessage` and
+ * `ngMessageExp` directives will trigger animations whenever any messages are added and removed from
+ * the DOM by the `ngMessages` directive.
  *
  * Whenever the `ngMessages` directive contains one or more visible messages then the `.ng-active` CSS
  * class will be added to the element. The `.ng-inactive` CSS class will be applied when there are no
@@ -171,7 +248,7 @@ angular.module('ngMessages', [])
     * messages use the `ngMessage` directive and will be inserted/removed from the page depending
     * on if they're present within the key/value object. By default, only one message will be displayed
     * at a time and this depends on the prioritization of the messages within the template. (This can
-    * be changed by using the ng-messages-multiple on the directive container.)
+    * be changed by using the `ng-messages-multiple` or `multiple` attribute on the directive container.)
     *
     * A remote template can also be used to promote message reusability and messages can also be
     * overridden.
@@ -182,23 +259,22 @@ angular.module('ngMessages', [])
     * ```html
     * <!-- using attribute directives -->
     * <ANY ng-messages="expression">
-    *   <ANY ng-message="keyValue1">...</ANY>
-    *   <ANY ng-message="keyValue2">...</ANY>
-    *   <ANY ng-message="keyValue3">...</ANY>
+    *   <ANY ng-message="stringValue">...</ANY>
+    *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
+    *   <ANY ng-message-exp="expressionValue">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
     * <ng-messages for="expression">
-    *   <ng-message when="keyValue1">...</ng-message>
-    *   <ng-message when="keyValue2">...</ng-message>
-    *   <ng-message when="keyValue3">...</ng-message>
+    *   <ng-message when="stringValue">...</ng-message>
+    *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
+    *   <ng-message when-exp="expressionValue">...</ng-message>
     * </ng-messages>
     * ```
     *
     * @param {string} ngMessages an angular expression evaluating to a key/value object
     *                 (this is typically the $error object on an ngModel instance).
     * @param {string=} ngMessagesMultiple|multiple when set, all messages will be displayed with true
-    * @param {string=} ngMessagesInclude|include when set, the specified template will be included into the ng-messages container
     *
     * @example
     * <example name="ngMessages-directive" module="ngMessagesExample"
@@ -228,91 +304,226 @@ angular.module('ngMessages', [])
     *   </file>
     * </example>
     */
-  .directive('ngMessages', ['$compile', '$animate', '$templateRequest',
-                   function($compile,    $animate,   $templateRequest) {
-    var ACTIVE_CLASS = 'ng-active';
-    var INACTIVE_CLASS = 'ng-inactive';
+   .directive('ngMessages', ['$animate', function($animate) {
+     var ACTIVE_CLASS = 'ng-active';
+     var INACTIVE_CLASS = 'ng-inactive';
 
-    return {
-      restrict: 'AE',
-      controller: function() {
-        this.$renderNgMessageClasses = angular.noop;
+     return {
+       require: 'ngMessages',
+       restrict: 'AE',
+       controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
+         var ctrl = this;
+         var latestKey = 0;
 
-        var messages = [];
-        this.registerMessage = function(index, message) {
-          for (var i = 0; i < messages.length; i++) {
-            if (messages[i].type == message.type) {
-              if (index != i) {
-                var temp = messages[index];
-                messages[index] = messages[i];
-                if (index < messages.length) {
-                  messages[i] = temp;
-                } else {
-                  messages.splice(0, i); //remove the old one (and shift left)
-                }
-              }
-              return;
-            }
-          }
-          messages.splice(index, 0, message); //add the new one (and shift right)
-        };
+         var messages = this.messages = {};
+         var renderLater, cachedCollection;
 
-        this.renderMessages = function(values, multiple) {
-          values = values || {};
+         this.render = function(collection) {
+           collection = collection || {};
 
-          var found;
-          angular.forEach(messages, function(message) {
-            if ((!found || multiple) && truthyVal(values[message.type])) {
-              message.attach();
-              found = true;
-            } else {
-              message.detach();
-            }
-          });
+           renderLater = false;
+           cachedCollection = collection;
 
-          this.renderElementClasses(found);
+           // this is true if the attribute is empty or if the attribute value is truthy
+           var multiple = isAttrTruthy($scope, $attrs.ngMessagesMultiple) ||
+                          isAttrTruthy($scope, $attrs.multiple);
 
-          function truthyVal(value) {
-            return value !== null && value !== false && value;
-          }
-        };
-      },
-      require: 'ngMessages',
-      link: function($scope, element, $attrs, ctrl) {
-        ctrl.renderElementClasses = function(bool) {
-          bool ? $animate.setClass(element, ACTIVE_CLASS, INACTIVE_CLASS)
-               : $animate.setClass(element, INACTIVE_CLASS, ACTIVE_CLASS);
-        };
+           var unmatchedMessages = [];
+           var matchedKeys = {};
+           var messageItem = ctrl.head;
+           var messageFound = false;
+           var totalMessages = 0;
 
-        //JavaScript treats empty strings as false, but ng-message-multiple by itself is an empty string
-        var multiple = angular.isString($attrs.ngMessagesMultiple) ||
-                       angular.isString($attrs.multiple);
+           // we use != instead of !== to allow for both undefined and null values
+           while (messageItem != null) {
+             totalMessages++;
+             var messageCtrl = messageItem.message;
 
-        var cachedValues, watchAttr = $attrs.ngMessages || $attrs['for']; //for is a reserved keyword
-        $scope.$watchCollection(watchAttr, function(values) {
-          cachedValues = values;
-          ctrl.renderMessages(values, multiple);
-        });
+             var messageUsed = false;
+             if (!messageFound) {
+               forEach(collection, function(value, key) {
+                 if (!messageUsed && truthy(value) && messageCtrl.test(key)) {
+                   // this is to prevent the same error name from showing up twice
+                   if (matchedKeys[key]) return;
+                   matchedKeys[key] = true;
 
-        var tpl = $attrs.ngMessagesInclude || $attrs.include;
-        if (tpl) {
-          $templateRequest(tpl)
-            .then(function processTemplate(html) {
-              var after, container = angular.element('<div/>').html(html);
-              angular.forEach(container.children(), function(elm) {
-               elm = angular.element(elm);
-               after ? after.after(elm)
-                     : element.prepend(elm); //start of the container
-               after = elm;
-               $compile(elm)($scope);
-              });
-              ctrl.renderMessages(cachedValues, multiple);
-            });
-        }
-      }
-    };
-  }])
+                   messageUsed = true;
+                   messageCtrl.attach();
+                 }
+               });
+             }
 
+             if (messageUsed) {
+               // unless we want to display multiple messages then we should
+               // set a flag here to avoid displaying the next message in the list
+               messageFound = !multiple;
+             } else {
+               unmatchedMessages.push(messageCtrl);
+             }
+
+             messageItem = messageItem.next;
+           }
+
+           forEach(unmatchedMessages, function(messageCtrl) {
+             messageCtrl.detach();
+           });
+
+           unmatchedMessages.length !== totalMessages
+              ? $animate.setClass($element, ACTIVE_CLASS, INACTIVE_CLASS)
+              : $animate.setClass($element, INACTIVE_CLASS, ACTIVE_CLASS);
+         };
+
+         $scope.$watchCollection($attrs.ngMessages || $attrs['for'], ctrl.render);
+
+         this.reRender = function() {
+           if (!renderLater) {
+             renderLater = true;
+             $scope.$evalAsync(function() {
+               if (renderLater) {
+                 cachedCollection && ctrl.render(cachedCollection);
+               }
+             });
+           }
+         };
+
+         this.register = function(comment, messageCtrl) {
+           var nextKey = latestKey.toString();
+           messages[nextKey] = {
+             message: messageCtrl
+           };
+           insertMessageNode($element[0], comment, nextKey);
+           comment.$$ngMessageNode = nextKey;
+           latestKey++;
+
+           ctrl.reRender();
+         };
+
+         this.deregister = function(comment) {
+           var key = comment.$$ngMessageNode;
+           delete comment.$$ngMessageNode;
+           removeMessageNode($element[0], comment, key);
+           delete messages[key];
+           ctrl.reRender();
+         };
+
+         function findPreviousMessage(parent, comment) {
+           var prevNode = comment;
+           var parentLookup = [];
+           while (prevNode && prevNode !== parent) {
+             var prevKey = prevNode.$$ngMessageNode;
+             if (prevKey && prevKey.length) {
+               return messages[prevKey];
+             }
+
+             // dive deeper into the DOM and examine its children for any ngMessage
+             // comments that may be in an element that appears deeper in the list
+             if (prevNode.childNodes.length && parentLookup.indexOf(prevNode) == -1) {
+               parentLookup.push(prevNode);
+               prevNode = prevNode.childNodes[prevNode.childNodes.length - 1];
+             } else {
+               prevNode = prevNode.previousSibling || prevNode.parentNode;
+             }
+           }
+         }
+
+         function insertMessageNode(parent, comment, key) {
+           var messageNode = messages[key];
+           if (!ctrl.head) {
+             ctrl.head = messageNode;
+           } else {
+             var match = findPreviousMessage(parent, comment);
+             if (match) {
+               messageNode.next = match.next;
+               match.next = messageNode;
+             } else {
+               messageNode.next = ctrl.head;
+               ctrl.head = messageNode;
+             }
+           }
+         }
+
+         function removeMessageNode(parent, comment, key) {
+           var messageNode = messages[key];
+
+           var match = findPreviousMessage(parent, comment);
+           if (match) {
+             match.next = messageNode.next;
+           } else {
+             ctrl.head = messageNode.next;
+           }
+         }
+       }]
+     };
+
+     function isAttrTruthy(scope, attr) {
+      return (isString(attr) && attr.length === 0) || //empty attribute
+             truthy(scope.$eval(attr));
+     }
+
+     function truthy(val) {
+       return isString(val) ? val.length : !!val;
+     }
+   }])
+
+   /**
+    * @ngdoc directive
+    * @name ngMessagesInclude
+    * @restrict AE
+    * @scope
+    *
+    * @description
+    * `ngMessagesInclude` is a directive with the purpose to import existing ngMessage template
+    * code from a remote template and place the downloaded template code into the exact spot
+    * that the ngMessagesInclude directive is placed within the ngMessages container. This allows
+    * for a series of pre-defined messages to be reused and also allows for the developer to
+    * determine what messages are overridden due to the placement of the ngMessagesInclude directive.
+    *
+    * @usage
+    * ```html
+    * <!-- using attribute directives -->
+    * <ANY ng-messages="expression">
+    *   <ANY ng-messages-include="remoteTplString">...</ANY>
+    * </ANY>
+    *
+    * <!-- or by using element directives -->
+    * <ng-messages for="expression">
+    *   <ng-messages-include src="expressionValue1">...</ng-messages-include>
+    * </ng-messages>
+    * ```
+    *
+    * {@link module:ngMessages Click here} to learn more about `ngMessages` and `ngMessage`.
+    *
+    * @param {string} ngMessagesInclude|src a string value corresponding to the remote template.
+    */
+   .directive('ngMessagesInclude',
+     ['$templateRequest', '$document', '$compile', function($templateRequest, $document, $compile) {
+
+     return {
+       restrict: 'AE',
+       require: '^^ngMessages',
+       compile: function(element, attrs) {
+         var comment = jqLite($document[0].createComment(' ngMessagesInclude: '));
+         element.after(comment);
+
+         return function($scope, $element, attrs, ngMessagesCtrl) {
+           // we're removing this since we only need access to the newly
+           // created comment node as an anchor.
+           element.remove();
+
+           $templateRequest(attrs.ngMessagesInclude || attrs.src).then(function(html) {
+             var elements = jqLite('<div></div>').html(html).contents();
+             var cursor = comment;
+             forEach(elements, function(elm) {
+               elm = jqLite(elm);
+               cursor.after(elm);
+               cursor = elm;
+             });
+             $compile(elements)($scope);
+           });
+         };
+       }
+     };
+   }])
 
    /**
     * @ngdoc directive
@@ -330,63 +541,96 @@ angular.module('ngMessages', [])
     * ```html
     * <!-- using attribute directives -->
     * <ANY ng-messages="expression">
-    *   <ANY ng-message="keyValue1">...</ANY>
-    *   <ANY ng-message="keyValue2">...</ANY>
-    *   <ANY ng-message="keyValue3">...</ANY>
+    *   <ANY ng-message="stringValue">...</ANY>
+    *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
+    *   <ANY ng-message-exp="expressionValue">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
     * <ng-messages for="expression">
-    *   <ng-message when="keyValue1">...</ng-message>
-    *   <ng-message when="keyValue2">...</ng-message>
-    *   <ng-message when="keyValue3">...</ng-message>
+    *   <ng-message when="stringValue">...</ng-message>
+    *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
+    *   <ng-message when-exp="expressionValue">...</ng-message>
     * </ng-messages>
     * ```
     *
     * {@link module:ngMessages Click here} to learn more about `ngMessages` and `ngMessage`.
     *
-    * @param {string} ngMessage a string value corresponding to the message key.
+    * @param {expression} ngMessage|when a string value corresponding to the message key.
+    * @param {expression} ngMessageExp|whenExp an expression value corresponding to the message key.
     */
-  .directive('ngMessage', ['$animate', function($animate) {
-    var COMMENT_NODE = 8;
+  .directive('ngMessage', ngMessageDirectiveFactory('AE'))
+  .directive('ngMessageExp', ngMessageDirectiveFactory('A'));
+
+function ngMessageDirectiveFactory(restrict) {
+  return ['$animate', function($animate) {
     return {
-      require: '^ngMessages',
+      restrict: 'AE',
       transclude: 'element',
       terminal: true,
-      restrict: 'AE',
-      link: function($scope, $element, $attrs, ngMessages, $transclude) {
-        var index, element;
+      require: '^^ngMessages',
+      link: function(scope, element, attrs, ngMessagesCtrl, $transclude) {
+        var commentNode = element[0];
 
-        var commentNode = $element[0];
-        var parentNode = commentNode.parentNode;
-        for (var i = 0, j = 0; i < parentNode.childNodes.length; i++) {
-          var node = parentNode.childNodes[i];
-          if (node.nodeType == COMMENT_NODE && node.nodeValue.indexOf('ngMessage') >= 0) {
-            if (node === commentNode) {
-              index = j;
-              break;
-            }
-            j++;
-          }
+        var records;
+        var staticExp = attrs.ngMessage || attrs.when;
+        var dynamicExp = attrs.ngMessageExp || attrs.whenExp;
+        var assignRecords = function(items) {
+          records = items
+              ? (isArray(items)
+                    ? items
+                    : items.split(/[\s,]+/))
+              : null;
+          ngMessagesCtrl.reRender();
+        };
+
+        if (dynamicExp) {
+          assignRecords(scope.$eval(dynamicExp));
+          scope.$watchCollection(dynamicExp, assignRecords);
+        } else {
+          assignRecords(staticExp);
         }
 
-        ngMessages.registerMessage(index, {
-          type: $attrs.ngMessage || $attrs.when,
+        var currentElement, messageCtrl;
+        ngMessagesCtrl.register(commentNode, messageCtrl = {
+          test: function(name) {
+            return contains(records, name);
+          },
           attach: function() {
-            if (!element) {
-              $transclude($scope, function(clone) {
-                $animate.enter(clone, null, $element);
-                element = clone;
+            if (!currentElement) {
+              $transclude(scope, function(elm) {
+                $animate.enter(elm, null, element);
+                currentElement = elm;
+
+                // in the event that the parent element is destroyed
+                // by any other structural directive then it's time
+                // to deregister the message from the controller
+                currentElement.on('$destroy', function() {
+                  if (currentElement) {
+                    ngMessagesCtrl.deregister(commentNode);
+                    messageCtrl.detach();
+                  }
+                });
               });
             }
           },
           detach: function() {
-            if (element) {
-              $animate.leave(element);
-              element = null;
+            if (currentElement) {
+              var elm = currentElement;
+              currentElement = null;
+              $animate.leave(elm);
             }
           }
         });
       }
     };
-  }]);
+  }];
+
+  function contains(collection, key) {
+    if (collection) {
+      return isArray(collection)
+          ? collection.indexOf(key) >= 0
+          : collection.hasOwnProperty(key);
+    }
+  }
+}
