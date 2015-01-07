@@ -1733,6 +1733,31 @@ describe('ngModelOptions attributes', function() {
   });
 
 
+  it('should allow options object with default update behavior to be shared between instances', function() {
+    $rootScope.sharedModelOptions = {
+        updateOn: 'default blur'
+    };
+
+    var inputElm = helper.compileInput(
+        '<input type="text" ng-model="nameA" name="aliasA" ' +
+          'ng-model-options="sharedModelOptions"' +
+        '/>' +
+        '<input type="text" ng-model="nameB" name="aliasB" ' +
+          'ng-model-options="sharedModelOptions"' +
+        '/>'),
+        inputA = jqLite(inputElm[0]),
+        inputB = jqLite(inputElm[1]);
+
+    expect($rootScope.sharedModelOptions.updateOnDefault).toBe(true);
+    helper.changeGivenInputTo(inputA, 'a');
+    expect($rootScope.nameA).toEqual('a');
+    helper.changeGivenInputTo(inputB, 'b');
+    expect($rootScope.nameB).toEqual('b');
+
+    delete $rootScope.sharedModelOptions;
+  });
+
+
   it('should allow overriding the model update trigger event on checkboxes', function() {
     var inputElm = helper.compileInput(
         '<input type="checkbox" ng-model="checkbox" ' +
