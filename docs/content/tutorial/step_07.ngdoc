@@ -11,7 +11,7 @@ multiple views by adding routing, using an Angular module called 'ngRoute'.
 
 * When you now navigate to `app/index.html`, you are redirected to `app/index.html/#/phones`
   and the phone list appears in the browser.
-* When you click on a phone link the url changes to one specific to that phone and the stub of a
+* When you click on a phone link, the url changes to that specific phone and the stub of a
   phone detail page is displayed.
 
 <div doc-tutorial-reset="7"></div>
