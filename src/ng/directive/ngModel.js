@@ -1082,6 +1082,10 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
  * Any pending changes will take place immediately when an enclosing form is submitted via the
  * `submit` event. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
  * to have access to the updated model.
+ * 
+ * Multiple `ngModelOptions` instances cannot share the same options Object. For example, supplying a 
+ * shared debouncing "config" Object among multiple input elements will not work; create a copy of the
+ * Object instead.
  *
  * `ngModelOptions` has an effect on the element it's declared on and its descendants.
  *
