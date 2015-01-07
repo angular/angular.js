@@ -26,6 +26,7 @@ function $SnifferProvider() {
         bodyStyle = document.body && document.body.style,
         transitions = false,
         animations = false,
+        ffPlugin = $window.XPCNativeWrapper !== undefined,
         match;
 
     if (bodyStyle) {
@@ -60,8 +61,14 @@ function $SnifferProvider() {
       // older webkit browser (533.9) on Boxee box has exactly the same problem as Android has
       // so let's not use the history API also
       // We are purposefully using `!(android < 4)` to cover the case when `android` is undefined
+
+      // XPCNativeWrapper is a global available only for scripts running
+      // as FF addon "content script". It's the simplest way to check if
+      // we're running in context of an addon. If yes, ffPlugin is true and
+      // we force oldschool use of `location.href` instead of HTML5 API.
       // jshint -W018
-      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee),
+      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee &&
+                  !ffPlugin),
       // jshint +W018
       hasEvent: function(event) {
         // IE9 implements 'input' event it's so fubared that we rather pretend that it doesn't have
