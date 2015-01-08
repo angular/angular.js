@@ -212,6 +212,32 @@ describe('select', function() {
     });
 
 
+    it('should be possible to use one-time binding on the expression', function() {
+      var options;
+
+      compile('<select ng-model="someModel" ng-options="o as o for o in ::arr"></select>');
+      options = element.find('option');
+      expect(options.length).toEqual(1);
+
+      scope.arr = ['a','b','c'];
+      scope.$digest();
+      options = element.find('option');
+      expect(options.length).toEqual(4);
+      expect(options.eq(0)).toEqualOption('?', '');
+      expect(options.eq(1)).toEqualOption('0', 'a');
+      expect(options.eq(2)).toEqualOption('1', 'b');
+      expect(options.eq(3)).toEqualOption('2', 'c');
+
+      scope.arr = ['w', 'x', 'y', 'z'];
+      scope.$digest();
+      options = element.find('option');
+      expect(options.length).toEqual(4);
+      expect(options.eq(0)).toEqualOption('?', '');
+      expect(options.eq(1)).toEqualOption('0', 'a');
+      expect(options.eq(2)).toEqualOption('1', 'b');
+      expect(options.eq(3)).toEqualOption('2', 'c');
+    });
+
     describe('empty option', function() {
 
       it('should select the empty option when model is undefined', function() {
