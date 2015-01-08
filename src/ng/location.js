@@ -917,7 +917,7 @@ function $LocationProvider() {
     // update browser
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = trimEmptyHash($browser.url());
-      var newUrl = trimEmptyHash($location.absUrl());
+      var newUrl = $location.absUrl();
       var oldState = $browser.state();
       var currentReplace = $location.$$replace;
       var urlOrStateChanged = oldUrl !== newUrl ||
