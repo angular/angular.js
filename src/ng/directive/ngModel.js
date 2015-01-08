@@ -1218,7 +1218,7 @@ var ngModelOptionsDirective = function() {
       this.$options = $scope.$eval($attrs.ngModelOptions);
       // Allow adding/overriding bound events
       if (this.$options.updateOn !== undefined) {
-        this.$options.updateOnDefault = false;
+        this.$options.updateOnDefault = this.$options.updateOnDefault || false;
         // extract "default" pseudo-event from list of events that can trigger a model update
         this.$options.updateOn = trim(this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
           that.$options.updateOnDefault = true;
