@@ -1341,6 +1341,30 @@ describe('$route', function() {
       });
     });
 
+    it('should not update query params when an optional property was previously not in path', function() {
+      var routeChangeSpy = jasmine.createSpy('route change');
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:barId/:fooId/:spamId/:eggId?', {controller: angular.noop});
+      });
+
+      inject(function($route, $routeParams, $location, $rootScope) {
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+        $location.path('/bar/1/2/3');
+        $location.search({initial: 'true'});
+        $rootScope.$digest();
+        routeChangeSpy.reset();
+
+        $route.updateParams({barId: '5', fooId: '6', eggId: '4'});
+        $rootScope.$digest();
+
+        expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4', initial: 'true'});
+        expect(routeChangeSpy).toHaveBeenCalledOnce();
+        expect($location.path()).toEqual('/bar/5/6/3/4');
+        expect($location.search()).toEqual({initial: 'true'});
+      });
+    });
 
     it('should complain if called without an existing route', inject(function($route) {
       expect($route.updateParams).toThrowMinErr('ngRoute', 'norout');
