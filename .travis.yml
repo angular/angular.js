@@ -22,6 +22,10 @@ env:
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
 
+matrix:
+  allow_failures:
+    - env: "JOB=unit BROWSER_PROVIDER=browserstack"
+
 install:
   # - npm config set registry http://23.251.144.68
   # Disable the spinner, it looks bad on Travis
