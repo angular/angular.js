@@ -16,6 +16,7 @@ if [ $JOB = "unit" ]; then
   grunt test:unit --browsers $BROWSERS --reporters dots
   grunt ci-checks
   grunt tests:docs --browsers $BROWSERS --reporters dots
+elif [ $JOB = "docs-e2e" ]; then
   grunt test:travis-protractor --specs "docs/app/e2e/**/*.scenario.js"
 elif [ $JOB = "e2e" ]; then
   if [ $TEST_TARGET = "jquery" ]; then
