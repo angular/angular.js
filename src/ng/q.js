@@ -271,6 +271,8 @@ function qFactory(nextTick, exceptionHandler) {
   }
 
   Promise.prototype = {
+    constructor: Promise,
+    
     then: function(onFulfilled, onRejected, progressBack) {
       var result = new Deferred();
 
@@ -340,6 +342,8 @@ function qFactory(nextTick, exceptionHandler) {
   }
 
   Deferred.prototype = {
+    constructor: Deferred,
+    
     resolve: function(val) {
       if (this.promise.$$state.status) return;
       if (val === this.promise) {
