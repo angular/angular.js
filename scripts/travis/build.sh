@@ -13,7 +13,7 @@ if [ $JOB = "unit" ]; then
   fi
 
   grunt test:promises-aplus
-  grunt test:unit --browsers $BROWSERS --reporters dots
+  DEBUG=engine,engine:* grunt test:unit --browsers $BROWSERS --reporters dots
   grunt ci-checks
   grunt tests:docs --browsers $BROWSERS --reporters dots
 elif [ $JOB = "docs-e2e" ]; then
