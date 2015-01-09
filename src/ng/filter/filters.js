@@ -361,7 +361,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   * `'m'`: Minute in hour (0-59)
  *   * `'ss'`: Second in minute, padded (00-59)
  *   * `'s'`: Second in minute (0-59)
- *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
+ *   * `'sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: AM/PM marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
  *   * `'ww'`: Week of year, padded (00-53). Week 01 is the week with the first Thursday of the year
