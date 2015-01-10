@@ -1151,6 +1151,27 @@ describe('ngOptions', function() {
     });
 
 
+    it('should not insert a blank option if one of the options maps to null', function() {
+      createSelect({
+        'ng-model': 'myColor',
+        'ng-options': 'color.shade as color.name for color in colors'
+      });
+
+      scope.$apply(function() {
+        scope.colors = [
+          {name:'nothing', shade:null},
+          {name:'red', shade:'dark'}
+        ];
+        scope.myColor = null;
+      });
+
+      expect(element.find('option').length).toEqual(2);
+      expect(element.find('option').eq(0)).toEqualOption(null);
+      expect(element.val()).not.toEqualUnknownValue(null);
+      expect(element.find('option').eq(0)).not.toEqualUnknownOption(null);
+    });
+
+
     it('should insert a unknown option if bound to something not in the list', function() {
       createSingleSelect();
 
