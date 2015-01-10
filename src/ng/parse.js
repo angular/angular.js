@@ -1174,7 +1174,7 @@ ASTCompiler.prototype = {
     };
   },
 
-  stringEscapeRegex: new RegExp('[^ a-zA-Z0-9]', 'g'),
+  stringEscapeRegex: /[^ a-zA-Z0-9]/g,
 
   stringEscapeFn: function(c) {
     return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4);
@@ -1287,7 +1287,9 @@ ASTInterpreter.prototype = {
       );
     case AST.Identifier:
       ensureSafeMemberName(ast.name);
-      return self.identifier(ast.name, self.expensiveChecks, context, create, self.expression);
+      return self.identifier(ast.name,
+                             self.expensiveChecks || isPossiblyDangerousMemberName(ast.name),
+                             context, create, self.expression);
     case AST.MemberExpression:
       left = this.recurse(ast.object, false, !!create);
       if (!ast.computed) {
@@ -1515,7 +1517,7 @@ ASTInterpreter.prototype = {
         base[name] = {};
       }
       var value = base ? base[name] : undefined;
-      if (expensiveChecks || isPossiblyDangerousMemberName(name)) {
+      if (expensiveChecks) {
         ensureSafeObject(value, expression);
       }
       if (context) {
@@ -1702,12 +1704,12 @@ function $ParseProvider() {
 
           var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
           parsedExpression = cache[cacheKey];
-          if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
-            oneTime = true;
-            exp = exp.substring(2);
-          }
 
           if (!parsedExpression) {
+            if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
+              oneTime = true;
+              exp = exp.substring(2);
+            }
             var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
             var lexer = new Lexer(parseOptions);
             var parser = new Parser(lexer, $filter, parseOptions);
