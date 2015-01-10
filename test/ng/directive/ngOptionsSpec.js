@@ -944,6 +944,36 @@ describe('ngOptions', function() {
     });
 
 
+    it('should place non-grouped items in the list where they appear', function() {
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item.name group by item.group for item in values'
+      });
+
+      scope.$apply(function() {
+        scope.values = [{name: 'A'},
+                        {name: 'B', group: 'first'},
+                        {name: 'C', group: 'second'},
+                        {name: 'D'},
+                        {name: 'E', group: 'first'},
+                        {name: 'F'},
+                        {name: 'G'},
+                        {name: 'H', group: 'second'}];
+        scope.selected = scope.values[0];
+      });
+
+      var children = element.children();
+      expect(children.length).toEqual(6);
+
+      expect(nodeName_(children[0])).toEqual('option');
+      expect(nodeName_(children[1])).toEqual('optgroup');
+      expect(nodeName_(children[2])).toEqual('optgroup');
+      expect(nodeName_(children[3])).toEqual('option');
+      expect(nodeName_(children[4])).toEqual('option');
+      expect(nodeName_(children[5])).toEqual('option');
+    });
+
+
     it('should bind to scope value and track/identify objects', function() {
       createSelect({
         'ng-model': 'selected',
