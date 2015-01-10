@@ -793,7 +793,6 @@ ASTCompiler.prototype = {
         'ensureSafeMemberName',
         'ensureSafeObject',
         'ensureSafeFunction',
-        'isPossiblyDangerousMemberName',
         'ifDefined',
         'plus',
         'text',
@@ -802,7 +801,6 @@ ASTCompiler.prototype = {
           ensureSafeMemberName,
           ensureSafeObject,
           ensureSafeFunction,
-          isPossiblyDangerousMemberName,
           ifDefined,
           plusFn,
           expression);
@@ -855,9 +853,17 @@ ASTCompiler.prototype = {
     return this.state[section].body.join('');
   },
 
-  recurse: function(ast, intoId, nameId, recursionFn, create) {
+  recurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
     var left, right, self = this, args, expression;
     recursionFn = recursionFn || noop;
+    if (!skipWatchIdCheck && isDefined(ast.watchId)) {
+      intoId = intoId || this.nextId();
+      this.if('i',
+        this.lazyAssign(intoId, this.computedMember('i', ast.watchId)),
+        this.lazyRecurse(ast, intoId, nameId, recursionFn, create, true)
+      );
+      return;
+    }
     switch (ast.type) {
     case AST.Program:
       forEach(ast.body, function(expression, pos) {
@@ -885,7 +891,7 @@ ASTCompiler.prototype = {
       this.recurse(ast.right, undefined, undefined, function(expr) { right = expr; });
       if (ast.operator === '+') {
         expression = this.plus(left, right);
-      } else if (ast.operator === '=') {
+      } else if (ast.operator === '-') {
         expression = this.ifDefined(left, 0) + ast.operator + this.ifDefined(right, 0);
       } else {
         expression = '(' + left + ')' + ast.operator + '(' + right + ')';
@@ -895,23 +901,15 @@ ASTCompiler.prototype = {
       break;
     case AST.LogicalExpression:
       intoId = intoId || this.nextId();
-      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
-        self.recurse(ast.left, intoId);
-        self.if(ast.operator === '&&' ? intoId : self.not(intoId), self.lazyRecurse(ast.right, intoId));
-        recursionFn(intoId);
-      }, function() {
-        self.assign(intoId, self.computedMember('i', ast.watchId));
-      });
+      self.recurse(ast.left, intoId);
+      self.if(ast.operator === '&&' ? intoId : self.not(intoId), self.lazyRecurse(ast.right, intoId));
+      recursionFn(intoId);
       break;
     case AST.ConditionalExpression:
       intoId = intoId || this.nextId();
-      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
-        self.recurse(ast.test, intoId);
-        self.if(intoId, self.lazyRecurse(ast.alternate, intoId), self.lazyRecurse(ast.consequent, intoId));
-        recursionFn(intoId);
-      }, function() {
-        self.assign(intoId, self.computedMember('i', ast.watchId));
-      });
+      self.recurse(ast.test, intoId);
+      self.if(intoId, self.lazyRecurse(ast.alternate, intoId), self.lazyRecurse(ast.consequent, intoId));
+      recursionFn(intoId);
       break;
     case AST.Identifier:
       intoId = intoId || this.nextId();
@@ -920,112 +918,100 @@ ASTCompiler.prototype = {
         nameId.computed = false;
         nameId.name = ast.name;
       }
-      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
-        ensureSafeMemberName(ast.name);
-        self.if(self.stage === 'inputs' || self.not(self.getHasOwnProperty('l', ast.name)),
-          function() {
-            self.if(self.stage === 'inputs' || 's', function() {
-              if (create && create !== 1) {
-                self.if(
-                  self.not(self.getHasOwnProperty('s', ast.name)),
-                  self.lazyAssign(self.nonComputedMember('s', ast.name), '{}'));
-              }
-              self.assign(intoId, self.nonComputedMember('s', ast.name));
-            });
-          }, intoId && self.lazyAssign(intoId, self.nonComputedMember('l', ast.name))
-          );
-        if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.name)) {
-          self.addEnsureSafeObject(intoId);
-        }
-        recursionFn(intoId);
-      }, function() {
-        self.assign(intoId, self.computedMember('i', ast.watchId));
-      });
+      ensureSafeMemberName(ast.name);
+      self.if(self.stage === 'inputs' || self.not(self.getHasOwnProperty('l', ast.name)),
+        function() {
+          self.if(self.stage === 'inputs' || 's', function() {
+            if (create && create !== 1) {
+              self.if(
+                self.not(self.getHasOwnProperty('s', ast.name)),
+                self.lazyAssign(self.nonComputedMember('s', ast.name), '{}'));
+            }
+            self.assign(intoId, self.nonComputedMember('s', ast.name));
+          });
+        }, intoId && self.lazyAssign(intoId, self.nonComputedMember('l', ast.name))
+        );
+      if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.name)) {
+        self.addEnsureSafeObject(intoId);
+      }
+      recursionFn(intoId);
       break;
     case AST.MemberExpression:
       left = nameId && (nameId.context = this.nextId()) || this.nextId();
       intoId = intoId || this.nextId();
-      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
-        self.recurse(ast.object, left, undefined, function() {
-          self.if(self.notNull(left), function() {
-            if (ast.computed) {
-              right = self.nextId();
-              self.recurse(ast.property, right);
-              self.addEnsureSafeMemberName(right);
-              if (create && create !== 1) {
-                self.if(self.not(right + ' in ' + left), self.lazyAssign(self.computedMember(left, right), '{}'));
-              }
-              expression = self.ensureSafeObject(self.computedMember(left, right));
-              self.assign(intoId, expression);
-              if (nameId) {
-                nameId.computed = true;
-                nameId.name = right;
-              }
-            } else {
-              ensureSafeMemberName(ast.property.name);
-              if (create && create !== 1) {
-                self.if(self.not(self.escape(ast.property.name) + ' in ' + left), self.lazyAssign(self.nonComputedMember(left, ast.property.name), '{}'));
-              }
-              expression = self.nonComputedMember(left, ast.property.name);
-              if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.property.name)) {
-                expression = self.ensureSafeObject(expression);
-              }
-              self.assign(intoId, expression);
-              if (nameId) {
-                nameId.computed = false;
-                nameId.name = ast.property.name;
-              }
+      self.recurse(ast.object, left, undefined, function() {
+        self.if(self.notNull(left), function() {
+          if (ast.computed) {
+            right = self.nextId();
+            self.recurse(ast.property, right);
+            self.addEnsureSafeMemberName(right);
+            if (create && create !== 1) {
+              self.if(self.not(right + ' in ' + left), self.lazyAssign(self.computedMember(left, right), '{}'));
             }
-            recursionFn(intoId);
-          });
-        }, !!create);
-      }, function() {
-        self.assign(intoId, self.computedMember('i', ast.watchId));
-      });
+            expression = self.ensureSafeObject(self.computedMember(left, right));
+            self.assign(intoId, expression);
+            if (nameId) {
+              nameId.computed = true;
+              nameId.name = right;
+            }
+          } else {
+            ensureSafeMemberName(ast.property.name);
+            if (create && create !== 1) {
+              self.if(self.not(self.escape(ast.property.name) + ' in ' + left), self.lazyAssign(self.nonComputedMember(left, ast.property.name), '{}'));
+            }
+            expression = self.nonComputedMember(left, ast.property.name);
+            if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.property.name)) {
+              expression = self.ensureSafeObject(expression);
+            }
+            self.assign(intoId, expression);
+            if (nameId) {
+              nameId.computed = false;
+              nameId.name = ast.property.name;
+            }
+          }
+          recursionFn(intoId);
+        });
+      }, !!create);
       break;
     case AST.CallExpression:
       intoId = intoId || this.nextId();
-      this.if(isDefined(ast.watchId) ? '!i' : true, function() {
-        if (ast.filter) {
-          right = self.filter(ast.callee.name);
-          args = [];
-          forEach(ast.arguments, function(expr) {
-            var argument = self.nextId();
-            self.recurse(expr, argument);
-            args.push(argument);
-          });
-          expression = right + '(' + args.join(',') + ')';
-          self.assign(intoId, expression);
-          recursionFn(intoId);
-        } else {
-          right = self.nextId();
-          left = {};
-          args = [];
-          self.recurse(ast.callee, right, left, function() {
-            self.if(self.notNull(right), function() {
-              self.addEnsureSafeFunction(right);
-              forEach(ast.arguments, function(expr) {
-                self.recurse(expr, undefined, undefined, function(argument) {
-                  args.push(self.ensureSafeObject(argument));
-                });
+      if (ast.filter) {
+        right = self.filter(ast.callee.name);
+        args = [];
+        forEach(ast.arguments, function(expr) {
+          var argument = self.nextId();
+          self.recurse(expr, argument);
+          args.push(argument);
+        });
+        expression = right + '(' + args.join(',') + ')';
+        self.assign(intoId, expression);
+        recursionFn(intoId);
+      } else {
+        right = self.nextId();
+        left = {};
+        args = [];
+        self.recurse(ast.callee, right, left, function() {
+          self.if(self.notNull(right), function() {
+            self.addEnsureSafeFunction(right);
+            forEach(ast.arguments, function(expr) {
+              self.recurse(expr, undefined, undefined, function(argument) {
+                args.push(self.ensureSafeObject(argument));
               });
-              if (left.name) {
-                if (!self.state.expensiveChecks) {
-                  self.addEnsureSafeObject(left.context);
-                }
-                expression = self.member(left.context, left.name, left.computed) + '(' + args.join(',') + ')';
-              } else {
-                expression = right + '(' + args.join(',') + ')';
-              }
-              expression = self.ensureSafeObject(expression);
-              self.assign(intoId, expression);
-              recursionFn(intoId);
             });
+            if (left.name) {
+              if (!self.state.expensiveChecks) {
+                self.addEnsureSafeObject(left.context);
+              }
+              expression = self.member(left.context, left.name, left.computed) + '(' + args.join(',') + ')';
+            } else {
+              expression = right + '(' + args.join(',') + ')';
+            }
+            expression = self.ensureSafeObject(expression);
+            self.assign(intoId, expression);
+            recursionFn(intoId);
           });
-        }
-      }, function() {
-        self.assign(intoId, self.computedMember('i', ast.watchId));
-      });
+        });
+      }
       break;
     case AST.AssignmentExpression:
       right = this.nextId();
@@ -1174,10 +1160,10 @@ ASTCompiler.prototype = {
     return 'ensureSafeFunction(' + item + ',text)';
   },
 
-  lazyRecurse: function(ast, intoId, nameId, recursionFn, create) {
+  lazyRecurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
     var self = this;
     return function() {
-      self.recurse(ast, intoId, nameId, recursionFn, create);
+      self.recurse(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck);
     };
   },
 
@@ -1301,21 +1287,7 @@ ASTInterpreter.prototype = {
       );
     case AST.Identifier:
       ensureSafeMemberName(ast.name);
-      return function(scope, locals, assign, inputs) {
-        var base = locals && (ast.name in locals) ? locals : scope;
-        if (self.expensiveChecks || isPossiblyDangerousMemberName(ast.name)) {
-          ensureSafeObject(value, self.expression);
-        }
-        if (create && create !== 1 && base && !(ast.name in base)) {
-          base[ast.name] = {};
-        }
-        var value = base ? base[ast.name] : undefined;
-        if (context) {
-          return {context: base, name: ast.name, value: value};
-        } else {
-          return value;
-        }
-      };
+      return self.identifier(ast.name, self.expensiveChecks, context, create, self.expression);
     case AST.MemberExpression:
       left = this.recurse(ast.object, false, !!create);
       if (!ast.computed) {
@@ -1324,40 +1296,8 @@ ASTInterpreter.prototype = {
       }
       if (ast.computed) right = this.recurse(ast.property);
       return ast.computed ?
-        function(scope, locals, assign, inputs) {
-          var lhs = left(scope, locals, assign, inputs);
-          var rhs;
-          var value;
-          if (lhs != null) {
-            rhs = right(scope, locals, assign, inputs);
-            ensureSafeMemberName(rhs, self.expression);
-            if (create && create !== 1 && lhs && !(rhs in lhs)) {
-              lhs[rhs] = {};
-            }
-            value = lhs[rhs];
-            ensureSafeObject(value, self.expression);
-          }
-          if (context) {
-            return {context: lhs, name: rhs, value: value};
-          } else {
-            return value;
-          }
-        } :
-        function(scope, locals, assign, inputs) {
-          var lhs = left(scope, locals, assign, inputs);
-          if (create && create !== 1 && lhs && !(right in lhs)) {
-            lhs[right] = {};
-          }
-          var value = lhs != null ? lhs[right] : undefined;
-          if (self.expensiveChecks || isPossiblyDangerousMemberName(right)) {
-            ensureSafeObject(value, self.expression);
-          }
-          if (context) {
-            return {context: lhs, name: right, value: value};
-          } else {
-            return value;
-          }
-        };
+        this.computedMember(left, right, context, create, self.expression) :
+        this.nonComputedMember(left, right, self.expensiveChecks, context, create, self.expression);
     case AST.CallExpression:
       args = [];
       forEach(ast.arguments, function(expr) {
@@ -1567,6 +1507,61 @@ ASTInterpreter.prototype = {
   },
   value: function(value, context) {
     return function() { return context ? {context: undefined, name: undefined, value: value} : value; };
+  },
+  identifier: function(name, expensiveChecks, context, create, expression) {
+    return function(scope, locals, assign, inputs) {
+      var base = locals && (name in locals) ? locals : scope;
+      if (create && create !== 1 && base && !(name in base)) {
+        base[name] = {};
+      }
+      var value = base ? base[name] : undefined;
+      if (expensiveChecks || isPossiblyDangerousMemberName(name)) {
+        ensureSafeObject(value, expression);
+      }
+      if (context) {
+        return {context: base, name: name, value: value};
+      } else {
+        return value;
+      }
+    };
+  },
+  computedMember: function(left, right, context, create, expression) {
+    return function(scope, locals, assign, inputs) {
+      var lhs = left(scope, locals, assign, inputs);
+      var rhs;
+      var value;
+      if (lhs != null) {
+        rhs = right(scope, locals, assign, inputs);
+        ensureSafeMemberName(rhs, expression);
+        if (create && create !== 1 && lhs && !(rhs in lhs)) {
+          lhs[rhs] = {};
+        }
+        value = lhs[rhs];
+        ensureSafeObject(value, expression);
+      }
+      if (context) {
+        return {context: lhs, name: rhs, value: value};
+      } else {
+        return value;
+      }
+    };
+  },
+  nonComputedMember: function(left, right, expensiveChecks, context, create, expression) {
+    return function(scope, locals, assign, inputs) {
+      var lhs = left(scope, locals, assign, inputs);
+      if (create && create !== 1 && lhs && !(right in lhs)) {
+        lhs[right] = {};
+      }
+      var value = lhs != null ? lhs[right] : undefined;
+      if (expensiveChecks || isPossiblyDangerousMemberName(right)) {
+        ensureSafeObject(value, expression);
+      }
+      if (context) {
+        return {context: lhs, name: right, value: value};
+      } else {
+        return value;
+      }
+    };
   },
   inputs: function(input, watchId) {
     return function(scope, value, locals, inputs) {
@@ -1866,11 +1861,11 @@ function $ParseProvider() {
           watchDelegate !== oneTimeLiteralWatchDelegate &&
           watchDelegate !== oneTimeWatchDelegate;
 
-      var fn = regularWatch ? function regularInterceptedExpression(scope, locals) {
-        var value = parsedExpression(scope, locals);
+      var fn = regularWatch ? function regularInterceptedExpression(scope, locals, assign, inputs) {
+        var value = parsedExpression(scope, locals, assign, inputs);
         return interceptorFn(value, scope, locals);
-      } : function oneTimeInterceptedExpression(scope, locals) {
-        var value = parsedExpression(scope, locals);
+      } : function oneTimeInterceptedExpression(scope, locals, assign, inputs) {
+        var value = parsedExpression(scope, locals, assign, inputs);
         var result = interceptorFn(value, scope, locals);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
@@ -1885,7 +1880,7 @@ function $ParseProvider() {
         // If there is an interceptor, but no watchDelegate then treat the interceptor like
         // we treat filters - it is assumed to be a pure function unless flagged with $stateful
         fn.$$watchDelegate = inputsWatchDelegate;
-        fn.inputs = [parsedExpression];
+        fn.inputs = parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression];
       }
 
       return fn;

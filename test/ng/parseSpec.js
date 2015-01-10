@@ -1898,6 +1898,16 @@ describe('parser', function() {
         expect(scope.$eval('b')).toBeUndefined();
         expect(scope.$eval('a.x')).toBeUndefined();
         expect(scope.$eval('a.b.c.d')).toBeUndefined();
+        scope.a = undefined;
+        expect(scope.$eval('a - b')).toBe(0);
+        expect(scope.$eval('a + b')).toBe(undefined);
+        scope.a = 0;
+        expect(scope.$eval('a - b')).toBe(0);
+        expect(scope.$eval('a + b')).toBe(0);
+        scope.a = undefined;
+        scope.b = 0;
+        expect(scope.$eval('a - b')).toBe(0);
+        expect(scope.$eval('a + b')).toBe(0);
       });
 
       it('should support property names that collide with native object properties', function() {
@@ -2982,6 +2992,7 @@ describe('parser', function() {
             return v;
           }
           scope.$watch($parse("a", interceptor));
+          scope.$watch($parse("a + b", interceptor));
           scope.a = scope.b = 0;
           scope.$digest();
           expect(called).toBe(true);
