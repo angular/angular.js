@@ -178,7 +178,7 @@ describe('$http', function() {
         });
         inject(function($http, $httpBackend, $rootScope) {
           $httpBackend.expect('GET', '/url', null, function(headers) {
-            return angular.equals(headers, {foo: 'intercepted'});
+            return angular.equals(headers.foo, 'intercepted');
           }).respond('');
           $http.get('/url');
           $rootScope.$apply();
@@ -732,6 +732,31 @@ describe('$http', function() {
 
         $httpBackend.flush();
       });
+
+      it('should set the X-Forwarded-Proto header', inject(function($browser) {
+        function checkSslHeader(proto) {
+          return function(headers) {
+            return headers['X-Forwarded-Proto'] == proto;
+          };
+        }
+        $httpBackend.expect('GET', 'http://example.com/url', undefined, checkSslHeader('http')).respond('');
+        $httpBackend.expect('GET', 'https://example.com/url', undefined, checkSslHeader('https')).respond('');
+        $httpBackend.expect('GET', 'ftp://example.com/url', undefined, checkSslHeader('ftp')).respond('');
+
+        $http({url: 'http://example.com/url', method: 'GET'});
+        $http({url: 'https://example.com/url', method: 'GET'});
+        $http({url: 'ftp://example.com/url', method: 'GET'});
+      }));
+
+      it('should set the X-Forwarded-Ssl header on when using HTTPS', inject(function($browser) {
+        function checkSslHeader() {
+          return function(headers) {
+            return headers['X-Forwarded-Ssl'] == 'on';
+          };
+        }
+        $httpBackend.expect('GET', 'https://example.com/url', undefined, checkSslHeader()).respond('');
+        $http({url: 'https://example.com/url', method: 'GET'});
+      }));
 
       it('should set the XSRF cookie into a XSRF header', inject(function($browser) {
         function checkXSRF(secret, header) {

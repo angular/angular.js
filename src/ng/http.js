@@ -1056,14 +1056,25 @@ function $HttpProvider() {
       }
 
 
-      // if we won't have the response in cache, set the xsrf headers and
+      // if we won't have the response in cache, set the convenient headers and
       // send the request to the backend
       if (isUndefined(cachedResp)) {
         var xsrfValue = urlIsSameOrigin(config.url)
             ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
             : undefined;
+
+           //TODO
         if (xsrfValue) {
           reqHeaders[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
+        }
+
+        var target = document.createElement('a');
+        target.href = url;
+
+        var protocol = target.protocol.substring(0, target.protocol.length - 1);
+        reqHeaders['X-Forwarded-Proto'] = protocol;
+        if (protocol == 'https') {
+          reqHeaders['X-Forwarded-Ssl'] = 'on';
         }
 
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
