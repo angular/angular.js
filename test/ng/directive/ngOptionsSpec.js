@@ -22,15 +22,17 @@ describe('ngOptions', function() {
     this.addMatchers({
       toEqualSelectValue: function(value, multiple) {
         var errors = [];
+        var actual = this.actual.val();
 
         if (multiple) {
           value = value.map(function(val) { return hashKey(val); });
+          actual = actual || [];
         } else {
           value = hashKey(value);
         }
 
-        if (!equals(this.actual.val(), value)) {
-          errors.push('Expected select value "' + this.actual.val() + '" to equal "' + value + '"');
+        if (!equals(actual, value)) {
+          errors.push('Expected select value "' + actual + '" to equal "' + value + '"');
         }
         this.message = function() {
           return errors.join('\n');
@@ -1279,6 +1281,82 @@ describe('ngOptions', function() {
       var option = element.find('option').eq(0);
       expect(option).toEqualUnknownOption();
     });
+
+
+    it('should update the model if the selected option is removed', function() {
+      scope.values = [{value: 0, label: 'zero'}, {value: 1, label: 'one'}];
+      scope.selected = 1;
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'option.value as option.label for option in values'
+      });
+      expect(element).toEqualSelectValue(1);
+
+      // Check after initial option update
+      scope.$apply(function() {
+        scope.values.pop();
+      });
+
+      expect(element.val()).toEqualUnknownValue();
+      expect(scope.selected).toEqual(null);
+
+      // Check after model change
+      scope.$apply(function() {
+        scope.selected = 0;
+      });
+
+      expect(element).toEqualSelectValue(0);
+
+      scope.$apply(function() {
+        scope.values.pop();
+      });
+
+      expect(element.val()).toEqualUnknownValue();
+      expect(scope.selected).toEqual(null);
+    });
+
+
+    it('should update the model if all the selected (multiple) options are removed', function() {
+      scope.values = [{value: 0, label: 'zero'}, {value: 1, label: 'one'}, {value: 2, label: 'two'}];
+      scope.selected = [1, 2];
+      createSelect({
+        'ng-model': 'selected',
+        'multiple': true,
+        'ng-options': 'option.value as option.label for option in values'
+      });
+
+      expect(element).toEqualSelectValue([1, 2], true);
+
+      // Check after initial option update
+      scope.$apply(function() {
+        scope.values.pop();
+      });
+
+      expect(element).toEqualSelectValue([1], true);
+      expect(scope.selected).toEqual([1]);
+
+      scope.$apply(function() {
+        scope.values.pop();
+      });
+
+      expect(element).toEqualSelectValue([], true);
+      expect(scope.selected).toEqual([]);
+
+      // Check after model change
+      scope.$apply(function() {
+        scope.selected = [0];
+      });
+
+      expect(element).toEqualSelectValue([0], true);
+
+      scope.$apply(function() {
+        scope.values.pop();
+      });
+
+      expect(element).toEqualSelectValue([], true);
+      expect(scope.selected).toEqual([]);
+    });
+
   });
 
 
