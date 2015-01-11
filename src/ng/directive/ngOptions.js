@@ -513,7 +513,10 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
       function updateOptions() {
 
+        var previousValue = options && selectCtrl.readValue();
+
         options = ngOptions.getOptions();
+
         var groupMap = {};
         var currentElement = selectElement[0].firstChild;
 
@@ -586,6 +589,14 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         removeExcessElements(currentElement);
 
         ngModelCtrl.$render();
+
+        // Check to see if the value has changed due to the update to the options
+        if(!ngModelCtrl.$isEmpty(previousValue)) {
+          var nextValue = selectCtrl.readValue();
+          if (!equals(previousValue, nextValue)) {
+            ngModelCtrl.$setViewValue(nextValue);
+          }
+        }
       }
 
     }
