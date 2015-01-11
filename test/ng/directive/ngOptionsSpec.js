@@ -706,6 +706,23 @@ describe('ngOptions', function() {
       browserTrigger(element, 'change');
       expect(scope.selected).toEqual([scope.obj['1'], scope.obj['2']]);
     });
+
+    it('should prevent infinite digest if track by expression is stable', function() {
+      scope.makeOptions = function() {
+          var options = [];
+          for (var i = 0; i < 5; i++) {
+              options.push({ label: 'Value = ' + i, value: i });
+          }
+          return options;
+      };
+      scope.selected = { label: 'Value = 1', value: 1 };
+      expect(function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item.label for item in makeOptions() track by item.value'
+        });
+      }).not.toThrow();
+    });
   });
 
 
