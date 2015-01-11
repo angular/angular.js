@@ -183,23 +183,23 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   addSetValidityMethod({
     ctrl: this,
     $element: element,
-    set: function(object, property, control) {
+    set: function(object, property, controller) {
       var list = object[property];
       if (!list) {
-        object[property] = [control];
+        object[property] = [controller];
       } else {
-        var index = list.indexOf(control);
+        var index = list.indexOf(controller);
         if (index === -1) {
-          list.push(control);
+          list.push(controller);
         }
       }
     },
-    unset: function(object, property, control) {
+    unset: function(object, property, controller) {
       var list = object[property];
       if (!list) {
         return;
       }
-      arrayRemove(list, control);
+      arrayRemove(list, controller);
       if (list.length === 0) {
         delete object[property];
       }
