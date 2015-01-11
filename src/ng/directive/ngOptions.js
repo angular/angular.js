@@ -366,8 +366,50 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
 
       selectCtrl.writeValue = function writeNgOptionsValue(value) {
-        if (multiple) {
+        var option = options.getOptionFromViewValue(value);
 
+        if (option) {
+          if (selectElement[0].value !== option.selectValue) {
+            removeUnknownOption();
+            removeEmptyOption();
+
+            selectElement[0].value = option.selectValue;
+            option.element.selected = true;
+            option.element.setAttribute('selected', 'selected');
+          }
+        } else {
+          if (value === null || providedEmptyOption) {
+            removeUnknownOption();
+            renderEmptyOption();
+          } else {
+            removeEmptyOption();
+            renderUnknownOption();
+          }
+        }
+      };
+
+      selectCtrl.readValue = function readNgOptionsValue() {
+
+        var selectedOption = options.selectValueMap[selectElement.val()];
+
+        if (selectedOption) {
+          removeEmptyOption();
+          removeUnknownOption();
+          return selectedOption.viewValue;
+        }
+        return null;
+      };
+
+
+      // Update the controller methods for multiple selectable options
+      if (multiple) {
+
+        ngModelCtrl.$isEmpty = function(value) {
+          return !value || value.length === 0;
+        };
+
+
+        selectCtrl.writeValue = function writeNgOptionsMultiple(value) {
           options.items.forEach(function(option) {
             option.element.selected = false;
           });
@@ -378,54 +420,15 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
               if (option) option.element.selected = true;
             });
           }
-
-        } else {
-          var option = options.getOptionFromViewValue(value);
-
-          if (option) {
-            if (selectElement[0].value !== option.selectValue) {
-              removeUnknownOption();
-              removeEmptyOption();
-
-              selectElement[0].value = option.selectValue;
-              option.element.selected = true;
-              option.element.setAttribute('selected', 'selected');
-            }
-          } else {
-            if (value === null || providedEmptyOption) {
-              removeUnknownOption();
-              renderEmptyOption();
-            } else {
-              removeEmptyOption();
-              renderUnknownOption();
-            }
-          }
-        }
-      };
+        };
 
 
-      selectCtrl.readValue = function readNgOptionsValue() {
-
-        if (multiple) {
-
-          return selectElement.val().map(function(selectedKey) {
+        selectCtrl.readValue = function readNgOptionsMultiple() {
+          var selectedValues = selectElement.val() || [];
+          return selectedValues.map(function(selectedKey) {
             var option = options.selectValueMap[selectedKey];
             return option.viewValue;
           });
-
-        } else {
-
-          var option = options.selectValueMap[selectElement.val()];
-          removeEmptyOption();
-          removeUnknownOption();
-          return option ? option.viewValue : null;
-        }
-      };
-
-
-      if (multiple) {
-        ngModelCtrl.$isEmpty = function(value) {
-          return !value || value.length === 0;
         };
       }
 
@@ -591,7 +594,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         ngModelCtrl.$render();
 
         // Check to see if the value has changed due to the update to the options
-        if(!ngModelCtrl.$isEmpty(previousValue)) {
+        if (!ngModelCtrl.$isEmpty(previousValue)) {
           var nextValue = selectCtrl.readValue();
           if (!equals(previousValue, nextValue)) {
             ngModelCtrl.$setViewValue(nextValue);
