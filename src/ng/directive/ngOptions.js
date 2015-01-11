@@ -227,8 +227,14 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
     var valueFn = $parse(match[2] ? match[1] : valueName);
     var selectAsFn = selectAs && $parse(selectAs);
     var viewValueFn = selectAsFn || valueFn;
-    var trackByFn = trackBy ? $parse(trackBy) :
-                              function getHashOfValue(value) { return hashKey(value); };
+    var trackByFn = trackBy && $parse(trackBy);
+
+    // Get the value by which we are going to track the option
+    // if we have a trackFn then use that (passing scope and locals)
+    // otherwise just hash the given viewValue
+    var getTrackByValue = trackBy ?
+                              function(viewValue, locals) { return trackByFn(scope, locals); } :
+                              function getHashOfValue(viewValue) { return hashKey(viewValue); };
     var displayFn = $parse(match[2] || match[1]);
     var groupByFn = $parse(match[3] || '');
     var valuesFn = $parse(match[7]);
@@ -263,7 +269,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         Object.keys(values).forEach(function getWatchable(key) {
           var locals = getLocals(values[key], key);
           var label = displayFn(scope, locals);
-          var selectValue = viewValueFn(scope, locals);
+          var selectValue = getTrackByValue(values[key], locals);
           watchedArray.push(selectValue);
           watchedArray.push(label);
         });
@@ -288,7 +294,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           var value = optionValues[key];
           var locals = getLocals(value, key);
           var viewValue = viewValueFn(scope, locals);
-          var selectValue = trackByFn(viewValue, locals);
+          var selectValue = getTrackByValue(viewValue, locals);
           var label = displayFn(scope, locals);
           var group = groupByFn(scope, locals);
           var optionItem = new Option(selectValue, viewValue, label, group);
@@ -301,7 +307,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           items: optionItems,
           selectValueMap: selectValueMap,
           getOptionFromViewValue: function(value) {
-            return selectValueMap[trackByFn(value, getLocals(value))];
+            return selectValueMap[getTrackByValue(value, getLocals(value))];
           }
         };
       }
