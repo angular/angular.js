@@ -1247,22 +1247,22 @@ function addSetValidityMethod(context) {
 
   ctrl.$setValidity = setValidity;
 
-  function setValidity(validationErrorKey, state, options) {
+  function setValidity(validationErrorKey, state, controller) {
     if (state === undefined) {
-      createAndSet('$pending', validationErrorKey, options);
+      createAndSet('$pending', validationErrorKey, controller);
     } else {
-      unsetAndCleanup('$pending', validationErrorKey, options);
+      unsetAndCleanup('$pending', validationErrorKey, controller);
     }
     if (!isBoolean(state)) {
-      unset(ctrl.$error, validationErrorKey, options);
-      unset(ctrl.$$success, validationErrorKey, options);
+      unset(ctrl.$error, validationErrorKey, controller);
+      unset(ctrl.$$success, validationErrorKey, controller);
     } else {
       if (state) {
-        unset(ctrl.$error, validationErrorKey, options);
-        set(ctrl.$$success, validationErrorKey, options);
+        unset(ctrl.$error, validationErrorKey, controller);
+        set(ctrl.$$success, validationErrorKey, controller);
       } else {
-        set(ctrl.$error, validationErrorKey, options);
-        unset(ctrl.$$success, validationErrorKey, options);
+        set(ctrl.$error, validationErrorKey, controller);
+        unset(ctrl.$$success, validationErrorKey, controller);
       }
     }
     if (ctrl.$pending) {
@@ -1290,20 +1290,21 @@ function addSetValidityMethod(context) {
     } else {
       combinedState = null;
     }
+
     toggleValidationCss(validationErrorKey, combinedState);
     parentForm.$setValidity(validationErrorKey, combinedState, ctrl);
   }
 
-  function createAndSet(name, value, options) {
+  function createAndSet(name, value, controller) {
     if (!ctrl[name]) {
       ctrl[name] = {};
     }
-    set(ctrl[name], value, options);
+    set(ctrl[name], value, controller);
   }
 
-  function unsetAndCleanup(name, value, options) {
+  function unsetAndCleanup(name, value, controller) {
     if (ctrl[name]) {
-      unset(ctrl[name], value, options);
+      unset(ctrl[name], value, controller);
     }
     if (isObjectEmpty(ctrl[name])) {
       ctrl[name] = undefined;
