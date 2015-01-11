@@ -84,7 +84,8 @@
   $$RAFProvider,
   $$AsyncCallbackProvider,
   $WindowProvider,
-  $$jqLiteProvider
+  $$jqLiteProvider,
+  $$CookieReaderProvider
 */
 
 
@@ -238,7 +239,8 @@ function publishExternalAPI(angular) {
         $window: $WindowProvider,
         $$rAF: $$RAFProvider,
         $$asyncCallback: $$AsyncCallbackProvider,
-        $$jqLite: $$jqLiteProvider
+        $$jqLite: $$jqLiteProvider,
+        $$cookieReader: $$CookieReaderProvider
       });
     }
   ]);

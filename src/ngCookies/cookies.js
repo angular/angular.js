@@ -47,7 +47,7 @@ angular.module('ngCookies', ['ng']).
    *   }]);
    * ```
    */
-   factory('$cookies', ['$rootScope', '$browser', function($rootScope, $browser) {
+   factory('$cookies', ['$rootScope', '$browser', '$$cookieReader', '$$cookieWriter', function($rootScope, $browser, $$cookieReader, $$cookieWriter) {
       var cookies = {},
           lastCookies = {},
           lastBrowserCookies,
@@ -57,8 +57,8 @@ angular.module('ngCookies', ['ng']).
 
       //creates a poller fn that copies all cookies from the $browser to service & inits the service
       $browser.addPollFn(function() {
-        var currentCookies = $browser.cookies();
-        if (lastBrowserCookies != currentCookies) { //relies on browser.cookies() impl
+        var currentCookies = $$cookieReader();
+        if (lastBrowserCookies != currentCookies) { //relies on $$cookieReader() impl
           lastBrowserCookies = currentCookies;
           copy(currentCookies, lastCookies);
           copy(currentCookies, cookies);
@@ -89,7 +89,7 @@ angular.module('ngCookies', ['ng']).
         //delete any cookies deleted in $cookies
         for (name in lastCookies) {
           if (isUndefined(cookies[name])) {
-            $browser.cookies(name, undefined);
+            $$cookieWriter(name, undefined);
           }
         }
 
@@ -101,7 +101,7 @@ angular.module('ngCookies', ['ng']).
             cookies[name] = value;
           }
           if (value !== lastCookies[name]) {
-            $browser.cookies(name, value);
+            $$cookieWriter(name, value);
             updated = true;
           }
         }
@@ -109,7 +109,7 @@ angular.module('ngCookies', ['ng']).
         //verify what was actually stored
         if (updated) {
           updated = false;
-          browserCookies = $browser.cookies();
+          browserCookies = $$cookieReader();
 
           for (name in cookies) {
             if (cookies[name] !== browserCookies[name]) {
@@ -153,7 +153,7 @@ angular.module('ngCookies', ['ng']).
    *   }]);
    * ```
    */
-   factory('$cookieStore', ['$browser', function($browser) {
+   factory('$cookieStore', ['$$cookieReader', '$$cookieWriter', function($$cookieReader, $$cookieWriter) {
 
       return {
         /**
@@ -167,7 +167,7 @@ angular.module('ngCookies', ['ng']).
          * @returns {Object} Deserialized cookie value, undefined if the cookie does not exist.
          */
         get: function(key) {
-          var value = $browser.cookies()[key];
+          var value = $$cookieReader()[key];
           return value ? angular.fromJson(value) : value;
         },
 
@@ -182,7 +182,7 @@ angular.module('ngCookies', ['ng']).
          * @returns {string} Raw cookie value.
          */
         getRaw: function(key) {
-          return $browser.cookies()[key];
+          return $$cookieReader()[key];
         },
 
         /**
@@ -195,7 +195,7 @@ angular.module('ngCookies', ['ng']).
          * @returns {Object} All cookies
          */
         getAll: function() {
-          return $browser.cookies();
+          return $$cookieReader();
         },
 
         /**
@@ -220,7 +220,7 @@ angular.module('ngCookies', ['ng']).
          *    - **secure** - `{boolean}` - The cookie will be available only in secured connection.
          */
         put: function(key, value, options) {
-          $browser.cookies(key, angular.toJson(value), options);
+          $$cookieWriter(key, angular.toJson(value), options);
         },
 
         /**
@@ -235,7 +235,7 @@ angular.module('ngCookies', ['ng']).
          * @param {Object=} options Options object.
          */
         putRaw: function(key, value, options) {
-          $browser.cookies(key, value, options);
+          $$cookieWriter(key, value, options);
         },
 
         /**
@@ -248,7 +248,7 @@ angular.module('ngCookies', ['ng']).
          * @param {string} key Id of the key-value pair to delete.
          */
         remove: function(key) {
-          $browser.cookies(key, undefined);
+          $$cookieWriter(key, undefined);
         }
       };
 
