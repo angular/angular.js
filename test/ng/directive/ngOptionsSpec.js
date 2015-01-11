@@ -1025,6 +1025,7 @@ describe('ngOptions', function() {
       expect(element).toEqualSelectValue(scope.selected);
     });
 
+
     it('should update options in the DOM', function() {
       compile(
         '<select ng-model="selected" ng-options="item.id as item.name for item in values"></select>'
