@@ -512,6 +512,41 @@ describe('form', function() {
       expect(doc.find('div').hasClass('ng-invalid-maxlength')).toBe(false);
     });
 
+    it('should deregister a input that is $pending when it is removed from DOM', function() {
+      doc = jqLite(
+        '<form name="parent">' +
+          '<div class="ng-form" name="child">' +
+            '<input ng-if="inputPresent" ng-model="modelA" name="inputA">' +
+          '</div>' +
+        '</form>');
+      $compile(doc)(scope);
+      scope.$apply('inputPresent = true');
+
+      var parent = scope.parent;
+      var child = scope.child;
+      var input = child.inputA;
+
+      scope.$apply(child.inputA.$setValidity('fake', undefined));
+
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
+
+      expect(parent.$pending.fake).toEqual([child]);
+      expect(child.$pending.fake).toEqual([input]);
+
+      expect(doc.hasClass('ng-pending')).toBe(true);
+      expect(doc.find('div').hasClass('ng-pending')).toBe(true);
+
+      //remove child input
+      scope.$apply('inputPresent = false');
+
+      expect(parent.$pending).toBeUndefined();
+      expect(child.$pending).toBeUndefined();
+
+      expect(doc.hasClass('ng-pending')).toBe(false);
+      expect(doc.find('div').hasClass('ng-pending')).toBe(false);
+    });
+
   it('should leave the parent form invalid when deregister a removed input', function() {
     doc = jqLite(
       '<form name="parent">' +
