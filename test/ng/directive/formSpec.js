@@ -463,7 +463,7 @@ describe('form', function() {
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
-            '<input ng-if="inputPresent" ng-model="modelA" name="inputA" required>' +
+            '<input ng-if="inputPresent" ng-model="modelA" name="inputA" required maxlength="10">' +
           '</div>' +
         '</form>');
       $compile(doc)(scope);
@@ -476,23 +476,40 @@ describe('form', function() {
 
       expect(parent).toBeDefined();
       expect(child).toBeDefined();
+
       expect(parent.$error.required).toEqual([child]);
+      expect(parent.$$success.maxlength).toEqual([child]);
+
       expect(child.$error.required).toEqual([input]);
+      expect(child.$$success.maxlength).toEqual([input]);
+
       expect(doc.hasClass('ng-invalid')).toBe(true);
       expect(doc.hasClass('ng-invalid-required')).toBe(true);
+      expect(doc.hasClass('ng-valid-maxlength')).toBe(true);
       expect(doc.find('div').hasClass('ng-invalid')).toBe(true);
       expect(doc.find('div').hasClass('ng-invalid-required')).toBe(true);
+      expect(doc.find('div').hasClass('ng-valid-maxlength')).toBe(true);
 
       //remove child input
-      scope.inputPresent = false;
-      scope.$apply();
+      scope.$apply('inputPresent = false');
 
       expect(parent.$error.required).toBeFalsy();
+      expect(parent.$$success.maxlength).toBeFalsy();
+
       expect(child.$error.required).toBeFalsy();
+      expect(child.$$success.maxlength).toBeFalsy();
+
       expect(doc.hasClass('ng-valid')).toBe(true);
       expect(doc.hasClass('ng-valid-required')).toBe(false);
+      expect(doc.hasClass('ng-invalid-required')).toBe(false);
+      expect(doc.hasClass('ng-valid-maxlength')).toBe(false);
+      expect(doc.hasClass('ng-invalid-maxlength')).toBe(false);
+
       expect(doc.find('div').hasClass('ng-valid')).toBe(true);
       expect(doc.find('div').hasClass('ng-valid-required')).toBe(false);
+      expect(doc.find('div').hasClass('ng-invalid-required')).toBe(false);
+      expect(doc.find('div').hasClass('ng-valid-maxlength')).toBe(false);
+      expect(doc.find('div').hasClass('ng-invalid-maxlength')).toBe(false);
     });
 
   it('should leave the parent form invalid when deregister a removed input', function() {

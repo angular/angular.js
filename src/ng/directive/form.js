@@ -163,6 +163,9 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
     forEach(form.$error, function(value, name) {
       form.$setValidity(name, null, control);
     });
+    forEach(form.$$success, function(value, name) {
+      form.$setValidity(name, null, control);
+    });
 
     arrayRemove(controls, control);
   };
