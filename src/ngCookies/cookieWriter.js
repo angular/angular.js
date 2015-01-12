@@ -16,19 +16,22 @@ function $$CookieWriter($document, $log, $browser) {
   var rawDocument = $document[0];
 
   function buildCookieString(name, value, options) {
-    options = angular.extend({path: cookiePath}, options);
+    var path, expires;
+    options = options || {};
+    expires = options.expires;
+    path = angular.isDefined(options.path) ? options.path : cookiePath;
     if (value === undefined) {
-      options.expires = 'Thu, 01 Jan 1970 00:00:00 GMT';
+      expires = 'Thu, 01 Jan 1970 00:00:00 GMT';
       value = '';
     }
-    if (angular.isString(options.expires)) {
-      options.expires = new Date(options.expires);
+    if (angular.isString(expires)) {
+      expires = new Date(expires);
     }
 
     var str = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-    str += options.path ? ';path=' + options.path : '';
+    str += path ? ';path=' + path : '';
     str += options.domain ? ';domain=' + options.domain : '';
-    str += options.expires ? ';expires=' + options.expires.toUTCString() : '';
+    str += expires ? ';expires=' + expires.toUTCString() : '';
     str += options.secure ? ';secure' : '';
 
     // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
