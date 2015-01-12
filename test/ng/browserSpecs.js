@@ -249,37 +249,6 @@ describe('browser', function() {
   });
 
 
-  describe('poller', function() {
-
-    it('should call functions in pollFns in regular intervals', function() {
-      var log = '';
-      browser.addPollFn(function() {log+='a';});
-      browser.addPollFn(function() {log+='b';});
-      expect(log).toEqual('');
-      fakeWindow.setTimeout.flush();
-      expect(log).toEqual('ab');
-      fakeWindow.setTimeout.flush();
-      expect(log).toEqual('abab');
-    });
-
-    it('should startPoller', function() {
-      expect(fakeWindow.timeouts.length).toEqual(0);
-
-      browser.addPollFn(function() {});
-      expect(fakeWindow.timeouts.length).toEqual(1);
-
-      //should remain 1 as it is the check fn
-      browser.addPollFn(function() {});
-      expect(fakeWindow.timeouts.length).toEqual(1);
-    });
-
-    it('should return fn that was passed into addPollFn', function() {
-      var fn = function() { return 1; };
-      var returnedFn = browser.addPollFn(fn);
-      expect(returnedFn).toBe(fn);
-    });
-  });
-
   describe('url', function() {
     var pushState, replaceState, locationReplace;
 
@@ -723,7 +692,6 @@ describe('browser', function() {
           fakeWindow.location.href = newUrl;
         });
         $provide.value('$browser', browser);
-        browser.pollFns = [];
 
         sniffer.history = options.history;
         $provide.value('$sniffer', sniffer);
@@ -846,7 +814,6 @@ describe('browser', function() {
 
     beforeEach(module(function($provide, $locationProvider) {
       $provide.value('$browser', browser);
-      browser.pollFns = [];
     }));
 
     it('should not interfere with legacy browser url replace behavior', function() {

@@ -99,7 +99,6 @@ describe('$location', function() {
 
         /* global Browser: false */
         var b = new Browser($window, $document, fakeLog, sniffer);
-        b.pollFns = [];
         return b;
       };
     });
