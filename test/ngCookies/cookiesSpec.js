@@ -49,6 +49,11 @@ describe('$cookies', function() {
     expect($$cookieWriter).toHaveBeenCalledWith('name', '"value"', {path: '/a/b'});
   }));
 
+  it('should pass options on remove', inject(function($cookies, $$cookieWriter) {
+    $cookies.remove('name', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', undefined, {path: '/a/b'});
+  }));
+
   it('should put cookie value without serializing', inject(function($cookies, $$cookieReader) {
     $cookies.put('name', 'value');
     expect($$cookieReader()).toEqual({'name': 'value'});

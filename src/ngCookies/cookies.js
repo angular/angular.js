@@ -136,9 +136,10 @@ angular.module('ngCookies', ['ng']).
          * Remove given cookie
          *
          * @param {string} key Id of the key-value pair to delete.
+         * @param {Object=} options Object with options for the cookie to be removed.
          */
-        remove: function(key) {
-          $$cookieWriter(key, undefined);
+        remove: function(key, options) {
+          $$cookieWriter(key, undefined, options);
         }
       };
 
