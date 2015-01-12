@@ -258,13 +258,12 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
     }
 
     return {
-      getWatchables: function() {
+      getWatchables: $parse(valuesFn, function(values) {
         // Create a collection of things that we would like to watch (watchedArray)
         // so that they can all be watched using a single $watchCollection
         // that only runs the handler once if anything changes
         var watchedArray = [];
-
-        var values = valuesFn(scope) || [];
+        values = values || [];
 
         Object.keys(values).forEach(function getWatchable(key) {
           var locals = getLocals(values[key], key);
@@ -274,7 +273,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           watchedArray.push(label);
         });
         return watchedArray;
-      },
+      }),
 
       getOptions: function() {
 
