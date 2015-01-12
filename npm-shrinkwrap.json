@@ -1528,7 +1528,7 @@
               "dependencies": {
                 "fsevents": {
                   "version": "0.2.1",
-                  "from": "git://github.com/pipobscure/fsevents#7dcdf9fa3f8956610fd6f69f72c67bace2de7138",
+                  "from": "fsevents@git://github.com/pipobscure/fsevents#7dcdf9fa3f8956610fd6f69f72c67bace2de7138",
                   "resolved": "git://github.com/pipobscure/fsevents#7dcdf9fa3f8956610fd6f69f72c67bace2de7138",
                   "dependencies": {
                     "nan": {
