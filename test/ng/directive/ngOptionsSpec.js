@@ -497,6 +497,42 @@ describe('ngOptions', function() {
   });
 
 
+
+  it('should be possible to use one-time binding on the expression', function() {
+    createSelect({
+      'ng-model': 'someModel',
+      'ng-options': 'o as o for o in ::arr'
+    });
+
+    var options;
+
+    // Initially the options list is just the unknown option
+    options = element.find('option');
+    expect(options.length).toEqual(1);
+
+    // Now initialize the scope and the options should be updated
+    scope.$apply(function() {
+      scope.arr = ['a','b','c'];
+    });
+    options = element.find('option');
+    expect(options.length).toEqual(4);
+    expect(options.eq(0)).toEqualUnknownOption();
+    expect(options.eq(1)).toEqualOption('a');
+    expect(options.eq(2)).toEqualOption('b');
+    expect(options.eq(3)).toEqualOption('c');
+
+    // Change the scope but the options should not change
+    scope.arr = ['w', 'x', 'y', 'z'];
+    scope.$digest();
+    options = element.find('option');
+    expect(options.length).toEqual(4);
+    expect(options.eq(0)).toEqualUnknownOption();
+    expect(options.eq(1)).toEqualOption('a');
+    expect(options.eq(2)).toEqualOption('b');
+    expect(options.eq(3)).toEqualOption('c');
+  });
+
+
   describe('selectAs expression', function() {
     beforeEach(function() {
       scope.arr = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}];
