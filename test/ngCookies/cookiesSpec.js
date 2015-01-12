@@ -1,13 +1,19 @@
 'use strict';
 
 describe('$cookies', function() {
+  var mockedCookies;
 
-  beforeEach(module('ngCookies', function($provide) {
-    $provide.provider('$$cookieWriter', angular.mock.$$CookieWriterProvider);
-    $provide.decorator('$$cookieWriter', function($delegate) {
-      return jasmine.createSpy('$$cookieWriter').andCallFake($delegate);
+  beforeEach(function() {
+    mockedCookies = {};
+    module('ngCookies', {
+      $$cookieWriter: jasmine.createSpy('$$cookieWriter').andCallFake(function(name, value) {
+        mockedCookies[name] = value;
+      }),
+      $$cookieReader: function() {
+        return mockedCookies;
+      }
     });
-  }));
+  });
 
   it('should serialize objects to json', inject(function($cookies, $$cookieReader) {
     $cookies.putObject('objectCookie', {id: 123, name: 'blah'});
@@ -34,7 +40,7 @@ describe('$cookies', function() {
         toEqual({ 'emptyCookie': '""' });
     expect($cookies.getObject("emptyCookie")).toEqual('');
 
-    $$cookieReader.cookieHash['blankCookie'] = '';
+    mockedCookies['blankCookie'] = '';
     expect($cookies.getObject("blankCookie")).toEqual('');
   }));
 
