@@ -110,6 +110,7 @@ function annotate(fn, strictDi, name) {
     last = fn.length - 1;
     assertArgFn(fn[last], 'fn');
     $inject = fn.slice(0, last);
+    fn[last].$inject = $inject;
   } else {
     assertArgFn(fn, 'fn', true);
   }
