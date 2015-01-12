@@ -59,7 +59,7 @@ In Angular applications, you move the job of filling page templates with data fr
 * **Realtime: **[Socket.io](http://www.creativebloq.com/javascript/angularjs-collaboration-board-socketio-2132885), [OmniBinder](https://github.com/jeffbcross/omnibinder)
 * **Visualization:** [SVG](http://gaslight.co/blog/angular-backed-svgs), [D3.js](http://www.ng-newsletter.com/posts/d3-on-angular.html)
 * **Local Storage and session:** [ngStorage](https://github.com/gsklee/ngStorage)
-
+* **Firefox OS related:** [Compatibility issues](http://acegautam.github.io/firefoxos/angular_issues.html)
 ## Tools
 
 * **Getting Started:** [Comparison of the options for starting a new project](http://www.dancancro.com/comparison-of-angularjs-application-starters/)
