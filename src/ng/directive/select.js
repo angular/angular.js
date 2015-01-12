@@ -414,7 +414,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         ctrl.$render = render;
 
         scope.$watchCollection(valuesFn, scheduleRendering);
-        scope.$watchCollection(getLabels, scheduleRendering);
+        scope.$watchCollection($parse(valuesFn, getLabels), scheduleRendering);
 
         if (multiple) {
           scope.$watchCollection(function() { return ctrl.$modelValue; }, scheduleRendering);
@@ -458,8 +458,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         }
 
-        function getLabels() {
-          var values = valuesFn(scope);
+        function getLabels(values) {
           var toDisplay;
           if (values && isArray(values)) {
             toDisplay = new Array(values.length);
