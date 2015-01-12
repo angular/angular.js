@@ -1081,6 +1081,26 @@ describe('angular', function() {
         window.name = originalName;
       });
 
+      it('should provide injector for deferred bootstrap', function() {
+        var injector;
+        window.name = 'NG_DEFER_BOOTSTRAP!';
+
+        injector = angular.bootstrap(element);
+        expect(injector).toBeUndefined();
+
+        injector = angular.resumeBootstrap();
+        expect(injector).toBeDefined();
+      });
+
+      it('should resume deferred bootstrap, if defined', function() {
+        var injector;
+        window.name = 'NG_DEFER_BOOTSTRAP!';
+
+        angular.resumeDeferredBootstrap = noop;
+        var spy = spyOn(angular, "resumeDeferredBootstrap");
+        injector = angular.bootstrap(element);
+        expect(spy).toHaveBeenCalled();
+      });
 
       it('should wait for extra modules', function() {
         window.name = 'NG_DEFER_BOOTSTRAP!';
