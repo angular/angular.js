@@ -210,7 +210,7 @@ function replaceJsonProp {
 # deleteJsonProp(jsonFile, property)
 # - restriction: property needs to be on a single line!
 function deleteJsonProp {
-  sed -i -e /\"$2\"\:/d $1
+  sed -ie /\"$2\"\:/d $1
 }
 
 # replaceInFile(file, findPattern, replacePattern)
