@@ -705,6 +705,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               updateLabelMap(labelMap, option.label, false);
               option.element.remove();
             }
+            // force OPTIONs refresh in IE <= 9
+            if (msie && msie <= 9 && selectElement[0].options.length) {
+              selectElement[0].options[0].label = "" + selectElement[0].options[0].label;
+              jqLite(selectElement[0].options[0]).removeAttr('label');
+            }
           }
           // remove any excessive OPTGROUPs from select
           while (optionGroupsCache.length > groupIndex) {
