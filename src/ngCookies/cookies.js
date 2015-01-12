@@ -25,10 +25,6 @@ angular.module('ngCookies', ['ng']).
    * @description
    * Provides read/write access to browser's cookies.
    *
-   * <div class="alert alert-error">
-   * **Note:** The $cookies service is deprecated. Please use the $cookieStore service instead.
-   * </div>
-   *
    * Only a simple Object is exposed and by adding or removing properties to/from this object, new
    * cookies are created/deleted at the end of current $eval.
    * The object's properties can only be strings.
@@ -47,81 +43,103 @@ angular.module('ngCookies', ['ng']).
    *   }]);
    * ```
    */
-   factory('$cookies', ['$rootScope', '$browser', '$$cookieReader', '$$cookieWriter', function($rootScope, $browser, $$cookieReader, $$cookieWriter) {
-      var cookies = {},
-          lastCookies = {},
-          lastBrowserCookies,
-          runEval = false,
-          copy = angular.copy,
-          isUndefined = angular.isUndefined;
+   factory('$cookies', ['$$cookieReader', '$$cookieWriter', function($$cookieReader, $$cookieWriter) {
 
-      //creates a poller fn that copies all cookies from the $browser to service & inits the service
-      $browser.addPollFn(function() {
-        var currentCookies = $$cookieReader();
-        if (lastBrowserCookies != currentCookies) { //relies on $$cookieReader() impl
-          lastBrowserCookies = currentCookies;
-          copy(currentCookies, lastCookies);
-          copy(currentCookies, cookies);
-          if (runEval) $rootScope.$apply();
+      return {
+        /**
+         * @ngdoc method
+         * @name $cookies#get
+         *
+         * @description
+         * Returns the value of given cookie key
+         *
+         * @param {string} key Id to use for lookup.
+         * @returns {string} Raw cookie value.
+         */
+        get: function(key) {
+          return $$cookieReader()[key];
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookies#getObject
+         *
+         * @description
+         * Returns the value of given cookie key
+         *
+         * @param {string} key Id to use for lookup.
+         * @returns {Object} Deserialized cookie value.
+         */
+        getObject: function(key) {
+          var value = $$cookieReader()[key];
+          return value ? angular.fromJson(value) : value;
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookies#getAll
+         *
+         * @description
+         * Returns a key value object with all the cookies
+         *
+         * @returns {Object} All cookies
+         */
+        getAll: function() {
+          return $$cookieReader();
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookies#put
+         *
+         * @description
+         * Sets a value for given cookie key
+         *
+         * @param {string} key Id for the `value`.
+         * @param {string} value Raw value to be stored.
+         * @param {Object=} options Options object.
+         */
+        put: function(key, value, options) {
+          $$cookieWriter(key, value, options);
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookies#putObject
+         *
+         * @description
+         * Sets a value for given cookie key
+         *
+         * @param {string} key Id for the `value`.
+         * @param {Object} value Value to be stored.
+         * @param {Object=} options Object with options that need to be stored for the cookie.
+         *    The object may have following properties:
+         *
+         *    - **path** - `{string}` - The cookie will be available only for this path and its
+         *      sub-paths. By default, this would be the URL that appears in your base tag.
+         *    - **domain** - `{string}` - The cookie will be available only for this domain and
+         *      its sub-domains. For obvious security reasons the user agent will not accept the
+         *      cookie if the current domain is not a sub domain or equals to the requested domain.
+         *    - **expires** - `{string|Date}` - String of the form "Wdy, DD Mon YYYY HH:MM:SS GMT"
+         *      or a Date object indicating the exact date/time this cookie will expire.
+         *    - **secure** - `{boolean}` - The cookie will be available only in secured connection.
+         */
+        putObject: function(key, value, options) {
+          $$cookieWriter(key, angular.toJson(value), options);
+        },
+
+        /**
+         * @ngdoc method
+         * @name $cookies#remove
+         *
+         * @description
+         * Remove given cookie
+         *
+         * @param {string} key Id of the key-value pair to delete.
+         */
+        remove: function(key) {
+          $$cookieWriter(key, undefined);
         }
-      })();
+      };
 
-      runEval = true;
-
-      //at the end of each eval, push cookies
-      //TODO: this should happen before the "delayed" watches fire, because if some cookies are not
-      //      strings or browser refuses to store some cookies, we update the model in the push fn.
-      $rootScope.$watch(push);
-
-      return cookies;
-
-
-      /**
-       * Pushes all the cookies from the service to the browser and verifies if all cookies were
-       * stored.
-       */
-      function push() {
-        var name,
-            value,
-            browserCookies,
-            updated;
-
-        //delete any cookies deleted in $cookies
-        for (name in lastCookies) {
-          if (isUndefined(cookies[name])) {
-            $$cookieWriter(name, undefined);
-          }
-        }
-
-        //update all cookies updated in $cookies
-        for (name in cookies) {
-          value = cookies[name];
-          if (!angular.isString(value)) {
-            value = '' + value;
-            cookies[name] = value;
-          }
-          if (value !== lastCookies[name]) {
-            $$cookieWriter(name, value);
-            updated = true;
-          }
-        }
-
-        //verify what was actually stored
-        if (updated) {
-          updated = false;
-          browserCookies = $$cookieReader();
-
-          for (name in cookies) {
-            if (cookies[name] !== browserCookies[name]) {
-              //delete or reset all cookies that the browser dropped from $cookies
-              if (isUndefined(browserCookies[name])) {
-                delete cookies[name];
-              } else {
-                cookies[name] = browserCookies[name];
-              }
-              updated = true;
-            }
-          }
-        }
-      }
     }]);
