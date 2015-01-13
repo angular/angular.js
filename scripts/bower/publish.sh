@@ -91,11 +91,12 @@ function prepare {
     then
       echo "module.exports = angular;"
     else
+      # convert to module names (angular-animate >> ngAnimate)
       suffix=`echo $repo | cut -c9-`
       first=`echo $suffix | cut -c1 | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
       tail=`echo $suffix | cut -c2-`
 
-      echo "module.exports = angular.module('ng$first$tail');"
+      echo "module.exports = 'ng$first$tail';"
     fi
 
     git add -A
