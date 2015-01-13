@@ -91,6 +91,14 @@ function prepare {
       tail=`echo $suffix | cut -c2-`
 
       echo "module.exports = 'ng$first$tail';" >> index.js
+
+      # add angular as a peer dependency
+      deleteJsonProp "package.json" "peerDependencies"
+      replaceInFile "package.json" "homepage\"\: \"http\:\/\/angularjs\.org\"$" "homepage\"\: \"http\:\/\/angularjs\.org\","
+      sed -i '' -e /^}/d "package.json"
+      # have to use single line form so deleteJsonProp will work
+      echo "\t\"peerDependencies\": { \"angular\": \"$NEW_VERSION\" }" >> package.json
+      echo '}' >> package.json
     fi
 
     git add -A
