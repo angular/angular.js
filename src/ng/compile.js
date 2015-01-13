@@ -2119,7 +2119,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       forEach(dst, function(value, key) {
         if (key.charAt(0) != '$') {
           if (src[key] && src[key] !== value) {
-            value += (key === 'style' ? ';' : ' ') + src[key];
+            var concatString = ' ';
+            if(key === 'style') {
+              concatString = ';'
+            }
+            if(key === 'ngIf'){ //if ngIf is merged both conditions need to be taken into account
+              concatString = ' && ';
+            }
+            value += concatString + src[key];
           }
           dst.$set(key, value, true, srcAttr[key]);
         }
