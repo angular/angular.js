@@ -2120,10 +2120,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (key.charAt(0) != '$') {
           if (src[key] && src[key] !== value) {
             var concatString = ' ';
-            if(key === 'style') {
-              concatString = ';'
+            if (key === 'style') {
+              concatString = ';';
             }
-            if(key === 'ngIf'){ //if ngIf is merged both conditions need to be taken into account
+            if (key === 'ngIf') { //if ngIf is merged both conditions need to be taken into account
               concatString = ' && ';
             }
             value += concatString + src[key];
