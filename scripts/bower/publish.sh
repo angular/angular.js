@@ -90,7 +90,14 @@ function prepare {
       first=`echo $suffix | cut -c1 | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
       tail=`echo $suffix | cut -c2-`
 
-      echo "module.exports = 'ng$first$tail';" >> index.js
+      if [ $repo != "angular-mocks" ]
+      then
+        echo "module.exports = 'ng$first$tail';" >> index.js
+      else
+        echo "exports.ngMock = 'ngMock';" >> index.js
+        echo "exports.ngMockE2E = 'ngMockE2E';" >> index.js
+        echo "exports.ngAnimateMock = 'ngAnimateMock';" >> index.js
+      fi
 
       # add angular as a peer dependency
       deleteJsonProp "package.json" "peerDependencies"
