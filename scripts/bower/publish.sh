@@ -78,13 +78,7 @@ function prepare {
     deleteJsonProp "package.json" "main"
 
     echo "-- Adding CommonJS index file"
-    if [ -f "index.js" ]
-    then
-      rm index.js
-    fi
-
-    touch index.js
-    echo "require('./$repo');" >> index.js
+    echo "require('./$repo');" > index.js
     echo "" >> index.js
     echo "module.exports = $repo;" >> index.js
     if [ $repo == "angular" ]
