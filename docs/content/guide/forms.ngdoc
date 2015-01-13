@@ -44,7 +44,9 @@ for other directives to augment its behavior.
           };
 
           $scope.reset = function() {
-            $scope.user = angular.copy($scope.master);
+            //$scope.user = angular.copy($scope.master);
+            $scope.master = {};
+            $scope.user = {};
           };
 
           $scope.reset();
