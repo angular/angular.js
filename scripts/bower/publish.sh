@@ -89,14 +89,14 @@ function prepare {
     echo "module.exports = $repo;" >> index.js
     if [ $repo == "angular" ]
     then
-      echo "module.exports = angular;"
+      echo "module.exports = angular;" >> index.js
     else
       # convert to module names (angular-animate >> ngAnimate)
       suffix=`echo $repo | cut -c9-`
       first=`echo $suffix | cut -c1 | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
       tail=`echo $suffix | cut -c2-`
 
-      echo "module.exports = 'ng$first$tail';"
+      echo "module.exports = 'ng$first$tail';" >> index.js
     fi
 
     git add -A
