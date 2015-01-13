@@ -80,7 +80,6 @@ function prepare {
     echo "-- Adding CommonJS index file"
     echo "require('./$repo');" > index.js
     echo "" >> index.js
-    echo "module.exports = $repo;" >> index.js
     if [ $repo == "angular" ]
     then
       echo "module.exports = angular;" >> index.js
