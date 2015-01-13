@@ -1,3 +1,153 @@
+<a name="1.4.0-beta.0"></a>
+# 1.4.0-beta.0 photonic-umbrakinesis (2015-01-13)
+
+
+## Bug Fixes
+
+- **$location:** support right button click on anchors in firefox
+  ([aa798f12](https://github.com/angular/angular.js/commit/aa798f123658cb78b5581513d26577016195cafe),
+   [#7984](https://github.com/angular/angular.js/issues/7984))
+- **$templateRequest:** propagate HTTP status on failed requests
+  ([e24f22bd](https://github.com/angular/angular.js/commit/e24f22bdb1740388938d58778aa24d307a79a796),
+   [#10514](https://github.com/angular/angular.js/issues/10514), [#10628](https://github.com/angular/angular.js/issues/10628))
+- **dateFilter:** ignore invalid dates
+  ([1334b8c8](https://github.com/angular/angular.js/commit/1334b8c8326b93e0ca016c85516627900c7a9fd3),
+   [#10640](https://github.com/angular/angular.js/issues/10640))
+- **filterFilter:** use isArray() to determine array type
+  ([a01ce6b8](https://github.com/angular/angular.js/commit/a01ce6b81c197b0a4a1057981e8e9c1b74f37587),
+   [#10621](https://github.com/angular/angular.js/issues/10621))
+- **ngChecked:** ensure that ngChecked doesn't interfere with ngModel
+  ([e079111b](https://github.com/angular/angular.js/commit/e079111b33bf36be21c0941718b41cc9ca67bea0),
+   [#10662](https://github.com/angular/angular.js/issues/10662), [#10664](https://github.com/angular/angular.js/issues/10664))
+- **ngClass:** handle multi-class definitions as an element of an array
+  ([e1132f53](https://github.com/angular/angular.js/commit/e1132f53b03a5a71aa9b6eded24d64e3bc83929b),
+   [#8578](https://github.com/angular/angular.js/issues/8578), [#10651](https://github.com/angular/angular.js/issues/10651))
+- **ngModelOptions:** allow sharing options between multiple inputs
+  ([9c9c6b3f](https://github.com/angular/angular.js/commit/9c9c6b3fe4edfe78ae275c413ee3eefb81f1ebf6),
+   [#10667](https://github.com/angular/angular.js/issues/10667))
+- **ngOptions:**
+  - support one-time binding on the option values
+  ([ba90261b](https://github.com/angular/angular.js/commit/ba90261b7586b519483883800ea876510faf5c21),
+   [#10687](https://github.com/angular/angular.js/issues/10687), [#10694](https://github.com/angular/angular.js/issues/10694))
+  - prevent infinite digest if track by expression is stable
+  ([fc21db8a](https://github.com/angular/angular.js/commit/fc21db8a15545fad53124fc941b3c911a8d57067),
+   [#9464](https://github.com/angular/angular.js/issues/9464))
+  - update model if selected option is removed
+  ([933591d6](https://github.com/angular/angular.js/commit/933591d69cee2c5580da1d8522ba90a7d924da0e),
+   [#7736](https://github.com/angular/angular.js/issues/7736))
+  - ensure that the correct option is selected when options are loaded async
+  ([7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
+   [#8019](https://github.com/angular/angular.js/issues/8019), [#9714](https://github.com/angular/angular.js/issues/9714), [#10639](https://github.com/angular/angular.js/issues/10639))
+- **ngPluralize:** generate a warning when using a not defined rule
+  ([c66b4b6a](https://github.com/angular/angular.js/commit/c66b4b6a133f7215d50c23db516986cfc1f0a985))
+
+
+## Features
+
+- **$filter:** display Infinity symbol when number is Infinity
+  ([51d67742](https://github.com/angular/angular.js/commit/51d6774286202b55ade402ca097e417e70fd546b),
+   [#10421](https://github.com/angular/angular.js/issues/10421))
+- **$timeout:** allow `fn` to be an optional parameter
+  ([5a603023](https://github.com/angular/angular.js/commit/5a60302389162c6ef45f311c1aaa65a00d538c66),
+   [#9176](https://github.com/angular/angular.js/issues/9176))
+- **limitTo:** ignore limit when invalid
+  ([a3c3bf33](https://github.com/angular/angular.js/commit/a3c3bf3332e5685dc319c46faef882cb6ac246e1),
+   [#10510](https://github.com/angular/angular.js/issues/10510))
+- **ngMock/$exceptionHandler:** log errors when rethrowing
+  ([deb3cb4d](https://github.com/angular/angular.js/commit/deb3cb4daef0054457bd9fb8995829fff0e8f1e4),
+   [#10540](https://github.com/angular/angular.js/issues/10540), [#10564](https://github.com/angular/angular.js/issues/10564))
+
+
+## Performance Improvements
+
+- **ngStyleDirective:** use $watchCollection
+  ([8928d023](https://github.com/angular/angular.js/commit/8928d0234551a272992d0eccef73b3ad6cb8bfd1),
+   [#10535](https://github.com/angular/angular.js/issues/10535))
+
+
+## Breaking Changes
+
+- **limitTo:** due to [a3c3bf33](https://github.com/angular/angular.js/commit/a3c3bf3332e5685dc319c46faef882cb6ac246e1),
+  limitTo changed behavior when limit value is invalid.
+Instead of returning empty object/array it returns unchanged input.
+
+
+- **ngOptions:** due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
+
+
+When using `ngOptions`: the directive applies a surrogate key as the value of the `<option>` element.
+This commit changes the actual string used as the surrogate key. We now store a string that is computed
+by calling `hashKey` on the item in the options collection; previously it was the index or key of the
+item in the collection.
+
+(This is in keeping with the way that the unknown option value is represented in the select directive.)
+
+Before you might have seen:
+
+```
+<select ng-model="x" ng-option="i in items">
+  <option value="1">a</option>
+  <option value="2">b</option>
+  <option value="3">c</option>
+  <option value="4">d</option>
+</select>
+```
+
+Now it will be something like:
+
+```
+<select ng-model="x" ng-option="i in items">
+  <option value="string:a">a</option>
+  <option value="string:b">b</option>
+  <option value="string:c">c</option>
+  <option value="string:d">d</option>
+</select>
+```
+
+If your application code relied on this value, which it shouldn't, then you will need to modify your
+application to accommodate this. You may find that you can use the `track by` feaure of `ngOptions`
+as this provides the ability to specify the key that is stored.
+
+- **ngOptions:** due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
+
+When iterating over an object's properties using the `(key, value) in obj` syntax
+the order of the elements used to be sorted alphabetically. This was an artificial
+attempt to create a deterministic ordering since browsers don't guarantee the order.
+But in practice this is not what people want and so this change iterates over properties
+in the order they are returned by Object.keys(obj), which is almost always the order
+in which the properties were defined.
+
+
+
+<a name="1.3.9"></a>
+# 1.3.9 multidimensional-awareness (2015-01-13)
+
+
+## Bug Fixes
+
+- **$parse:** allow use of locals in assignments
+  ([86900814](https://github.com/angular/angular.js/commit/869008140a96e0e9e0d9774cc2e5fdd66ada7ba9))
+- **filterFilter:** use isArray() to determine array type
+  ([d4b60ada](https://github.com/angular/angular.js/commit/d4b60ada1ecff5afdb3210caa44e149e9f3d4c1b),
+   [#10621](https://github.com/angular/angular.js/issues/10621))
+
+
+## Features
+
+- **ngMock/$exceptionHandler:** log errors when rethrowing
+  ([2b97854b](https://github.com/angular/angular.js/commit/2b97854bf4786fe8579974e2b9d6b4adee8a3dc3),
+   [#10540](https://github.com/angular/angular.js/issues/10540), [#10564](https://github.com/angular/angular.js/issues/10564))
+
+
+## Performance Improvements
+
+- **ngStyleDirective:** use $watchCollection
+  ([4c8d8ad5](https://github.com/angular/angular.js/commit/4c8d8ad5083d9dd17c0b8480339d5f95943f1b71),
+   [#10535](https://github.com/angular/angular.js/issues/10535))
+
+
+
+
 <a name="1.3.8"></a>
 # 1.3.8 prophetic-narwhal (2014-12-19)
 
