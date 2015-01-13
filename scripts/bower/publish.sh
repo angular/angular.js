@@ -75,6 +75,28 @@ function prepare {
     replaceJsonProp "bower.json" "angular.*" ".*" "$NEW_VERSION"
     replaceJsonProp "package.json" "version" ".*" "$NEW_VERSION"
     replaceJsonProp "package.json" "angular.*" ".*" "$NEW_VERSION"
+    deleteJsonProp "package.json" "main"
+
+    echo "-- Adding CommonJS index file"
+    if [ -f "index.js" ]
+    then
+      rm index.js
+    fi
+
+    touch index.js
+    echo "require('./$repo');" >> index.js
+    echo "" >> index.js
+    echo "module.exports = $repo;" >> index.js
+    if [ $repo == "angular" ]
+    then
+      echo "module.exports = angular;"
+    else
+      suffix=`echo $repo | cut -c9-`
+      first=`echo $suffix | cut -c1 | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+      tail=`echo $suffix | cut -c2-`
+
+      echo "module.exports = angular.module('ng$first$tail');"
+    fi
 
     git add -A
 
