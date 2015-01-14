@@ -87,7 +87,7 @@ Before you submit your pull request consider the following guidelines:
   that relates to your submission. You don't want to duplicate effort.
 * Please sign our [Contributor License Agreement (CLA)](#cla) before sending pull
   requests. We cannot accept code without this.
-* Make your changes in a new git branch
+* Make your changes in a new git branch:
 
      ```shell
      git checkout -b my-fix-branch master
@@ -107,7 +107,7 @@ Before you submit your pull request consider the following guidelines:
      ```
   Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
-* Build your changes locally to ensure all the tests pass
+* Build your changes locally to ensure all the tests pass:
 
     ```shell
     grunt test
@@ -120,7 +120,7 @@ Before you submit your pull request consider the following guidelines:
     ```
 
 * In GitHub, send a pull request to `angular:master`.
-* If we suggest changes then
+* If we suggest changes then:
   * Make the required updates.
   * Re-run the Angular test suite to ensure tests are still passing.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
