@@ -699,13 +699,6 @@ describe('angular', function() {
   });
 
 
-  describe('sortedKeys', function() {
-    it('should collect keys from object', function() {
-      expect(sortedKeys({c:0, b:0, a:0})).toEqual(['a', 'b', 'c']);
-    });
-  });
-
-
   describe('encodeUriSegment', function() {
     it('should correctly encode uri segment and not encode chars defined as pchar set in rfc3986',
         function() {

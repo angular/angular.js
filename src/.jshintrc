@@ -28,7 +28,6 @@
     "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
-    "sortedKeys": false,
     "forEachSorted": false,
     "reverseParams": false,
     "nextUid": false,
