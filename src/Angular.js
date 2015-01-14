@@ -767,6 +767,36 @@ function equals(o1, o2) {
   return false;
 }
 
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngJq
+ *
+ * @element html
+ * @param {string} (optional) the name of the library available under `window` to be used for angular.element
+ *
+ * @description
+ *
+ * Use this directive to force the angular.element library.  This should be used to force
+ * either jqLite by leaving ng-jq blank or setting the name of the jquery variable under window
+ * (eg. jQuery).
+ *
+ * This directive is global for the whole of the angular library, hence the directive can only
+ * be added to the top-most HTML element.
+ *
+ */
+var jq = function () {
+  if (isDefined(jq.name_)) return jq.name_;
+
+  var el = document.querySelector('[ng-jq]') || document.querySelector('[data-ng-jq]');
+  var name = undefined;
+
+  if (el) {
+    name = el.getAttribute('ng-jq') || el.getAttribute('data-ng-jq') || '';
+  }
+
+  return (jq.name_ = name);
+};
+
 
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
@@ -1147,7 +1177,7 @@ function snake_case(name, separator){
 
 function bindJQuery() {
   // bind to jQuery if present;
-  jQuery = window.jQuery;
+  jQuery = jq() ? window[jq()] : window.jQuery;
   // reset to jQuery or default to us.
   if (jQuery) {
     jqLite = jQuery;
