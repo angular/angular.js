@@ -68,6 +68,10 @@ function stripHash(url) {
   return index == -1 ? url : url.substr(0, index);
 }
 
+function trimEmptyHash(url) {
+  return url.replace(/(#.+)|#$/, '$1');
+}
+
 
 function stripFile(url) {
   return url.substr(0, stripHash(url).lastIndexOf('/') + 1);
@@ -724,10 +728,11 @@ function $LocationProvider(){
     // update browser
     var changeCounter = 0;
     $rootScope.$watch(function $locationWatch() {
-      var oldUrl = $browser.url();
+      var oldUrl = trimEmptyHash($browser.url());
+      var newUrl = trimEmptyHash($location.absUrl());
       var currentReplace = $location.$$replace;
 
-      if (!changeCounter || oldUrl != $location.absUrl()) {
+      if (!changeCounter || oldUrl != newUrl) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
           if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).

@@ -550,6 +550,20 @@ describe('$location', function() {
     };
   }
 
+  describe('location watch', function() {
+    beforeEach(initService({supportHistory: true}));
+    beforeEach(inject(initBrowser({url:'http://new.com/a/b#'})));
+
+    it('should not update browser if only the empty hash fragment is cleared by updating the search', inject(function($rootScope, $browser, $location) {
+      $rootScope.$digest();
+
+      $browser.url('http://new.com/a/b#');
+      var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+      $rootScope.$digest();
+      expect($browserUrl).not.toHaveBeenCalled();
+    }));
+  });
+
   describe('wiring', function() {
 
     beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
