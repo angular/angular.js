@@ -46,6 +46,7 @@
 # Utility functions:
 # - readJsonProp
 # - replaceJsonProp
+# - deleteJsonProp
 # - resolveDir
 # - getVar
 # - serVar
