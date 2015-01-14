@@ -72,6 +72,7 @@ function $RootScopeProvider() {
   var $rootScopeMinErr = minErr('$rootScope');
   var lastDirtyWatch = null;
   var applyAsyncId = null;
+  var watchId = 0;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -79,6 +80,10 @@ function $RootScopeProvider() {
     }
     return TTL;
   };
+
+  function nextWatchId() {
+    return ++watchId;
+  }
 
   function createChildScopeClass(parent) {
     function ChildScope() {
@@ -396,7 +401,8 @@ function $RootScopeProvider() {
               last: initWatchVal,
               get: get,
               exp: prettyPrintExpression || watchExp,
-              eq: !!objectEquality
+              eq: !!objectEquality,
+              id: nextWatchId()
             };
 
         lastDirtyWatch = null;
@@ -414,10 +420,12 @@ function $RootScopeProvider() {
         incrementWatchersCount(this, 1);
 
         return function deregisterWatch() {
-          if (arrayRemove(array, watcher) >= 0) {
+          var index = binarySearch(array, watcher.id);
+          if (index >= 0) {
+            array.splice(index, 1);
             incrementWatchersCount(scope, -1);
+            lastDirtyWatch = null;
           }
-          lastDirtyWatch = null;
         };
       },
 
@@ -1360,6 +1368,24 @@ function $RootScopeProvider() {
           $rootScope.$apply(flushApplyAsync);
         });
       }
+    }
+
+    // Array is ordered in descending order by id
+    function binarySearch(array, id) {
+      var low = 0;
+      var mid;
+      var high = array.length - 1;
+      var value;
+      while (low <= high) {
+        // jshint bitwise: false
+        mid = (low + high) >>> 1;
+        // jshint bitwise: true
+        value = array[mid].id;
+        if (value > id) low = mid + 1;
+        else if (value < id) high = mid - 1;
+        else return mid;
+      }
+      return -(low + 1);
     }
   }];
 }
