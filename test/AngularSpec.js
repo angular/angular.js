@@ -78,6 +78,186 @@ describe('angular', function() {
       expect(copy(objWithRegExp.re) === objWithRegExp.re).toBeFalsy();
     });
 
+    it("should copy a Uint8Array with no destination", function() {
+      if (typeof Uint8Array !== 'undefined') {
+        var src = new Uint8Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Uint8Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Uint8ClampedArray with no destination", function() {
+      if (typeof Uint8ClampedArray !== 'undefined') {
+        var src = new Uint8ClampedArray(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Uint8ClampedArray).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Uint16Array with no destination", function() {
+      if (typeof Uint16Array !== 'undefined') {
+        var src = new Uint16Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Uint16Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Uint32Array with no destination", function() {
+      if (typeof Uint32Array !== 'undefined') {
+        var src = new Uint32Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Uint32Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Int8Array with no destination", function() {
+      if (typeof Int8Array !== 'undefined') {
+        var src = new Int8Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Int8Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Int16Array with no destination", function() {
+      if (typeof Int16Array !== 'undefined') {
+        var src = new Int16Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Int16Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Int32Array with no destination", function() {
+      if (typeof Int32Array !== 'undefined') {
+        var src = new Int32Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Int32Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Float32Array with no destination", function() {
+      if (typeof Float32Array !== 'undefined') {
+        var src = new Float32Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Float32Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should copy a Float64Array with no destination", function() {
+      if (typeof Float64Array !== 'undefined') {
+        var src = new Float64Array(2);
+        src[1] = 1;
+        var dst = copy(src);
+        expect(copy(src) instanceof Float64Array).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it("should throw an exception if a Uint8Array is the destination", function() {
+      if (typeof Uint8Array !== 'undefined') {
+        var src = new Uint8Array();
+        var dst = new Uint8Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Uint8ClampedArray is the destination", function() {
+      if (typeof Uint8ClampedArray !== 'undefined') {
+        var src = new Uint8ClampedArray();
+        var dst = new Uint8ClampedArray(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Uint16Array is the destination", function() {
+      if (typeof Uint16Array !== 'undefined') {
+        var src = new Uint16Array();
+        var dst = new Uint16Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Uint32Array is the destination", function() {
+      if (typeof Uint32Array !== 'undefined') {
+        var src = new Uint32Array();
+        var dst = new Uint32Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Int8Array is the destination", function() {
+      if (typeof Int8Array !== 'undefined') {
+        var src = new Int8Array();
+        var dst = new Int8Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Int16Array is the destination", function() {
+      if (typeof Int16Array !== 'undefined') {
+        var src = new Int16Array();
+        var dst = new Int16Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Int32Array is the destination", function() {
+      if (typeof Int32Array !== 'undefined') {
+        var src = new Int32Array();
+        var dst = new Int32Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Float32Array is the destination", function() {
+      if (typeof Float32Array !== 'undefined') {
+        var src = new Float32Array();
+        var dst = new Float32Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if a Float64Array is the destination", function() {
+      if (typeof Float64Array !== 'undefined') {
+        var src = new Float64Array();
+        var dst = new Float64Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
     it("should deeply copy an array into an existing array", function() {
       var src = [1, {name:"value"}];
       var dst = [{key:"v"}];
