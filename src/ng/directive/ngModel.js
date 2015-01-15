@@ -799,6 +799,41 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
   };
 
+  function formatValue(modelValue) {
+    var formatters = ctrl.$formatters,
+        idx = formatters.length;
+
+    var viewValue = modelValue;
+    while (idx--) {
+      viewValue = formatters[idx](viewValue);
+    }
+
+    return viewValue;
+  }
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$setModelValue
+   *
+   */
+  this.$setModelValue = function(modelValue, fromModel) {
+    var previousModelValue = ctrl.$modelValue;
+    ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
+
+    if (!fromModel && previousModelValue !== ctrl.$modelValue) {
+      this.$$writeModelToScope();
+    }
+
+    var viewValue = formatValue(this.$modelValue);
+
+    if (this.$viewValue !== viewValue) {
+      this.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+      this.$render();
+
+      ctrl.$$runValidators(undefined, modelValue, ctrl.$viewValue, noop);
+    }
+  };
+
   // model -> value
   // Note: we cannot use a normal scope.$watch as we want to detect the following:
   // 1. scope value is 'a'
@@ -813,21 +848,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     // if scope model value and ngModel value are out of sync
     // TODO(perf): why not move this to the action fn?
     if (modelValue !== ctrl.$modelValue) {
-      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
-
-      var formatters = ctrl.$formatters,
-          idx = formatters.length;
-
-      var viewValue = modelValue;
-      while (idx--) {
-        viewValue = formatters[idx](viewValue);
-      }
-      if (ctrl.$viewValue !== viewValue) {
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
-        ctrl.$render();
-
-        ctrl.$$runValidators(undefined, modelValue, viewValue, noop);
-      }
+      ctrl.$setModelValue(modelValue, true);
     }
 
     return modelValue;

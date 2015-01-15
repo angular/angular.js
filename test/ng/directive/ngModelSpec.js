@@ -455,6 +455,42 @@ describe('ngModel', function() {
     });
 
 
+    describe('$setModelValue', function() {
+
+      it('should set the value to $modelValue', function() {
+        ctrl.$setModelValue(10);
+        expect(ctrl.$modelValue).toBe(10);
+      });
+
+      it('should update the value on the scope', inject(function($compile) {
+        var element = $compile('<form name="form"><input name="field" ng-model="val" /></form>')(scope);
+
+        var input = element.children().eq(0);
+        ctrl = input.controller('ngModel');
+
+        scope.val = 11;
+        scope.$digest();
+        ctrl.$setModelValue(22);
+        scope.$digest();
+        expect(scope.val).toBe(22);
+
+        dealoc(element);
+      }));
+
+      it('should $render only if value changed', function() {
+        spyOn(ctrl, '$render');
+
+        ctrl.$setModelValue(3);
+        expect(ctrl.$render).toHaveBeenCalledOnce();
+        ctrl.$render.reset();
+
+        ctrl.$formatters.push(function() {return 3;});
+        ctrl.$setModelValue(5);
+        expect(ctrl.$render).not.toHaveBeenCalled();
+      });
+    });
+
+
     describe('model -> view', function() {
 
       it('should set the value to $modelValue', function() {
