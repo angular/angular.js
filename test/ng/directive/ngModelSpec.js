@@ -455,6 +455,28 @@ describe('ngModel', function() {
     });
 
 
+    describe('$setModelValue', function() {
+
+      it('should set the value to $modelValue', function() {
+        ctrl.$setModelValue(10);
+        expect(ctrl.$modelValue).toBe(10);
+      });
+
+      it('should $render only if value changed', function() {
+        spyOn(ctrl, '$render');
+
+        ctrl.$setModelValue(3);
+        expect(ctrl.$render).toHaveBeenCalledOnce();
+        ctrl.$render.reset();
+
+        ctrl.$formatters.push(function() {return 3;});
+        ctrl.$setModelValue(5);
+        expect(ctrl.$render).not.toHaveBeenCalled();
+      });
+
+    });
+
+
     describe('model -> view', function() {
 
       it('should set the value to $modelValue', function() {
