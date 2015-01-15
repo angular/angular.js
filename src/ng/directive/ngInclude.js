@@ -173,7 +173,7 @@
  * @name ngInclude#$includeContentError
  * @eventType emit on the scope ngInclude was declared in
  * @description
- * Emitted when a template HTTP request yields an erronous response (status < 200 || status > 299)
+ * Emitted when a template HTTP request yields an erroneous response (status < 200 || status > 299)
  *
  * @param {Object} angularEvent Synthetic event object.
  * @param {String} src URL of content to load.
