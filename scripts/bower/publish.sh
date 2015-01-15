@@ -91,7 +91,7 @@ function prepare {
 
       if [ $repo != "angular-mocks" ]
       then
-        echo "module.exports = 'ng$first$tail';" >> index.js
+        echo "module.exports = angular.module('ng$first$tail');" >> index.js
       else
         echo "exports.ngMock = 'ngMock';" >> index.js
         echo "exports.ngMockE2E = 'ngMockE2E';" >> index.js
