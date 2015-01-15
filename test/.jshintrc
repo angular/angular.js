@@ -60,6 +60,7 @@
     "shallowCopy": false,
     "equals": false,
     "csp": false,
+    "jq": false,
     "concat": false,
     "sliceArgs": false,
     "bind": false,
