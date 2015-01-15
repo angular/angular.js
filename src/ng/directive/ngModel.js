@@ -1247,22 +1247,22 @@ function addSetValidityMethod(context) {
 
   ctrl.$setValidity = setValidity;
 
-  function setValidity(validationErrorKey, state, options) {
+  function setValidity(validationErrorKey, state, control) {
     if (state === undefined) {
-      createAndSet('$pending', validationErrorKey, options);
+      createAndSet('$pending', validationErrorKey, control);
     } else {
-      unsetAndCleanup('$pending', validationErrorKey, options);
+      unsetAndCleanup('$pending', validationErrorKey, control);
     }
     if (!isBoolean(state)) {
-      unset(ctrl.$error, validationErrorKey, options);
-      unset(ctrl.$$success, validationErrorKey, options);
+      unset(ctrl.$error, validationErrorKey, control);
+      unset(ctrl.$$success, validationErrorKey, control);
     } else {
       if (state) {
-        unset(ctrl.$error, validationErrorKey, options);
-        set(ctrl.$$success, validationErrorKey, options);
+        unset(ctrl.$error, validationErrorKey, control);
+        set(ctrl.$$success, validationErrorKey, control);
       } else {
-        set(ctrl.$error, validationErrorKey, options);
-        unset(ctrl.$$success, validationErrorKey, options);
+        set(ctrl.$error, validationErrorKey, control);
+        unset(ctrl.$$success, validationErrorKey, control);
       }
     }
     if (ctrl.$pending) {
@@ -1290,20 +1290,21 @@ function addSetValidityMethod(context) {
     } else {
       combinedState = null;
     }
+
     toggleValidationCss(validationErrorKey, combinedState);
     parentForm.$setValidity(validationErrorKey, combinedState, ctrl);
   }
 
-  function createAndSet(name, value, options) {
+  function createAndSet(name, value, control) {
     if (!ctrl[name]) {
       ctrl[name] = {};
     }
-    set(ctrl[name], value, options);
+    set(ctrl[name], value, control);
   }
 
-  function unsetAndCleanup(name, value, options) {
+  function unsetAndCleanup(name, value, control) {
     if (ctrl[name]) {
-      unset(ctrl[name], value, options);
+      unset(ctrl[name], value, control);
     }
     if (isObjectEmpty(ctrl[name])) {
       ctrl[name] = undefined;
