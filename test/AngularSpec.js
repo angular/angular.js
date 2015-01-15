@@ -615,6 +615,94 @@ describe('angular', function() {
   });
 
 
+  describe('jq', function() {
+    var element;
+
+    beforeEach(function() {
+      element = document.createElement('html');
+    });
+
+    afterEach(function() {
+      delete jq.name_;
+    });
+
+    it('should return undefined when jq is not set, no jQuery found (the default)', function() {
+      expect(jq()).toBe(undefined);
+    });
+
+    it('should return empty string when jq is enabled manually via [ng-jq] with empty string', function() {
+      element.setAttribute('ng-jq', '');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[ng-jq]') return element;
+      });
+      expect(jq()).toBe('');
+    });
+
+    it('should return empty string when jq is enabled manually via [data-ng-jq] with empty string', function() {
+      element.setAttribute('data-ng-jq', '');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[data-ng-jq]') return element;
+      });
+      expect(jq()).toBe('');
+      expect(document.querySelector).toHaveBeenCalledWith('[data-ng-jq]');
+    });
+
+    it('should return empty string when jq is enabled manually via [x-ng-jq] with empty string', function() {
+      element.setAttribute('x-ng-jq', '');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[x-ng-jq]') return element;
+      });
+      expect(jq()).toBe('');
+      expect(document.querySelector).toHaveBeenCalledWith('[x-ng-jq]');
+    });
+
+    it('should return empty string when jq is enabled manually via [ng:jq] with empty string', function() {
+      element.setAttribute('ng:jq', '');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[ng\\:jq]') return element;
+      });
+      expect(jq()).toBe('');
+      expect(document.querySelector).toHaveBeenCalledWith('[ng\\:jq]');
+    });
+
+    it('should return "jQuery" when jq is enabled manually via [ng-jq] with value "jQuery"', function() {
+      element.setAttribute('ng-jq', 'jQuery');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[ng-jq]') return element;
+      });
+      expect(jq()).toBe('jQuery');
+      expect(document.querySelector).toHaveBeenCalledWith('[ng-jq]');
+    });
+
+    it('should return "jQuery" when jq is enabled manually via [data-ng-jq] with value "jQuery"', function() {
+      element.setAttribute('data-ng-jq', 'jQuery');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[data-ng-jq]') return element;
+      });
+      expect(jq()).toBe('jQuery');
+      expect(document.querySelector).toHaveBeenCalledWith('[data-ng-jq]');
+    });
+
+    it('should return "jQuery" when jq is enabled manually via [x-ng-jq] with value "jQuery"', function() {
+      element.setAttribute('x-ng-jq', 'jQuery');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[x-ng-jq]') return element;
+      });
+      expect(jq()).toBe('jQuery');
+      expect(document.querySelector).toHaveBeenCalledWith('[x-ng-jq]');
+    });
+
+    it('should return "jQuery" when jq is enabled manually via [ng:jq] with value "jQuery"', function() {
+      element.setAttribute('ng:jq', 'jQuery');
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector === '[ng\\:jq]') return element;
+      });
+      expect(jq()).toBe('jQuery');
+      expect(document.querySelector).toHaveBeenCalledWith('[ng\\:jq]');
+    });
+  });
+
+
   describe('parseKeyValue', function() {
     it('should parse a string into key-value pairs', function() {
       expect(parseKeyValue('')).toEqual({});
