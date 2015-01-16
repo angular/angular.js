@@ -474,6 +474,8 @@ describe('ngRepeat', function() {
         'this',
         'undefined',
         '$parent',
+        '$root',
+        '$id',
         '$index',
         '$first',
         '$middle',
