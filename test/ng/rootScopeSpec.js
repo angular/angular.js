@@ -604,6 +604,138 @@ describe('Scope', function() {
     });
 
 
+    describe('watch reregistration', function() {
+      it('should be possible to reregister a watcher', inject(function($rootScope, log) {
+        var w1 = $rootScope.$watch(log.fn('watch1'), noop);
+        var w2 = $rootScope.$watch(log.fn('watch2'), noop);
+        var w3 = $rootScope.$watch(log.fn('watch3'), noop);
+
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3', 'watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        w1();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch2', 'watch3']);
+        log.reset();
+
+        w1.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        w2();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch3']);
+        log.reset();
+
+        w2.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        w3();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2']);
+        log.reset();
+
+        w3.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+      }));
+
+
+      it('should not add multiple times the same watcher when calling multiple times `restore`', inject(function($rootScope, log) {
+        var w1 = $rootScope.$watch(log.fn('watch1'), noop);
+        var w2 = $rootScope.$watch(log.fn('watch2'), noop);
+        var w3 = $rootScope.$watch(log.fn('watch3'), noop);
+
+        $rootScope.$digest();
+        log.reset();
+
+        w1();
+        $rootScope.$digest();
+        log.reset();
+        w1.restore();
+        w1.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        w1();
+        $rootScope.$digest();
+        log.reset();
+        w1.restore();
+        w1();
+        w1.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+      }));
+
+      it('should be possible to reregister a watcher from watchGroup', inject(function($rootScope, log) {
+        var w = $rootScope.$watchGroup([log.fn('watch1'), log.fn('watch2'), log.fn('watch3')], noop);
+
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3', 'watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        w();
+        $rootScope.$digest();
+        expect(log).toEqual([]);
+        log.reset();
+
+        w.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+
+        w.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch1', 'watch2', 'watch3']);
+        log.reset();
+      }));
+
+      it('should be possible to reregister a watcher from watchCollection', inject(function($rootScope, log) {
+        $rootScope.obj = [0, 1, 2];
+        var w = $rootScope.$watchCollection('obj', log.fn('watch!'));
+
+        $rootScope.$digest();
+        expect(log).toEqual(['watch!']);
+        log.reset();
+
+        $rootScope.$digest();
+        expect(log).toEqual([]);
+        log.reset();
+
+        $rootScope.obj.push(3);
+        $rootScope.$digest();
+        expect(log).toEqual(['watch!']);
+        log.reset();
+
+        w();
+        $rootScope.obj.push(4);
+        $rootScope.$digest();
+        expect(log).toEqual([]);
+        log.reset();
+
+        w.restore();
+        $rootScope.$digest();
+        expect(log).toEqual(['watch!']);
+        log.reset();
+      }));
+    });
+
+
     describe('$watchCollection', function() {
       var log, $rootScope, deregister;
 
