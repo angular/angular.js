@@ -1381,6 +1381,25 @@ describe("ngAnimate", function() {
             expect(element.attr('style')).toContain('border-color: blue');
           }));
 
+          it("should not apply a piggy-back-transition if the styles object contains no styles",
+            inject(function($compile, $animate, $rootScope, $sniffer) {
+
+            if (!$sniffer.animations) return;
+
+            $animate.enabled(true);
+            ss.addRule('.on', '-webkit-animation: 1s super-animation; animation: 1s super-animation;');
+
+            element = $compile(html('<div>1</div>'))($rootScope);
+
+            $animate.addClass(element, 'on', {
+              to: {}
+            });
+
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            expect(element.attr('style')).not.toMatch(/transition/);
+          }));
+
           it("should pause the playstate when performing a stagger animation",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
