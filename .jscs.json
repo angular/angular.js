@@ -35,6 +35,7 @@
     "afterConsequent": true,
     "beforeAlternate": true
   },
+  "requireSpacesInForStatement": true,
   "requireSpacesInFunction": {
     "beforeOpeningCurlyBrace": true
   },
