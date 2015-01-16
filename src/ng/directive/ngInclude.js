@@ -179,7 +179,7 @@
  * @param {String} src URL of content to load.
  */
 var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce',
-                  function($templateRequest,   $anchorScroll,   $animate,   $sce) {
+                  function($templateRequest, $anchorScroll, $animate, $sce) {
   return {
     restrict: 'ECA',
     priority: 400,

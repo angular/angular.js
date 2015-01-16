@@ -719,7 +719,7 @@ function $SceProvider() {
    */
 
   this.$get = ['$parse', '$sceDelegate', function(
-                $parse,   $sceDelegate) {
+                $parse, $sceDelegate) {
     // Prereq: Ensure that we're not running in IE<11 quirks mode.  In that mode, IE < 11 allow
     // the "expression(javascript expression)" syntax which is insecure.
     if (enabled && msie < 8) {

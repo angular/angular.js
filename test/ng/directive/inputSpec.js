@@ -1641,9 +1641,9 @@ describe('input', function() {
       });
     });
 
-    describe('max', function()  {
+    describe('max', function() {
 
-      it('should invalidate', function()  {
+      it('should invalidate', function() {
         var inputElm = helper.compileInput('<input type="date" ng-model="value" name="alias" max="2019-01-01" />');
         helper.changeInputValueTo('2019-12-31');
         expect(inputElm).toBeInvalid();
