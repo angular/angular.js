@@ -490,8 +490,7 @@ function $RouteProvider() {
               newParams = angular.extend({}, this.current.params, newParams);
               $location.path(interpolate(this.current.$$route.originalPath, newParams));
               $location.search(angular.extend({}, $location.search(), searchParams));
-            }
-            else {
+            } else {
               throw $routeMinErr('norout', 'Tried updating route when with no current route');
             }
           }

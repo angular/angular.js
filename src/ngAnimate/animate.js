@@ -1327,8 +1327,7 @@ angular.module('ngAnimate', ['ng'])
           } else if (lastAnimation.event == 'setClass') {
             animationsToCancel.push(lastAnimation);
             cleanup(element, className);
-          }
-          else if (runningAnimations[className]) {
+          } else if (runningAnimations[className]) {
             var current = runningAnimations[className];
             if (current.event == animationEvent) {
               skipAnimation = true;
