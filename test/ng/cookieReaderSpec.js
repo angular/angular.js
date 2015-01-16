@@ -1,4 +1,3 @@
-/* global $$CookieReader:true */
 'use strict';
 
 describe('$$cookieReader', function() {
@@ -24,8 +23,8 @@ describe('$$cookieReader', function() {
     deleteAllCookies();
     expect(document.cookie).toEqual('');
 
-    inject(function($injector) {
-      $$cookieReader = $injector.invoke($$CookieReader);
+    inject(function(_$$cookieReader_) {
+      $$cookieReader = _$$cookieReader_;
     });
   });
 
@@ -36,7 +35,7 @@ describe('$$cookieReader', function() {
   });
 
 
-  describe('get via cookies()[cookieName]', function() {
+  describe('get via $$cookieReader().cookieName', function() {
 
     it('should return undefined for nonexistent cookie', function() {
       expect($$cookieReader().nonexistent).not.toBeDefined();
@@ -81,7 +80,7 @@ describe('$$cookieReader', function() {
   });
 
 
-  describe('getAll via cookies()', function() {
+  describe('getAll via $$cookieReader()', function() {
 
     it('should return cookies as hash', function() {
       document.cookie = "foo1=bar1;path=/";
