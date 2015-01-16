@@ -120,8 +120,7 @@ angular.scenario.Application.prototype.executeAction = function(action) {
 
   if (!!this.rootElement) {
     executeWithElement(this.rootElement);
-  }
-  else {
+  } else {
     angularInit($window.document, angular.bind(this, executeWithElement));
   }
 
