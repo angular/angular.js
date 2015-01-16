@@ -3089,10 +3089,11 @@ describe('parser', function() {
           var filterCalls = 0;
           $filterProvider.register('foo', valueFn(function(input) {
             filterCalls++;
+            expect(input instanceof Date).toBe(true);
             return input;
           }));
 
-          var parsed = $parse('date | foo');
+          var parsed = $parse('date | foo:a');
           var date = scope.date = new Date();
 
           var watcherCalls = 0;
@@ -3115,10 +3116,11 @@ describe('parser', function() {
           var filterCalls = 0;
           $filterProvider.register('foo', valueFn(function(input) {
             filterCalls++;
+            expect(input instanceof Date).toBe(true);
             return input;
           }));
 
-          var parsed = $parse('date | foo');
+          var parsed = $parse('date | foo:a');
           var date = scope.date = new Date();
 
           var watcherCalls = 0;
