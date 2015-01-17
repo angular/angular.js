@@ -1,9 +1,10 @@
 'use strict';
 
 var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
-    DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
+    DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21},
+    ENCODED_SLASH = '%2F',
+    DOUBLE_ENCODED_SLASH = '%252F';
 var $locationMinErr = minErr('$location');
-
 
 /**
  * Encode path using encodeUriSegment, ignoring forward slashes
@@ -32,15 +33,17 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
 
 
 function parseAppUrl(relativeUrl, locationObj) {
+  var path;
   var prefixed = (relativeUrl.charAt(0) !== '/');
   if (prefixed) {
     relativeUrl = '/' + relativeUrl;
   }
   var match = urlResolve(relativeUrl);
-  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
-      match.pathname.substring(1) : match.pathname);
+  path = prefixed && match.pathname.charAt(0) === '/' ? match.pathname.substring(1) : match.pathname;
+
+  locationObj.$$path = decodePath(path, locationObj.$$opts.leaveSlashesEncoded);
   locationObj.$$search = parseKeyValue(match.search);
-  locationObj.$$hash = decodeURIComponent(match.hash);
+  locationObj.$$hash = decodePath(match.hash, locationObj.$$opts.leaveSlashesEncoded);
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
@@ -48,6 +51,18 @@ function parseAppUrl(relativeUrl, locationObj) {
   }
 }
 
+/**
+ * Decode path using decodeURIComponent, optionally double-encoding any encoded slashes
+ * to leave them encoded.
+ *
+ * @param {string} path
+ * @param {boolean} leaveSlashesEncoded
+ * @returns {string}
+ */
+function decodePath(path, leaveSlashesEncoded) {
+  var encodedPath = leaveSlashesEncoded ? path.replace(ENCODED_SLASH, DOUBLE_ENCODED_SLASH, 'g') : path;
+  return decodeURIComponent(encodedPath);
+}
 
 /**
  *
@@ -172,7 +187,6 @@ function LocationHtml5Url(appBase, basePrefix) {
  */
 function LocationHashbangUrl(appBase, hashPrefix) {
   var appBaseNoFile = stripFile(appBase);
-
   parseAbsoluteUrl(appBase, this);
 
 
@@ -319,6 +333,11 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
 var locationPrototype = {
 
   /**
+   * Extra options. Used to store value for leaveSlashesEncoded.
+   */
+  $$opts: {},
+
+  /**
    * Are we in html5 mode?
    * @private
    */
@@ -377,7 +396,7 @@ var locationPrototype = {
       return this.$$url;
 
     var match = PATH_MATCH.exec(url);
-    if (match[1] || url === '') this.path(decodeURIComponent(match[1]));
+    if (match[1] || url === '') this.path(decodePath(match[1], this.$$opts.leaveSlashesEncoded));
     if (match[2] || match[1] || url === '') this.search(match[3] || '');
     this.hash(match[5] || '');
 
@@ -688,7 +707,8 @@ function $LocationProvider() {
         enabled: false,
         requireBase: true,
         rewriteLinks: true
-      };
+      },
+      leaveSlashesEncoded = false;
 
   /**
    * @ngdoc method
@@ -703,6 +723,23 @@ function $LocationProvider() {
       return this;
     } else {
       return hashPrefix;
+    }
+  };
+
+  /**
+   * @ngdoc method
+   * @name $locationProvider#leaveSlashesEncoded
+   * @description Get or set leaveSlashesEncoded (default false). If true, encoded slashes in path/hash are
+   * left encoded when the rest of the path/hash is decoded.
+   * @param {boolean=} setEncode
+   * @returns {boolean} Current value of leaveSlashesEncoded if used as getter or itself if used as setter
+   */
+  this.leaveSlashesEncoded = function(setEncode) {
+    if (isDefined(setEncode) && isBoolean(setEncode)) {
+      leaveSlashesEncoded = setEncode;
+      return this;
+    } else {
+      return leaveSlashesEncoded;
     }
   };
 
@@ -808,6 +845,7 @@ function $LocationProvider() {
       LocationMode = LocationHashbangUrl;
     }
     $location = new LocationMode(appBase, '#' + hashPrefix);
+    $location.$$opts = {leaveSlashesEncoded: leaveSlashesEncoded};
     $location.$$parseLinkUrl(initialUrl, initialUrl);
 
     $location.$$state = $browser.state();
