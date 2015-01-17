@@ -4,7 +4,7 @@
     "jquery": "2.1.1",
     "lunr.js": "0.4.3",
     "google-code-prettify": "1.0.1",
-    "angular-material": "master",
+    "angular-material": "0.6.x",
     "angular-sanitize": "1.3.x"
   }
 }
