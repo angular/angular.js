@@ -27,6 +27,18 @@ describe('$controller', function() {
       expect(ctrl instanceof FooCtrl).toBe(true);
     });
 
+    it('should allow registration of bound controller functions', function() {
+      var FooCtrl = function($scope) { $scope.foo = 'bar'; },
+        scope = {},
+        ctrl;
+
+      var BoundFooCtrl = FooCtrl.bind(null);
+
+      $controllerProvider.register('FooCtrl', ['$scope', BoundFooCtrl]);
+      ctrl = $controller('FooCtrl', {$scope: scope});
+
+      expect(scope.foo).toBe('bar');
+    });
 
     it('should allow registration of map of controllers', function() {
       var FooCtrl = function($scope) { $scope.foo = 'foo'; },
