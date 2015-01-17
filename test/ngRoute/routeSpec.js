@@ -366,6 +366,36 @@ describe('$route', function() {
     });
   });
 
+  describe('urlencoded slashes', function() {
+
+    function initProviders(opts) {
+      return module(function($routeProvider, $locationProvider) {
+        $routeProvider.when('/:path/:subresource', {templateUrl: 'bar.html'});
+        $routeProvider.when('/path%2Fwithslash', {templateUrl: 'foo.html'});
+        $locationProvider.leaveSlashesEncoded(opts.leaveSlashesEncoded);
+      });
+    }
+
+    describe ('with leaveSlashesEncoded = false', function() {
+      beforeEach(initProviders({leaveSlashesEncoded: false}));
+
+      it('should be split into multiple route params if url contains encoded slash', inject(function($route, $location, $rootScope) {
+        $location.url('/path%2Fwithslash');
+        $rootScope.$digest();
+        expect($route.current.loadedTemplateUrl).toBe('bar.html');
+      }));
+    });
+
+    describe ('with leaveSlashesEncoded = true', function() {
+      beforeEach(initProviders({leaveSlashesEncoded: true}));
+
+      it('should NOT be split into multiple route params if url contains encoded slash', inject(function($route, $location, $rootScope) {
+        $location.url('/path%2Fwithslash');
+        $rootScope.$digest();
+        expect($route.current.loadedTemplateUrl).toBe('foo.html');
+      }));
+    });
+  });
 
   describe('should match a route that contains optional params in the path', function() {
     beforeEach(module(function($routeProvider) {
