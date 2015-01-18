@@ -49,6 +49,16 @@ describe('ngClick (touch)', function() {
   }));
 
 
+  it('should unwrap a jQuery-wrapped event object', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-click="event = $event"></div>')($rootScope);
+    $rootScope.$digest();
+
+    browserTrigger(element, 'touchstart');
+    browserTrigger(element, 'touchend');
+    expect($rootScope.event.originalEvent).toBeUndefined();
+  }));
+
+
   it('should not click if the touch is held too long', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
     $rootElement.append(element);
