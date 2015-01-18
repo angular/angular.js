@@ -1,13 +1,16 @@
 angular.module('examples', [])
 
 .factory('formPostData', ['$document', function($document) {
-  return function(url, fields) {
+  return function(url, newWindow, fields) {
     /**
-     * Form previously posted to target="_blank", but pop-up blockers were causing this to not work.
-     * If a user chose to bypass pop-up blocker one time and click the link, they would arrive at
-     * a new default plnkr, not a plnkr with the desired template.
+     * If the form posts to target="_blank", pop-up blockers can cause it not to work.
+     * If a user choses to bypass pop-up blocker one time and click the link, they will arrive at
+     * a new default plnkr, not a plnkr with the desired template.  Given this undesired behavior,
+     * some may still want to open the plnk in a new window by opting-in via ctrl+click.  The
+     * newWindow param allows for this possibility.
      */
-    var form = angular.element('<form style="display: none;" method="post" action="' + url + '"></form>');
+    var target = newWindow ? '_blank' : '_self';
+    var form = angular.element('<form style="display: none;" method="post" action="' + url + '" target="' + target + '"></form>');
     angular.forEach(fields, function(value, name) {
       var input = angular.element('<input type="hidden" name="' +  name + '">');
       input.attr('value', value);
@@ -21,9 +24,10 @@ angular.module('examples', [])
 
 
 .factory('openPlunkr', ['formPostData', '$http', '$q', function(formPostData, $http, $q) {
-  return function(exampleFolder) {
+  return function(exampleFolder, clickEvent) {
 
     var exampleName = 'AngularJS Example';
+    var newWindow = clickEvent.ctrlKey;
 
     // Load the manifest for the example
     $http.get(exampleFolder + '/manifest.json')
@@ -71,7 +75,7 @@ angular.module('examples', [])
         postData.private = true;
         postData.description = exampleName;
 
-        formPostData('http://plnkr.co/edit/?p=preview', postData);
+        formPostData('http://plnkr.co/edit/?p=preview', newWindow, postData);
       });
   };
 }]);
