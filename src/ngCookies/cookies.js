@@ -160,7 +160,7 @@ angular.module('ngCookies', ['ng']).
          * Returns the value of given cookie key
          *
          * @param {string} key Id to use for lookup.
-         * @returns {Object} Deserialized cookie value.
+         * @returns {Object} Deserialized cookie value, undefined if the cookie does not exist.
          */
         get: function(key) {
           var value = $cookies[key];
