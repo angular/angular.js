@@ -243,7 +243,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
-      
+
       // Use JQuery originalEvent
       event = event.originalEvent || event;
       var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
