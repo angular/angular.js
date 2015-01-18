@@ -17,7 +17,7 @@ describe('$templateRequest', function() {
   }));
 
   it('should cache the request to prevent extra downloads',
-    inject(function($rootScope, $templateRequest, $httpBackend) {
+    inject(function($rootScope, $templateRequest, $templateCache, $httpBackend) {
 
     $httpBackend.expectGET('tpl.html').respond('matias');
 
@@ -34,6 +34,7 @@ describe('$templateRequest', function() {
 
     expect(content[0]).toBe('matias');
     expect(content[1]).toBe('matias');
+    expect($templateCache.get('tpl.html')).toBe('matias');
   }));
 
   it('should throw an error when the template is not found',
