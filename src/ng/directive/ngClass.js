@@ -142,6 +142,7 @@ function classDirective(name, selector) {
  *
  * @animations
  * add - happens just before the class is applied to the element
+ * 
  * remove - happens just before the class is removed from the element
  *
  * @element ANY
