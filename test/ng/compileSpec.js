@@ -3833,9 +3833,9 @@ describe('$compile', function() {
     });
 
 
-    it('should throw noctrl when missing controllerAs label', function() {
+    it('should throw noident when missing controllerAs directive property', function() {
       module(function($compileProvider) {
-        $compileProvider.directive('noCtrl', valueFn({
+        $compileProvider.directive('noIdent', valueFn({
           templateUrl: 'test.html',
           scope: {
             'data': '=dirData',
@@ -3848,17 +3848,17 @@ describe('$compile', function() {
       });
       inject(function($compile, $rootScope) {
         expect(function() {
-          $compile('<div no-ctrl>')($rootScope);
-        }).toThrowMinErr('$compile', 'noctrl',
-        'Cannot bind to controller without directive \'noCtrl\'s controller.');
+          $compile('<div no-ident>')($rootScope);
+        }).toThrowMinErr('$compile', 'noident',
+        'Cannot bind to controller without identifier for directive \'noIdent\'.');
       });
     });
 
 
-    it('should throw noctrl when missing controller label', function() {
+    it('should throw noident when missing controller identifier', function() {
       module(function($compileProvider, $controllerProvider) {
         $controllerProvider.register('myCtrl', function() {});
-        $compileProvider.directive('noCtrl', valueFn({
+        $compileProvider.directive('noIdent', valueFn({
           templateUrl: 'test.html',
           scope: {
             'data': '=dirData',
@@ -3871,9 +3871,9 @@ describe('$compile', function() {
       });
       inject(function($compile, $rootScope) {
         expect(function() {
-          $compile('<div no-ctrl>')($rootScope);
-        }).toThrowMinErr('$compile', 'noctrl',
-        'Cannot bind to controller without directive \'noCtrl\'s controller.');
+          $compile('<div no-ident>')($rootScope);
+        }).toThrowMinErr('$compile', 'noident',
+        'Cannot bind to controller without identifier for directive \'noIdent\'.');
       });
     });
 
@@ -3958,7 +3958,7 @@ describe('$compile', function() {
     });
 
 
-    it('should put controller in scope when labelled but not using controllerAs', function() {
+    it('should put controller in scope when controller identifier present but not using controllerAs', function() {
       var controllerCalled = false;
       var myCtrl;
       module(function($compileProvider, $controllerProvider) {
@@ -3998,7 +3998,7 @@ describe('$compile', function() {
         });
         expect(this.str).toBe('Hello, world!');
         expect(this.fn()).toBe('called!');
-      }
+      };
 
       module(function($compileProvider, $controllerProvider) {
         $controllerProvider.register('myCtrl', function() {
@@ -4052,7 +4052,7 @@ describe('$compile', function() {
         });
         expect(this.str).toBe('Hello, world!');
         expect(this.fn()).toBe('called!');
-      }
+      };
 
       module(function($compileProvider, $controllerProvider) {
         $controllerProvider.register('myCtrl', function() {
