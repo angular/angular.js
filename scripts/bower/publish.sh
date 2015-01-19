@@ -86,7 +86,7 @@ function prepare {
     touch index.js
     echo "require('./$repo');" >> index.js
     echo "" >> index.js
-    echo "module.exports = $repo;" >> index.js
+    echo "module.exports = '$repo';" >> index.js
 
     git add -A
 
