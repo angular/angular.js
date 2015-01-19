@@ -762,9 +762,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     if (isObject(bindings.bindToController)) {
       var controller = directive.controller;
       var controllerAs = directive.controllerAs;
-      if (!directive.controller || !identifierForController(controller, controllerAs)) {
+      if (!controller) {
+        // There is no controller, there may or may not be a controllerAs property
         throw $compileMinErr('noctrl',
               "Cannot bind to controller without directive '{0}'s controller.",
+              directiveName);
+      } else if (!identifierForController(controller, controllerAs)) {
+        // There is a controller, but no identifier or controllerAs property
+        throw $compileMinErr('noident',
+              "Cannot bind to controller without identifier for directive '{0}'.",
               directiveName);
       }
     }
