@@ -2226,7 +2226,6 @@ describe('$location', function() {
     });
   });
 
-
   describe('LocationHashbangInHtml5Url', function() {
     /* global LocationHashbangInHtml5Url: false */
     var location, locationIndex;
@@ -2253,6 +2252,71 @@ describe('$location', function() {
 
     it('should throw on url(urlString, stateObject)', function() {
       throwOnState(location);
+    });
+  });
+
+  describe('urlencoding behavior', function() {
+    function testDecodeEntities(type, expectedPath, options) {
+      var baseUrl = 'http://example.com/';
+      var parsePath = '/path%2Fwithslash';
+      var hashPrefix = '#';
+      var opts = options || {};
+      var path;
+
+      var url = new type(baseUrl, hashPrefix, opts);
+      url.$$opts = options || {};
+      url.$$parse(baseUrl + hashPrefix + parsePath);
+
+      path = type === LocationHtml5Url ? url.hash() : url.path();
+      expect(path).toBe(expectedPath);
+    }
+
+    describe('LocationHashbangUrl', function () {
+      var type = LocationHashbangUrl;
+
+      it('should decode all entities if leaveSlashesEncoded is not set', function () {
+        testDecodeEntities(type, '/path/withslash');
+      });
+
+      it('should leave slashes encoded if leaveSlashesEncoded is true', function () {
+        testDecodeEntities(type, '/path%2Fwithslash', {leaveSlashesEncoded: true});
+      });
+
+      it('should decode all entities if leaveSlashesEncoded is false', function () {
+        testDecodeEntities(type, '/path/withslash', {leaveSlashesEncoded: false});
+      });
+    });
+
+    describe('LocationHashbangInHtml5Url', function () {
+      var type = LocationHashbangInHtml5Url;
+
+      it('should decode all entities if leaveSlashesEncoded is not set', function () {
+        testDecodeEntities(type, '/path/withslash');
+      });
+
+      it('should leave slashes encoded if leaveSlashesEncoded is true', function () {
+        testDecodeEntities(type, '/path%2Fwithslash', {leaveSlashesEncoded: true});
+      });
+
+      it('should decode all entities if leaveSlashesEncoded is false', function () {
+        testDecodeEntities(type, '/path/withslash', {leaveSlashesEncoded: false});
+      });
+    });
+
+    describe('LocationHtml5Url', function () {
+      var type = LocationHtml5Url;
+
+      it('should decode all entities if leaveSlashesEncoded is not set', function () {
+        testDecodeEntities(type, '/path/withslash');
+      });
+
+      it('should leave slashes encoded if leaveSlashesEncoded is true', function () {
+        testDecodeEntities(type, '/path%2Fwithslash', {leaveSlashesEncoded: true});
+      });
+
+      it('should decode all entities if leaveSlashesEncoded is false', function () {
+        testDecodeEntities(type, '/path/withslash', {leaveSlashesEncoded: false});
+      });
     });
   });
 });
