@@ -1221,6 +1221,80 @@ describe('ngModel', function() {
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'ab');
         expect(ctrl.$validators.mock.calls.length).toEqual(2);
       });
+
+      it('should validate correctly when $parser name equals $validator key', function() {
+
+        var testValid, otherValid, parseValid;
+
+        ctrl.$validators.test = function(value) {
+          return testValid;
+        };
+
+        ctrl.$validators.other = function(value) {
+          return otherValid;
+        };
+
+        ctrl.$$parserName = 'test';
+        ctrl.$parsers.push(function(value) {
+          return parseValid ? true : undefined;
+        });
+
+
+        testValid = otherValid = parseValid = false;
+        scope.$apply('value = "allInvalid"');
+        expect(scope.value).toBe('allInvalid');
+        expect(ctrl.$error).toEqual({test: true, other: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('allInvalid');
+        expect(ctrl.$error).toEqual({test: true, other: true});
+
+        ctrl.$setViewValue('stillAllInvalid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+
+        parseValid = true;
+        scope.$apply('value = "parseValidAndValidatorInvalid"');
+        expect(scope.value).toBe('parseValidAndValidatorInvalid');
+        expect(ctrl.$error).toEqual({test: true, other: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('parseValidAndValidatorInvalid');
+        expect(ctrl.$error).toEqual({test: true, other: true});
+
+        ctrl.$setViewValue('stillParseValidAndValidatorInvalid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true, other: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true, other: true});
+
+
+        parseValid = false;
+        testValid = otherValid = true;
+        scope.$apply('value = "parseInvalidAndValidatorValid"');
+        expect(scope.value).toBe('parseInvalidAndValidatorValid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('parseInvalidAndValidatorValid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$setViewValue('stillParseInvalidAndValidatorValid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+      });
+
     });
   });
 
