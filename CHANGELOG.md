@@ -1,3 +1,80 @@
+<a name="1.4.0-beta.1"></a>
+# 1.4.0-beta.1 trepidatious-salamander (2015-01-20)
+
+
+## Bug Fixes
+
+- **$animate:** ensure no transitions are applied when an empty inline style object is provided
+  ([0db5b21b](https://github.com/angular/angular.js/commit/0db5b21b1d09431535e0c0bf8ac63d4b5b24d349),
+   [#10613](https://github.com/angular/angular.js/issues/10613), [#10770](https://github.com/angular/angular.js/issues/10770))
+- **$compile:** support class directives on SVG elements
+  ([23c8a90d](https://github.com/angular/angular.js/commit/23c8a90d22f7c7b41b5a756b89498ffac828980a),
+   [#10736](https://github.com/angular/angular.js/issues/10736), [#10756](https://github.com/angular/angular.js/issues/10756))
+- **form:** clean up success state of controls when they are removed
+  ([2408f2de](https://github.com/angular/angular.js/commit/2408f2ded5ead6e678c241e38ef474c1fadff92b),
+   [#10509](https://github.com/angular/angular.js/issues/10509))
+- **ngController:** allow bound constructor fns as controllers
+  ([d17fbc38](https://github.com/angular/angular.js/commit/d17fbc3862e0a2e646db1222f184dbe663da4a1f),
+   [#10784](https://github.com/angular/angular.js/issues/10784), [#10790](https://github.com/angular/angular.js/issues/10790))
+- **ngRepeat:** do not sort object keys alphabetically
+  ([c260e738](https://github.com/angular/angular.js/commit/c260e7386391877625eda086480de73e8a0ba921),
+   [#6210](https://github.com/angular/angular.js/issues/6210), [#10538](https://github.com/angular/angular.js/issues/10538))
+
+
+## Features
+
+- **$http:** provide a config object as an argument to header functions
+  ([d435464c](https://github.com/angular/angular.js/commit/d435464c51d3912f56cfc830d86bfc64a1578327),
+   [#7235](https://github.com/angular/angular.js/issues/7235), [#10622](https://github.com/angular/angular.js/issues/10622))
+
+
+## Breaking Changes
+
+- **ngRepeat:** due to [c260e738](https://github.com/angular/angular.js/commit/c260e7386391877625eda086480de73e8a0ba921),
+
+
+Previously, the order of items when using ngRepeat to iterate
+over object properties was guaranteed to be consistent by sorting the
+keys into alphabetic order.
+
+Now, the order of the items is browser dependent based on the order returned
+from iterating over the object using the `for key in obj` syntax.
+
+It seems that browsers generally follow the strategy of providing
+keys in the order in which they were defined, although there are exceptions
+when keys are deleted and reinstated. See
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#Cross-browser_issues
+
+The best approach is to convert Objects into Arrays by a filter such as
+https://github.com/petebacondarwin/angular-toArrayFilter
+or some other mechanism, and then sort them manually in the order you need.
+
+Closes #6210
+Closes #10538
+
+
+
+<a name="1.3.10"></a>
+# 1.3.10 heliotropic-sundial (2015-01-20)
+
+
+## Bug Fixes
+
+- **$animate:** ensure no transitions are applied when an empty inline style object is provided
+  ([9b8df52a](https://github.com/angular/angular.js/commit/9b8df52aa960b9b6288fc150d55ea2e35f56555e),
+   [#10613](https://github.com/angular/angular.js/issues/10613), [#10770](https://github.com/angular/angular.js/issues/10770))
+- **$compile:** support class directives on SVG elements
+  ([7a9e3360](https://github.com/angular/angular.js/commit/7a9e3360284d58197a1fe34de57f5e0f6d1f4a76),
+   [#10736](https://github.com/angular/angular.js/issues/10736), [#10756](https://github.com/angular/angular.js/issues/10756))
+- **form:** clean up success state of controls when they are removed
+  ([cdc7280d](https://github.com/angular/angular.js/commit/cdc7280dd3d5a2ded784c06dd55fe36c2053fb6f),
+   [#10509](https://github.com/angular/angular.js/issues/10509))
+- **ngController:** allow bound constructor fns as controllers
+  ([d015c8a8](https://github.com/angular/angular.js/commit/d015c8a80b28754633c846fc50d11c9437519486),
+   [#10784](https://github.com/angular/angular.js/issues/10784), [#10790](https://github.com/angular/angular.js/issues/10790))
+
+
+
 <a name="1.4.0-beta.0"></a>
 # 1.4.0-beta.0 photonic-umbrakinesis (2015-01-13)
 
