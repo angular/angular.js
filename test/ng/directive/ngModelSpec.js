@@ -1221,6 +1221,85 @@ describe('ngModel', function() {
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'ab');
         expect(ctrl.$validators.mock.calls.length).toEqual(2);
       });
+
+      it('should validate correctly when parserName is same as $validator key', function() {
+        ctrl.$validators.test = function(value) {
+          return ['valid', 'parseInvalidAndValidatorValid'].indexOf(value) !== -1;
+        };
+
+        ctrl.$$parserName = 'test';
+        ctrl.$parsers.push(function(value) {
+          var result = ['valid', 'parseValidAndValidatorInvalid'].indexOf(value) !== -1 ? value : undefined;
+          return result;
+        });
+
+        //model to view updates
+        scope.$apply('value = "valid"');
+        expect(scope.value).toBe('valid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('valid');
+        expect(ctrl.$error).toEqual({});
+
+        scope.$apply('value = "invalid"');
+        expect(scope.value).toBe('invalid');
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('invalid');
+        expect(ctrl.$error).toEqual({test: true});
+
+        scope.$apply('value = "parseValidAndValidatorInvalid"');
+        expect(scope.value).toBe('parseValidAndValidatorInvalid');
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('parseValidAndValidatorInvalid');
+        expect(ctrl.$error).toEqual({test: true});
+
+        scope.$apply('value = "parseInvalidAndValidatorValid"');
+        expect(scope.value).toBe('parseInvalidAndValidatorValid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('parseInvalidAndValidatorValid');
+        expect(ctrl.$error).toEqual({});
+
+        //view to model update
+        ctrl.$setViewValue('valid');
+        expect(scope.value).toBe('valid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('valid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$setViewValue('invalid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$setViewValue('parseValidAndValidatorInvalid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$setViewValue('parseInvalidAndValidatorValid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({test: true});
+      });
+
     });
   });
 

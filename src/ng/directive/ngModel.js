@@ -563,7 +563,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       if (parseValid === undefined) {
         setValidity(errorKey, null);
       } else {
-        setValidity(errorKey, parseValid);
         if (!parseValid) {
           forEach(ctrl.$validators, function(v, name) {
             setValidity(name, null);
@@ -571,8 +570,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           forEach(ctrl.$asyncValidators, function(v, name) {
             setValidity(name, null);
           });
-          return false;
         }
+        // Set the parse error last, to prevent unsetting it, should a $validators key == parserName
+        setValidity(errorKey, parseValid);
+        return parseValid;
       }
       return true;
     }
