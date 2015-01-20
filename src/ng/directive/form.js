@@ -9,7 +9,8 @@ var nullFormCtrl = {
   $setValidity: noop,
   $setDirty: noop,
   $setPristine: noop,
-  $setSubmitted: noop
+  $setSubmitted: noop,
+  $setUntouched: noop
 },
 SUBMITTED_CLASS = 'ng-submitted';
 
