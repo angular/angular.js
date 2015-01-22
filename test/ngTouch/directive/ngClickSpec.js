@@ -49,12 +49,23 @@ describe('ngClick (touch)', function() {
   }));
 
 
-  it('should unwrap a jQuery-wrapped event object', inject(function($rootScope, $compile) {
+  it('should unwrap a jQuery-wrapped event object on touchstart/touchend', inject(function($rootScope, $compile) {
     element = $compile('<div ng-click="event = $event"></div>')($rootScope);
     $rootScope.$digest();
 
     browserTrigger(element, 'touchstart');
     browserTrigger(element, 'touchend');
+    expect($rootScope.event.originalEvent).toBeUndefined();
+    expect($rootScope.event.clientX).toBeDefined();
+    expect($rootScope.event.clientY).toBeDefined();
+  }));
+
+
+  it('should unwrap a jQuery-wrapped event object on click', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-click="event = $event"></div>')($rootScope);
+    $rootScope.$digest();
+
+    browserTrigger(element, 'click');
     expect($rootScope.event.originalEvent).toBeUndefined();
   }));
 
