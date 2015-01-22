@@ -22,7 +22,7 @@ describe('$timeout', function() {
   it('should call $apply after each callback is executed', inject(function($timeout, $rootScope) {
     var applySpy = spyOn($rootScope, '$apply').andCallThrough();
 
-    $timeout(function() {});
+    $timeout(noop);
     expect(applySpy).not.toHaveBeenCalled();
 
     $timeout.flush();
@@ -30,8 +30,8 @@ describe('$timeout', function() {
 
     applySpy.reset();
 
-    $timeout(function() {});
-    $timeout(function() {});
+    $timeout(noop);
+    $timeout(noop);
     $timeout.flush();
     expect(applySpy.callCount).toBe(2);
   }));
@@ -40,7 +40,7 @@ describe('$timeout', function() {
   it('should NOT call $apply if skipApply is set to true', inject(function($timeout, $rootScope) {
     var applySpy = spyOn($rootScope, '$apply').andCallThrough();
 
-    $timeout(function() {}, 12, false);
+    $timeout(noop, 12, false);
     expect(applySpy).not.toHaveBeenCalled();
 
     $timeout.flush();
@@ -89,8 +89,8 @@ describe('$timeout', function() {
     // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
     var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
 
-    var promise1 = $timeout(function() {}, 0, false);
-    var promise2 = $timeout(function() {}, 100, false);
+    var promise1 = $timeout(noop, 0, false);
+    var promise2 = $timeout(noop, 100, false);
     expect(cancelSpy).not.toHaveBeenCalled();
 
     $timeout.flush(0);
@@ -103,7 +103,6 @@ describe('$timeout', function() {
     $timeout.cancel(promise2);
     expect(cancelSpy).toHaveBeenCalled();
   }));
-
 
   it('should allow the `fn` parameter to be optional', inject(function($timeout, log) {
 
@@ -123,6 +122,35 @@ describe('$timeout', function() {
     expect(log).toEqual(['promise success: undefined']);
   }));
 
+  it('should pass the timeout arguments in the timeout callback',
+      inject(function($timeout, $browser, log) {
+    var task1 = jasmine.createSpy('Nappa'),
+        task2 = jasmine.createSpy('Vegeta');
+
+    $timeout(task1, 9000, true, 'What does', 'the timeout', 'say about', 'its delay level');
+    expect($browser.deferredFns.length).toBe(1);
+
+    $timeout(task2, 9001, false, 'It\'s', 'over', 9000);
+    expect($browser.deferredFns.length).toBe(2);
+
+    $timeout(9000, false, 'What!', 9000).then(function(value) { log('There\'s no way that can be right! ' + value); }, log.fn('It can\'t!'));
+    expect($browser.deferredFns.length).toBe(3);
+    expect(log).toEqual([]);
+
+    $timeout.flush(0);
+    expect(task1).not.toHaveBeenCalled();
+
+    $timeout.flush(9000);
+    expect(task1).toHaveBeenCalledWith('What does', 'the timeout', 'say about', 'its delay level');
+
+    $timeout.flush(1);
+    expect(task2).toHaveBeenCalledWith('It\'s', 'over', 9000);
+
+    $timeout.flush(9000);
+    expect(log).toEqual(['There\'s no way that can be right! undefined']);
+
+  }));
+
 
   describe('exception handling', function() {
 
@@ -133,7 +161,7 @@ describe('$timeout', function() {
 
     it('should delegate exception to the $exceptionHandler service', inject(
         function($timeout, $exceptionHandler) {
-      $timeout(function() {throw "Test Error";});
+      $timeout(function() { throw "Test Error"; });
       expect($exceptionHandler.errors).toEqual([]);
 
       $timeout.flush();
@@ -145,7 +173,7 @@ describe('$timeout', function() {
         function($timeout, $rootScope) {
       var applySpy = spyOn($rootScope, '$apply').andCallThrough();
 
-      $timeout(function() {throw "Test Error";});
+      $timeout(function() { throw "Test Error"; });
       expect(applySpy).not.toHaveBeenCalled();
 
       $timeout.flush();
@@ -161,6 +189,25 @@ describe('$timeout', function() {
       $timeout.flush();
 
       expect(log).toEqual('error: Some Error');
+    }));
+
+
+    it('should pass the timeout arguments in the timeout callback even if an exception is thrown',
+        inject(function($timeout, log) {
+      var promise1 = $timeout(function(arg) { throw arg; }, 9000, true, 'Some Arguments');
+      var promise2 = $timeout(function(arg1, args2) { throw arg1 + ' ' + args2; }, 9001, false, 'Are Meant', 'To Be Thrown');
+
+      promise1.then(log.fn('success'), function(reason) { log('error: ' + reason); });
+      promise2.then(log.fn('success'), function(reason) { log('error: ' + reason); });
+
+      $timeout.flush(0);
+      expect(log).toEqual('');
+
+      $timeout.flush(9000);
+      expect(log).toEqual('error: Some Arguments');
+
+      $timeout.flush(1);
+      expect(log).toEqual('error: Some Arguments; error: Are Meant To Be Thrown');
     }));
 
 
@@ -242,7 +289,7 @@ describe('$timeout', function() {
       // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
       var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
 
-      var promise = $timeout(function() {}, 0, false);
+      var promise = $timeout(noop, 0, false);
 
       expect(cancelSpy).not.toHaveBeenCalled();
       $timeout.cancel(promise);
