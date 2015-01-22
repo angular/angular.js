@@ -1,4 +1,10 @@
 'use strict';
+// I have no idea how to change the common header that 
+// tells people that they can download some module from different places
+// that's why i do this comment here . maybe you can figure it out
+// the link to Google CDN is wrong 
+// it points to https://developers.google.com/speed/libraries/devguide#angularjs
+// instead of http://cdnjs.com/libraries/angular.js/ 
 
 var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
