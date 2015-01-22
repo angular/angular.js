@@ -172,6 +172,15 @@
           person2.sendKeys('Vojta');
           expect(withOffset.getText()).toEqual('Di, Vojta and 2 other people are viewing.');
         });
+        it('should reset count to 0 if count - offset is negative', function() {
+          var withOffset = element.all(by.css('ng-pluralize')).get(1);
+          var personCount = element(by.model('personCount'));
+          personCount.clear();
+          personCount.sendKeys('4');
+          expect(withOffset.getText()).toEqual('Igor, Misko and 2 other people are viewing.');
+          personCount.clear();
+          expect(withOffset.getText()).toEqual('Nobody is viewing.');
+        });
       </file>
     </example>
  */
@@ -189,9 +198,18 @@ var ngPluralizeDirective = ['$locale', '$interpolate', '$log', function($locale,
           whensExpFns = {},
           startSymbol = $interpolate.startSymbol(),
           endSymbol = $interpolate.endSymbol(),
-          braceReplacement = startSymbol + numberExp + '-' + offset + endSymbol,
           watchRemover = angular.noop,
           lastCount;
+
+      var oneTimeCount = /^\s*::/.test(numberExp) || '';
+      if (oneTimeCount) {
+        numberExp = numberExp.replace(/^\s*::/, '');
+        oneTimeCount = '::';
+      }
+      var braceReplacement = [
+        startSymbol, oneTimeCount, '((', numberExp, '-', offset,
+        ') < 0 ?', 0, ':', numberExp, '-', offset, ')', endSymbol
+      ].join('');
 
       forEach(attr, function(expression, attributeName) {
         var tmpMatch = IS_WHEN.exec(attributeName);
@@ -205,14 +223,14 @@ var ngPluralizeDirective = ['$locale', '$interpolate', '$log', function($locale,
 
       });
 
-      scope.$watch(numberExp, function ngPluralizeWatchAction(newVal) {
+      scope.$watch(oneTimeCount + numberExp, function ngPluralizeWatchAction(newVal) {
         var count = parseFloat(newVal);
         var countIsNaN = isNaN(count);
 
         if (!countIsNaN && !(count in whens)) {
           // If an explicit number rule such as 1, 2, 3... is defined, just use it.
           // Otherwise, check it against pluralization rules in $locale service.
-          count = $locale.pluralCat(count - offset);
+          count = $locale.pluralCat(count - offset < 0 ? 0 : count - offset);
         }
 
         // If both `count` and `lastCount` are NaN, we don't need to re-register a watch.
