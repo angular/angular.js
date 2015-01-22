@@ -1286,7 +1286,7 @@ ASTInterpreter.prototype = {
         context
       );
     case AST.Identifier:
-      ensureSafeMemberName(ast.name);
+      ensureSafeMemberName(ast.name, self.expression);
       return self.identifier(ast.name,
                              self.expensiveChecks || isPossiblyDangerousMemberName(ast.name),
                              context, create, self.expression);
@@ -1336,7 +1336,7 @@ ASTInterpreter.prototype = {
       return function(scope, locals, assign, inputs) {
         var lhs = left(scope, locals, assign, inputs);
         var rhs = right(scope, locals, assign, inputs);
-        ensureSafeObject(lhs.value);
+        ensureSafeObject(lhs.value, self.expression);
         lhs.context[lhs.name] = rhs;
         return context ? {value: rhs} : rhs;
       };

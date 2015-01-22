@@ -2225,7 +2225,6 @@ describe('parser', function() {
           });
 
           it('should NOT allow access to Function constructor in getter', function() {
-
             expect(function() {
               scope.$eval('{}.toString.constructor("alert(1)")');
             }).toThrowMinErr(
@@ -2308,18 +2307,26 @@ describe('parser', function() {
             }).toThrow();
           });
 
-          it('should NOT allow access to Function constructor that has been aliased', function() {
+          it('should NOT allow access to Function constructor that has been aliased in getters', function() {
             scope.foo = { "bar": Function };
             expect(function() {
               scope.$eval('foo["bar"]');
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
                     'Expression: foo["bar"]');
+          });
 
+          it('should NOT allow access to Function constructor that has been aliased in setters', function() {
+            scope.foo = { "bar": Function };
+            expect(function() {
+              scope.$eval('foo["bar"] = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: foo["bar"] = 1');
           });
 
           describe('expensiveChecks', function() {
-            it('should block access to window object even when aliased', inject(function($parse, $window) {
+            it('should block access to window object even when aliased in getters', inject(function($parse, $window) {
               scope.foo = {w: $window};
               // This isn't blocked for performance.
               expect(scope.$eval($parse('foo.w'))).toBe($window);
@@ -2330,7 +2337,23 @@ describe('parser', function() {
               }).toThrowMinErr(
                       '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
                       'Expression: foo.w');
+            }));
 
+            it('should block access to window object even when aliased in setters', inject(function($parse, $window) {
+              scope.foo = {w: $window};
+              // This is blocked as it points to `window`.
+              expect(function() {
+                expect(scope.$eval($parse('foo.w = 1'))).toBe($window);
+              }).toThrowMinErr(
+                      '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                      'Expression: foo.w = 1');
+              // Event handlers use the more expensive path for better protection since they expose
+              // the $event object on the scope.
+              expect(function() {
+                scope.$eval($parse('foo.w = 1', null, true));
+              }).toThrowMinErr(
+                      '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                      'Expression: foo.w = 1');
             }));
           });
         });
@@ -2387,7 +2410,7 @@ describe('parser', function() {
 
         describe('Object constructor', function() {
 
-          it('should NOT allow access to Object constructor that has been aliased', function() {
+          it('should NOT allow access to Object constructor that has been aliased in getters', function() {
             scope.foo = { "bar": Object };
 
             expect(function() {
@@ -2401,6 +2424,22 @@ describe('parser', function() {
             }).toThrowMinErr(
                     '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
                     'Expression: foo["bar"]["keys"](foo)');
+          });
+
+          it('should NOT allow access to Object constructor that has been aliased in setters', function() {
+            scope.foo = { "bar": Object };
+
+            expect(function() {
+              scope.$eval('foo.bar.keys(foo).bar = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
+                    'Expression: foo.bar.keys(foo).bar = 1');
+
+            expect(function() {
+              scope.$eval('foo["bar"]["keys"](foo).bar = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecobj', 'Referencing Object in Angular expressions is disallowed! ' +
+                    'Expression: foo["bar"]["keys"](foo).bar = 1');
           });
         });
 
@@ -2418,6 +2457,16 @@ describe('parser', function() {
             }).toThrowMinErr(
                     '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
                     'disallowed! Expression: wrap["d"]');
+            expect(function() {
+              scope.$eval('wrap["w"] = 1', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is ' +
+                    'disallowed! Expression: wrap["w"] = 1');
+            expect(function() {
+              scope.$eval('wrap["d"] = 1', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
+                    'disallowed! Expression: wrap["d"] = 1');
           }));
 
           it('should NOT allow access to the Window or DOM returned from a function', inject(function($window, $document) {
@@ -2575,6 +2624,9 @@ describe('parser', function() {
           });
 
           it('should NOT allow access to __proto__', function() {
+            expect(function() {
+              scope.$eval('__proto__');
+            }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
               scope.$eval('{}.__proto__');
             }).toThrowMinErr('$parse', 'isecfld');
