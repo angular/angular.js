@@ -27,7 +27,7 @@ angular.module('examples', [])
   return function(exampleFolder, clickEvent) {
 
     var exampleName = 'AngularJS Example';
-    var newWindow = clickEvent.ctrlKey;
+    var newWindow = clickEvent.ctrlKey || clickEvent.metaKey;
 
     // Load the manifest for the example
     $http.get(exampleFolder + '/manifest.json')
