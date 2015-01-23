@@ -372,17 +372,28 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           collectionLength = collectionKeys.length;
           nextBlockOrder = new Array(collectionLength);
 
+          var k = 0;
+          var keyIndex;
           // locate existing items
           for (index = 0; index < collectionLength; index++) {
-            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            if (collection === collectionKeys) {
+              // Do not iterate over holes in arrays or array-like values
+              if (!(index in collection)) continue;
+              key = index;
+              keyIndex = k++;
+            } else {
+              key = collectionKeys[index];
+              keyIndex = index;
+            }
+
             value = collection[key];
-            trackById = trackByIdFn(key, value, index);
+            trackById = trackByIdFn(key, value, keyIndex);
             if (lastBlockMap[trackById]) {
               // found previously seen block
               block = lastBlockMap[trackById];
               delete lastBlockMap[trackById];
               nextBlockMap[trackById] = block;
-              nextBlockOrder[index] = block;
+              nextBlockOrder[keyIndex] = block;
             } else if (nextBlockMap[trackById]) {
               // if collision detected. restore lastBlockMap and throw an error
               forEach(nextBlockOrder, function(block) {
@@ -393,7 +404,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                   expression, trackById, value);
             } else {
               // new never before seen block
-              nextBlockOrder[index] = {id: trackById, scope: undefined, clone: undefined};
+              nextBlockOrder[keyIndex] = {id: trackById, scope: undefined, clone: undefined};
               nextBlockMap[trackById] = true;
             }
           }
@@ -413,11 +424,22 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             block.scope.$destroy();
           }
 
+          k = 0;
           // we are not using forEach for perf reasons (trying to avoid #call)
           for (index = 0; index < collectionLength; index++) {
-            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            if (collection === collectionKeys) {
+              // Do not iterate over holes in arrays or array-like values
+              if (!(index in collection)) continue;
+              key = index;
+              keyIndex = k++;
+            } else {
+              key = collectionKeys[index];
+              keyIndex = index;
+            }
+
             value = collection[key];
-            block = nextBlockOrder[index];
+            block = nextBlockOrder[keyIndex];
+            if (!block) continue;
 
             if (block.scope) {
               // if we have already seen this object, then we need to reuse the
@@ -435,7 +457,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 $animate.move(getBlockNodes(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+              updateScope(block.scope, keyIndex, valueIdentifier, value, keyIdentifier, key, collectionLength);
             } else {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
@@ -452,7 +474,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // by a directive with templateUrl when its template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
-                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+                updateScope(block.scope, keyIndex, valueIdentifier, value, keyIdentifier, key, collectionLength);
               });
             }
           }

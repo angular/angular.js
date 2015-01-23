@@ -762,14 +762,23 @@ describe('ngRepeat', function() {
   });
 
 
-  it('should iterate over non-existent elements of a sparse array', function() {
+  it('should not iterate over non-existent elements of a sparse array', function() {
     element = $compile('<ul><li ng-repeat="item in array track by $index">{{item}}|</li></ul>')(scope);
-    scope.array = ['a', 'b'];
-    scope.array[4] = 'c';
-    scope.array[6] = 'd';
+    // jscs: disable
+    scope.array = ['a', 'b', , , 'c', , 'd'];
+    // jscs: enable
     scope.$digest();
 
-    expect(element.text()).toBe('a|b|||c||d|');
+    expect(element.text()).toBe('a|b|c|d|');
+  });
+
+
+  it('should not iterate over non-existent elements of a sparse array-like', function() {
+    element = $compile('<ul><li ng-repeat="item in array track by $index">{{item}}|</li></ul>')(scope);
+    scope.array = { '0': 'a', '1': 'b', '4': 'c', '6': 'd', 'length': 7 };
+    scope.$digest();
+
+    expect(element.text()).toBe('a|b|c|d|');
   });
 
 
