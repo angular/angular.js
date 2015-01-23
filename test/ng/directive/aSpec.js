@@ -3,6 +3,25 @@
 describe('a', function() {
   var element, $compile, $rootScope;
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.
+      directive('linkTo', valueFn({
+        restrict: 'A',
+        template: '<div class="my-link"><a href="{{destination}}">{{destination}}</a></div>',
+        replace: true,
+        scope: {
+          destination: '@linkTo'
+        }
+      })).
+      directive('linkNot', valueFn({
+        restrict: 'A',
+        template: '<div class="my-link"><a href>{{destination}}</a></div>',
+        replace: true,
+        scope: {
+          destination: '@linkNot'
+        }
+      }));
+  }));
 
   beforeEach(inject(function(_$compile_, _$rootScope_) {
     $compile = _$compile_;
@@ -73,6 +92,40 @@ describe('a', function() {
     linker($rootScope);
 
     expect(jq.prototype.on).not.toHaveBeenCalled();
+  });
+
+
+  it('should not preventDefault if anchor element is replaced with href-containing element', function() {
+    spyOn(jqLite.prototype, 'on').andCallThrough();
+    element = $compile('<a link-to="https://www.google.com">')($rootScope);
+    $rootScope.$digest();
+
+    var child = element.children('a');
+    var preventDefault = jasmine.createSpy('preventDefault');
+
+    child.triggerHandler({
+      type: 'click',
+      preventDefault: preventDefault
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+
+
+  it('should preventDefault if anchor element is replaced with element without href attribute', function() {
+    spyOn(jqLite.prototype, 'on').andCallThrough();
+    element = $compile('<a link-not="https://www.google.com">')($rootScope);
+    $rootScope.$digest();
+
+    var child = element.children('a');
+    var preventDefault = jasmine.createSpy('preventDefault');
+
+    child.triggerHandler({
+      type: 'click',
+      preventDefault: preventDefault
+    });
+
+    expect(preventDefault).toHaveBeenCalled();
   });
 
 
