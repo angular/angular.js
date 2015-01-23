@@ -63,18 +63,18 @@ describe('ngPluralize', function() {
 
       $rootScope.email = -0.1;
       $rootScope.$digest();
-      expect(element.text()).toBe('You have -0.1 new emails');
-      expect(elementAlt.text()).toBe('You have -0.1 new emails');
+      expect(element.text()).toBe('You have 0 new emails');
+      expect(elementAlt.text()).toBe('You have 0 new emails');
 
       $rootScope.email = '-0.01';
       $rootScope.$digest();
-      expect(element.text()).toBe('You have -0.01 new emails');
-      expect(elementAlt.text()).toBe('You have -0.01 new emails');
+      expect(element.text()).toBe('You have 0 new emails');
+      expect(elementAlt.text()).toBe('You have 0 new emails');
 
       $rootScope.email = -2;
       $rootScope.$digest();
-      expect(element.text()).toBe('You have -2 new emails');
-      expect(elementAlt.text()).toBe('You have -2 new emails');
+      expect(element.text()).toBe('You have 0 new emails');
+      expect(elementAlt.text()).toBe('You have 0 new emails');
 
       $rootScope.email = -1;
       $rootScope.$digest();
@@ -111,8 +111,8 @@ describe('ngPluralize', function() {
 
       $rootScope.email = '-011';
       $rootScope.$digest();
-      expect(element.text()).toBe('You have -11 new emails');
-      expect(elementAlt.text()).toBe('You have -11 new emails');
+      expect(element.text()).toBe('You have 0 new emails');
+      expect(elementAlt.text()).toBe('You have 0 new emails');
 
       $rootScope.email = '1fff';
       $rootScope.$digest();
