@@ -29,6 +29,11 @@ function init {
     angular-touch
     angular-messages
   )
+  MOCK_MODULES=(
+    ngMock
+    ngMockE2E
+    ngAnimateMock
+  )
 }
 
 
@@ -77,9 +82,13 @@ function prepare {
     replaceJsonProp "package.json" "angular.*" ".*" "$NEW_VERSION"
     deleteJsonProp "package.json" "main"
 
-    echo "-- Adding CommonJS index file"
-    echo "require('./$repo');" > index.js
-    echo "" >> index.js
+    if [ $repo != "angular-mocks" ]
+    then
+      echo "-- Adding $repo CommonJS index file"
+      echo "require('./$repo');" > index.js
+      echo "" >> index.js
+    fi
+    
     if [ $repo == "angular" ]
     then
       echo "module.exports = angular;" >> index.js
@@ -93,9 +102,13 @@ function prepare {
       then
         echo "module.exports = angular.module('ng$first$tail');" >> index.js
       else
-        echo "exports.ngMock = 'ngMock';" >> index.js
-        echo "exports.ngMockE2E = 'ngMockE2E';" >> index.js
-        echo "exports.ngAnimateMock = 'ngAnimateMock';" >> index.js
+        for mock in "${MOCK_MODULES[@]}"
+        do
+          echo "-- Adding $repo/$mock CommonJS file"
+          echo "require('./$repo');" > $mock.js
+          echo "" >> $mock.js
+          echo "module.exports = angular.module('$mock');" >> $mock.js
+        done
       fi
     fi
 
