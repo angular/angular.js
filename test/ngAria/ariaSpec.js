@@ -85,6 +85,28 @@ describe('$aria', function() {
       expect(element.attr('aria-checked')).toBe('false');
     });
 
+    it('should handle checkbox with string model values using ng(True|False)Value', function() {
+      var element = $compile('<input type="checkbox" ng-model="val" ng-true-value="\'yes\'" ' +
+        'ng-false-value="\'no\'">'
+      )(scope);
+
+      scope.$apply('val="yes"');
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+
+      scope.$apply('val="no"');
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+    });
+
+    it('should handle checkbox with integer model values using ngTrueValue', function() {
+      var element = $compile('<input type="checkbox" ng-model="val" ng-true-value="0">')(scope);
+
+      scope.$apply('val=0');
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+
+      scope.$apply('val=1');
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+    });
+
     it('should attach itself to input type="radio"', function() {
       var element = $compile('<input type="radio" ng-model="val" value="one">' +
           '<input type="radio" ng-model="val" value="two">')(scope);
@@ -94,6 +116,36 @@ describe('$aria', function() {
       expect(element.eq(1).attr('aria-checked')).toBe('false');
 
       scope.$apply("val='two'");
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+      expect(element.eq(1).attr('aria-checked')).toBe('true');
+    });
+
+    it('should handle radios with integer model values', function() {
+      var element = $compile('<input type="radio" ng-model="val" value="0">' +
+          '<input type="radio" ng-model="val" value="1">')(scope);
+
+      scope.$apply('val=0');
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+      expect(element.eq(1).attr('aria-checked')).toBe('false');
+
+      scope.$apply('val=1');
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+      expect(element.eq(1).attr('aria-checked')).toBe('true');
+    });
+
+    it('should handle radios with boolean model values using ngValue', function() {
+      var element = $compile('<input type="radio" ng-model="val" ng-value="valExp">' +
+          '<input type="radio" ng-model="val" ng-value="valExp2">')(scope);
+
+      scope.$apply(function() {
+        scope.valExp = true;
+        scope.valExp2 = false;
+        scope.val = true;
+      });
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+      expect(element.eq(1).attr('aria-checked')).toBe('false');
+
+      scope.$apply('val = false');
       expect(element.eq(0).attr('aria-checked')).toBe('false');
       expect(element.eq(1).attr('aria-checked')).toBe('true');
     });

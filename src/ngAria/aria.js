@@ -129,6 +129,7 @@ function $AriaProvider() {
    * @name $aria
    *
    * @description
+   * @priority 200
    *
    * The $aria service contains helper methods for applying common
    * [ARIA](http://www.w3.org/TR/wai-aria/) attributes to HTML directives.
@@ -205,6 +206,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
   return {
     restrict: 'A',
     require: '?ngModel',
+    priority: 200, //Make sure watches are fired after any other directives that affect the ngModel value
     link: function(scope, elem, attr, ngModel) {
       var shape = getShape(attr, elem);
       var needsTabIndex = shouldAttachAttr('tabindex', 'tabindex', elem);
@@ -217,19 +219,19 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
         if (needsTabIndex) {
           needsTabIndex = false;
           return function ngAriaRadioReaction(newVal) {
-            var boolVal = newVal === attr.value;
+            var boolVal = (attr.value == ngModel.$viewValue);
             elem.attr('aria-checked', boolVal);
             elem.attr('tabindex', 0 - !boolVal);
           };
         } else {
           return function ngAriaRadioReaction(newVal) {
-            elem.attr('aria-checked', newVal === attr.value);
+            elem.attr('aria-checked', (attr.value == ngModel.$viewValue));
           };
         }
       }
 
       function ngAriaCheckboxReaction(newVal) {
-        elem.attr('aria-checked', !!newVal);
+        elem.attr('aria-checked', !ngModel.$isEmpty(ngModel.$viewValue));
       }
 
       switch (shape) {
