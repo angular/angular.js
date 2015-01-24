@@ -214,8 +214,8 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$httpBackend', '$httpUrlParams', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($httpBackend, $httpUrlParams, $browser, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -1130,28 +1130,61 @@ function $HttpProvider() {
 
 
     function buildUrl(url, params) {
-      if (!params) return url;
+      params = $httpUrlParams.serialize(params);
+      if (params) {
+        url += ((url.indexOf('?') == -1) ? '?' : '&') + params;
+      }
+      return url;
+    }
+  }];
+}
+
+/**
+ * @ngdoc provider
+ * @name $httpUrlParamsProvider
+ * @description
+ * Use `$httpUrlParamsProvider` to change the default behavior of the {@link ng.$httpUrlParams $httpUrlParams} service.
+ * */
+function $HttpUrlParamsProvider() {
+
+ /**
+  * @ngdoc service
+  * @name $httpUrlParams
+  *
+  * @description
+  * The `$httpUrlParams` service is responsible for serializing request params
+  * (expressed as a JavaScript object) to a string.
+  * It abstracts the way in which request params are transformed, grouped, encoded etc.
+  *
+  * Normally you wouldn't use this service directly in the application's code but rather override this service
+  * to enable custom serialization schemas for URL parameters.
+  *
+  * The `$httpUrlParams` service comes handy while unit testing with {@link ngMock.$httpBackend $httpBackend mock},
+  * as one can inject `$httpUrlParams` into a test and serialize URL params as {@link ng.$http $http} service.
+  */
+  this.$get = function() {
+    var HttpUrlParams = {};
+
+    HttpUrlParams.serialize = function(params) {
       var parts = [];
+
+      if (!params) return '';
+
       forEachSorted(params, function(value, key) {
         if (value === null || isUndefined(value)) return;
         if (!isArray(value)) value = [value];
 
         forEach(value, function(v) {
           if (isObject(v)) {
-            if (isDate(v)) {
-              v = v.toISOString();
-            } else {
-              v = toJson(v);
-            }
+            v = isDate(v) ? v.toISOString() : toJson(v);
           }
-          parts.push(encodeUriQuery(key) + '=' +
-                     encodeUriQuery(v));
+          parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(v));
         });
       });
-      if (parts.length > 0) {
-        url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
-      }
-      return url;
-    }
-  }];
+
+      return parts.join('&');
+    };
+
+    return HttpUrlParams;
+  };
 }
