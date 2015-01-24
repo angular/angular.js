@@ -220,8 +220,8 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$httpBackend', '$httpUrlParams', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($httpBackend, $httpUrlParams, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -1028,7 +1028,7 @@ function $HttpProvider() {
           cache,
           cachedResp,
           reqHeaders = config.headers,
-          url = buildUrl(config.url, config.params);
+          url = buildUrl(config.url, config.params, config.paramsMode);
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
@@ -1135,29 +1135,86 @@ function $HttpProvider() {
     }
 
 
-    function buildUrl(url, params) {
-      if (!params) return url;
-      var parts = [];
-      forEachSorted(params, function(value, key) {
-        if (value === null || isUndefined(value)) return;
-        if (!isArray(value)) value = [value];
-
-        forEach(value, function(v) {
-          if (isObject(v)) {
-            if (isDate(v)) {
-              v = v.toISOString();
-            } else {
-              v = toJson(v);
-            }
-          }
-          parts.push(encodeUriQuery(key) + '=' +
-                     encodeUriQuery(v));
-        });
-      });
-      if (parts.length > 0) {
-        url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
+    function buildUrl(url, params, mode) {
+      params = $httpUrlParams.serialize(params, mode);
+      if (params) {
+        url += ((url.indexOf('?') == -1) ? '?' : '&') + params;
       }
       return url;
     }
   }];
+}
+
+/**
+ * @ngdoc provider
+ * @name $httpUrlParamsProvider
+ * @description
+ * Use `$httpUrlParamsProvider` to change the default behavior of the {@link ng.$httpUrlParams $httpUrlParams} service.
+ * */
+function $HttpUrlParamsProvider() {
+
+  var paramSerializers = createMap();
+
+  function serializeParams(params, addArrayMarker) {
+    var parts = [];
+
+    if (!params) return '';
+
+    forEachSorted(params, function(value, key) {
+      if (value === null || isUndefined(value)) return;
+      if (!isArray(value)) value = [value];
+
+      forEach(value, function(v) {
+        if (isObject(v)) {
+          v = isDate(v) ? v.toISOString() : toJson(v);
+        }
+        parts.push(encodeUriQuery(key) + (addArrayMarker ? '[]' : '') + '=' + encodeUriQuery(v));
+      });
+    });
+
+    return parts.join('&');
+  }
+
+
+  this.defaultMode = 'traditional';
+
+
+  this.registerSerializer = function registerSerializer(mode, serFn) {
+    paramSerializers[mode] = serFn;
+  };
+
+  /**
+  * @ngdoc service
+  * @name $httpUrlParams
+  *
+  * @description
+  * The `$httpUrlParams` service is responsible for serializing request params
+  * (expressed as a JavaScript object) to a string.
+  * It abstracts the way in which request params are transformed, grouped, encoded etc.
+  *
+  * Normally you wouldn't use this service directly in the application's code but rather override this service
+  * to enable custom serialization schemas for URL parameters.
+  *
+  * The `$httpUrlParams` service comes handy while unit testing with {@link ngMock.$httpBackend $httpBackend mock},
+  * as one can inject `$httpUrlParams` into a test and serialize URL params as {@link ng.$http $http} service.
+  */
+  this.$get = function() {
+
+    var provider = this;
+    var HttpUrlParams = {};
+
+    HttpUrlParams.serialize = function(params, mode) {
+      return paramSerializers[lowercase(mode) || provider.defaultMode](params);
+    };
+
+    return HttpUrlParams;
+  };
+
+  this.registerSerializer(this.defaultMode, function(params) {
+    return serializeParams(params, false);
+  });
+
+  this.registerSerializer('jquery', function(params) {
+    return serializeParams(params, false);
+  });
 }
