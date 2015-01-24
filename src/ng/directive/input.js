@@ -902,28 +902,30 @@ var inputType = {
          <script>
            angular.module('checkboxExample', [])
              .controller('ExampleController', ['$scope', function($scope) {
-               $scope.value1 = true;
-               $scope.value2 = 'YES'
+               $scope.checkboxModel = {
+                value1 : true,
+                value2 : 'YES'
+              };
              }]);
          </script>
          <form name="myForm" ng-controller="ExampleController">
-           Value1: <input type="checkbox" ng-model="value1"> <br/>
-           Value2: <input type="checkbox" ng-model="value2"
+           Value1: <input type="checkbox" ng-model="checkboxModel.value1"> <br/>
+           Value2: <input type="checkbox" ng-model="checkboxModel.value2"
                           ng-true-value="'YES'" ng-false-value="'NO'"> <br/>
-           <tt>value1 = {{value1}}</tt><br/>
-           <tt>value2 = {{value2}}</tt><br/>
+           <tt>value1 = {{checkboxModel.value1}}</tt><br/>
+           <tt>value2 = {{checkboxModel.value2}}</tt><br/>
           </form>
         </file>
         <file name="protractor.js" type="protractor">
           it('should change state', function() {
-            var value1 = element(by.binding('value1'));
-            var value2 = element(by.binding('value2'));
+            var value1 = element(by.binding('checkboxModel.value1'));
+            var value2 = element(by.binding('checkboxModel.value2'));
 
             expect(value1.getText()).toContain('true');
             expect(value2.getText()).toContain('YES');
 
-            element(by.model('value1')).click();
-            element(by.model('value2')).click();
+            element(by.model('checkboxModel.value1')).click();
+            element(by.model('checkboxModel.value2')).click();
 
             expect(value1.getText()).toContain('false');
             expect(value2.getText()).toContain('NO');
