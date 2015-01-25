@@ -53,13 +53,13 @@ describe('$cookies', function() {
     var preexisting = $cookies.preexisting = function() {};
     $rootScope.$digest();
     expect($browser.cookies()).toEqual({
-      'preexisting': '' + preexisting,
+      'preexisting': String(preexisting),
       'nonString': '1,2,3',
       'nullVal': 'null',
       'undefVal': 'undefined'
     });
     expect($cookies).toEqual({
-      'preexisting': '' + preexisting,
+      'preexisting': String(preexisting),
       'nonString': '1,2,3',
       'nullVal': 'null',
       'undefVal': 'undefined'

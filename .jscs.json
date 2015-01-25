@@ -1,5 +1,6 @@
 {
   "excludeFiles": ["src/ngLocale/**"],
+  "disallowImplicitTypeConversion": ["string"],
   "disallowKeywords": ["with"],
   "disallowMixedSpacesAndTabs": true,
   "disallowMultipleLineStrings": true,

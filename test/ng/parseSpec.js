@@ -833,7 +833,7 @@ describe('parser', function() {
             //   This causes the function that we constructed to be executed when sort calls
             //   .valueOf() on the result of the comparison.
             expect(function() {
-              scope.$eval('' +
+              scope.$eval(
                 'hasOwnProperty.constructor.prototype.valueOf=valueOf.call;' +
                 '["a","alert(1)"].sort(hasOwnProperty.constructor)');
             }).toThrow();
@@ -1133,13 +1133,13 @@ describe('parser', function() {
 
         it('should prevent the exploit', function() {
           expect(function() {
-            scope.$eval('' +
+            scope.$eval(
               ' "".sub.call.call(' +
                 '({})["constructor"].getOwnPropertyDescriptor("".sub.__proto__, "constructor").value,' +
                 'null,' +
                 '"alert(1)"' +
-              ')()' +
-              '');
+              ')()'
+              );
           }).toThrow();
         });
       });

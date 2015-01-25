@@ -61,7 +61,7 @@ describe('ngOptions', function() {
       },
       toEqualTrackedOption: function(value, text, label) {
         var errors = [];
-        if (this.actual.attr('value') !== '' + value) {
+        if (this.actual.attr('value') !== String(value)) {
           errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "' + value + '"');
         }
         if (text && this.actual.text() !== text) {

@@ -474,7 +474,7 @@ describe('ngModel', function() {
 
         ctrl.$formatters.unshift(function(value) {
           log.push(value);
-          return value + '';
+          return String(value);
         });
 
         scope.$apply('value = 3');
