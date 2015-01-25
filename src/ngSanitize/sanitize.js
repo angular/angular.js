@@ -372,8 +372,9 @@ function htmlParser(html, handler) {
 
     unary = voidElements[tagName] || !!unary;
 
-    if (!unary)
+    if (!unary) {
       stack.push(tagName);
+    }
 
     var attrs = {};
 
@@ -392,11 +393,12 @@ function htmlParser(html, handler) {
   function parseEndTag(tag, tagName) {
     var pos = 0, i;
     tagName = angular.lowercase(tagName);
-    if (tagName)
+    if (tagName) {
       // Find the closest opened tag of the same type
-      for (pos = stack.length - 1; pos >= 0; pos--)
-        if (stack[pos] == tagName)
-          break;
+      for (pos = stack.length - 1; pos >= 0; pos--) {
+        if (stack[pos] == tagName) break;
+      }
+    }
 
     if (pos >= 0) {
       // Close all the open elements, up the stack
