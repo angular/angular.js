@@ -8,19 +8,6 @@ describe('ngMessages', function() {
     return (element.length ? element[0] : element).querySelectorAll('[ng-message], [ng-message-exp]');
   }
 
-  function they(msg, vals, spec, focus) {
-    forEach(vals, function(val, key) {
-      var m = msg.replace('$prop', key);
-      (focus ? iit : it)(m, function() {
-        spec(val);
-      });
-    });
-  }
-
-  function tthey(msg, vals, spec) {
-    they(msg, vals, spec, true);
-  }
-
   function s(str) {
     return str.replace(/\s+/g,'');
   }
