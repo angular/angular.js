@@ -599,8 +599,9 @@ function padNumber(num, digits, trim) {
   }
   num = '' + num;
   while (num.length < digits) num = '0' + num;
-  if (trim)
+  if (trim) {
     num = num.substr(num.length - digits);
+  }
   return neg + num;
 }
 
@@ -650,11 +651,12 @@ angular.mock.TzDate = function(offset, timestamp) {
     self.origDate = jsonStringToDate(timestamp);
 
     timestamp = self.origDate.getTime();
-    if (isNaN(timestamp))
+    if (isNaN(timestamp)) {
       throw {
         name: "Illegal Argument",
         message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
       };
+    }
   } else {
     self.origDate = new Date(timestamp);
   }
@@ -1184,14 +1186,16 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     }
 
     if (expectation && expectation.match(method, url)) {
-      if (!expectation.matchData(data))
+      if (!expectation.matchData(data)) {
         throw new Error('Expected ' + expectation + ' with different data\n' +
             'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
+      }
 
-      if (!expectation.matchHeaders(headers))
+      if (!expectation.matchHeaders(headers)) {
         throw new Error('Expected ' + expectation + ' with different headers\n' +
                         'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' +
                         prettyPrint(headers));
+      }
 
       expectations.shift();
 

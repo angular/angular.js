@@ -851,8 +851,9 @@ forEach({
   children: function(element) {
     var children = [];
     forEach(element.childNodes, function(element) {
-      if (element.nodeType === NODE_TYPE_ELEMENT)
+      if (element.nodeType === NODE_TYPE_ELEMENT) {
         children.push(element);
+      }
     });
     return children;
   },

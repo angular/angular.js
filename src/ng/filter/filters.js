@@ -234,8 +234,9 @@ function padNumber(num, digits, trim) {
   }
   num = '' + num;
   while (num.length < digits) num = '0' + num;
-  if (trim)
+  if (trim) {
     num = num.substr(num.length - digits);
+  }
   return neg + num;
 }
 
@@ -244,8 +245,9 @@ function dateGetter(name, size, offset, trim) {
   offset = offset || 0;
   return function(date) {
     var value = date['get' + name]();
-    if (offset > 0 || value > -offset)
+    if (offset > 0 || value > -offset) {
       value += offset;
+    }
     if (value === 0 && offset == -12) value = 12;
     return padNumber(value, size, trim);
   };
