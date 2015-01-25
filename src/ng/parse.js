@@ -284,8 +284,9 @@ Lexer.prototype = {
       if (escape) {
         if (ch === 'u') {
           var hex = this.text.substring(this.index + 1, this.index + 5);
-          if (!hex.match(/[\da-f]{4}/i))
+          if (!hex.match(/[\da-f]{4}/i)) {
             this.throwError('Invalid unicode escape [\\u' + hex + ']');
+          }
           this.index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
         } else {
@@ -397,8 +398,9 @@ Parser.prototype = {
   },
 
   peekToken: function() {
-    if (this.tokens.length === 0)
+    if (this.tokens.length === 0) {
       throw $parseMinErr('ueoe', 'Unexpected end of expression: {0}', this.text);
+    }
     return this.tokens[0];
   },
 
@@ -483,8 +485,9 @@ Parser.prototype = {
   statements: function() {
     var statements = [];
     while (true) {
-      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
+      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']')) {
         statements.push(this.filterChain());
+      }
       if (!this.expect(';')) {
         // optimize for the common case where there is only one statement.
         // TODO(size): maybe we should not support multiple statements?
