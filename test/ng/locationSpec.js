@@ -1272,7 +1272,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with target="_blank"', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="_blank"'});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="_blank"'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1285,7 +1285,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with target specified', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="some-frame"'});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="some-frame"'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1480,7 +1480,7 @@ describe('$location', function() {
     });
 
     it('should not rewrite when clicked with ctrl pressed', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1493,7 +1493,7 @@ describe('$location', function() {
 
 
     it('should not rewrite when clicked with meta pressed', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1505,7 +1505,7 @@ describe('$location', function() {
     });
 
     it('should not rewrite when right click pressed', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
