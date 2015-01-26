@@ -245,7 +245,9 @@ var validAttrs = angular.extend({},
 
 function makeMap(str) {
   var obj = {}, items = str.split(','), i;
-  for (i = 0; i < items.length; i++) obj[items[i]] = true;
+  for (i = 0; i < items.length; i++) {
+    obj[items[i]] = true;
+  }
   return obj;
 }
 
@@ -286,7 +288,9 @@ function htmlParser(html, handler) {
         index = html.indexOf("--", 4);
 
         if (index >= 0 && html.lastIndexOf("-->", index) === index) {
-          if (handler.comment) handler.comment(html.substring(4, index));
+          if (handler.comment) {
+            handler.comment(html.substring(4, index));
+          }
           html = html.substring(index + 3);
           chars = false;
         }
@@ -332,7 +336,9 @@ function htmlParser(html, handler) {
         text += index < 0 ? html : html.substring(0, index);
         html = index < 0 ? "" : html.substring(index);
 
-        if (handler.chars) handler.chars(decodeEntities(text));
+        if (handler.chars) {
+          handler.chars(decodeEntities(text));
+        }
       }
 
     } else {
@@ -340,7 +346,9 @@ function htmlParser(html, handler) {
         function(all, text) {
           text = text.replace(COMMENT_REGEXP, "$1").replace(CDATA_REGEXP, "$1");
 
-          if (handler.chars) handler.chars(decodeEntities(text));
+          if (handler.chars) {
+            handler.chars(decodeEntities(text));
+          }
 
           return "";
       });
@@ -387,7 +395,9 @@ function htmlParser(html, handler) {
 
         attrs[name] = decodeEntities(value);
     });
-    if (handler.start) handler.start(tagName, attrs, unary);
+    if (handler.start) {
+      handler.start(tagName, attrs, unary);
+    }
   }
 
   function parseEndTag(tag, tagName) {

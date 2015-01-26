@@ -378,8 +378,12 @@ var locationPrototype = {
     }
 
     var match = PATH_MATCH.exec(url);
-    if (match[1] || url === '') this.path(decodeURIComponent(match[1]));
-    if (match[2] || match[1] || url === '') this.search(match[3] || '');
+    if (match[1] || url === '') {
+      this.path(decodeURIComponent(match[1]));
+    }
+    if (match[2] || match[1] || url === '') {
+      this.search(match[3] || '');
+    }
     this.hash(match[5] || '');
 
     return this;
@@ -531,7 +535,9 @@ var locationPrototype = {
           search = copy(search, {});
           // remove object undefined or null properties
           forEach(search, function(value, key) {
-            if (value == null) delete search[key];
+            if (value == null) {
+              delete search[key];
+            }
           });
 
           this.$$search = search;
@@ -914,7 +920,9 @@ function $LocationProvider() {
           afterLocationChange(oldUrl, oldState);
         }
       });
-      if (!$rootScope.$$phase) $rootScope.$digest();
+      if (!$rootScope.$$phase) {
+        $rootScope.$digest();
+      }
     });
 
     // update browser

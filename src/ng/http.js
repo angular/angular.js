@@ -71,7 +71,9 @@ function headersGetter(headers) {
   var headersObj = isObject(headers) ? headers : undefined;
 
   return function(name) {
-    if (!headersObj) headersObj =  parseHeaders(headers);
+    if (!headersObj) {
+      headersObj =  parseHeaders(headers);
+    }
 
     if (name) {
       var value = headersObj[lowercase(name)];
@@ -1098,7 +1100,9 @@ function $HttpProvider() {
           $rootScope.$applyAsync(resolveHttpPromise);
         } else {
           resolveHttpPromise();
-          if (!$rootScope.$$phase) $rootScope.$apply();
+          if (!$rootScope.$$phase) {
+            $rootScope.$apply();
+          }
         }
       }
 
@@ -1125,7 +1129,9 @@ function $HttpProvider() {
 
       function removePendingReq() {
         var idx = $http.pendingRequests.indexOf(config);
-        if (idx !== -1) $http.pendingRequests.splice(idx, 1);
+        if (idx !== -1) {
+          $http.pendingRequests.splice(idx, 1);
+        }
       }
     }
 
@@ -1135,7 +1141,9 @@ function $HttpProvider() {
       var parts = [];
       forEachSorted(params, function(value, key) {
         if (value === null || isUndefined(value)) return;
-        if (!isArray(value)) value = [value];
+        if (!isArray(value)) {
+          value = [value];
+        }
 
         forEach(value, function(v) {
           if (isObject(v)) {

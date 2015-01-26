@@ -254,7 +254,9 @@ function jqLiteClone(element) {
 }
 
 function jqLiteDealoc(element, onlyDescendants) {
-  if (!onlyDescendants) jqLiteRemoveData(element);
+  if (!onlyDescendants) {
+    jqLiteRemoveData(element);
+  }
 
   if (element.querySelectorAll) {
     var descendants = element.querySelectorAll('*');
@@ -450,9 +452,13 @@ function jqLiteEmpty(element) {
 }
 
 function jqLiteRemove(element, keepData) {
-  if (!keepData) jqLiteDealoc(element);
+  if (!keepData) {
+    jqLiteDealoc(element);
+  }
   var parent = element.parentNode;
-  if (parent) parent.removeChild(element);
+  if (parent) {
+    parent.removeChild(element);
+  }
 }
 
 
@@ -1011,15 +1017,21 @@ function $$jqLiteProvider() {
   this.$get = function $$jqLite() {
     return extend(JQLite, {
       hasClass: function(node, classes) {
-        if (node.attr) node = node[0];
+        if (node.attr) {
+          node = node[0];
+        }
         return jqLiteHasClass(node, classes);
       },
       addClass: function(node, classes) {
-        if (node.attr) node = node[0];
+        if (node.attr) {
+          node = node[0];
+        }
         return jqLiteAddClass(node, classes);
       },
       removeClass: function(node, classes) {
-        if (node.attr) node = node[0];
+        if (node.attr) {
+          node = node[0];
+        }
         return jqLiteRemoveClass(node, classes);
       }
     });

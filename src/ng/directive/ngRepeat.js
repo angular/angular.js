@@ -240,7 +240,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
     // TODO(perf): generate setters to shave off ~40ms or 1-1.5%
     scope[valueIdentifier] = value;
-    if (keyIdentifier) scope[keyIdentifier] = key;
+    if (keyIdentifier) {
+      scope[keyIdentifier] = key;
+    }
     scope.$index = index;
     scope.$first = (index === 0);
     scope.$last = (index === (arrayLength - 1));
@@ -316,7 +318,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         if (trackByExpGetter) {
           trackByIdExpFn = function(key, value, index) {
             // assign key, value, and $index to the locals so that they can be used in hash functions
-            if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
+            if (keyIdentifier) {
+              hashFnLocals[keyIdentifier] = key;
+            }
             hashFnLocals[valueIdentifier] = value;
             hashFnLocals.$index = index;
             return trackByExpGetter($scope, hashFnLocals);
@@ -386,7 +390,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             } else if (nextBlockMap[trackById]) {
               // if collision detected. restore lastBlockMap and throw an error
               forEach(nextBlockOrder, function(block) {
-                if (block && block.scope) lastBlockMap[block.id] = block;
+                if (block && block.scope) {
+                  lastBlockMap[block.id] = block;
+                }
               });
               throw ngRepeatMinErr('dupes',
                   "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}",

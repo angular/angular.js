@@ -539,9 +539,15 @@ angular.module('ngResource', ['ng']).
                   break;
                 }
               case 1:
-                if (isFunction(a1)) success = a1;
-                else if (hasBody) data = a1;
-                else params = a1;
+                if (isFunction(a1)) {
+                  success = a1;
+                }
+                else if (hasBody) {
+                  data = a1;
+                }
+                else {
+                  params = a1;
+                }
                 break;
               case 0: break;
               default:
@@ -565,7 +571,9 @@ angular.module('ngResource', ['ng']).
               }
             });
 
-            if (hasBody) httpConfig.data = data;
+            if (hasBody) {
+              httpConfig.data = data;
+            }
             route.setUrlParams(httpConfig,
               extend({}, extractParams(data, action.params || {}), params),
               action.url);

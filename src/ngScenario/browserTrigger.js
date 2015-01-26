@@ -11,7 +11,9 @@
    * coordinates, keys, etc...) that are passed into the event when triggered
    */
   window.browserTrigger = function browserTrigger(element, eventType, eventData) {
-    if (element && !element.nodeName) element = element[0];
+    if (element && !element.nodeName) {
+      element = element[0];
+    }
     if (!element) return;
 
     eventData = eventData || {};

@@ -1609,7 +1609,9 @@ describe('jqLite', function() {
         tested = true;
       }
       iframe_.onload = iframe_.onreadystatechange = function() {
-        if (iframe_.contentDocument) test();
+        if (iframe_.contentDocument) {
+          test()
+        };
       };
       /* jshint scripturl:true */
       iframe_.src = 'javascript:false';

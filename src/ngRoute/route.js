@@ -484,7 +484,9 @@ function $RouteProvider() {
               var searchParams = {}, self=this;
 
               angular.forEach(Object.keys(newParams), function(key) {
-                if (!self.current.pathParams[key]) searchParams[key] = newParams[key];
+                if (!self.current.pathParams[key]) {
+                  searchParams[key] = newParams[key];
+                }
               });
 
               newParams = angular.extend({}, this.current.params, newParams);

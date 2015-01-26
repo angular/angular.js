@@ -231,7 +231,9 @@ function $RootScopeProvider() {
         // prototypically. In all other cases, this property needs to be set
         // when the parent scope is destroyed.
         // The listener needs to be added after the parent is set
-        if (isolate || parent != this) child.$on('$destroy', destroyChild);
+        if (isolate || parent != this) {
+          child.$on('$destroy', destroyChild);
+        }
 
         return child;
 
@@ -428,7 +430,9 @@ function $RootScopeProvider() {
           // No expressions means we call the listener ASAP
           var shouldCall = true;
           self.$evalAsync(function() {
-            if (shouldCall) listener(newValues, newValues, self);
+            if (shouldCall) {
+              listener(newValues, newValues, self);
+            }
           });
           return function deregisterWatchGroup() {
             shouldCall = false;
@@ -771,7 +775,9 @@ function $RootScopeProvider() {
                       watch.fn(value, ((last === initWatchVal) ? value : last), current);
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
-                        if (!watchLog[logIdx]) watchLog[logIdx] = [];
+                        if (!watchLog[logIdx]) {
+                          watchLog[logIdx] = [];
+                        }
                         watchLog[logIdx].push({
                           msg: isFunction(watch.exp) ? 'fn: ' + (watch.exp.name || watch.exp.toString()) : watch.exp,
                           newVal: value,
@@ -875,10 +881,18 @@ function $RootScopeProvider() {
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
         // not be retained by any of our references and should be eligible for garbage collection)
-        if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
-        if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
-        if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
-        if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
+        if (parent.$$childHead == this) {
+          parent.$$childHead = this.$$nextSibling;
+        }
+        if (parent.$$childTail == this) {
+          parent.$$childTail = this.$$prevSibling;
+        }
+        if (this.$$prevSibling) {
+          this.$$prevSibling.$$nextSibling = this.$$nextSibling;
+        }
+        if (this.$$nextSibling) {
+          this.$$nextSibling.$$prevSibling = this.$$prevSibling;
+        }
 
         // Disable listeners, watchers and apply/digest methods
         this.$destroy = this.$digest = this.$apply = this.$evalAsync = this.$applyAsync = noop;

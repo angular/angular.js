@@ -1346,7 +1346,9 @@ function angularInit(element, bootstrap) {
  * @returns {auto.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules, config) {
-  if (!isObject(config)) config = {};
+  if (!isObject(config)) {
+    config = {};
+  }
   var defaultConfig = {
     strictDi: false
   };

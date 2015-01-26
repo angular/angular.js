@@ -58,7 +58,9 @@ angular.module('ngCookies', ['ng']).
           lastBrowserCookies = currentCookies;
           copy(currentCookies, lastCookies);
           copy(currentCookies, cookies);
-          if (runEval) $rootScope.$apply();
+          if (runEval) {
+            $rootScope.$apply();
+          }
         }
       })();
 

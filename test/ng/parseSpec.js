@@ -1296,7 +1296,11 @@ describe('parser', function() {
 
         it('should stay stable once the value defined', inject(function($parse, $rootScope, log) {
           var fn = $parse('::foo');
-          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+          $rootScope.$watch(fn, function(value, old) {
+            if (value !== old) {
+              log(value);
+            }
+          });
 
           $rootScope.$digest();
           expect($rootScope.$$watchers.length).toBe(1);
@@ -1315,7 +1319,11 @@ describe('parser', function() {
 
         it('should have a stable value if at the end of a $digest it has a defined value', inject(function($parse, $rootScope, log) {
           var fn = $parse('::foo');
-          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+          $rootScope.$watch(fn, function(value, old) {
+            if (value !== old) {
+              log(value);
+            }
+          });
           $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
 
           $rootScope.foo = 'bar';

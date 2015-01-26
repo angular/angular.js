@@ -7,9 +7,13 @@
  * special event and changes it form 'change' to 'click/keydown' and
  * few others. This horrible hack removes the special treatment
  */
-if (window._jQuery) _jQuery.event.special.change = undefined;
+if (window._jQuery) {
+  _jQuery.event.special.change = undefined;
+}
 
-if (window.bindJQuery) bindJQuery();
+if (window.bindJQuery) {
+  bindJQuery();
+}
 
 beforeEach(function() {
   // all this stuff is not needed for module tests, where jqlite and publishExternalAPI and jqLite are not global vars

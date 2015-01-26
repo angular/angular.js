@@ -153,7 +153,9 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       hasExponent = false,
       parts = [];
 
-  if (isInfinity) formatedText = '\u221e';
+  if (isInfinity) {
+    formatedText = '\u221e';
+  }
 
   if (!isInfinity && numStr.indexOf('e') !== -1) {
     var match = numStr.match(/([\d\.]+)e(-?)(\d+)/);
@@ -208,7 +210,9 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       fraction += '0';
     }
 
-    if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
+    if (fractionSize && fractionSize !== "0") {
+      formatedText += decimalSep + fraction.substr(0, fractionSize);
+    }
   } else {
     if (fractionSize > 0 && number < 1) {
       formatedText = number.toFixed(fractionSize);
@@ -233,7 +237,9 @@ function padNumber(num, digits, trim) {
     num = -num;
   }
   num = '' + num;
-  while (num.length < digits) num = '0' + num;
+  while (num.length < digits) {
+    num = '0' + num;
+  }
   if (trim) {
     num = num.substr(num.length - digits);
   }
@@ -248,7 +254,9 @@ function dateGetter(name, size, offset, trim) {
     if (offset > 0 || value > -offset) {
       value += offset;
     }
-    if (value === 0 && offset == -12) value = 12;
+    if (value === 0 && offset == -12) {
+      value = 12;
+    }
     return padNumber(value, size, trim);
   };
 }

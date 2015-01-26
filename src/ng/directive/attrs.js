@@ -428,7 +428,9 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
           // to set the property as well to achieve the desired effect.
           // we use attr[attrName] value since $set can sanitize the url.
-          if (msie && propName) element.prop(propName, attr[name]);
+          if (msie && propName) {
+            element.prop(propName, attr[name]);
+          }
         });
       }
     };

@@ -51,6 +51,8 @@ var ngStyleDirective = ngDirective(function(scope, element, attr) {
     if (oldStyles && (newStyles !== oldStyles)) {
       forEach(oldStyles, function(val, style) { element.css(style, '');});
     }
-    if (newStyles) element.css(newStyles);
+    if (newStyles) {
+      element.css(newStyles);
+    }
   });
 });

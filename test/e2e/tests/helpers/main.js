@@ -4,7 +4,9 @@ var helper = {
   },
   loadFixture: function(fixture) {
     var i = 0;
-    while (fixture[i] === '/') ++i;
+    while (fixture[i] === '/') {
+      ++i;
+    }
     fixture = fixture.slice(i);
     if (!/\/(index\.html)?$/.test(fixture)) {
       fixture += '/';

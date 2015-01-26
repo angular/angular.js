@@ -39,7 +39,9 @@ var SelectController =
   });
 
   self.removeUnknownOption = function() {
-    if (self.unknownOption.parent()) self.unknownOption.remove();
+    if (self.unknownOption.parent()) {
+      self.unknownOption.remove();
+    }
   };
 
   // Here we find the option that represents the "empty" value, i.e. the option with a value
@@ -70,7 +72,9 @@ var SelectController =
     if (self.hasOption(value)) {
       self.removeUnknownOption();
       $element.val(value);
-      if (value === '') self.emptyOption.prop('selected', true); // to make IE9 happy
+      if (value === '') {
+        self.emptyOption.prop('selected', true);  // to make IE9 happy
+      }
     } else {
       if (isUndefined(value) && self.emptyOption) {
         $element.val('');

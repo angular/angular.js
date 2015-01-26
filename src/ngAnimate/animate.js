@@ -1209,8 +1209,12 @@ angular.module('ngAnimate', ['ng'])
             return !classes
               ? done()
               : performAnimation('setClass', classes, element, parentElement, null, function() {
-                  if (classes[0]) $delegate.$$addClassImmediately(element, classes[0]);
-                  if (classes[1]) $delegate.$$removeClassImmediately(element, classes[1]);
+                  if (classes[0]) {
+                    $delegate.$$addClassImmediately(element, classes[0]);
+                  }
+                  if (classes[1]) {
+                    $delegate.$$removeClassImmediately(element, classes[1]);
+                  }
                 }, cache.options, done);
           });
         },

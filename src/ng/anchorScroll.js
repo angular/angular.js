@@ -236,16 +236,24 @@ function $AnchorScrollProvider() {
       var hash = $location.hash(), elm;
 
       // empty hash, scroll to the top of the page
-      if (!hash) scrollTo(null);
+      if (!hash) {
+        scrollTo(null);
+      }
 
       // element with given id
-      else if ((elm = document.getElementById(hash))) scrollTo(elm);
+      else if ((elm = document.getElementById(hash))) {
+        scrollTo(elm);
+      }
 
       // first anchor with given name :-D
-      else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) scrollTo(elm);
+      else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) {
+        scrollTo(elm);
+      }
 
       // no element and hash == 'top', scroll to the top of the page
-      else if (hash === 'top') scrollTo(null);
+      else if (hash === 'top') {
+        scrollTo(null);
+      }
     }
 
     // does not scroll when user clicks on anchor link that is currently on

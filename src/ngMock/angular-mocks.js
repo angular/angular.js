@@ -85,7 +85,9 @@ angular.mock.$Browser = function() {
     var fnIndex;
 
     angular.forEach(self.deferredFns, function(fn, index) {
-      if (fn.id === deferId) fnIndex = index;
+      if (fn.id === deferId) {
+        fnIndex = index;
+      }
     });
 
     if (fnIndex !== undefined) {
@@ -479,7 +481,9 @@ angular.mock.$IntervalProvider = function() {
           deferred.resolve(iteration);
 
           angular.forEach(repeatFns, function(fn, index) {
-            if (fn.id === promise.$$intervalId) fnIndex = index;
+            if (fn.id === promise.$$intervalId) {
+              fnIndex = index;
+            }
           });
 
           if (fnIndex !== undefined) {
@@ -521,7 +525,9 @@ angular.mock.$IntervalProvider = function() {
       var fnIndex;
 
       angular.forEach(repeatFns, function(fn, index) {
-        if (fn.id === promise.$$intervalId) fnIndex = index;
+        if (fn.id === promise.$$intervalId) {
+          fnIndex = index;
+        }
       });
 
       if (fnIndex !== undefined) {
@@ -598,7 +604,9 @@ function padNumber(num, digits, trim) {
     num = -num;
   }
   num = '' + num;
-  while (num.length < digits) num = '0' + num;
+  while (num.length < digits) {
+    num = '0' + num;
+  }
   if (trim) {
     num = num.substr(num.length - digits);
   }
@@ -1519,7 +1527,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *   is called an exception is thrown (as this typically a sign of programming error).
    */
   $httpBackend.flush = function(count, digest) {
-    if (digest !== false) $rootScope.$digest();
+    if (digest !== false) {
+      $rootScope.$digest();
+    }
     if (!responses.length) throw new Error('No pending request to flush !');
 
     if (angular.isDefined(count) && count !== null) {
@@ -1551,7 +1561,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * ```
    */
   $httpBackend.verifyNoOutstandingExpectation = function(digest) {
-    if (digest !== false) $rootScope.$digest();
+    if (digest !== false) {
+      $rootScope.$digest();
+    }
     if (expectations.length) {
       throw new Error('Unsatisfied requests: ' + expectations.join(', '));
     }
@@ -1687,7 +1699,9 @@ function MockXhr() {
 
     header = undefined;
     angular.forEach(this.$$respHeaders, function(headerVal, headerName) {
-      if (!header && angular.lowercase(headerName) == name) header = headerVal;
+      if (!header && angular.lowercase(headerName) == name) {
+        header = headerVal;
+      }
     });
     return header;
   };
@@ -2305,11 +2319,18 @@ if (window.jasmine || window.mocha) {
   var ErrorAddingDeclarationLocationStack = function(e, errorForStack) {
     this.message = e.message;
     this.name = e.name;
-    if (e.line) this.line = e.line;
-    if (e.sourceId) this.sourceId = e.sourceId;
-    if (e.stack && errorForStack)
+    if (e.line) {
+      this.line = e.line;
+    }
+    if (e.sourceId) {
+      this.sourceId = e.sourceId;
+    }
+    if (e.stack && errorForStack) {
       this.stack = e.stack + '\n' + errorForStack.stack;
-    if (e.stackArray) this.stackArray = e.stackArray;
+    }
+    if (e.stackArray) {
+      this.stackArray = e.stackArray;
+    }
   };
   ErrorAddingDeclarationLocationStack.prototype.toString = Error.prototype.toString;
 

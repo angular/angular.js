@@ -103,7 +103,9 @@ var ngListDirective = function() {
 
         if (viewValue) {
           forEach(viewValue.split(separator), function(value) {
-            if (value) list.push(trimValues ? trim(value) : value);
+            if (value) {
+              list.push(trimValues ? trim(value) : value);
+            }
           });
         }
 

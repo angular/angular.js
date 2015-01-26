@@ -422,7 +422,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           if (value) {
             value.forEach(function(item) {
               var option = options.getOptionFromViewValue(item);
-              if (option) option.element.selected = true;
+              if (option) {
+                option.element.selected = true;
+              }
             });
           }
         };
@@ -466,7 +468,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
       function updateOptionElement(option, element) {
         option.element = element;
-        if (option.value !== element.value) element.value = option.selectValue;
+        if (option.value !== element.value) {
+          element.value = option.selectValue;
+        }
         if (option.label !== element.label) {
           element.label = option.label;
           element.textContent = option.label;

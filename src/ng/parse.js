@@ -667,7 +667,9 @@ Parser.prototype = {
     }, {
       assign: function(scope, value, locals) {
         var o = object(scope, locals);
-        if (!o) object.assign(scope, o = {});
+        if (!o) {
+          object.assign(scope, o = {});
+        }
         return getter.assign(o, value);
       }
     });
@@ -693,7 +695,9 @@ Parser.prototype = {
         var key = ensureSafeMemberName(indexFn(self, locals), expression);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
         var o = ensureSafeObject(obj(self, locals), expression);
-        if (!o) obj.assign(self, o = {});
+        if (!o) {
+          obj.assign(self, o = {});
+        }
         return o[key] = value;
       }
     });
@@ -1193,7 +1197,9 @@ function $ParseProvider() {
         }
         if (isAllDefined(value)) {
           scope.$$postDigest(function() {
-            if (isAllDefined(lastValue)) unwatch();
+            if (isAllDefined(lastValue)) {
+              unwatch();
+            }
           });
         }
       }, objectEquality);
@@ -1201,7 +1207,9 @@ function $ParseProvider() {
       function isAllDefined(value) {
         var allDefined = true;
         forEach(value, function(val) {
-          if (!isDefined(val)) allDefined = false;
+          if (!isDefined(val)) {
+            allDefined = false;
+          }
         });
         return allDefined;
       }

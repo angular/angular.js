@@ -1235,8 +1235,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         compile.$$addScopeInfo($linkNode, scope);
 
-        if (cloneConnectFn) cloneConnectFn($linkNode, scope);
-        if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode, parentBoundTranscludeFn);
+        if (cloneConnectFn) {
+          cloneConnectFn($linkNode, scope);
+        }
+        if (compositeLinkFn) {
+          compositeLinkFn(scope, $linkNode, $linkNode, parentBoundTranscludeFn);
+        }
         return $linkNode;
       };
     }
@@ -1507,8 +1511,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                       attrStart, attrEnd);
           }
           if (node.nodeType == NODE_TYPE_ELEMENT) {
-            if (node.hasAttribute(attrStart)) depth++;
-            if (node.hasAttribute(attrEnd)) depth--;
+            if (node.hasAttribute(attrStart)) {
+              depth++;
+            }
+            if (node.hasAttribute(attrEnd)) {
+              depth--;
+            }
           }
           nodes.push(node);
           node = node.nextSibling;
@@ -1771,7 +1779,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       function addLinkFns(pre, post, attrStart, attrEnd) {
         if (pre) {
-          if (attrStart) pre = groupElementsLinkFnWrapper(pre, attrStart, attrEnd);
+          if (attrStart) {
+            pre = groupElementsLinkFnWrapper(pre, attrStart, attrEnd);
+          }
           pre.require = directive.require;
           pre.directiveName = directiveName;
           if (newIsolateScopeDirective === directive || directive.$$isolateScope) {
@@ -1780,7 +1790,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           preLinkFns.push(pre);
         }
         if (post) {
-          if (attrStart) post = groupElementsLinkFnWrapper(post, attrStart, attrEnd);
+          if (attrStart) {
+            post = groupElementsLinkFnWrapper(post, attrStart, attrEnd);
+          }
           post.require = directive.require;
           post.directiveName = directiveName;
           if (newIsolateScopeDirective === directive || directive.$$isolateScope) {
@@ -1800,8 +1812,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           require = require.substring(match[0].length);
 
           if (match[3]) {
-            if (match[1]) match[3] = null;
-            else match[1] = match[3];
+            if (match[1]) {
+              match[3] = null;
+            } else {
+              match[1] = match[3];
+            }
           }
           if (match[1] === '^') {
             retrievalMethod = 'inheritedData';
@@ -2293,11 +2308,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             // When transcluding a template that has bindings in the root
             // we don't have a parent and thus need to add the class during linking fn.
-            if (hasCompileParent) compile.$$addBindingClass(templateNodeParent);
+            if (hasCompileParent) {
+              compile.$$addBindingClass(templateNodeParent);
+            }
 
             return function textInterpolateLinkFn(scope, node) {
               var parent = node.parent();
-              if (!hasCompileParent) compile.$$addBindingClass(parent);
+              if (!hasCompileParent) {
+                compile.$$addBindingClass(parent);
+              }
               compile.$$addBindingInfo(parent, interpolateFn.expressions);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
                 node[0].nodeValue = value;

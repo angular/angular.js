@@ -96,7 +96,9 @@ function limitToFilter() {
     }
     if (isNaN(limit)) return input;
 
-    if (isNumber(input)) input = input.toString();
+    if (isNumber(input)) {
+      input = input.toString();
+    }
     if (!isArray(input) && !isString(input)) return input;
 
     return limit >= 0 ? input.slice(0, limit) : input.slice(limit);

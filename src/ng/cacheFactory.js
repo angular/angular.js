@@ -166,7 +166,9 @@ function $CacheFactoryProvider() {
             refresh(lruEntry);
           }
 
-          if (!(key in data)) size++;
+          if (!(key in data)) {
+            size++;
+          }
           data[key] = value;
 
           if (size > capacity) {
@@ -216,8 +218,12 @@ function $CacheFactoryProvider() {
 
             if (!lruEntry) return;
 
-            if (lruEntry == freshEnd) freshEnd = lruEntry.p;
-            if (lruEntry == staleEnd) staleEnd = lruEntry.n;
+            if (lruEntry == freshEnd) {
+              freshEnd = lruEntry.p;
+            }
+            if (lruEntry == staleEnd) {
+              staleEnd = lruEntry.n;
+            }
             link(lruEntry.n,lruEntry.p);
 
             delete lruHash[key];
@@ -307,8 +313,12 @@ function $CacheFactoryProvider() {
        */
       function link(nextEntry, prevEntry) {
         if (nextEntry != prevEntry) {
-          if (nextEntry) nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
-          if (prevEntry) prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
+          if (nextEntry) {
+            nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
+          }
+          if (prevEntry) {
+            prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
+          }
         }
       }
     }

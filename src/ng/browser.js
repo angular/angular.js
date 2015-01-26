@@ -103,7 +103,9 @@ function Browser(window, document, $log, $sniffer) {
    * @returns {function()} the added function
    */
   self.addPollFn = function(fn) {
-    if (isUndefined(pollTimeout)) startPoller(100, setTimeout);
+    if (isUndefined(pollTimeout)) {
+      startPoller(100, setTimeout);
+    }
     pollFns.push(fn);
     return fn;
   };
@@ -164,8 +166,12 @@ function Browser(window, document, $log, $sniffer) {
     }
 
     // Android Browser BFCache causes location, history reference to become stale.
-    if (location !== window.location) location = window.location;
-    if (history !== window.history) history = window.history;
+    if (location !== window.location) {
+      location = window.location;
+    }
+    if (history !== window.history) {
+      history = window.history;
+    }
 
     // setter
     if (url) {
@@ -288,7 +294,9 @@ function Browser(window, document, $log, $sniffer) {
       // changed by push/replaceState
 
       // html5 history api - popstate event
-      if ($sniffer.history) jqLite(window).on('popstate', cacheStateAndFireUrlChange);
+      if ($sniffer.history) {
+        jqLite(window).on('popstate', cacheStateAndFireUrlChange);
+      }
       // hashchange event
       jqLite(window).on('hashchange', cacheStateAndFireUrlChange);
 
