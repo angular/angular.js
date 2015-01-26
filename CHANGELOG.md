@@ -13,9 +13,6 @@
 - **filterFilter:** throw error if input is not an array
   ([cea8e751](https://github.com/angular/angular.js/commit/cea8e75144e6910b806b63a6ec2a6d118316fddd),
    [#9992](https://github.com/angular/angular.js/issues/9992), [#10352](https://github.com/angular/angular.js/issues/10352))
-- **form:** ignore properties in $error prototype chain
-  ([31a5b835](https://github.com/angular/angular.js/commit/31a5b8353ae5f1a5cb283322829880995e877833),
-   [#10469](https://github.com/angular/angular.js/issues/10469), [#10727](https://github.com/angular/angular.js/issues/10727))
 - **htmlAnchorDirective:**
   - remove "element !== target element" check
   ([2958cd30](https://github.com/angular/angular.js/commit/2958cd308b5ebaf223a3e5df3fb5bf0f23408447),
@@ -47,9 +44,6 @@ Closes #10352
 - **$location:** don't rewrite when link is shift-clicked
   ([939ca37c](https://github.com/angular/angular.js/commit/939ca37cfe5f6fc35b09b6705caabd1fcc3cf9d3),
    [#9904](https://github.com/angular/angular.js/issues/9904), [#9906](https://github.com/angular/angular.js/issues/9906))
-- **form:** ignore properties in $error prototype chain
-  ([adf91fe6](https://github.com/angular/angular.js/commit/adf91fe6ee77a84e8159c9a95e36f65276fe67bd),
-   [#10469](https://github.com/angular/angular.js/issues/10469), [#10727](https://github.com/angular/angular.js/issues/10727))
 - **htmlAnchorDirective:**
   - remove "element !== target element" check
   ([779e3f6b](https://github.com/angular/angular.js/commit/779e3f6b5f8d2550e758cb0c5f64187ba8e00e29),
