@@ -36,8 +36,9 @@ angular.scenario.Runner.prototype.emit = function(eventName) {
   var self = this;
   var args = Array.prototype.slice.call(arguments, 1);
   eventName = eventName.toLowerCase();
-  if (!this.listeners[eventName])
+  if (!this.listeners[eventName]) {
     return;
+  }
   angular.forEach(this.listeners[eventName], function(listener) {
     listener.apply(self, args);
   });
@@ -157,8 +158,9 @@ angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
 
   // Export all the methods to child scope manually as now we don't mess controllers with scopes
   // TODO(vojta): refactor scenario runner so that these objects are not tightly coupled as current
-  for (var name in Cls.prototype)
+  for (var name in Cls.prototype) {
     child[name] = angular.bind(child, Cls.prototype[name]);
+  }
 
   Cls.call(child);
   return child;

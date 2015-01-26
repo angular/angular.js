@@ -243,7 +243,9 @@ function qFactory(nextTick, exceptionHandler) {
     var called = false;
     function wrap(fn) {
       return function(value) {
-        if (called) return;
+        if (called) {
+          return;
+        }
         called = true;
         fn.call(self, value);
       };
@@ -276,7 +278,9 @@ function qFactory(nextTick, exceptionHandler) {
 
       this.$$state.pending = this.$$state.pending || [];
       this.$$state.pending.push([result, onFulfilled, onRejected, progressBack]);
-      if (this.$$state.status > 0) scheduleProcessQueue(this.$$state);
+      if (this.$$state.status > 0) {
+        scheduleProcessQueue(this.$$state);
+      }
 
       return result.promise;
     },
@@ -326,7 +330,9 @@ function qFactory(nextTick, exceptionHandler) {
   }
 
   function scheduleProcessQueue(state) {
-    if (state.processScheduled || !state.pending) return;
+    if (state.processScheduled || !state.pending) {
+      return;
+    }
     state.processScheduled = true;
     nextTick(function() { processQueue(state); });
   }
@@ -341,14 +347,15 @@ function qFactory(nextTick, exceptionHandler) {
 
   Deferred.prototype = {
     resolve: function(val) {
-      if (this.promise.$$state.status) return;
+      if (this.promise.$$state.status) {
+        return;
+      }
       if (val === this.promise) {
         this.$$reject($qMinErr(
           'qcycle',
           "Expected promise to be resolved with value other than itself '{0}'",
           val));
-      }
-      else {
+      } else {
         this.$$resolve(val);
       }
 
@@ -359,7 +366,9 @@ function qFactory(nextTick, exceptionHandler) {
 
       fns = callOnce(this, this.$$resolve, this.$$reject);
       try {
-        if ((isObject(val) || isFunction(val))) then = val && val.then;
+        if ((isObject(val) || isFunction(val))) {
+          then = val && val.then;
+        }
         if (isFunction(then)) {
           this.promise.$$state.status = -1;
           then.call(val, fns[0], fns[1], this.notify);
@@ -375,7 +384,9 @@ function qFactory(nextTick, exceptionHandler) {
     },
 
     reject: function(reason) {
-      if (this.promise.$$state.status) return;
+      if (this.promise.$$state.status) {
+        return;
+      }
       this.$$reject(reason);
     },
 
@@ -460,7 +471,9 @@ function qFactory(nextTick, exceptionHandler) {
   var handleCallback = function handleCallback(value, isResolved, callback) {
     var callbackOutput = null;
     try {
-      if (isFunction(callback)) callbackOutput = callback();
+      if (isFunction(callback)) {
+        callbackOutput = callback();
+      }
     } catch (e) {
       return makePromise(e, false);
     }
@@ -520,11 +533,17 @@ function qFactory(nextTick, exceptionHandler) {
     forEach(promises, function(promise, key) {
       counter++;
       when(promise).then(function(value) {
-        if (results.hasOwnProperty(key)) return;
+        if (results.hasOwnProperty(key)) {
+          return;
+        }
         results[key] = value;
-        if (!(--counter)) deferred.resolve(results);
+        if (!(--counter)) {
+          deferred.resolve(results);
+        }
       }, function(reason) {
-        if (results.hasOwnProperty(key)) return;
+        if (results.hasOwnProperty(key)) {
+          return;
+        }
         deferred.reject(reason);
       });
     });

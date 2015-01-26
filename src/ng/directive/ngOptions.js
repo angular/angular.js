@@ -288,7 +288,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         keys.forEach(function getOption(key) {
 
           // Ignore "angular" properties that start with $ or $$
-          if (key.charAt(0) === '$') return;
+          if (key.charAt(0) === '$') {
+            return;
+          }
 
           var value = optionValues[key];
           var locals = getLocals(value, key);
@@ -327,7 +329,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
       // if ngModel is not defined, we don't need to do anything
       var ngModelCtrl = ctrls[1];
-      if (!ngModelCtrl) return;
+      if (!ngModelCtrl) {
+        return;
+      }
 
       var selectCtrl = ctrls[0];
       var multiple = attr.multiple;
@@ -422,7 +426,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           if (value) {
             value.forEach(function(item) {
               var option = options.getOptionFromViewValue(item);
-              if (option) option.element.selected = true;
+              if (option) {
+                option.element.selected = true;
+              }
             });
           }
         };
@@ -466,7 +472,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
       function updateOptionElement(option, element) {
         option.element = element;
-        if (option.value !== element.value) element.value = option.selectValue;
+        if (option.value !== element.value) {
+          element.value = option.selectValue;
+        }
         if (option.label !== element.label) {
           element.label = option.label;
           element.textContent = option.label;

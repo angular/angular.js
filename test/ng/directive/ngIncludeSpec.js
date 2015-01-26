@@ -257,7 +257,9 @@ describe('ngInclude', function() {
     var called = 0;
     // we want to assert only during first watch
     $rootScope.$watch(function() {
-      if (!called) expect(element.text()).toBe('');
+      if (!called) {
+        expect(element.text()).toBe('');
+      }
       called++;
     });
 
@@ -363,7 +365,9 @@ describe('ngInclude', function() {
 
 
   it('should construct SVG template elements with correct namespace', function() {
-    if (!window.SVGRectElement) return;
+    if (!window.SVGRectElement) {
+      return;
+    }
     module(function($compileProvider) {
       $compileProvider.directive('test', valueFn({
         templateNamespace: 'svg',
@@ -384,7 +388,9 @@ describe('ngInclude', function() {
 
 
   it('should compile only the template content of an SVG template', function() {
-    if (!window.SVGRectElement) return;
+    if (!window.SVGRectElement) {
+      return;
+    }
     module(function($compileProvider) {
       $compileProvider.directive('test', valueFn({
         templateNamespace: 'svg',

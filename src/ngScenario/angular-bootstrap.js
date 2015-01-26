@@ -25,7 +25,9 @@
 
   window.onload = function() {
     try {
-      if (previousOnLoad) previousOnLoad();
+      if (previousOnLoad) {
+        previousOnLoad();
+      }
     } catch (e) {}
     angular.scenario.setUpAndRun({});
   };

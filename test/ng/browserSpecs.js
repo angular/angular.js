@@ -28,11 +28,15 @@ function MockWindow(options) {
 
   this.setTimeout.flush = function() {
     var length = timeouts.length;
-    while (length-- > 0) timeouts.shift()();
+    while (length-- > 0) {
+      timeouts.shift()();
+    }
   };
 
   this.addEventListener = function(name, listener) {
-    if (angular.isUndefined(events[name])) events[name] = [];
+    if (angular.isUndefined(events[name])) {
+      events[name] = [];
+    }
     events[name].push(listener);
   };
 
@@ -809,7 +813,9 @@ describe('browser', function() {
     });
 
     afterEach(function() {
-      if (!jQuery) jqLiteDealoc(fakeWindow);
+      if (!jQuery) {
+        jqLiteDealoc(fakeWindow);
+      }
     });
 
     it('should return registered callback', function() {

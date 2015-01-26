@@ -140,20 +140,26 @@ function numberFilter($locale) {
 
 var DECIMAL_SEP = '.';
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
-  if (isObject(number)) return '';
+  if (isObject(number)) {
+    return '';
+  }
 
   var isNegative = number < 0;
   number = Math.abs(number);
 
   var isInfinity = number === Infinity;
-  if (!isInfinity && !isFinite(number)) return '';
+  if (!isInfinity && !isFinite(number)) {
+    return '';
+  }
 
   var numStr = number + '',
       formatedText = '',
       hasExponent = false,
       parts = [];
 
-  if (isInfinity) formatedText = '\u221e';
+  if (isInfinity) {
+    formatedText = '\u221e';
+  }
 
   if (!isInfinity && numStr.indexOf('e') !== -1) {
     var match = numStr.match(/([\d\.]+)e(-?)(\d+)/);
@@ -208,7 +214,9 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       fraction += '0';
     }
 
-    if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
+    if (fractionSize && fractionSize !== "0") {
+      formatedText += decimalSep + fraction.substr(0, fractionSize);
+    }
   } else {
     if (fractionSize > 0 && number < 1) {
       formatedText = number.toFixed(fractionSize);
@@ -233,9 +241,12 @@ function padNumber(num, digits, trim) {
     num = -num;
   }
   num = '' + num;
-  while (num.length < digits) num = '0' + num;
-  if (trim)
+  while (num.length < digits) {
+    num = '0' + num;
+  }
+  if (trim) {
     num = num.substr(num.length - digits);
+  }
   return neg + num;
 }
 
@@ -244,9 +255,12 @@ function dateGetter(name, size, offset, trim) {
   offset = offset || 0;
   return function(date) {
     var value = date['get' + name]();
-    if (offset > 0 || value > -offset)
+    if (offset > 0 || value > -offset) {
       value += offset;
-    if (value === 0 && offset == -12) value = 12;
+    }
+    if (value === 0 && offset == -12) {
+      value = 12;
+    }
     return padNumber(value, size, trim);
   };
 }

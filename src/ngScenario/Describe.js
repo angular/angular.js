@@ -22,7 +22,9 @@ angular.scenario.Describe = function(descName, parent) {
    */
   var beforeEachFns = this.beforeEachFns;
   this.setupBefore = function() {
-    if (parent) parent.setupBefore.call(this);
+    if (parent) {
+      parent.setupBefore.call(this);
+    }
     angular.forEach(beforeEachFns, function(fn) { fn.call(this); }, this);
   };
 
@@ -32,7 +34,9 @@ angular.scenario.Describe = function(descName, parent) {
   var afterEachFns = this.afterEachFns;
   this.setupAfter  = function() {
     angular.forEach(afterEachFns, function(fn) { fn.call(this); }, this);
-    if (parent) parent.setupAfter.call(this);
+    if (parent) {
+      parent.setupAfter.call(this);
+    }
   };
 };
 

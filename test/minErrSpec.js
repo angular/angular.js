@@ -27,7 +27,9 @@ describe('minErr', function() {
     someFn();
 
     // only Chrome, Firefox have stack
-    if (!supportStackTraces()) return;
+    if (!supportStackTraces()) {
+      return;
+    }
 
     expect(myError.stack).toMatch(/^[.\s\S]+nestedFn[.\s\S]+someFn.+/);
   });

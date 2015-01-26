@@ -1155,12 +1155,16 @@ describe('ngModel', function() {
         var removeClassCallCount = 0;
         var input;
         $animate.$$addClassImmediately = function(element, className) {
-          if (input && element[0] === input[0]) ++addClassCallCount;
+          if (input && element[0] === input[0]) {
+            ++addClassCallCount;
+          }
           return addClass.call($animate, element, className);
         };
 
         $animate.$$removeClassImmediately = function(element, className) {
-          if (input && element[0] === input[0]) ++removeClassCallCount;
+          if (input && element[0] === input[0]) {
+            ++removeClassCallCount;
+          }
           return removeClass.call($animate, element, className);
         };
 
@@ -1552,7 +1556,9 @@ describe('ngModel', function() {
     function assertValidAnimation(animation, event, classNameA, classNameB) {
       expect(animation.event).toBe(event);
       expect(animation.args[1]).toBe(classNameA);
-      if (classNameB) expect(animation.args[2]).toBe(classNameB);
+      if (classNameB) {
+        expect(animation.args[2]).toBe(classNameB);
+      }
     }
 
     var doc, input, scope, model;

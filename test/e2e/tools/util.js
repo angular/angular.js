@@ -25,7 +25,9 @@ function testExists(testname) {
 
 function rewriteTestFile(testname, testfile) {
   var i = 0;
-  while (testfile[i] === '/') ++i;
+  while (testfile[i] === '/') {
+    ++i;
+  }
   testfile = testfile.slice(i);
   var s = stat(path.resolve(tests, testname, testfile));
   if (s && (s.isFile() || s.isDirectory())) {

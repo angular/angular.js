@@ -7,9 +7,13 @@
  * special event and changes it form 'change' to 'click/keydown' and
  * few others. This horrible hack removes the special treatment
  */
-if (window._jQuery) _jQuery.event.special.change = undefined;
+if (window._jQuery) {
+  _jQuery.event.special.change = undefined;
+}
 
-if (window.bindJQuery) bindJQuery();
+if (window.bindJQuery) {
+  bindJQuery();
+}
 
 beforeEach(function() {
   // all this stuff is not needed for module tests, where jqlite and publishExternalAPI and jqLite are not global vars
@@ -160,8 +164,9 @@ function sortedHtml(element, showNgClass) {
         attrs.push(' class="' + className + '"');
       }
       for (var i = 0; i < attributes.length; i++) {
-        if (i > 0 && attributes[i] == attributes[i - 1])
+        if (i > 0 && attributes[i] == attributes[i - 1]) {
           continue; //IE9 creates dupes. Ignore them!
+        }
 
         var attr = attributes[i];
         if (attr.name.match(/^ng[\:\-]/) ||
@@ -221,8 +226,9 @@ function sortedHtml(element, showNgClass) {
         var tmp = style;
         style = [];
         forEach(tmp, function(value) {
-          if (!value.match(/^max[^\-]/))
+          if (!value.match(/^max[^\-]/)) {
             style.push(value);
+          }
         });
         if (style.length) {
           html += ' style="' + style.join('; ') + ';"';

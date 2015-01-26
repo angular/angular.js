@@ -272,7 +272,9 @@ jasmine.Matchers.prototype.toThrow = function(expected) {
 function spyOnlyCallsWithArgs(obj, method) {
   var spy = spyOn(obj, method);
   obj[method] = function() {
-    if (arguments.length) return spy.apply(this, arguments);
+    if (arguments.length) {
+      return spy.apply(this, arguments);
+    }
     return spy.originalValue.apply(this);
   };
   return spy;

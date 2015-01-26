@@ -1,6 +1,7 @@
 {
   "excludeFiles": ["src/ngLocale/**"],
   "disallowKeywords": ["with"],
+  "disallowKeywordsOnNewLine": ["else"],
   "disallowMixedSpacesAndTabs": true,
   "disallowMultipleLineStrings": true,
   "disallowNewlineBeforeBlockStatements": true,
@@ -22,6 +23,7 @@
   "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,
   "requireCommaBeforeLineBreak": true,
+  "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
   "requireLineFeedAtFileEnd": true,
   "requireSpaceAfterBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||"],
   "requireSpaceBeforeBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||"],

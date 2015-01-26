@@ -344,7 +344,9 @@ var ngAttributeAliasDirectives = {};
 // boolean attrs are evaluated
 forEach(BOOLEAN_ATTR, function(propName, attrName) {
   // binding to multiple is not supported
-  if (propName == "multiple") return;
+  if (propName == "multiple") {
+    return;
+  }
 
   function defaultLinkFn(scope, element, attr) {
     scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
@@ -428,7 +430,9 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
           // to set the property as well to achieve the desired effect.
           // we use attr[attrName] value since $set can sanitize the url.
-          if (msie && propName) element.prop(propName, attr[name]);
+          if (msie && propName) {
+            element.prop(propName, attr[name]);
+          }
         });
       }
     };

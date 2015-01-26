@@ -152,7 +152,9 @@ function $IntervalProvider() {
           delete intervals[promise.$$intervalId];
         }
 
-        if (!skipApply) $rootScope.$apply();
+        if (!skipApply) {
+          $rootScope.$apply();
+        }
 
       }, delay);
 

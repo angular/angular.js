@@ -1040,7 +1040,9 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
           }
 
           element.on('blur', function(ev) {
-            if (modelCtrl.$touched) return;
+            if (modelCtrl.$touched) {
+              return;
+            }
 
             if ($rootScope.$$phase) {
               scope.$evalAsync(modelCtrl.$setTouched);

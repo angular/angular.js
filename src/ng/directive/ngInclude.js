@@ -227,7 +227,9 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
             //set the 2nd param to true to ignore the template request error so that the inner
             //contents and scope can be cleaned up.
             $templateRequest(src, true).then(function(response) {
-              if (thisChangeId !== changeCounter) return;
+              if (thisChangeId !== changeCounter) {
+                return;
+              }
               var newScope = scope.$new();
               ctrl.template = response;
 

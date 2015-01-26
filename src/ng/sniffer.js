@@ -69,7 +69,9 @@ function $SnifferProvider() {
         // when cut operation is performed.
         // IE10+ implements 'input' event but it erroneously fires under various situations,
         // e.g. when placeholder changes, or a form is focused.
-        if (event === 'input' && msie <= 11) return false;
+        if (event === 'input' && msie <= 11) {
+          return false;
+        }
 
         if (isUndefined(eventSupport[event])) {
           var divElm = document.createElement('div');

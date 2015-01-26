@@ -488,7 +488,9 @@ angular.module('ngAnimate', ['ng'])
       var deregisterWatch = $rootScope.$watch(
         function() { return $templateRequest.totalPendingRequests; },
         function(val, oldVal) {
-          if (val !== 0) return;
+          if (val !== 0) {
+            return;
+          }
           deregisterWatch();
 
           // Now that all templates have been downloaded, $animate will wait until
@@ -709,7 +711,9 @@ angular.module('ngAnimate', ['ng'])
           function afterAnimationComplete(index) {
             if (cancellations) {
               (cancellations[index] || noop)();
-              if (++count < animations.length) return;
+              if (++count < animations.length) {
+                return;
+              }
               cancellations = null;
             }
             allCompleteFn();
@@ -1209,8 +1213,12 @@ angular.module('ngAnimate', ['ng'])
             return !classes
               ? done()
               : performAnimation('setClass', classes, element, parentElement, null, function() {
-                  if (classes[0]) $delegate.$$addClassImmediately(element, classes[0]);
-                  if (classes[1]) $delegate.$$removeClassImmediately(element, classes[1]);
+                  if (classes[0]) {
+                    $delegate.$$addClassImmediately(element, classes[0]);
+                  }
+                  if (classes[1]) {
+                    $delegate.$$removeClassImmediately(element, classes[1]);
+                  }
                 }, cache.options, done);
           });
         },
@@ -1327,8 +1335,7 @@ angular.module('ngAnimate', ['ng'])
           } else if (lastAnimation.event == 'setClass') {
             animationsToCancel.push(lastAnimation);
             cleanup(element, className);
-          }
-          else if (runningAnimations[className]) {
+          } else if (runningAnimations[className]) {
             var current = runningAnimations[className];
             if (current.event == animationEvent) {
               skipAnimation = true;
@@ -1545,7 +1552,9 @@ angular.module('ngAnimate', ['ng'])
           //the element did not reach the root element which means that it
           //is not apart of the DOM. Therefore there is no reason to do
           //any animations on it
-          if (parentElement.length === 0) break;
+          if (parentElement.length === 0) {
+            break;
+          }
 
           var isRoot = isMatchingElement(parentElement, $rootElement);
           var state = isRoot ? rootAnimateState : (parentElement.data(NG_ANIMATE_STATE) || {});

@@ -163,7 +163,9 @@ describe('q', function() {
     queue: [],
     logExceptions: true,
     flush: function() {
-      if (!mockNextTick.queue.length) throw new Error('Nothing to be flushed!');
+      if (!mockNextTick.queue.length) {
+        throw new Error('Nothing to be flushed!');
+      }
       while (mockNextTick.queue.length) {
         var queue = mockNextTick.queue;
         mockNextTick.queue = [];

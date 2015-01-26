@@ -97,13 +97,17 @@ var ngListDirective = function() {
 
       var parse = function(viewValue) {
         // If the viewValue is invalid (say required but empty) it will be `undefined`
-        if (isUndefined(viewValue)) return;
+        if (isUndefined(viewValue)) {
+          return;
+        }
 
         var list = [];
 
         if (viewValue) {
           forEach(viewValue.split(separator), function(value) {
-            if (value) list.push(trimValues ? trim(value) : value);
+            if (value) {
+              list.push(trimValues ? trim(value) : value);
+            }
           });
         }
 

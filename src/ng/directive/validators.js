@@ -5,7 +5,9 @@ var requiredDirective = function() {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
-      if (!ctrl) return;
+      if (!ctrl) {
+        return;
+      }
       attr.required = true; // force truthy in case we are on non input element
 
       ctrl.$validators.required = function(modelValue, viewValue) {
@@ -25,7 +27,9 @@ var patternDirective = function() {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
-      if (!ctrl) return;
+      if (!ctrl) {
+        return;
+      }
 
       var regexp, patternExp = attr.ngPattern || attr.pattern;
       attr.$observe('pattern', function(regex) {
@@ -56,7 +60,9 @@ var maxlengthDirective = function() {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
-      if (!ctrl) return;
+      if (!ctrl) {
+        return;
+      }
 
       var maxlength = -1;
       attr.$observe('maxlength', function(value) {
@@ -76,7 +82,9 @@ var minlengthDirective = function() {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
-      if (!ctrl) return;
+      if (!ctrl) {
+        return;
+      }
 
       var minlength = 0;
       attr.$observe('minlength', function(value) {

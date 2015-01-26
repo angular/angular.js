@@ -235,17 +235,15 @@ function $AnchorScrollProvider() {
     function scroll() {
       var hash = $location.hash(), elm;
 
-      // empty hash, scroll to the top of the page
-      if (!hash) scrollTo(null);
-
-      // element with given id
-      else if ((elm = document.getElementById(hash))) scrollTo(elm);
-
-      // first anchor with given name :-D
-      else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) scrollTo(elm);
-
-      // no element and hash == 'top', scroll to the top of the page
-      else if (hash === 'top') scrollTo(null);
+      if (!hash) { // empty hash, scroll to the top of the page
+        scrollTo(null);
+      } else if ((elm = document.getElementById(hash))) { // element with given id
+        scrollTo(elm);
+      } else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) { // first anchor with given name :-D
+        scrollTo(elm);
+      } else if (hash === 'top') { // no element and hash == 'top', scroll to the top of the page
+        scrollTo(null);
+      }
     }
 
     // does not scroll when user clicks on anchor link that is currently on
@@ -254,7 +252,9 @@ function $AnchorScrollProvider() {
       $rootScope.$watch(function autoScrollWatch() {return $location.hash();},
         function autoScrollWatchAction(newVal, oldVal) {
           // skip the initial scroll if $location.hash is empty
-          if (newVal === oldVal && newVal === '') return;
+          if (newVal === oldVal && newVal === '') {
+            return;
+          }
 
           jqLiteDocumentLoaded(function() {
             $rootScope.$evalAsync(scroll);

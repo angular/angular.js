@@ -1007,7 +1007,9 @@ describe('$http', function() {
 
 
         it('should ignore Blob objects', function() {
-          if (!window.Blob) return;
+          if (!window.Blob) {
+            return;
+          }
 
           var blob = new Blob(['blob!'], { type: 'text/plain' });
 
@@ -1016,7 +1018,9 @@ describe('$http', function() {
         });
 
         it('should ignore FormData objects', function() {
-          if (!window.FormData) return;
+          if (!window.FormData) {
+            return;
+          }
 
           var formData = new FormData();
           formData.append('angular', 'is great');

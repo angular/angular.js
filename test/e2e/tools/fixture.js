@@ -33,9 +33,14 @@ function generateFixture(test, query) {
   var angular = null;
   $$('script').each(function(i, script) {
     var src = $(script).attr('src');
-    if (src === 'jquery.js' && jquery === null) jquery = script;
-    else if (src === 'angular.js' && angular === null) angular = script;
-    if (firstScript === null) firstScript = script;
+    if (src === 'jquery.js' && jquery === null) {
+      jquery = script;
+    } else if (src === 'angular.js' && angular === null) {
+      angular = script;
+    }
+    if (firstScript === null) {
+      firstScript = script;
+    }
     if (src) {
       var s = util.stat(path.resolve(build, src));
       if (s && s.isFile()) {

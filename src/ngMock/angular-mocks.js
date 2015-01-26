@@ -85,7 +85,9 @@ angular.mock.$Browser = function() {
     var fnIndex;
 
     angular.forEach(self.deferredFns, function(fn, index) {
-      if (fn.id === deferId) fnIndex = index;
+      if (fn.id === deferId) {
+        fnIndex = index;
+      }
     });
 
     if (fnIndex !== undefined) {
@@ -479,7 +481,9 @@ angular.mock.$IntervalProvider = function() {
           deferred.resolve(iteration);
 
           angular.forEach(repeatFns, function(fn, index) {
-            if (fn.id === promise.$$intervalId) fnIndex = index;
+            if (fn.id === promise.$$intervalId) {
+              fnIndex = index;
+            }
           });
 
           if (fnIndex !== undefined) {
@@ -517,11 +521,15 @@ angular.mock.$IntervalProvider = function() {
      * @returns {boolean} Returns `true` if the task was successfully cancelled.
      */
     $interval.cancel = function(promise) {
-      if (!promise) return false;
+      if (!promise) {
+        return false;
+      }
       var fnIndex;
 
       angular.forEach(repeatFns, function(fn, index) {
-        if (fn.id === promise.$$intervalId) fnIndex = index;
+        if (fn.id === promise.$$intervalId) {
+          fnIndex = index;
+        }
       });
 
       if (fnIndex !== undefined) {
@@ -598,9 +606,12 @@ function padNumber(num, digits, trim) {
     num = -num;
   }
   num = '' + num;
-  while (num.length < digits) num = '0' + num;
-  if (trim)
+  while (num.length < digits) {
+    num = '0' + num;
+  }
+  if (trim) {
     num = num.substr(num.length - digits);
+  }
   return neg + num;
 }
 
@@ -650,11 +661,12 @@ angular.mock.TzDate = function(offset, timestamp) {
     self.origDate = jsonStringToDate(timestamp);
 
     timestamp = self.origDate.getTime();
-    if (isNaN(timestamp))
+    if (isNaN(timestamp)) {
       throw {
         name: "Illegal Argument",
         message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
       };
+    }
   } else {
     self.origDate = new Date(timestamp);
   }
@@ -1137,7 +1149,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       copy = angular.copy;
 
   function createResponse(status, data, headers, statusText) {
-    if (angular.isFunction(status)) return status;
+    if (angular.isFunction(status)) {
+      return status;
+    }
 
     return function() {
       return angular.isNumber(status)
@@ -1184,14 +1198,16 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     }
 
     if (expectation && expectation.match(method, url)) {
-      if (!expectation.matchData(data))
+      if (!expectation.matchData(data)) {
         throw new Error('Expected ' + expectation + ' with different data\n' +
             'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
+      }
 
-      if (!expectation.matchHeaders(headers))
+      if (!expectation.matchHeaders(headers)) {
         throw new Error('Expected ' + expectation + ' with different headers\n' +
                         'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' +
                         prettyPrint(headers));
+      }
 
       expectations.shift();
 
@@ -1210,7 +1226,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
         } else if (definition.passThrough) {
           $delegate(method, url, data, callback, headers, timeout, withCredentials);
-        } else throw new Error('No response defined !');
+        } else {
+          throw new Error('No response defined !');
+        }
         return;
       }
     }
@@ -1515,12 +1533,18 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *   is called an exception is thrown (as this typically a sign of programming error).
    */
   $httpBackend.flush = function(count, digest) {
-    if (digest !== false) $rootScope.$digest();
-    if (!responses.length) throw new Error('No pending request to flush !');
+    if (digest !== false) {
+      $rootScope.$digest();
+    }
+    if (!responses.length) {
+      throw new Error('No pending request to flush !');
+    }
 
     if (angular.isDefined(count) && count !== null) {
       while (count--) {
-        if (!responses.length) throw new Error('No more pending request to flush !');
+        if (!responses.length) {
+          throw new Error('No more pending request to flush !');
+        }
         responses.shift()();
       }
     } else {
@@ -1547,7 +1571,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * ```
    */
   $httpBackend.verifyNoOutstandingExpectation = function(digest) {
-    if (digest !== false) $rootScope.$digest();
+    if (digest !== false) {
+      $rootScope.$digest();
+    }
     if (expectations.length) {
       throw new Error('Unsatisfied requests: ' + expectations.join(', '));
     }
@@ -1611,30 +1637,54 @@ function MockHttpExpectation(method, url, data, headers) {
   this.headers = headers;
 
   this.match = function(m, u, d, h) {
-    if (method != m) return false;
-    if (!this.matchUrl(u)) return false;
-    if (angular.isDefined(d) && !this.matchData(d)) return false;
-    if (angular.isDefined(h) && !this.matchHeaders(h)) return false;
+    if (method != m) {
+      return false;
+    }
+    if (!this.matchUrl(u)) {
+      return false;
+    }
+    if (angular.isDefined(d) && !this.matchData(d)) {
+      return false;
+    }
+    if (angular.isDefined(h) && !this.matchHeaders(h)) {
+      return false;
+    }
     return true;
   };
 
   this.matchUrl = function(u) {
-    if (!url) return true;
-    if (angular.isFunction(url.test)) return url.test(u);
-    if (angular.isFunction(url)) return url(u);
+    if (!url) {
+      return true;
+    }
+    if (angular.isFunction(url.test)) {
+      return url.test(u);
+    }
+    if (angular.isFunction(url)) {
+      return url(u);
+    }
     return url == u;
   };
 
   this.matchHeaders = function(h) {
-    if (angular.isUndefined(headers)) return true;
-    if (angular.isFunction(headers)) return headers(h);
+    if (angular.isUndefined(headers)) {
+      return true;
+    }
+    if (angular.isFunction(headers)) {
+      return headers(h);
+    }
     return angular.equals(headers, h);
   };
 
   this.matchData = function(d) {
-    if (angular.isUndefined(data)) return true;
-    if (data && angular.isFunction(data.test)) return data.test(d);
-    if (data && angular.isFunction(data)) return data(d);
+    if (angular.isUndefined(data)) {
+      return true;
+    }
+    if (data && angular.isFunction(data.test)) {
+      return data.test(d);
+    }
+    if (data && angular.isFunction(data)) {
+      return data(d);
+    }
     if (data && !angular.isString(data)) {
       return angular.equals(angular.fromJson(angular.toJson(data)), angular.fromJson(d));
     }
@@ -1675,15 +1725,21 @@ function MockXhr() {
     // the lookup must be case insensitive,
     // that's why we try two quick lookups first and full scan last
     var header = this.$$respHeaders[name];
-    if (header) return header;
+    if (header) {
+      return header;
+    }
 
     name = angular.lowercase(name);
     header = this.$$respHeaders[name];
-    if (header) return header;
+    if (header) {
+      return header;
+    }
 
     header = undefined;
     angular.forEach(this.$$respHeaders, function(headerVal, headerName) {
-      if (!header && angular.lowercase(headerName) == name) header = headerVal;
+      if (!header && angular.lowercase(headerName) == name) {
+        header = headerVal;
+      }
     });
     return header;
   };
@@ -2301,11 +2357,18 @@ if (window.jasmine || window.mocha) {
   var ErrorAddingDeclarationLocationStack = function(e, errorForStack) {
     this.message = e.message;
     this.name = e.name;
-    if (e.line) this.line = e.line;
-    if (e.sourceId) this.sourceId = e.sourceId;
-    if (e.stack && errorForStack)
+    if (e.line) {
+      this.line = e.line;
+    }
+    if (e.sourceId) {
+      this.sourceId = e.sourceId;
+    }
+    if (e.stack && errorForStack) {
       this.stack = e.stack + '\n' + errorForStack.stack;
-    if (e.stackArray) this.stackArray = e.stackArray;
+    }
+    if (e.stackArray) {
+      this.stackArray = e.stackArray;
+    }
   };
   ErrorAddingDeclarationLocationStack.prototype.toString = Error.prototype.toString;
 

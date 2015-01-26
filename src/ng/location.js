@@ -373,12 +373,17 @@ var locationPrototype = {
    * @return {string} url
    */
   url: function(url) {
-    if (isUndefined(url))
+    if (isUndefined(url)) {
       return this.$$url;
+    }
 
     var match = PATH_MATCH.exec(url);
-    if (match[1] || url === '') this.path(decodeURIComponent(match[1]));
-    if (match[2] || match[1] || url === '') this.search(match[3] || '');
+    if (match[1] || url === '') {
+      this.path(decodeURIComponent(match[1]));
+    }
+    if (match[2] || match[1] || url === '') {
+      this.search(match[3] || '');
+    }
     this.hash(match[5] || '');
 
     return this;
@@ -530,7 +535,9 @@ var locationPrototype = {
           search = copy(search, {});
           // remove object undefined or null properties
           forEach(search, function(value, key) {
-            if (value == null) delete search[key];
+            if (value == null) {
+              delete search[key];
+            }
           });
 
           this.$$search = search;
@@ -613,8 +620,9 @@ forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], fun
    * @return {object} state
    */
   Location.prototype.state = function(state) {
-    if (!arguments.length)
+    if (!arguments.length) {
       return this.$$state;
+    }
 
     if (Location !== LocationHtml5Url || !this.$$html5) {
       throw $locationMinErr('nostate', 'History API state support is available only ' +
@@ -639,8 +647,9 @@ function locationGetter(property) {
 
 function locationGetterSetter(property, preprocess) {
   return function(value) {
-    if (isUndefined(value))
+    if (isUndefined(value)) {
       return this[property];
+    }
 
     this[property] = preprocess(value);
     this.$$compose();
@@ -837,14 +846,18 @@ function $LocationProvider() {
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (!html5Mode.rewriteLinks || event.ctrlKey || event.metaKey || event.shiftKey || event.which == 2 || event.button == 2) return;
+      if (!html5Mode.rewriteLinks || event.ctrlKey || event.metaKey || event.shiftKey || event.which == 2 || event.button == 2) {
+        return;
+      }
 
       var elm = jqLite(event.target);
 
       // traverse the DOM up to find first A tag
       while (nodeName_(elm[0]) !== 'a') {
         // ignore rewriting if no A tag (reached root element, or no parent - removed from document)
-        if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) return;
+        if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) {
+          return;
+        }
       }
 
       var absHref = elm.prop('href');
@@ -859,7 +872,9 @@ function $LocationProvider() {
       }
 
       // Ignore when url is started with javascript: or mailto:
-      if (IGNORE_URI_REGEXP.test(absHref)) return;
+      if (IGNORE_URI_REGEXP.test(absHref)) {
+        return;
+      }
 
       if (absHref && !elm.attr('target') && !event.isDefaultPrevented()) {
         if ($location.$$parseLinkUrl(absHref, relHref)) {
@@ -900,7 +915,9 @@ function $LocationProvider() {
 
         // if the location was changed by a `$locationChangeStart` handler then stop
         // processing this location change
-        if ($location.absUrl() !== newUrl) return;
+        if ($location.absUrl() !== newUrl) {
+          return;
+        }
 
         if (defaultPrevented) {
           $location.$$parse(oldUrl);
@@ -911,7 +928,9 @@ function $LocationProvider() {
           afterLocationChange(oldUrl, oldState);
         }
       });
-      if (!$rootScope.$$phase) $rootScope.$digest();
+      if (!$rootScope.$$phase) {
+        $rootScope.$digest();
+      }
     });
 
     // update browser
@@ -933,7 +952,9 @@ function $LocationProvider() {
 
           // if the location was changed by a `$locationChangeStart` handler then stop
           // processing this location change
-          if ($location.absUrl() !== newUrl) return;
+          if ($location.absUrl() !== newUrl) {
+            return;
+          }
 
           if (defaultPrevented) {
             $location.$$parse(oldUrl);

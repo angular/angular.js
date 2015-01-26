@@ -231,7 +231,9 @@ function $InterpolateProvider() {
       if (!mustHaveExpression || expressions.length) {
         var compute = function(values) {
           for (var i = 0, ii = expressions.length; i < ii; i++) {
-            if (allOrNothing && isUndefined(values[i])) return;
+            if (allOrNothing && isUndefined(values[i])) {
+              return;
+            }
             concat[expressionPositions[i]] = values[i];
           }
           return concat.join('');

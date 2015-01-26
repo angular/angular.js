@@ -159,14 +159,18 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         put: function(key, value) {
-          if (isUndefined(value)) return;
+          if (isUndefined(value)) {
+            return;
+          }
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
             refresh(lruEntry);
           }
 
-          if (!(key in data)) size++;
+          if (!(key in data)) {
+            size++;
+          }
           data[key] = value;
 
           if (size > capacity) {
@@ -191,7 +195,9 @@ function $CacheFactoryProvider() {
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
-            if (!lruEntry) return;
+            if (!lruEntry) {
+              return;
+            }
 
             refresh(lruEntry);
           }
@@ -214,10 +220,16 @@ function $CacheFactoryProvider() {
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
-            if (!lruEntry) return;
+            if (!lruEntry) {
+              return;
+            }
 
-            if (lruEntry == freshEnd) freshEnd = lruEntry.p;
-            if (lruEntry == staleEnd) staleEnd = lruEntry.n;
+            if (lruEntry == freshEnd) {
+              freshEnd = lruEntry.p;
+            }
+            if (lruEntry == staleEnd) {
+              staleEnd = lruEntry.n;
+            }
             link(lruEntry.n,lruEntry.p);
 
             delete lruHash[key];
@@ -307,8 +319,12 @@ function $CacheFactoryProvider() {
        */
       function link(nextEntry, prevEntry) {
         if (nextEntry != prevEntry) {
-          if (nextEntry) nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
-          if (prevEntry) prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
+          if (nextEntry) {
+            nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
+          }
+          if (prevEntry) {
+            prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
+          }
         }
       }
     }

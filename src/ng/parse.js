@@ -284,8 +284,9 @@ Lexer.prototype = {
       if (escape) {
         if (ch === 'u') {
           var hex = this.text.substring(this.index + 1, this.index + 5);
-          if (!hex.match(/[\da-f]{4}/i))
+          if (!hex.match(/[\da-f]{4}/i)) {
             this.throwError('Invalid unicode escape [\\u' + hex + ']');
+          }
           this.index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
         } else {
@@ -397,8 +398,9 @@ Parser.prototype = {
   },
 
   peekToken: function() {
-    if (this.tokens.length === 0)
+    if (this.tokens.length === 0) {
       throw $parseMinErr('ueoe', 'Unexpected end of expression: {0}', this.text);
+    }
     return this.tokens[0];
   },
 
@@ -483,8 +485,9 @@ Parser.prototype = {
   statements: function() {
     var statements = [];
     while (true) {
-      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
+      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']')) {
         statements.push(this.filterChain());
+      }
       if (!this.expect(';')) {
         // optimize for the common case where there is only one statement.
         // TODO(size): maybe we should not support multiple statements?
@@ -664,7 +667,9 @@ Parser.prototype = {
     }, {
       assign: function(scope, value, locals) {
         var o = object(scope, locals);
-        if (!o) object.assign(scope, o = {});
+        if (!o) {
+          object.assign(scope, o = {});
+        }
         return getter.assign(o, value);
       }
     });
@@ -682,7 +687,9 @@ Parser.prototype = {
           v;
 
       ensureSafeMemberName(i, expression);
-      if (!o) return undefined;
+      if (!o) {
+        return undefined;
+      }
       v = ensureSafeObject(o[i], expression);
       return v;
     }, {
@@ -690,7 +697,9 @@ Parser.prototype = {
         var key = ensureSafeMemberName(indexFn(self, locals), expression);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
         var o = ensureSafeObject(obj(self, locals), expression);
-        if (!o) obj.assign(self, o = {});
+        if (!o) {
+          obj.assign(self, o = {});
+        }
         return o[key] = value;
       }
     });
@@ -849,23 +858,41 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, expensiveChecks)
   return function cspSafeGetter(scope, locals) {
     var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope;
 
-    if (pathVal == null) return pathVal;
+    if (pathVal == null) {
+      return pathVal;
+    }
     pathVal = eso0(pathVal[key0]);
 
-    if (!key1) return pathVal;
-    if (pathVal == null) return undefined;
+    if (!key1) {
+      return pathVal;
+    }
+    if (pathVal == null) {
+      return undefined;
+    }
     pathVal = eso1(pathVal[key1]);
 
-    if (!key2) return pathVal;
-    if (pathVal == null) return undefined;
+    if (!key2) {
+      return pathVal;
+    }
+    if (pathVal == null) {
+      return undefined;
+    }
     pathVal = eso2(pathVal[key2]);
 
-    if (!key3) return pathVal;
-    if (pathVal == null) return undefined;
+    if (!key3) {
+      return pathVal;
+    }
+    if (pathVal == null) {
+      return undefined;
+    }
     pathVal = eso3(pathVal[key3]);
 
-    if (!key4) return pathVal;
-    if (pathVal == null) return undefined;
+    if (!key4) {
+      return pathVal;
+    }
+    if (pathVal == null) {
+      return undefined;
+    }
     pathVal = eso4(pathVal[key4]);
 
     return pathVal;
@@ -882,7 +909,9 @@ function getterFn(path, options, fullExp) {
   var expensiveChecks = options.expensiveChecks;
   var getterFnCache = (expensiveChecks ? getterFnCacheExpensive : getterFnCacheDefault);
   var fn = getterFnCache[path];
-  if (fn) return fn;
+  if (fn) {
+    return fn;
+  }
 
 
   var pathKeys = path.split('.'),
@@ -1190,7 +1219,9 @@ function $ParseProvider() {
         }
         if (isAllDefined(value)) {
           scope.$$postDigest(function() {
-            if (isAllDefined(lastValue)) unwatch();
+            if (isAllDefined(lastValue)) {
+              unwatch();
+            }
           });
         }
       }, objectEquality);
@@ -1198,7 +1229,9 @@ function $ParseProvider() {
       function isAllDefined(value) {
         var allDefined = true;
         forEach(value, function(val) {
-          if (!isDefined(val)) allDefined = false;
+          if (!isDefined(val)) {
+            allDefined = false;
+          }
         });
         return allDefined;
       }
@@ -1217,7 +1250,9 @@ function $ParseProvider() {
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {
-      if (!interceptorFn) return parsedExpression;
+      if (!interceptorFn) {
+        return parsedExpression;
+      }
       var watchDelegate = parsedExpression.$$watchDelegate;
 
       var regularWatch =

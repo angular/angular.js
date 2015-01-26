@@ -39,7 +39,9 @@ function isJsonLike(str) {
 function parseHeaders(headers) {
   var parsed = createMap(), key, val, i;
 
-  if (!headers) return parsed;
+  if (!headers) {
+    return parsed;
+  }
 
   forEach(headers.split('\n'), function(line) {
     i = line.indexOf(':');
@@ -71,7 +73,9 @@ function headersGetter(headers) {
   var headersObj = isObject(headers) ? headers : undefined;
 
   return function(name) {
-    if (!headersObj) headersObj =  parseHeaders(headers);
+    if (!headersObj) {
+      headersObj =  parseHeaders(headers);
+    }
 
     if (name) {
       var value = headersObj[lowercase(name)];
@@ -98,8 +102,9 @@ function headersGetter(headers) {
  * @returns {*} Transformed data.
  */
 function transformData(data, headers, status, fns) {
-  if (isFunction(fns))
+  if (isFunction(fns)) {
     return fns(data, headers, status);
+  }
 
   forEach(fns, function(fn) {
     data = fn(data, headers, status);
@@ -1097,7 +1102,9 @@ function $HttpProvider() {
           $rootScope.$applyAsync(resolveHttpPromise);
         } else {
           resolveHttpPromise();
-          if (!$rootScope.$$phase) $rootScope.$apply();
+          if (!$rootScope.$$phase) {
+            $rootScope.$apply();
+          }
         }
       }
 
@@ -1124,17 +1131,25 @@ function $HttpProvider() {
 
       function removePendingReq() {
         var idx = $http.pendingRequests.indexOf(config);
-        if (idx !== -1) $http.pendingRequests.splice(idx, 1);
+        if (idx !== -1) {
+          $http.pendingRequests.splice(idx, 1);
+        }
       }
     }
 
 
     function buildUrl(url, params) {
-      if (!params) return url;
+      if (!params) {
+        return url;
+      }
       var parts = [];
       forEachSorted(params, function(value, key) {
-        if (value === null || isUndefined(value)) return;
-        if (!isArray(value)) value = [value];
+        if (value === null || isUndefined(value)) {
+          return;
+        }
+        if (!isArray(value)) {
+          value = [value];
+        }
 
         forEach(value, function(v) {
           if (isObject(v)) {

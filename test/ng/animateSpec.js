@@ -91,7 +91,9 @@ describe("$animate", function() {
     }));
 
     it("should add and remove classes on SVG elements", inject(function($animate, $rootScope) {
-      if (!window.SVGElement) return;
+      if (!window.SVGElement) {
+        return;
+      }
       var svg = jqLite('<svg><rect></rect></svg>');
       var rect = svg.children();
       $animate.enabled(false);
@@ -200,13 +202,17 @@ describe("$animate", function() {
         var removeClassImmediately = $animate.$$removeClassImmediately;
         addClass = spyOn($animate, '$$addClassImmediately').andCallFake(function(element, classes) {
           var names = classes;
-          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
+          if (Object.prototype.toString.call(classes) === '[object Array]') {
+            names = classes.join(' ');
+          }
           log('addClass(' + names + ')');
           return addClassImmediately.call($animate, element, classes);
         });
         removeClass = spyOn($animate, '$$removeClassImmediately').andCallFake(function(element, classes) {
           var names = classes;
-          if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
+          if (Object.prototype.toString.call(classes) === '[object Array]') {
+            names = classes.join(' ');
+          }
           log('removeClass(' + names + ')');
           return removeClassImmediately.call($animate, element, classes);
         });
@@ -306,7 +312,9 @@ describe("$animate", function() {
 
 
     it('should defer class manipulation until end of digest for SVG', inject(function($rootScope, $animate) {
-      if (!window.SVGElement) return;
+      if (!window.SVGElement) {
+        return;
+      }
       setupClassManipulationSpies();
       element = jqLite('<svg><g></g></svg>');
       var target = element.children().eq(0);
@@ -333,7 +341,9 @@ describe("$animate", function() {
 
 
     it('should defer class manipulation until postDigest when outside of digest for SVG', inject(function($rootScope, $animate, log) {
-      if (!window.SVGElement) return;
+      if (!window.SVGElement) {
+        return;
+      }
       setupClassManipulationLogger(log);
       element = jqLite('<svg><g class="test-class4"></g></svg>');
       var target = element.children().eq(0);
@@ -356,7 +366,9 @@ describe("$animate", function() {
 
 
     it('should perform class manipulation in expected order at end of digest for SVG', inject(function($rootScope, $animate, log) {
-      if (!window.SVGElement) return;
+      if (!window.SVGElement) {
+        return;
+      }
       element = jqLite('<svg><g class="test-class3"></g></svg>');
       var target = element.children().eq(0);
 
