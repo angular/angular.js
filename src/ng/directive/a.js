@@ -25,9 +25,6 @@ var htmlAnchorDirective = valueFn({
         var href = toString.call(element.prop('href')) === '[object SVGAnimatedString]' ?
                    'xlink:href' : 'href';
         element.on('click', function(event) {
-          // If a different element was clicked, ignore it.
-          if (element[0] !== event.target) return;
-
           // if we have no href url, then don't navigate anywhere.
           if (!element.attr(href)) {
             event.preventDefault();
