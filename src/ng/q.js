@@ -243,7 +243,9 @@ function qFactory(nextTick, exceptionHandler) {
     var called = false;
     function wrap(fn) {
       return function(value) {
-        if (called) return;
+        if (called) {
+          return;
+        }
         called = true;
         fn.call(self, value);
       };
@@ -328,7 +330,9 @@ function qFactory(nextTick, exceptionHandler) {
   }
 
   function scheduleProcessQueue(state) {
-    if (state.processScheduled || !state.pending) return;
+    if (state.processScheduled || !state.pending) {
+      return;
+    }
     state.processScheduled = true;
     nextTick(function() { processQueue(state); });
   }
@@ -343,7 +347,9 @@ function qFactory(nextTick, exceptionHandler) {
 
   Deferred.prototype = {
     resolve: function(val) {
-      if (this.promise.$$state.status) return;
+      if (this.promise.$$state.status) {
+        return;
+      }
       if (val === this.promise) {
         this.$$reject($qMinErr(
           'qcycle',
@@ -379,7 +385,9 @@ function qFactory(nextTick, exceptionHandler) {
     },
 
     reject: function(reason) {
-      if (this.promise.$$state.status) return;
+      if (this.promise.$$state.status) {
+        return;
+      }
       this.$$reject(reason);
     },
 
@@ -526,13 +534,17 @@ function qFactory(nextTick, exceptionHandler) {
     forEach(promises, function(promise, key) {
       counter++;
       when(promise).then(function(value) {
-        if (results.hasOwnProperty(key)) return;
+        if (results.hasOwnProperty(key)) {
+          return;
+        }
         results[key] = value;
         if (!(--counter)) {
           deferred.resolve(results);
         }
       }, function(reason) {
-        if (results.hasOwnProperty(key)) return;
+        if (results.hasOwnProperty(key)) {
+          return;
+        }
         deferred.reject(reason);
       });
     });

@@ -419,7 +419,9 @@ describe('angular', function() {
 
     it('should return the true when CSP is enabled manually via [ng-csp]', function() {
       spyOn(document, 'querySelector').andCallFake(function(selector) {
-        if (selector == '[ng-csp]') return {};
+        if (selector == '[ng-csp]') {
+          return {};
+        }
       });
       expect(csp()).toBe(true);
     });
@@ -427,7 +429,9 @@ describe('angular', function() {
 
     it('should return the true when CSP is enabled manually via [data-ng-csp]', function() {
       spyOn(document, 'querySelector').andCallFake(function(selector) {
-        if (selector == '[data-ng-csp]') return {};
+        if (selector == '[data-ng-csp]') {
+          return {};
+        }
       });
       expect(csp()).toBe(true);
       expect(document.querySelector).toHaveBeenCalledWith('[data-ng-csp]');

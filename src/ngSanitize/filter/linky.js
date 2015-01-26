@@ -108,7 +108,9 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
       MAILTO_REGEXP = /^mailto:/;
 
   return function(text, target) {
-    if (!text) return text;
+    if (!text) {
+      return text;
+    }
     var match;
     var raw = text;
     var html = [];

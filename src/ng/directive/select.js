@@ -154,7 +154,9 @@ var selectDirective = function() {
 
       // if ngModel is not defined, we don't need to do anything
       var ngModelCtrl = ctrls[1];
-      if (!ngModelCtrl) return;
+      if (!ngModelCtrl) {
+        return;
+      }
 
       var selectCtrl = ctrls[0];
 

@@ -94,12 +94,16 @@ function limitToFilter() {
     } else {
       limit = toInt(limit);
     }
-    if (isNaN(limit)) return input;
+    if (isNaN(limit)) {
+      return input;
+    }
 
     if (isNumber(input)) {
       input = input.toString();
     }
-    if (!isArray(input) && !isString(input)) return input;
+    if (!isArray(input) && !isString(input)) {
+      return input;
+    }
 
     return limit >= 0 ? input.slice(0, limit) : input.slice(limit);
   };

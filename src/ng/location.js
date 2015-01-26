@@ -846,14 +846,18 @@ function $LocationProvider() {
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (!html5Mode.rewriteLinks || event.ctrlKey || event.metaKey || event.shiftKey || event.which == 2 || event.button == 2) return;
+      if (!html5Mode.rewriteLinks || event.ctrlKey || event.metaKey || event.shiftKey || event.which == 2 || event.button == 2) {
+        return;
+      }
 
       var elm = jqLite(event.target);
 
       // traverse the DOM up to find first A tag
       while (nodeName_(elm[0]) !== 'a') {
         // ignore rewriting if no A tag (reached root element, or no parent - removed from document)
-        if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) return;
+        if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) {
+          return;
+        }
       }
 
       var absHref = elm.prop('href');
@@ -868,7 +872,9 @@ function $LocationProvider() {
       }
 
       // Ignore when url is started with javascript: or mailto:
-      if (IGNORE_URI_REGEXP.test(absHref)) return;
+      if (IGNORE_URI_REGEXP.test(absHref)) {
+        return;
+      }
 
       if (absHref && !elm.attr('target') && !event.isDefaultPrevented()) {
         if ($location.$$parseLinkUrl(absHref, relHref)) {
@@ -909,7 +915,9 @@ function $LocationProvider() {
 
         // if the location was changed by a `$locationChangeStart` handler then stop
         // processing this location change
-        if ($location.absUrl() !== newUrl) return;
+        if ($location.absUrl() !== newUrl) {
+          return;
+        }
 
         if (defaultPrevented) {
           $location.$$parse(oldUrl);
@@ -944,7 +952,9 @@ function $LocationProvider() {
 
           // if the location was changed by a `$locationChangeStart` handler then stop
           // processing this location change
-          if ($location.absUrl() !== newUrl) return;
+          if ($location.absUrl() !== newUrl) {
+            return;
+          }
 
           if (defaultPrevented) {
             $location.$$parse(oldUrl);

@@ -365,7 +365,9 @@ describe('ngInclude', function() {
 
 
   it('should construct SVG template elements with correct namespace', function() {
-    if (!window.SVGRectElement) return;
+    if (!window.SVGRectElement) {
+      return;
+    }
     module(function($compileProvider) {
       $compileProvider.directive('test', valueFn({
         templateNamespace: 'svg',
@@ -386,7 +388,9 @@ describe('ngInclude', function() {
 
 
   it('should compile only the template content of an SVG template', function() {
-    if (!window.SVGRectElement) return;
+    if (!window.SVGRectElement) {
+      return;
+    }
     module(function($compileProvider) {
       $compileProvider.directive('test', valueFn({
         templateNamespace: 'svg',

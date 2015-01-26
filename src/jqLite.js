@@ -267,13 +267,18 @@ function jqLiteDealoc(element, onlyDescendants) {
 }
 
 function jqLiteOff(element, type, fn, unsupported) {
-  if (isDefined(unsupported)) throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
+  if (isDefined(unsupported)) {
+    throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
+  }
 
   var expandoStore = jqLiteExpandoStore(element);
   var events = expandoStore && expandoStore.events;
   var handle = expandoStore && expandoStore.handle;
 
-  if (!handle) return; //no listeners registered
+  if (!handle) {
+    //no listeners registered
+    return;
+  }
 
   if (!type) {
     for (type in events) {
@@ -360,7 +365,9 @@ function jqLiteData(element, key, value) {
 }
 
 function jqLiteHasClass(element, selector) {
-  if (!element.getAttribute) return false;
+  if (!element.getAttribute) {
+    return false;
+  }
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf(" " + selector + " ") > -1);
 }
@@ -434,7 +441,9 @@ function jqLiteInheritedData(element, name, value) {
 
   while (element) {
     for (var i = 0, ii = names.length; i < ii; i++) {
-      if ((value = jqLite.data(element, names[i])) !== undefined) return value;
+      if ((value = jqLite.data(element, names[i])) !== undefined) {
+        return value;
+      }
     }
 
     // If dealing with a document fragment node with a host element, and no parent, use the host
@@ -483,7 +492,9 @@ var JQLitePrototype = JQLite.prototype = {
     var fired = false;
 
     function trigger() {
-      if (fired) return;
+      if (fired) {
+        return;
+      }
       fired = true;
       fn();
     }
@@ -727,7 +738,9 @@ function createEventHandler(element, events) {
     var eventFns = events[type || event.type];
     var eventFnsLength = eventFns ? eventFns.length : 0;
 
-    if (!eventFnsLength) return;
+    if (!eventFnsLength) {
+      return;
+    }
 
     if (isUndefined(event.immediatePropagationStopped)) {
       var originalStopImmediatePropagation = event.stopImmediatePropagation;
@@ -775,7 +788,9 @@ forEach({
   removeData: jqLiteRemoveData,
 
   on: function jqLiteOn(element, type, fn, unsupported) {
-    if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+    if (isDefined(unsupported)) {
+      throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+    }
 
     // Do not add event handlers to non-elements because they will not be cleaned up.
     if (!jqLiteAcceptsData(element)) {
@@ -870,7 +885,9 @@ forEach({
 
   append: function(element, node) {
     var nodeType = element.nodeType;
-    if (nodeType !== NODE_TYPE_ELEMENT && nodeType !== NODE_TYPE_DOCUMENT_FRAGMENT) return;
+    if (nodeType !== NODE_TYPE_ELEMENT && nodeType !== NODE_TYPE_DOCUMENT_FRAGMENT) {
+      return;
+    }
 
     node = new JQLite(node);
 

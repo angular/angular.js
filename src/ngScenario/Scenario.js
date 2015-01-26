@@ -272,7 +272,9 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     match = function(actualExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
-        if (actualExp == bindExp) return true;
+        if (actualExp == bindExp) {
+          return true;
+        }
         if (actualExp.indexOf(bindExp) === 0) {
           return actualExp.charAt(bindExp.length) == '|';
         }

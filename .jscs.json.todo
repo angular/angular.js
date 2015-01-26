@@ -4,7 +4,6 @@
 // that correct the existing code base issues and make the new check pass.
 
 {
-  "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
   "disallowKeywordsOnNewLine": ["else"],

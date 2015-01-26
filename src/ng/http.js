@@ -39,7 +39,9 @@ function isJsonLike(str) {
 function parseHeaders(headers) {
   var parsed = createMap(), key, val, i;
 
-  if (!headers) return parsed;
+  if (!headers) {
+    return parsed;
+  }
 
   forEach(headers.split('\n'), function(line) {
     i = line.indexOf(':');
@@ -1137,10 +1139,14 @@ function $HttpProvider() {
 
 
     function buildUrl(url, params) {
-      if (!params) return url;
+      if (!params) {
+        return url;
+      }
       var parts = [];
       forEachSorted(params, function(value, key) {
-        if (value === null || isUndefined(value)) return;
+        if (value === null || isUndefined(value)) {
+          return;
+        }
         if (!isArray(value)) {
           value = [value];
         }

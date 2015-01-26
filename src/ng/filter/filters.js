@@ -140,13 +140,17 @@ function numberFilter($locale) {
 
 var DECIMAL_SEP = '.';
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
-  if (isObject(number)) return '';
+  if (isObject(number)) {
+    return '';
+  }
 
   var isNegative = number < 0;
   number = Math.abs(number);
 
   var isInfinity = number === Infinity;
-  if (!isInfinity && !isFinite(number)) return '';
+  if (!isInfinity && !isFinite(number)) {
+    return '';
+  }
 
   var numStr = number + '',
       formatedText = '',

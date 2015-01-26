@@ -94,7 +94,9 @@ function makeSwipeDirective(directiveName, direction, eventName) {
         // (ie. same direction as the directive wants) will have a positive delta and
         // illegal ones a negative delta.
         // Therefore this delta must be positive, and larger than the minimum.
-        if (!startCoords) return false;
+        if (!startCoords) {
+          return false;
+        }
         var deltaY = Math.abs(coords.y - startCoords.y);
         var deltaX = (coords.x - startCoords.x) * direction;
         return valid && // Short circuit for already-invalidated swipes.

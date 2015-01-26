@@ -2,7 +2,9 @@
 
 describe('$$rAF', function() {
   it('should queue and block animation frames', inject(function($$rAF) {
-    if (!$$rAF.supported) return;
+    if (!$$rAF.supported) {
+      return;
+    }
 
     var message;
     $$rAF(function() {
@@ -15,7 +17,9 @@ describe('$$rAF', function() {
   }));
 
   it('should provide a cancellation method', inject(function($$rAF) {
-    if (!$$rAF.supported) return;
+    if (!$$rAF.supported) {
+      return;
+    }
 
     var present = true;
     var cancel = $$rAF(function() {

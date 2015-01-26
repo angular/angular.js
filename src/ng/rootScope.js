@@ -559,7 +559,9 @@ function $RootScopeProvider() {
           var newLength, key, bothNaN, newItem, oldItem;
 
           // If the new value is undefined, then return undefined as the watch may be a one-time watch
-          if (isUndefined(newValue)) return;
+          if (isUndefined(newValue)) {
+            return;
+          }
 
           if (!isObject(newValue)) { // if primitive
             if (oldValue !== newValue) {
@@ -868,12 +870,16 @@ function $RootScopeProvider() {
        */
       $destroy: function() {
         // we can't destroy the root scope or a scope that has been already destroyed
-        if (this.$$destroyed) return;
+        if (this.$$destroyed) {
+          return;
+        }
         var parent = this.$parent;
 
         this.$broadcast('$destroy');
         this.$$destroyed = true;
-        if (this === $rootScope) return;
+        if (this === $rootScope) {
+          return;
+        }
 
         for (var eventName in this.$$listenerCount) {
           decrementListenerCount(this, this.$$listenerCount[eventName], eventName);
@@ -1240,7 +1246,9 @@ function $RootScopeProvider() {
               defaultPrevented: false
             };
 
-        if (!target.$$listenerCount[name]) return event;
+        if (!target.$$listenerCount[name]) {
+          return event;
+        }
 
         var listenerArgs = concat([event], arguments, 1),
             listeners, i, length;

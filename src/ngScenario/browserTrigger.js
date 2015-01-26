@@ -14,7 +14,9 @@
     if (element && !element.nodeName) {
       element = element[0];
     }
-    if (!element) return;
+    if (!element) {
+      return;
+    }
 
     eventData = eventData || {};
     var keys = eventData.keys;
@@ -96,7 +98,9 @@
      * read */
     evnt.$manualTimeStamp = eventData.timeStamp;
 
-    if (!evnt) return;
+    if (!evnt) {
+      return;
+    }
 
     var originalPreventDefault = evnt.preventDefault,
         appWindow = element.ownerDocument.defaultView,

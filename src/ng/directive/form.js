@@ -494,7 +494,9 @@ var formDirectiveFactory = function(isNgForm) {
             if (alias) {
               setter(scope, alias, controller, alias);
               attr.$observe(attr.name ? 'name' : 'ngForm', function(newValue) {
-                if (alias === newValue) return;
+                if (alias === newValue) {
+                  return;
+                }
                 setter(scope, alias, undefined, alias);
                 alias = newValue;
                 setter(scope, alias, controller, alias);

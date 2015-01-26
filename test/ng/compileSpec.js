@@ -407,7 +407,9 @@ describe('$compile', function() {
         element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
       } catch (e) {
       } finally {
-        if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+        if (!element[0].childNodes[1]) {
+          return; //browser doesn't support this kind of mocking
+        }
       }
 
       expect(element[0].childNodes[1].textContent).toBe('fake node');
@@ -444,7 +446,9 @@ describe('$compile', function() {
 
 
       it('should allow directives in SVG element classes', inject(function($compile, $rootScope, log) {
-        if (!window.SVGElement) return;
+        if (!window.SVGElement) {
+          return;
+        }
         element = $compile('<svg><text class="greet: angular; log:123;"></text></svg>')($rootScope);
         var text = element.children().eq(0);
         // In old Safari, SVG elements don't have innerHTML, so element.html() won't work
@@ -455,7 +459,9 @@ describe('$compile', function() {
 
 
       it('should ignore not set CSS classes on SVG elements', inject(function($compile, $rootScope, log) {
-        if (!window.SVGElement) return;
+        if (!window.SVGElement) {
+          return;
+        }
         // According to spec SVG element className property is readonly, but only FF
         // implements it this way which causes compile exceptions.
         element = $compile('<svg><text>{{1}}</text></svg>')($rootScope);

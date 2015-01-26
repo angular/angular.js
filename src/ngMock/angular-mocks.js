@@ -521,7 +521,9 @@ angular.mock.$IntervalProvider = function() {
      * @returns {boolean} Returns `true` if the task was successfully cancelled.
      */
     $interval.cancel = function(promise) {
-      if (!promise) return false;
+      if (!promise) {
+        return false;
+      }
       var fnIndex;
 
       angular.forEach(repeatFns, function(fn, index) {
@@ -1147,7 +1149,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       copy = angular.copy;
 
   function createResponse(status, data, headers, statusText) {
-    if (angular.isFunction(status)) return status;
+    if (angular.isFunction(status)) {
+      return status;
+    }
 
     return function() {
       return angular.isNumber(status)
@@ -1222,7 +1226,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
         } else if (definition.passThrough) {
           $delegate(method, url, data, callback, headers, timeout, withCredentials);
-        } else throw new Error('No response defined !');
+        } else {
+          throw new Error('No response defined !');
+        }
         return;
       }
     }
@@ -1530,11 +1536,15 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     if (digest !== false) {
       $rootScope.$digest();
     }
-    if (!responses.length) throw new Error('No pending request to flush !');
+    if (!responses.length) {
+      throw new Error('No pending request to flush !');
+    }
 
     if (angular.isDefined(count) && count !== null) {
       while (count--) {
-        if (!responses.length) throw new Error('No more pending request to flush !');
+        if (!responses.length) {
+          throw new Error('No more pending request to flush !');
+        }
         responses.shift()();
       }
     } else {
@@ -1627,30 +1637,54 @@ function MockHttpExpectation(method, url, data, headers) {
   this.headers = headers;
 
   this.match = function(m, u, d, h) {
-    if (method != m) return false;
-    if (!this.matchUrl(u)) return false;
-    if (angular.isDefined(d) && !this.matchData(d)) return false;
-    if (angular.isDefined(h) && !this.matchHeaders(h)) return false;
+    if (method != m) {
+      return false;
+    }
+    if (!this.matchUrl(u)) {
+      return false;
+    }
+    if (angular.isDefined(d) && !this.matchData(d)) {
+      return false;
+    }
+    if (angular.isDefined(h) && !this.matchHeaders(h)) {
+      return false;
+    }
     return true;
   };
 
   this.matchUrl = function(u) {
-    if (!url) return true;
-    if (angular.isFunction(url.test)) return url.test(u);
-    if (angular.isFunction(url)) return url(u);
+    if (!url) {
+      return true;
+    }
+    if (angular.isFunction(url.test)) {
+      return url.test(u);
+    }
+    if (angular.isFunction(url)) {
+      return url(u);
+    }
     return url == u;
   };
 
   this.matchHeaders = function(h) {
-    if (angular.isUndefined(headers)) return true;
-    if (angular.isFunction(headers)) return headers(h);
+    if (angular.isUndefined(headers)) {
+      return true;
+    }
+    if (angular.isFunction(headers)) {
+      return headers(h);
+    }
     return angular.equals(headers, h);
   };
 
   this.matchData = function(d) {
-    if (angular.isUndefined(data)) return true;
-    if (data && angular.isFunction(data.test)) return data.test(d);
-    if (data && angular.isFunction(data)) return data(d);
+    if (angular.isUndefined(data)) {
+      return true;
+    }
+    if (data && angular.isFunction(data.test)) {
+      return data.test(d);
+    }
+    if (data && angular.isFunction(data)) {
+      return data(d);
+    }
     if (data && !angular.isString(data)) {
       return angular.equals(angular.fromJson(angular.toJson(data)), angular.fromJson(d));
     }
@@ -1691,11 +1725,15 @@ function MockXhr() {
     // the lookup must be case insensitive,
     // that's why we try two quick lookups first and full scan last
     var header = this.$$respHeaders[name];
-    if (header) return header;
+    if (header) {
+      return header;
+    }
 
     name = angular.lowercase(name);
     header = this.$$respHeaders[name];
-    if (header) return header;
+    if (header) {
+      return header;
+    }
 
     header = undefined;
     angular.forEach(this.$$respHeaders, function(headerVal, headerName) {

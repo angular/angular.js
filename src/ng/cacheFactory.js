@@ -159,7 +159,9 @@ function $CacheFactoryProvider() {
          * @returns {*} the value stored.
          */
         put: function(key, value) {
-          if (isUndefined(value)) return;
+          if (isUndefined(value)) {
+            return;
+          }
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
 
@@ -193,7 +195,9 @@ function $CacheFactoryProvider() {
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
-            if (!lruEntry) return;
+            if (!lruEntry) {
+              return;
+            }
 
             refresh(lruEntry);
           }
@@ -216,7 +220,9 @@ function $CacheFactoryProvider() {
           if (capacity < Number.MAX_VALUE) {
             var lruEntry = lruHash[key];
 
-            if (!lruEntry) return;
+            if (!lruEntry) {
+              return;
+            }
 
             if (lruEntry == freshEnd) {
               freshEnd = lruEntry.p;

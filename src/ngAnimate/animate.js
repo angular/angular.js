@@ -488,7 +488,9 @@ angular.module('ngAnimate', ['ng'])
       var deregisterWatch = $rootScope.$watch(
         function() { return $templateRequest.totalPendingRequests; },
         function(val, oldVal) {
-          if (val !== 0) return;
+          if (val !== 0) {
+            return;
+          }
           deregisterWatch();
 
           // Now that all templates have been downloaded, $animate will wait until
@@ -709,7 +711,9 @@ angular.module('ngAnimate', ['ng'])
           function afterAnimationComplete(index) {
             if (cancellations) {
               (cancellations[index] || noop)();
-              if (++count < animations.length) return;
+              if (++count < animations.length) {
+                return;
+              }
               cancellations = null;
             }
             allCompleteFn();
@@ -1549,7 +1553,9 @@ angular.module('ngAnimate', ['ng'])
           //the element did not reach the root element which means that it
           //is not apart of the DOM. Therefore there is no reason to do
           //any animations on it
-          if (parentElement.length === 0) break;
+          if (parentElement.length === 0) {
+            break;
+          }
 
           var isRoot = isMatchingElement(parentElement, $rootElement);
           var state = isRoot ? rootAnimateState : (parentElement.data(NG_ANIMATE_STATE) || {});

@@ -54,8 +54,10 @@ var $AnimateProvider = ['$provide', function($provide) {
    */
   this.register = function(name, factory) {
     var key = name + '-animation';
-    if (name && name.charAt(0) != '.') throw $animateMinErr('notcsel',
+    if (name && name.charAt(0) != '.') {
+      throw $animateMinErr('notcsel',
         "Expecting class selector starting with '.' got '{0}'.", name);
+    }
     this.$$selectors[name.substr(1)] = key;
     $provide.factory(key, factory);
   };

@@ -14,7 +14,9 @@ describe('Scope', function() {
 
     it('should expose the constructor', inject(function($rootScope) {
       /* jshint -W103 */
-      if (msie < 11) return;
+      if (msie < 11) {
+        return;
+      }
       expect($rootScope.__proto__).toBe($rootScope.constructor.prototype);
     }));
 

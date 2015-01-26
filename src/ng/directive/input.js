@@ -997,7 +997,9 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       $browser.defer.cancel(timeout);
       timeout = null;
     }
-    if (composing) return;
+    if (composing) {
+      return;
+    }
     var value = element.val(),
         event = ev && ev.type;
 
@@ -1039,7 +1041,9 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
       // ignore
       //    command            modifiers                   arrows
-      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) {
+        return;
+      }
 
       deferListener(event, this, this.value);
     });
@@ -1150,7 +1154,9 @@ function createDateInputType(type, regexp, parseDate, format) {
 
     ctrl.$$parserName = type;
     ctrl.$parsers.push(function(value) {
-      if (ctrl.$isEmpty(value)) return null;
+      if (ctrl.$isEmpty(value)) {
+        return null;
+      }
       if (regexp.test(value)) {
         // Note: We cannot read ctrl.$modelValue, as there might be a different
         // parser/formatter in the processing chain so that the model
@@ -1235,8 +1241,12 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   ctrl.$$parserName = 'number';
   ctrl.$parsers.push(function(value) {
-    if (ctrl.$isEmpty(value))      return null;
-    if (NUMBER_REGEXP.test(value)) return parseFloat(value);
+    if (ctrl.$isEmpty(value)) {
+      return null;
+    }
+    if (NUMBER_REGEXP.test(value)) {
+      return parseFloat(value);
+    }
     return undefined;
   });
 

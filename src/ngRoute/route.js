@@ -521,10 +521,14 @@ function $RouteProvider() {
       var keys = route.keys,
           params = {};
 
-      if (!route.regexp) return null;
+      if (!route.regexp) {
+        return null;
+      }
 
       var m = route.regexp.exec(on);
-      if (!m) return null;
+      if (!m) {
+        return null;
+      }
 
       for (var i = 1, len = m.length; i < len; ++i) {
         var key = keys[i - 1];

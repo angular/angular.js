@@ -2078,7 +2078,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      */
     function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startAttrName,
                           endAttrName) {
-      if (name === ignoreDirective) return null;
+      if (name === ignoreDirective) {
+        return null;
+      }
       var match = null;
       if (hasDirectives.hasOwnProperty(name)) {
         for (var directive, directives = $injector.get(name + Suffix),
@@ -2234,7 +2236,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 boundTranscludeFn = linkQueue.shift(),
                 linkNode = $compileNode[0];
 
-            if (scope.$$destroyed) continue;
+            if (scope.$$destroyed) {
+              continue;
+            }
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
               var oldClasses = beforeTemplateLinkNode.className;
@@ -2262,7 +2266,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, boundTranscludeFn) {
         var childBoundTranscludeFn = boundTranscludeFn;
-        if (scope.$$destroyed) return;
+        if (scope.$$destroyed) {
+          return;
+        }
         if (linkQueue) {
           linkQueue.push(scope,
                          node,
@@ -2283,8 +2289,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      */
     function byPriority(a, b) {
       var diff = b.priority - a.priority;
-      if (diff !== 0) return diff;
-      if (a.name !== b.name) return (a.name < b.name) ? -1 : 1;
+      if (diff !== 0) {
+        return diff;
+      }
+      if (a.name !== b.name) {
+        return (a.name < b.name) ? -1 : 1;
+      }
       return a.index - b.index;
     }
 
@@ -2364,7 +2374,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var interpolateFn = $interpolate(value, true, trustedContext, allOrNothing);
 
       // no interpolation found -> ignore
-      if (!interpolateFn) return;
+      if (!interpolateFn) {
+        return;
+      }
 
 
       if (name === "multiple" && nodeName_(node) === "select") {
@@ -2398,7 +2410,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
                 // if attribute was updated so that there is no interpolation going on we don't want to
                 // register any observers
-                if (!interpolateFn) return;
+                if (!interpolateFn) {
+                  return;
+                }
 
                 // initialize attr object so that it's ready in case we need the value for isolate
                 // scope initialization, otherwise the value would not be available from isolate
@@ -2604,7 +2618,9 @@ function tokenDifference(str1, str2) {
   for (var i = 0; i < tokens1.length; i++) {
     var token = tokens1[i];
     for (var j = 0; j < tokens2.length; j++) {
-      if (token == tokens2[j]) continue outer;
+      if (token == tokens2[j]) {
+        continue outer;
+      }
     }
     values += (values.length > 0 ? ' ' : '') + token;
   }

@@ -262,7 +262,9 @@ function $AnchorScrollProvider() {
       $rootScope.$watch(function autoScrollWatch() {return $location.hash();},
         function autoScrollWatchAction(newVal, oldVal) {
           // skip the initial scroll if $location.hash is empty
-          if (newVal === oldVal && newVal === '') return;
+          if (newVal === oldVal && newVal === '') {
+            return;
+          }
 
           jqLiteDocumentLoaded(function() {
             $rootScope.$evalAsync(scroll);
