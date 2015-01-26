@@ -6,7 +6,6 @@
 {
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
-  "disallowKeywordsOnNewLine": ["else"],
   "validateJSDoc": {
     "checkParamNames": true,
     "requireParamTypes": true

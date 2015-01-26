@@ -541,11 +541,9 @@ angular.module('ngResource', ['ng']).
               case 1:
                 if (isFunction(a1)) {
                   success = a1;
-                }
-                else if (hasBody) {
+                } else if (hasBody) {
                   data = a1;
-                }
-                else {
+                } else {
                   params = a1;
                 }
                 break;

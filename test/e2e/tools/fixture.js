@@ -35,8 +35,7 @@ function generateFixture(test, query) {
     var src = $(script).attr('src');
     if (src === 'jquery.js' && jquery === null) {
       jquery = script;
-    }
-    else if (src === 'angular.js' && angular === null) {
+    } else if (src === 'angular.js' && angular === null) {
       angular = script;
     }
     if (firstScript === null) {

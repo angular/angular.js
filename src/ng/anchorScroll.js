@@ -235,23 +235,13 @@ function $AnchorScrollProvider() {
     function scroll() {
       var hash = $location.hash(), elm;
 
-      // empty hash, scroll to the top of the page
-      if (!hash) {
+      if (!hash) { // empty hash, scroll to the top of the page
         scrollTo(null);
-      }
-
-      // element with given id
-      else if ((elm = document.getElementById(hash))) {
+      } else if ((elm = document.getElementById(hash))) { // element with given id
         scrollTo(elm);
-      }
-
-      // first anchor with given name :-D
-      else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) {
+      } else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) { // first anchor with given name :-D
         scrollTo(elm);
-      }
-
-      // no element and hash == 'top', scroll to the top of the page
-      else if (hash === 'top') {
+      } else if (hash === 'top') { // no element and hash == 'top', scroll to the top of the page
         scrollTo(null);
       }
     }
