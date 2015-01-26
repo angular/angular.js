@@ -302,24 +302,24 @@ function qFactory(nextTick, exceptionHandler) {
   }
 
   function processQueue(state) {
-    var fn, promise, pending;
+    var fn, deferred, pending;
 
     pending = state.pending;
     state.processScheduled = false;
     state.pending = undefined;
     for (var i = 0, ii = pending.length; i < ii; ++i) {
-      promise = pending[i][0];
+      deferred = pending[i][0];
       fn = pending[i][state.status];
       try {
         if (isFunction(fn)) {
-          promise.resolve(fn(state.value));
+          deferred.resolve(fn(state.value));
         } else if (state.status === 1) {
-          promise.resolve(state.value);
+          deferred.resolve(state.value);
         } else {
-          promise.reject(state.value);
+          deferred.reject(state.value);
         }
       } catch (e) {
-        promise.reject(e);
+        deferred.reject(e);
         exceptionHandler(e);
       }
     }
