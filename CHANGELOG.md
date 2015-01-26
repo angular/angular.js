@@ -1,3 +1,64 @@
+<a name="1.4.0-beta.2"></a>
+# 1.4.0-beta.2 holographic-rooster (2015-01-26)
+
+
+## Bug Fixes
+
+- **$location:** don't rewrite when link is shift-clicked
+  ([8b33de6f](https://github.com/angular/angular.js/commit/8b33de6fd0ec0eb785fed697f062763b5c1d8d23),
+   [#9904](https://github.com/angular/angular.js/issues/9904), [#9906](https://github.com/angular/angular.js/issues/9906))
+- **$templateRequest:** cache downloaded templates as strings
+  ([b3a9bd3a](https://github.com/angular/angular.js/commit/b3a9bd3ae043e3042ea7ccfe08e3b36a84feb35e),
+   [#10630](https://github.com/angular/angular.js/issues/10630), [#10646](https://github.com/angular/angular.js/issues/10646))
+- **filterFilter:** throw error if input is not an array
+  ([cea8e751](https://github.com/angular/angular.js/commit/cea8e75144e6910b806b63a6ec2a6d118316fddd),
+   [#9992](https://github.com/angular/angular.js/issues/9992), [#10352](https://github.com/angular/angular.js/issues/10352))
+- **form:** ignore properties in $error prototype chain
+  ([31a5b835](https://github.com/angular/angular.js/commit/31a5b8353ae5f1a5cb283322829880995e877833),
+   [#10469](https://github.com/angular/angular.js/issues/10469), [#10727](https://github.com/angular/angular.js/issues/10727))
+- **htmlAnchorDirective:**
+  - remove "element !== target element" check
+  ([2958cd30](https://github.com/angular/angular.js/commit/2958cd308b5ebaf223a3e5df3fb5bf0f23408447),
+   [#10866](https://github.com/angular/angular.js/issues/10866))
+  - don't add event listener if replaced, ignore event if target is different element
+  ([b146af11](https://github.com/angular/angular.js/commit/b146af11271de8fa4c51c6db87df104269f41a33),
+   [#4262](https://github.com/angular/angular.js/issues/4262), [#10849](https://github.com/angular/angular.js/issues/10849))
+- **ngPluralize:** fix wrong text content when count is null/undefined
+  ([3228d3b4](https://github.com/angular/angular.js/commit/3228d3b4991af681e57de5ab079c1e1c11cf35cb),
+   [#10836](https://github.com/angular/angular.js/issues/10836), [#10841](https://github.com/angular/angular.js/issues/10841))
+
+## Breaking Changes
+
+- **filterFilter:** due to [cea8e751](https://github.com/angular/angular.js/commit/cea8e75144e6910b806b63a6ec2a6d118316fddd),
+  Previously, the filter was not applied if used with a non array.
+Now, it throws an error. This can be worked around by converting an object to an array, using
+a filter such as https://github.com/petebacondarwin/angular-toArrayFilter
+
+Closes #9992
+Closes #10352
+
+
+<a name="1.3.11"></a>
+# 1.3.11 spiffy-manatee (2015-01-26)
+
+
+## Bug Fixes
+
+- **$location:** don't rewrite when link is shift-clicked
+  ([939ca37c](https://github.com/angular/angular.js/commit/939ca37cfe5f6fc35b09b6705caabd1fcc3cf9d3),
+   [#9904](https://github.com/angular/angular.js/issues/9904), [#9906](https://github.com/angular/angular.js/issues/9906))
+- **form:** ignore properties in $error prototype chain
+  ([adf91fe6](https://github.com/angular/angular.js/commit/adf91fe6ee77a84e8159c9a95e36f65276fe67bd),
+   [#10469](https://github.com/angular/angular.js/issues/10469), [#10727](https://github.com/angular/angular.js/issues/10727))
+- **htmlAnchorDirective:**
+  - remove "element !== target element" check
+  ([779e3f6b](https://github.com/angular/angular.js/commit/779e3f6b5f8d2550e758cb0c5f64187ba8e00e29),
+   [#10866](https://github.com/angular/angular.js/issues/10866))
+  - don't add event listener if replaced, ignore event if target is different element
+  ([837a0775](https://github.com/angular/angular.js/commit/837a077578081bbd07863bef85241537d19fa652),
+   [#4262](https://github.com/angular/angular.js/issues/4262), [#10849](https://github.com/angular/angular.js/issues/10849))
+
+
 <a name="1.4.0-beta.1"></a>
 # 1.4.0-beta.1 trepidatious-salamander (2015-01-20)
 
