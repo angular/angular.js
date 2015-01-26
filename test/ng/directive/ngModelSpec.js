@@ -54,22 +54,6 @@ describe('ngModel', function() {
     });
 
 
-    it('should ignore items in prototype chain when determining validity', inject(function($compile) {
-      dealoc(element);
-      Object.prototype.someProp = true;
-      element = $compile('<form name="form"><input type="text" ng-model="value" name="value"></form>')(scope);
-      var input = element.children().eq(0);
-      ctrl = input.controller('ngModel');
-      var form = element.controller('form');
-      scope.$digest();
-      expect(ctrl.$valid).toBe(true);
-      expect(element.children()).toBeValid();
-      expect(form.$valid).toBe(true);
-      expect(element).toBeValid();
-      delete Object.prototype.someProp;
-    }));
-
-
     describe('setValidity', function() {
 
       function expectOneError() {

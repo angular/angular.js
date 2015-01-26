@@ -233,8 +233,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
-  this.$error = createMap(); // keep invalid keys here
-  this.$$success = createMap(); // keep valid keys here
+  this.$error = {}; // keep invalid keys here
+  this.$$success = {}; // keep valid keys here
   this.$pending = undefined; // keep pending keys here
   this.$name = $interpolate($attr.name || '', false)($scope);
 
