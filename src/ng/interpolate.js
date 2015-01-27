@@ -251,7 +251,7 @@ function $InterpolateProvider() {
             case 'string':
               break;
             case 'number':
-              value = '' + value;
+              value = String(value);
               break;
             default:
               value = toJson(value);

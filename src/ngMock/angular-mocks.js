@@ -597,7 +597,7 @@ function padNumber(num, digits, trim) {
     neg =  '-';
     num = -num;
   }
-  num = '' + num;
+  num = String(num);
   while (num.length < digits) num = '0' + num;
   if (trim)
     num = num.substr(num.length - digits);
@@ -864,7 +864,7 @@ angular.mock.dump = function(object) {
       if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
         out = serializeScope(object);
       } else if (object instanceof Error) {
-        out = object.stack || ('' + object.name + ': ' + object.message);
+        out = object.stack || (object.name + ': ' + object.message);
       } else {
         // TODO(i): this prevents methods being logged,
         // we should have a better way to serialize objects

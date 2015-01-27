@@ -93,7 +93,7 @@ angular.module('ngCookies', ['ng']).
         for (name in cookies) {
           value = cookies[name];
           if (!angular.isString(value)) {
-            value = '' + value;
+            value = String(value);
             cookies[name] = value;
           }
           if (value !== lastCookies[name]) {

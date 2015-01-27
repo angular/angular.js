@@ -267,7 +267,7 @@ function htmlParser(html, handler) {
     if (html === null || typeof html === 'undefined') {
       html = '';
     } else {
-      html = '' + html;
+      html = String(html);
     }
   }
   var index, chars, match, stack = [], last = html, text;

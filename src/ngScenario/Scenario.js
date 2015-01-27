@@ -297,7 +297,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     } else if (typeof value !== 'string') {
       value = angular.toJson(value);
     }
-    result.push('' + value);
+    result.push(String(value));
   }
 
   selection.each(function() {

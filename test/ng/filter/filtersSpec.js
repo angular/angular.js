@@ -259,7 +259,7 @@ describe('filters', function() {
 
     it('should accept number or number string representing milliseconds as input', function() {
       expect(date(noon.getTime())).toEqual(date(noon.getTime(), 'mediumDate'));
-      expect(date(noon.getTime() + "")).toEqual(date(noon.getTime() + "", 'mediumDate'));
+      expect(date(String(noon.getTime()))).toEqual(date(String(noon.getTime()), 'mediumDate'));
     });
 
     it('should accept various format strings', function() {

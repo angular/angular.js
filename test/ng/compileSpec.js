@@ -5223,7 +5223,7 @@ describe('$compile', function() {
         inject(function($compile) {
           element = $compile('<div transclude>{{$id}}</div>')($rootScope);
           $rootScope.$apply();
-          expect(element.text()).toBe('' + $rootScope.$id);
+          expect(element.text()).toBe(String($rootScope.$id));
         });
 
       });

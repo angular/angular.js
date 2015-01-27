@@ -206,8 +206,7 @@ function $RouteProvider() {
         var star = option === '*' ? option : null;
         keys.push({ name: key, optional: !!optional });
         slash = slash || '';
-        return ''
-          + (optional ? '' : slash)
+        return (optional ? '' : slash)
           + '(?:'
           + (optional ? slash : '')
           + (star && '(.+?)' || '([^/]+)')

@@ -148,7 +148,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   var isInfinity = number === Infinity;
   if (!isInfinity && !isFinite(number)) return '';
 
-  var numStr = number + '',
+  var numStr = String(number),
       formatedText = '',
       hasExponent = false,
       parts = [];
@@ -178,7 +178,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round
     number = +(Math.round(+(number.toString() + 'e' + fractionSize)).toString() + 'e' + -fractionSize);
 
-    var fraction = ('' + number).split(DECIMAL_SEP);
+    var fraction = String(number).split(DECIMAL_SEP);
     var whole = fraction[0];
     fraction = fraction[1] || '';
 
@@ -232,7 +232,7 @@ function padNumber(num, digits, trim) {
     neg =  '-';
     num = -num;
   }
-  num = '' + num;
+  num = String(num);
   while (num.length < digits) num = '0' + num;
   if (trim)
     num = num.substr(num.length - digits);

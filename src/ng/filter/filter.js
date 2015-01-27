@@ -170,8 +170,8 @@ function createPredicateFn(expression, comparator, matchAgainstAnyProp) {
         return false;
       }
 
-      actual = lowercase('' + actual);
-      expected = lowercase('' + expected);
+      actual = lowercase(String(actual));
+      expected = lowercase(String(expected));
       return actual.indexOf(expected) !== -1;
     };
   }
