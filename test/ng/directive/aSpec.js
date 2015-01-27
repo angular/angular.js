@@ -82,19 +82,6 @@ describe('a', function() {
   });
 
 
-  it('should not link and hookup an event if name is present at compile', function() {
-    var jq = jQuery || jqLite;
-    element = jq('<a name="bobby">hello@you</a>');
-    var linker = $compile(element);
-
-    spyOn(jq.prototype, 'on');
-
-    linker($rootScope);
-
-    expect(jq.prototype.on).not.toHaveBeenCalled();
-  });
-
-
   it('should not preventDefault if anchor element is replaced with href-containing element', function() {
     spyOn(jqLite.prototype, 'on').andCallThrough();
     element = $compile('<a link-to="https://www.google.com">')($rootScope);
@@ -160,19 +147,6 @@ describe('a', function() {
       it('should not link and hookup an event if xlink:href is present at compile', function() {
         var jq = jQuery || jqLite;
         element = jq('<svg><a xlink:href="bobby">hello@you</a></svg>');
-        var linker = $compile(element);
-
-        spyOn(jq.prototype, 'on');
-
-        linker($rootScope);
-
-        expect(jq.prototype.on).not.toHaveBeenCalled();
-      });
-
-
-      it('should not link and hookup an event if name is present at compile', function() {
-        var jq = jQuery || jqLite;
-        element = jq('<svg><a name="bobby">hello@you</a></svg>');
         var linker = $compile(element);
 
         spyOn(jq.prototype, 'on');
