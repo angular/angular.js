@@ -1021,13 +1021,30 @@ describe('Scope', function() {
 
 
     it('should broadcast $destroy on rootScope', inject(function($rootScope) {
-      var spy = spyOn(angular, 'noop');
-      $rootScope.$on('$destroy', angular.noop);
+      var spy = jasmine.createSpy('$destroy handler');
+      $rootScope.$on('$destroy', spy);
       $rootScope.$destroy();
-      $rootScope.$digest();
-      expect(log).toEqual('123');
       expect(spy).toHaveBeenCalled();
       expect($rootScope.$$destroyed).toBe(true);
+    }));
+
+
+    it('should remove all listeners after $destroy of rootScope', inject(function($rootScope) {
+      var spy = jasmine.createSpy('$destroy handler');
+      $rootScope.$on('dummy', spy);
+      $rootScope.$destroy();
+      $rootScope.$broadcast('dummy');
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should remove all watchers after $destroy of rootScope', inject(function($rootScope) {
+      var spy = jasmine.createSpy('$watch spy');
+      var digest = $rootScope.$digest;
+      $rootScope.$watch(spy);
+      $rootScope.$destroy();
+      digest.call($rootScope);
+      expect(spy).not.toHaveBeenCalled();
     }));
 
 
