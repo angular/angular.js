@@ -410,6 +410,20 @@ describe('validators', function() {
       expect($rootScope.value).toBe(12345);
       expect($rootScope.form.input.$error.maxlength).toBeUndefined();
     });
+
+    it('should validate emptiness against the viewValue', function() {
+      var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="10" />');
+
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$isEmpty').andCallThrough();
+
+      ctrl.$parsers.push(function(value) {
+        return value + '678';
+      });
+
+      helper.changeInputValueTo('12345');
+      expect(ctrl.$isEmpty).toHaveBeenCalledWith('12345');
+    });
   });
 
 
