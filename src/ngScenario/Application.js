@@ -73,7 +73,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
           return;
         }
 
-        if(!$window.angular.resumeBootstrap){
+        if (!$window.angular.resumeBootstrap) {
           $window.angular.resumeDeferredBootstrap = resumeDeferredBootstrap;
         } else {
           resumeDeferredBootstrap();
@@ -85,8 +85,8 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
 
       function resumeDeferredBootstrap() {
         // Disable animations
-        var $injector = $window.angular.resumeBootstrap([['$provide', function ($provide) {
-          return ['$animate', function ($animate) {
+        var $injector = $window.angular.resumeBootstrap([['$provide', function($provide) {
+          return ['$animate', function($animate) {
             $animate.enabled(false);
           }];
         }]]);
@@ -118,14 +118,14 @@ angular.scenario.Application.prototype.executeAction = function(action) {
     return action.call(this, $window, _jQuery($window.document));
   }
 
-  if(!!this.rootElement){
+  if (!!this.rootElement) {
     executeWithElement(this.rootElement);
   }
   else {
-    angularInit($window.document, bind(this, executeWithElement));
+    angularInit($window.document, angular.bind(this, executeWithElement));
   }
 
-  function executeWithElement(element){
+  function executeWithElement(element) {
     var $injector = $window.angular.element(element).injector();
     var $element = _jQuery(element);
 

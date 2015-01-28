@@ -132,8 +132,8 @@ describe('angular.scenario.Application', function() {
     var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').andReturn($injector);
 
     var injectorGet = $injector.get;
-    spyOn($injector, 'get').andCallFake(function(name){
-      switch(name){
+    spyOn($injector, 'get').andCallFake(function(name) {
+      switch (name) {
         case "$rootElement": return jqLite(testWindow.document);
         default: return injectorGet(name);
       }
@@ -162,8 +162,8 @@ describe('angular.scenario.Application', function() {
     jqLite(testWindow.document).data('$injector', $injector);
 
     var injectorGet = $injector.get;
-    var injectorSpy = spyOn($injector, 'get').andCallFake(function(name){
-      switch(name){
+    var injectorSpy = spyOn($injector, 'get').andCallFake(function(name) {
+      switch (name) {
         case "$rootElement": return jqLite(testWindow.document);
         default: return injectorGet(name);
       }

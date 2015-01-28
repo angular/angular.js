@@ -1411,7 +1411,7 @@ function bootstrap(element, modules, config) {
     return doBootstrap();
   };
 
-  if(isFunction(angular.resumeDeferredBootstrap)){
+  if (isFunction(angular.resumeDeferredBootstrap)) {
     angular.resumeDeferredBootstrap();
   }
 }
