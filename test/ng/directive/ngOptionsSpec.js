@@ -856,7 +856,87 @@ describe('ngOptions', function() {
       expect(options.eq(2)).toEqualTrackedOption(20, 'twenty');
     });
 
-    
+
+    it('should update the selected option even if only the tracked property on the selected object changes (single)', function() {
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item.label for item in arr track by item.id'
+      });
+
+      scope.$apply(function() {
+        scope.selected = {id: 10, label: 'ten'};
+      });
+
+      expect(element.val()).toEqual('10');
+
+      // Update the properties on the selected object, rather than replacing the whole object
+      scope.$apply(function() {
+        scope.selected.id = 20;
+        scope.selected.label = 'new twenty';
+      });
+
+      // The value of the select should change since the id property changed
+      expect(element.val()).toEqual('20');
+
+      // But the label of the selected option does not change
+      var option = element.find('option').eq(1);
+      expect(option.prop('selected')).toEqual(true);
+      expect(option.text()).toEqual('twenty'); // not 'new twenty'
+    });
+
+
+    it('should update the selected options even if only the tracked properties on the objects in the ' +
+        'selected collection change (multi)', function() {
+      createSelect({
+        'ng-model': 'selected',
+        'multiple': true,
+        'ng-options': 'item.label for item in arr track by item.id'
+      });
+
+      scope.$apply(function() {
+        scope.selected = [{id: 10, label: 'ten'}];
+      });
+
+      expect(element.val()).toEqual(['10']);
+
+      // Update the properties on the object in the selected array, rather than replacing the whole object
+      scope.$apply(function() {
+        scope.selected[0].id = 20;
+        scope.selected[0].label = 'new twenty';
+      });
+
+      // The value of the select should change since the id property changed
+      expect(element.val()).toEqual(['20']);
+
+      // But the label of the selected option does not change
+      var option = element.find('option').eq(1);
+      expect(option.prop('selected')).toEqual(true);
+      expect(option.text()).toEqual('twenty'); // not 'new twenty'
+    });
+
+
+    it('should prevent changes to the selected object from modifying the options objects (single)', function() {
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item.label for item in arr track by item.id'
+      });
+
+      element.val('10');
+      browserTrigger(element, 'change');
+
+      expect(scope.selected).toEqual(scope.arr[0]);
+
+      scope.$apply(function() {
+        scope.selected.id = 20;
+      });
+
+      expect(scope.selected).not.toEqual(scope.arr[0]);
+      expect(element.val()).toEqual('20');
+      expect(scope.arr).toEqual([{id: 10, label: 'ten'}, {id:20, label: 'twenty'}]);
+    });
+
+
     it('should preserve value even when reference has changed (single&array)', function() {
       createSelect({
         'ng-model': 'selected',
@@ -919,7 +999,7 @@ describe('ngOptions', function() {
       expect(element.val()).toBe('10');
 
       setSelectValue(element, 1);
-      expect(scope.selected).toBe(scope.obj['2']);
+      expect(scope.selected).toEqual(scope.obj['2']);
     });
 
 
@@ -998,7 +1078,7 @@ describe('ngOptions', function() {
 
       element.val('10');
       browserTrigger(element, 'change');
-      expect(scope.selected).toBe(scope.arr[0].subItem);
+      expect(scope.selected).toEqual(scope.arr[0].subItem);
 
       // Now reload the array
       scope.$apply(function() {
@@ -1577,7 +1657,7 @@ describe('ngOptions', function() {
         scope.values.pop();
       });
 
-      expect(element.val()).toEqualUnknownValue();
+      expect(element.val()).toEqual('');
       expect(scope.selected).toEqual(null);
 
       // Check after model change
@@ -1591,7 +1671,7 @@ describe('ngOptions', function() {
         scope.values.pop();
       });
 
-      expect(element.val()).toEqualUnknownValue();
+      expect(element.val()).toEqual('');
       expect(scope.selected).toEqual(null);
     });
 
