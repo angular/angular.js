@@ -34,7 +34,6 @@ install:
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  - time ./scripts/travis/npm-bundle-deps.sh
   - time npm install
 
 before_script:
