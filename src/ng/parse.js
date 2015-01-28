@@ -728,6 +728,11 @@ Parser.prototype = {
             ? fn.apply(context, args)
             : fn(args[0], args[1], args[2], args[3], args[4]);
 
+      if (args) {
+        // Free-up the memory (arguments of the last function call).
+        args.length = 0;
+      }
+
       return ensureSafeObject(v, expressionText);
       };
   },
