@@ -362,6 +362,7 @@ describe('ngOptions', function() {
     expect(options.eq(2)).toEqualOption(scope.values[2], 'D');
   });
 
+
   it('should preserve pre-existing empty option', function() {
     createSingleSelect(true);
 
@@ -855,6 +856,7 @@ describe('ngOptions', function() {
       expect(options.eq(2)).toEqualTrackedOption(20, 'twenty');
     });
 
+    
     it('should preserve value even when reference has changed (single&array)', function() {
       createSelect({
         'ng-model': 'selected',
