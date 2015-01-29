@@ -500,7 +500,6 @@ function isDate(value) {
   return toString.call(value) === '[object Date]';
 }
 
-
 /**
  * @ngdoc function
  * @name angular.isArray
@@ -583,6 +582,10 @@ function isPromiseLike(obj) {
   return obj && isFunction(obj.then);
 }
 
+var TYPED_ARRAY_REGEXP = /^\[object (Uint8(Clamped)?)|(Uint16)|(Uint32)|(Int8)|(Int16)|(Int32)|(Float(32)|(64))Array\]$/;
+function isTypedArray(value) {
+  return TYPED_ARRAY_REGEXP.test(toString.call(value));
+}
 
 var TYPED_ARRAY_REGEXP = /^\[object (Uint8(Clamped)?)|(Uint16)|(Uint32)|(Int8)|(Int16)|(Int32)|(Float(32)|(64))Array\]$/;
 function isTypedArray(value) {
