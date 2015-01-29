@@ -3403,6 +3403,72 @@ describe('$compile', function() {
         });
       });
 
+      describe('isolateScope one way data binding', function() {
+        it('should not throw if the one way binding is optional', function() {
+          module(function() {
+            directive('hello', function() {
+              return {
+                scope: {
+                  oneWay: '>?'
+                }
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            compile('<div hello></div>');
+
+            var isolateScope = element.isolateScope();
+            expect(isolateScope.oneWay).toBe(undefined);
+          });
+        });
+
+        it('should not update isolate scope when parent scope changes a ":" binding', function() {
+          module(function() {
+            directive('hello', function() {
+              return {
+                scope: {
+                  oneWay: '>'
+                }
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            $rootScope.name = 'jack';
+            compile('<div hello one-way="name"></div>');
+
+            var isolateScope = element.isolateScope();
+            expect(isolateScope.oneWay).toBe('jack');
+
+            $rootScope.$apply(function() { $rootScope.name = 'igor'; });
+            expect(isolateScope.oneWay).toBe('jack');
+          });
+        });
+
+        it('should not update parent scope when isolate scope changes a ":" binding', function() {
+          module(function() {
+            directive('hello', function() {
+              return {
+                scope: {
+                  oneWay: '>'
+                }
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            $rootScope.name = 'jack';
+            compile('<div hello one-way="name"></div>');
+
+            var isolateScope = element.isolateScope();
+            expect(isolateScope.oneWay).toBe('jack');
+
+            isolateScope.$apply(function(scope) { scope.oneWay = 'igor'; });
+            expect($rootScope.name).toBe('jack');
+          });
+        });
+      });
     });
 
 
