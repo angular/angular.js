@@ -64,7 +64,7 @@
  *       templateNamespace: 'html',
  *       scope: false,
  *       controller: function($scope, $element, $attrs, $transclude, otherInjectables) { ... },
- *       controllerAs: 'stringAlias',
+ *       controllerAs: 'stringIdentifier',
  *       require: 'siblingDirectiveName', // or // ['^parentDirectiveName', '?optionalDirectiveName', '?^optionalParent'],
  *       compile: function compile(tElement, tAttrs, transclude) {
  *         return {
@@ -224,9 +224,10 @@
  *
  *
  * #### `controllerAs`
- * Controller alias at the directive scope. An alias for the controller so it
- * can be referenced at the directive template. The directive needs to define a scope for this
- * configuration to be used. Useful in the case when directive is used as component.
+ * Identifier name for a reference to the controller in the directive's scope.
+ * This allows the controller to be referenced from the directive template. The directive
+ * needs to define a scope for this configuration to be used. Useful in the case when
+ * directive is used as component.
  *
  *
  * #### `restrict`
