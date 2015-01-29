@@ -775,6 +775,36 @@ describe('Scope', function() {
     });
 
 
+    describe('$suspend/$resume', function() {
+      it('should suspend watchers on scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        $rootScope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$digest();
+        expect(watchSpy).not.toHaveBeenCalled();
+      }));
+
+      it('should resume watchers on scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        $rootScope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$resume();
+        $rootScope.$digest();
+        expect(watchSpy).toHaveBeenCalled();
+      }));
+
+      it('should suspend watchers on child scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        var scope = $rootScope.$new(true);
+        scope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$digest();
+        expect(watchSpy).not.toHaveBeenCalled();
+      }));
+
+    });
+
+
     describe('optimizations', function() {
 
       function setupWatches(scope, log) {
