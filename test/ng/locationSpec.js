@@ -957,7 +957,7 @@ describe('$location', function() {
       initService({html5Mode:true,hashPrefix: '!!',supportHistory: false});
       inject(
         initBrowser({url:'http://domain.com/base/index.html#!!/a/b',basePath: '/base/index.html'}),
-        function($rootScope, $location,  $browser) {
+        function($rootScope, $location, $browser) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!!/a/b');
           $location.path('/new');
           $location.search({a: true});
@@ -1323,7 +1323,7 @@ describe('$location', function() {
     });
 
 
-    it ('should not rewrite links when rewriting links is disabled', function() {
+    it('should not rewrite links when rewriting links is disabled', function() {
       configureService({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
       inject(
         initBrowser(),
@@ -1860,7 +1860,7 @@ describe('$location', function() {
       })
     );
 
-    it ('should fire $locationChangeSuccess event when change from browser location bar',
+    it('should fire $locationChangeSuccess event when change from browser location bar',
       inject(function($log, $location, $browser, $rootScope) {
         $rootScope.$apply(); // clear initial $locationChangeStart
 

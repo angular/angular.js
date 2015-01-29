@@ -476,7 +476,7 @@ angular.module('ngAnimate', ['ng'])
     var $$jqLite;
     $provide.decorator('$animate',
         ['$delegate', '$$q', '$injector', '$sniffer', '$rootElement', '$$asyncCallback', '$rootScope', '$document', '$templateRequest', '$$jqLite',
- function($delegate,   $$q,   $injector,   $sniffer,   $rootElement,   $$asyncCallback,   $rootScope,   $document,   $templateRequest,   $$$jqLite) {
+ function($delegate, $$q, $injector, $sniffer, $rootElement, $$asyncCallback, $rootScope, $document, $templateRequest, $$$jqLite) {
 
       $$jqLite = $$$jqLite;
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
@@ -1327,8 +1327,7 @@ angular.module('ngAnimate', ['ng'])
           } else if (lastAnimation.event == 'setClass') {
             animationsToCancel.push(lastAnimation);
             cleanup(element, className);
-          }
-          else if (runningAnimations[className]) {
+          } else if (runningAnimations[className]) {
             var current = runningAnimations[className];
             if (current.event == animationEvent) {
               skipAnimation = true;
@@ -1579,7 +1578,7 @@ angular.module('ngAnimate', ['ng'])
     }]);
 
     $animateProvider.register('', ['$window', '$sniffer', '$timeout', '$$animateReflow',
-                           function($window,   $sniffer,   $timeout,   $$animateReflow) {
+                           function($window, $sniffer, $timeout, $$animateReflow) {
       // Detect proper transitionend/animationend event names.
       var CSS_PREFIX = '', TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMATIONEND_EVENT;
 
