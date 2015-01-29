@@ -254,6 +254,20 @@ describe('validators', function() {
       expect($rootScope.value).toBe(12345);
       expect($rootScope.form.input.$error.minlength).toBeUndefined();
     });
+
+    it('should validate emptiness against the viewValue', function() {
+      var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
+
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$isEmpty').andCallThrough();
+
+      ctrl.$parsers.push(function(value) {
+        return value + '678';
+      });
+
+      helper.changeInputValueTo('12345');
+      expect(ctrl.$isEmpty).toHaveBeenCalledWith('12345');
+    });
   });
 
 
@@ -516,6 +530,20 @@ describe('validators', function() {
 
       $rootScope.$apply("answer = false");
       expect(inputElm).toBeValid();
+    });
+
+    it('should validate emptiness against the viewValue', function() {
+      var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" required />');
+
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$isEmpty').andCallThrough();
+
+      ctrl.$parsers.push(function(value) {
+        return value + '678';
+      });
+
+      helper.changeInputValueTo('12345');
+      expect(ctrl.$isEmpty).toHaveBeenCalledWith('12345');
     });
   });
 });
