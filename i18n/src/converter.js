@@ -42,6 +42,8 @@ function convertDatetimeData(dataObj) {
   datetimeFormats.DAY = dataObj.WEEKDAYS;
   datetimeFormats.SHORTDAY = dataObj.SHORTWEEKDAYS;
   datetimeFormats.AMPMS = dataObj.AMPMS;
+  datetimeFormats.FIRSTDAYOFWEEK = dataObj.FIRSTDAYOFWEEK;
+  datetimeFormats.WEEKENDRANGE = dataObj.WEEKENDRANGE;
 
 
   datetimeFormats.medium      = dataObj.DATEFORMATS[2] + ' ' + dataObj.TIMEFORMATS[2];

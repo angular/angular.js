@@ -184,6 +184,8 @@ describe("extractDateTimeSymbols", function() {
                       'nov.', 'déc.'],
                   DAY: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
                   SHORTDAY: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+                  FIRSTDAYOFWEEK: 6,
+                  WEEKENDRANGE: [5, 6],
                   AMPMS: ['AM', 'PM'],
                   medium: 'yyyy-MM-dd HH:mm:ss',
                   short: 'yy-MM-dd HH:mm',
