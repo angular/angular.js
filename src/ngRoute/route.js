@@ -485,8 +485,7 @@ function $RouteProvider() {
               $location.path(interpolate(this.current.$$route.originalPath, newParams));
               // interpolate modifies newParams, only query params are left
               $location.search(newParams);
-            }
-            else {
+            } else {
               throw $routeMinErr('norout', 'Tried updating route when with no current route');
             }
           }

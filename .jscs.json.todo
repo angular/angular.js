@@ -8,7 +8,6 @@
   "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
-  "disallowKeywordsOnNewLine": ["else"],
   "validateJSDoc": {
     "checkParamNames": true,
     "requireParamTypes": true
