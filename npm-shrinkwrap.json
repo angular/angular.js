@@ -1395,66 +1395,66 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.7",
+      "version": "0.10.8",
       "dependencies": {
         "catharsis": {
           "version": "0.7.1"
         },
         "change-case": {
-          "version": "2.1.5",
+          "version": "2.2.0",
           "dependencies": {
             "camel-case": {
-              "version": "1.0.2"
+              "version": "1.1.1"
             },
             "constant-case": {
-              "version": "1.0.0"
-            },
-            "dot-case": {
-              "version": "1.0.1"
-            },
-            "is-lower-case": {
-              "version": "1.0.0"
-            },
-            "is-upper-case": {
-              "version": "1.0.1"
-            },
-            "lower-case": {
-              "version": "1.0.2"
-            },
-            "param-case": {
-              "version": "1.0.1"
-            },
-            "pascal-case": {
-              "version": "1.0.0"
-            },
-            "path-case": {
-              "version": "1.0.1"
-            },
-            "sentence-case": {
               "version": "1.1.0"
             },
+            "dot-case": {
+              "version": "1.1.0"
+            },
+            "is-lower-case": {
+              "version": "1.1.0"
+            },
+            "is-upper-case": {
+              "version": "1.1.0"
+            },
+            "lower-case": {
+              "version": "1.1.1"
+            },
+            "param-case": {
+              "version": "1.1.0"
+            },
+            "pascal-case": {
+              "version": "1.1.0"
+            },
+            "path-case": {
+              "version": "1.1.0"
+            },
+            "sentence-case": {
+              "version": "1.1.1"
+            },
             "snake-case": {
-              "version": "1.0.1"
+              "version": "1.1.0"
             },
             "swap-case": {
-              "version": "1.0.2"
+              "version": "1.1.0"
             },
             "title-case": {
-              "version": "1.0.1"
+              "version": "1.1.0"
             },
             "upper-case": {
-              "version": "1.0.3"
+              "version": "1.1.1"
             },
             "upper-case-first": {
-              "version": "1.0.1"
+              "version": "1.1.0"
             }
           }
         },
         "esprima": {
-          "version": "1.2.2"
+          "version": "1.2.3"
         },
         "estraverse": {
-          "version": "1.7.1"
+          "version": "1.9.1"
         },
         "glob": {
           "version": "3.2.11",
@@ -1626,7 +1626,7 @@
                   }
                 },
                 "node-uuid": {
-                  "version": "1.4.1"
+                  "version": "1.4.2"
                 },
                 "cookie-jar": {
                   "version": "0.2.0"
@@ -2342,7 +2342,7 @@
     },
     "grunt-jasmine-node": {
       "version": "0.1.0",
-      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7",
+      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs": {
