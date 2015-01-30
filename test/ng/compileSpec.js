@@ -423,8 +423,7 @@ describe('$compile', function() {
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log) {
         element = $compile(
-          '<span greet="angular" log="L" x-high-log="H" data-medium-log="M"></span>')
-          ($rootScope);
+          '<span greet="angular" log="L" x-high-log="H" data-medium-log="M"></span>')($rootScope);
         expect(element.text()).toEqual('Hello angular');
         expect(log).toEqual('L; M; H');
       }));
@@ -607,8 +606,7 @@ describe('$compile', function() {
       describe('priority', function() {
         it('should honor priority', inject(function($compile, $rootScope, log) {
           element = $compile(
-            '<span log="L" x-high-log="H" data-medium-log="M"></span>')
-            ($rootScope);
+            '<span log="L" x-high-log="H" data-medium-log="M"></span>')($rootScope);
           expect(log).toEqual('L; M; H');
         }));
       });
@@ -809,8 +807,7 @@ describe('$compile', function() {
 
 
         it('should compile template when replacing', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div replace medium-log>ignore</div><div>')
-            ($rootScope);
+          element = $compile('<div><div replace medium-log>ignore</div><div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Replace!');
           expect(log).toEqual('LOG; HIGH; MEDIUM');
@@ -818,8 +815,7 @@ describe('$compile', function() {
 
 
         it('should compile template when appending', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div append medium-log>ignore</div><div>')
-            ($rootScope);
+          element = $compile('<div><div append medium-log>ignore</div><div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!');
           expect(log).toEqual('LOG; HIGH; MEDIUM');
@@ -828,8 +824,7 @@ describe('$compile', function() {
 
         it('should merge attributes including style attr', inject(function($compile, $rootScope) {
           element = $compile(
-            '<div><div replace class="medium-log" style="height: 20px" ></div><div>')
-            ($rootScope);
+            '<div><div replace class="medium-log" style="height: 20px" ></div><div>')($rootScope);
           var div = element.find('div');
           expect(div.hasClass('medium-log')).toBe(true);
           expect(div.hasClass('log')).toBe(true);
@@ -841,8 +836,7 @@ describe('$compile', function() {
 
         it('should not merge attributes if they are the same', inject(function($compile, $rootScope) {
           element = $compile(
-            '<div><div nomerge class="medium-log" id="myid"></div><div>')
-            ($rootScope);
+            '<div><div nomerge class="medium-log" id="myid"></div><div>')($rootScope);
           var div = element.find('div');
           expect(div.hasClass('medium-log')).toBe(true);
           expect(div.hasClass('log')).toBe(true);
@@ -4892,8 +4886,7 @@ describe('$compile', function() {
           });
         });
         inject(function(log, $rootScope, $compile) {
-          element = $compile('<div><div trans>T:{{x}}-{{$parent.$id}}-{{$id}}<span>;</span></div></div>')
-              ($rootScope);
+          element = $compile('<div><div trans>T:{{x}}-{{$parent.$id}}-{{$id}}<span>;</span></div></div>')($rootScope);
           $rootScope.x = 'root';
           $rootScope.$apply();
           expect(element.text()).toEqual('W:iso-1-2;T:root-2-3;');
@@ -5178,8 +5171,7 @@ describe('$compile', function() {
           });
         });
         inject(function(log, $rootScope, $compile) {
-          element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')
-              ($rootScope);
+          element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')($rootScope);
           $rootScope.$apply();
           expect(jqLite(element.find('span')[0]).text()).toEqual('I:');
           expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
@@ -6010,8 +6002,7 @@ describe('$compile', function() {
           });
         });
         inject(function(log, $rootScope, $compile) {
-          element = $compile('<div><div high-log trans="text" log>{{$parent.$id}}-{{$id}};</div></div>')
-              ($rootScope);
+          element = $compile('<div><div high-log trans="text" log>{{$parent.$id}}-{{$id}};</div></div>')($rootScope);
           $rootScope.$apply();
           expect(log).toEqual('compile: <!-- trans: text -->; link; LOG; LOG; HIGH');
           expect(element.text()).toEqual('1-2;1-3;');
