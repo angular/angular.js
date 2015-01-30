@@ -516,6 +516,61 @@ describe('Scope', function() {
       expect(log).toEqual([]);
     }));
 
+    it('should use custom equals and copy functions',
+      inject(function($rootScope) {
+        var log = [];
+        var oldLog = [];
+
+        function logger(newVal, oldVal) {
+          log.push(newVal);
+          oldLog.push(oldVal);
+        }
+
+        var watched = "ABC";
+        var watchedFn = function() {
+          return watched;
+        };
+
+        // Comparator returns true if string starts with same character
+        var comparator = function(newVal, oldVal) {
+          if (oldVal === newVal) return true;
+          if (oldVal === undefined || newVal === undefined) return false;
+          if (newVal.length === oldVal.length === 0) return true;
+          if (newVal.length > 0 && oldVal.length > 0 && oldVal[0] === newVal[0]) {
+            return true;
+          }
+          return false;
+        };
+
+        // Copier add " copy" to value
+        var copier = function(value) {
+          if (value !== undefined) {
+            return value + " copy";
+          }
+          return undefined;
+        };
+
+        $rootScope.$watch(watchedFn, logger, comparator, copier);
+
+        $rootScope.$digest();
+        expect(log).toEqual(['ABC']);
+        expect(oldLog).toEqual(['ABC']);
+        log = [];
+        oldLog = [];
+
+        watched = "DEF";
+        $rootScope.$digest();
+        expect(log).toEqual(['DEF']);
+        expect(oldLog).toEqual(['ABC copy']);
+        log = [];
+        oldLog = [];
+
+        watched = "DZZ";
+        $rootScope.$digest();
+        expect(log).toEqual([]);
+        expect(oldLog).toEqual([]);
+      }));
+
 
     describe('$watch deregistration', function() {
 
