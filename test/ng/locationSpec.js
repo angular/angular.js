@@ -1323,7 +1323,7 @@ describe('$location', function() {
     });
 
 
-    it ('should not rewrite links when rewriting links is disabled', function() {
+    it('should not rewrite links when rewriting links is disabled', function() {
       configureService({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
       inject(
         initBrowser(),
@@ -1860,7 +1860,7 @@ describe('$location', function() {
       })
     );
 
-    it ('should fire $locationChangeSuccess event when change from browser location bar',
+    it('should fire $locationChangeSuccess event when change from browser location bar',
       inject(function($log, $location, $browser, $rootScope) {
         $rootScope.$apply(); // clear initial $locationChangeStart
 

@@ -12,6 +12,7 @@
   "disallowSpacesInAnonymousFunctionExpression": {
     "beforeOpeningRoundBrace": true
   },
+  "disallowSpacesInCallExpression": true,
   "disallowSpacesInFunctionDeclaration": {
     "beforeOpeningRoundBrace": true
   },

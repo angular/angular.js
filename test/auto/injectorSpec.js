@@ -976,7 +976,7 @@ describe('strict-di injector', function() {
       });
     });
     inject(function($injector) {
-      expect (function() {
+      expect(function() {
         $injector.invoke(function($test2) {});
       }).toThrowMinErr('$injector', 'strictdi');
     });
@@ -990,7 +990,7 @@ describe('strict-di injector', function() {
       });
     });
     inject(function($injector) {
-      expect (function() {
+      expect(function() {
         $injector.invoke(['$test', function($test) {}]);
       }).toThrowMinErr('$injector', 'strictdi');
     });

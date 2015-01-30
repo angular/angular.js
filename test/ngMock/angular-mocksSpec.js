@@ -1226,7 +1226,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should throw exception when only headers differs from expectation', function() {
+      it('should throw exception when only headers differs from expectation', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
 
@@ -1237,7 +1237,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should throw exception when only data differs from expectation', function() {
+      it('should throw exception when only data differs from expectation', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', 'some-data');
 
@@ -1248,7 +1248,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should not throw an exception when parsed body is equal to expected body object', function() {
+      it('should not throw an exception when parsed body is equal to expected body object', function() {
         hb.when('GET').respond(200, '', {});
 
         hb.expect('GET', '/match', {a: 1, b: 2});
@@ -1263,7 +1263,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should throw exception when only parsed body differs from expected body object', function() {
+      it('should throw exception when only parsed body differs from expected body object', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', {a: 1, b: 2});
 
