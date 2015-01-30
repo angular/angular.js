@@ -4,6 +4,7 @@
 // that correct the existing code base issues and make the new check pass.
 
 {
+  "validateParameterSeparator": ", ", // Re-assert this rule when JSCS allows multiple spaces
   "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
   "disallowImplicitTypeConversion": ["string"],
   "disallowMultipleLineBreaks": true,
