@@ -24,7 +24,7 @@
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-jasmine-node": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
-    "grunt-jscs": "~0.7.1",
+    "grunt-jscs": "~1.2.0",
     "grunt-merge-conflict": "~0.0.1",
     "grunt-shell": "~1.1.1",
     "gulp": "~3.8.0",
