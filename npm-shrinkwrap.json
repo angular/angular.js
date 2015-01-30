@@ -2346,22 +2346,28 @@
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs": {
-      "version": "0.7.1",
+      "version": "1.2.0",
       "dependencies": {
         "hooker": {
           "version": "0.2.3"
         },
         "jscs": {
-          "version": "1.6.2",
+          "version": "1.10.0",
           "dependencies": {
             "colors": {
-              "version": "0.6.2"
+              "version": "1.0.3"
             },
             "commander": {
-              "version": "2.3.0"
+              "version": "2.5.1"
             },
             "esprima": {
-              "version": "1.2.2"
+              "version": "1.2.3"
+            },
+            "esprima-harmony-jscs": {
+              "version": "1.1.0-regex-token-fix"
+            },
+            "estraverse": {
+              "version": "1.9.1"
             },
             "exit": {
               "version": "0.1.2"
@@ -2370,10 +2376,21 @@
               "version": "4.0.6",
               "dependencies": {
                 "graceful-fs": {
-                  "version": "3.0.4"
+                  "version": "3.0.5"
                 },
                 "inherits": {
                   "version": "2.0.1"
+                },
+                "minimatch": {
+                  "version": "1.0.0",
+                  "dependencies": {
+                    "lru-cache": {
+                      "version": "2.5.0"
+                    },
+                    "sigmund": {
+                      "version": "1.0.0"
+                    }
+                  }
                 },
                 "once": {
                   "version": "1.3.1",
@@ -2386,54 +2403,61 @@
               }
             },
             "minimatch": {
-              "version": "1.0.0",
+              "version": "2.0.1",
               "dependencies": {
-                "lru-cache": {
-                  "version": "2.5.0"
-                },
-                "sigmund": {
-                  "version": "1.0.0"
+                "brace-expansion": {
+                  "version": "1.1.0",
+                  "dependencies": {
+                    "balanced-match": {
+                      "version": "0.2.0"
+                    },
+                    "concat-map": {
+                      "version": "0.0.1"
+                    }
+                  }
                 }
               }
             },
             "strip-json-comments": {
-              "version": "1.0.1"
+              "version": "1.0.2"
             },
             "vow-fs": {
-              "version": "0.3.2",
+              "version": "0.3.4",
               "dependencies": {
                 "node-uuid": {
-                  "version": "1.4.0"
-                },
-                "vow": {
-                  "version": "0.4.4"
+                  "version": "1.4.2"
                 },
                 "vow-queue": {
-                  "version": "0.3.1"
+                  "version": "0.4.1"
                 },
                 "glob": {
-                  "version": "3.2.8",
+                  "version": "4.3.5",
                   "dependencies": {
-                    "minimatch": {
-                      "version": "0.2.14",
+                    "inflight": {
+                      "version": "1.0.4",
                       "dependencies": {
-                        "lru-cache": {
-                          "version": "2.5.0"
-                        },
-                        "sigmund": {
-                          "version": "1.0.0"
+                        "wrappy": {
+                          "version": "1.0.1"
                         }
                       }
                     },
                     "inherits": {
                       "version": "2.0.1"
+                    },
+                    "once": {
+                      "version": "1.3.1",
+                      "dependencies": {
+                        "wrappy": {
+                          "version": "1.0.1"
+                        }
+                      }
                     }
                   }
                 }
               }
             },
             "xmlbuilder": {
-              "version": "2.4.4",
+              "version": "2.4.6",
               "dependencies": {
                 "lodash-node": {
                   "version": "2.4.1"
@@ -2441,12 +2465,12 @@
               }
             },
             "supports-color": {
-              "version": "1.1.0"
+              "version": "1.2.0"
             }
           }
         },
         "vow": {
-          "version": "0.4.5"
+          "version": "0.4.8"
         }
       }
     },

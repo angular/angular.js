@@ -6347,7 +6347,7 @@ describe('$compile', function() {
             link: function(scope, element, attrs, ctrl, transclude) {
 
               // We use timeout here to simulate how ng-if works
-              $timeout(function()  {
+              $timeout(function() {
                 transclude(function(child) { element.append(child); });
               });
             }
