@@ -88,7 +88,9 @@ forEach({
   'null': function() { return null; },
   'true': function() { return true; },
   'false': function() { return false; },
-  'undefined': function() {}
+  'undefined': function() {},
+  'Infinity': function() { return Infinity; },
+  'NaN': function() { return NaN; }
 }, function(constantGetter, name) {
   constantGetter.constant = constantGetter.literal = constantGetter.sharedGetter = true;
   CONSTANTS[name] = constantGetter;
