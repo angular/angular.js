@@ -2156,7 +2156,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           beforeTemplateCompileNode = $compileNode[0],
           origAsyncDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
-          derivedSyncDirective = extend({}, origAsyncDirective, {
+          derivedSyncDirective = inherit(origAsyncDirective, {
             templateUrl: null, transclude: null, replace: null, $$originalDirective: origAsyncDirective
           }),
           templateUrl = (isFunction(origAsyncDirective.templateUrl))

@@ -2034,6 +2034,33 @@ describe('$compile', function() {
           });
         });
 
+        it('should keep prototype properties on sync version of async directive', function() {
+          module(function() {
+            function DirectiveClass() {
+              this.restrict = 'E';
+              this.templateUrl = "test.html";
+            }
+
+            DirectiveClass.prototype.compile = function() {
+              return function(scope, element, attrs) {
+                scope.value = "Test Value";
+              }
+            }
+
+            directive('templateUrlWithPrototype', valueFn(new DirectiveClass()));
+          });
+
+          inject(function($compile, $rootScope, $httpBackend) {
+            $httpBackend.whenGET('test.html').
+              respond('<p>{{value}}</p>');
+            element = $compile('<template-url-with-prototype><template-url-with-prototype>')($rootScope);
+            $httpBackend.flush();
+            $rootScope.$digest();
+            console.log(element.find("p")[0]);
+            expect(element.find("p")[0].innerText).toEqual("Test Value");
+          });
+        });
+
       });
 
 
