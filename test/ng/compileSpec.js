@@ -1120,7 +1120,7 @@ describe('$compile', function() {
           module(function() {
             function DirectiveClass() {
               this.restrict = 'E';
-              this.template = "<p>{{value}}<p>";
+              this.template = "<p>{{value}}</p>";
             }
 
             DirectiveClass.prototype.compile = function() {
@@ -1135,7 +1135,7 @@ describe('$compile', function() {
           inject(function($compile, $rootScope) {
             element = $compile('<template-url-with-prototype><template-url-with-prototype>')($rootScope);
             $rootScope.$digest();
-            expect(element.find("p")[0].innerText).toEqual("Test Value");
+            expect(element.find("p")[0].innerHTML).toEqual("Test Value");
           });
         });
       });
@@ -2079,7 +2079,7 @@ describe('$compile', function() {
             element = $compile('<template-url-with-prototype><template-url-with-prototype>')($rootScope);
             $httpBackend.flush();
             $rootScope.$digest();
-            expect(element.find("p")[0].innerText).toEqual("Test Value");
+            expect(element.find("p")[0].innerHTML).toEqual("Test Value");
           });
         });
 
