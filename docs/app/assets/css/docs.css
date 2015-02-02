@@ -415,7 +415,7 @@ iframe.example {
 
 .main-body-grid .side-navigation {
   position:relative;
-  padding-bottom:50px;
+  padding-bottom:120px;
 }
 
 .main-body-grid .side-navigation.ng-hide {
@@ -631,6 +631,7 @@ ul.events > li {
   }
   .main-body-grid .side-navigation {
     display:block!important;
+    padding-bottom:50px;
   }
   .main-body-grid .side-navigation.ng-hide {
     display:none!important;
