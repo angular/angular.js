@@ -103,10 +103,10 @@ then(function (tags) {
     sort(semver.rcompare);
 }).
 then(function (tags) {
-  var major = tags[0].split('.')[0] + '.x';
+  var major = tags[0].split('.')[0];
   return tags.
     filter(function (ver) {
-      return semver.satisfies(ver, major);
+      return semver(ver).major == major;
     });
 }).
 then(function (tags) {
