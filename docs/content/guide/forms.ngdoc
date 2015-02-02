@@ -6,11 +6,12 @@
 Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
 A Form is a collection of controls for the purpose of grouping related controls together.
 
-Form and controls provide validation services, so that the user can be notified of invalid input.
-This provides a better user experience, because the user gets instant feedback on how to
-correct the error. Keep in mind that while client-side validation plays an important role
-in providing good user experience, it can easily be circumvented and thus can not be trusted.
-Server-side validation is still necessary for a secure application.
+Form and controls provide validation services, so that the user can be notified of invalid input
+before submitting a form. This provides a better user experience than server-side validation alone
+because the user gets instant feedback on how to correct the error. Keep in mind that while
+client-side validation plays an important role in providing good user experience, it can easily
+be circumvented and thus can not be trusted. Server-side validation is still necessary for a
+secure application.
 
 
 # Simple form
