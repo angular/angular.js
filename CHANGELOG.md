@@ -1,3 +1,94 @@
+<a name="1.4.0-beta.3"></a>
+# 1.4.0-beta.3 substance-mimicry (2015-02-02)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - do not initialize optional '&' binding if attribute not specified
+  ([6a38dbfd](https://github.com/angular/angular.js/commit/6a38dbfd3c34c8f9efff503d17eb3cbeb666d422),
+   [#6404](https://github.com/angular/angular.js/issues/6404), [#9216](https://github.com/angular/angular.js/issues/9216))
+  - respect return value from controller constructor
+  ([62d514b0](https://github.com/angular/angular.js/commit/62d514b06937cc7dd86e973ea11165c88343b42d))
+- **$controller:** throw better error when controller expression is bad
+  ([dda65e99](https://github.com/angular/angular.js/commit/dda65e992b72044c0fa0c8f5f33184028c0e3ad7),
+   [#10875](https://github.com/angular/angular.js/issues/10875), [#10910](https://github.com/angular/angular.js/issues/10910))
+- **$parse:** remove references to last arguments to a fn call
+  ([e61eae1b](https://github.com/angular/angular.js/commit/e61eae1b1f2351c51bcfe4142749a4e68a2806ff),
+   [#10894](https://github.com/angular/angular.js/issues/10894))
+- **a:** don't reload if there is only a name attribute
+  ([d729fcf0](https://github.com/angular/angular.js/commit/d729fcf030be1d3ef37196d36ea3bf3249ee3318),
+   [#6273](https://github.com/angular/angular.js/issues/6273), [#10880](https://github.com/angular/angular.js/issues/10880))
+- **angular.copy:** support copying `TypedArray`s
+  ([aa0f6449](https://github.com/angular/angular.js/commit/aa0f64496a66d2a5d1a4d033f2eb075a8b084a78),
+   [#10745](https://github.com/angular/angular.js/issues/10745))
+- **filter:** format timezone correctly in the case that UTC timezone is used
+  ([8c469191](https://github.com/angular/angular.js/commit/8c46919199090a05634789774124b38983430c76),
+   [#9359](https://github.com/angular/angular.js/issues/9359))
+- **ngRoute:** dont duplicate optional params into query
+  ([27bf2ce4](https://github.com/angular/angular.js/commit/27bf2ce40c5adfb1494d69c9d0ac9cf433834a12),
+   [#10689](https://github.com/angular/angular.js/issues/10689))
+- **ngScenario:** allow ngScenario to handle lazy-loaded and manually bootstrapped applications
+  ([c69caa7b](https://github.com/angular/angular.js/commit/c69caa7beee4e920f8f587eb3e943be99864a14f),
+   [#10723](https://github.com/angular/angular.js/issues/10723))
+- **validators:** maxlength should use viewValue for $isEmpty
+  ([bfcf9946](https://github.com/angular/angular.js/commit/bfcf9946e16d21b55dde50d4d21c71c898b10215),
+   [#10898](https://github.com/angular/angular.js/issues/10898))
+
+
+## Features
+
+- **$compile:** allow using bindToController as object, support both new/isolate scopes
+  ([35498d70](https://github.com/angular/angular.js/commit/35498d7045ba9138016464a344e2c145ce5264c1),
+   [#10420](https://github.com/angular/angular.js/issues/10420), [#10467](https://github.com/angular/angular.js/issues/10467))
+- **ngMocks:** cleanup $inject annotations after each test
+  ([0baa17a3](https://github.com/angular/angular.js/commit/0baa17a3b7ad2b242df2b277b81cebdf75b04287))
+
+
+## Performance Improvements
+
+- **$scope:** Add a property $$watchersCount to scope
+  ([c1500ea7](https://github.com/angular/angular.js/commit/c1500ea775c4cb130088b7d5bb5fb872bda50bae))
+
+
+## Breaking Changes
+
+- **$compile:** due to [6a38dbfd](https://github.com/angular/angular.js/commit/6a38dbfd3c34c8f9efff503d17eb3cbeb666d422),
+Previously, '&' expressions would always set up a function in the isolate scope. Now, if the binding
+is marked as optional and the attribute is not specified, no function will be added to the isolate scope.
+
+
+<a name="1.3.12"></a>
+# 1.3.12 outlandish-knitting (2015-02-02)
+
+
+## Bug Fixes
+
+- **$controller:** throw better error when controller expression is bad
+  ([632b2ddd](https://github.com/angular/angular.js/commit/632b2ddd34c07b3b5a207bd83ca3a5e6e613e63b),
+   [#10875](https://github.com/angular/angular.js/issues/10875), [#10910](https://github.com/angular/angular.js/issues/10910))
+- **$parse:** remove references to last arguments to a fn call
+  ([7caad220](https://github.com/angular/angular.js/commit/7caad2205a6e9927890192a3638f55532bdaaf75),
+   [#10894](https://github.com/angular/angular.js/issues/10894))
+- **ngRoute:** dont duplicate optional params into query
+  ([f41ca4a5](https://github.com/angular/angular.js/commit/f41ca4a53ed53f172fb334911be56e42aad58794),
+   [#10689](https://github.com/angular/angular.js/issues/10689))
+- **ngScenario:** Allow ngScenario to handle lazy-loaded and manually bootstrapped applications
+  ([0bcd0872](https://github.com/angular/angular.js/commit/0bcd0872d8d2e37e6cb7aa5bc5cb0c742b4294f9),
+   [#10723](https://github.com/angular/angular.js/issues/10723))
+- **validators:** maxlength should use viewValue for $isEmpty
+  ([abd8e2a9](https://github.com/angular/angular.js/commit/abd8e2a9eb2d21ac67989c2f7b64c4c6547a1585),
+   [#10898](https://github.com/angular/angular.js/issues/10898))
+
+
+## Features
+
+- **ngMocks:** cleanup $inject annotations after each test
+  ([6ec59460](https://github.com/angular/angular.js/commit/6ec5946094ee92b820bbacc886fa2367715e60b4))
+
+
+
+  
 <a name="1.4.0-beta.2"></a>
 # 1.4.0-beta.2 holographic-rooster (2015-01-26)
 
