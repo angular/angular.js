@@ -13,7 +13,10 @@
 - **$controller:** throw better error when controller expression is bad
   ([dda65e99](https://github.com/angular/angular.js/commit/dda65e992b72044c0fa0c8f5f33184028c0e3ad7),
    [#10875](https://github.com/angular/angular.js/issues/10875), [#10910](https://github.com/angular/angular.js/issues/10910))
-- **$parse:** remove references to last arguments to a fn call
+- **$parse:**
+  - handle null targets at assign
+  ([2e5a7e52](https://github.com/angular/angular.js/commit/2e5a7e52a0385575bbb55a801471b009afafeca3))
+  - remove references to last arguments to a fn call
   ([e61eae1b](https://github.com/angular/angular.js/commit/e61eae1b1f2351c51bcfe4142749a4e68a2806ff),
    [#10894](https://github.com/angular/angular.js/issues/10894))
 - **a:** don't reload if there is only a name attribute
@@ -41,6 +44,9 @@
 - **$compile:** allow using bindToController as object, support both new/isolate scopes
   ([35498d70](https://github.com/angular/angular.js/commit/35498d7045ba9138016464a344e2c145ce5264c1),
    [#10420](https://github.com/angular/angular.js/issues/10420), [#10467](https://github.com/angular/angular.js/issues/10467))
+- **filter:** support conversion to timezone other than UTC
+  ([c6d8512a](https://github.com/angular/angular.js/commit/c6d8512a1d7345516d1bd9a039d81821b9518bff),
+   [#10858](https://github.com/angular/angular.js/issues/10858))
 - **ngMocks:** cleanup $inject annotations after each test
   ([0baa17a3](https://github.com/angular/angular.js/commit/0baa17a3b7ad2b242df2b277b81cebdf75b04287))
 
@@ -49,6 +55,8 @@
 
 - **$scope:** Add a property $$watchersCount to scope
   ([c1500ea7](https://github.com/angular/angular.js/commit/c1500ea775c4cb130088b7d5bb5fb872bda50bae))
+- **$parse** new and more performant parser
+  ([0d42426](https://github.com/angular/angular.js/commit/0d424263ead16635afb582affab2b147f8e71626))
 
 
 ## Breaking Changes
@@ -88,7 +96,7 @@ is marked as optional and the attribute is not specified, no function will be ad
 
 
 
-  
+
 <a name="1.4.0-beta.2"></a>
 # 1.4.0-beta.2 holographic-rooster (2015-01-26)
 
