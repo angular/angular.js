@@ -2784,6 +2784,27 @@ describe('parser', function() {
           fn.assign(scope, 123);
           expect(scope.a.b.c).toEqual(123);
         }));
+
+        it('should create objects when finding a null', inject(function($parse) {
+          var fn = $parse('foo.bar');
+          var scope = {foo: null};
+          fn.assign(scope, 123);
+          expect(scope.foo.bar).toEqual(123);
+        }));
+
+        it('should create objects when finding a null', inject(function($parse) {
+          var fn = $parse('foo["bar"]');
+          var scope = {foo: null};
+          fn.assign(scope, 123);
+          expect(scope.foo.bar).toEqual(123);
+        }));
+
+        it('should create objects when finding a null', inject(function($parse) {
+          var fn = $parse('foo.bar.baz');
+          var scope = {foo: null};
+          fn.assign(scope, 123);
+          expect(scope.foo.bar.baz).toEqual(123);
+        }));
       });
 
       describe('one-time binding', function() {
