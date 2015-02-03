@@ -152,7 +152,15 @@ function filterFilter() {
         return array;
     }
 
-    return array.filter(predicateFn);
+    var filtered = [];
+
+    for (var i = 0, length = array.length;i < length;i++) {
+      if (predicateFn(array[i], i)) {
+        filtered.push(array[i]);
+      }
+    }
+
+    return filtered;
   };
 }
 
