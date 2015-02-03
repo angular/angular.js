@@ -979,7 +979,7 @@ function toJsonReplacer(key, value) {
  * Serializes input into a JSON-formatted string. Properties with leading $$ characters will be
  * stripped since angular uses this notation internally.
  *
- * @param {Object|Array|Date|string|number} obj Input to be serialized into JSON.
+ * @param {Object|Array|Date|string|number|undefined} obj Input to be serialized into JSON.
  * @param {boolean|number=} pretty If set to true, the JSON output will contain newlines and whitespace.
  *    If set to an integer, the JSON output will contain that many spaces per indentation (the default is 2).
  * @returns {string|undefined} JSON-ified string representing `obj`.
@@ -1002,8 +1002,8 @@ function toJson(obj, pretty) {
  * @description
  * Deserializes a JSON string.
  *
- * @param {string} json JSON string to deserialize.
- * @returns {Object|Array|string|number} Deserialized JSON string.
+ * @param {string|undefined} json JSON string to deserialize.
+ * @returns {Object|Array|string|number|undefined} Deserialized JSON string.
  */
 function fromJson(json) {
   return isString(json)

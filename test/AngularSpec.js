@@ -1369,6 +1369,10 @@ describe('angular', function() {
       expect(fromJson('{}')).toEqual({});
       expect(spy).toHaveBeenCalled();
     });
+
+    it('should deserialize undefined as undefined', function() {
+      expect(fromJson(undefined)).toEqual(undefined);
+    });
   });
 
 
