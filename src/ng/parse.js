@@ -926,7 +926,7 @@ ASTCompiler.prototype = {
           self.if(self.stage === 'inputs' || 's', function() {
             if (create && create !== 1) {
               self.if(
-                self.not(self.getHasOwnProperty('s', ast.name)),
+                self.not(self.nonComputedMember('s', ast.name)),
                 self.lazyAssign(self.nonComputedMember('s', ast.name), '{}'));
             }
             self.assign(intoId, self.nonComputedMember('s', ast.name));
@@ -948,7 +948,7 @@ ASTCompiler.prototype = {
             self.recurse(ast.property, right);
             self.addEnsureSafeMemberName(right);
             if (create && create !== 1) {
-              self.if(self.not(right + ' in ' + left), self.lazyAssign(self.computedMember(left, right), '{}'));
+              self.if(self.not(self.computedMember(left, right)), self.lazyAssign(self.computedMember(left, right), '{}'));
             }
             expression = self.ensureSafeObject(self.computedMember(left, right));
             self.assign(intoId, expression);
@@ -959,7 +959,7 @@ ASTCompiler.prototype = {
           } else {
             ensureSafeMemberName(ast.property.name);
             if (create && create !== 1) {
-              self.if(self.not(self.escape(ast.property.name) + ' in ' + left), self.lazyAssign(self.nonComputedMember(left, ast.property.name), '{}'));
+              self.if(self.not(self.nonComputedMember(left, ast.property.name)), self.lazyAssign(self.nonComputedMember(left, ast.property.name), '{}'));
             }
             expression = self.nonComputedMember(left, ast.property.name);
             if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.property.name)) {
@@ -1515,7 +1515,7 @@ ASTInterpreter.prototype = {
   identifier: function(name, expensiveChecks, context, create, expression) {
     return function(scope, locals, assign, inputs) {
       var base = locals && (name in locals) ? locals : scope;
-      if (create && create !== 1 && base && !(name in base)) {
+      if (create && create !== 1 && base && !(base[name])) {
         base[name] = {};
       }
       var value = base ? base[name] : undefined;
@@ -1537,7 +1537,7 @@ ASTInterpreter.prototype = {
       if (lhs != null) {
         rhs = right(scope, locals, assign, inputs);
         ensureSafeMemberName(rhs, expression);
-        if (create && create !== 1 && lhs && !(rhs in lhs)) {
+        if (create && create !== 1 && lhs && !(lhs[rhs])) {
           lhs[rhs] = {};
         }
         value = lhs[rhs];
@@ -1553,7 +1553,7 @@ ASTInterpreter.prototype = {
   nonComputedMember: function(left, right, expensiveChecks, context, create, expression) {
     return function(scope, locals, assign, inputs) {
       var lhs = left(scope, locals, assign, inputs);
-      if (create && create !== 1 && lhs && !(right in lhs)) {
+      if (create && create !== 1 && lhs && !(lhs[right])) {
         lhs[right] = {};
       }
       var value = lhs != null ? lhs[right] : undefined;
