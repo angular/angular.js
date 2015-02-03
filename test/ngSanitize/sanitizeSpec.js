@@ -140,6 +140,10 @@ describe('HTML', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
   });
 
+  it('should remove script that has newline characters', function() {
+    expectHTML('a<SCRIPT\n>\n\revil\n\r< / scrIpt\n >c.').toEqual('ac.');
+  });
+
   it('should remove DOCTYPE header', function() {
     expectHTML('<!DOCTYPE html>').toEqual('');
     expectHTML('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n"http://www.w3.org/TR/html4/strict.dtd">').toEqual('');
@@ -158,6 +162,10 @@ describe('HTML', function() {
 
   it('should remove style', function() {
     expectHTML('a<STyle>evil</stYle>c.').toEqual('ac.');
+  });
+
+  it('should remove style that has newline characters', function() {
+    expectHTML('a<STyle \n>\n\revil\n\r</stYle\n>c.').toEqual('ac.');
   });
 
   it('should remove script and style', function() {
