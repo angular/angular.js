@@ -154,7 +154,7 @@ function filterFilter() {
 
     var filtered = [];
 
-    for (var i = 0, length = array.length;i < length;i++) {
+    for (var i = 0, length = array.length; i < length; i++) {
       if (predicateFn(array[i], i)) {
         filtered.push(array[i]);
       }
