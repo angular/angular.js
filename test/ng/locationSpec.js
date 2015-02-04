@@ -673,6 +673,16 @@ describe('$location', function() {
     }));
   });
 
+  describe('rewrite hashbang url <> html5 url', function() {
+    beforeEach(initService({html5Mode: true, supportHistory: true}));
+    beforeEach(inject(initBrowser({url:'http://new.com/#', basePath: '/'})));
+
+    it('should not replace browser url if only the empty hash fragment is cleared', inject(function($browser, $location) {
+      expect($browser.url()).toBe('http://new.com/#');
+      expect($location.absUrl()).toBe('http://new.com/');
+    }));
+  });
+
   describe('wiring', function() {
 
     beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
