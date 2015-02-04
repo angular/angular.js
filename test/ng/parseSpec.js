@@ -2204,6 +2204,24 @@ describe('parser', function() {
         expect(scope.$eval('a + \n b.c + \r "\td" + \t \r\n\r "\r\n\n"')).toEqual("abc\td\r\n\n");
       });
 
+
+      // https://github.com/angular/angular.js/issues/10968
+      it('should evaluate arrays literals initializers left-to-right', inject(function($parse) {
+        var s = {c:function() {return {b: 1}; }};
+        expect($parse("e=1;[a=c(),d=a.b+1]")(s)).toEqual([{b: 1}, 2]);
+      }));
+
+      it('should evaluate function arguments left-to-right', inject(function($parse) {
+        var s = {c:function() {return {b: 1}; }, i: function(x, y) { return [x, y];}};
+        expect($parse("e=1;i(a=c(),d=a.b+1)")(s)).toEqual([{b: 1}, 2]);
+      }));
+
+      it('should evaluate object properties expressions left-to-right', inject(function($parse) {
+        var s = {c:function() {return {b: 1}; }};
+        expect($parse("e=1;{x: a=c(), y: d=a.b+1}")(s)).toEqual({x: {b: 1}, y: 2});
+      }));
+
+
       describe('sandboxing', function() {
         describe('Function constructor', function() {
           it('should not tranverse the Function constructor in the getter', function() {
