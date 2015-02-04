@@ -2131,7 +2131,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
 if (window.jasmine || window.mocha) {
 
   var currentSpec = null,
-      annotatedFunctions,
+      annotatedFunctions = [],
       isSpecRunning = function() {
         return !!currentSpec;
       };
