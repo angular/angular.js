@@ -996,7 +996,7 @@ ASTCompiler.prototype = {
           self.if(self.notNull(right), function() {
             self.addEnsureSafeFunction(right);
             forEach(ast.arguments, function(expr) {
-              self.recurse(expr, undefined, undefined, function(argument) {
+              self.recurse(expr, self.nextId(), undefined, function(argument) {
                 args.push(self.ensureSafeObject(argument));
               });
             });
@@ -1027,14 +1027,14 @@ ASTCompiler.prototype = {
           self.addEnsureSafeObject(self.member(left.context, left.name, left.computed));
           expression = self.member(left.context, left.name, left.computed) + ast.operator + right;
           self.assign(intoId, expression);
-          recursionFn(expression);
+          recursionFn(intoId || expression);
         });
       }, 1);
       break;
     case AST.ArrayExpression:
       args = [];
       forEach(ast.elements, function(expr) {
-        self.recurse(expr, undefined, undefined, function(argument) {
+        self.recurse(expr, self.nextId(), undefined, function(argument) {
           args.push(argument);
         });
       });
@@ -1045,7 +1045,7 @@ ASTCompiler.prototype = {
     case AST.ObjectExpression:
       args = [];
       forEach(ast.properties, function(property) {
-        self.recurse(property.value, undefined, undefined, function(expr) {
+        self.recurse(property.value, self.nextId(), undefined, function(expr) {
           args.push(self.escape(
               property.key.type === AST.Identifier ? property.key.name :
                 ('' + property.key.value)) +
