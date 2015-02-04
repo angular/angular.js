@@ -138,6 +138,7 @@ describe('HTML', function() {
 
   it('should remove script', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
+    expectHTML('a<SCRIPT>\n\revil\n\r< / scrIpt >c.').toEqual('ac.');
   });
 
   it('should remove script that has newline characters', function() {
@@ -162,6 +163,7 @@ describe('HTML', function() {
 
   it('should remove style', function() {
     expectHTML('a<STyle>evil</stYle>c.').toEqual('ac.');
+    expectHTML('a<STyle>\n\revil\n\r</stYle>c.').toEqual('ac.');
   });
 
   it('should remove style that has newline characters', function() {
