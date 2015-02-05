@@ -291,6 +291,18 @@ function qFactory(nextTick, exceptionHandler) {
       }, function(error) {
         return handleCallback(error, false, callback);
       }, progressBack);
+    },
+
+    isPending: function() {
+      return this.$$state.status == 0;
+    },
+
+    isResolved: function() {
+      return this.$$state.status == 1;
+    },
+
+    isRejected: function() {
+      return this.$$state.status == 2;
     }
   };
 

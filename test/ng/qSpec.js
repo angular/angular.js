@@ -781,6 +781,31 @@ describe('q', function() {
         });
       });
 
+      describe('state reflection', function() {
+        it('should reflect on rejection', function() {
+          var promise = createPromise();
+          reject();
+          expect(promise.isRejected()).toBe(true);
+          expect(promise.isPending()).toBe(false);
+          expect(promise.isResolved()).toBe(false);
+        });
+
+        it('should reflect on resolution', function() {
+          var promise = createPromise();
+          resolve();
+          expect(promise.isResolved()).toBe(true);
+          expect(promise.isPending()).toBe(false);
+          expect(promise.isRejected()).toBe(false);
+        });
+
+        it('should reflect on pending', function() {
+          var promise = createPromise();
+          expect(promise.isPending()).toBe(true);
+          expect(promise.isRejected()).toBe(false);
+          expect(promise.isResolved()).toBe(false);
+        });
+      });
+
       describe('catch', function() {
         it('should be a shorthand for defining promise error handlers', function() {
           var promise = createPromise();
