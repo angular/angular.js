@@ -62,6 +62,11 @@ var ngInitDirective = ngDirective({
     return {
       pre: function(scope, element, attrs) {
         scope.$eval(attrs.ngInit);
+      },
+      post: function(scope, element, attrs) {
+        scope.$watch(attrs.ngInit, function() {
+          scope.$eval(attrs.ngInit);
+        });
       }
     };
   }
