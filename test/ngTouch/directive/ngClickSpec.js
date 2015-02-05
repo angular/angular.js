@@ -125,7 +125,7 @@ describe('ngClick (touch)', function() {
   }));
 
 
-  it('should not click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
+  it('should not prevent click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
@@ -140,11 +140,11 @@ describe('ngClick (touch)', function() {
     browserTrigger(element, 'touchmove');
     browserTrigger(element, 'touchend',{
       keys: [],
-      x: 400,
-      y: 400
+      x: 15,
+      y: 15
     });
 
-    expect($rootScope.tapped).toBeUndefined();
+    expect($rootScope.tapped).toEqual(true);
   }));
 
   it('should add the CSS class while the element is held down, and then remove it', inject(function($rootScope, $compile, $rootElement) {
