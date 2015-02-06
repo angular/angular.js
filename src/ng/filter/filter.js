@@ -218,7 +218,7 @@ function deepCompare(actual, expected, comparator, matchAgainstAnyProp, dontMatc
           }
 
           var matchAnyProperty = key === '$';
-          var actualVal = matchAnyProperty ? actual : actual[key];
+          var actualVal = (matchAnyProperty || actual == null) ? actual : actual[key];
           if (!deepCompare(actualVal, expectedVal, comparator, matchAnyProperty, matchAnyProperty)) {
             return false;
           }
