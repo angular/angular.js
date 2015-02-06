@@ -236,16 +236,18 @@ var svgAttrs = makeMap('accent-height,accumulate,additive,alphabetic,arabic-form
     'underline-position,underline-thickness,unicode,unicode-range,units-per-em,values,version,' +
     'viewBox,visibility,width,widths,x,x-height,x1,x2,xlink:actuate,xlink:arcrole,xlink:role,' +
     'xlink:show,xlink:title,xlink:type,xml:base,xml:lang,xml:space,xmlns,xmlns:xlink,y,y1,y2,' +
-    'zoomAndPan');
+    'zoomAndPan', true);
 
 var validAttrs = angular.extend({},
                                 uriAttrs,
                                 svgAttrs,
                                 htmlAttrs);
 
-function makeMap(str) {
+function makeMap(str, lowercaseKeys) {
   var obj = {}, items = str.split(','), i;
-  for (i = 0; i < items.length; i++) obj[items[i]] = true;
+  for (i = 0; i < items.length; i++) {
+    obj[lowercaseKeys ? angular.lowercase(items[i]) : items[i]] = true;
+  }
   return obj;
 }
 
