@@ -575,7 +575,7 @@ function isBlob(obj) {
 
 
 function isBoolean(value) {
-   return value === true || value === false;
+   return value === true || value === false || toString.call(value) === '[object Boolean]';
 }
 
 
