@@ -251,6 +251,12 @@ describe('HTML', function() {
         .toEqual('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>');
   });
 
+  it('should not ignore white-listed svg camelCased attributes', function() {
+    expectHTML('<svg preserveAspectRatio="true"></svg>')
+        .toEqual('<svg preserveAspectRatio="true"></svg>');
+
+  });
+
   it('should sanitize SVG xlink:href attribute values', function() {
     expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert()"></a></svg>')
         .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
