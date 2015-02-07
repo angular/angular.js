@@ -709,6 +709,10 @@ function arrayRemove(array, value) {
  </example>
  */
 function copy(source, destination, stackSource, stackDest) {
+  if (isElement(source)) {
+    throw ngMinErr('cpe',
+      "Can't copy! Making copies of DOM or jQuery Objects is not supported.");
+  }
   if (isWindow(source) || isScope(source)) {
     throw ngMinErr('cpws',
       "Can't copy! Making copies of Window or Scope instances is not supported.");
@@ -772,11 +776,16 @@ function copy(source, destination, stackSource, stackDest) {
       }
       for (var key in source) {
         if (source.hasOwnProperty(key)) {
-          result = copy(source[key], null, stackSource, stackDest);
-          if (isObject(source[key])) {
-            stackSource.push(source[key]);
-            stackDest.push(result);
+          if (!isElement(source[key])) {
+            result = copy(source[key], null, stackSource, stackDest);
+            if (isObject(source[key])) {
+              stackSource.push(source[key]);
+              stackDest.push(result);
+            }
+          } else {
+            result = source[key];
           }
+
           destination[key] = result;
         }
       }

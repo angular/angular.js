@@ -258,6 +258,27 @@ describe('angular', function() {
       }
     });
 
+    it("should throw an exception if a DOM object is copied", function() {
+      var src = document.body;
+      var dst = {};
+      expect(function() { copy(src, dst); })
+        .toThrowMinErr("ng", "cpe", "Can't copy! Making copies of DOM or jQuery Objects is not supported.");
+    });
+
+    it("should throw an exception if an Element object is copied", function() {
+      var src = angular.element(document.body);
+      var dst = {};
+      expect(function() { copy(src, dst); })
+        .toThrowMinErr("ng", "cpe", "Can't copy! Making copies of DOM or jQuery Objects is not supported.");
+    });
+
+    it("should not throw an exception if a copied object contains a DOM and/or Element.", function() {
+      var src = {a: document.body, b: angular.element(document.body)};
+      var dst = {};
+      expect(function() { copy(src, dst); })
+        .not.toThrow();
+    });
+
     it("should deeply copy an array into an existing array", function() {
       var src = [1, {name:"value"}];
       var dst = [{key:"v"}];
