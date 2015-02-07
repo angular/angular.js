@@ -613,6 +613,19 @@ describe('input', function() {
     });
 
 
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2013-07');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 5, 30, 19, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2014, 5, 30, 19, 0, 0));
+      });
+      expect(inputElm.val()).toBe('2014-07');
+    });
+
+
     it('should label parse errors as `month`', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="val" name="alias" />', {
         valid: false,
@@ -634,6 +647,17 @@ describe('input', function() {
       helper.changeInputValueTo('2013-12');
       expect(+$rootScope.value).toBe(Date.UTC(2013, 11, 1, 1, 0, 0, 0));
       expect(inputElm.val()).toBe('2013-12');
+    });
+
+    it('should only change the month of a bound date in any timezone', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2013, 6, 31, 20, 0, 0));
+      });
+      helper.changeInputValueTo('2013-09');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 7, 31, 20, 0, 0));
+      expect(inputElm.val()).toBe('2013-09');
     });
 
     describe('min', function() {
@@ -814,6 +838,19 @@ describe('input', function() {
     });
 
 
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2013-W03');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 0, 16, 19, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2014, 0, 16, 19, 0, 0));
+      });
+      expect(inputElm.val()).toBe('2014-W03');
+    });
+
+
     it('should label parse errors as `week`', function() {
       var inputElm = helper.compileInput('<input type="week" ng-model="val" name="alias" />', {
         valid: false,
@@ -987,6 +1024,30 @@ describe('input', function() {
         $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
       });
       expect(inputElm.val()).toBe('2001-01-01T01:02:00.000');
+    });
+
+
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2000-01-01T06:02');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+      });
+      expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+    });
+
+
+    it('should fallback to default timezone in case an unknown timezone was passed', function() {
+      var inputElm = helper.compileInput(
+        '<input type="datetime-local" ng-model="value1" ng-model-options="{timezone: \'WTF\'}" />' +
+        '<input type="datetime-local" ng-model="value2" />');
+
+      helper.changeGivenInputTo(inputElm.eq(0), '2000-01-01T06:02');
+      helper.changeGivenInputTo(inputElm.eq(1), '2000-01-01T06:02');
+      expect($rootScope.value1).toEqual($rootScope.value2);
     });
 
 
@@ -1278,6 +1339,19 @@ describe('input', function() {
     });
 
 
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="time" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('23:02:00');
+      expect(+$rootScope.value).toBe(Date.UTC(1970, 0, 1, 18, 2, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(1971, 0, 1, 18, 2, 0));
+      });
+      expect(inputElm.val()).toBe('23:02:00.000');
+    });
+
+
     it('should allow to specify the milliseconds', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="value"" />');
 
@@ -1554,6 +1628,19 @@ describe('input', function() {
 
       $rootScope.$apply(function() {
         $rootScope.value = new Date(Date.UTC(2001, 0, 1));
+      });
+      expect(inputElm.val()).toBe('2001-01-01');
+    });
+
+
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2000-01-01');
+      expect(+$rootScope.value).toBe(Date.UTC(1999, 11, 31, 19, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2000, 11, 31, 19, 0, 0));
       });
       expect(inputElm.val()).toBe('2001-01-01');
     });

@@ -1097,8 +1097,10 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
        `ngModel` as getters/setters.
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
- *     `<input type="date">`, `<input type="time">`, ... . Right now, the only supported value is `'UTC'`,
- *     otherwise the default timezone of the browser will be used.
+ *     `<input type="date">`, `<input type="time">`, ... . It understands UTC/GMT and the
+ *     continental US time zone abbreviations, but for general use, use a time zone offset, for
+ *     example, `'+0430'` (4 hours, 30 minutes east of the Greenwich meridian)
+ *     If not specified, the timezone of the browser will be used.
  *
  * @example
 

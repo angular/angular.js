@@ -1156,8 +1156,12 @@ function createDateInputType(type, regexp, parseDate, format) {
         // parser/formatter in the processing chain so that the model
         // contains some different data format!
         var parsedDate = parseDate(value, previousDate);
-        if (timezone === 'UTC') {
-          parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+        if (timezone) {
+          var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
+          if (!isNaN(requestedTimezoneOffset)) {
+            parsedDate = new Date(parsedDate.getTime());
+            parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset() + requestedTimezoneOffset);
+          }
         }
         return parsedDate;
       }
@@ -1170,9 +1174,12 @@ function createDateInputType(type, regexp, parseDate, format) {
       }
       if (isValidDate(value)) {
         previousDate = value;
-        if (previousDate && timezone === 'UTC') {
-          var timezoneOffset = 60000 * previousDate.getTimezoneOffset();
-          previousDate = new Date(previousDate.getTime() + timezoneOffset);
+        if (previousDate && timezone) {
+          var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
+          if (!isNaN(requestedTimezoneOffset)) {
+            previousDate = new Date(previousDate.getTime());
+            previousDate.setMinutes(previousDate.getMinutes() + previousDate.getTimezoneOffset() - requestedTimezoneOffset);
+          }
         }
         return $filter('date')(value, format, timezone);
       } else {
