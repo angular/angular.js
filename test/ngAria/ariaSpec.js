@@ -98,6 +98,19 @@ describe('$aria', function() {
       expect(element.eq(1).attr('aria-checked')).toBe('true');
     });
 
+    it('should handle non-string model values', function() {
+      var element = $compile('<input type="radio" ng-model="val" value="0">' +
+          '<input type="radio" ng-model="val" value="1">')(scope);
+
+      scope.$apply("val=0");
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+      expect(element.eq(1).attr('aria-checked')).toBe('false');
+
+      scope.$apply("val=1");
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+      expect(element.eq(1).attr('aria-checked')).toBe('true');
+    });
+
     it('should attach itself to role="radio"', function() {
       scope.$apply("val = 'one'");
       compileInput('<div role="radio" ng-model="val" value="{{val}}"></div>');
