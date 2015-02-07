@@ -65,6 +65,9 @@
   toJsonReplacer: true,
   toJson: true,
   fromJson: true,
+  fromTimezoneToLocal: true,
+  fromLocalToTimezone: true,
+  timezoneToOffset: true,
   startingTag: true,
   tryDecodeURIComponent: true,
   parseKeyValue: true,
@@ -1065,6 +1068,31 @@ function fromJson(json) {
   return isString(json)
       ? JSON.parse(json)
       : json;
+}
+
+
+function timezoneToOffset(timezone, fallback) {
+  var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
+  return isNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
+}
+
+
+function addDateMinutes(date, minutes) {
+  date = new Date(date.getTime());
+  date.setMinutes(date.getMinutes() + minutes);
+  return date;
+}
+
+
+function fromTimezoneToLocal(date, timezone) {
+  var timezoneOffset = timezoneToOffset(timezone, date.getTimezoneOffset());
+  return addDateMinutes(date, timezoneOffset - date.getTimezoneOffset());
+}
+
+
+function fromLocalToTimezone(date, timezone) {
+  var timezoneOffset = timezoneToOffset(timezone, date.getTimezoneOffset());
+  return addDateMinutes(date, date.getTimezoneOffset() - timezoneOffset);
 }
 
 
