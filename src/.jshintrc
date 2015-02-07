@@ -71,6 +71,8 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
+    "convertTimezoneToLocal": false,
+    "timezoneToOffset": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
