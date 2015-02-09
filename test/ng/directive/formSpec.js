@@ -1000,3 +1000,56 @@ describe('form animations', function() {
     assertValidAnimation($animate.queue[3], 'removeClass', 'ng-invalid-custom-error');
   }));
 });
+
+describe('reset errors', function() {
+
+  var doc, scope, form;
+  beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
+    scope = $rootScope.$new();
+    doc = jqLite('<form name="myForm"><input name="alias" ng-model="name" type="text"/></form>');
+    $rootElement.append(doc);
+    $compile(doc)(scope);
+    $animate.queue = [];
+    form = scope.myForm;
+  }));
+
+  afterEach(function() {
+    dealoc(doc);
+  });
+
+  function expectClear() {
+    expect(form.$$success).toEqual({});
+    expect(form.$error).toEqual({});
+    expect(form.alias.$error).toEqual({});
+  }
+
+  function expectError() {
+    expect(form.$error.someError.length).toBe(1);
+    expect(form.alias.$error).toEqual({someError: true});
+    expect(form.$$success).toEqual({});
+  }
+
+  function expectTwoErrors() {
+    expect(form.$error.someError1.length).toBe(1);
+    expect(form.$error.someError2.length).toBe(1);
+    expect(form.alias.$error).toEqual({someError1: true, someError2: true});
+    expect(form.$$success).toEqual({});
+  }
+
+  it('should trigger an animation when invalid', function() {
+    expectClear();
+
+    form.alias.$setValidity('someError', false);
+    expectError();
+
+    form.$resetErrors();
+    expectClear();
+
+    form.alias.$setValidity('someError1', false);
+    form.alias.$setValidity('someError2', false);
+    expectTwoErrors();
+
+    form.$resetErrors();
+    expectClear();
+  });
+});
