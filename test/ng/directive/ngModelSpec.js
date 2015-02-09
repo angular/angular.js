@@ -2263,3 +2263,51 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.changed).toHaveBeenCalledOnce();
   });
 });
+
+describe('reset errors', function() {
+
+    function assertValidAnimation(animation, event, classNameA, classNameB) {
+      expect(animation.event).toBe(event);
+      expect(animation.args[1]).toBe(classNameA);
+      if (classNameB) expect(animation.args[2]).toBe(classNameB);
+    }
+
+    var doc, input, scope, model;
+
+    beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
+      scope = $rootScope.$new();
+      doc = jqLite('<form name="myForm">' +
+                   '  <input type="text" ng-model="input" name="myInput" />' +
+                   '</form>');
+      $rootElement.append(doc);
+      $compile(doc)(scope);
+      $animate.queue = [];
+
+      input = doc.find('input');
+      model = scope.myForm.myInput;
+    }));
+
+    afterEach(function() {
+      dealoc(input);
+    });
+
+    function expectErrors(errors) {
+      for (var index = 0; index < errors.length; index++) {
+        var currentError = errors[index];
+        expect(model.$error[currentError]).toBe(true);
+      }
+    }
+
+    function expectClear() {
+        expect(model.$error).toEqual({});
+    }
+
+    it('should clear all errors', inject(function($animate) {
+      model.$setValidity('required', false);
+      model.$setValidity('onlyNumbers', false);
+      expectErrors(['required', 'onlyNumbers']);
+      model.$resetErrors();
+      expectClear();
+
+    }));
+});
