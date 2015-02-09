@@ -319,6 +319,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
       currentValidationRunId = 0;
 
+  var classCache = {};
   /**
    * @ngdoc method
    * @name ngModel.NgModelController#$setValidity
@@ -344,6 +345,31 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   addSetValidityMethod({
     ctrl: this,
     $element: $element,
+    classCache: classCache,
+    set: function(object, property) {
+      object[property] = true;
+    },
+    unset: function(object, property) {
+      delete object[property];
+    },
+    parentForm: parentForm,
+    $animate: $animate
+  });
+
+  /**
+   * @ngdoc method
+   * @name ngModel.NgModelController#$resetErrors
+   *
+   * @description
+   * Reset all errors (added by $setValidity method).
+   *
+   * This method should be called in order to reset all ng-invalid-* css classes and all validities added within $setValidity method.
+   *
+   */
+  addResetErrorsMethod({
+    ctrl: this,
+    $element: $element,
+    classCache: classCache,
     set: function(object, property) {
       object[property] = true;
     },
@@ -1231,13 +1257,11 @@ var ngModelOptionsDirective = function() {
   };
 };
 
-
-
 // helper methods
 function addSetValidityMethod(context) {
   var ctrl = context.ctrl,
       $element = context.$element,
-      classCache = {},
+      classCache = context.classCache,
       set = context.set,
       unset = context.unset,
       parentForm = context.parentForm,
@@ -1326,6 +1350,38 @@ function addSetValidityMethod(context) {
 
     cachedToggleClass(VALID_CLASS + validationErrorKey, isValid === true);
     cachedToggleClass(INVALID_CLASS + validationErrorKey, isValid === false);
+  }
+}
+
+function addResetErrorsMethod(context) {
+  var ctrl = context.ctrl,
+  $element = context.$element,
+  classCache = context.classCache,
+  set = context.set,
+  unset = context.unset,
+  parentForm = context.parentForm,
+  $animate = context.$animate;
+
+  ctrl.$resetErrors = resetErrors;
+
+  function resetErrors(controller) {
+    var errors = copy(ctrl.$error);
+    forEach(errors, function(value, validationName) {
+       unset(ctrl.$error, validationName, controller);
+       unset(ctrl.$$success, validationName, controller);
+       toggleValidationCss(validationName);
+    });
+  }
+
+  function cachedToggleClass(className) {
+    $animate.removeClass($element, className);
+    delete classCache[className];
+  }
+
+  function toggleValidationCss(validationErrorKey) {
+    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+    cachedToggleClass(VALID_CLASS + validationErrorKey);
+    cachedToggleClass(INVALID_CLASS + validationErrorKey);
   }
 }
 
