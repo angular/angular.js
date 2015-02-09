@@ -1,3 +1,55 @@
+<a name="1.4.0-beta.4"></a>
+# 1.4.0-beta.4 (2015-02-09)
+
+
+## Bug Fixes
+
+- **$location:** prevent page reload if initial url has empty hash at the end
+  ([a509e9aa](https://github.com/angular/angular.js/commit/a509e9aa149d0f88cc39f703d539f7ffd4cd6103),
+   [#10397](https://github.com/angular/angular.js/issues/10397), [#10960](https://github.com/angular/angular.js/issues/10960))
+- **$parse:** Initialize elements in an array from left to right
+  ([966f6d83](https://github.com/angular/angular.js/commit/966f6d831f9469a917601f9a10604612cd7bd792))
+- **ngAria:** ensure native controls fire a single click
+  ([9d53e5a3](https://github.com/angular/angular.js/commit/9d53e5a38dd369dec82d82e13e078df3d6054c8a),
+   [#10388](https://github.com/angular/angular.js/issues/10388), [#10766](https://github.com/angular/angular.js/issues/10766))
+- **ngMock:** handle cases where injector is created before tests
+  ([898714df](https://github.com/angular/angular.js/commit/898714df9ea38f9ef700015ced5ddea52f096b77),
+   [#10967](https://github.com/angular/angular.js/issues/10967))
+- **sanitize:** handle newline characters inside special tags
+  ([cc8755cd](https://github.com/angular/angular.js/commit/cc8755cda6efda0b52954388e8a8d5306e4bfbca),
+  [030a42e7](https://github.com/angular/angular.js/commit/030a42e79dec8a4bb73053762f7a54d797a058f6)
+   [#10943](https://github.com/angular/angular.js/issues/10943))
+
+
+## Features
+
+- **ng-jq:** adds the ability to force jqLite or a specific jQuery version
+  ([09ee82d8](https://github.com/angular/angular.js/commit/09ee82d84dcbea4a6e8d85903af82dcd087a78a7))
+
+
+
+<a name="1.3.13"></a>
+# 1.3.13 meticulous-riffleshuffle (2015-02-09)
+
+
+## Bug Fixes
+
+- **$location:** prevent page reload if initial url has empty hash at the end
+  ([4b3a590b](https://github.com/angular/angular.js/commit/4b3a590b009d7fdceda7f52e7ba0352a271b3256),
+   [#10397](https://github.com/angular/angular.js/issues/10397), [#10960](https://github.com/angular/angular.js/issues/10960))
+- **ngAria:** ensure native controls fire a single click
+  ([69ee593f](https://github.com/angular/angular.js/commit/69ee593fd2cb5f1d7757efbe6b256e4458752fd7),
+   [#10388](https://github.com/angular/angular.js/issues/10388), [#10766](https://github.com/angular/angular.js/issues/10766))
+- **ngMock:** handle cases where injector is created before tests
+  ([39ddef68](https://github.com/angular/angular.js/commit/39ddef682971d3b7282bf9d08f6eaf97b7f4bca4),
+   [#10967](https://github.com/angular/angular.js/issues/10967))
+- **sanitize:** handle newline characters inside special tags
+  ([11aedbd7](https://github.com/angular/angular.js/commit/11aedbd741ccddba060a9805adba1779391731da),
+  [ce49d4d6](https://github.com/angular/angular.js/commit/ce49d4d61bd02464b6c6376af8048f6eb09330a8)
+   [#10943](https://github.com/angular/angular.js/issues/10943))
+
+
+
 <a name="1.4.0-beta.3"></a>
 # 1.4.0-beta.3 substance-mimicry (2015-02-02)
 
