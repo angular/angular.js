@@ -1,5 +1,5 @@
 <a name="1.4.0-beta.4"></a>
-# 1.4.0-beta.4 (2015-02-09)
+# 1.4.0-beta.4 overlyexplosive-poprocks (2015-02-09)
 
 
 ## Bug Fixes
