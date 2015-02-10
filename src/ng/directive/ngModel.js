@@ -1367,9 +1367,9 @@ function addResetErrorsMethod(context) {
   function resetErrors(controller) {
     var errors = copy(ctrl.$error);
     forEach(errors, function(value, validationName) {
-       unset(ctrl.$error, validationName, controller);
-       unset(ctrl.$$success, validationName, controller);
-       toggleValidationCss(validationName);
+      unset(ctrl.$error, validationName, controller);
+      unset(ctrl.$$success, validationName, controller);
+      toggleValidationCss(validationName);
     });
   }
 
