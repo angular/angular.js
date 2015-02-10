@@ -295,10 +295,17 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
    * @description
    * Sets the form to its submitted state.
    */
-  form.$setSubmitted = function() {
+  form.$setSubmitted = function(setOnChildren) {
     $animate.addClass(element, SUBMITTED_CLASS);
     form.$submitted = true;
-    form.$$parentForm.$setSubmitted();
+    if (!setOnChildren) {
+      form.$$parentForm.$setSubmitted();
+    }
+    forEach(controls, function(control) {
+      if (control.$setSubmitted) {
+        control.$setSubmitted(true);
+      }
+    });
   };
 }
 

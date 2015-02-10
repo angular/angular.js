@@ -523,6 +523,22 @@ describe('form', function() {
       expect(parent.$submitted).toBeTruthy();
     });
 
+    it('should set $submitted equal to true on child forms when parent is submitted', function() {
+      doc = jqLite(
+          '<ng-form name="parent">' +
+            '<ng-form name="child">' +
+              '<input ng:model="modelA" name="inputA">' +
+              '<input ng:model="modelB" name="inputB">' +
+            '</ng-form>' +
+          '</ng-form>');
+      $compile(doc)(scope);
+
+      var parent = scope.parent,
+          child = scope.child;
+
+      parent.$setSubmitted();
+      expect(child.$submitted).toBeTruthy();
+    });
 
     it('should deregister a child form when its DOM is removed', function() {
       doc = jqLite(
