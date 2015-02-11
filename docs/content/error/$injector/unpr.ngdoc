@@ -69,3 +69,15 @@ angular.module('myModule', [])
 ```
 
 Use the `$controller` service if you want to instantiate controllers yourself.
+
+Attempting to inject a scope object into anything that's not a controller or a directive,
+for example a service, will also throw an `Unknown provider: $scopeProvider <- $scope` error.
+This might happen if one mistakenly registers a controller as a service, ex.:
+
+```
+angular.module('myModule', [])
+  .service('MyController', ['$scope', function($scope) {
+    // This controller throws an unknown provider error because
+    // a scope object cannot be injected into a service.
+  }]);
+```
