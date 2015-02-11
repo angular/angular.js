@@ -233,7 +233,7 @@ are added to the element:
   1. a "starting" class that represents the style at the beginning of the animation
   2. an "active" class that represents the style at the end of the animation
 
-The name of the starting class is the name of event that is fired (like `enter`, `move` or `leave`) prefixed with
+The name of the starting class is the name of the event that is fired (like `enter`, `move` or `leave`) prefixed with
 `ng-`. So an `enter` event will result in a class called `ng-enter`.
 
 The active class name is the same as the starting class's but with an `-active` suffix.
