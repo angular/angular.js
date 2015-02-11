@@ -225,7 +225,7 @@ inserted into and removed from the list:
   * The `ng-leave` class is applied when they're removed from the list.
 
 The phone listing items are added and removed depending on the data passed to the `ng-repeat` attribute.
-For example, if the filter data changes the items will be animated in and out of the repeat list.
+For example, if the filter data changes, the items will be animated in and out of the repeat list.
 
 Something important to note is that when an animation occurs, two sets of CSS classes
 are added to the element:
