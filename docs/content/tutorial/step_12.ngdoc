@@ -225,7 +225,7 @@ inserted into and removed from the list:
   * The `ng-leave` class is applied when they're removed from the list.
 
 The phone listing items are added and removed depending on the data passed to the `ng-repeat` attribute.
-For example, if the filter data changes the items will be animated in and out of the repeat list.
+For example, if the filter data changes, the items will be animated in and out of the repeat list.
 
 Something important to note is that when an animation occurs, two sets of CSS classes
 are added to the element:
@@ -233,7 +233,7 @@ are added to the element:
   1. a "starting" class that represents the style at the beginning of the animation
   2. an "active" class that represents the style at the end of the animation
 
-The name of the starting class is the name of event that is fired (like `enter`, `move` or `leave`) prefixed with
+The name of the starting class is the name of the event that is fired (like `enter`, `move` or `leave`) prefixed with
 `ng-`. So an `enter` event will result in a class called `ng-enter`.
 
 The active class name is the same as the starting class's but with an `-active` suffix.
