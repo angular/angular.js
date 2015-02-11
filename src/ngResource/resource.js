@@ -560,8 +560,10 @@ angular.module('ngResource', ['ng']).
               undefined;
 
             forEach(action, function(value, key) {
-              if (key != 'params' && key != 'isArray' && key != 'interceptor') {
+              if (key != 'params' && key != 'isArray' && key != 'interceptor' && key != 'timeout') {
                 httpConfig[key] = copy(value);
+              } else if (key == 'timeout') {
+                httpConfig[key] = value;
               }
             });
 
