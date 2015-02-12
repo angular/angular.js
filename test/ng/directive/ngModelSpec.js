@@ -1222,7 +1222,7 @@ describe('ngModel', function() {
         expect(ctrl.$validators.mock.calls.length).toEqual(2);
       });
 
-      iit('should validate correctly when $parser name equals $validator key', function() {
+      it('should validate correctly when $parser name equals $validator key', function() {
 
         ctrl.$validators.parserOrValidator = function(value) {
           switch (value) {
