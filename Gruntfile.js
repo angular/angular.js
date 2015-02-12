@@ -126,6 +126,9 @@ module.exports = function(grunt) {
       ngLocale: {
         files: { src: 'src/ngLocale/**/*.js' },
       },
+      ngMessageFormat: {
+        files: { src: 'src/ngMessageFormat/**/*.js' },
+      },
       ngMessages: {
         files: { src: 'src/ngMessages/**/*.js' },
       },
@@ -200,6 +203,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-resource.js',
         src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
+      messageformat: {
+        dest: 'build/angular-messageFormat.js',
+        src: util.wrap(files['angularModules']['ngMessageFormat'], 'module')
+      },
       messages: {
         dest: 'build/angular-messages.js',
         src: util.wrap(files['angularModules']['ngMessages'], 'module')
@@ -232,6 +239,7 @@ module.exports = function(grunt) {
       animate: 'build/angular-animate.js',
       cookies: 'build/angular-cookies.js',
       loader: 'build/angular-loader.js',
+      messageformat: 'build/angular-messageFormat.js',
       messages: 'build/angular-messages.js',
       touch: 'build/angular-touch.js',
       resource: 'build/angular-resource.js',

@@ -1,0 +1,11 @@
+@ngdoc error
+@name $interpolate:reqcomma
+@fullName Missing comma following MessageFormat plural/select keyword
+@description
+
+The MessageFormat syntax requires a comma following the "plural" or "select"
+extension keyword in the extended interpolation syntax.
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}
