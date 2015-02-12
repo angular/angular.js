@@ -1221,6 +1221,96 @@ describe('ngModel', function() {
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'ab');
         expect(ctrl.$validators.mock.calls.length).toEqual(2);
       });
+
+      it('should validate correctly when $parser name equals $validator key', function() {
+
+        ctrl.$validators.parserOrValidator = function(value) {
+          switch (value) {
+            case 'allInvalid':
+            case 'parseValid-validatorsInvalid':
+            case 'stillParseValid-validatorsInvalid':
+              return false;
+            default:
+              return true;
+          }
+        };
+
+        ctrl.$validators.validator = function(value) {
+          switch (value) {
+            case 'allInvalid':
+            case 'parseValid-validatorsInvalid':
+            case 'stillParseValid-validatorsInvalid':
+              return false;
+            default:
+              return true;
+          }
+        };
+
+        ctrl.$$parserName = 'parserOrValidator';
+        ctrl.$parsers.push(function(value) {
+          switch (value) {
+            case 'allInvalid':
+            case 'stillAllInvalid':
+            case 'parseInvalid-validatorsValid':
+            case 'stillParseInvalid-validatorsValid':
+              return undefined;
+            default:
+              return value;
+          }
+        });
+
+        //Parser and validators are invalid
+        scope.$apply('value = "allInvalid"');
+        expect(scope.value).toBe('allInvalid');
+        expect(ctrl.$error).toEqual({parserOrValidator: true, validator: true});
+
+        ctrl.$validate();
+        expect(scope.value).toEqual('allInvalid');
+        expect(ctrl.$error).toEqual({parserOrValidator: true, validator: true});
+
+        ctrl.$setViewValue('stillAllInvalid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({parserOrValidator: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({parserOrValidator: true});
+
+        //Parser is valid, validators are invalid
+        scope.$apply('value = "parseValid-validatorsInvalid"');
+        expect(scope.value).toBe('parseValid-validatorsInvalid');
+        expect(ctrl.$error).toEqual({parserOrValidator: true, validator: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('parseValid-validatorsInvalid');
+        expect(ctrl.$error).toEqual({parserOrValidator: true, validator: true});
+
+        ctrl.$setViewValue('stillParseValid-validatorsInvalid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({parserOrValidator: true, validator: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({parserOrValidator: true, validator: true});
+
+        //Parser is invalid, validators are valid
+        scope.$apply('value = "parseInvalid-validatorsValid"');
+        expect(scope.value).toBe('parseInvalid-validatorsValid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$validate();
+        expect(scope.value).toBe('parseInvalid-validatorsValid');
+        expect(ctrl.$error).toEqual({});
+
+        ctrl.$setViewValue('stillParseInvalid-validatorsValid');
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({parserOrValidator: true});
+
+        ctrl.$validate();
+        expect(scope.value).toBeUndefined();
+        expect(ctrl.$error).toEqual({parserOrValidator: true});
+      });
+
     });
   });
 
