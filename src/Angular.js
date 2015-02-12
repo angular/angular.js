@@ -941,21 +941,22 @@ var csp = function() {
  ```
  */
 var jq = function() {
-  if (isDefined(jq.name_)) return jq.name_;
-  var el;
-  var i, ii = ngAttrPrefixes.length;
-  for (i = 0; i < ii; ++i) {
-    if (el = document.querySelector('[' + ngAttrPrefixes[i].replace(':', '\\:') + 'jq]')) {
-      break;
-    }
-  }
+	if (isDefined(jq.name_)) return jq.name_;
+	var el;
+	var i, ii = ngAttrPrefixes.length, prefix;
+	for (i = 0; i < ii; ++i) {
+		prefix = ngAttrPrefixes[i];
+		if (el = document.querySelector('[' + prefix.replace(':', '\\:') + 'jq]')) {
+			break;
+		}
+	}
 
-  var name;
-  if (el) {
-    name = getNgAttribute(el, "jq");
-  }
+	var name;
+	if (el) {
+		name = el.getAttribute(prefix + 'jq');
+	}
 
-  return (jq.name_ = name);
+	return (jq.name_ = name);
 };
 
 function concat(array1, array2, index) {
