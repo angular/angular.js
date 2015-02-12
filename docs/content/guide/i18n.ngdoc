@@ -137,3 +137,115 @@ The Angular datetime filter uses the time zone settings of the browser. The same
 application will show different time information depending on the time zone settings of the
 computer that the application is running on. Neither JavaScript nor Angular currently supports
 displaying the date with a timezone specified by the developer.
+
+
+<a name="MessageFormat"></a>
+## MessageFormat extensions 
+
+AngularJS interpolations via `$interpolate` and in templates
+support an extended syntax based on a subset of the ICU
+MessageFormat that covers plurals and gender selections.
+
+Please refer to our [design doc](https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit)
+for a lot more details.  You may find it helpful to play with our [Plnkr Example](http://plnkr.co/edit/QBVRQ70dvKZDWmHW9RyR?p=preview).
+
+You can read more about the ICU MessageFormat syntax at
+[Formatting Messages | ICU User Guide](http://userguide.icu-project.org/formatparse/messages#TOC-MessageFormat).
+
+This extended syntax is provided by way of the
+`ngMessageFormat` module that your application can depend
+upon (shipped separately as `angular-messageFormat.min.js` and
+`angular-messageFormat.js`.)  A current limitation of the
+`ngMessageFormat` module, is that it does not support
+redefining the `$interpolate` start and end symbols. Only the
+default `{{` and `}}` are allowed.
+
+This syntax extension, while based on MessageFormat, has
+been designed to be backwards compatible with existing
+AngularJS interpolation expressions.  The key rule is simply
+this: **All interpolations are done inside double curlies.**
+The top level comma operator after an expression inside the
+double curlies causes MessageFormat extensions to be
+recognized.  Such a top level comma is otherwise illegal in
+an Angular expression and is used by MessageFormat to
+specify the function (such as plural/select) and it's
+related syntax.
+
+To understand the extension, take a look at the ICU
+MessageFormat syntax as specified by the ICU documentation.
+Anywhere in that MessageFormat that you have regular message
+text and you want to substitute an expression, just put it
+in double curlies instead of single curlies that
+MessageFormat dictates.  This has a huge advantage.  **You
+are no longer limited to simple identifiers for
+substitutions**.  Because you are using double curlies, you
+can stick in any arbitrary interpolation syntax there,
+including nesting more MessageFormat expressions!  Some
+examples will make this clear.  In the following example, I
+will only be showing you the AngularJS syntax.
+
+
+### Simple plural example
+
+```
+{{numMessages, plural,
+      =0 { You have no new messages }
+      =1 { You have one new message }
+   other { You have # new messages }
+}}
+```
+
+While I won't be teaching you MessageFormat here, you will
+note that the `#` symbol works as expected.  You could have
+also written it as:
+
+```
+{{numMessages, plural,
+      =0 { You have no new messages }
+      =1 { You have one new message }
+   other { You have {{numMessages}} new messages }
+}}
+```
+
+where you explicitly typed in `numMessages` for "other"
+instead of using `#`.  They are nearly the same except if
+you're using "offset".  Refer to the ICU MessageFormat
+documentation to learn about offset.
+
+Please note that **other** is a **required** category (for
+both the plural syntax and the select syntax that is shown
+later.)
+
+
+### Simple select (for gender) example
+
+```
+{{friendGender, select,
+       male { Invite him }
+     female { Invite her }
+      other { Invite them }
+}}
+```
+
+### More complex example that combines some of these
+
+This is taken from the [plunker example](http://plnkr.co/edit/QBVRQ70dvKZDWmHW9RyR?p=preview) linked to earlier.
+
+```
+{{recipients.length, plural, offset:1
+    =0 {You ({{sender.name}}) gave no gifts}
+    =1 { {{ recipients[0].gender, select,
+              male {You ({{sender.name}}) gave him ({{recipients[0].name}}) a gift.}
+              female {You ({{sender.name}}) gave her ({{recipients[0].name}}) a gift.}
+              other {You ({{sender.name}}) gave them ({{recipients[0].name}}) a gift.}
+          }}
+       }
+    one { {{ recipients[0].gender, select,
+              male {You ({{sender.name}}) gave him ({{recipients[0].name}}) and one other person a gift.}
+              female {You ({{sender.name}}) gave her ({{recipients[0].name}}) and one other person a gift.}
+              other {You ({{sender.name}}) gave them ({{recipients[0].name}}) and one other person a gift.}
+          }}
+       }
+    other {You ({{sender.name}}) gave {{recipients.length}} people gifts. }
+}}
+```

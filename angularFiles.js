@@ -94,6 +94,13 @@ var angularFiles = {
       'src/ngCookies/cookieStore.js',
       'src/ngCookies/cookieWriter.js'
     ],
+    'ngMessageFormat': [
+      'src/ngMessageFormat/messageFormatCommon.js',
+      'src/ngMessageFormat/messageFormatSelector.js',
+      'src/ngMessageFormat/messageFormatInterpolationParts.js',
+      'src/ngMessageFormat/messageFormatParser.js',
+      'src/ngMessageFormat/messageFormatService.js'
+    ],
     'ngMessages': [
       'src/ngMessages/messages.js'
     ],
@@ -184,6 +191,7 @@ var angularFiles = {
     '@angularSrcModules',
     'src/ngScenario/browserTrigger.js',
     'test/helpers/*.js',
+    'test/ngMessageFormat/*.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngRoute/**/*.js',
@@ -212,6 +220,7 @@ var angularFiles = {
 
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],
+  angularFiles['angularModules']['ngMessageFormat'],
   angularFiles['angularModules']['ngMessages'],
   angularFiles['angularModules']['ngCookies'],
   angularFiles['angularModules']['ngResource'],
