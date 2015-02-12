@@ -1,0 +1,11 @@
+@ngdoc error
+@name $interpolate:reqendbrace
+@fullName Unterminated message for plural/select value
+@description
+
+The plural or select message for a value or keyword choice has no matching end
+brace to mark the end of the message.
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}

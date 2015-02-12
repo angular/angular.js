@@ -1,0 +1,12 @@
+@ngdoc error
+@name $interpolate:unknarg
+@fullName Unrecognized MessageFormat extension
+@description
+
+The MessageFormat extensions provided by `ngMessageFormat` are currently
+limited to "plural" and "select".  The extension that you have used is either
+unsupported or invalid.
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}
