@@ -233,6 +233,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
+  this.$$parseError = false;
   this.$error = {}; // keep invalid keys here
   this.$$success = {}; // keep valid keys here
   this.$pending = undefined; // keep pending keys here
@@ -518,7 +519,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     // Check if the there's a parse error, so we don't unset it accidentially
     var parserName = ctrl.$$parserName || 'parse';
-    var parserValid = ctrl.$error[parserName] ? false : undefined;
+    var parserValid = ctrl.$$parseError ? false : undefined;
 
     var prevValid = ctrl.$valid;
     var prevModelValue = ctrl.$modelValue;
@@ -563,7 +564,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       if (parseValid === undefined) {
         setValidity(errorKey, null);
       } else {
-        setValidity(errorKey, parseValid);
         if (!parseValid) {
           forEach(ctrl.$validators, function(v, name) {
             setValidity(name, null);
@@ -571,9 +571,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
           forEach(ctrl.$asyncValidators, function(v, name) {
             setValidity(name, null);
           });
-          return false;
+          ctrl.$$parseError = true;
         }
+        // Set the parse error last, to prevent unsetting it, should a $validators key == parserName
+        setValidity(errorKey, parseValid);
+        return parseValid;
       }
+
+      ctrl.$$parseError = false;
       return true;
     }
 
@@ -814,6 +819,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     // TODO(perf): why not move this to the action fn?
     if (modelValue !== ctrl.$modelValue) {
       ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
+      ctrl.$$parseError = false;
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
