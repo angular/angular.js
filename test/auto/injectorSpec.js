@@ -204,6 +204,11 @@ describe('injector', function() {
       expect(annotate(beforeEachFn)).toEqual(['foo']);
     });
 
+    it('should strip leading "_at_" from arg name during inference (CoffeeScript 1.9)', function() {
+      function beforeEachFn(_at_foo) { /* foo = _foo_ */ }
+      expect(annotate(beforeEachFn)).toEqual(['foo']);
+    });
+
     it('should not strip service names with a single underscore', function() {
       function beforeEachFn(_) { /* _ = _ */ }
       expect(annotate(beforeEachFn)).toEqual(['_']);
