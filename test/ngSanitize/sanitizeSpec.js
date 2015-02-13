@@ -495,8 +495,7 @@ describe('HTML', function() {
 });
 
 describe('decodeEntities', function() {
-  var handler, text,
-      origHiddenPre = window.hiddenPre;
+  var handler, text;
 
   beforeEach(function() {
     text = '';
@@ -511,10 +510,6 @@ describe('decodeEntities', function() {
     module('ngSanitize');
   });
 
-  afterEach(function() {
-    window.hiddenPre = origHiddenPre;
-  });
-  
   it('should unescape text', function() {
     htmlParser('a&lt;div&gt;&amp;&lt;/div&gt;c', handler);
     expect(text).toEqual('a<div>&</div>c');
@@ -523,35 +518,5 @@ describe('decodeEntities', function() {
   it('should preserve whitespace', function() {
     htmlParser('  a&amp;b ', handler);
     expect(text).toEqual('  a&b ');
-  });
-
-  it('should use innerText if textContent is not available (IE<9)', function() {
-    window.hiddenPre = {
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('INNER_TEXT');
-    });
-  });
-  it('should use textContent if available', function() {
-    window.hiddenPre = {
-      textContent: 'TEXT_CONTENT',
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('TEXT_CONTENT');
-    });
-  });
-  it('should use textContent even if empty', function() {
-    window.hiddenPre = {
-      textContent: '',
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('');
-    });
   });
 });
