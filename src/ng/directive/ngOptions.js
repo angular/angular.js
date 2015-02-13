@@ -267,10 +267,14 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
         Object.keys(values).forEach(function getWatchable(key) {
           var locals = getLocals(values[key], key);
-          var label = displayFn(scope, locals);
           var selectValue = getTrackByValue(values[key], locals);
           watchedArray.push(selectValue);
-          watchedArray.push(label);
+
+          // Only need to watch the displayFn if there is a specific label expression
+          if (match[2]) {
+            var label = displayFn(scope, locals);
+            watchedArray.push(label);
+          }
         });
         return watchedArray;
       }),
