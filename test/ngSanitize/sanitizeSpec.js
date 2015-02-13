@@ -514,6 +514,16 @@ describe('decodeEntities', function() {
   afterEach(function() {
     window.hiddenPre = origHiddenPre;
   });
+  
+  it('should unescape text', function() {
+    htmlParser('a&lt;div&gt;&amp;&lt;/div&gt;c', handler);
+    expect(text).toEqual('a<div>&</div>c');
+  });
+
+  it('should preserve whitespace', function() {
+    htmlParser('  a&amp;b ', handler);
+    expect(text).toEqual('  a&b ');
+  });
 
   it('should use innerText if textContent is not available (IE<9)', function() {
     window.hiddenPre = {
