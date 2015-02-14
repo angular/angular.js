@@ -125,6 +125,28 @@ describe('$interpolate', function() {
 
       expect($rootScope.$countWatchers()).toBe(0);
     }));
+
+    it('should stop watching strings with no expressions after first execution',
+      inject(function($interpolate, $rootScope) {
+        var spy = jasmine.createSpy();
+        $rootScope.$watch($interpolate('foo'), spy);
+        $rootScope.$digest();
+        expect($rootScope.$countWatchers()).toBe(0);
+        expect(spy).toHaveBeenCalledWith('foo', 'foo', $rootScope);
+        expect(spy.calls.length).toBe(1);
+      })
+    );
+
+    it('should stop watching strings with only constant expressions after first execution',
+      inject(function($interpolate, $rootScope) {
+        var spy = jasmine.createSpy();
+        $rootScope.$watch($interpolate('foo {{42}}'), spy);
+        $rootScope.$digest();
+        expect($rootScope.$countWatchers()).toBe(0);
+        expect(spy).toHaveBeenCalledWith('foo 42', 'foo 42', $rootScope);
+        expect(spy.calls.length).toBe(1);
+      })
+    );
   });
 
   describe('interpolation escaping', function() {
