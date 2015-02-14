@@ -20,6 +20,8 @@
       <div>interpolation + fnInvocation: <input type="radio" ng-model="benchmarkType" value="interpolationFn"></div>
       <div>ngBind + filter: <input type="radio" ng-model="benchmarkType" value="ngBindFilter"></div>
       <div>interpolation + filter: <input type="radio" ng-model="benchmarkType" value="interpolationFilter"></div>
+      <div>ngModel (const name): <input type="radio" ng-model="benchmarkType" value="ngModelConstName"></div>
+      <div>ngModel (interp name): <input type="radio" ng-model="benchmarkType" value="ngModelInterpName"></div>
 
       <ng-switch on="benchmarkType">
         <baseline-binding-table ng-switch-when="baselineBinding">
@@ -82,6 +84,20 @@
           <h2>interpolation with filter</h2>
           <div ng-repeat="row in data">
             <span ng-repeat="column in row">{{column.i | noop}}:{{column.j | noop}}|</span>
+          </div>
+        </div>
+        <div ng-switch-when="ngModelConstName">
+          <h2>ngModel (const name)</h2>
+          <div ng-repeat="row in data">
+            <input type="text" ng-model="row.i" name="constName" />
+            <input type="text" ng-model="row.j" />
+          </div>
+        </div>
+        <div ng-switch-when="ngModelInterpName">
+          <h2>ngModel (interp name)</h2>
+          <div ng-repeat="(rowIdx, row) in data">
+            <input type="text" ng-model="row.i" name="input-{{rowIdx}}" />
+            <input type="text" ng-model="row.j" name="input2-{{rowIdx}}" />
           </div>
         </div>
       </ng-switch>
