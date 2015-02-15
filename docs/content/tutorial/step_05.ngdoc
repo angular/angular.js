@@ -255,6 +255,43 @@ You should now see the following output in the Karma tab:
 <pre>Chrome 22.0: Executed 2 of 2 SUCCESS (0.028 secs / 0.007 secs)</pre>
 
 
+Now that we've updated the unit tests, it's time to update the e2e tests to grab the actual results.
+Since the results of phoneNameColumn.map() is a promise, `.then` will be able to modify resulting array and limit it to 2 results.
+
+```js
+	it('should properly sort the phones via selection box', function() {
+
+			var phoneNameColumn = element.all(by.repeater('phone in phones')
+                                    .column('phone.name'));
+
+			var getNames = function() {
+                var thing = phoneNameColumn.map(function(element) {
+                    return element.getText();
+                }).then(function(value) {
+                    return value.slice(0, 2);
+                });
+				return thing;
+			}
+
+            element(by.model('orderProp'))
+                        .element(by.css('option[value=name')).click();
+
+			expect(getNames()).toEqual([
+				'Dell Streak 7', 'Dell Venue'
+			]);
+
+            element(by.model('orderProp'))
+                        .element(by.css('option[value=snippet')).click();
+
+			expect(getNames()).toEqual([
+				'MOTOROLA BRAVO™ with MOTOBLUR™', 'LG Axis'
+			]);
+
+	});
+
+```
+
+
 
 # Experiments
 
