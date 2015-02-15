@@ -943,17 +943,13 @@ var csp = function() {
 var jq = function() {
   if (isDefined(jq.name_)) return jq.name_;
   var el;
-  var i, ii = ngAttrPrefixes.length, prefix;
+  var i, ii = ngAttrPrefixes.length, prefix, name;
   for (i = 0; i < ii; ++i) {
     prefix = ngAttrPrefixes[i];
     if (el = document.querySelector('[' + prefix.replace(':', '\\:') + 'jq]')) {
+      name = el.getAttribute(prefix + 'jq');
       break;
     }
-  }
-
-  var name;
-  if (el) {
-    name = el.getAttribute(prefix + 'jq');
   }
 
   return (jq.name_ = name);
@@ -1196,10 +1192,9 @@ var ngAttrPrefixes = ['ng-', 'data-ng-', 'ng:', 'x-ng-'];
 
 function getNgAttribute(element, ngAttr) {
   var attr, i, ii = ngAttrPrefixes.length;
-  element = jqLite(element);
   for (i = 0; i < ii; ++i) {
     attr = ngAttrPrefixes[i] + ngAttr;
-    if (isString(attr = element.attr(attr))) {
+    if (isString(attr = element.getAttribute(attr))) {
       return attr;
     }
   }
