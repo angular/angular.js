@@ -31,8 +31,11 @@ var jqLite = angular.element;
  *
  * ```html
  * <form name="myForm">
- *   <input type="text" ng-model="field" name="myField" required minlength="5" />
- *   <div ng-messages="myForm.myField.$error">
+ *   <label>
+ *     Enter text:
+ *     <input type="text" ng-model="field" name="myField" required minlength="5" />
+ *   </label>
+ *   <div ng-messages="myForm.myField.$error" role="alert">
  *     <div ng-message="required">You did not enter a field</div>
  *     <div ng-message="minlength, maxlength">
  *       Your email must be between 5 and 100 characters long
@@ -80,7 +83,7 @@ var jqLite = angular.element;
  *   <div ng-message="minlength">This field is too short</div>
  * </script>
  *
- * <div ng-messages="myForm.myField.$error">
+ * <div ng-messages="myForm.myField.$error" role="alert">
  *   <div ng-messages-include="error-messages"></div>
  * </div>
  * ```
@@ -97,16 +100,18 @@ var jqLite = angular.element;
  * </script>
  *
  * <form name="myForm">
- *   <input type="email"
- *          id="email"
- *          name="myEmail"
- *          ng-model="email"
- *          minlength="5"
- *          required />
- *
+ *   <label>
+ *     Email address
+ *     <input type="email"
+ *            id="email"
+ *            name="myEmail"
+ *            ng-model="email"
+ *            minlength="5"
+ *            required />
+ *   </label>
  *   <!-- any ng-message elements that appear BEFORE the ng-messages-include will
  *        override the messages present in the ng-messages-include template -->
- *   <div ng-messages="myForm.myEmail.$error">
+ *   <div ng-messages="myForm.myEmail.$error" role="alert">
  *     <!-- this required message has overridden the template message -->
  *     <div ng-message="required">You did not enter your email address</div>
  *
@@ -131,13 +136,15 @@ var jqLite = angular.element;
  *
  * ```html
  * <form name="myForm">
- *   <input type="email"
- *          name="myEmail"
- *          ng-model="email"
- *          minlength="5"
- *          required />
- *
- *   <div ng-messages="myForm.myEmail.$error">
+ *   <label>
+ *     Email address
+ *     <input type="email"
+ *            name="myEmail"
+ *            ng-model="email"
+ *            minlength="5"
+ *            required />
+ *   </label>
+ *   <div ng-messages="myForm.myEmail.$error" role="alert">
  *     <div ng-message="required">You did not enter your email address</div>
  *     <div ng-repeat="errorMessage in errorMessages">
  *       <!-- use ng-message-exp for a message whose key is given by an expression -->
@@ -151,13 +158,16 @@ var jqLite = angular.element;
  * that multiple errors can be associated with a single error message:
  *
  * ```html
- *  <input type="email"
- *         ng-model="data.email"
- *         name="myEmail"
- *         ng-minlength="5"
- *         ng-maxlength="100"
- *         required />
- *   <div ng-messages="myForm.myEmail.$error">
+ *   <label>
+ *     Email address
+ *     <input type="email"
+ *            ng-model="data.email"
+ *            name="myEmail"
+ *            ng-minlength="5"
+ *            ng-maxlength="100"
+ *            required />
+ *   </label>
+ *   <div ng-messages="myForm.myEmail.$error" role="alert">
  *     <div ng-message-exp="'required'">You did not enter your email address</div>
  *     <div ng-message-exp="['minlength', 'maxlength']">
  *       Your email must be between 5 and 100 characters long
@@ -172,7 +182,7 @@ var jqLite = angular.element;
  * directive.
  *
  * ```html
- * <div ng-messages="myForm.myEmail.$error">
+ * <div ng-messages="myForm.myEmail.$error" role="alert">
  *   <div ng-if="showRequiredError">
  *     <div ng-message="required">Please enter something</div>
  *   </div>
@@ -192,7 +202,7 @@ var jqLite = angular.element;
  * Let's say that our HTML code for our messages container looks like so:
  *
  * ```html
- * <div ng-messages="myMessages" class="my-messages">
+ * <div ng-messages="myMessages" class="my-messages" role="alert">
  *   <div ng-message="alert" class="some-message">...</div>
  *   <div ng-message="fail" class="some-message">...</div>
  * </div>
@@ -258,14 +268,14 @@ angular.module('ngMessages', [])
     * @usage
     * ```html
     * <!-- using attribute directives -->
-    * <ANY ng-messages="expression">
+    * <ANY ng-messages="expression" role="alert">
     *   <ANY ng-message="stringValue">...</ANY>
     *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
     *   <ANY ng-message-exp="expressionValue">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
-    * <ng-messages for="expression">
+    * <ng-messages for="expression" role="alert>
     *   <ng-message when="stringValue">...</ng-message>
     *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
     *   <ng-message when-exp="expressionValue">...</ng-message>
@@ -282,17 +292,18 @@ angular.module('ngMessages', [])
     *          animations="true" fixBase="true">
     *   <file name="index.html">
     *     <form name="myForm">
-    *       <label>Enter your name:</label>
-    *       <input type="text"
-    *              name="myName"
-    *              ng-model="name"
-    *              ng-minlength="5"
-    *              ng-maxlength="20"
-    *              required />
-    *
+    *       <label>
+    *         Enter your name:
+    *         <input type="text"
+    *                name="myName"
+    *                ng-model="name"
+    *                ng-minlength="5"
+    *                ng-maxlength="20"
+    *                required />
+    *       </label>
     *       <pre>myForm.myName.$error = {{ myForm.myName.$error | json }}</pre>
     *
-    *       <div ng-messages="myForm.myName.$error" style="color:maroon">
+    *       <div ng-messages="myForm.myName.$error" style="color:maroon" role="alert>
     *         <div ng-message="required">You did not enter a field</div>
     *         <div ng-message="minlength">Your field is too short</div>
     *         <div ng-message="maxlength">Your field is too long</div>
@@ -481,12 +492,12 @@ angular.module('ngMessages', [])
     * @usage
     * ```html
     * <!-- using attribute directives -->
-    * <ANY ng-messages="expression">
+    * <ANY ng-messages="expression" role="alert>
     *   <ANY ng-messages-include="remoteTplString">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
-    * <ng-messages for="expression">
+    * <ng-messages for="expression" role="alert>
     *   <ng-messages-include src="expressionValue1">...</ng-messages-include>
     * </ng-messages>
     * ```
@@ -537,13 +548,13 @@ angular.module('ngMessages', [])
     * @usage
     * ```html
     * <!-- using attribute directives -->
-    * <ANY ng-messages="expression">
+    * <ANY ng-messages="expression" role="alert>
     *   <ANY ng-message="stringValue">...</ANY>
     *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
-    * <ng-messages for="expression">
+    * <ng-messages for="expression" role="alert>
     *   <ng-message when="stringValue">...</ng-message>
     *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
     * </ng-messages>
