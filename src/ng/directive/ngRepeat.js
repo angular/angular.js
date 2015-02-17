@@ -143,6 +143,11 @@
  *
  *     For example: `item in items | filter:x as results` will store the fragment of the repeated items as `results`, but only after
  *     the items have been processed through the filter.
+ * 
+ *  * `as [variable name] is not an operator but rather a part of ngRepeat micro-syntax so it can be used only at the end 
+ *    (and not as operator, inside an expression).
+ * 
+ *    For example: `item in items | filter : x | orderBy : order | limitTo : limit as results` .
  *
  * @example
  * This example initializes the scope to a list of names and
