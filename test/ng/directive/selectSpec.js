@@ -237,6 +237,23 @@ describe('select', function() {
       });
 
 
+      it('should remove unknown option when model is undefined', function() {
+        scope.robot = 'other';
+        compile('<select ng-model="robot">' +
+                  '<option value="">--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+
+        expect(element).toEqualSelect([unknownValue('other')], '', 'x', 'y');
+
+        scope.robot = undefined;
+        scope.$digest();
+
+        expect(element).toEqualSelect([''], 'x', 'y');
+      });
+
+
       describe('interactions with repeated options', function() {
 
         it('should select empty option when model is undefined', function() {

@@ -73,6 +73,7 @@ var SelectController =
       if (value === '') self.emptyOption.prop('selected', true); // to make IE9 happy
     } else {
       if (isUndefined(value) && self.emptyOption) {
+        self.removeUnknownOption();
         $element.val('');
       } else {
         self.renderUnknownOption(value);
