@@ -181,7 +181,7 @@ of a real browser alert.
 
 ```js
 var mock, notify;
-
+beforeEach(module('myServiceModule'));
 beforeEach(function() {
   mock = {alert: jasmine.createSpy()};
 
