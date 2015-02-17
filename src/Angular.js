@@ -902,6 +902,41 @@ var csp = function() {
   return (csp.isActive_ = active);
 };
 
+
+Example:-
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body ng-app="myApp">
+  <div ng-controller="Ctrl">
+    <br/>Obj1: {{object1}}
+    <br/>Obj2: {{object2}}
+    <br/><br/>Are they equal? {{equals}}
+  </div>
+</body>
+<script src="http://code.angularjs.org/1.2.2/angular.js"></script>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script>
+angular.module('myApp', []).controller('Ctrl', function($scope) {
+  var obj1 = {
+    key1: "value1",
+    key2: "value2",
+    key3: {a: "value3", b: "value4"}
+  }
+  var obj2 = {
+    key2: "value2",
+    key1: "value1",
+    key3: {a: "value3", b: "value4"}
+  }
+  $scope.object1 = obj1;
+  $scope.object2 = obj2;
+  $scope.equals = angular.equals(obj1, obj2)
+});
+</script>
+</html>
+
 /**
  * @ngdoc directive
  * @module ng
