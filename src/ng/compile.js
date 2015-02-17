@@ -1905,11 +1905,29 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (controllerDirectives) {
           elementControllers = {};
           forEach(controllerDirectives, function(directive) {
+            // github issue #5893 Add ability to inject required controllers
+            // into the controller function
+            var requiredControllers;
+            if (directive.require && directive.require !== directive.name) {
+                // the directive requires its own controller. this would make an error
+                // this does not prevent require: "^sameDirective"
+                var requiredControllersCopy = angular.copy(directive.require);
+                if (angular.isArray(requiredControllersCopy)) {
+                    var indexOfSelf = requiredControllersCopy.indexOf(directive.name);
+                    if (indexOfSelf !== -1) {
+                        requiredControllersCopy.splice(indexOfSelf, 1);
+                    }
+                }
+                requiredControllers = requiredControllersCopy
+                    && getControllers(requiredControllersCopy, $element, elementControllers);
+            }
+          
             var locals = {
               $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
               $element: $element,
               $attrs: attrs,
-              $transclude: transcludeFn
+              $transclude: transcludeFn,
+              $requiredControllers: requiredControllers
             }, controllerInstance;
 
             controller = directive.controller;
