@@ -100,14 +100,14 @@ function prepare {
 
       if [ $repo != "angular-mocks" ]
       then
-        echo "module.exports = angular.module('ng$first$tail');" >> index.js
+        echo "module.exports = 'ng$first$tail';" >> index.js
       else
         for mock in "${MOCK_MODULES[@]}"
         do
           echo "-- Adding $repo/$mock CommonJS file"
           echo "require('./$repo');" > $mock.js
           echo "" >> $mock.js
-          echo "module.exports = angular.module('$mock');" >> $mock.js
+          echo "module.exports = '$mock';" >> $mock.js
         done
       fi
     fi
