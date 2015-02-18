@@ -151,8 +151,15 @@ describe('ngOptions', function() {
 
   it('should throw when not formated "? for ? in ?"', function() {
     expect(function() {
-        compile('<select ng-model="selected" ng-options="i dont parse"></select>')(scope);
+        compile('<select ng-model="selected" ng-options="i dont parse"></select>');
       }).toThrowMinErr('ngOptions', 'iexp', /Expected expression in form of/);
+  });
+
+
+  it('should have optional dependency on ngModel', function() {
+    expect(function() {
+      compile('<select ng-options="item in items"></select>');
+    }).not.toThrow();
   });
 
 
