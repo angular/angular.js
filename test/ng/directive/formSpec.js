@@ -881,20 +881,38 @@ describe('form', function() {
 
   it('should rename forms with no parent when interpolated name changes', function() {
     var element = $compile('<form name="name{{nameID}}"></form>')(scope);
-    var element2 = $compile('<div ng-form="name{{nameID}}"></div>')(scope);
+    var element2 = $compile('<div ng-form="ngform{{nameID}}"></div>')(scope);
     scope.nameID = "A";
     scope.$digest();
     var form = element.controller('form');
     var form2 = element2.controller('form');
+    expect(scope.nameA).toBe(form);
+    expect(scope.ngformA).toBe(form2);
     expect(form.$name).toBe('nameA');
-    expect(form2.$name).toBe('nameA');
+    expect(form2.$name).toBe('ngformA');
 
     scope.nameID = "B";
     scope.$digest();
+    expect(scope.nameA).toBeUndefined();
+    expect(scope.ngformA).toBeUndefined();
+    expect(scope.nameB).toBe(form);
+    expect(scope.ngformB).toBe(form2);
     expect(form.$name).toBe('nameB');
-    expect(form2.$name).toBe('nameB');
+    expect(form2.$name).toBe('ngformB');
   });
 
+  it('should rename forms with an initially blank name', function() {
+    var element = $compile('<form name="{{name}}"></form>')(scope);
+    scope.$digest();
+    var form = element.controller('form');
+    expect(scope['']).toBe(form);
+    expect(form.$name).toBe('');
+    scope.name = 'foo';
+    scope.$digest();
+    expect(scope.foo).toBe(form);
+    expect(form.$name).toBe('foo');
+    expect(scope.foo).toBe(form);
+  });
 
   describe('$setSubmitted', function() {
     beforeEach(function() {
