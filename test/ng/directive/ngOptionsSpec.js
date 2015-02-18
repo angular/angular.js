@@ -532,6 +532,57 @@ describe('ngOptions', function() {
     expect(options.eq(3)).toEqualOption('c');
   });
 
+  it('should disable options', function() {
+
+    scope.selected = '';
+    scope.options = [
+      { name: 'white', value: '#FFFFFF' },
+      { name: 'one', value: 1, unavailable: true },
+      { name: 'notTrue', value: false },
+      { name: 'thirty', value: 30, unavailable: false }
+    ];
+    createSelect({
+      'ng-options': 'o.value as o.name disable when o.unavailable for o in options',
+      'ng-model': 'selected'
+    });
+    var options = element.find('option');
+
+    expect(options.length).toEqual(5);
+    expect(options.eq(1).prop('disabled')).toEqual(false);
+    expect(options.eq(2).prop('disabled')).toEqual(true);
+    expect(options.eq(3).prop('disabled')).toEqual(false);
+    expect(options.eq(4).prop('disabled')).toEqual(false);
+  });
+
+  it('should not write disabled options from model', function() {
+    scope.selected = 30;
+    scope.options = [
+      { name: 'white', value: '#FFFFFF' },
+      { name: 'one', value: 1, unavailable: true },
+      { name: 'notTrue', value: false },
+      { name: 'thirty', value: 30, unavailable: false }
+    ];
+    createSelect({
+      'ng-options': 'o.value as o.name disable when o.unavailable for o in options',
+      'ng-model': 'selected'
+    });
+
+    var options = element.find('option');
+
+    expect(options.eq(3).prop('selected')).toEqual(true);
+
+    scope.$apply(function() {
+      scope.selected = 1;
+    });
+
+    options = element.find('option');
+
+    expect(element.val()).toEqualUnknownValue('?');
+    expect(options.length).toEqual(5);
+    expect(options.eq(0).prop('selected')).toEqual(true);
+    expect(options.eq(2).prop('selected')).toEqual(false);
+    expect(options.eq(4).prop('selected')).toEqual(false);
+  });
 
   describe('disableWhen expression', function() {
 
