@@ -9,9 +9,11 @@ branches:
 env:
   matrix:
     - JOB=unit BROWSER_PROVIDER=saucelabs
+    - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
     - JOB=unit BROWSER_PROVIDER=browserstack
+    - JOB=docs-e2e BROWSER_PROVIDER=browserstack
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack
   global:
@@ -25,6 +27,9 @@ env:
 matrix:
   allow_failures:
     - env: "JOB=unit BROWSER_PROVIDER=browserstack"
+    - env: "JOB=docs-e2e BROWSER_PROVIDER=browserstack"
+    - env: "JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack"
+    - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
 
 install:
   # - npm config set registry http://23.251.144.68

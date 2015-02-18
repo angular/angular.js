@@ -1641,9 +1641,9 @@ describe('input', function() {
       });
     });
 
-    describe('max', function()  {
+    describe('max', function() {
 
-      it('should invalidate', function()  {
+      it('should invalidate', function() {
         var inputElm = helper.compileInput('<input type="date" ng-model="value" name="alias" max="2019-01-01" />');
         helper.changeInputValueTo('2019-12-31');
         expect(inputElm).toBeInvalid();
@@ -1869,10 +1869,15 @@ describe('input', function() {
       });
 
       it('should validate even if min value changes on-the-fly', function() {
-        $rootScope.min = 10;
+        $rootScope.min = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        $rootScope.min = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.min = 20;
@@ -1910,10 +1915,15 @@ describe('input', function() {
       });
 
       it('should validate even if the ngMin value changes on-the-fly', function() {
-        $rootScope.min = 10;
+        $rootScope.min = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-min="min" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        $rootScope.min = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.min = 20;
@@ -1952,10 +1962,15 @@ describe('input', function() {
       });
 
       it('should validate even if max value changes on-the-fly', function() {
-        $rootScope.max = 10;
+        $rootScope.max = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        $rootScope.max = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.max = 0;
@@ -1993,10 +2008,15 @@ describe('input', function() {
       });
 
       it('should validate even if the ngMax value changes on-the-fly', function() {
-        $rootScope.max = 10;
+        $rootScope.max = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-max="max" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        $rootScope.max = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.max = 0;

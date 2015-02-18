@@ -35,18 +35,18 @@ module.exports = function(config, specificOptions) {
       'SL_Chrome': {
         base: 'SauceLabs',
         browserName: 'chrome',
-        version: '34'
+        version: '39'
       },
       'SL_Firefox': {
         base: 'SauceLabs',
         browserName: 'firefox',
-        version: '26'
+        version: '31'
       },
       'SL_Safari': {
         base: 'SauceLabs',
         browserName: 'safari',
-        platform: 'OS X 10.9',
-        version: '7'
+        platform: 'OS X 10.10',
+        version: '8'
       },
       'SL_IE_9': {
         base: 'SauceLabs',
@@ -71,13 +71,13 @@ module.exports = function(config, specificOptions) {
         base: 'BrowserStack',
         browser: 'chrome',
         os: 'OS X',
-        os_version: 'Mountain Lion'
+        os_version: 'Yosemite'
       },
       'BS_Safari': {
         base: 'BrowserStack',
         browser: 'safari',
         os: 'OS X',
-        os_version: 'Mountain Lion'
+        os_version: 'Yosemite'
       },
       'BS_Firefox': {
         base: 'BrowserStack',

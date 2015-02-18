@@ -2112,7 +2112,7 @@ goog.i18n.NumberFormatSymbols_lt = {
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0\u00A0%',
   CURRENCY_PATTERN: '#,##0.00\u00A0\u00A4',
-  DEF_CURRENCY_CODE: 'LTL'
+  DEF_CURRENCY_CODE: 'EUR'
 };
 
 

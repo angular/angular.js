@@ -10,13 +10,13 @@ There are a few things you might consider when running your AngularJS applicatio
 
 ## Disabling Debug Data
 
-By default AngularJS attaches information about scopes to DOM nodes, and adds CSS classes
-to data-bound elements. The information that is not included is:
+By default AngularJS attaches information about binding and scopes to DOM nodes,
+and adds CSS classes to data-bound elements:
 
-As a result of `ngBind`, `ngBindHtml` or `{{...}}` interpolations, binding data and CSS class
-`ng-class` is attached to the corresponding element.
+- As a result of `ngBind`, `ngBindHtml` or `{{...}}` interpolations, binding data and CSS class
+`ng-binding` are attached to the corresponding element.
 
-Where the compiler has created a new scope, the scope and either `ng-scope` or `ng-isolated-scope`
+- Where the compiler has created a new scope, the scope and either `ng-scope` or `ng-isolated-scope`
 CSS class are attached to the corresponding element. These scope references can then be accessed via
 `element.scope()` and `element.isolateScope()`.
 

@@ -37,6 +37,7 @@ Currently, ngAria interfaces with the following directives:
  * {@link guide/accessibility#nghide ngHide}
  * {@link guide/accessibility#ngclick ngClick}
  * {@link guide/accessibility#ngdblclick ngDblClick}
+ * {@link guide/accessibility#ngmessages ngMessages}
 
 <h2 id="ngmodel">ngModel</h2>
 
@@ -209,10 +210,14 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 `display: none`. See explanation for {@link guide/accessibility#ngshow ngShow} when overriding the default CSS.
 
 <h2><span id="ngclick">ngClick</span> and <span id="ngdblclick">ngDblclick</span></h2>
-If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex` if it isn't there already.
-Even with this, you must currently still add `ng-keypress` to non-interactive elements such as `div`
-or `taco-button` to enable keyboard access. Conversation is currently ongoing about whether ngAria
-should also bind `ng-keypress`.
+If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` if it isn't there
+already.
+
+For `ng-click`, keypress will also be bound to `div` and `li` elements. You can turn this
+functionality on or off with the `bindKeypress` configuration option.
+
+For `ng-dblclick`, you must manually add `ng-keypress` to non-interactive elements such as `div`
+or `taco-button` to enable keyboard access.
 
 <h3>Example</h3>
 ```html
@@ -223,7 +228,6 @@ Becomes:
 ```html
 <div ng-click="toggleMenu()" tabindex="0"></div>
 ```
-*Note: ngAria still requires `ng-keypress` to be added manually to non-native controls like divs.*
 
 <h2 id="ngmessages">ngMessages</h2>
 

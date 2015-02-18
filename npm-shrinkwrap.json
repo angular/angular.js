@@ -1395,66 +1395,66 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.7",
+      "version": "0.10.8",
       "dependencies": {
         "catharsis": {
           "version": "0.7.1"
         },
         "change-case": {
-          "version": "2.1.5",
+          "version": "2.2.0",
           "dependencies": {
             "camel-case": {
-              "version": "1.0.2"
+              "version": "1.1.1"
             },
             "constant-case": {
-              "version": "1.0.0"
-            },
-            "dot-case": {
-              "version": "1.0.1"
-            },
-            "is-lower-case": {
-              "version": "1.0.0"
-            },
-            "is-upper-case": {
-              "version": "1.0.1"
-            },
-            "lower-case": {
-              "version": "1.0.2"
-            },
-            "param-case": {
-              "version": "1.0.1"
-            },
-            "pascal-case": {
-              "version": "1.0.0"
-            },
-            "path-case": {
-              "version": "1.0.1"
-            },
-            "sentence-case": {
               "version": "1.1.0"
             },
+            "dot-case": {
+              "version": "1.1.0"
+            },
+            "is-lower-case": {
+              "version": "1.1.0"
+            },
+            "is-upper-case": {
+              "version": "1.1.0"
+            },
+            "lower-case": {
+              "version": "1.1.1"
+            },
+            "param-case": {
+              "version": "1.1.0"
+            },
+            "pascal-case": {
+              "version": "1.1.0"
+            },
+            "path-case": {
+              "version": "1.1.0"
+            },
+            "sentence-case": {
+              "version": "1.1.1"
+            },
             "snake-case": {
-              "version": "1.0.1"
+              "version": "1.1.0"
             },
             "swap-case": {
-              "version": "1.0.2"
+              "version": "1.1.0"
             },
             "title-case": {
-              "version": "1.0.1"
+              "version": "1.1.0"
             },
             "upper-case": {
-              "version": "1.0.3"
+              "version": "1.1.1"
             },
             "upper-case-first": {
-              "version": "1.0.1"
+              "version": "1.1.0"
             }
           }
         },
         "esprima": {
-          "version": "1.2.2"
+          "version": "1.2.3"
         },
         "estraverse": {
-          "version": "1.7.1"
+          "version": "1.9.1"
         },
         "glob": {
           "version": "3.2.11",
@@ -1626,7 +1626,7 @@
                   }
                 },
                 "node-uuid": {
-                  "version": "1.4.1"
+                  "version": "1.4.2"
                 },
                 "cookie-jar": {
                   "version": "0.2.0"
@@ -2342,26 +2342,32 @@
     },
     "grunt-jasmine-node": {
       "version": "0.1.0",
-      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7",
+      "from": "grunt-jasmine-node@git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs": {
-      "version": "0.7.1",
+      "version": "1.2.0",
       "dependencies": {
         "hooker": {
           "version": "0.2.3"
         },
         "jscs": {
-          "version": "1.6.2",
+          "version": "1.10.0",
           "dependencies": {
             "colors": {
-              "version": "0.6.2"
+              "version": "1.0.3"
             },
             "commander": {
-              "version": "2.3.0"
+              "version": "2.5.1"
             },
             "esprima": {
-              "version": "1.2.2"
+              "version": "1.2.3"
+            },
+            "esprima-harmony-jscs": {
+              "version": "1.1.0-regex-token-fix"
+            },
+            "estraverse": {
+              "version": "1.9.1"
             },
             "exit": {
               "version": "0.1.2"
@@ -2370,10 +2376,21 @@
               "version": "4.0.6",
               "dependencies": {
                 "graceful-fs": {
-                  "version": "3.0.4"
+                  "version": "3.0.5"
                 },
                 "inherits": {
                   "version": "2.0.1"
+                },
+                "minimatch": {
+                  "version": "1.0.0",
+                  "dependencies": {
+                    "lru-cache": {
+                      "version": "2.5.0"
+                    },
+                    "sigmund": {
+                      "version": "1.0.0"
+                    }
+                  }
                 },
                 "once": {
                   "version": "1.3.1",
@@ -2386,54 +2403,61 @@
               }
             },
             "minimatch": {
-              "version": "1.0.0",
+              "version": "2.0.1",
               "dependencies": {
-                "lru-cache": {
-                  "version": "2.5.0"
-                },
-                "sigmund": {
-                  "version": "1.0.0"
+                "brace-expansion": {
+                  "version": "1.1.0",
+                  "dependencies": {
+                    "balanced-match": {
+                      "version": "0.2.0"
+                    },
+                    "concat-map": {
+                      "version": "0.0.1"
+                    }
+                  }
                 }
               }
             },
             "strip-json-comments": {
-              "version": "1.0.1"
+              "version": "1.0.2"
             },
             "vow-fs": {
-              "version": "0.3.2",
+              "version": "0.3.4",
               "dependencies": {
                 "node-uuid": {
-                  "version": "1.4.0"
-                },
-                "vow": {
-                  "version": "0.4.4"
+                  "version": "1.4.2"
                 },
                 "vow-queue": {
-                  "version": "0.3.1"
+                  "version": "0.4.1"
                 },
                 "glob": {
-                  "version": "3.2.8",
+                  "version": "4.3.5",
                   "dependencies": {
-                    "minimatch": {
-                      "version": "0.2.14",
+                    "inflight": {
+                      "version": "1.0.4",
                       "dependencies": {
-                        "lru-cache": {
-                          "version": "2.5.0"
-                        },
-                        "sigmund": {
-                          "version": "1.0.0"
+                        "wrappy": {
+                          "version": "1.0.1"
                         }
                       }
                     },
                     "inherits": {
                       "version": "2.0.1"
+                    },
+                    "once": {
+                      "version": "1.3.1",
+                      "dependencies": {
+                        "wrappy": {
+                          "version": "1.0.1"
+                        }
+                      }
                     }
                   }
                 }
               }
             },
             "xmlbuilder": {
-              "version": "2.4.4",
+              "version": "2.4.6",
               "dependencies": {
                 "lodash-node": {
                   "version": "2.4.1"
@@ -2441,28 +2465,17 @@
               }
             },
             "supports-color": {
-              "version": "1.1.0"
+              "version": "1.2.0"
             }
           }
         },
         "vow": {
-          "version": "0.4.5"
+          "version": "0.4.8"
         }
       }
     },
     "grunt-merge-conflict": {
       "version": "0.0.2"
-    },
-    "grunt-parallel": {
-      "version": "0.3.1",
-      "dependencies": {
-        "q": {
-          "version": "0.8.12"
-        },
-        "lpad": {
-          "version": "0.1.0"
-        }
-      }
     },
     "grunt-shell": {
       "version": "1.1.1",
@@ -4810,7 +4823,7 @@
       }
     },
     "protractor": {
-      "version": "1.4.0",
+      "version": "1.6.0",
       "dependencies": {
         "request": {
           "version": "2.36.0",
@@ -4828,7 +4841,7 @@
               "version": "0.5.2"
             },
             "node-uuid": {
-              "version": "1.4.1"
+              "version": "1.4.2"
             },
             "tough-cookie": {
               "version": "0.12.1",
@@ -4858,16 +4871,16 @@
               "version": "0.4.0"
             },
             "http-signature": {
-              "version": "0.10.0",
+              "version": "0.10.1",
               "dependencies": {
                 "assert-plus": {
-                  "version": "0.1.2"
+                  "version": "0.1.5"
                 },
                 "asn1": {
                   "version": "0.1.11"
                 },
                 "ctype": {
-                  "version": "0.5.2"
+                  "version": "0.5.3"
                 }
               }
             },
@@ -4909,7 +4922,7 @@
                   "version": "0.6.1"
                 },
                 "xmlbuilder": {
-                  "version": "2.4.4",
+                  "version": "2.4.5",
                   "dependencies": {
                     "lodash-node": {
                       "version": "2.4.1"
@@ -4925,6 +4938,17 @@
         },
         "jasminewd": {
           "version": "1.1.0"
+        },
+        "jasminewd2": {
+          "version": "0.0.2"
+        },
+        "jasmine": {
+          "version": "2.1.1",
+          "dependencies": {
+            "jasmine-core": {
+              "version": "2.1.3"
+            }
+          }
         },
         "saucelabs": {
           "version": "0.1.1"
@@ -4966,7 +4990,7 @@
           "version": "1.0.0"
         },
         "source-map-support": {
-          "version": "0.2.8",
+          "version": "0.2.9",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",

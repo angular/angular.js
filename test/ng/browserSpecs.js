@@ -395,7 +395,7 @@ describe('browser', function() {
       });
 
 
-      it ('should return a value for an existing cookie', function() {
+      it('should return a value for an existing cookie', function() {
         document.cookie = "foo=bar=baz;path=/";
         expect(browser.cookies().foo).toEqual('bar=baz');
       });
@@ -408,7 +408,7 @@ describe('browser', function() {
         expect(browser.cookies()['foo']).toBe('"first"');
       });
 
-      it ('should decode cookie values that were encoded by puts', function() {
+      it('should decode cookie values that were encoded by puts', function() {
         document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
         expect(browser.cookies()['cookie2=bar;baz']).toEqual('val=ue');
       });

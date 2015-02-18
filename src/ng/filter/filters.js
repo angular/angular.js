@@ -234,8 +234,9 @@ function padNumber(num, digits, trim) {
   }
   num = '' + num;
   while (num.length < digits) num = '0' + num;
-  if (trim)
+  if (trim) {
     num = num.substr(num.length - digits);
+  }
   return neg + num;
 }
 
@@ -244,8 +245,9 @@ function dateGetter(name, size, offset, trim) {
   offset = offset || 0;
   return function(date) {
     var value = date['get' + name]();
-    if (offset > 0 || value > -offset)
+    if (offset > 0 || value > -offset) {
       value += offset;
+    }
     if (value === 0 && offset == -12) value = 12;
     return padNumber(value, size, trim);
   };
@@ -260,8 +262,8 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
-function timeZoneGetter(date) {
-  var zone = -1 * date.getTimezoneOffset();
+function timeZoneGetter(date, formats, offset) {
+  var zone = -1 * offset;
   var paddedZone = (zone >= 0) ? "+" : "";
 
   paddedZone += padNumber(Math[zone > 0 ? 'floor' : 'ceil'](zone / 60), 2) +
@@ -361,7 +363,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d
  *   * `'m'`: Minute in hour (0-59)
  *   * `'ss'`: Second in minute, padded (00-59)
  *   * `'s'`: Second in minute (0-59)
- *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
+ *   * `'sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: AM/PM marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
  *   * `'ww'`: Week of year, padded (00-53). Week 01 is the week with the first Thursday of the year
@@ -482,13 +484,18 @@ function dateFilter($locale) {
       }
     }
 
-    if (timezone && timezone === 'UTC') {
-      date = new Date(date.getTime());
-      date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+    var dateTimezoneOffset = date.getTimezoneOffset();
+    if (timezone) {
+      var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
+      if (!isNaN(requestedTimezoneOffset)) {
+        date = new Date(date.getTime());
+        date.setMinutes(date.getMinutes() + dateTimezoneOffset - requestedTimezoneOffset);
+        dateTimezoneOffset = requestedTimezoneOffset;
+      }
     }
     forEach(parts, function(value) {
       fn = DATE_FORMATS[value];
-      text += fn ? fn(date, $locale.DATETIME_FORMATS)
+      text += fn ? fn(date, $locale.DATETIME_FORMATS, dateTimezoneOffset)
                  : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
     });
 

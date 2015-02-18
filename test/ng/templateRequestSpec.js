@@ -17,7 +17,7 @@ describe('$templateRequest', function() {
   }));
 
   it('should cache the request to prevent extra downloads',
-    inject(function($rootScope, $templateRequest, $httpBackend) {
+    inject(function($rootScope, $templateRequest, $templateCache, $httpBackend) {
 
     $httpBackend.expectGET('tpl.html').respond('matias');
 
@@ -34,12 +34,13 @@ describe('$templateRequest', function() {
 
     expect(content[0]).toBe('matias');
     expect(content[1]).toBe('matias');
+    expect($templateCache.get('tpl.html')).toBe('matias');
   }));
 
   it('should throw an error when the template is not found',
     inject(function($rootScope, $templateRequest, $httpBackend) {
 
-    $httpBackend.expectGET('tpl.html').respond(404);
+    $httpBackend.expectGET('tpl.html').respond(404, '', {}, 'Not found');
 
     $templateRequest('tpl.html');
 
@@ -48,7 +49,7 @@ describe('$templateRequest', function() {
     expect(function() {
       $rootScope.$digest();
       $httpBackend.flush();
-    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html');
+    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html (HTTP status: 404 Not found)');
   }));
 
   it('should not throw when the template is not found and ignoreRequestError is true',

@@ -1,6 +1,7 @@
 {
   "name": "angularjs",
-  "branchVersion": "1.3.*",
+  "branchVersion": "^1.4.0-beta.0",
+  "branchPattern": "1.4.*",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
@@ -11,6 +12,7 @@
     "bower": "~1.3.9",
     "browserstacktunnel-wrapper": "~1.3.1",
     "canonical-path": "0.0.2",
+    "cheerio": "^0.17.0",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.10.0",
     "event-stream": "~3.1.0",
@@ -23,7 +25,7 @@
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-jasmine-node": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
-    "grunt-jscs": "~0.7.1",
+    "grunt-jscs": "~1.2.0",
     "grunt-merge-conflict": "~0.0.1",
     "grunt-shell": "~1.1.1",
     "gulp": "~3.8.0",
@@ -51,7 +53,7 @@
     "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
     "promises-aplus-tests": "~2.1.0",
-    "protractor": "1.4.0",
+    "protractor": "^1.6.0",
     "q": "~1.0.0",
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
@@ -59,8 +61,7 @@
     "semver": "~4.0.3",
     "shelljs": "~0.3.0",
     "sorted-object": "^1.0.0",
-    "stringmap": "^0.2.2",
-    "cheerio": "^0.17.0"
+    "stringmap": "^0.2.2"
   },
   "licenses": [
     {

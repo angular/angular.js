@@ -624,7 +624,7 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should match bindings by substring match', function() {
-        compile('<pre ng-bind="foo.bar | filter"></pre>', 'binding value');
+        compile('<pre ng-bind="foo.bar | lowercase"></pre>', 'binding value');
         $root.dsl.binding('foo . bar');
         expect($root.futureResult).toEqual('binding value');
       });

@@ -87,11 +87,9 @@ describe('$sniffer', function() {
         var ua = $window.navigator.userAgent.toLowerCase();
         if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
           expectedPrefix = 'Webkit';
-        }
-        else if (/firefox/i.test(ua)) {
+        } else if (/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
-        }
-        else if (/ie/i.test(ua) || /trident/i.test(ua)) {
+        } else if (/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
         expect($sniffer.vendorPrefix).toBe(expectedPrefix);

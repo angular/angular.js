@@ -28,7 +28,6 @@
     "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
-    "sortedKeys": false,
     "forEachSorted": false,
     "reverseParams": false,
     "nextUid": false,
@@ -152,6 +151,9 @@
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
+
+    /* ng/controller.js */
+    "identifierForController": false,
 
     /* ng/compile.js */
     "directiveNormalize": false,

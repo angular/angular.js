@@ -55,8 +55,7 @@
       if (window.WebKitTransitionEvent) {
         evnt = new WebKitTransitionEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
-      }
-      else {
+      } else {
         try {
           evnt = new TransitionEvent(eventType, eventData);
         }
@@ -65,13 +64,11 @@
           evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
-    }
-    else if (/animationend/.test(eventType)) {
+    } else if (/animationend/.test(eventType)) {
       if (window.WebKitAnimationEvent) {
         evnt = new WebKitAnimationEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
-      }
-      else {
+      } else {
         try {
           evnt = new AnimationEvent(eventType, eventData);
         }
@@ -80,8 +77,7 @@
           evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
-    }
-    else {
+    } else {
       evnt = document.createEvent('MouseEvents');
       x = x || 0;
       y = y || 0;

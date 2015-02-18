@@ -1,6 +1,7 @@
 {
   "excludeFiles": ["src/ngLocale/**"],
   "disallowKeywords": ["with"],
+  "disallowKeywordsOnNewLine": ["else"],
   "disallowMixedSpacesAndTabs": true,
   "disallowMultipleLineStrings": true,
   "disallowNewlineBeforeBlockStatements": true,
@@ -11,6 +12,7 @@
   "disallowSpacesInAnonymousFunctionExpression": {
     "beforeOpeningRoundBrace": true
   },
+  "disallowSpacesInCallExpression": true,
   "disallowSpacesInFunctionDeclaration": {
     "beforeOpeningRoundBrace": true
   },
@@ -18,6 +20,11 @@
     "beforeOpeningRoundBrace": true
   },
   "disallowSpacesInsideArrayBrackets": true,
+  "requireSpaceBeforeKeywords": [
+    "else",
+    "while",
+    "catch"
+  ],
   "disallowSpacesInsideParentheses": true,
   "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,
@@ -33,9 +40,9 @@
     "afterConsequent": true,
     "beforeAlternate": true
   },
+  "requireSpacesInForStatement": true,
   "requireSpacesInFunction": {
     "beforeOpeningCurlyBrace": true
   },
-  "validateLineBreaks": "LF",
-  "validateParameterSeparator": ", "
+  "validateLineBreaks": "LF"
 }

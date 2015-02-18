@@ -74,19 +74,9 @@ afterEach(function() {
 
 
   // copied from Angular.js
-  // we need these two methods here so that we can run module tests with wrapped angular.js
-  function sortedKeys(obj) {
-    var keys = [];
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        keys.push(key);
-      }
-    }
-    return keys.sort();
-  }
-
+  // we need this method here so that we can run module tests with wrapped angular.js
   function forEachSorted(obj, iterator, context) {
-    var keys = sortedKeys(obj);
+    var keys = Object.keys(obj).sort();
     for (var i = 0; i < keys.length; i++) {
       iterator.call(context, obj[keys[i]], keys[i]);
     }
@@ -170,8 +160,9 @@ function sortedHtml(element, showNgClass) {
         attrs.push(' class="' + className + '"');
       }
       for (var i = 0; i < attributes.length; i++) {
-        if (i > 0 && attributes[i] == attributes[i - 1])
+        if (i > 0 && attributes[i] == attributes[i - 1]) {
           continue; //IE9 creates dupes. Ignore them!
+        }
 
         var attr = attributes[i];
         if (attr.name.match(/^ng[\:\-]/) ||
@@ -231,8 +222,9 @@ function sortedHtml(element, showNgClass) {
         var tmp = style;
         style = [];
         forEach(tmp, function(value) {
-          if (!value.match(/^max[^\-]/))
+          if (!value.match(/^max[^\-]/)) {
             style.push(value);
+          }
         });
         if (style.length) {
           html += ' style="' + style.join('; ') + ';"';

@@ -85,6 +85,28 @@ describe('$aria', function() {
       expect(element.attr('aria-checked')).toBe('false');
     });
 
+    it('should handle checkbox with string model values using ng(True|False)Value', function() {
+      var element = $compile('<input type="checkbox" ng-model="val" ng-true-value="\'yes\'" ' +
+        'ng-false-value="\'no\'">'
+      )(scope);
+
+      scope.$apply('val="yes"');
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+
+      scope.$apply('val="no"');
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+    });
+
+    it('should handle checkbox with integer model values using ngTrueValue', function() {
+      var element = $compile('<input type="checkbox" ng-model="val" ng-true-value="0">')(scope);
+
+      scope.$apply('val=0');
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+
+      scope.$apply('val=1');
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+    });
+
     it('should attach itself to input type="radio"', function() {
       var element = $compile('<input type="radio" ng-model="val" value="one">' +
           '<input type="radio" ng-model="val" value="two">')(scope);
@@ -94,6 +116,36 @@ describe('$aria', function() {
       expect(element.eq(1).attr('aria-checked')).toBe('false');
 
       scope.$apply("val='two'");
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+      expect(element.eq(1).attr('aria-checked')).toBe('true');
+    });
+
+    it('should handle radios with integer model values', function() {
+      var element = $compile('<input type="radio" ng-model="val" value="0">' +
+          '<input type="radio" ng-model="val" value="1">')(scope);
+
+      scope.$apply('val=0');
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+      expect(element.eq(1).attr('aria-checked')).toBe('false');
+
+      scope.$apply('val=1');
+      expect(element.eq(0).attr('aria-checked')).toBe('false');
+      expect(element.eq(1).attr('aria-checked')).toBe('true');
+    });
+
+    it('should handle radios with boolean model values using ngValue', function() {
+      var element = $compile('<input type="radio" ng-model="val" ng-value="valExp">' +
+          '<input type="radio" ng-model="val" ng-value="valExp2">')(scope);
+
+      scope.$apply(function() {
+        scope.valExp = true;
+        scope.valExp2 = false;
+        scope.val = true;
+      });
+      expect(element.eq(0).attr('aria-checked')).toBe('true');
+      expect(element.eq(1).attr('aria-checked')).toBe('false');
+
+      scope.$apply('val = false');
       expect(element.eq(0).attr('aria-checked')).toBe('false');
       expect(element.eq(1).attr('aria-checked')).toBe('true');
     });
@@ -488,12 +540,24 @@ describe('$aria', function() {
 
     it('should a trigger click from the keyboard', function() {
       scope.someAction = function() {};
-      compileInput('<div ng-click="someAction()" tabindex="0"></div>');
+
+      var elements = $compile('<section>' +
+                  '<div class="div-click" ng-click="someAction(\'div\')" tabindex="0"></div>' +
+                  '<ul><li ng-click="someAction( \'li\')" tabindex="0"></li></ul>' +
+                  '</section>')(scope);
+
+      scope.$digest();
+
       clickFn = spyOn(scope, 'someAction');
 
-      element.triggerHandler({type: 'keypress', keyCode: 32});
+      var divElement = elements.find('div');
+      var liElement = elements.find('li');
 
-      expect(clickFn).toHaveBeenCalled();
+      divElement.triggerHandler({type: 'keypress', keyCode: 32});
+      liElement.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).toHaveBeenCalledWith('div');
+      expect(clickFn).toHaveBeenCalledWith('li');
     });
 
     it('should not override existing ng-keypress', function() {
@@ -526,6 +590,13 @@ describe('$aria', function() {
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('keypress13');
     });
+
+    it('should not bind keypress to elements not in the default config', function() {
+      compileInput('<button ng-click="event = $event">{{event.type}}{{event.keyCode}}</button>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('');
+    });
   });
 
   describe('actions when bindKeypress set to false', function() {
@@ -534,11 +605,11 @@ describe('$aria', function() {
     }));
     beforeEach(injectScopeAndCompiler);
 
-    it('should not a trigger click from the keyboard', function() {
+    it('should not a trigger click', function() {
       scope.someAction = function() {};
       var clickFn = spyOn(scope, 'someAction');
 
-      element = $compile('<div ng-click="someAction()" tabindex="0">></div>')(scope);
+      element = $compile('<div ng-click="someAction()" tabindex="0"></div>')(scope);
 
       element.triggerHandler({type: 'keypress', keyCode: 32});
 

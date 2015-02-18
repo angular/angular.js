@@ -140,6 +140,10 @@ describe('HTML', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
   });
 
+  it('should remove script that has newline characters', function() {
+    expectHTML('a<SCRIPT\n>\n\revil\n\r< / scrIpt\n >c.').toEqual('ac.');
+  });
+
   it('should remove DOCTYPE header', function() {
     expectHTML('<!DOCTYPE html>').toEqual('');
     expectHTML('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n"http://www.w3.org/TR/html4/strict.dtd">').toEqual('');
@@ -158,6 +162,10 @@ describe('HTML', function() {
 
   it('should remove style', function() {
     expectHTML('a<STyle>evil</stYle>c.').toEqual('ac.');
+  });
+
+  it('should remove style that has newline characters', function() {
+    expectHTML('a<STyle \n>\n\revil\n\r</stYle\n>c.').toEqual('ac.');
   });
 
   it('should remove script and style', function() {
@@ -487,8 +495,7 @@ describe('HTML', function() {
 });
 
 describe('decodeEntities', function() {
-  var handler, text,
-      origHiddenPre = window.hiddenPre;
+  var handler, text;
 
   beforeEach(function() {
     text = '';
@@ -503,37 +510,13 @@ describe('decodeEntities', function() {
     module('ngSanitize');
   });
 
-  afterEach(function() {
-    window.hiddenPre = origHiddenPre;
+  it('should unescape text', function() {
+    htmlParser('a&lt;div&gt;&amp;&lt;/div&gt;c', handler);
+    expect(text).toEqual('a<div>&</div>c');
   });
 
-  it('should use innerText if textContent is not available (IE<9)', function() {
-    window.hiddenPre = {
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('INNER_TEXT');
-    });
-  });
-  it('should use textContent if available', function() {
-    window.hiddenPre = {
-      textContent: 'TEXT_CONTENT',
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('TEXT_CONTENT');
-    });
-  });
-  it('should use textContent even if empty', function() {
-    window.hiddenPre = {
-      textContent: '',
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('');
-    });
+  it('should preserve whitespace', function() {
+    htmlParser('  a&amp;b ', handler);
+    expect(text).toEqual('  a&b ');
   });
 });

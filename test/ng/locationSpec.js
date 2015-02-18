@@ -673,6 +673,16 @@ describe('$location', function() {
     }));
   });
 
+  describe('rewrite hashbang url <> html5 url', function() {
+    beforeEach(initService({html5Mode: true, supportHistory: true}));
+    beforeEach(inject(initBrowser({url:'http://new.com/#', basePath: '/'})));
+
+    it('should not replace browser url if only the empty hash fragment is cleared', inject(function($browser, $location) {
+      expect($browser.url()).toBe('http://new.com/#');
+      expect($location.absUrl()).toBe('http://new.com/');
+    }));
+  });
+
   describe('wiring', function() {
 
     beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
@@ -1272,7 +1282,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with target="_blank"', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="_blank"'});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="_blank"'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1285,7 +1295,7 @@ describe('$location', function() {
 
 
     it('should not rewrite links with target specified', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="some-frame"'});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="some-frame"'});
       inject(
         initBrowser(),
         initLocation(),
@@ -1323,7 +1333,7 @@ describe('$location', function() {
     });
 
 
-    it ('should not rewrite links when rewriting links is disabled', function() {
+    it('should not rewrite links when rewriting links is disabled', function() {
       configureService({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
       inject(
         initBrowser(),
@@ -1480,7 +1490,7 @@ describe('$location', function() {
     });
 
     it('should not rewrite when clicked with ctrl pressed', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
@@ -1493,12 +1503,59 @@ describe('$location', function() {
 
 
     it('should not rewrite when clicked with meta pressed', function() {
-      configureService({linkHref: '/a?b=c', html5Mode: true, supportHist: true});
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
         initBrowser(),
         initLocation(),
         function($browser) {
           browserTrigger(link, 'click', { keys: ['meta'] });
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+    it('should not rewrite when right click pressed', function() {
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          var rightClick;
+          if (document.createEvent) {
+            rightClick = document.createEvent('MouseEvents');
+            rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
+                                      false, false, false, 2, null);
+
+            link.dispatchEvent(rightClick);
+          } else if (document.createEventObject) { // for IE
+            rightClick = document.createEventObject();
+            rightClick.type = 'click';
+            rightClick.cancelBubble = true;
+            rightClick.detail = 1;
+            rightClick.screenX = 10;
+            rightClick.screenY = 10;
+            rightClick.clientX = 10;
+            rightClick.clientY = 10;
+            rightClick.ctrlKey = false;
+            rightClick.altKey = false;
+            rightClick.shiftKey = false;
+            rightClick.metaKey = false;
+            rightClick.button = 2;
+            link.fireEvent('onclick', rightClick);
+          }
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when clicked with shift pressed', function() {
+      configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click', { keys: ['shift'] });
           expectNoRewrite($browser);
         }
       );
@@ -1813,7 +1870,7 @@ describe('$location', function() {
       })
     );
 
-    it ('should fire $locationChangeSuccess event when change from browser location bar',
+    it('should fire $locationChangeSuccess event when change from browser location bar',
       inject(function($log, $location, $browser, $rootScope) {
         $rootScope.$apply(); // clear initial $locationChangeStart
 

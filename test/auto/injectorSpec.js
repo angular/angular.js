@@ -238,7 +238,11 @@ describe('injector', function() {
 
 
     it('should publish annotate API', function() {
-      expect(injector.annotate).toBe(annotate);
+      expect(angular.mock.$$annotate).toBe(annotate);
+      spyOn(angular.mock, '$$annotate').andCallThrough();
+      function fn() {}
+      injector.annotate(fn);
+      expect(angular.mock.$$annotate).toHaveBeenCalledWith(fn);
     });
   });
 
@@ -972,7 +976,7 @@ describe('strict-di injector', function() {
       });
     });
     inject(function($injector) {
-      expect (function() {
+      expect(function() {
         $injector.invoke(function($test2) {});
       }).toThrowMinErr('$injector', 'strictdi');
     });
@@ -986,7 +990,7 @@ describe('strict-di injector', function() {
       });
     });
     inject(function($injector) {
-      expect (function() {
+      expect(function() {
         $injector.invoke(['$test', function($test) {}]);
       }).toThrowMinErr('$injector', 'strictdi');
     });
