@@ -297,9 +297,9 @@ then the expression is not fulfilled and will remain watched.
   2. If V is not undefined, mark the result of the expression as stable and schedule a task
      to deregister the watch for this expression when we exit the digest loop
   3. Process the digest loop as normal
-  4. When digest loop is done and all the values have settled process the queue of watch
-     deregistration tasks. For each watch to be deregistered check if it still evaluates
-     to value that is not `undefined`. If that's the case, deregister the watch. Otherwise
+  4. When digest loop is done and all the values have settled, process the queue of watch
+     deregistration tasks. For each watch to be deregistered, check if it still evaluates
+     to a value that is not `undefined`. If that's the case, deregister the watch. Otherwise,
      keep dirty-checking the watch in the future digest loops by following the same
      algorithm starting from step 1
 
