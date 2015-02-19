@@ -204,6 +204,8 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as checked. (Their presence means true and their absence means false.)
+ * If ng-change directive used with expression like ng-change="expression", 
+ * it will never update the binding with declared ng-model variable.
  * If we put an Angular interpolation expression into such an attribute then the
  * binding information would be lost when the browser removes the attribute.
  * The `ngChecked` directive solves this problem for the `checked` attribute.
