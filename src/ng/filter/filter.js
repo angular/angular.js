@@ -187,7 +187,7 @@ function createPredicateFn(expression, comparator, matchAgainstAnyProp) {
 }
 
 function deepCompare(actual, expected, comparator, matchAgainstAnyProp, dontMatchWholeObject) {
-  var actualType = (actual !== null) ? typeof actual : 'null'; 
+  var actualType = (actual !== null) ? typeof actual : 'null';
   var expectedType = typeof expected;
 
   if ((expectedType === 'string') && (expected.charAt(0) === '!')) {
