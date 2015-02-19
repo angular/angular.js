@@ -32,6 +32,9 @@
  * Additionally, you can provide animations via the `ngAnimate` module to animate the `enter`
  * and `leave` effects.
  *
+ * You can use ng-if across few dom elements. First element needs `ng-if-start="expresion"`, and the
+ * last one `ng-if-end`. Those two and all elements between will hide/appear together.
+ *
  * @animations
  * enter - happens just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container
  * leave - happens just before the `ngIf` contents are removed from the DOM
