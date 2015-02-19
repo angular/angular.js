@@ -2,6 +2,12 @@ language: node_js
 node_js:
   - '0.10'
 
+cache:
+  directories:
+    - node_modules
+    - bower_components
+    - docs/bower_components
+
 branches:
   except:
     - /^g3_.*$/
@@ -32,12 +38,12 @@ matrix:
     - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
 
 install:
+  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/
   # - npm config set registry http://23.251.144.68
   # Disable the spinner, it looks bad on Travis
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  - time ./scripts/travis/npm-bundle-deps.sh
   - time npm install
 
 before_script:
