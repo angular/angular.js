@@ -5,6 +5,11 @@
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
   },
+  "engines": {
+    "node": "~0.10",
+    "npm": "~2.5"
+  },
+  "engineStrict": true,
   "devDependencies": {
     "angular-benchpress": "0.x.x",
     "benchmark": "1.x.x",
