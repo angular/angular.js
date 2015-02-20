@@ -162,6 +162,7 @@
           "dependencies": {
             "traceur": {
               "version": "0.0.33",
+              "resolved": "git+https://github.com/vojtajina/traceur-compiler#d90b1e34c799bf61cd1aafdc33db0a554fa9e617",
               "dependencies": {
                 "commander": {
                   "version": "2.6.0"
@@ -4988,6 +4989,7 @@
     },
     "karma": {
       "version": "0.12.31",
+      "resolved": "git+https://github.com/vojtajina/karma#94bf1319de85db854e5782dc798cfe2fc0609fa6",
       "dependencies": {
         "di": {
           "version": "0.0.1"
