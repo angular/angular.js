@@ -1038,6 +1038,18 @@ describe('$http', function() {
           expect(callback).toHaveBeenCalledOnce();
         });
 
+        it('should have access to request headers with mixed case', function() {
+          $httpBackend.expect('POST', '/url', 'header1').respond(200);
+          $http.post('/url', 'req', {
+            headers: {H1: 'header1'},
+            transformRequest: function(data, headers) {
+              return headers('H1');
+            }
+          }).success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+        });
 
         it('should pipeline more functions', function() {
           function first(d, h) {return d + '-first' + ':' + h('h1');}
