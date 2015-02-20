@@ -15,7 +15,7 @@ var fs = require('fs');
 function cleanModule(module, name) {
 
   // keep `from` and `resolve` properties for git dependencies, delete otherwise
-  if (!(module.resolved && module.resolved.match(/^git:\/\//))) {
+  if (!(module.resolved && module.resolved.match(/^git(\+[a-z]+)?:\/\//))) {
     delete module.from;
     delete module.resolved;
   }
