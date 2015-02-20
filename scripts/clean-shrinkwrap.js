@@ -20,12 +20,6 @@ function cleanModule(module, name) {
     delete module.resolved;
   }
 
-  if (name === 'chokidar') {
-    if (module.version === '0.8.1') {
-      delete module.dependencies;
-    }
-  }
-
   _.forEach(module.dependencies, function(mod, name) {
     cleanModule(mod, name);
   });
@@ -38,5 +32,5 @@ var shrinkwrap = require('./../npm-shrinkwrap.json');
 console.log('Cleaning shrinkwrap object');
 cleanModule(shrinkwrap, shrinkwrap.name);
 
-console.log('Writing cleaned npm-shrinkwrap.json');
-fs.writeFileSync('./npm-shrinkwrap.json', JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
+console.log('Writing cleaned npm-shrinkwrap.clean.json');
+fs.writeFileSync('./npm-shrinkwrap.clean.json', JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
