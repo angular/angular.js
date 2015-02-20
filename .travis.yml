@@ -44,6 +44,7 @@ install:
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
+  - npm install -g npm@2.5
   - time npm install
 
 before_script:
