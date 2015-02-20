@@ -37,6 +37,9 @@ matrix:
     - env: "JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack"
     - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
 
+before_install:
+  - npm update -g npm
+
 install:
   - du -sh ./node_modules ./bower_components/ ./docs/bower_components/
   # - npm config set registry http://23.251.144.68
