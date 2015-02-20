@@ -61,7 +61,7 @@ var ngBindDirective = ['$compile', function($compile) {
         element = element[0];
         scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
           element.textContent = value === undefined ? '' : value;
-        });
+        }, true);
       };
     }
   };
