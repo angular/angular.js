@@ -3255,7 +3255,6 @@
     },
     "grunt-jasmine-node": {
       "version": "0.1.0",
-      "from": "../../../../var/folders/_9/p__8cpj15lx5t538ggg0v2_w003k9q/T/npm-79025-87a1c15f/git-cache-9b6dfb6b81b8/ced17cbe52c1412b2ada53160432a5b681f37cd7",
       "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
     },
     "grunt-jscs": {
