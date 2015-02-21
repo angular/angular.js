@@ -812,17 +812,15 @@ function $HttpProvider() {
       }
 
       promise.success = function(fn) {
-        promise.then(function(response) {
-          fn(response.data, response.status, response.headers, config);
+        return promise.then(function(response) {
+          return fn(response.data, response.status, response.headers, config);
         });
-        return promise;
       };
 
       promise.error = function(fn) {
-        promise.then(null, function(response) {
-          fn(response.data, response.status, response.headers, config);
+        return promise.then(null, function(response) {
+          return fn(response.data, response.status, response.headers, config);
         });
-        return promise;
       };
 
       return promise;
