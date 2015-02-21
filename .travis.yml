@@ -46,6 +46,7 @@ install:
   # Log HTTP requests
   - npm config set loglevel http
   - npm install -g npm@2.5
+  # Instal npm dependcies and ensure that npm cache is not stale (these steps are replicated in lib/grunt/utils.js)
   - diff -q npm-shrinkwrap.json node_modules/npm-shrinkwrap.cached.json; if [[ $? -ne 0 ]]; then echo 'Shrinkwrap changed! Blowing away node_modules.'; rm -rf node_modules; fi
   - time npm install
   - cp npm-shrinkwrap.json node_modules/npm-shrinkwrap.cached.json
