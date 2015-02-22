@@ -21,11 +21,13 @@ angular.module('versions', [])
   };
 
   $scope.jumpToDocsVersion = function(version) {
-    var currentPagePath = $location.path().replace(/\/$/, '');
-
-    // TODO: We need to do some munging of the path for different versions of the API...
-
-
-    $window.location = version.docsUrl + currentPagePath;
+    var currentPagePath = $location.path().replace(/\/$/, ''),
+        url = '';
+    if (version.isOldDocsUrl) {
+      url = version.docsUrl;
+    }else{
+      url = version.docsUrl + currentPagePath;
+    }
+    $window.location = url;
   };
 }]);
