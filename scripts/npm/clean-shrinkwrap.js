@@ -10,6 +10,7 @@
 var _ = require('lodash');
 var sorted = require('sorted-object');
 var fs = require('fs');
+var path = require('path');
 
 
 function cleanModule(module, name) {
@@ -27,10 +28,11 @@ function cleanModule(module, name) {
 
 
 console.log('Reading npm-shrinkwrap.json');
-var shrinkwrap = require('./../npm-shrinkwrap.json');
+var shrinkwrap = require('../../npm-shrinkwrap.json');
 
 console.log('Cleaning shrinkwrap object');
 cleanModule(shrinkwrap, shrinkwrap.name);
 
-console.log('Writing cleaned npm-shrinkwrap.clean.json');
-fs.writeFileSync('./npm-shrinkwrap.clean.json', JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
+var cleanShrinkwrapPath = path.join(__dirname, '..', '..', 'npm-shrinkwrap.clean.json');
+console.log('Writing cleaned to', cleanShrinkwrapPath);
+fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
