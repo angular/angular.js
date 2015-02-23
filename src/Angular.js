@@ -491,7 +491,7 @@ function isNumber(value) {return typeof value === 'number';}
  * @kind function
  *
  * @description
- * Determines if a value is a date.
+ * Determines if a value is an instance of Date object
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Date`.
