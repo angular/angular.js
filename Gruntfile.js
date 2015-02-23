@@ -282,7 +282,7 @@ module.exports = function(grunt) {
 
     shell: {
       "npm-install": {
-        command: 'scripts/npm/install-dependencies.sh'
+        command: path.normalize('scripts/npm/install-dependencies.sh')
       },
 
       "promises-aplus-tests": {
