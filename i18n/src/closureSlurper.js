@@ -5,6 +5,7 @@ var Q  = require('q'),
     qfs  = require('q-io/fs'),
     converter = require('./converter.js'),
     util = require('./util.js'),
+    format = require('util').format,
     closureI18nExtractor = require('./closureI18nExtractor.js'),
     localeInfo = {},
     currencySymbols,
@@ -56,7 +57,7 @@ function writeLocaleFiles() {
   var localeIds = Object.keys(localeInfo);
   var num_files = 0;
 
-  console.log('Generated %j locale files.', localeIds.length);
+  console.log('Generated %j locale files.', localeIds.length * 2);
   loop();
   return result.promise;
 
@@ -77,13 +78,19 @@ function writeLocaleFiles() {
     var content = closureI18nExtractor.outputLocale(localeInfo, localeID);
     if (!content) return;
     var correctedLocaleId = closureI18nExtractor.correctedLocaleId(localeID);
-    var filename = NG_LOCALE_DIR + 'angular-locale_' + correctedLocaleId + '.js'
+    var basename = 'angular-locale_' + correctedLocaleId;
+    var filename = NG_LOCALE_DIR + basename + '.js'; 
+    var cjsFilename = NG_LOCALE_DIR + correctedLocaleId + '.js';
+    var cjsContent = format("require('./%s');\nmodule.exports = 'ngLocale';\n", basename);
     console.log('Writing ' + filename);
-    return qfs.write(filename, content)
-        .then(function() {
-          console.log('Wrote ' + filename);
-          ++num_files;
-        });
+    return Q.all([
+      qfs.write(filename, content),
+      qfs.write(cjsFilename, cjsContent)
+    ])
+    .then(function () {
+      console.log('Wrote ' + [filename, cjsFilename].join(', '));
+      num_files += 2;
+    });
   }
 
 }
