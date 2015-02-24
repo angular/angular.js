@@ -43,7 +43,7 @@
     "jasmine-node": "~1.14.5",
     "jasmine-reporters": "~1.0.1",
     "jshint-stylish": "~1.0.0",
-    "karma": "~0.12.0",
+    "karma": "0.12.32",
     "karma-browserstack-launcher": "0.1.2",
     "karma-chrome-launcher": "0.1.5",
     "karma-firefox-launcher": "0.1.3",
