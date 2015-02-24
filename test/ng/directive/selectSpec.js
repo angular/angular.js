@@ -1891,7 +1891,7 @@ describe('select', function() {
       it('should select the correct option when label equals $viewValue', function(){
         scope.numbersArray = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
         scope.values= {};
-        scope.selected='Four'
+        scope.selected='Four';
         createSelect({
           'ng-model': 'selected',
           'ng-options': 'option.value as option.value for option in values'
