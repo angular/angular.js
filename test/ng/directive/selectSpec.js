@@ -1888,7 +1888,7 @@ describe('select', function() {
         expect(option.text()).toBe('');
       });
       
-      iit('should select the correct option when label equals $viewValue', function(){
+      it('should select the correct option when label equals $viewValue', function(){
         scope.numbersArray = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
         scope.values= {};
         scope.selected='Four'
