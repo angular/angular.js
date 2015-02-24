@@ -1887,8 +1887,29 @@ describe('select', function() {
         expect(option.val()).toBe('?');
         expect(option.text()).toBe('');
       });
+      
+      iit('should select the correct option when label equals $viewValue', function(){
+        scope.numbersArray = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
+        scope.values= {};
+        scope.selected='Four'
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'option.value as option.value for option in values'
+        });
+        
+        scope.$apply(function(){
+          scope.values=scope.numbersArray.map(function (value, index) {
+            return {
+              id: index,
+              value: value
+            };
+          });
+        });
+        expect(element[0].selectedIndex).toBe(4);
+      });
     });
 
+    
 
     describe('blank option', function() {
 

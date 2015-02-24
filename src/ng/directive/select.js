@@ -205,7 +205,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           optionsMap = {},
           ngModelCtrl = nullModelCtrl,
           nullOption,
-          unknownOption;
+          unknownOption,
+          optionsExp = $attrs.ngOptions;
 
 
       self.databound = $attrs.ngModel;
@@ -221,8 +222,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       self.addOption = function(value, element) {
         assertNotHasOwnProperty(value, '"option value"');
         optionsMap[value] = true;
-
-        if (ngModelCtrl.$viewValue == value) {
+        
+        if (isUndefined(optionsExp) && ngModelCtrl.$viewValue == value) {
           $element.val(value);
           if (unknownOption.parent()) unknownOption.remove();
         }
@@ -238,7 +239,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       self.removeOption = function(value) {
         if (this.hasOption(value)) {
           delete optionsMap[value];
-          if (ngModelCtrl.$viewValue === value) {
+          if (isUndefined(optionsExp) && ngModelCtrl.$viewValue === value) {
             this.renderUnknownOption(value);
           }
         }
