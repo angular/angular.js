@@ -64,6 +64,21 @@ function prepare {
 
 
   #
+  # Run local precommit script if there is one
+  #
+  for repo in "${REPOS[@]}"
+  do
+    if [ -f $TMP_DIR/bower-$repo/precommit.sh ]
+      then
+        echo "-- Running precommit.sh script for bower-$repo"
+        cd $TMP_DIR/bower-$repo
+        $TMP_DIR/bower-$repo/precommit.sh
+        cd $SCRIPT_DIR
+    fi
+  done
+
+
+  #
   # update bower.json
   # tag each repo
   #
