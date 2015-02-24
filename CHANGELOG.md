@@ -1,3 +1,110 @@
+<a name="1.4.0-beta.5"></a>
+# 1.4.0-beta.5 karmic-stabilization (2015-02-24)
+
+
+## Bug Fixes
+
+- **$http:** properly access request headers with mixed case
+  ([5da1256f](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
+   [#10881](https://github.com/angular/angular.js/issues/10881), [#10883](https://github.com/angular/angular.js/issues/10883))
+- **input:** create max and/or min validator regardless of initial value
+  ([c211e7a5](https://github.com/angular/angular.js/commit/c211e7a5ad5f1fb8748125f14912aa8715081925),
+   [#10307](https://github.com/angular/angular.js/issues/10307), [#10327](https://github.com/angular/angular.js/issues/10327))
+- **ngAria:** correctly set "checked" attr for checkboxes and radios
+  ([d6eba217](https://github.com/angular/angular.js/commit/d6eba21733c6e67e90e3a4763d8d41ad89a73a0c),
+   [#10389](https://github.com/angular/angular.js/issues/10389), [#10212](https://github.com/angular/angular.js/issues/10212))
+- **ngModel:** fix issues when parserName is same as validator key
+  ([056a3170](https://github.com/angular/angular.js/commit/056a31700803c0a6014b43cfcc36c5c500cc596e),
+   [#10698](https://github.com/angular/angular.js/issues/10698), [#10850](https://github.com/angular/angular.js/issues/10850), [#11046](https://github.com/angular/angular.js/issues/11046))
+- **ngOptions:** ngModel is optional
+  ([ef894c87](https://github.com/angular/angular.js/commit/ef894c87eaead76d90169113ab6acc9287654ea3))
+- **ngSanitize:** Do not ignore white-listed svg camelCased attributes
+  ([46b80654](https://github.com/angular/angular.js/commit/46b80654cae9105642909cd55f73f7c26d2fbd80),
+   [#10779](https://github.com/angular/angular.js/issues/10779), [#10990](https://github.com/angular/angular.js/issues/10990), [#11124](https://github.com/angular/angular.js/issues/11124))
+- **select:** remove unknown option when model is undefined and empty option is available
+  ([30b48132](https://github.com/angular/angular.js/commit/30b48132e0fb92ea8dd25a9794b4c41a3a81a951),
+   [#11078](https://github.com/angular/angular.js/issues/11078), [#11092](https://github.com/angular/angular.js/issues/11092))
+- **templateRequest:** avoid throwing syntax error in Android 2.3
+  ([f6272333](https://github.com/angular/angular.js/commit/f6272333127d908b19da23f9cd8a74052711795b),
+   [#11089](https://github.com/angular/angular.js/issues/11089), [#11051](https://github.com/angular/angular.js/issues/11051), [#11088](https://github.com/angular/angular.js/issues/11088))
+
+
+## Features
+
+- **CommonJS:** - angular modules are now packaged for npm with helpful exports
+
+- **limitTo:** extend the filter to take a beginning index argument
+  ([aaae3cc4](https://github.com/angular/angular.js/commit/aaae3cc4160417e6dad802ed9d9f6d5471821a87),
+   [#5355](https://github.com/angular/angular.js/issues/5355), [#10899](https://github.com/angular/angular.js/issues/10899))
+- **ngMessages:** provide support for dynamic message resolution
+  ([c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+   [#10036](https://github.com/angular/angular.js/issues/10036), [#9338](https://github.com/angular/angular.js/issues/9338))
+- **ngOptions:** add support for disabling an option
+  ([da9eac86](https://github.com/angular/angular.js/commit/da9eac8660343b1cd9fdcf9d2d1bda06067142d7),
+   [#638](https://github.com/angular/angular.js/issues/638), [#11017](https://github.com/angular/angular.js/issues/11017))
+
+
+## Performance Improvements
+
+- **$compile:**
+  - replace forEach(controller) with plain loops
+  ([5b522867](https://github.com/angular/angular.js/commit/5b5228675f67c8f5e04c7183c3ef5e71cb2bf08b),
+   [#11084](https://github.com/angular/angular.js/issues/11084))
+  - avoid .data when fetching required controllers
+  ([fa0aa839](https://github.com/angular/angular.js/commit/fa0aa83937378cf8fc720c38bcc5c78fc923624e))
+- **ngOptions:** only watch labels if a display expression is specified
+  ([51faaffd](https://github.com/angular/angular.js/commit/51faaffdbcc734c55d52ff6c42b386d5c90207ea))
+
+
+## Breaking Changes
+
+- **ngMessages:** due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+
+
+The `ngMessagesInclude` attribute is now its own directive and that must
+be placed as a **child** element within the element with the ngMessages
+directive. (Keep in mind that the former behaviour of the
+ngMessageInclude attribute was that all **included** ngMessage template
+code was placed at the **bottom** of the element containing the
+ngMessages directive; therefore to make this behave in the same way,
+place the element containing the ngMessagesInclude directive at the
+end of the container containing the ngMessages directive).
+
+```html
+<!-- AngularJS 1.3.x -->
+<div ng-messages="model.$error" ng-messages-include="remote.html">
+  <div ng-message="required">Your message is required</div>
+</div>
+
+<!-- AngularJS 1.4.x -->
+<div ng-messages="model.$error">
+  <div ng-message="required">Your message is required</div>
+  <div ng-messages-include="remote.html"></div>
+</div>
+```
+
+<a name="1.3.14"></a>
+# 1.3.14 instantaneous-browserification (2015-02-24)
+
+
+## Features
+
+- **CommonJS:** - angular modules are now packaged for npm with helpful exports
+
+## Bug Fixes
+
+- **input:** create max and/or min validator regardless of initial value
+  ([abfce532](https://github.com/angular/angular.js/commit/abfce5327ce6fd29c33c62d2edf3600674a6b4c0),
+   [#10307](https://github.com/angular/angular.js/issues/10307), [#10327](https://github.com/angular/angular.js/issues/10327))
+- **ngAria:** correctly set "checked" attr for checkboxes and radios
+  ([944c150e](https://github.com/angular/angular.js/commit/944c150e6c3001e51d4bf5e2d8149ae4c565d1e3),
+   [#10389](https://github.com/angular/angular.js/issues/10389), [#10212](https://github.com/angular/angular.js/issues/10212))
+- **ngModel:** fix issues when parserName is same as validator key
+  ([6b7625a0](https://github.com/angular/angular.js/commit/6b7625a09508c4b5355121a9d4206a734b07b2e1),
+   [#10698](https://github.com/angular/angular.js/issues/10698), [#10850](https://github.com/angular/angular.js/issues/10850), [#11046](https://github.com/angular/angular.js/issues/11046))
+
+
+
 <a name="1.4.0-beta.4"></a>
 # 1.4.0-beta.4 overlyexplosive-poprocks (2015-02-09)
 
