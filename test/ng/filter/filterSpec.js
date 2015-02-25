@@ -438,18 +438,18 @@ describe('Filter: filter', function() {
       expect(filter(items, f).length).toBe(3);
 
       f = { people:null };
-      expect(filter(items, f).length).toBe(3);
+      expect(filter(items, f).length).toBe(1);
 
-      //should throw an error in 1.3.12
+      f = { people: {}};
+      expect(filter(items, f).length).toBe(2);
+
+      f = { people:{ name: '' }};
+      expect(filter(items, f).length).toBe(2);
+
       f = { people:{ name:'john' }};
       expect(filter(items, f).length).toBe(1);
 
-      //should throw an error in 1.3.12
       f = { people:{ name:'j' }};
-      expect(filter(items, f).length).toBe(2);
-
-      //should throw an error in 1.3.12
-      f = { people:{ name: '' }};
       expect(filter(items, f).length).toBe(2);
 
   });
