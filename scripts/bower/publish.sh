@@ -29,6 +29,11 @@ function init {
     angular-touch
     angular-messages
   )
+  MOCK_MODULES=(
+    ngMock
+    ngMockE2E
+    ngAnimateMock
+  )
 }
 
 
@@ -90,6 +95,37 @@ function prepare {
     replaceJsonProp "bower.json" "angular.*" ".*" "$NEW_VERSION"
     replaceJsonProp "package.json" "version" ".*" "$NEW_VERSION"
     replaceJsonProp "package.json" "angular.*" ".*" "$NEW_VERSION"
+    deleteJsonProp "package.json" "main"
+
+    if [ $repo != "angular-mocks" ]
+    then
+      echo "-- Adding $repo CommonJS index file"
+      echo "require('./$repo');" > index.js
+      echo "" >> index.js
+    fi
+    
+    if [ $repo == "angular" ]
+    then
+      echo "module.exports = angular;" >> index.js
+    else
+      # convert to module names (angular-animate >> ngAnimate)
+      suffix=`echo $repo | cut -c9-`
+      first=`echo $suffix | cut -c1 | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+      tail=`echo $suffix | cut -c2-`
+
+      if [ $repo != "angular-mocks" ]
+      then
+        echo "module.exports = 'ng$first$tail';" >> index.js
+      else
+        for mock in "${MOCK_MODULES[@]}"
+        do
+          echo "-- Adding $repo/$mock CommonJS file"
+          echo "require('./$repo');" > $mock.js
+          echo "" >> $mock.js
+          echo "module.exports = '$mock';" >> $mock.js
+        done
+      fi
+    fi
 
     git add -A
 
