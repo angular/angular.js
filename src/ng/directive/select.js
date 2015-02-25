@@ -222,7 +222,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       self.addOption = function(value, element) {
         assertNotHasOwnProperty(value, '"option value"');
         optionsMap[value] = true;
-        
+
         if (isUndefined(optionsExp) && ngModelCtrl.$viewValue == value) {
           $element.val(value);
           if (unknownOption.parent()) unknownOption.remove();
