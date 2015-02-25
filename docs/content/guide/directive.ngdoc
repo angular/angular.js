@@ -867,6 +867,7 @@ element?
   </file>
 </example>
 
+Note: Returning a `function(scope, element, attr){...}` is just a shorthand for `{link: function(scope, element, attr){...}}`.
 
 
 ### Creating Directives that Communicate
