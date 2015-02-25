@@ -83,6 +83,10 @@ function $RootScopeProvider() {
   this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
       function($injector, $exceptionHandler, $parse, $browser) {
 
+    function destroyChildScope($event) {
+        $event.currentScope.$$destroyed = true;
+    }
+
     /**
      * @ngdoc type
      * @name $rootScope.Scope
@@ -233,13 +237,9 @@ function $RootScopeProvider() {
         // prototypically. In all other cases, this property needs to be set
         // when the parent scope is destroyed.
         // The listener needs to be added after the parent is set
-        if (isolate || parent != this) child.$on('$destroy', destroyChild);
+        if (isolate || parent != this) child.$on('$destroy', destroyChildScope);
 
         return child;
-
-        function destroyChild() {
-          child.$$destroyed = true;
-        }
       },
 
       /**
