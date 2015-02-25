@@ -1,5 +1,37 @@
 'use strict';
 
+function they(msg, vals, spec, specialState) {
+  var keyIsValue = isArray(vals);
+  forEach(vals, function(val, key) {
+    if (keyIsValue) {
+      key = val;
+    }
+    var m = msg.replace('$prop', key);
+    var method;
+    switch(specialState) {
+      case 'focus':
+        method = iit;
+        break;
+      case 'skip':
+        method = xit;
+        break;
+      default:
+        method = it;
+    }
+    method(m, function() {
+      spec(val);
+    });
+  });
+}
+
+function tthey(msg, vals, spec) {
+  they(msg, vals, spec, 'focus');
+}
+
+function xthey(msg, vals, spec) {
+  they(msg, vals, spec, 'skip');
+}
+
 function createMockStyleSheet(doc, wind) {
   doc = doc ? doc[0] : document;
   wind = wind || window;
