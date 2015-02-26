@@ -34,7 +34,7 @@ run `npm start` to start the web server. Now, open a browser window for the app 
 <a href="http://localhost:8000/app/" target="_blank">`http://localhost:8000/app/`</a>
 
 Note that if you already ran the master branch app prior to checking out step-0, you may see the cached
-master version of the app in your browser window at this point. Just hit refresh to re-load the page.
+master version of the app in your browser window at this point. Just hit refresh to re-load the page or clear your browser cache manually .
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
