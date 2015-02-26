@@ -170,6 +170,7 @@
  * <div ng-init="isDisabled = false">
  *  <button disabled="{{isDisabled}}">Disabled</button>
  * </div>
+ * <!-- See below for an example of ng-disabled being used correctly -->
  * ```
  *
  * This is because the HTML specification does not require browsers to preserve the values of
