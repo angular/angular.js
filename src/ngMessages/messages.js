@@ -80,9 +80,7 @@ var jqLite = angular.element;
  *   <div ng-message="minlength">This field is too short</div>
  * </script>
  *
- * <div ng-messages="myForm.myField.$error">
- *   <div ng-messages-include="error-messages"></div>
- * </div>
+ * <div ng-messages="myForm.myField.$error" ng-messages-include="error-messages"></div>
  * ```
  *
  * However, including generic messages may not be useful enough to match all input fields, therefore,
@@ -104,17 +102,14 @@ var jqLite = angular.element;
  *          minlength="5"
  *          required />
  *
- *   <!-- any ng-message elements that appear BEFORE the ng-messages-include will
+ *   <!-- any ng-message elements that appear INSIDE the ng-messages-include will
  *        override the messages present in the ng-messages-include template -->
- *   <div ng-messages="myForm.myEmail.$error">
+ *   <div ng-messages="myForm.myEmail.$error" ng-messages-include="error-messages">
  *     <!-- this required message has overridden the template message -->
  *     <div ng-message="required">You did not enter your email address</div>
  *
  *     <!-- this is a brand new message and will appear last in the prioritization -->
  *     <div ng-message="email">Your email address is invalid</div>
- *
- *     <!-- and here are the generic error messages -->
- *     <div ng-messages-include="error-messages"></div>
  *   </div>
  * </form>
  * ```
@@ -481,9 +476,7 @@ angular.module('ngMessages', [])
     * @usage
     * ```html
     * <!-- using attribute directives -->
-    * <ANY ng-messages="expression">
-    *   <ANY ng-messages-include="remoteTplString">...</ANY>
-    * </ANY>
+    * <ANY ng-messages="expression" ng-messages-include="remoteTplString">...</ANY>
     *
     * <!-- or by using element directives -->
     * <ng-messages for="expression">
