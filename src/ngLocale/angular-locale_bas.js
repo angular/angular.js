@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "\u014bgw\u00e0 k\u0254\u0254",
       "\u014bgw\u00e0 j\u00f4n"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "K\u0254nd\u0254\u014b",
       "M\u00e0c\u025b\u0302l",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "bio",
       "may",
       "li\u0253"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

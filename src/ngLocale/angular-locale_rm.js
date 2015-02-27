@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "venderdi",
       "sonda"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "schaner",
       "favrer",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "oct.",
       "nov.",
       "dec."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, 'ils' d 'da' MMMM y",
     "longDate": "d 'da' MMMM y",

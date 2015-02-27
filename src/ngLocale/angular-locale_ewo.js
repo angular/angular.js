@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "f\u00falad\u00e9",
       "s\u00e9rad\u00e9"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ng\u0254n os\u00fa",
       "ng\u0254n b\u025b\u030c",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "nga",
       "ngad",
       "ngab"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

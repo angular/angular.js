@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "mvf\u00f2 m\u00e0ga ly\u025b\u030c\u02bc",
       "m\u00e0ga ly\u025b\u030c\u02bc"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "sa\u014b tsets\u025b\u0300\u025b l\u00f9m",
       "sa\u014b k\u00e0g ngw\u00f3\u014b",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "sa\u014b t\u00e0\u014ba tsets\u00e1\u02bc",
       "sa\u014b mejwo\u014b\u00f3",
       "sa\u014b l\u00f9m"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE , 'ly\u025b'\u030c\u02bc d 'na' MMMM, y",
     "longDate": "'ly\u025b'\u030c\u02bc d 'na' MMMM, y",

@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "tallimanngorneq",
       "arfininngorneq"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januari",
       "februari",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "okt",
       "nov",
       "dec"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE dd MMMM y",
     "longDate": "dd MMMM y",

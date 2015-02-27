@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Chishanu",
       "Mugovera"
     ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Ndira",
       "Kukadzi",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Gum",
       "Mb",
       "Zvi"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

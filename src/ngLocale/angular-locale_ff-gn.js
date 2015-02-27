@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "mawnde",
       "hoore-biir"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "siilo",
       "colte",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "yar",
       "jol",
       "bow"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
