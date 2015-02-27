@@ -367,6 +367,7 @@ describe('angular', function() {
       expect(equals(new Date(undefined), new Date(0))).toBe(false);
       expect(equals(new Date(undefined), new Date(null))).toBe(false);
       expect(equals(new Date(undefined), new Date('wrong'))).toBe(true);
+      expect(equals(new Date(), /abc/)).toBe(false);
     });
 
     it('should correctly test for keys that are present on Object.prototype', function() {
@@ -384,11 +385,21 @@ describe('angular', function() {
       expect(equals(/abc/, /def/)).toBe(false);
       expect(equals(/^abc/, /abc/)).toBe(false);
       expect(equals(/^abc/, '/^abc/')).toBe(false);
+      expect(equals(/abc/, new Date())).toBe(false);
     });
 
     it('should return false when comparing an object and an array', function() {
       expect(equals({}, [])).toBe(false);
       expect(equals([], {})).toBe(false);
+    });
+
+    it('should return false when comparing an object and a RegExp', function() {
+      expect(equals({}, /abc/)).toBe(false);
+      expect(equals({}, new RegExp('abc', 'i'))).toBe(false);
+    });
+
+    it('should return false when comparing an object and a Date', function() {
+      expect(equals({}, new Date())).toBe(false);
     });
   });
 
