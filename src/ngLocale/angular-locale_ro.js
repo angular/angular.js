@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "vineri",
       "s\u00e2mb\u0103t\u0103"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ianuarie",
       "februarie",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "oct.",
       "nov.",
       "dec."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

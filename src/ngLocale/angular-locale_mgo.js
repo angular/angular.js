@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Aneg 6",
       "Aneg 7"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "im\u0259g mbegtug",
       "imeg \u00e0b\u00f9b\u00ec",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "im\u0259g t\u00e8si\u02bce",
       "im\u0259g z\u00f2",
       "im\u0259g krizmed"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",

@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "vinars",
       "sabide"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Zen\u00e2r",
       "Fevr\u00e2r",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Otu",
       "Nov",
       "Dic"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d 'di' MMMM 'dal' y",
     "longDate": "d 'di' MMMM 'dal' y",

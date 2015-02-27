@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "DihAoine",
       "DiSathairne"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "dhen Fhaoilleach",
       "dhen Ghearran",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "D\u00e0mh",
       "Samh",
       "D\u00f9bh"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d'mh' MMMM y",
     "longDate": "d'mh' MMMM y",

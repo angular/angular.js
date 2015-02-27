@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "fi\u0256a",
       "memle\u0256a"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "dzove",
       "dzodze",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "kel",
       "ade",
       "dzm"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, MMMM d 'lia' y",
     "longDate": "MMMM d 'lia' y",

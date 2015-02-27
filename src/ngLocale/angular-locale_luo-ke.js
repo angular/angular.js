@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Tich Abich",
       "Ngeso"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Dwe mar Achiel",
       "Dwe mar Ariyo",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "DAP",
       "DGI",
       "DAG"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

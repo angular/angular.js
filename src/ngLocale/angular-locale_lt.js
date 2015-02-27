@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "penktadienis",
       "\u0161e\u0161tadienis"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "sausio",
       "vasario",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "spal.",
       "lapkr.",
       "gruod."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y 'm'. MMMM d 'd'., EEEE",
     "longDate": "y 'm'. MMMM d 'd'.",

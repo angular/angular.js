@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Betutab mut",
       "Betutab lo"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mulgul",
       "Ng\u2019atyato",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Epe",
       "Tai",
       "Aen"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
