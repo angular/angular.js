@@ -4,6 +4,10 @@ describe('ngMessages', function() {
   beforeEach(inject.strictDi());
   beforeEach(module('ngMessages'));
 
+  function messageChildren(element) {
+    return (element.length ? element[0] : element).querySelectorAll('[ng-message], [ng-message-exp]');
+  }
+
   function they(msg, vals, spec, focus) {
     forEach(vals, function(val, key) {
       var m = msg.replace('$prop', key);
@@ -236,7 +240,7 @@ describe('ngMessages', function() {
         $rootScope.col = {};
       });
 
-      expect(element.children().length).toBe(0);
+      expect(messageChildren(element).length).toBe(0);
       expect(trim(element.text())).toEqual('');
 
       $rootScope.$apply(function() {
@@ -246,7 +250,7 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual('This message is blue');
 
       $rootScope.$apply(function() {
@@ -255,13 +259,13 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual('This message is red');
 
       $rootScope.$apply(function() {
         $rootScope.col = null;
       });
-      expect(element.children().length).toBe(0);
+      expect(messageChildren(element).length).toBe(0);
       expect(trim(element.text())).toEqual('');
 
 
@@ -272,7 +276,7 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(0);
+      expect(messageChildren(element).length).toBe(0);
       expect(trim(element.text())).toEqual('');
     });
   });
@@ -346,21 +350,21 @@ describe('ngMessages', function() {
       ];
     });
 
-    expect(messageChildren().length).toBe(0);
+    expect(messageChildren(element).length).toBe(0);
     expect(trim(element.text())).toEqual("");
 
     $rootScope.$apply(function() {
       $rootScope.col = { hair: true };
     });
 
-    expect(messageChildren().length).toBe(1);
+    expect(messageChildren(element).length).toBe(1);
     expect(trim(element.text())).toEqual("Your hair is too long");
 
     $rootScope.$apply(function() {
       $rootScope.col = { age: true, hair: true};
     });
 
-    expect(messageChildren().length).toBe(1);
+    expect(messageChildren(element).length).toBe(1);
     expect(trim(element.text())).toEqual("Your age is incorrect");
 
     $rootScope.$apply(function() {
@@ -368,7 +372,7 @@ describe('ngMessages', function() {
       $rootScope.items.shift();
     });
 
-    expect(messageChildren().length).toBe(1);
+    expect(messageChildren(element).length).toBe(1);
     expect(trim(element.text())).toEqual("Your hair is too long");
 
     $rootScope.$apply(function() {
@@ -377,12 +381,8 @@ describe('ngMessages', function() {
       $rootScope.col.primary = true;
     });
 
-    expect(messageChildren().length).toBe(1);
+    expect(messageChildren(element).length).toBe(1);
     expect(trim(element.text())).toEqual("Enter something");
-
-    function messageChildren() {
-      return element[0].querySelectorAll('[ng-message], [ng-message-exp]');
-    }
   }));
 
 
@@ -415,6 +415,88 @@ describe('ngMessages', function() {
   });
 
   describe('when including templates', function() {
+    they('should work with a dynamic collection model which is managed by ngRepeat',
+      {'<div ng-messages-include="...">': '<div ng-messages="item">' +
+                                            '<div ng-messages-include="abc.html"></div>' +
+                                          '</div>',
+       '<ng-messages-include src="...">': '<ng-messages for="item">' +
+                                            '<ng-messages-include src="abc.html"></ng-messages-include>' +
+                                          '</ng-messages>'},
+    function(html) {
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('abc.html', '<div ng-message="a">A</div>' +
+                                       '<div ng-message="b">B</div>' +
+                                       '<div ng-message="c">C</div>');
+
+        html = '<div><div ng-repeat="item in items">' + html + '</div></div>';
+        $rootScope.items = [{},{},{}];
+
+        element = $compile(html)($rootScope);
+        $rootScope.$apply(function() {
+          $rootScope.items[0].a = true;
+          $rootScope.items[1].b = true;
+          $rootScope.items[2].c = true;
+        });
+
+        var elements = element[0].querySelectorAll('[ng-repeat]');
+
+        // all three collections should have atleast one error showing up
+        expect(messageChildren(element).length).toBe(3);
+        expect(messageChildren(elements[0]).length).toBe(1);
+        expect(messageChildren(elements[1]).length).toBe(1);
+        expect(messageChildren(elements[2]).length).toBe(1);
+
+        // this is the standard order of the displayed error messages
+        expect(element.text().trim()).toBe('ABC');
+
+        $rootScope.$apply(function() {
+          $rootScope.items[0].a = false;
+          $rootScope.items[0].c = true;
+
+          $rootScope.items[1].b = false;
+
+          $rootScope.items[2].c = false;
+          $rootScope.items[2].a = true;
+        });
+
+        // with the 2nd item gone and the values changed
+        // we should see both 1 and 3 changed
+        expect(element.text().trim()).toBe('CA');
+
+        $rootScope.$apply(function() {
+          // add the value for the 2nd item back
+          $rootScope.items[1].b = true;
+          $rootScope.items.reverse();
+        });
+
+        // when reversed we get back to our original value
+        expect(element.text().trim()).toBe('ABC');
+      });
+    });
+
+    they('should remove the $prop element and place a comment anchor node where it used to be',
+      {'<div ng-messages-include="...">': '<div ng-messages="data">' +
+                                            '<div ng-messages-include="abc.html"></div>' +
+                                          '</div>',
+       '<ng-messages-include src="...">': '<ng-messages for="data">' +
+                                            '<ng-messages-include src="abc.html"></ng-messages-include>' +
+                                          '</ng-messages>'},
+    function(html) {
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('abc.html', '<div></div>');
+
+        element = $compile(html)($rootScope);
+        $rootScope.$digest();
+
+        var includeElement = element[0].querySelector('[ng-messages-include], ng-messages-include');
+        expect(includeElement).toBeFalsy();
+
+        var comment = element[0].childNodes[0];
+        expect(comment.nodeType).toBe(8);
+        expect(comment.nodeValue).toBe(' ngMessagesInclude: abc.html ');
+      });
+    });
+
     they('should load a remote template using $prop',
       {'<div ng-messages-include="...">': '<div ng-messages="data">' +
                                             '<div ng-messages-include="abc.html"></div>' +
@@ -437,7 +519,7 @@ describe('ngMessages', function() {
           };
         });
 
-        expect(element.children().length).toBe(1);
+        expect(messageChildren(element).length).toBe(1);
         expect(trim(element.text())).toEqual("A");
 
         $rootScope.$apply(function() {
@@ -446,7 +528,7 @@ describe('ngMessages', function() {
           };
         });
 
-        expect(element.children().length).toBe(1);
+        expect(messageChildren(element).length).toBe(1);
         expect(trim(element.text())).toEqual("C");
       });
     });
@@ -454,7 +536,7 @@ describe('ngMessages', function() {
     it('should cache the template after download',
       inject(function($rootScope, $compile, $templateCache, $httpBackend) {
 
-      $httpBackend.expect('GET', 'tpl').respond(201, 'abc');
+      $httpBackend.expect('GET', 'tpl').respond(201, '<div>abc</div>');
 
       expect($templateCache.get('tpl')).toBeUndefined();
 
@@ -484,13 +566,13 @@ describe('ngMessages', function() {
 
       $rootScope.$digest();
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual("Your value is that of failure");
 
       $httpBackend.flush();
       $rootScope.$digest();
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual("You did not enter a value");
     }));
 
@@ -515,7 +597,7 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual("AAA");
 
       $rootScope.$apply(function() {
@@ -525,7 +607,7 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual("B");
 
       $rootScope.$apply(function() {
@@ -534,7 +616,7 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(1);
+      expect(messageChildren(element).length).toBe(1);
       expect(trim(element.text())).toEqual("C");
     }));
 
@@ -560,7 +642,7 @@ describe('ngMessages', function() {
           };
         });
 
-        expect(element.children().length).toBe(2);
+        expect(messageChildren(element).length).toBe(2);
         expect(s(element.text())).toContain("13");
       });
     });
@@ -584,14 +666,14 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(2);
+      expect(messageChildren(element).length).toBe(2);
       expect(s(element.text())).toEqual("XZ");
 
       $rootScope.$apply(function() {
         $rootScope.data.y = {};
       });
 
-      expect(element.children().length).toBe(3);
+      expect(messageChildren(element).length).toBe(3);
       expect(s(element.text())).toEqual("XYZ");
     }));
 
@@ -616,14 +698,14 @@ describe('ngMessages', function() {
         };
       });
 
-      expect(element.children().length).toBe(2);
+      expect(messageChildren(element).length).toBe(2);
       expect(s(element.text())).toEqual("ZZZX");
 
       $rootScope.$apply(function() {
         $rootScope.data.y = {};
       });
 
-      expect(element.children().length).toBe(3);
+      expect(messageChildren(element).length).toBe(3);
       expect(s(element.text())).toEqual("YYYZZZX");
     }));
   });
