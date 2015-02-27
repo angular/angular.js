@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "pa hihanu",
       "pa shahulembela"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "pa mwedzi gwa hutala",
       "pa mwedzi gwa wuvili",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Kum",
       "Kmj",
       "Kmb"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

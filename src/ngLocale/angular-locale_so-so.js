@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Jimco",
       "Sabti"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Bisha Koobaad",
       "Bisha Labaad",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Tob",
       "KIT",
       "LIT"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, MMMM dd, y",
     "longDate": "dd MMMM y",

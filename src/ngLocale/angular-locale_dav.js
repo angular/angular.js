@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Kuramuka kasanu",
       "Kifula nguwo"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mori ghwa imbiri",
       "Mori ghwa kawi",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Iku",
       "Imw",
       "Iwi"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

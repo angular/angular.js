@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Ichuma",
       "Esabato"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Chanuari",
       "Feburari",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Okt",
       "Nob",
       "Dis"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

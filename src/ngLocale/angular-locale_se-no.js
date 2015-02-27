@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "bearjadat",
       "l\u00e1vvardat"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "o\u0111\u0111ajagem\u00e1nnu",
       "guovvam\u00e1nnu",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "golg",
       "sk\u00e1b",
       "juov"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",

@@ -16,6 +16,7 @@ $provide.value("$locale", {
       "Lwesihlanu",
       "Mgqibelo"
     ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Januwari",
       "Februwari",
@@ -52,6 +53,10 @@ $provide.value("$locale", {
       "Okt",
       "Nov",
       "Dis"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "MMMM d, y",

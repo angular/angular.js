@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Fritag",
       "Sam\u0161tag"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Jenner",
       "Hornig",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "W\u00edm",
       "Win",
       "Chr"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",

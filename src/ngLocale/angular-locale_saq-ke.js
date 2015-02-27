@@ -34,6 +34,7 @@ $provide.value("$locale", {
       "Mderot ee sapa",
       "Mderot ee kwe"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Lapa le obo",
       "Lapa le waare",
@@ -70,6 +71,10 @@ $provide.value("$locale", {
       "Tom",
       "Tob",
       "Tow"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
