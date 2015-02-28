@@ -314,18 +314,6 @@ describe('ngClick (touch)', function() {
 
       expect($rootScope.count1).toBe(1);
 
-      time = 90;
-      // Verify that it is blured so we don't get soft-keyboard
-      element1[0].blur = jasmine.createSpy('blur');
-      browserTrigger(element1, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      expect(element1[0].blur).toHaveBeenCalled();
-
-      expect($rootScope.count1).toBe(1);
-
       time = 100;
       browserTrigger(element1, 'touchstart',{
         keys: [],
