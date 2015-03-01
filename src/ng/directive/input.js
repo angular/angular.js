@@ -70,7 +70,7 @@ var inputType = {
          <form name="myForm" ng-controller="ExampleController">
            <label>Single word:
              <input type="text" name="input" ng-model="example.text"
-                  ng-pattern="example.word" required ng-trim="false">
+                    ng-pattern="example.word" required ng-trim="false">
            </label>
            <div role="alert">
              <span class="error" ng-show="myForm.input.$error.required">
@@ -444,7 +444,8 @@ var inputType = {
       <form name="myForm" ng-controller="DateController as dateCtrl">
         <label>Pick a date between in 2013:
           <input type="week" name="input" ng-model="example.value"
-            placeholder="YYYY-W##" min="2012-W32" max="2013-W52" required />
+                 placeholder="YYYY-W##" min="2012-W32"
+                 max="2013-W52" required />
         </label>
         <div role="alert">
           <span class="error" ng-show="myForm.input.$error.required">
@@ -645,7 +646,7 @@ var inputType = {
          <form name="myForm" ng-controller="ExampleController">
            <label>Number:
              <input type="number" name="input" ng-model="example.value"
-                  min="0" max="99" required>
+                    min="0" max="99" required>
           </label>
            <div role="alert">
              <span class="error" ng-show="myForm.input.$error.required">
@@ -910,15 +911,15 @@ var inputType = {
          </script>
          <form name="myForm" ng-controller="ExampleController">
            <label>
-             <input id="red" type="radio" ng-model="color.name" value="red">
+             <input type="radio" ng-model="color.name" value="red">
              Red
            </label><br/>
            <label>
-             <input id="green" type="radio" ng-model="color.name" ng-value="specialValue">
+             <input type="radio" ng-model="color.name" ng-value="specialValue">
              Green
            </label><br/>
            <label>
-             <input id="blue" type="radio" ng-model="color.name" value="blue">
+             <input type="radio" ng-model="color.name" value="blue">
              Blue
            </label><br/>
            <tt>color = {{color.name | json}}</tt><br/>
@@ -973,7 +974,7 @@ var inputType = {
            </label><br/>
            <label>Value2:
              <input type="checkbox" ng-model="checkboxModel.value2"
-                ng-true-value="'YES'" ng-false-value="'NO'">
+                    ng-true-value="'YES'" ng-false-value="'NO'">
             </label><br/>
            <tt>value1 = {{checkboxModel.value1}}</tt><br/>
            <tt>value2 = {{checkboxModel.value2}}</tt><br/>
@@ -1491,16 +1492,18 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
        </script>
        <div ng-controller="ExampleController">
          <form name="myForm">
-           <label>User name:
-             <input type="text" name="userName" ng-model="user.name" required>
+           <label>
+              User name:
+              <input type="text" name="userName" ng-model="user.name" required>
            </label>
            <div role="alert">
              <span class="error" ng-show="myForm.userName.$error.required">
               Required!</span>
            </div>
-           <label>Last name:
-             <input type="text" name="lastName" ng-model="user.last"
-             ng-minlength="3" ng-maxlength="10">
+           <label>
+              Last name:
+              <input type="text" name="lastName" ng-model="user.last"
+              ng-minlength="3" ng-maxlength="10">
            </label>
            <div role="alert">
              <span class="error" ng-show="myForm.lastName.$error.minlength">
@@ -1511,14 +1514,14 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
          </form>
          <hr>
          <tt>user = {{user}}</tt><br/>
-         <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br>
-         <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br>
-         <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br>
-         <tt>myForm.lastName.$error = {{myForm.lastName.$error}}</tt><br>
-         <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
-         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
-         <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br>
-         <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
+         <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br/>
+         <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br/>
+         <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br/>
+         <tt>myForm.lastName.$error = {{myForm.lastName.$error}}</tt><br/>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+         <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br/>
+         <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br/>
        </div>
       </file>
       <file name="protractor.js" type="protractor">

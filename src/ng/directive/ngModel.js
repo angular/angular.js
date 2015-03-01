@@ -474,13 +474,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *        <p>Now see what happens if you start typing then press the Escape key</p>
    *
    *       <form name="myForm" ng-model-options="{ updateOn: 'blur' }">
-   *         <p id="inputLabel1">With $rollbackViewValue()</p>
-   *         <input name="myInput1" aria-labelledby="inputLabel1" ng-model="myValue"
+   *         <p id="inputDescription1">With $rollbackViewValue()</p>
+   *         <input name="myInput1" aria-describedby="inputDescription1" ng-model="myValue"
    *                ng-keydown="resetWithCancel($event)"><br/>
    *         myValue: "{{ myValue }}"
    *
-   *         <p id="inputLabel2">Without $rollbackViewValue()</p>
-   *         <input name="myInput2" aria-labelledby="inputLabel2" ng-model="myValue"
+   *         <p id="inputDescription2">Without $rollbackViewValue()</p>
+   *         <input name="myInput2" aria-describedby="inputDescription2" ng-model="myValue"
    *                ng-keydown="resetWithoutCancel($event)"><br/>
    *         myValue: "{{ myValue }}"
    *       </form>
@@ -951,7 +951,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
        </p>
        <form name="testForm" ng-controller="ExampleController">
          <input ng-model="val" ng-pattern="/^\d+$/" name="anim" class="my-input"
-            aria-labelledby="inputDescription" />
+                aria-describedby="inputDescription" />
        </form>
      </file>
  * </example>
@@ -983,8 +983,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
          <form name="userForm">
            <label>Name:
              <input type="text" name="userName"
-                  ng-model="user.name"
-                  ng-model-options="{ getterSetter: true }" />
+                    ng-model="user.name"
+                    ng-model-options="{ getterSetter: true }" />
            </label>
          </form>
          <pre>user.name = <span ng-bind="user.name()"></span></pre>
@@ -1123,9 +1123,9 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
         <form name="userForm">
           <label>Name:
             <input type="text" name="userName"
-                 ng-model="user.name"
-                 ng-model-options="{ updateOn: 'blur' }"
-                 ng-keyup="cancel($event)" />
+                   ng-model="user.name"
+                   ng-model-options="{ updateOn: 'blur' }"
+                   ng-keyup="cancel($event)" />
           </label><br />
           <label>Other data:
             <input type="text" ng-model="user.data" />
@@ -1179,10 +1179,11 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
         <form name="userForm">
           <label>Name:
             <input type="text" name="userName"
-                 ng-model="user.name"
-                 ng-model-options="{ debounce: 1000 }" />
+                   ng-model="user.name"
+                   ng-model-options="{ debounce: 1000 }" />
           </label>
-          <button ng-click="userForm.userName.$rollbackViewValue(); user.name=''">Clear</button><br />
+          <button ng-click="userForm.userName.$rollbackViewValue(); user.name=''">Clear</button>
+          <br />
         </form>
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
@@ -1203,8 +1204,8 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
         <form name="userForm">
           <label>Name:
             <input type="text" name="userName"
-                 ng-model="user.name"
-                 ng-model-options="{ getterSetter: true }" />
+                   ng-model="user.name"
+                   ng-model-options="{ getterSetter: true }" />
           </label>
         </form>
         <pre>user.name = <span ng-bind="user.name()"></span></pre>
