@@ -1,4 +1,4 @@
-#Contributing to AngularJS
+# Contributing to AngularJS
 
 We'd love for you to contribute to our source code and to make AngularJS even better than it is
 today! Here are the guidelines we'd like you to follow:
@@ -54,7 +54,7 @@ For large fixes, please build and test the documentation before submitting the P
 accidentally introduced any layout or formatting issues. You should also make sure that your commit message
 is labeled "docs:" and follows the **Git Commit Guidelines** outlined below.
 
-If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly. When naming the commit, it is advised to still label it according to the commit guidelines below, by starting the commit message with **docs** and referencing the filename. Since this is not obvious and some changes are made on the fly, this is not strictly necessary and we will understand if this isn't done the first few times. 
+If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly. When naming the commit, it is advised to still label it according to the commit guidelines below, by starting the commit message with **docs** and referencing the filename. Since this is not obvious and some changes are made on the fly, this is not strictly necessary and we will understand if this isn't done the first few times.
 
 ## <a name="submit"></a> Submission Guidelines
 
@@ -227,11 +227,11 @@ The subject contains succinct description of the change:
 * don't capitalize first letter
 * no dot (.) at the end
 
-###Body
+### Body
 Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes"
 The body should include the motivation for the change and contrast this with previous behavior.
 
-###Footer
+### Footer
 The footer should contain any information about **Breaking Changes** and is also the place to
 reference GitHub issues that this commit **Closes**.
 
