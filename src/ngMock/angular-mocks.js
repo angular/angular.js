@@ -138,11 +138,6 @@ angular.mock.$Browser.prototype = {
     });
   },
 
-  addPollFn: function(pollFn) {
-    this.pollFns.push(pollFn);
-    return pollFn;
-  },
-
   url: function(url, replace, state) {
     if (angular.isUndefined(state)) {
       state = null;
@@ -2148,7 +2143,6 @@ if (window.jasmine || window.mocha) {
 
     if (injector) {
       injector.get('$rootElement').off();
-      injector.get('$browser').pollFns.length = 0;
     }
 
     // clean up jquery's fragment cache
