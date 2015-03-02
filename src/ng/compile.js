@@ -346,7 +346,7 @@
  * `templateUrl` declaration or manual compilation inside the compile function.
  * </div>
  *
- * <div class="alert alert-error">
+ * <div class="alert alert-danger">
  * **Note:** The `transclude` function that is passed to the compile function is deprecated, as it
  *   e.g. does not know about the right outer scope. Please use the transclude function that is passed
  *   to the link function instead.
@@ -625,7 +625,7 @@
  * @param {string|DOMElement} element Element or HTML string to compile into a template function.
  * @param {function(angular.Scope, cloneAttachFn=)} transclude function available to directives - DEPRECATED.
  *
- * <div class="alert alert-error">
+ * <div class="alert alert-danger">
  * **Note:** Passing a `transclude` function to the $compile function is deprecated, as it
  *   e.g. will not use the right outer scope. Please pass the transclude function as a
  *   `parentBoundTranscludeFn` to the link function instead.
