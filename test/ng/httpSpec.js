@@ -2,10 +2,16 @@
 
 describe('$http', function() {
 
-  var callback;
+  var callback, mockedCookies;
 
   beforeEach(function() {
     callback = jasmine.createSpy('done');
+    mockedCookies = {};
+    module({
+      $$cookieReader: function() {
+        return mockedCookies;
+      }
+    });
   });
 
   beforeEach(module(function($exceptionHandlerProvider) {
@@ -691,7 +697,7 @@ describe('$http', function() {
       });
 
       it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
-        $browser.cookies('XSRF-TOKEN', 'secret');
+        mockedCookies['XSRF-TOKEN'] =  'secret';
         $browser.url('http://host.com/base');
         $httpBackend.expect('GET', 'http://www.test.com/url', undefined, function(headers) {
           return headers['X-XSRF-TOKEN'] === undefined;
@@ -733,15 +739,15 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
-      it('should set the XSRF cookie into a XSRF header', inject(function($browser) {
+      it('should set the XSRF cookie into a XSRF header', inject(function() {
         function checkXSRF(secret, header) {
           return function(headers) {
             return headers[header || 'X-XSRF-TOKEN'] == secret;
           };
         }
 
-        $browser.cookies('XSRF-TOKEN', 'secret');
-        $browser.cookies('aCookie', 'secret2');
+        mockedCookies['XSRF-TOKEN'] =  'secret';
+        mockedCookies['aCookie'] = 'secret2';
         $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('POST', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('PUT', '/url', undefined, checkXSRF('secret')).respond('');
@@ -809,23 +815,18 @@ describe('$http', function() {
         expect(config.foo).toBeUndefined();
       });
 
-      it('should check the cache before checking the XSRF cookie', inject(function($browser, $cacheFactory) {
-        var testCache = $cacheFactory('testCache'),
-            executionOrder = [];
+      it('should check the cache before checking the XSRF cookie', inject(function($cacheFactory) {
+        var testCache = $cacheFactory('testCache');
 
-        spyOn($browser, 'cookies').andCallFake(function() {
-          executionOrder.push('cookies');
-          return {'XSRF-TOKEN':'foo'};
-        });
         spyOn(testCache, 'get').andCallFake(function() {
-          executionOrder.push('cache');
+          mockedCookies['XSRF-TOKEN'] = 'foo';
         });
 
-        $httpBackend.expect('GET', '/url', undefined).respond('');
+        $httpBackend.expect('GET', '/url', undefined, function(headers) {
+          return headers['X-XSRF-TOKEN'] === 'foo';
+        }).respond('');
         $http({url: '/url', method: 'GET', cache: testCache});
         $httpBackend.flush();
-
-        expect(executionOrder).toEqual(['cache', 'cookies']);
       }));
     });
 
