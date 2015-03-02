@@ -22,13 +22,13 @@
  *
  * | Directive                                   | Supported Attributes                                                                   |
  * |---------------------------------------------|----------------------------------------------------------------------------------------|
- * | {@link ng.directive:ngModel ngModel}        | aria-checked, aria-valuemin, aria-valuemax, aria-valuenow, aria-invalid, aria-required |
  * | {@link ng.directive:ngDisabled ngDisabled}  | aria-disabled                                                                          |
  * | {@link ng.directive:ngShow ngShow}          | aria-hidden                                                                            |
  * | {@link ng.directive:ngHide ngHide}          | aria-hidden                                                                            |
- * | {@link ng.directive:ngClick ngClick}        | tabindex, keypress event                                                               |
  * | {@link ng.directive:ngDblclick ngDblclick}  | tabindex                                                                               |
  * | {@link module:ngMessages ngMessages}        | aria-live                                                                              |
+ * | {@link ng.directive:ngModel ngModel}        | aria-checked, aria-valuemin, aria-valuemax, aria-valuenow, aria-invalid, aria-required, input roles |
+ * | {@link ng.directive:ngClick ngClick}        | tabindex, keypress event, button role                                                               |
  *
  * Find out more information about each directive by reading the
  * {@link guide/accessibility ngAria Developer Guide}.
@@ -317,17 +317,22 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
       var fn = $parse(attr.ngClick, /* interceptorFn */ null, /* expensiveChecks */ true);
       return function(scope, elem, attr) {
 
+        var nodeBlackList = ['BUTTON', 'A', 'INPUT', 'TEXTAREA'];
+
         function isNodeOneOf(elem, nodeTypeArray) {
           if (nodeTypeArray.indexOf(elem[0].nodeName) !== -1) {
             return true;
           }
+        }
+        if (!elem.attr('role') && !isNodeOneOf(elem, nodeBlackList)) {
+          elem.attr('role', 'button');
         }
 
         if ($aria.config('tabindex') && !elem.attr('tabindex')) {
           elem.attr('tabindex', 0);
         }
 
-        if ($aria.config('bindKeypress') && !attr.ngKeypress && isNodeOneOf(elem, ['DIV', 'LI'])) {
+        if ($aria.config('bindKeypress') && !attr.ngKeypress && !isNodeOneOf(elem, nodeBlackList)) {
           elem.on('keypress', function(event) {
             if (event.keyCode === 32 || event.keyCode === 13) {
               scope.$apply(callback);
