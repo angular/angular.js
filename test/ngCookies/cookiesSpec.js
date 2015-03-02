@@ -6,9 +6,9 @@ describe('$cookies', function() {
   beforeEach(function() {
     mockedCookies = {};
     module('ngCookies', {
-      $$cookieWriter: function(name, value) {
+      $$cookieWriter: jasmine.createSpy('$$cookieWriter').andCallFake(function(name, value) {
         mockedCookies[name] = value;
-      },
+      }),
       $$cookieReader: function() {
         return mockedCookies;
       }
@@ -64,5 +64,23 @@ describe('$cookies', function() {
     $cookies.put('name', 'value');
     $cookies.putObject('name2', 'value2');
     expect($cookies.getAll()).toEqual({name: 'value', name2: '"value2"'});
+  }));
+
+
+  it('should pass options on put', inject(function($cookies, $$cookieWriter) {
+    $cookies.put('name', 'value', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {path: '/a/b'});
+  }));
+
+
+  it('should pass options on putObject', inject(function($cookies, $$cookieWriter) {
+    $cookies.putObject('name', 'value', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', '"value"', {path: '/a/b'});
+  }));
+
+
+  it('should pass options on remove', inject(function($cookies, $$cookieWriter) {
+    $cookies.remove('name', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', undefined, {path: '/a/b'});
   }));
  });
