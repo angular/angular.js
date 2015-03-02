@@ -195,6 +195,16 @@ describe('$aria', function() {
   describe('roles for custom inputs', function() {
     beforeEach(injectScopeAndCompiler);
 
+    it('should add missing role="button" to custom input', function() {
+      compileElement('<div ng-click="someFunction()"></div>');
+      expect(element.attr('role')).toBe('button');
+    });
+
+    it('should not add role="button" to anchor', function() {
+      compileElement('<a ng-click="someFunction()"></a>');
+      expect(element.attr('role')).not.toBe('button');
+    });
+
     it('should add missing role="checkbox" to custom input', function() {
       compileElement('<div type="checkbox" ng-model="val"></div>');
       expect(element.attr('role')).toBe('checkbox');

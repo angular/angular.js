@@ -213,11 +213,13 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` if it isn't there
 already.
 
-For `ng-click`, keypress will also be bound to `div` and `li` elements. You can turn this
-functionality on or off with the `bindKeypress` configuration option.
+To fix widespread accessibility problems with `ng-click` on div elements, ngAria will dynamically
+bind keypress by default as long as the element isn't an anchor, button, input or textarea.
+You can turn this functionality on or off with the `bindKeypress` configuration option. ngAria
+will also add the `button` role to communicate to users of assistive technologies.
 
-For `ng-dblclick`, you must manually add `ng-keypress` to non-interactive elements such as `div`
-or `taco-button` to enable keyboard access.
+For `ng-dblclick`, you must still manually add `ng-keypress` and role to non-interactive elements such
+as `div` or `taco-button` to enable keyboard access.
 
 <h3>Example</h3>
 ```html
