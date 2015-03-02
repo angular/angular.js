@@ -83,4 +83,60 @@ describe('$cookies', function() {
     $cookies.remove('name', {path: '/a/b'});
     expect($$cookieWriter).toHaveBeenCalledWith('name', undefined, {path: '/a/b'});
   }));
+
+
+  it('should pass default options on put', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.put('name', 'value', {path: '/a/b'});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {path: '/a/b', secure: true});
+    });
+  });
+
+
+  it('should pass default options on putObject', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.putObject('name', 'value', {path: '/a/b'});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', '"value"', {path: '/a/b', secure: true});
+    });
+  });
+
+
+  it('should pass default options on remove', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.remove('name', {path: '/a/b'});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', undefined, {path: '/a/b', secure: true});
+    });
+  });
+
+
+  it('should let passed options override default options', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.put('name', 'value', {secure: false});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {secure: false});
+    });
+  });
+
+
+  it('should pass default options if no options are passed', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.put('name', 'value');
+      expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {secure: true});
+    });
+  });
+
  });
