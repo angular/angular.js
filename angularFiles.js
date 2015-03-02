@@ -40,6 +40,7 @@ var angularFiles = {
     'src/ng/timeout.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',
+    'src/ng/cookieReader.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
@@ -89,7 +90,8 @@ var angularFiles = {
       'src/ngAnimate/animate.js'
     ],
     'ngCookies': [
-      'src/ngCookies/cookies.js'
+      'src/ngCookies/cookies.js',
+      'src/ngCookies/cookieWriter.js'
     ],
     'ngMessages': [
       'src/ngMessages/messages.js'
@@ -162,7 +164,7 @@ var angularFiles = {
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
+    '@angularTest'
   ],
 
   'karmaExclude': [
@@ -197,7 +199,7 @@ var angularFiles = {
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
+    '@angularTest'
   ],
 
   'karmaJqueryExclude': [
