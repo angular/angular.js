@@ -40,6 +40,7 @@ var angularFiles = {
     'src/ng/timeout.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',
+    'src/ng/cookieReader.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
@@ -89,7 +90,9 @@ var angularFiles = {
       'src/ngAnimate/animate.js'
     ],
     'ngCookies': [
-      'src/ngCookies/cookies.js'
+      'src/ngCookies/cookies.js',
+      'src/ngCookies/cookieStore.js',
+      'src/ngCookies/cookieWriter.js'
     ],
     'ngMessages': [
       'src/ngMessages/messages.js'
