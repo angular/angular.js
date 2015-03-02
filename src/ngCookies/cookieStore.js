@@ -4,6 +4,7 @@ angular.module('ngCookies').
 /**
  * @ngdoc service
  * @name $cookieStore
+ * @deprecated
  * @requires $cookies
  *
  * @description
@@ -12,6 +13,11 @@ angular.module('ngCookies').
  * deserialized by angular's toJson/fromJson.
  *
  * Requires the {@link ngCookies `ngCookies`} module to be installed.
+ *
+ * <div class="alert alert-error">
+ * **Note:** The $cookieStore service is deprecated.
+ * Please use the {@link ngCookies.$cookies `$cookies`} service instead.
+ * </div>
  *
  * @example
  *
@@ -41,8 +47,7 @@ angular.module('ngCookies').
        * @returns {Object} Deserialized cookie value, undefined if the cookie does not exist.
        */
       get: function(key) {
-        var value = $cookies[key];
-        return value ? angular.fromJson(value) : value;
+        return $cookies.getObject(key);
       },
 
       /**
@@ -56,7 +61,7 @@ angular.module('ngCookies').
        * @param {Object} value Value to be stored.
        */
       put: function(key, value) {
-        $cookies[key] = angular.toJson(value);
+        $cookies.putObject(key, value);
       },
 
       /**
@@ -69,7 +74,7 @@ angular.module('ngCookies').
        * @param {string} key Id of the key-value pair to delete.
        */
       remove: function(key) {
-        delete $cookies[key];
+        $cookies.remove(key);
       }
     };
 
