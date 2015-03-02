@@ -893,6 +893,40 @@ describe('browser', function() {
         };
       }
     });
+
+    it('should not fire callback when it\'s detached', function() {
+      browser.onUrlChange(callback);
+      browser.detachFromBrowser();
+
+      fakeWindow.location.href = 'http://server.new';
+      fakeWindow.setTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.fire('popstate');
+      fakeWindow.fire('hashchange');
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should not fire urlChange if changed by browser.url method (polling)', function() {
+      sniffer.history = false;
+      sniffer.hashchange = false;
+      browser.onUrlChange(callback);
+      browser.url('http://new.com');
+
+      fakeWindow.setTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should not fire urlChange if changed by browser.url method (hashchange)', function() {
+      sniffer.history = false;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      browser.url('http://new.com');
+
+      fakeWindow.fire('hashchange');
+      expect(callback).not.toHaveBeenCalled();
+    });
+
   });
 
 
