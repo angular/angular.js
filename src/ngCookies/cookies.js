@@ -43,7 +43,7 @@ angular.module('ngCookies', ['ng']).
    *   }]);
    * ```
    */
-   factory('$cookies', ['$rootScope', '$browser', function($rootScope, $browser) {
+   factory('$cookies', ['$rootScope', '$browser', '$$cookieReader', '$$cookieWriter', function($rootScope, $browser, $$cookieReader, $$cookieWriter) {
       var cookies = {},
           lastCookies = {},
           lastBrowserCookies,
@@ -53,7 +53,7 @@ angular.module('ngCookies', ['ng']).
 
       //creates a poller fn that copies all cookies from the $browser to service & inits the service
       $browser.addPollFn(function() {
-        var currentCookies = $browser.cookies();
+        var currentCookies = $$cookieReader();
         if (lastBrowserCookies != currentCookies) { //relies on browser.cookies() impl
           lastBrowserCookies = currentCookies;
           copy(currentCookies, lastCookies);
@@ -85,7 +85,7 @@ angular.module('ngCookies', ['ng']).
         //delete any cookies deleted in $cookies
         for (name in lastCookies) {
           if (isUndefined(cookies[name])) {
-            $browser.cookies(name, undefined);
+            $$cookieWriter(name, undefined);
           }
         }
 
@@ -97,7 +97,7 @@ angular.module('ngCookies', ['ng']).
             cookies[name] = value;
           }
           if (value !== lastCookies[name]) {
-            $browser.cookies(name, value);
+            $$cookieWriter(name, value);
             updated = true;
           }
         }
@@ -105,7 +105,7 @@ angular.module('ngCookies', ['ng']).
         //verify what was actually stored
         if (updated) {
           updated = false;
-          browserCookies = $browser.cookies();
+          browserCookies = $$cookieReader();
 
           for (name in cookies) {
             if (cookies[name] !== browserCookies[name]) {
