@@ -65,6 +65,7 @@
   $FilterProvider,
   $InterpolateProvider,
   $IntervalProvider,
+  $$HashMapProvider,
   $HttpProvider,
   $HttpBackendProvider,
   $LocationProvider,
@@ -241,6 +242,7 @@ function publishExternalAPI(angular) {
         $$rAF: $$RAFProvider,
         $$asyncCallback: $$AsyncCallbackProvider,
         $$jqLite: $$jqLiteProvider,
+        $$HashMap: $$HashMapProvider,
         $$cookieReader: $$CookieReaderProvider
       });
     }
