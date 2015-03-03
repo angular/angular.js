@@ -73,3 +73,9 @@ HashMap.prototype = {
     return value;
   }
 };
+
+var $$HashMapProvider = [function() {
+  this.$get = [function() {
+    return HashMap;
+  }];
+}];
