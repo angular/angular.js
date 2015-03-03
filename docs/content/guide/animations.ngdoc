@@ -236,7 +236,7 @@ The example below shows how to perform animations during class changes:
  </file>
 </example>
 
-Although the CSS is a little different then what we saw before, the idea is the same.
+Although the CSS is a little different than what we saw before, the idea is the same.
 
 ## Which directives support animations?
 
