@@ -504,6 +504,21 @@ function qFactory(nextTick, exceptionHandler) {
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.
    *
+   * ```js
+   *   promiseC = $q.all([promiseA, promiseB]).then(function(result) {
+   *     success: do something and resolve promiseC
+   *     return result;
+   *   }, function(reason) {
+   *     // error: handle the error if possible and
+   *     //        resolve promiseC with newPromiseOrValue,
+   *     //        otherwise forward the rejection to promiseC
+   *     if (canHandle(reason)) {
+   *      // handle the error and recover
+   *      return newPromiseOrValue;
+   *     }
+   *   });
+   * ```
+   * 
    * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
    * @returns {Promise} Returns a single promise that will be resolved with an array/hash of values,
    *   each value corresponding to the promise at the same index/key in the `promises` array/hash.
