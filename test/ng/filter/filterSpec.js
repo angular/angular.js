@@ -465,28 +465,41 @@ describe('Filter: filter', function() {
 
   describe('should support comparator', function() {
 
-    it('not consider `object === "[object Object]"` in non-strict comparison', function() {
+    it('not consider objects without a custom `toString` in non-strict comparison', function() {
       var items = [{test: {}}];
       var expr = '[object';
       expect(filter(items, expr).length).toBe(0);
     });
 
 
-    it('should consider custom `toString()` in non-strict comparison', function() {
+    it('should consider objects with custom `toString()` in non-strict comparison', function() {
       var obj = new Date(1970, 0);
       var items = [{test: obj}];
       expect(filter(items, '1970').length).toBe(1);
       expect(filter(items, 1970).length).toBe(1);
 
-      obj = {};
-      obj.toString = function() { return 'custom'; };
+      obj = {
+        toString: function() { return 'custom'; }
+      };
       items = [{test: obj}];
       expect(filter(items, 'custom').length).toBe(1);
     });
 
 
-    it('should not throw on missing `toString()` in non-strict comparison', function() {
+    it('should cope with objects that have no `toString()` in non-strict comparison', function() {
       var obj = Object.create(null);
+      var items = [{test: obj}];
+      expect(function() {
+        filter(items, 'foo');
+      }).not.toThrow();
+      expect(filter(items, 'foo').length).toBe(0);
+    });
+
+
+    it('should cope with objects where `toString` is not a function in non-strict comparison', function() {
+      var obj = {
+        toString: 'moo'
+      };
       var items = [{test: obj}];
       expect(function() {
         filter(items, 'foo');
