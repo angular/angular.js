@@ -506,7 +506,7 @@ function qFactory(nextTick, exceptionHandler) {
    *
    * ```js
    *   promiseC = $q.all([promiseA, promiseB]).then(function(result) {
-   *     success: do something and resolve promiseC
+   *     // success: do something and resolve promiseC
    *     return result;
    *   }, function(reason) {
    *     // error: handle the error if possible and
