@@ -603,6 +603,12 @@ function $RootScopeProvider() {
             // copy the items to oldValue and look for changes.
             newLength = 0;
             for (key in newValue) {
+              // Emulate angular.equals(), which ignores keys beginning with
+              // a single dollar sign.
+              if (key.charAt(0) === '$') {
+                continue;
+              }
+
               if (newValue.hasOwnProperty(key)) {
                 newLength++;
                 newItem = newValue[key];
