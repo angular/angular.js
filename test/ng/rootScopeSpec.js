@@ -1029,6 +1029,25 @@ describe('Scope', function() {
     }));
 
 
+    it('should remove all listeners after $destroy of rootScope', inject(function($rootScope) {
+      var spy = jasmine.createSpy('$destroy handler');
+      $rootScope.$on('dummy', spy);
+      $rootScope.$destroy();
+      $rootScope.$broadcast('dummy');
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should remove all watchers after $destroy of rootScope', inject(function($rootScope) {
+      var spy = jasmine.createSpy('$watch spy');
+      var digest = $rootScope.$digest;
+      $rootScope.$watch(spy);
+      $rootScope.$destroy();
+      digest.call($rootScope);
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
+
     it('should remove first', inject(function($rootScope) {
       first.$destroy();
       $rootScope.$digest();
