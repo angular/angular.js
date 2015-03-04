@@ -15,6 +15,12 @@ describe('private mocks', function() {
         expect(window.it).toHaveBeenCalledWith('should do stuff with "c"', jasmine.any(Function));
       });
 
+      it('should replace multiple occurrences of `$prop`', function() {
+        spyOn(window, 'it');
+
+        they('should fight $prop with $prop', ['fire']);
+        expect(window.it).toHaveBeenCalledWith('should fight "fire" with "fire"', jasmine.any(Function));
+      });
 
       it('should pass each item in an array to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
