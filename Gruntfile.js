@@ -247,8 +247,19 @@ module.exports = function(grunt) {
         'test/**/*.js',
         '!test/ngScenario/DescribeSpec.js',
         '!src/ng/directive/attrs.js', // legitimate xit here
-        '!src/ngScenario/**/*.js'
-      ]
+        '!src/ngScenario/**/*.js',
+        '!test/helpers/privateMocks*.js'
+      ],
+      options: {
+        disallowed: [
+          'iit',
+          'xit',
+          'tthey',
+          'xthey',
+          'ddescribe',
+          'xdescribe'
+        ]
+      }
     },
 
     "merge-conflict": {
