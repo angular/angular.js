@@ -1304,7 +1304,13 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$$parserName = 'email';
   ctrl.$validators.email = function(modelValue, viewValue) {
     var value = modelValue || viewValue;
-    return ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value);
+    if (angular.isArray(value)) {
+      return value.every(function(e) {
+        return ctrl.$isEmpty(e) || EMAIL_REGEXP.test(e);
+      });
+    } else {
+      return ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value);
+    };
   };
 }
 
