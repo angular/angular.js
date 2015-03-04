@@ -1803,6 +1803,77 @@ angular.mock.$RootElementProvider = function() {
 };
 
 /**
+ * @ngdoc service
+ * @name $controller
+ * @description
+ * A decorator for {@link ng.$controller} with additional `bindings` parameter, useful when testing
+ * controllers of directives that use {@link $compile#-bindtocontroller- `bindToController`}.
+ *
+ *
+ * ## Example
+ *
+ * ```js
+ *
+ * // Directive definition ...
+ *
+ * myMod.directive('myDirective', {
+ *   controller: 'MyDirectiveController',
+ *   bindToController: {
+ *     name: '@'
+ *   }
+ * });
+ *
+ *
+ * // Controller definition ...
+ *
+ * myMod.controller('MyDirectiveController', ['log', function($log) {
+ *   $log.info(this.name);
+ * })];
+ *
+ *
+ * // In a test ...
+ *
+ * describe('myDirectiveController', function() {
+ *   it('should write the bound name to the log', inject(function($controller, $log) {
+ *     var ctrl = $controller('MyDirective', { /* no locals &#42;/ }, { name: 'Clark Kent' });
+ *     expect(ctrl.name).toEqual('Clark Kent');
+ *     expect($log.info.logs).toEqual(['Clark Kent']);
+ *   });
+ * });
+ *
+ * ```
+ *
+ * @param {Function|string} constructor If called with a function then it's considered to be the
+ *    controller constructor function. Otherwise it's considered to be a string which is used
+ *    to retrieve the controller constructor using the following steps:
+ *
+ *    * check if a controller with given name is registered via `$controllerProvider`
+ *    * check if evaluating the string on the current scope returns a constructor
+ *    * if $controllerProvider#allowGlobals, check `window[constructor]` on the global
+ *      `window` object (not recommended)
+ *
+ *    The string can use the `controller as property` syntax, where the controller instance is published
+ *    as the specified property on the `scope`; the `scope` must be injected into `locals` param for this
+ *    to work correctly.
+ *
+ * @param {Object} locals Injection locals for Controller.
+ * @param {Object=} bindings Properties to add to the controller before invoking the constructor. This is used
+ *                           to simulate the `bindToController` feature and simplify certain kinds of tests.
+ * @return {Object} Instance of given controller.
+ */
+angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
+  return function(expression, locals, later, ident) {
+    if (later && typeof later === 'object') {
+      var create = $delegate(expression, locals, true, ident);
+      angular.extend(create.instance, later);
+      return create();
+    }
+    return $delegate(expression, locals, later, ident);
+  };
+}];
+
+
+/**
  * @ngdoc module
  * @name ngMock
  * @packageName angular-mocks
@@ -1830,6 +1901,7 @@ angular.module('ngMock', ['ng']).provider({
   $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
   $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
+  $provide.decorator('$controller', angular.mock.$ControllerDecorator);
 }]);
 
 /**
