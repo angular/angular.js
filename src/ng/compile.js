@@ -11,6 +11,8 @@
  *     Or gives undesired access to variables likes document or window?    *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+/* global indexOf: true */
+
 /* ! VARIABLE/FUNCTION NAMING CONVENTIONS THAT APPLY TO THIS FILE!
  *
  * DOM-related variables:
@@ -3281,31 +3283,21 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var firstElementToRemove = elementsToRemove[0],
           removeCount = elementsToRemove.length,
           parent = firstElementToRemove.parentNode,
-          i, ii;
+          i;
 
-      if ($rootElement) {
-        for (i = 0, ii = $rootElement.length; i < ii; i++) {
-          if ($rootElement[i] === firstElementToRemove) {
-            $rootElement[i++] = newNode;
-            for (var j = i, j2 = j + removeCount - 1,
-                     jj = $rootElement.length;
-                 j < jj; j++, j2++) {
-              if (j2 < jj) {
-                $rootElement[j] = $rootElement[j2];
-              } else {
-                delete $rootElement[j];
-              }
-            }
-            $rootElement.length -= removeCount - 1;
+      var index;
+      if ($rootElement && (index = indexOf.call($rootElement, firstElementToRemove)) !== -1) {
+        if (removeCount === 1) {
+          $rootElement[index] = newNode;
+        } else {
+          $rootElement.splice(index, removeCount, newNode);
+        }
 
-            // If the replaced element is also the jQuery .context then replace it
-            // .context is a deprecated jQuery api, so we should set it only when jQuery set it
-            // http://api.jquery.com/context/
-            if ($rootElement.context === firstElementToRemove) {
-              $rootElement.context = newNode;
-            }
-            break;
-          }
+        // If the replaced element is also the jQuery .context then replace it
+        // .context is a deprecated jQuery api, so we should set it only when jQuery set it
+        // http://api.jquery.com/context/
+        if ($rootElement.context === firstElementToRemove) {
+          $rootElement.context = newNode;
         }
       }
 

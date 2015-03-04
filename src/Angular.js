@@ -56,6 +56,7 @@
   isElement,
   makeMap,
   includes,
+  indexOf
   arrayRemove,
   copy,
   equals,
@@ -731,8 +732,10 @@ function nodeName_(element) {
   return lowercase(element.nodeName || (element[0] && element[0].nodeName));
 }
 
+var indexOf = Array.prototype.indexOf;
+
 function includes(array, obj) {
-  return Array.prototype.indexOf.call(array, obj) !== -1;
+  return indexOf.call(array, obj) !== -1;
 }
 
 function arrayRemove(array, value) {
