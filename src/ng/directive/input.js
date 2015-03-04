@@ -1310,7 +1310,7 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       });
     } else {
       return ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value);
-    };
+    }
   };
 }
 
