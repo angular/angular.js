@@ -537,23 +537,51 @@ angular.module('ngMessages', [])
     * <ANY ng-messages="expression">
     *   <ANY ng-message="stringValue">...</ANY>
     *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
-    *   <ANY ng-message-exp="expressionValue">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
     * <ng-messages for="expression">
     *   <ng-message when="stringValue">...</ng-message>
     *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
-    *   <ng-message when-exp="expressionValue">...</ng-message>
     * </ng-messages>
     * ```
     *
     * {@link module:ngMessages Click here} to learn more about `ngMessages` and `ngMessage`.
     *
     * @param {expression} ngMessage|when a string value corresponding to the message key.
-    * @param {expression} ngMessageExp|whenExp an expression value corresponding to the message key.
     */
   .directive('ngMessage', ngMessageDirectiveFactory('AE'))
+
+
+   /**
+    * @ngdoc directive
+    * @name ngMessageExp
+    * @restrict AE
+    * @scope
+    *
+    * @description
+    * `ngMessageExp` is a directive with the purpose to show and hide a particular message.
+    * For `ngMessageExp` to operate, a parent `ngMessages` directive on a parent DOM element
+    * must be situated since it determines which messages are visible based on the state
+    * of the provided key/value map that `ngMessages` listens on.
+    *
+    * @usage
+    * ```html
+    * <!-- using attribute directives -->
+    * <ANY ng-messages="expression">
+    *   <ANY ng-message-exp="expressionValue">...</ANY>
+    * </ANY>
+    *
+    * <!-- or by using element directives -->
+    * <ng-messages for="expression">
+    *   <ng-message when-exp="expressionValue">...</ng-message>
+    * </ng-messages>
+    * ```
+    *
+    * {@link module:ngMessages Click here} to learn more about `ngMessages` and `ngMessage`.
+    *
+    * @param {expression} ngMessageExp|whenExp an expression value corresponding to the message key.
+    */
   .directive('ngMessageExp', ngMessageDirectiveFactory('A'));
 
 function ngMessageDirectiveFactory(restrict) {
