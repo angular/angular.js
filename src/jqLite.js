@@ -905,7 +905,7 @@ forEach({
     for (var i = 0, ii = newElement.length; i < ii; i++) {
       var node = newElement[i];
       
-      if(parent) {
+      if (parent) {
         parent.insertBefore(node, index.nextSibling);
         index = node;
       }
