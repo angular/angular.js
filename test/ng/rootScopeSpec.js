@@ -1021,11 +1021,9 @@ describe('Scope', function() {
 
 
     it('should broadcast $destroy on rootScope', inject(function($rootScope) {
-      var spy = spyOn(angular, 'noop');
-      $rootScope.$on('$destroy', angular.noop);
+      var spy = jasmine.createSpy('$destroy handler');
+      $rootScope.$on('$destroy', spy);
       $rootScope.$destroy();
-      $rootScope.$digest();
-      expect(log).toEqual('123');
       expect(spy).toHaveBeenCalled();
       expect($rootScope.$$destroyed).toBe(true);
     }));
