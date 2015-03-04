@@ -23,7 +23,6 @@ function tthey(msg, vals, spec) {
 }
 
 function xthey(msg, vals, spec) {
-  /* jshint -W040 : ignore possible strict violation due to use of this */
   baseThey(msg, vals, spec, xit);
 }
 
