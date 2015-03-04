@@ -6,7 +6,7 @@ function baseThey(msg, vals, spec, itFn) {
   var valsIsArray = isArray(vals);
 
   forEach(vals, function(val, key) {
-    var m = msg.replace('$prop', angular.toJson(valsIsArray ? val : key));
+    var m = msg.replace(/\$prop/g, angular.toJson(valsIsArray ? val : key));
     itFn(m, function() {
       /* jshint -W040 : ignore possible strict violation due to use of this */
       spec.call(this, val);
