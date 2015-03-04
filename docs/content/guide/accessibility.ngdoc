@@ -81,7 +81,7 @@ attributes (if they have not been explicitly specified by the developer):
   </style>
  <div>
  <form ng-controller="formsController">
-  <some-checkbox role="checkbox" ng-model="checked" ng-class="{active: checked}"
+  <some-checkbox role="checkbox" aria-checked = {{checked}} ng-model="checked" ng-class="{active: checked}"
     ng-disabled="isDisabled" ng-click="toggleCheckbox()"
     aria-label="Custom Checkbox" show-attrs>
     <span class="icon" aria-hidden="true"></span>
