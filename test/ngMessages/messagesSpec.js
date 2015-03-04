@@ -4,17 +4,8 @@ describe('ngMessages', function() {
   beforeEach(inject.strictDi());
   beforeEach(module('ngMessages'));
 
-  function they(msg, vals, spec, focus) {
-    forEach(vals, function(val, key) {
-      var m = msg.replace('$prop', key);
-      (focus ? iit : it)(m, function() {
-        spec(val);
-      });
-    });
-  }
-
-  function tthey(msg, vals, spec) {
-    they(msg, vals, spec, true);
+  function messageChildren(element) {
+    return (element.length ? element[0] : element).querySelectorAll('[ng-message], [ng-message-exp]');
   }
 
   function s(str) {
