@@ -3,9 +3,9 @@
 /* globals xit */
 
 function baseThey(msg, vals, spec, itFn) {
-  var valsIsArray = isArray(vals);
+  var valsIsArray = angular.isArray(vals);
 
-  forEach(vals, function(val, key) {
+  angular.forEach(vals, function(val, key) {
     var m = msg.replace(/\$prop/g, angular.toJson(valsIsArray ? val : key));
     itFn(m, function() {
       /* jshint -W040 : ignore possible strict violation due to use of this */
