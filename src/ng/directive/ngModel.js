@@ -506,7 +506,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$validate = function() {
     // ignore $validate before model is initialized
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       return;
     }
 
@@ -676,7 +676,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         }
       }
     }
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       // ctrl.$modelValue has not been touched yet...
       ctrl.$modelValue = ngModelGet($scope);
     }

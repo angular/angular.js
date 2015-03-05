@@ -399,6 +399,10 @@ function toInt(str) {
   return parseInt(str, 10);
 }
 
+var isNumberNaN = Number.isNaN || function isNumberNaN(num) {
+  return num !== num;
+};
+
 
 function inherit(parent, extra) {
   return extend(Object.create(parent), extra);
@@ -1113,7 +1117,7 @@ function fromJson(json) {
 
 function timezoneToOffset(timezone, fallback) {
   var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
-  return isNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
+  return isNumberNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
 }
 
 
