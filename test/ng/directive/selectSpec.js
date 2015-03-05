@@ -1223,6 +1223,5 @@ describe('select', function() {
                 '</select>');
       }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
     });
-
   });
 });
