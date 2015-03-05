@@ -14,8 +14,7 @@ describe('style', function() {
     $compile(element)($rootScope);
     $rootScope.$digest();
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.header{font-size:1.5em; h3{font-size:1.5em}}');
+    expect(element[0].innerHTML).toBe('.header{font-size:1.5em; h3{font-size:1.5em}}');
   }));
 
 
@@ -24,15 +23,13 @@ describe('style', function() {
     $compile(element)($rootScope);
     $rootScope.$digest();
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.some-container{ width: px; }');
+    expect(element[0].innerHTML).toBe('.some-container{ width: px; }');
 
     $rootScope.$apply(function() {
       $rootScope.elementWidth = 200;
     });
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.some-container{ width: 200px; }');
+    expect(element[0].innerHTML).toBe('.some-container{ width: 200px; }');
   }));
 
 
@@ -41,15 +38,13 @@ describe('style', function() {
     $compile(element)($rootScope);
     $rootScope.$digest();
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.header{ h3 { font-size: em }}');
+    expect(element[0].innerHTML).toBe('.header{ h3 { font-size: em }}');
 
     $rootScope.$apply(function() {
       $rootScope.fontSize = 1.5;
     });
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.header{ h3 { font-size: 1.5em }}');
+    expect(element[0].innerHTML).toBe('.header{ h3 { font-size: 1.5em }}');
   }));
 
 
@@ -58,16 +53,14 @@ describe('style', function() {
     $compile(element)($rootScope);
     $rootScope.$digest();
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.header{ h3 { font-size:  }}');
+    expect(element[0].innerHTML).toBe('.header{ h3 { font-size:  }}');
 
     $rootScope.$apply(function() {
       $rootScope.fontSize = 1.5;
       $rootScope.unit = 'em';
     });
 
-    // read innerHTML and trim to pass on IE8
-    expect(trim(element[0].innerHTML)).toBe('.header{ h3 { font-size: 1.5em }}');
+    expect(element[0].innerHTML).toBe('.header{ h3 { font-size: 1.5em }}');
   }));
 
 
