@@ -551,12 +551,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2013-01');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -776,12 +772,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2013-W02');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -965,12 +957,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2009-01-06T16:25:00.000');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -1277,12 +1265,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('16:25:00.000');
 
-      try {
-        //set to text for browsers with time validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with time validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -1571,12 +1555,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2014-09-14');
 
-      try {
-        //set to text for browsers with date validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with date validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('1-2-3');
       expect(inputElm.val()).toBe('1-2-3');
@@ -1843,12 +1823,10 @@ describe('input', function() {
       $rootScope.$apply('age = 123');
       expect(inputElm.val()).toBe('123');
 
-      try {
-        // to allow non-number values, we have to change type so that
-        // the browser which have number validation will not interfere with
-        // this test. IE8 won't allow it hence the catch.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {}
+      // to allow non-number values, we have to change type so that
+      // the browser which have number validation will not interfere with
+      // this test.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('123X');
       expect(inputElm.val()).toBe('123X');

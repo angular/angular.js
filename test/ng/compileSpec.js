@@ -1326,16 +1326,10 @@ describe('$compile', function() {
               $rootScope.$digest();
 
 
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>',
-                  '<div><b class="i-hello"></b><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>');
 
               $httpBackend.flush();
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>',
-                  '<div><span class="i-hello" i-hello="">Hello!</span><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>');
             }
         ));
 
@@ -1362,10 +1356,7 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
-                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello, Elvis!</span></div>');
             }
         ));
 
@@ -1394,10 +1385,7 @@ describe('$compile', function() {
               element = template($rootScope);
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
-                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello, Elvis!</span></div>');
             }
         ));
 

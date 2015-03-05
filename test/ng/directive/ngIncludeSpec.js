@@ -354,11 +354,7 @@ describe('ngInclude', function() {
 
     expect(window._ngIncludeCausesScriptToRun).toBe(true);
 
-    // IE8 doesn't like deleting properties of window
-    window._ngIncludeCausesScriptToRun = undefined;
-    try {
-      delete window._ngIncludeCausesScriptToRun;
-    } catch (e) {}
+    delete window._ngIncludeCausesScriptToRun;
   }));
 
 
