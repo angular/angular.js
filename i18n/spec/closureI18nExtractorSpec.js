@@ -185,6 +185,8 @@ describe("extractDateTimeSymbols", function() {
                   DAY: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
                   SHORTDAY: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
                   AMPMS: ['AM', 'PM'],
+                  ERAS: ['av. J.-C.', 'ap. J.-C.'],
+                  ERANAMES: ['avant Jésus-Christ', 'après Jésus-Christ'],
                   medium: 'yyyy-MM-dd HH:mm:ss',
                   short: 'yy-MM-dd HH:mm',
                   fullDate: 'EEEE d MMMM y',
