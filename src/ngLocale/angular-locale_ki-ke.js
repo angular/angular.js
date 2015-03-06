@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Njumaa",
       "Njumamothi"
     ],
+    "ERANAMES": [
+      "Mbere ya Kristo",
+      "Thutha wa Kristo"
+    ],
+    "ERAS": [
+      "MK",
+      "TK"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Njenuar\u0129",

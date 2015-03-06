@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Ijumaa",
       "Ijumamosi"
     ],
+    "ERANAMES": [
+      "Kabla ya Mayesu",
+      "Baada ya Mayesu"
+    ],
+    "ERAS": [
+      "KM",
+      "BM"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mweri wa kwanza",

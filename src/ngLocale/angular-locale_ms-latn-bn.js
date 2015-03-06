@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "Jumaat",
       "Sabtu"
     ],
+    "ERANAMES": [
+      "S.M.",
+      "TM"
+    ],
+    "ERAS": [
+      "S.M.",
+      "TM"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Januari",

@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "D\u00e9 hAoine",
       "D\u00e9 Sathairn"
     ],
+    "ERANAMES": [
+      "Roimh Chr\u00edost",
+      "Anno Domini"
+    ],
+    "ERAS": [
+      "RC",
+      "AD"
+    ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Ean\u00e1ir",

@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "vinars",
       "sabide"
     ],
+    "ERANAMES": [
+      "pdC",
+      "ddC"
+    ],
+    "ERAS": [
+      "pdC",
+      "ddC"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Zen\u00e2r",
