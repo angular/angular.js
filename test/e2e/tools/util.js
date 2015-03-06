@@ -24,6 +24,10 @@ function testExists(testname) {
 }
 
 function rewriteTestFile(testname, testfile) {
+  if (testfile.indexOf('http') === 0) {
+    return testfile;
+  }
+
   var i = 0;
   while (testfile[i] === '/') ++i;
   testfile = testfile.slice(i);
