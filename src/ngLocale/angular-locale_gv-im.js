@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Jeheiney",
       "Jesarn"
     ],
+    "ERANAMES": [
+      "RC",
+      "AD"
+    ],
+    "ERAS": [
+      "RC",
+      "AD"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Jerrey-geuree",

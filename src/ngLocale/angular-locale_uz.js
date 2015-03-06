@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "juma",
       "shanba"
     ],
+    "ERANAMES": [
+      "M.A.",
+      "E"
+    ],
+    "ERAS": [
+      "M.A.",
+      "E"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Yanvar",

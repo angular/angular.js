@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "vendredo",
       "sabato"
     ],
+    "ERANAMES": [
+      "aK",
+      "pK"
+    ],
+    "ERAS": [
+      "aK",
+      "pK"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januaro",

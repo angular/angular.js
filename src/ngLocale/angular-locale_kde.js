@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Liduva lyannyano na mavili",
       "Liduva litandi"
     ],
+    "ERANAMES": [
+      "Akanapawa Yesu",
+      "Nankuida Yesu"
+    ],
+    "ERAS": [
+      "AY",
+      "NY"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mwedi Ntandi",

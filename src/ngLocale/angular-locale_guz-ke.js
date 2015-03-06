@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Ichuma",
       "Esabato"
     ],
+    "ERANAMES": [
+      "Yeso ataiborwa",
+      "Yeso kaiboirwe"
+    ],
+    "ERAS": [
+      "YA",
+      "YK"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Chanuari",

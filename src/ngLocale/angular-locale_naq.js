@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Fraitaxtsees",
       "Satertaxtsees"
     ],
+    "ERANAMES": [
+      "Xristub ai\u01c3\u00e2",
+      "Xristub khao\u01c3g\u00e2"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u01c3Khanni",

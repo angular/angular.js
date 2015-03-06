@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Olokutaanu",
       "Olomukaaga"
     ],
+    "ERANAMES": [
+      "Kulisto nga azilawo",
+      "Kulisto nga affile"
+    ],
+    "ERAS": [
+      "AZ",
+      "AF"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Janwaliyo",

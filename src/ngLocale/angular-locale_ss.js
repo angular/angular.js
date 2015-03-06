@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Lesihlanu",
       "uMgcibelo"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Bhimbidvwane",

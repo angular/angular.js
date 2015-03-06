@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Kuwa gatanu",
       "Kuwa gatandatu"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mutarama",

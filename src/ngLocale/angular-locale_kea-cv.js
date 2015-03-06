@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "sesta-fera",
       "sabadu"
     ],
+    "ERANAMES": [
+      "Antis di Kristu",
+      "Dispos di Kristu"
+    ],
+    "ERAS": [
+      "AK",
+      "DK"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Janeru",

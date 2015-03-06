@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Palichisano",
       "Pachibelushi"
     ],
+    "ERANAMES": [
+      "Before Yesu",
+      "After Yesu"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Januari",

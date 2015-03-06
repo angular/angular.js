@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "petak",
       "subota"
     ],
+    "ERANAMES": [
+      "Prije nove ere",
+      "Nove ere"
+    ],
+    "ERAS": [
+      "p. n. e.",
+      "n. e."
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januar",

@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "vandredi",
       "samdi"
     ],
+    "ERANAMES": [
+      "avan Zezi-Krist",
+      "apre Zezi-Krist"
+    ],
+    "ERAS": [
+      "av. Z-K",
+      "ap. Z-K"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "zanvie",

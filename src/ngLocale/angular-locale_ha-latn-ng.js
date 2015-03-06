@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Jumma\u02bca",
       "Asabar"
     ],
+    "ERANAMES": [
+      "Kafin haihuwar annab",
+      "Bayan haihuwar annab"
+    ],
+    "ERAS": [
+      "KHAI",
+      "BHAI"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Janairu",
