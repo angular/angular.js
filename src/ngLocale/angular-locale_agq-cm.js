@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "tsu\u0294ugh\u0268\u0302m",
       "tsu\u0294ndz\u0268k\u0254\u0294\u0254"
     ],
+    "ERANAMES": [
+      "S\u011be K\u0268\u0300lesto",
+      "B\u01cea K\u0268\u0300lesto"
+    ],
+    "ERAS": [
+      "SK",
+      "BK"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ndz\u0254\u0300\u014b\u0254\u0300n\u00f9m",

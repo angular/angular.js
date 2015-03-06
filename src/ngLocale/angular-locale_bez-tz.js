@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "pa hihanu",
       "pa shahulembela"
     ],
+    "ERANAMES": [
+      "Kabla ya Mtwaa",
+      "Baada ya Mtwaa"
+    ],
+    "ERAS": [
+      "KM",
+      "BM"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "pa mwedzi gwa hutala",

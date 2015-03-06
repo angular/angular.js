@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Gumqata",
       "Sabti"
     ],
+    "ERANAMES": [
+      "Yaasuusuk Duma",
+      "Yaasuusuk Wadir"
+    ],
+    "ERAS": [
+      "Yaasuusuk Duma",
+      "Yaasuusuk Wadir"
+    ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Qunxa Garablu",

@@ -187,6 +187,8 @@ describe("extractDateTimeSymbols", function() {
                   FIRSTDAYOFWEEK: 6,
                   WEEKENDRANGE: [5, 6],
                   AMPMS: ['AM', 'PM'],
+                  ERAS: ['av. J.-C.', 'ap. J.-C.'],
+                  ERANAMES: ['avant Jésus-Christ', 'après Jésus-Christ'],
                   medium: 'yyyy-MM-dd HH:mm:ss',
                   short: 'yy-MM-dd HH:mm',
                   fullDate: 'EEEE d MMMM y',
