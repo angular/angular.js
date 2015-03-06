@@ -229,7 +229,7 @@ describe('filters', function() {
     });
   });
 
-  describe('date', function() {
+  ddescribe('date', function() {
 
     var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.001Z'); //7am
     var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
@@ -298,6 +298,9 @@ describe('filters', function() {
 
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+
+      expect(date(noon, "MMMM dd, y G")).
+                      toEqual('September 03, 2010 AD');
     });
 
     it('should accept negative numbers as strings', function() {
