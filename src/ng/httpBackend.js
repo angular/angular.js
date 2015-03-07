@@ -119,7 +119,9 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     }
 
 
+    var timedOut;
     function timeoutRequest() {
+      timedOut = true;
       jsonpDone && jsonpDone();
       xhr && xhr.abort();
     }
@@ -131,7 +133,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       }
       jsonpDone = xhr = null;
 
-      callback(status, response, headersString, statusText);
+      callback(status, response, headersString, statusText, timedOut);
       $browser.$$completeOutstandingRequest(noop);
     }
   };
