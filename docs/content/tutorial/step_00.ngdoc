@@ -81,7 +81,8 @@ __`app/index.html`:__
 
           <script src="bower_components/angular/angular.js">
 
-  This code downloads the `angular.js` script and registers a callback that will be executed by the
+  This code downloads the `angular.js` script and executes the code in it.
+  The script registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
 looks for the {@link ng.directive:ngApp ngApp} directive. If
 Angular finds the directive, it will bootstrap the application with the root of the application DOM
