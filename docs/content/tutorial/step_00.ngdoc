@@ -111,7 +111,7 @@ being the element on which the `ngApp` directive was defined.
 ## Bootstrapping AngularJS apps
 
 Bootstrapping AngularJS apps automatically using the `ngApp` directive is very easy and suitable
-for most cases. In advanced cases, such as when using script loaders, you can use
+for most cases. In advanced cases, such as when using script loaders, you can use the
 {@link guide/bootstrap imperative / manual way} to bootstrap the app.
 
 There are 3 important things that happen during the app bootstrap:
