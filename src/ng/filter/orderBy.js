@@ -34,6 +34,41 @@
  * @param {boolean=} reverse Reverse the order of the array.
  * @returns {Array} Sorted copy of the source array.
  *
+ * To make AngularJS perform a sort, add orderBy to the ng-repeat. 
+ * The example below demonstrates setting the predicate to '-age' and reverse * to false.
+ *
+ * @example
+   <example module="orderByExample">
+     <file name="index.html">
+       <script>
+         angular.module('orderByExample', [])
+           .controller('ExampleController', ['$scope', function($scope) {
+             $scope.friends =
+                 [{name:'John', phone:'555-1212', age:10},
+                  {name:'Mary', phone:'555-9876', age:19},
+                  {name:'Mike', phone:'555-4321', age:21},
+                  {name:'Adam', phone:'555-5678', age:35},
+                  {name:'Julie', phone:'555-8765', age:29}];
+           }]);
+       </script>
+       <div ng-controller="ExampleController">
+         <table class="friend">
+           <tr>
+             <th>Name</th>
+             <th>Phone Number</th>
+             <th>Age</th>
+           </tr>
+           <tr ng-repeat="friend in friends | orderBy:-age:false">
+             <td>{{friend.name}}</td>
+             <td>{{friend.phone}}</td>
+             <td>{{friend.age}}</td>
+           </tr>
+         </table>
+       </div>
+     </file>
+   </example>
+ * The predicate and reverse parameters can be controlled dynamically through variables, 
+ * as shown in the next example.
  * @example
    <example module="orderByExample">
      <file name="index.html">
