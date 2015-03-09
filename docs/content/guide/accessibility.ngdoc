@@ -235,7 +235,7 @@ Becomes:
 
 The new ngMessages module makes it easy to display form validation or other messages with priority
 sequencing and animation. To expose these visual messages to screen readers,
-ngAria injects `aria-live="polite"`, causing them to be read aloud any time a message is shown,
+ngAria injects `aria-live="assertive"`, causing them to be read aloud any time a message is shown,
 regardless of the user's focus location.
 ###Example
 
@@ -249,7 +249,7 @@ regardless of the user's focus location.
 Becomes:
 
 ```html
-<div ng-messages="myForm.myName.$error" aria-live="polite">
+<div ng-messages="myForm.myName.$error" aria-live="assertive">
   <div ng-message="required">You did not enter a field</div>
   <div ng-message="maxlength">Your field is too long</div>
 </div>
