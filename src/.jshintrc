@@ -94,6 +94,7 @@
     "skipDestroyOnNextJQueryCleanData": true,
 
     "NODE_TYPE_ELEMENT": false,
+    "NODE_TYPE_ATTRIBUTE": false,
     "NODE_TYPE_TEXT": false,
     "NODE_TYPE_COMMENT": false,
     "NODE_TYPE_COMMENT": false,
