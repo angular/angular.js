@@ -612,6 +612,30 @@ describe('jqLite', function() {
       expect(elm.attr('readOnly')).toBeUndefined();
       expect(elm.attr('disabled')).toBeUndefined();
     });
+
+    it('should do nothing when setting or getting on attribute nodes', function() {
+      var attrNode = jqLite(document.createAttribute('myattr'));
+      expect(attrNode).toBeDefined();
+      expect(attrNode[0].nodeType).toEqual(2);
+      expect(attrNode.attr('some-attribute','somevalue')).toEqual(attrNode);
+      expect(attrNode.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on text nodes', function() {
+      var textNode = jqLite(document.createTextNode('some text'));
+      expect(textNode).toBeDefined();
+      expect(textNode[0].nodeType).toEqual(3);
+      expect(textNode.attr('some-attribute','somevalue')).toEqual(textNode);
+      expect(textNode.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on comment nodes', function() {
+      var comment = jqLite(document.createComment('some comment'));
+      expect(comment).toBeDefined();
+      expect(comment[0].nodeType).toEqual(8);
+      expect(comment.attr('some-attribute','somevalue')).toEqual(comment);
+      expect(comment.attr('some-attribute')).toBeUndefined();
+    });
   });
 
 
