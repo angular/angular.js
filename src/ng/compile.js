@@ -806,16 +806,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             forEach(hasDirectives[name], function(directiveFactory, index) {
               try {
                 var directive = $injector.invoke(directiveFactory);
+                var defaults = {
+                  priority: 0,
+                  name: name,
+                  require: directive.controller && directive.name,
+                  restrict: 'EA'
+                }
+                if (directive.bind) {
+                  addBindDefaults(defaults, name, directive);
+                }
                 if (isFunction(directive)) {
                   directive = { compile: valueFn(directive) };
                 } else if (!directive.compile && directive.link) {
                   directive.compile = valueFn(directive.link);
                 }
-                directive.priority = directive.priority || 0;
+                reverseExtend(directive, defaults);
                 directive.index = index;
-                directive.name = directive.name || name;
-                directive.require = directive.require || (directive.controller && directive.name);
-                directive.restrict = directive.restrict || 'EA';
                 var bindings = directive.$$bindings =
                     parseDirectiveBindings(directive, directive.name);
                 if (isObject(bindings.isolateScope)) {
@@ -834,6 +840,24 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       forEach(name, reverseParams(registerDirective));
     }
     return this;
+    
+    function addBindDefaults(defaults, name, directive) {
+     return angular.extend(defaults, { 
+       restrict: 'E', 
+       controller: function() {}, 
+       controllerAs: name,
+       scope: {},
+       bindToController: directive.bind
+     });
+    }
+    
+    function reverseExtend(dest, defaults) {
+      forEach(defaults, function(val, name) {
+        if (!isDefined(dest[name])) {
+          dest[name] = val;
+        }
+      });
+    }
   };
 
 
