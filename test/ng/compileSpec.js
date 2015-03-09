@@ -147,6 +147,7 @@ describe('$compile', function() {
 
 
   describe('configuration', function() {
+
     it('should register a directive', function() {
       module(function() {
         directive('div', function(log) {
@@ -198,6 +199,15 @@ describe('$compile', function() {
         expect(function() {
           directive('hasOwnProperty', function() { });
         }).toThrowMinErr('ng','badname', "hasOwnProperty is not a valid directive name");
+      });
+      inject(function($compile) {});
+    });
+
+    it('should throw an exception if a directive name starts with a non-lowercase letter', function() {
+      module(function() {
+        expect(function() {
+          directive('BadDirectiveName', function() { });
+        }).toThrowMinErr('$compile','baddir', "Directive name 'BadDirectiveName' is invalid. The first character must be a lowercase letter");
       });
       inject(function($compile) {});
     });
