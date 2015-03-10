@@ -1034,18 +1034,31 @@ function $RootScopeProvider() {
        * @returns {*} The result of evaluating the expression.
        */
       $apply: function(expr) {
+        var abortApply = false;
+        var scopeForDigest = $rootScope;
+        var currentScope = this;
+
         try {
           beginPhase('$apply');
-          return this.$eval(expr);
+          return this.$eval(expr, {
+            $abortApply: function() {
+              abortApply = true;
+            },
+            $partialDigest: function(scope) {
+              scopeForDigest = scope || currentScope;
+            }
+          });
         } catch (e) {
           $exceptionHandler(e);
         } finally {
           clearPhase();
-          try {
-            $rootScope.$digest();
-          } catch (e) {
-            $exceptionHandler(e);
-            throw e;
+          if (!abortApply) {
+            try {
+              scopeForDigest.$digest();
+            } catch (e) {
+              $exceptionHandler(e);
+              throw e;
+            }
           }
         }
       },

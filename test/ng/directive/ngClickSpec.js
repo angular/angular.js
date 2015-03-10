@@ -23,4 +23,24 @@ describe('ngClick', function() {
     browserTrigger(element, 'click');
     expect($rootScope.event).toBeDefined();
   }));
+
+  it('should abort apply if abort argument is invoked', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-click="a = 1; $abortApply()">{{a}}</div>')($rootScope);
+    $rootScope.$digest();
+
+    browserTrigger(element, 'click');
+    expect(element.text()).toBe('');
+  }));
+
+  it('should digest locally if $partialDigest is invoked', inject(function($rootScope, $compile) {
+    var scope = $rootScope.$new();
+    element = $compile('<div ng-click="a = 1; $partialDigest()">{{a}}</div>')(scope);
+    $rootScope.$digest();
+
+    var watchSpy = jasmine.createSpy('watchSpy');
+    $rootScope.$watch(watchSpy);
+    browserTrigger(element, 'click');
+    expect(element.text()).toBe('1');
+    expect(watchSpy).not.toHaveBeenCalled();
+  }));
 });

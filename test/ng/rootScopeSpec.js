@@ -1398,6 +1398,39 @@ describe('Scope', function() {
       expect(log).toEqual('1');
     }));
 
+    it('should abort apply if abort argument is invoked', inject(function($rootScope) {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      $rootScope.$watch(watchSpy);
+      $rootScope.$apply('$abortApply()');
+      expect(watchSpy).not.toHaveBeenCalled();
+    }));
+
+    it('should perform digest locally if $partialDigest is invoked', inject(function($rootScope) {
+      var watchRootSpy = jasmine.createSpy('watchRootSpy');
+      var watchSpy = jasmine.createSpy('watchSpy');
+      var child = $rootScope.$new();
+
+      $rootScope.$watch(watchRootSpy);
+      child.$watch(watchSpy);
+      child.$apply('$partialDigest()');
+
+      expect(watchRootSpy).not.toHaveBeenCalled();
+      expect(watchSpy).toHaveBeenCalled();
+    }));
+
+    it('should perform digest on specific scope', inject(function($rootScope) {
+      var watchRootSpy = jasmine.createSpy('watchRootSpy');
+      var watchSpy = jasmine.createSpy('watchSpy');
+      var child = $rootScope.$new();
+      var grandChild = child.$new();
+
+      $rootScope.$watch(watchRootSpy);
+      child.$watch(watchSpy);
+      grandChild.$apply('$partialDigest($parent)');
+
+      expect(watchRootSpy).not.toHaveBeenCalled();
+      expect(watchSpy).toHaveBeenCalled();
+    }));
 
     it('should catch exceptions', function() {
       module(function($exceptionHandlerProvider) {
