@@ -362,8 +362,6 @@ function baseExtend(dst, objs, deep) {
  *
  * @param {Object} dst Destination object.
  * @param {...Object} src Source object(s).
- * @param {boolean=} deep if the last parameter is set to `true`, objects are recursively merged
- *    (deep copy). Defaults to `false`.
  * @returns {Object} Reference to `dst`.
  */
 function extend(dst) {
