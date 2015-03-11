@@ -82,7 +82,7 @@ on the service.
 ### Registering Services
 
 Services are registered to modules via the {@link angular.Module Module API}.
-Typically you use the {@link angular.module Module#factory} API to register a service:
+Typically you use the {@link angular.Module#factory Module factory} API to register a service:
 
 ```js
 var myModule = angular.module('myModule', []);
