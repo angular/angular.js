@@ -180,7 +180,6 @@ var ngPluralizeDirective = ['$locale', '$interpolate', '$log', function($locale,
       IS_WHEN = /^when(Minus)?(.+)$/;
 
   return {
-    restrict: 'EA',
     link: function(scope, element, attr) {
       var numberExp = attr.count,
           whenExp = attr.$attr.when && element.attr(attr.$attr.when), // we have {{}} in attrs
