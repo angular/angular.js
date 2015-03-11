@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Friidaach",
       "Samsdaach"
     ],
+    "ERANAMES": [
+      "v\u00fcr Chrestus",
+      "noh Chrestus"
+    ],
+    "ERAS": [
+      "v. Chr.",
+      "n. Chr."
+    ],
     "MONTH": [
       "Jannewa",
       "F\u00e4browa",

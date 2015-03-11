@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Mderot ee sapa",
       "Mderot ee kwe"
     ],
+    "ERANAMES": [
+      "Kabla ya Christo",
+      "Baada ya Christo"
+    ],
+    "ERAS": [
+      "KK",
+      "BK"
+    ],
     "MONTH": [
       "Lapa le obo",
       "Lapa le waare",

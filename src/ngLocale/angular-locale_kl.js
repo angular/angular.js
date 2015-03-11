@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "tallimanngorneq",
       "arfininngorneq"
     ],
+    "ERANAMES": [
+      "Kristusip inunngornerata siornagut",
+      "Kristusip inunngornerata kingornagut"
+    ],
+    "ERAS": [
+      "Kr.in.si.",
+      "Kr.in.king."
+    ],
     "MONTH": [
       "januari",
       "februari",

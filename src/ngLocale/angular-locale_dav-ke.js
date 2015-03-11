@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Kuramuka kasanu",
       "Kifula nguwo"
     ],
+    "ERANAMES": [
+      "Kabla ya Kristo",
+      "Baada ya Kristo"
+    ],
+    "ERAS": [
+      "KK",
+      "BK"
+    ],
     "MONTH": [
       "Mori ghwa imbiri",
       "Mori ghwa kawi",

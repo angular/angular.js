@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Aneg 6",
       "Aneg 7"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
     "MONTH": [
       "im\u0259g mbegtug",
       "imeg \u00e0b\u00f9b\u00ec",

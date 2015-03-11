@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Wetano",
       "Jumamosi"
     ],
+    "ERANAMES": [
+      "Mbere ya Krist\u0169",
+      "Nyuma ya Krist\u0169"
+    ],
+    "ERAS": [
+      "MK",
+      "NK"
+    ],
     "MONTH": [
       "Januar\u0129",
       "Feburuar\u0129",

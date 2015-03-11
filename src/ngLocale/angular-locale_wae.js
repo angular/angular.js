@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Fritag",
       "Sam\u0161tag"
     ],
+    "ERANAMES": [
+      "v. Chr.",
+      "n. Chr"
+    ],
+    "ERAS": [
+      "v. Chr.",
+      "n. Chr"
+    ],
     "MONTH": [
       "Jenner",
       "Hornig",

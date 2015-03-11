@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "bearjadat",
       "l\u00e1vvardat"
     ],
+    "ERANAMES": [
+      "ovdal Kristtusa",
+      "ma\u014b\u014bel Kristtusa"
+    ],
+    "ERAS": [
+      "o.Kr.",
+      "m.Kr."
+    ],
     "MONTH": [
       "o\u0111\u0111ajagem\u00e1nnu",
       "guovvam\u00e1nnu",

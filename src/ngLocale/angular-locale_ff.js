@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "mawnde",
       "hoore-biir"
     ],
+    "ERANAMES": [
+      "Hade Iisa",
+      "Caggal Iisa"
+    ],
+    "ERAS": [
+      "H-I",
+      "C-I"
+    ],
     "MONTH": [
       "siilo",
       "colte",

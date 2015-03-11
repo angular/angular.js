@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Labotlhano",
       "Matlhatso"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
     "MONTH": [
       "Ferikgong",
       "Tlhakole",

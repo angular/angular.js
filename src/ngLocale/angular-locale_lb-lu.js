@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Freideg",
       "Samschdeg"
     ],
+    "ERANAMES": [
+      "v. Chr.",
+      "n. Chr."
+    ],
+    "ERAS": [
+      "v. Chr.",
+      "n. Chr."
+    ],
     "MONTH": [
       "Januar",
       "Februar",

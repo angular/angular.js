@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Chishanu",
       "Sabudu"
     ],
+    "ERANAMES": [
+      "Antes de Cristo",
+      "Anno Domini"
+    ],
+    "ERAS": [
+      "AC",
+      "AD"
+    ],
     "MONTH": [
       "Janeiro",
       "Fevreiro",

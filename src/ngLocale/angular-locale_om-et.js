@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Jimaata",
       "Sanbata"
     ],
+    "ERANAMES": [
+      "KD",
+      "KB"
+    ],
+    "ERAS": [
+      "KD",
+      "KB"
+    ],
     "MONTH": [
       "Amajjii",
       "Guraandhala",

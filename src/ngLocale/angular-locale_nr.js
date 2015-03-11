@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "ngoLesihlanu",
       "umGqibelo"
     ],
+    "ERANAMES": [
+      "BC",
+      "AD"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
     "MONTH": [
       "Janabari",
       "uFeberbari",

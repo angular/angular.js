@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "e premte",
       "e shtun\u00eb"
     ],
+    "ERANAMES": [
+      "para er\u00ebs s\u00eb re",
+      "er\u00ebs s\u00eb re"
+    ],
+    "ERAS": [
+      "p.e.r.",
+      "e.r."
+    ],
     "MONTH": [
       "janar",
       "shkurt",

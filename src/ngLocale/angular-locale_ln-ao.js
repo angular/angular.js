@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "mok\u0254l\u0254 ya m\u00edt\u00e1no",
       "mp\u0254\u0301s\u0254"
     ],
+    "ERANAMES": [
+      "Yambo ya Y\u00e9zu Kr\u00eds",
+      "Nsima ya Y\u00e9zu Kr\u00eds"
+    ],
+    "ERAS": [
+      "lib\u00f3so ya",
+      "nsima ya Y"
+    ],
     "MONTH": [
       "s\u00e1nz\u00e1 ya yambo",
       "s\u00e1nz\u00e1 ya m\u00edbal\u00e9",

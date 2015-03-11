@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "Po\u02bbalima",
       "Po\u02bbaono"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
     "MONTH": [
       "Ianuali",
       "Pepeluali",

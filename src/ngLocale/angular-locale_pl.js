@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "pi\u0105tek",
       "sobota"
     ],
+    "ERANAMES": [
+      "p.n.e.",
+      "n.e."
+    ],
+    "ERAS": [
+      "p.n.e.",
+      "n.e."
+    ],
     "MONTH": [
       "stycznia",
       "lutego",

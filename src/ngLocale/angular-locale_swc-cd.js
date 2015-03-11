@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "siku ya tanu",
       "siku ya sita"
     ],
+    "ERANAMES": [
+      "mbele ya Yezu Kristo",
+      "kisha ya Yezu Kristo"
+    ],
+    "ERAS": [
+      "mbele ya Y",
+      "kisha ya Y"
+    ],
     "MONTH": [
       "mwezi ya kwanja",
       "mwezi ya pili",

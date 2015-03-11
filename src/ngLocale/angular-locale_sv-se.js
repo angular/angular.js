@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "fredag",
       "l\u00f6rdag"
     ],
+    "ERANAMES": [
+      "f\u00f6re Kristus",
+      "efter Kristus"
+    ],
+    "ERAS": [
+      "f.Kr.",
+      "e.Kr."
+    ],
     "MONTH": [
       "januari",
       "februari",

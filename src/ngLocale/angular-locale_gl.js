@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "venres",
       "s\u00e1bado"
     ],
+    "ERANAMES": [
+      "antes de Cristo",
+      "despois de Cristo"
+    ],
+    "ERAS": [
+      "a.C.",
+      "d.C."
+    ],
     "MONTH": [
       "xaneiro",
       "febreiro",

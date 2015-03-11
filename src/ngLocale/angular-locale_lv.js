@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "piektdiena",
       "sestdiena"
     ],
+    "ERANAMES": [
+      "pirms m\u016bsu \u0113ras",
+      "m\u016bsu \u0113r\u0101"
+    ],
+    "ERAS": [
+      "p.m.\u0113.",
+      "m.\u0113."
+    ],
     "MONTH": [
       "janv\u0101ris",
       "febru\u0101ris",

@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "vineri",
       "s\u00e2mb\u0103t\u0103"
     ],
+    "ERANAMES": [
+      "\u00eenainte de Hristos",
+      "dup\u0103 Hristos"
+    ],
+    "ERAS": [
+      "\u00ee.Hr.",
+      "d.Hr."
+    ],
     "MONTH": [
       "ianuarie",
       "februarie",

@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "ostirala",
       "larunbata"
     ],
+    "ERANAMES": [
+      "K.a.",
+      "K.o."
+    ],
+    "ERAS": [
+      "K.a.",
+      "K.o."
+    ],
     "MONTH": [
       "urtarrilak",
       "otsailak",

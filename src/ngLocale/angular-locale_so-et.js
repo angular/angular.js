@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Jimco",
       "Sabti"
     ],
+    "ERANAMES": [
+      "Ciise ka hor (CS)",
+      "Ciise ka dib (CS)"
+    ],
+    "ERAS": [
+      "CK",
+      "CD"
+    ],
     "MONTH": [
       "Bisha Koobaad",
       "Bisha Labaad",

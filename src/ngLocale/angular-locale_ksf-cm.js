@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "j\u00famb\u00e1",
       "samd\u00ed"
     ],
+    "ERANAMES": [
+      "di Y\u025b\u0301sus ak\u00e1 y\u00e1l\u025b",
+      "c\u00e1m\u025b\u025bn k\u01dd k\u01ddb\u0254pka Y"
+    ],
+    "ERAS": [
+      "d.Y.",
+      "k.Y."
+    ],
     "MONTH": [
       "\u014bw\u00ed\u00ed a nt\u0254\u0301nt\u0254",
       "\u014bw\u00ed\u00ed ak\u01dd b\u025b\u0301\u025b",

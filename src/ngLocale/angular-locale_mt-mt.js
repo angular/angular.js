@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "Il-\u0120img\u0127a",
       "Is-Sibt"
     ],
+    "ERANAMES": [
+      "Qabel Kristu",
+      "Wara Kristu"
+    ],
+    "ERAS": [
+      "QK",
+      "WK"
+    ],
     "MONTH": [
       "Jannar",
       "Frar",

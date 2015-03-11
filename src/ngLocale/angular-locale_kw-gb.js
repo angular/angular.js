@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "De Gwener",
       "De Sadorn"
     ],
+    "ERANAMES": [
+      "RC",
+      "AD"
+    ],
+    "ERAS": [
+      "RC",
+      "AD"
+    ],
     "MONTH": [
       "Mys Genver",
       "Mys Whevrel",

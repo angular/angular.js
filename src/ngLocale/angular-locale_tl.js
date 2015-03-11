@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "Biyernes",
       "Sabado"
     ],
+    "ERANAMES": [
+      "BC",
+      "AD"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
     "MONTH": [
       "Enero",
       "Pebrero",

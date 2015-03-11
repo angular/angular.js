@@ -34,6 +34,14 @@ $provide.value("$locale", {
       "juma",
       "sibiri"
     ],
+    "ERANAMES": [
+      "jezu krisiti \u0272\u025b",
+      "jezu krisiti mink\u025b"
+    ],
+    "ERAS": [
+      "J.-C. \u0272\u025b",
+      "ni J.-C."
+    ],
     "MONTH": [
       "zanwuye",
       "feburuye",

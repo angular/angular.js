@@ -16,6 +16,14 @@ $provide.value("$locale", {
       "\u0a38\u0a3c\u0a41\u0a71\u0a15\u0a30\u0a35\u0a3e\u0a30",
       "\u0a38\u0a3c\u0a28\u0a3f\u0a71\u0a1a\u0a30\u0a35\u0a3e\u0a30"
     ],
+    "ERANAMES": [
+      "\u0a08\u0a38\u0a35\u0a40 \u0a2a\u0a42\u0a30\u0a35",
+      "\u0a08\u0a38\u0a35\u0a40 \u0a38\u0a70\u0a28"
+    ],
+    "ERAS": [
+      "\u0a08. \u0a2a\u0a42.",
+      "\u0a38\u0a70\u0a28"
+    ],
     "MONTH": [
       "\u0a1c\u0a28\u0a35\u0a30\u0a40",
       "\u0a2b\u0a3c\u0a30\u0a35\u0a30\u0a40",
