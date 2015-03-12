@@ -179,11 +179,11 @@ The following graphic shows how everything works together after we introduced th
 
 <img style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-databinding2.png">
 
-## View independent business logic: Services
+## View-independent business logic: Services
 
 Right now, the `InvoiceController` contains all logic of our example. When the application grows it
-is a good practice to move view independent logic from the controller into a so called
-<a name="service">"{@link services service}"</a>, so it can be reused by other parts
+is a good practice to move view-independent logic from the controller into a
+<a name="service">{@link services service}</a>, so it can be reused by other parts
 of the application as well. Later on, we could also change that service to load the exchange rates
 from the web, e.g. by calling the Yahoo Finance API, without changing the controller.
 
