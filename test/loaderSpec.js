@@ -41,10 +41,12 @@ describe('module loader', function() {
       controller('ctrl', 'ccc').
       config('init2').
       constant('abc', 123).
+      decorator('dk', 'dv').
       run('runBlock')).toBe(myModule);
 
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
+      ['$provide', 'decorator', ['dk', 'dv']],
       ['$provide', 'constant', ['abc', 123]],
       ['$provide', 'provider', ['sk', 'sv']],
       ['$provide', 'factory', ['fk', 'fv']],
