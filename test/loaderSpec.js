@@ -32,6 +32,7 @@ describe('module loader', function() {
     var myModule = window.angular.module('my', ['other'], 'config');
 
     expect(myModule.
+      decorator('dk', 'dv').
       provider('sk', 'sv').
       factory('fk', 'fv').
       service('a', 'aa').
@@ -41,7 +42,6 @@ describe('module loader', function() {
       controller('ctrl', 'ccc').
       config('init2').
       constant('abc', 123).
-      decorator('dk', 'dv').
       run('runBlock')).toBe(myModule);
 
     expect(myModule.requires).toEqual(['other']);
