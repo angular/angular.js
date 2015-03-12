@@ -192,7 +192,7 @@ function setupModuleLoader(window) {
            * See {@link auto.$provide#constant $provide.constant()}.
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
-          
+
           /**
            * @ngdoc method
            * @name angular.Module#decorator
