@@ -2462,6 +2462,14 @@ describe('$location', function() {
     it('should throw on url(urlString, stateObject)', function() {
       expectThrowOnStateChange(locationUrl);
     });
+
+    it('should allow navigating outside the original base URL', function() {
+      locationUrl = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      locationUrl.$$parse('http://server/next/index.html');
+      expect(locationUrl.url()).toBe('');
+      expect(locationUrl.absUrl()).toBe('http://server/next/index.html');
+    });
   });
 
 
