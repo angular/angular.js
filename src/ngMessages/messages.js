@@ -531,6 +531,8 @@ angular.module('ngMessages', [])
     * must be situated since it determines which messages are visible based on the state
     * of the provided key/value map that `ngMessages` listens on.
     *
+    * Typical cases of using `ngMessage` are documented {@link module:ngMessages here}.
+    *
     * @usage
     * ```html
     * <!-- using attribute directives -->
@@ -545,8 +547,6 @@ angular.module('ngMessages', [])
     *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
     * </ng-messages>
     * ```
-    *
-    * {@link module:ngMessages Click here} to learn more about `ngMessages` and `ngMessage`.
     *
     * @param {expression} ngMessage|when a string value corresponding to the message key.
     */
