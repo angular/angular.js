@@ -1764,7 +1764,7 @@ describe('ngMock', function() {
       module(function($controllerProvider) {
         $controllerProvider.register('testCtrl', function() {
           called = true;
-          expect(this.data).toEqual(data);
+          expect(this.data).toBe(data);
         });
       });
       inject(function($controller, $rootScope) {
