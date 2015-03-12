@@ -46,8 +46,8 @@ describe('module loader', function() {
 
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
-      ['$provide', 'decorator', ['dk', 'dv']],
       ['$provide', 'constant', ['abc', 123]],
+      ['$provide', 'decorator', ['dk', 'dv']],
       ['$provide', 'provider', ['sk', 'sv']],
       ['$provide', 'factory', ['fk', 'fv']],
       ['$provide', 'service', ['a', 'aa']],
