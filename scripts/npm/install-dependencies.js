@@ -2,44 +2,44 @@
 
 'use strict';
 
-var rimraf = require('rimraf');
 var shell = require('shelljs');
-var q = require('q');
-var child_process = require('child_process');
 
 var SHRINKWRAP_FILE = 'npm-shrinkwrap.json';
 var SHRINKWRAP_CACHED_FILE = 'node_modules/npm-shrinkwrap.cached.json';
 
+
+function shrinkwrapChanged() {
+  return shell.exec('diff ' + SHRINKWRAP_FILE + ' ' + SHRINKWRAP_CACHED_FILE, {silent: true}).output;
+}
+
 function cleanNodeModules() {
-  if (process.platform === "win32") {
-    var deferred = q.defer();
-    rimraf('node_modules', function(error) {
-      if (error) {
-        deferred.reject(new Error(error));
-      } else {
-        console.log('cleaned node_modules using rimraf');
-        deferred.resolve();
-      }
-    });
-
-    return deferred.promise;
+  if (process.platform !== "win32") {
+    console.time('shell.rm');
+    shell.rm('-rf', 'node_modules');
+    console.timeEnd('shell.rm');
+    console.log('cleaned node_modules using rimraf');
+  } else {
+    console.time('rm -rf');
+    shell.exec('rm -rf node_modules');
+    console.timeEnd('rm -rf');
+    console.log('cleaned node_modules using rm -rf');
   }
+}
 
-  shell.rm('-rf', 'node_modules');
-  console.log('cleaned node_modules using rm -rf');
+function npmInstall() {
+  shell.exec('npm install');
+  shell.cp(SHRINKWRAP_FILE, SHRINKWRAP_CACHED_FILE);
 }
 
 function installDependencies() {
 
-  if (!shell.exec('diff ' + SHRINKWRAP_FILE + ' ' + SHRINKWRAP_CACHED_FILE, {silent: true}).output) {
+  if (!shrinkwrapChanged()) {
     console.log('No shrinkwrap changes detected. npm install will be skipped...');
   } else {
     console.log('Blowing away node_modules and reinstalling npm dependencies...');
-    q.when(cleanNodeModules()).then(function() {
-      shell.exec('npm install');
-      shell.cp(SHRINKWRAP_FILE, SHRINKWRAP_CACHED_FILE);
-      console.log('npm install successful!');
-    });
+    cleanNodeModules();
+    npmInstall();
+    console.log('npm install successful!');
   }
 }
 
