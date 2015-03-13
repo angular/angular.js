@@ -155,27 +155,39 @@ describe('$aria', function() {
     });
 
     it('should attach itself to role="radio"', function() {
-      scope.$apply("val = 'one'");
-      compileElement('<div role="radio" ng-model="val" value="{{val}}"></div>');
+      scope.val = 'one';
+      compileElement('<div role="radio" ng-model="val" value="one"></div>');
       expect(element.attr('aria-checked')).toBe('true');
+
+      scope.$apply("val = 'two'");
+      expect(element.attr('aria-checked')).toBe('false');
     });
 
     it('should attach itself to role="checkbox"', function() {
       scope.val = true;
       compileElement('<div role="checkbox" ng-model="val"></div>');
       expect(element.attr('aria-checked')).toBe('true');
+
+      scope.$apply('val = false');
+      expect(element.attr('aria-checked')).toBe('false');
     });
 
     it('should attach itself to role="menuitemradio"', function() {
       scope.val = 'one';
-      compileElement('<div role="menuitemradio" ng-model="val" value="{{val}}"></div>');
+      compileElement('<div role="menuitemradio" ng-model="val" value="one"></div>');
       expect(element.attr('aria-checked')).toBe('true');
+
+      scope.$apply("val = 'two'");
+      expect(element.attr('aria-checked')).toBe('false');
     });
 
     it('should attach itself to role="menuitemcheckbox"', function() {
       scope.val = true;
       compileElement('<div role="menuitemcheckbox" ng-model="val"></div>');
       expect(element.attr('aria-checked')).toBe('true');
+
+      scope.$apply('val = false');
+      expect(element.attr('aria-checked')).toBe('false');
     });
 
     it('should not attach itself if an aria-checked value is already present', function() {
