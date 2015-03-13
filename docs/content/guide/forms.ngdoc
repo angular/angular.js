@@ -3,6 +3,8 @@
 @sortOrder 290
 @description
 
+# Forms
+
 Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
 A Form is a collection of controls for the purpose of grouping related controls together.
 
@@ -14,7 +16,7 @@ be circumvented and thus can not be trusted. Server-side validation is still nec
 secure application.
 
 
-# Simple form
+## Simple form
 The key directive in understanding two-way data-binding is {@link ng.directive:ngModel ngModel}.
 The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view,
 as well as view to the model. In addition it provides an {@link ngModel.NgModelController API}
@@ -62,7 +64,7 @@ For example: inputs of type `email` must have a value in the form of `user@domai
 
 
 
-# Using CSS classes
+## Using CSS classes
 
 To allow styling of form as well as controls, `ngModel`  adds these CSS classes:
 
@@ -126,7 +128,7 @@ and failing to satisfy its validity.
 
 
 
-# Binding to form and control state
+## Binding to form and control state
 
 A form is an instance of {@link form.FormController FormController}.
 The form instance can optionally be published into the scope using the `name` attribute.
@@ -208,7 +210,7 @@ didn't interact with a control
 
 
 
-# Custom model update triggers
+## Custom model update triggers
 
 By default, any change to the content will trigger a model update and form validation. You can
 override this behavior using the {@link ng.directive:ngModelOptions ngModelOptions} directive to
@@ -249,7 +251,7 @@ will update the model only when the control loses focus (blur event).
 
 
 
-# Non-immediate (debounced) model updates
+## Non-immediate (debounced) model updates
 
 You can delay the model update/validation by using the `debounce` key with the
 {@link ng.directive:ngModelOptions ngModelOptions} directive. This delay will also apply to
@@ -290,7 +292,7 @@ after last change.
   </file>
 </example>
 
-# Custom Validation
+## Custom Validation
 
 Angular provides basic implementation for most common HTML5 {@link ng.directive:input input}
 types: ({@link input[text] text}, {@link input[number] number}, {@link input[url] url},
@@ -407,7 +409,7 @@ In the following example we create two directives:
   </file>
 </example>
 
-# Modifying built-in validators
+## Modifying built-in validators
 
 Since Angular itself uses `$validators`, you can easily replace or remove built-in validators,
 should you find it necessary. The following example shows you how to overwrite the email validator
@@ -452,7 +454,7 @@ Note that you can alternatively use `ng-pattern` to further restrict the validat
 </example>
 
 
-# Implementing custom form controls (using `ngModel`)
+## Implementing custom form controls (using `ngModel`)
 Angular implements all of the basic HTML form controls ({@link ng.directive:input input},
 {@link ng.directive:select select}, {@link ng.directive:textarea textarea}),
 which should be sufficient for most cases. However, if you need more flexibility,
