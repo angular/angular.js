@@ -4197,6 +4197,130 @@ describe('$compile', function() {
     });
 
 
+    it('should respect explicit return value from controller', function() {
+      module(function() {
+        directive('logControllerProp', function(log) {
+          return {
+            controller: function($scope) {
+              this.foo = 'baz'; // value should not be used.
+              return {foo: 'bar'};
+            },
+            link: function(scope, element, attrs, controller) {
+              log(controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
+        expect(log).toEqual('bar');
+        expect(element.data('$logControllerPropController').foo).toEqual('bar');
+      });
+    });
+
+
+    it('should get explicit return value of required parent controller', function() {
+      module(function() {
+        directive('nested', function(log) {
+          return {
+            require: '^^?nested',
+            controller: function() {
+              return {foo: 'bar'};
+            },
+            link: function(scope, element, attrs, controller) {
+              log(!!controller && controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div nested><div nested></div></div>')($rootScope);
+
+        expect(log).toEqual('bar; false');
+      });
+    });
+
+
+    it('should respect explicit controller return value when using controllerAs', function() {
+      module(function() {
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            scope: {},
+            controller: function() {
+              this.name = 'lucas';
+              return {name: 'george'};
+            },
+            controllerAs: 'mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>template:{{mainCtrl.name}}</span>');
+        element = $compile('<main/>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('template:george');
+      });
+    });
+
+
+    it('transcluded children should receive explicit return value of parent controller', function() {
+      var expectedController;
+      module(function() {
+        directive('nester', valueFn({
+          transclude: 'content',
+          controller: function($transclude) {
+            this.foo = 'baz';
+            expectedController = {transclude:$transclude, foo: 'bar'};
+            return expectedController;
+          },
+          link: function(scope, el, attr, ctrl) {
+            ctrl.transclude(cloneAttach);
+            function cloneAttach(clone) {
+              el.append(clone);
+            }
+          }
+        }));
+        directive('nested', function(log) {
+          return {
+            require: '^^nester',
+            link: function(scope, element, attrs, controller) {
+              expect(controller).toBe(expectedController);
+              log('done');
+            }
+          };
+        });
+      });
+      inject(function(log, $compile) {
+        element = $compile('<div nester><div nested></div></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('done');
+      });
+    });
+
+
+    it('explicit controller return values are ignored if they are primitives', function() {
+      module(function() {
+        directive('logControllerProp', function(log) {
+          return {
+            controller: function($scope) {
+              this.foo = 'baz'; // value *will* be used.
+              return 'bar';
+            },
+            link: function(scope, element, attrs, controller) {
+              log(controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
+        expect(log).toEqual('baz');
+        expect(element.data('$logControllerPropController').foo).toEqual('baz');
+      });
+    });
+
+
     it('should get required parent controller', function() {
       module(function() {
         directive('nested', function(log) {
