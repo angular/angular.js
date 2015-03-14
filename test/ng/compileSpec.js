@@ -4197,6 +4197,27 @@ describe('$compile', function() {
     });
 
 
+    it('should respect controller return value', function() {
+      module(function() {
+        directive('logControllerProp', function(log) {
+          return {
+            controller: function($scope) {
+              this.foo = 'baz'; // value should not be used.
+              return {foo: 'bar'};
+            },
+            link: function(scope, element, attrs, controller) {
+              log(controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
+        expect(log).toEqual('bar');
+      });
+    });
+
+
     it('should get required parent controller', function() {
       module(function() {
         directive('nested', function(log) {
