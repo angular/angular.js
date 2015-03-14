@@ -1967,13 +1967,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           for (i in elementControllers) {
             controller = elementControllers[i];
             var controllerResult = controller();
-            if (controllerResult !== controller.instance &&
-                controller === controllerForBindings) {
-              // Remove and re-install bindToController bindings
-              thisLinkFn.$$destroyBindings();
-              thisLinkFn.$$destroyBindings =
+            if (controllerResult !== controller.instance && (isObject(controllerResult) || isFunction(controllerResult))) {
+              controller.instance = controllerResult;
+              $element.data('$' + directive.name + 'Controller', controllerResult);
+              if (controller === controllerForBindings) {
+                // Remove and re-install bindToController bindings
+                thisLinkFn.$$destroyBindings();
+                thisLinkFn.$$destroyBindings =
                   initializeDirectiveBindings(scope, attrs, controllerResult,
-                                              bindings, scopeDirective);
+                    bindings, scopeDirective);
+              }
             }
           }
         }

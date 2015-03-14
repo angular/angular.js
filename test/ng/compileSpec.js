@@ -4214,6 +4214,7 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
         expect(log).toEqual('bar');
+        expect(element.data('$logControllerPropController').foo).toEqual('bar');
       });
     });
 
