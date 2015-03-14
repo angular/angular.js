@@ -15,14 +15,14 @@ development.
 production.
 
 To point your code to an angular script on the Google CDN server, use the following template.  This
-example points to the minified version 1.2.0:
+example points to the minified version 1.3.14:
 
 ```
   <!doctype html>
   <html ng-app>
     <head>
       <title>My Angular App</title>
-      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
     </head>
     <body>
     </body>
