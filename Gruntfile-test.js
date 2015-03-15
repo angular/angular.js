@@ -7,4 +7,4 @@ module.exports = function(grunt) {
   grunt.registerTask('npm-install', function() {
     npmInstall.installDependencies();
   });
-}
+};
