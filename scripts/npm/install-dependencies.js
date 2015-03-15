@@ -3,6 +3,7 @@
 'use strict';
 
 var shell = require('shelljs');
+var rimraf = require('rimraf');
 
 var SHRINKWRAP_FILE = 'npm-shrinkwrap.json';
 var SHRINKWRAP_CACHED_FILE = 'node_modules/npm-shrinkwrap.cached.json';
@@ -13,10 +14,10 @@ function shrinkwrapChanged() {
 }
 
 function cleanNodeModules() {
-  if (process.platform !== "win32") {
-    console.time('shell.rm');
-    shell.rm('-rf', 'node_modules');
-    console.timeEnd('shell.rm');
+  if (process.platform == "win32") {
+    console.time('rimraf');
+    rimraf.sync('node_modules');
+    console.timeEnd('rimraf');
     console.log('cleaned node_modules using rimraf');
   } else {
     console.time('rm -rf');
