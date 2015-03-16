@@ -1967,7 +1967,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           for (i in elementControllers) {
             controller = elementControllers[i];
             var controllerResult = controller();
-            if (controllerResult !== controller.instance && (isObject(controllerResult) || isFunction(controllerResult))) {
+            if (controllerResult !== controller.instance) {
               controller.instance = controllerResult;
               $element.data('$' + directive.name + 'Controller', controllerResult);
               if (controller === controllerForBindings) {
