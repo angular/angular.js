@@ -432,6 +432,34 @@ describe('$http', function() {
           var httpPromise = $http({url: '/url', method: 'GET'});
           expect(httpPromise.success(callback)).toBe(httpPromise);
         });
+
+
+        it('should error if the callback is not a function', function() {
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).success();
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).success(undefined);
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).success(null);
+          }).toThrowMinErr('ng', 'areq');
+
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).success({});
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).success([]);
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).success('error');
+          }).toThrowMinErr('ng', 'areq');
+        });
       });
 
 
@@ -455,6 +483,34 @@ describe('$http', function() {
           $httpBackend.expect('GET', '/url').respond(543, 'bad error', {'request-id': '123'});
           var httpPromise = $http({url: '/url', method: 'GET'});
           expect(httpPromise.error(callback)).toBe(httpPromise);
+        });
+
+
+        it('should error if the callback is not a function', function() {
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).error();
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).error(undefined);
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).error(null);
+          }).toThrowMinErr('ng', 'areq');
+
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).error({});
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).error([]);
+          }).toThrowMinErr('ng', 'areq');
+
+          expect(function() {
+            $http({url: '/url', method: 'GET'}).error('error');
+          }).toThrowMinErr('ng', 'areq');
         });
       });
     });
