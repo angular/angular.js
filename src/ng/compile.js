@@ -1974,8 +1974,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // Remove and re-install bindToController bindings
                 thisLinkFn.$$destroyBindings();
                 thisLinkFn.$$destroyBindings =
-                  initializeDirectiveBindings(scope, attrs, controllerResult,
-                    bindings, scopeDirective);
+                  initializeDirectiveBindings(scope, attrs, controllerResult, bindings, scopeDirective);
               }
             }
           }

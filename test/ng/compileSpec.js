@@ -4219,6 +4219,28 @@ describe('$compile', function() {
     });
 
 
+    it('primitive controller return values are ignored', function() {
+      module(function() {
+        directive('logControllerProp', function(log) {
+          return {
+            controller: function($scope) {
+              this.foo = 'baz'; // value *will* be used.
+              return 'bar';
+            },
+            link: function(scope, element, attrs, controller) {
+              log(controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
+        expect(log).toEqual('baz');
+        expect(element.data('$logControllerPropController').foo).toEqual('baz');
+      });
+    });
+
+
     it('should get required parent controller', function() {
       module(function() {
         directive('nested', function(log) {
@@ -4234,6 +4256,28 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         element = $compile('<div nested><div nested></div></div>')($rootScope);
         expect(log).toEqual('true; false');
+      });
+    });
+
+
+    it('should get explicit return value of required parent controller', function() {
+      module(function() {
+        directive('nested', function(log) {
+          return {
+            require: '^^?nested',
+            controller: function() {
+              return {foo: 'bar'};
+            },
+            link: function(scope, element, attrs, controller) {
+              log(!!controller && controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div nested><div nested></div></div>')($rootScope);
+
+        expect(log).toEqual('bar; false');
       });
     });
 
@@ -4542,6 +4586,30 @@ describe('$compile', function() {
         element = $compile('<div main>transclude:{{mainCtrl.name}}</div>')($rootScope);
         $rootScope.$apply();
         expect(element.text()).toBe('template:lucas transclude:');
+      });
+    });
+
+
+    it('should respect explicit controller return value when using controllerAs', function() {
+      module(function() {
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            transclude: true,
+            scope: {},
+            controller: function() {
+              this.name = 'lucas';
+              return {name: 'george'};
+            },
+            controllerAs: 'mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>template:{{mainCtrl.name}} <div ng-transclude></div></span>');
+        element = $compile('<div main>transclude:{{mainCtrl.name}}</div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('template:george transclude:');
       });
     });
 
@@ -5544,6 +5612,41 @@ describe('$compile', function() {
           for (i = 0; i < cloneCount; i++) {
             expect(children.eq(i).data('$transcludeController')).toBeUndefined();
           }
+        });
+      });
+
+      it('should copy the explicit return value to all clones', function() {
+        module(function() {
+          directive('makeThree', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              this.foo = 'baz';
+              return {transclude:$transclude, foo: 'bar'};
+            },
+            link: function(scope, el, attr, ctrl) {
+              ctrl.transclude(cloneAttach);
+              ctrl.transclude(cloneAttach);
+              ctrl.transclude(cloneAttach);
+
+              function cloneAttach(clone) {
+                el.append(clone);
+              }
+            }
+          }));
+
+          directive('nested', function(log) {
+            return {
+              require: '^^makeThree',
+              link: function(scope, element, attrs, controller) {
+                log(controller.foo);
+              }
+            };
+          });
+        });
+        inject(function(log, $compile) {
+          element = $compile('<div make-three><div nested></div></div>')($rootScope);
+          $rootScope.$apply();
+          expect(log).toEqual('bar; bar; bar');
         });
       });
 
