@@ -812,6 +812,8 @@ function $HttpProvider() {
       }
 
       promise.success = function(fn) {
+        assertArgFn(fn, 'fn');
+
         promise.then(function(response) {
           fn(response.data, response.status, response.headers, config);
         });
@@ -819,6 +821,8 @@ function $HttpProvider() {
       };
 
       promise.error = function(fn) {
+        assertArgFn(fn, 'fn');
+
         promise.then(null, function(response) {
           fn(response.data, response.status, response.headers, config);
         });
