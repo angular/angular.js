@@ -9,6 +9,10 @@ while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
   let "counter++"
   if [ $counter -gt 240 ]; then
     echo "Timed out after 2 minutes waiting for browser provider ready file"
+    # We must manually print logs here because travis will not run
+    # after_script commands if the failure occurs before the script
+    # phase.
+    ./print_logs.sh
     exit 5
   fi
   sleep .5
