@@ -4198,45 +4198,56 @@ describe('$compile', function() {
 
 
     it('should respect explicit return value from controller', function() {
+      var expectedController;
       module(function() {
         directive('logControllerProp', function(log) {
           return {
             controller: function($scope) {
               this.foo = 'baz'; // value should not be used.
-              return {foo: 'bar'};
+              return expectedController = {foo: 'bar'};
             },
             link: function(scope, element, attrs, controller) {
-              log(controller.foo);
+              expect(expectedController).toBeDefined();
+              expect(controller).toBe(expectedController);
+              expect(controller.foo).toBe('bar');
+              log('done');
             }
           };
         });
       });
       inject(function(log, $compile, $rootScope) {
         element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
-        expect(log).toEqual('bar');
-        expect(element.data('$logControllerPropController').foo).toEqual('bar');
+        expect(log).toEqual('done');
+        expect(element.data('$logControllerPropController')).toBe(expectedController);
       });
     });
 
 
     it('should get explicit return value of required parent controller', function() {
+      var expectedController;
       module(function() {
         directive('nested', function(log) {
           return {
             require: '^^?nested',
             controller: function() {
-              return {foo: 'bar'};
+              if (!expectedController) expectedController = {foo: 'bar'};
+              return expectedController;
             },
             link: function(scope, element, attrs, controller) {
-              log(!!controller && controller.foo);
+              if (element.parent().length) {
+                expect(expectedController).toBeDefined();
+                expect(controller).toBe(expectedController);
+                expect(controller.foo).toBe('bar');
+                log('done');
+              }
             }
           };
         });
       });
       inject(function(log, $compile, $rootScope) {
         element = $compile('<div nested><div nested></div></div>')($rootScope);
-
-        expect(log).toEqual('bar; false');
+        expect(log).toEqual('done');
+        expect(element.data('$nestedController')).toBe(expectedController);
       });
     });
 
@@ -4268,11 +4279,10 @@ describe('$compile', function() {
       var expectedController;
       module(function() {
         directive('nester', valueFn({
-          transclude: 'content',
+          transclude: true,
           controller: function($transclude) {
             this.foo = 'baz';
-            expectedController = {transclude:$transclude, foo: 'bar'};
-            return expectedController;
+            return expectedController = {transclude:$transclude, foo: 'bar'};
           },
           link: function(scope, el, attr, ctrl) {
             ctrl.transclude(cloneAttach);
@@ -4285,6 +4295,7 @@ describe('$compile', function() {
           return {
             require: '^^nester',
             link: function(scope, element, attrs, controller) {
+              expect(controller).toBeDefined();
               expect(controller).toBe(expectedController);
               log('done');
             }
@@ -4294,7 +4305,8 @@ describe('$compile', function() {
       inject(function(log, $compile) {
         element = $compile('<div nester><div nested></div></div>')($rootScope);
         $rootScope.$apply();
-        expect(log).toEqual('done');
+        expect(log.toString()).toBe('done');
+        expect(element.data('$nesterController')).toBe(expectedController);
       });
     });
 
