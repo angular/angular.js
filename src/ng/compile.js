@@ -1960,19 +1960,21 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                       newIsolateScopeDirective, isolateScope);
         }
         if (elementControllers) {
-          // Initialize bindToController bindings for new/isolate scopes
-          var scopeDirective = newIsolateScopeDirective || newScopeDirective;
-          var bindings;
-          var controllerForBindings;
-          if (scopeDirective && elementControllers[scopeDirective.name]) {
-            bindings = scopeDirective.$$bindings.bindToController;
-            controller = elementControllers[scopeDirective.name];
+          for (i in elementControllers) {
+            // Initialize bindToController bindings for new/isolate scopes
+            var scopeDirective = newIsolateScopeDirective || controllerDirectives[i];
+            var bindings;
+            var controllerForBindings;
+            if (scopeDirective && elementControllers[scopeDirective.name]) {
+              bindings = scopeDirective.$$bindings.bindToController;
+              controller = elementControllers[scopeDirective.name];
 
-            if (controller && controller.identifier && bindings) {
-              controllerForBindings = controller;
-              thisLinkFn.$$destroyBindings =
+              if (controller && controller.identifier && bindings) {
+                controllerForBindings = controller;
+                thisLinkFn.$$destroyBindings =
                   initializeDirectiveBindings(scope, attrs, controller.instance,
-                                              bindings, scopeDirective);
+                    bindings, scopeDirective);
+              }
             }
           }
           for (i in elementControllers) {
