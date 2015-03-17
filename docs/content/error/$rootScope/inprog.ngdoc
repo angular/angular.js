@@ -4,7 +4,7 @@
 @description
 
 At any point in time there can be only one `$digest` or `$apply` operation in progress. This is to
-prevent very hard to detect bugs from entering your application. The stack trace of this error
+prevent very hard bugs from entering your application. The stack trace of this error
 allows you to trace the origin of the currently executing `$apply` or `$digest` call, which caused
 the error.
 
