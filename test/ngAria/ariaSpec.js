@@ -598,7 +598,7 @@ describe('$aria', function() {
 
     var clickFn;
 
-    it('should a trigger click from the keyboard', function() {
+    it('should trigger a click from the keyboard', function() {
       scope.someAction = function() {};
 
       var elements = $compile('<section>' +
@@ -615,6 +615,28 @@ describe('$aria', function() {
 
       divElement.triggerHandler({type: 'keypress', keyCode: 32});
       liElement.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).toHaveBeenCalledWith('div');
+      expect(clickFn).toHaveBeenCalledWith('li');
+    });
+
+    it('should trigger a click in browsers that provide event.which instead of event.keyCode', function() {
+      scope.someAction = function() {};
+
+      var elements = $compile('<section>' +
+      '<div class="div-click" ng-click="someAction(\'div\')" tabindex="0"></div>' +
+      '<ul><li ng-click="someAction( \'li\')" tabindex="0"></li></ul>' +
+      '</section>')(scope);
+
+      scope.$digest();
+
+      clickFn = spyOn(scope, 'someAction');
+
+      var divElement = elements.find('div');
+      var liElement = elements.find('li');
+
+      divElement.triggerHandler({type: 'keypress', which: 32});
+      liElement.triggerHandler({type: 'keypress', which: 32});
 
       expect(clickFn).toHaveBeenCalledWith('div');
       expect(clickFn).toHaveBeenCalledWith('li');
