@@ -1970,26 +1970,25 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
         if (elementControllers) {
           // Initialize bindToController bindings for new/isolate scopes
-          var scopeDirective = newIsolateScopeDirective || newScopeDirective;
-          var bindings;
-          var controllerForBindings;
-          if (scopeDirective && elementControllers[scopeDirective.name]) {
-            bindings = scopeDirective.$$bindings.bindToController;
-            controller = elementControllers[scopeDirective.name];
-
-            if (controller && controller.identifier && bindings) {
-              controllerForBindings = controller;
-              thisLinkFn.$$destroyBindings =
-                  initializeDirectiveBindings(scope, attrs, controller.instance,
-                                              bindings, scopeDirective);
-            }
-          }
           for (i in elementControllers) {
+            var scopeDirective = newIsolateScopeDirective || controllerDirectives[i];
+            var bindings;
+            var controllerForBindings;
+            if (scopeDirective && elementControllers[scopeDirective.name]) {
+              bindings = scopeDirective.$$bindings.bindToController;
+              controller = elementControllers[scopeDirective.name];
+              if (controller && controller.identifier && bindings) {
+                controllerForBindings = controller;
+                thisLinkFn.$$destroyBindings =
+                    initializeDirectiveBindings(scope, attrs, controller.instance,
+                                                bindings, scopeDirective);
+              }
+            }
             controller = elementControllers[i];
             var controllerResult = controller();
             if (controllerResult !== controller.instance) {
               controller.instance = controllerResult;
-              $element.data('$' + directive.name + 'Controller', controllerResult);
+              $element.data('$' + controllerDirectives[i].name + 'Controller', controllerResult);
               if (controller === controllerForBindings) {
                 // Remove and re-install bindToController bindings
                 thisLinkFn.$$destroyBindings();
