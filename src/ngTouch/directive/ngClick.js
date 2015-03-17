@@ -52,7 +52,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   var MOVE_TOLERANCE = 12; // 12px seems to work in most mobile browsers.
   var PREVENT_DURATION = 2500; // 2.5 seconds maximum from preventGhostClick call to click
   var CLICKBUSTER_THRESHOLD = 25; // 25 pixels in any dimension is the limit for busting clicks.
-  var EVENT_REFIRE_THRESHOLD = 100; // 100ms is reasonable enough for accepting next event
+  var EVENT_REFIRE_THRESHOLD = 25; // 25ms is reasonable enough for accepting next event
 
   var ACTIVE_CLASS_NAME = 'ng-click-active';
   var lastPreventedTime;
