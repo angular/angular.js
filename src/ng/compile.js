@@ -1968,7 +1968,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (scopeDirective && elementControllers[scopeDirective.name]) {
               bindings = scopeDirective.$$bindings.bindToController;
               controller = elementControllers[scopeDirective.name];
-
               if (controller && controller.identifier && bindings) {
                 controllerForBindings = controller;
                 thisLinkFn.$$destroyBindings =
@@ -1976,17 +1975,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     bindings, scopeDirective);
               }
             }
-          }
-          for (i in elementControllers) {
             controller = elementControllers[i];
             var controllerResult = controller();
             if (controllerResult !== controller.instance &&
-                controller === controllerForBindings) {
+              controller === controllerForBindings) {
               // Remove and re-install bindToController bindings
               thisLinkFn.$$destroyBindings();
               thisLinkFn.$$destroyBindings =
-                  initializeDirectiveBindings(scope, attrs, controllerResult,
-                                              bindings, scopeDirective);
+                initializeDirectiveBindings(scope, attrs, controllerResult,
+                  bindings, scopeDirective);
             }
           }
         }
