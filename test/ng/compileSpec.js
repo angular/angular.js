@@ -147,6 +147,15 @@ describe('$compile', function() {
 
 
   describe('configuration', function() {
+
+    it('should fail to register a directive that does not start with a lowercase letter', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.directive('BadDirectiveName', function() {
+          return {};
+        })).toThrowMinErr('badname', "Directive name 'BadDirectiveName' is invalid. The first letter of a directive must be a lowercase letter");
+      });
+    });
+
     it('should register a directive', function() {
       module(function() {
         directive('div', function(log) {
