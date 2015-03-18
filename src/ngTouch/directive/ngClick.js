@@ -227,10 +227,6 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       touchStartY = e.clientY;
     });
 
-    element.on('touchmove', function(event) {
-      resetState();
-    });
-
     element.on('touchcancel', function(event) {
       resetState();
     });
