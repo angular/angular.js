@@ -4,6 +4,10 @@ function createXhr() {
     return new window.XMLHttpRequest();
 }
 
+function createXdr() {
+    return new window.XDomainRequest();
+}
+
 /**
  * @ngdoc service
  * @name $httpBackend
@@ -22,11 +26,11 @@ function createXhr() {
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, createXhr, $browser.defer, $window.angular.callbacks, $document[0]);
+    return createHttpBackend($browser, createXhr, $browser.defer, $window.angular.callbacks, $document[0], createXdr);
   }];
 }
 
-function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
+function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument, createXdr) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
     $browser.$$incOutstandingRequestCount();
@@ -46,16 +50,56 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       });
     } else {
 
-      var xhr = createXhr();
+      var xhr;
+      var isXdr = false;
+      // only if we are in IE9
+      if (createXdr && window.XDomainRequest) {
+        // and it's CORS
+        var hostname = window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+        if (!(!/^https?:\/\/([^\?\/]+)/.test(url) || RegExp.$1 === hostname)) {
+          isXdr = true;
+        }
+      }
+      if (!isXdr) {
+        xhr = createXhr();
+      } else {
+        xhr = createXdr();
+        // these methods MUST be defined (and before xhr.open), otherwise requests will fail in IE9
+        xhr.onprogress = function() {};
+        xhr.ontimeout = function() {};
+        if (method !== 'GET') {
+          method = 'POST';
+        }
+        xhr.getAllResponseHeaders = function() {
+          return '';
+        };
+      }
+
+      var requestError = function() {
+        // The response is always empty
+        // See https://xhr.spec.whatwg.org/#request-error-steps and https://fetch.spec.whatwg.org/#concept-network-error
+        completeRequest(callback, -1, null, null, '');
+      };
+
+      xhr.onerror = requestError;
+      if (!isXdr) {
+        xhr.onabort = requestError;
+      }
 
       xhr.open(method, url, true);
-      forEach(headers, function(value, key) {
-        if (isDefined(value)) {
-            xhr.setRequestHeader(key, value);
-        }
-      });
+      if (!isXdr) {
+        forEach(headers, function(value, key) {
+          if (isDefined(value)) {
+             xhr.setRequestHeader(key, value);
+          }
+        });
+      }
 
       xhr.onload = function requestLoaded() {
+        if (isXdr) {
+          xhr.status = 200;
+          xhr.statusText = 'OK';
+        }
         var statusText = xhr.statusText || '';
 
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -79,16 +123,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
             statusText);
       };
 
-      var requestError = function() {
-        // The response is always empty
-        // See https://xhr.spec.whatwg.org/#request-error-steps and https://fetch.spec.whatwg.org/#concept-network-error
-        completeRequest(callback, -1, null, null, '');
-      };
-
-      xhr.onerror = requestError;
-      xhr.onabort = requestError;
-
-      if (withCredentials) {
+      if (withCredentials && !isXdr) {
         xhr.withCredentials = true;
       }
 
