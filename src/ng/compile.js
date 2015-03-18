@@ -2084,7 +2084,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
-        var i, ii, linkFn, controller, isolateScope, elementControllers, transcludeFn, $element,
+        var linkFn, isolateScope, elementControllers, transcludeFn, $element,
             attrs, removeScopeBindingWatches, removeControllerBindingWatches;
 
         if (compileNode === linkNode) {
@@ -2124,38 +2124,27 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             isolateScope.$on('$destroy', removeScopeBindingWatches);
           }
         }
-        if (elementControllers) {
-          // Initialize bindToController bindings for new/isolate scopes
-          var scopeDirective = newIsolateScopeDirective || newScopeDirective;
-          var bindings;
-          var controllerForBindings;
-          if (scopeDirective && elementControllers[scopeDirective.name]) {
-            bindings = scopeDirective.$$bindings.bindToController;
-            controller = elementControllers[scopeDirective.name];
 
-            if (controller && controller.identifier && bindings) {
-              controllerForBindings = controller;
-              removeControllerBindingWatches =
-                  initializeDirectiveBindings(scope, attrs, controller.instance,
-                                              bindings, scopeDirective);
-            }
+        // Initialize bindToController bindings
+        for (var name in elementControllers) {
+          var controllerDirective = controllerDirectives[name];
+          var controller = elementControllers[name];
+          var bindings = controllerDirective.$$bindings.bindToController;
+
+          if (controller.identifier && bindings) {
+            removeControllerBindingWatches =
+              initializeDirectiveBindings(scope, attrs, controller.instance, bindings, controllerDirective);
           }
-          for (i in elementControllers) {
-            controller = elementControllers[i];
-            var controllerResult = controller();
 
-            if (controllerResult !== controller.instance) {
-              // If the controller constructor has a return value, overwrite the instance
-              // from setupControllers and update the element data
-              controller.instance = controllerResult;
-              $element.data('$' + i + 'Controller', controllerResult);
-              if (controller === controllerForBindings) {
-                // Remove and re-install bindToController bindings
-                removeControllerBindingWatches && removeControllerBindingWatches();
-                removeControllerBindingWatches =
-                  initializeDirectiveBindings(scope, attrs, controllerResult, bindings, scopeDirective);
-              }
-            }
+          var controllerResult = controller();
+          if (controllerResult !== controller.instance) {
+            // If the controller constructor has a return value, overwrite the instance
+            // from setupControllers
+            controller.instance = controllerResult;
+            $element.data('$' + controllerDirective.name + 'Controller', controllerResult);
+            removeControllerBindingWatches && removeControllerBindingWatches();
+            removeControllerBindingWatches =
+              initializeDirectiveBindings(scope, attrs, controller.instance, bindings, controllerDirective);
           }
         }
 
