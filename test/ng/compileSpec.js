@@ -4033,6 +4033,68 @@ describe('$compile', function() {
     });
 
 
+    it('should bind to multiple directives controllers via object notation (new scope)', function() {
+      var controllerCalled = false;
+      var secondControllerCalled = false;
+      module(function($compileProvider, $controllerProvider) {
+        $controllerProvider.register('myCtrl', function() {
+          expect(this.data).toEqualData({
+            'foo': 'bar',
+            'baz': 'biz'
+          });
+          expect(this.str).toBe('Hello, world!');
+          expect(this.fn()).toBe('called!');
+          controllerCalled = true;
+        });
+        $controllerProvider.register('secondCtrl', function() {
+          expect(this.data).toEqualData({
+            'foo2': 'bar2',
+            'baz2': 'biz2'
+          });
+          expect(this.str).toBe('Hello, second world!');
+          expect(this.fn()).toBe('second called!');
+          secondControllerCalled = true;
+        });
+        $compileProvider.directive('fooDir', valueFn({
+          bindToController: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          scope: true,
+          controller: 'myCtrl as myCtrl'
+        }));
+        $compileProvider.directive('barDir', valueFn({
+          bindToController: {
+            'data': '=barData',
+            'str': '@barStr',
+            'fn': '&barFn'
+          },
+          scope: true,
+          controller: 'secondCtrl as secondCtrl'
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        $rootScope.fn = valueFn('called!');
+        $rootScope.whom = 'world';
+        $rootScope.remoteData = {
+          'foo': 'bar',
+          'baz': 'biz'
+        };
+        $rootScope.fn2 = valueFn('second called!');
+        $rootScope.whom2 = 'second world';
+        $rootScope.remoteData2 = {
+          'foo2': 'bar2',
+          'baz2': 'biz2'
+        };
+        element = $compile('<div foo-dir dir-data="remoteData" dir-str="Hello, {{whom}}!" dir-fn="fn()" bar-dir bar-data="remoteData2" bar-str="Hello, {{whom2}}!" bar-fn="fn2()" ></div>')($rootScope);
+        $rootScope.$digest();
+        expect(controllerCalled).toBe(true);
+        expect(secondControllerCalled).toBe(true);
+      });
+    });
+
+
     it('should put controller in scope when controller identifier present but not using controllerAs', function() {
       var controllerCalled = false;
       var myCtrl;
