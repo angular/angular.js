@@ -1322,7 +1322,7 @@ describe('resource', function() {
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
     expect(failureSpy.mostRecentCall.args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `query`\. Expected response to contain an array but got an object/
+        /^\[\$resource:badcfg\] Error in resource configuration for action `query`\. Expected response to contain an array but got an object \(Request: GET \/Customer\/123\)/
       );
   });
 
@@ -1339,7 +1339,7 @@ describe('resource', function() {
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
     expect(failureSpy.mostRecentCall.args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array/
+        /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
       );
   });
 
