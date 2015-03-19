@@ -125,10 +125,16 @@ module.exports = new Package('angularjs', [
   });
 
   computeIdsProcessor.idTemplates.push({
-    docTypes: ['error', 'errorNamespace'],
+    docTypes: ['error'],
+    getId: function(doc) { return 'error:' + doc.namespace + ':' + doc.name; },
+    getAliases: function(doc) { return [doc.name, doc.namespace + ':' + doc.name, doc.id]; }
+  },
+  {
+    docTypes: ['errorNamespace'],
     getId: function(doc) { return 'error:' + doc.name; },
     getAliases: function(doc) { return [doc.id]; }
-  });
+  }
+  );
 })
 
 .config(function(checkAnchorLinksProcessor) {
