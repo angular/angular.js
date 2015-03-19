@@ -300,10 +300,6 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      "npm-install": {
-        command: path.normalize('scripts/npm/install-dependencies.sh')
-      },
-
       "promises-aplus-tests": {
         options: {
           stdout: false,
@@ -332,7 +328,7 @@ module.exports = function(grunt) {
 
   // global beforeEach task
   if (!process.env.TRAVIS) {
-    grunt.task.run('shell:npm-install');
+    grunt.task.run('npm-install');
   }
 
   //alias tasks
