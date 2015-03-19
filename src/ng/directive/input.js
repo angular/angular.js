@@ -1245,7 +1245,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   ctrl.$formatters.push(function(value) {
     if (!ctrl.$isEmpty(value)) {
-      if (!isNumber(value)) {
+      if (isNaN(parseFloat(value)) || !isFinite(value)) {
         throw $ngModelMinErr('numfmt', 'Expected `{0}` to be a number', value);
       }
       value = value.toString();
