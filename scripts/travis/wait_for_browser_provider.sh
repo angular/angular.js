@@ -12,7 +12,7 @@ while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
     # We must manually print logs here because travis will not run
     # after_script commands if the failure occurs before the script
     # phase.
-    ./print_logs.sh
+    ./scripts/travis/print_logs.sh
     exit 5
   fi
   sleep .5
