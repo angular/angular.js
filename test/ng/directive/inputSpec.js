@@ -2537,8 +2537,18 @@ describe('input', function() {
     describe('URL_REGEXP', function() {
       /* global URL_REGEXP: false */
       it('should validate url', function() {
+        // See valid URLs in RFC3987 (http://tools.ietf.org/html/rfc3987)
         expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
+        expect(URL_REGEXP.test('https://server:123/path')).toBe(true);
+        expect(URL_REGEXP.test('file:///home/user')).toBe(true);
+        expect(URL_REGEXP.test('mailto:user@example.com?subject=Foo')).toBe(true);
+        expect(URL_REGEXP.test('r2-d2.c3-p0://localhost/foo')).toBe(true);
+        expect(URL_REGEXP.test('abc:/foo')).toBe(true);
+        expect(URL_REGEXP.test('http:')).toBe(false);
         expect(URL_REGEXP.test('a@B.c')).toBe(false);
+        expect(URL_REGEXP.test('a_B.c')).toBe(false);
+        expect(URL_REGEXP.test('0scheme://example.com')).toBe(false);
+        expect(URL_REGEXP.test('http://example.com:9999/~~``')).toBe(false);
       });
     });
   });
