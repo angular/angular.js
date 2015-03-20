@@ -877,7 +877,12 @@ function $RootScopeProvider() {
 
         this.$broadcast('$destroy');
         this.$$destroyed = true;
-        if (this === $rootScope) return;
+
+        if (this === $rootScope) {
+          //Remove handlers attached to window when $rootScope is removed
+          $browser.$$applicationDestroyed();
+          return;
+        }
 
         incrementWatchersCount(this, -this.$$watchersCount);
         for (var eventName in this.$$listenerCount) {
