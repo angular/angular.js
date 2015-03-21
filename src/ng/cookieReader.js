@@ -10,7 +10,7 @@
  * @return {Object} a key/value map of the current cookies
  */
 function $$CookieReader($document) {
-  var rawDocument = $document[0];
+  var rawDocument = $document[0] || {};
   var lastCookies = {};
   var lastCookieString = '';
 
@@ -24,9 +24,10 @@ function $$CookieReader($document) {
 
   return function() {
     var cookieArray, cookie, i, index, name;
+    var currentCookieString = rawDocument.cookie || '';
 
-    if (rawDocument.cookie !== lastCookieString) {
-      lastCookieString = rawDocument.cookie;
+    if (currentCookieString !== lastCookieString) {
+      lastCookieString = currentCookieString;
       cookieArray = lastCookieString.split('; ');
       lastCookies = {};
 
