@@ -245,7 +245,7 @@ of the `$watch` expressions and compares them with the previous value. This dirt
 asynchronously. This means that assignment such as `$scope.username="angular"` will not
 immediately cause a `$watch` to be notified, instead the `$watch` notification is delayed until
 the `$digest` phase. This delay is desirable, since it coalesces multiple model updates into one
-`$watch` notification as well as it guarantees that during the `$watch` notification no other
+`$watch` notification as well as guarantees that during the `$watch` notification no other
 `$watch`es are running. If a `$watch` changes the value of the model, it will force additional
 `$digest` cycle.
 
