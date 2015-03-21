@@ -66,7 +66,8 @@
     "semver": "~4.0.3",
     "shelljs": "~0.3.0",
     "sorted-object": "^1.0.0",
-    "stringmap": "^0.2.2"
+    "stringmap": "^0.2.2",
+    "rimraf": "~2.2.8"
   },
   "licenses": [
     {
