@@ -583,6 +583,12 @@ ul.events > li {
   margin-bottom:40px;
 }
 
+.definition-table td {
+  padding: 8px;
+  border: 1px solid #eee;
+  vertical-align: top;
+}
+
 @media only screen and (min-width: 769px) and (max-width: 991px) {
   .main-body-grid {
     margin-top: 160px;
