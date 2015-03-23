@@ -213,9 +213,8 @@
  * @returns {Promise} The newly created promise.
  */
 function $QProvider() {
-
   this.$get = ['$rootScope', '$exceptionHandler', function($rootScope, $exceptionHandler) {
-    return qFactory(function(callback) {
+    return qFactory(noop, function(callback, data) {
       $rootScope.$evalAsync(callback);
     }, $exceptionHandler);
   }];
@@ -223,22 +222,62 @@ function $QProvider() {
 
 function $$QProvider() {
   this.$get = ['$browser', '$exceptionHandler', function($browser, $exceptionHandler) {
-    return qFactory(function(callback) {
+    return qFactory(noop, function(callback, data) {
       $browser.defer(callback);
     }, $exceptionHandler);
   }];
 }
 
 /**
+ * @ngdoc service
+ * @name $qRaf
+ *
+ * @description
+ * `$qRaf` is a promise library that coordinates itself based on calls to `requestAnimationFrame`. The
+ * purpose of `$qRaf` is to allow animation-based code to be sequenced together without the need
+ * to hook into the digest cycle (which is how `$q` works).
+ *
+ * `$qRaf` is gauranteed to be delivered once one or more animation frames have passed. This means that
+ * even if the promise is resolved immediately then it will not be delivered until the next frame has passed.
+ * However if an animation does occur in between promise creation and resolution then the promise
+ * will be delivered immediately. This simple mechanism of flow control allows for animation callback
+ * code to avoid any unnecessary pauses. Any pause that occurs within an animation may lead to an
+ * unexpected reflow or page flicker and `$qRaf` aims to avoid this problem completely.
+ *
+ * Note that the API for `$qRaf` is the exact same as for `$q`.
+ *
+ * @param {function(function, function)} resolver Function which is responsible for resolving or
+ *   rejecting the newly created promise. The first parameter is a function which resolves the
+ *   promise, the second parameter is a function which rejects the promise.
+ *
+ * @returns {Promise} The newly created promise.
+ */
+function $QRafProvider() {
+  this.$get = ['$$rAF', '$exceptionHandler', function($$rAF, $exceptionHandler) {
+    return qFactory(
+      function(data) {
+        $$rAF(function() {
+          data.$$rafCleared = true;
+        });
+      },
+      function(callback, data) {
+        data.$$rafCleared ? callback() : $$rAF(callback);
+      }, $exceptionHandler);
+  }];
+}
+
+/**
  * Constructs a promise manager.
  *
+ * @param {function(function)} initFn Function callback function which is called upon defer.
  * @param {function(function)} nextTick Function for executing functions in the next turn.
  * @param {function(...*)} exceptionHandler Function into which unexpected exceptions are passed for
  *     debugging purposes.
  * @returns {object} Promise manager.
  */
-function qFactory(nextTick, exceptionHandler) {
+function qFactory(initFn, nextTick, exceptionHandler) {
   var $qMinErr = minErr('$q', TypeError);
+
   function callOnce(self, resolveFn, rejectFn) {
     var called = false;
     function wrap(fn) {
@@ -276,7 +315,7 @@ function qFactory(nextTick, exceptionHandler) {
 
       this.$$state.pending = this.$$state.pending || [];
       this.$$state.pending.push([result, onFulfilled, onRejected, progressBack]);
-      if (this.$$state.status > 0) scheduleProcessQueue(this.$$state);
+      if (this.$$state.status > 0) scheduleProcessQueue(result.promise, this.$$state);
 
       return result.promise;
     },
@@ -325,14 +364,15 @@ function qFactory(nextTick, exceptionHandler) {
     }
   }
 
-  function scheduleProcessQueue(state) {
+  function scheduleProcessQueue(promise, state) {
     if (state.processScheduled || !state.pending) return;
     state.processScheduled = true;
-    nextTick(function() { processQueue(state); });
+    nextTick(function() { processQueue(state); }, promise);
   }
 
   function Deferred() {
     this.promise = new Promise();
+    initFn(this.promise);
     //Necessary to support unbound execution :/
     this.resolve = simpleBind(this, this.resolve);
     this.reject = simpleBind(this, this.reject);
@@ -365,7 +405,7 @@ function qFactory(nextTick, exceptionHandler) {
         } else {
           this.promise.$$state.value = val;
           this.promise.$$state.status = 1;
-          scheduleProcessQueue(this.promise.$$state);
+          scheduleProcessQueue(this.promise, this.promise.$$state);
         }
       } catch (e) {
         fns[1](e);
@@ -381,7 +421,7 @@ function qFactory(nextTick, exceptionHandler) {
     $$reject: function(reason) {
       this.promise.$$state.value = reason;
       this.promise.$$state.status = 2;
-      scheduleProcessQueue(this.promise.$$state);
+      scheduleProcessQueue(this.promise, this.promise.$$state);
     },
 
     notify: function(progress) {
@@ -399,7 +439,7 @@ function qFactory(nextTick, exceptionHandler) {
               exceptionHandler(e);
             }
           }
-        });
+        }, this.promise);
       }
     }
   };

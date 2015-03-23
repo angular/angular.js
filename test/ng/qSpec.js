@@ -182,7 +182,7 @@ describe('q', function() {
 
 
   beforeEach(function() {
-    q = qFactory(mockNextTick.nextTick, noop),
+    q = qFactory(noop, mockNextTick.nextTick, noop),
     defer = q.defer;
     deferred =  defer();
     promise = deferred.promise;
@@ -194,7 +194,6 @@ describe('q', function() {
   afterEach(function() {
     expect(mockNextTick.queue.length).toBe(0);
   });
-
 
   describe('$Q', function() {
     var resolve, reject, resolve2, reject2;
@@ -210,7 +209,7 @@ describe('q', function() {
       });
     };
 
-    afterEach(function() {
+    beforeEach(function() {
       resolve = reject = resolve2 = reject2 = null;
     });
 
@@ -1965,7 +1964,7 @@ describe('q', function() {
 
 
     beforeEach(function() {
-      q = qFactory(mockNextTick.nextTick, mockExceptionLogger.logger),
+      q = qFactory(noop, mockNextTick.nextTick, mockExceptionLogger.logger),
       defer = q.defer;
       deferred =  defer();
       promise = deferred.promise;
@@ -2079,7 +2078,7 @@ describe('q', function() {
       errorSpy = jasmine.createSpy('errorSpy');
 
 
-      q = qFactory(mockNextTick.nextTick, exceptionExceptionSpy);
+      q = qFactory(noop, mockNextTick.nextTick, exceptionExceptionSpy);
       deferred = q.defer();
     });
 
@@ -2107,4 +2106,250 @@ describe('q', function() {
       expect(errorSpy).toHaveBeenCalled();
     });
   });
+
+});
+
+describe('$qRaf', function() {
+
+  it('should only allow itself to resolve after one or more rAFs has occurred',
+    inject(function($qRaf, $$rAF) {
+
+    var signature = 'A';
+    var defer = $qRaf.defer();
+    defer.resolve();
+
+    defer.promise.then(function() {
+      signature += 'B';
+    });
+    signature += 'C';
+
+    expect(signature).toBe('AC');
+    $$rAF.flush();
+
+    expect(signature).toBe('ACB');
+  }));
+
+  it('should synchronously resolve itself if a rAF has already occurred',
+    inject(function($qRaf, $$rAF) {
+
+    var signature = 'A';
+    var defer = $qRaf.defer();
+    defer.promise.then(function() {
+      signature += 'B';
+    });
+    defer.resolve();
+
+    expect(signature).toBe('A');
+
+    $$rAF.flush();
+    signature += 'C';
+    expect(signature).toBe('ABC');
+  }));
+
+  it('should synchronously resolve itself and all subsequent promises if a rAF has already occurred',
+    inject(function($qRaf, $$rAF) {
+
+    var signature = '';
+    var defer = $qRaf.defer();
+    var chain = defer.promise.then(function() {
+      signature += 'A';
+    });
+    chain = chain.then(function() {
+      signature += 'B';
+    });
+    chain = chain.then(function() {
+      signature += 'C';
+    });
+    defer.resolve();
+
+    expect(signature).toBe('');
+
+    $$rAF.flush();
+    expect(signature).toBe('ABC');
+  }));
+
+  it('should resolve itself within the same rAF when multiple promises are used with all()',
+    inject(function($qRaf, $$rAF) {
+
+    var i;
+    var defers = [];
+    var promises = [];
+    for (i = 0; i < 5; i++) {
+      var defer = $qRaf.defer();
+      defers.push(defer);
+      promises.push(defer.promise);
+    }
+
+    var completed = false;
+    $qRaf.all(promises).then(function() {
+      completed = true;
+    });
+
+    $$rAF.flush();
+    for (i = 0; i < 5; i++) {
+      defers[i].resolve();
+    }
+
+    expect(completed).toBe(true);
+  }));
+
+  it('should resolve itself within the same rAF when multiple chained promises are used with all()',
+    inject(function($qRaf, $$rAF) {
+
+    var i = 0;
+    var defers = [];
+    var promises = [];
+    for (i = 0; i < 5; i++) {
+      var defer = $qRaf.defer();
+      defers.push(defer);
+      promises.push(defer.promise);
+    }
+
+    var lastDefer;
+    promises[0] = promises[0].then(function() {
+      lastDefer = $qRaf.defer();
+      return lastDefer.promise;
+    });
+
+    var completed = false;
+    $qRaf.all(promises).then(function() {
+      completed = true;
+    });
+
+    $$rAF.flush();
+    for (i = 0; i < 5; i++) {
+      defers[i].resolve();
+    }
+
+    expect(completed).toBe(false);
+
+    $$rAF.flush();
+    lastDefer.resolve();
+
+    expect(completed).toBe(true);
+  }));
+
+  it('should resolve itself when when() is called after the first rAF',
+    inject(function($qRaf, $$rAF) {
+
+    var rejected = false;
+    var resolved = false;
+    $qRaf.when(true).then(function() {
+        resolved = true;
+      }, function() {
+        rejected = true;
+      });
+
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(false);
+    $$rAF.flush();
+    expect(resolved).toBe(true);
+    expect(rejected).toBe(false);
+  }));
+
+  it('should reject itself when reject() is called after the first rAF',
+    inject(function($qRaf, $$rAF) {
+
+    var rejected = false;
+    var resolved = false;
+    $qRaf.reject().then(function() {
+        resolved = true;
+      }, function() {
+        rejected = true;
+      });
+
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(false);
+    $$rAF.flush();
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(true);
+  }));
+
+  it('should resolve itself when all rAF promises are resolved and atleast one rAF has passed',
+    inject(function($qRaf, $$rAF) {
+
+    var resolved = false;
+    var rejected = false;
+    $qRaf.all([true, true]).then(function() {
+        resolved = true;
+      }, function() {
+        rejected = true;
+      });
+
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(false);
+    $$rAF.flush();
+    expect(resolved).toBe(true);
+    expect(rejected).toBe(false);
+  }));
+
+  it('should resolve itself when all rAF promises are resolved and atleast one rAF has passed',
+    inject(function($qRaf, $$rAF) {
+
+    var resolved = false;
+    var rejected = false;
+    $qRaf.all([true, true]).then(function() {
+        resolved = true;
+      }, function() {
+        rejected = true;
+      });
+
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(false);
+    $$rAF.flush();
+    expect(resolved).toBe(true);
+    expect(rejected).toBe(false);
+  }));
+
+  it('should resolve itself directly when the $qRaf constuctor is used after the first rAF',
+    inject(function($qRaf, $$rAF) {
+
+    var resolved = false;
+    var rejected = false;
+    var resolveFn;
+    var rejectFn;
+    var promise = $qRaf(function(resFn, rejFn) {
+      resolveFn = resFn;
+      rejectFn = rejFn;
+    });
+
+    promise.then(function() {
+        resolved = true;
+      }, function() {
+        rejected = true;
+      });
+
+    resolveFn();
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(false);
+    $$rAF.flush();
+    expect(resolved).toBe(true);
+    expect(rejected).toBe(false);
+  }));
+
+  it('should reject itself directly when the $qRaf constuctor is used after the first rAF',
+    inject(function($qRaf, $$rAF) {
+
+    var resolved = false;
+    var rejected = false;
+    var resolveFn;
+    var rejectFn;
+    var promise = $qRaf(function(resFn, rejFn) {
+      resolveFn = resFn;
+      rejectFn = rejFn;
+    });
+
+    promise.then(function() {
+        resolved = true;
+      }, function() {
+        rejected = true;
+      });
+
+    rejectFn();
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(false);
+    $$rAF.flush();
+    expect(resolved).toBe(false);
+    expect(rejected).toBe(true);
+  }));
 });
