@@ -92,8 +92,10 @@ means that it should be stateless and idempotent. Angular relies on these proper
 the filter only when the inputs to the function change.
 
 <div class="alert alert-warning">
-**Note:** filter names must be valid angular expression identifiers, such as `uppercase` or `orderBy`.
-Names with special characters, such as hyphens and dots, are not allowed.
+**Note:** Filter names must be valid angular {@link expression} identifiers, such as `uppercase` or `orderBy`.
+Names with special characters, such as hyphens and dots, are not allowed.  If you wish to namespace
+your filters, then you can use capitalization (`myappSubsectionFilterx`) or underscores
+(`myapp_subsection_filterx`).
 </div>
 
 The following sample filter reverses a text string. In addition, it conditionally makes the
