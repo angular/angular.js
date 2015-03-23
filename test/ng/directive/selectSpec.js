@@ -841,6 +841,60 @@ describe('select', function() {
       expect(element).toBeDirty();
     });
 
+
+    describe('calls to $render', function() {
+
+      var ngModelCtrl;
+
+      beforeEach(function() {
+        compile(
+          '<select name="select" ng-model="selection" multiple>' +
+          '<option>A</option>' +
+          '<option>B</option>' +
+          '</select>');
+
+        ngModelCtrl = element.controller('ngModel');
+        spyOn(ngModelCtrl, '$render').andCallThrough();
+      });
+
+
+      it('should call $render once when the reference to the viewValue changes', function() {
+        scope.$apply(function() {
+          scope.selection = ['A'];
+        });
+        expect(ngModelCtrl.$render.calls.length).toBe(1);
+
+        scope.$apply(function() {
+          scope.selection = ['A', 'B'];
+        });
+        expect(ngModelCtrl.$render.calls.length).toBe(2);
+
+        scope.$apply(function() {
+          scope.selection = [];
+        });
+        expect(ngModelCtrl.$render.calls.length).toBe(3);
+      });
+
+
+      it('should call $render once when the viewValue deep-changes', function() {
+        scope.$apply(function() {
+          scope.selection = ['A'];
+        });
+        expect(ngModelCtrl.$render.calls.length).toBe(1);
+
+        scope.$apply(function() {
+          scope.selection.push('B');
+        });
+        expect(ngModelCtrl.$render.calls.length).toBe(2);
+
+        scope.$apply(function() {
+          scope.selection.length = 0;
+        });
+        expect(ngModelCtrl.$render.calls.length).toBe(3);
+      });
+
+    });
+
   });
 
 
