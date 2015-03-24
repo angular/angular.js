@@ -578,6 +578,29 @@ describe('ngModel', function() {
 
         dealoc(form);
       }));
+
+
+      it('should set NaN as the $modelValue when an asyncValidator is present',
+        inject(function($q) {
+
+        ctrl.$asyncValidators.test = function() {
+          return $q(function(resolve, reject) {
+            resolve();
+          });
+        };
+
+        scope.$apply('value = 10');
+        expect(ctrl.$modelValue).toBe(10);
+
+        expect(function() {
+          scope.$apply(function() {
+            scope.value = NaN;
+          });
+        }).not.toThrow();
+
+        expect(ctrl.$modelValue).toBeNaN();
+
+      }));
     });
 
 
