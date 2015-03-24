@@ -260,6 +260,11 @@ myModule.filter('length', function() {
 });
 
 describe('length filter', function() {
+
+  beforeEach(inject(function(_$filter_){
+    $filter= _$filter_;
+  }));
+
   it('returns 0 when given null', function() {
     var length = $filter('length');
     expect(length(null)).toEqual(0);
