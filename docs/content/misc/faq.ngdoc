@@ -51,7 +51,7 @@ not used at Google or without sufficient test coverage, have a chance of making 
 
 Lastly, when we are making a release we generate updates to the changelog directly from the commits. This
 generated update contains a highlighted section that contains all the breaking changes that have been
-extracted fro the commits. We can quickly see in the new changelog exactly what commits contain breaking
+extracted from the commits. We can quickly see in the new changelog exactly what commits contain breaking
 changes and so can application developers when they are deciding whether to update to a new version of
 Angular.
 
