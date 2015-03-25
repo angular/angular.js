@@ -10,7 +10,7 @@
 /* global stringify: false */
 
 /**
- * @ngdoc module
+ * @ngdoc service
  * @name $$messageFormat
  *
  * @description
@@ -57,7 +57,12 @@ var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpo
   return interpolate;
 }];
 
-// define ngMessageFormat module and register $$MessageFormat service
+
+/**
+ * @ngdoc module
+ * @name ngMessageFormat
+ * @description
+ */
 var module = angular['module']('ngMessageFormat', ['ng']);
 module['provider']('$$messageFormat', $$MessageFormatProvider);
 module['config'](['$provide', function($provide) {
