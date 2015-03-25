@@ -59,7 +59,6 @@ function parseHeaders(headers) {
   return parsed;
 }
 
-
 /**
  * Returns a function that provides access to parsed headers.
  *
@@ -89,7 +88,33 @@ function headersGetter(headers) {
     return headersObj;
   };
 }
+/**
+ * Angular default param serialization
+ *
+ * See {@link ng.$httpUrlBuilderFactory $httpUrlBuilderFactory} for more information.
+ *
+ * @param {Object} params the params property in the request config
+ * @param {function(string, string)} addKeyValue function to be called for each
+ *   {key, value} pair that has been identified for serializing and will be incorporated
+ *   to the built url
+ */
+function paramSerializer(params, addKeyValue) {
+  forEachSorted(params, function(value, key) {
+    if (value === null || isUndefined(value)) return;
+    if (!isArray(value)) value = [value];
 
+    forEach(value, function(v) {
+      if (isObject(v)) {
+        if (isDate(v)) {
+          v = v.toISOString();
+        } else {
+          v = toJson(v);
+        }
+      }
+      addKeyValue(key, v);
+    });
+  });
+}
 
 /**
  * Chain all given functions
@@ -138,6 +163,10 @@ function $HttpProvider() {
    * that will provide the cache for all requests who set their `cache` property to `true`.
    * If you set the `default.cache = false` then only requests that specify their own custom
    * cache object will be cached. See {@link $http#caching $http Caching} for more information.
+   *
+   * - **`defaults.buildUrl`** - {Function|string} - a function created by
+   * {@link ng.$httpUrlBuilderFactory `$httpUrlBuilderFactory`} that will provide the
+   * default URL building strategy for all requests that doesn't specify `buildUrl` property
    *
    * - **`defaults.xsrfCookieName`** - {string} - Name of cookie containing the XSRF token.
    * Defaults value is `'XSRF-TOKEN'`.
@@ -220,10 +249,12 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$httpBackend', '$httpUrlBuilderFactory', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($httpBackend, $httpUrlBuilderFactory, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http');
+
+    var defaultBuildUrl = $httpUrlBuilderFactory(paramSerializer);
 
     /**
      * Interceptors stored in reverse order. Inner interceptors before outer interceptors.
@@ -1032,11 +1063,21 @@ function $HttpProvider() {
           cache,
           cachedResp,
           reqHeaders = config.headers,
-          url = buildUrl(config.url, config.params);
+          buildUrl,
+          url;
+
+      if (angular.isDefined(config.buildUrl)) {
+        buildUrl = angular.isString(config.buildUrl) ? $injector.get(config.buildUrl)
+          : config.buildUrl;
+      } else {
+        buildUrl = angular.isString(defaults.buildUrl) ? $injector.get(defaults.buildUrl)
+          : defaultBuildUrl;
+      }
+
+      url = buildUrl(config.url, config.params);
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
-
 
       if ((config.cache || defaults.cache) && config.cache !== false &&
           (config.method === 'GET' || config.method === 'JSONP')) {
@@ -1137,31 +1178,70 @@ function $HttpProvider() {
         if (idx !== -1) $http.pendingRequests.splice(idx, 1);
       }
     }
-
-
-    function buildUrl(url, params) {
-      if (!params) return url;
-      var parts = [];
-      forEachSorted(params, function(value, key) {
-        if (value === null || isUndefined(value)) return;
-        if (!isArray(value)) value = [value];
-
-        forEach(value, function(v) {
-          if (isObject(v)) {
-            if (isDate(v)) {
-              v = v.toISOString();
-            } else {
-              v = toJson(v);
-            }
-          }
-          parts.push(encodeUriQuery(key) + '=' +
-                     encodeUriQuery(v));
-        });
-      });
-      if (parts.length > 0) {
-        url += ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
-      }
-      return url;
-    }
   }];
+}
+
+
+/**
+ * @ngdoc service
+ * @kind function
+ * @name $httpUrlBuilderFactory
+ *
+ * @description
+ * Factory that creates `buildUrl` functions that uses the provided parameters
+ * serialization strategy. The returned function can be added to any request config,
+ * to implement a custom url understandable by your backend
+ *
+ * ```js
+ * angular.module('App')
+ * .factory('pirateBuildUrl', function($httpUrlBuilderFactory) {
+ *   function pirateSerializer(params, addKeyValue) {
+ *     //params is the $http request `params` config property
+ *     angular.forEach(params, function(value, key) {
+ *       addKeyValue('ARR' + key, value);
+ *     });
+ *   }
+ *   return $httpUrlBuilderFactory(pirateSerializer);
+ * });
+ *
+ * $http.get('http://myapi.com/things', {
+ *   params: {
+ *     id: 5
+ *    },
+ *   //specify the url builder
+ *   buildUrl: 'pirateBuildUrl'
+ * });
+ * // GET http://myapi.com/things?ARRid=5 *
+ * ```
+ *
+ * Example: default pirate url builder for the whole app
+ *
+ * ```js
+ * angular.module('App')
+ * .config(function($httpProvider) {
+ *   $httpProvider.defaults.buildUrl = 'pirateBuildUrl';
+ * });
+ * ```
+ *
+ */
+function $HttpUrlBuilderFactoryProvider() {
+  this.$get = function() {
+    return function $httpUrlBuilderFactory(serializer) {
+      return function buildUrl(url, params) {
+        if (!params) {
+          return url;
+        }
+        var parts = [];
+
+        serializer(params, function addKeyValue(key, value) {
+          parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
+        });
+
+        if (parts.length > 0) {
+          url += ((url.indexOf('?') === -1) ? '?' : '&') + parts.join('&');
+        }
+        return url;
+      };
+    };
+  };
 }
