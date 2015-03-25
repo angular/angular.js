@@ -391,6 +391,9 @@
 
 angular.module('ngAnimate', ['ng'])
 
+  .factory('$$rAFMutex', $$rAFMutexFactory)
+  .factory('$animateRunner', $AnimateRunnerFactory)
+
   /**
    * @ngdoc provider
    * @name $animateProvider

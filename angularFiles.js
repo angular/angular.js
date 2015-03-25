@@ -87,6 +87,7 @@ var angularFiles = {
 
   'angularModules': {
     'ngAnimate': [
+      'src/ngAnimate/animateRunner.js',
       'src/ngAnimate/animate.js'
     ],
     'ngCookies': [
