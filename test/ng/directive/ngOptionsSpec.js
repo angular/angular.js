@@ -1041,6 +1041,50 @@ describe('ngOptions', function() {
         });
       }).not.toThrow();
     });
+
+    it('should setup equality watches on ngModel changes if using trackBy', function() {
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item for item in arr track by item.id'
+      });
+
+      scope.$apply(function() {
+        scope.selected = scope.arr[0];
+      });
+
+      spyOn(element.controller('ngModel'), '$render');
+
+      scope.$apply(function() {
+        scope.selected.label = 'changed';
+      });
+
+      // update render due to equality watch
+      expect(element.controller('ngModel').$render).toHaveBeenCalled();
+
+    });
+
+    it('should not setup equality watches on ngModel changes if not using trackBy', function() {
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item for item in arr'
+      });
+
+      scope.$apply(function() {
+        scope.selected = scope.arr[0];
+      });
+
+      spyOn(element.controller('ngModel'), '$render');
+
+      scope.$apply(function() {
+        scope.selected.label = 'changed';
+      });
+
+      // no render update as no equality watch
+      expect(element.controller('ngModel').$render).not.toHaveBeenCalled();
+    });
+
   });
 
 
