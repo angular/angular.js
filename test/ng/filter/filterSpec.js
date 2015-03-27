@@ -463,7 +463,58 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should match `null` against `null` only', function() {
+    var items = [
+      {value: null},
+      {value: undefined},
+      {value: true},
+      {value: false},
+      {value: NaN},
+      {value: 42},
+      {value: 'null'},
+      {value: 'test'},
+      {value: {}},
+      {value: new Date()}
+    ];
+    var flt;
+
+    flt = null;
+    expect(filter(items, flt).length).toBe(1);
+    expect(filter(items, flt)[0]).toBe(items[0]);
+
+    flt = {value: null};
+    expect(filter(items, flt).length).toBe(1);
+    expect(filter(items, flt)[0]).toBe(items[0]);
+
+    flt = {value: undefined};
+    expect(filter(items, flt).length).toBe(items.length);
+
+    flt = {value: NaN};
+    expect(includes(filter(items, flt), items[0])).toBeFalsy();
+
+    flt = {value: false};
+    expect(includes(filter(items, flt), items[0])).toBeFalsy();
+
+    flt = '';
+    expect(includes(filter(items, flt), items[0])).toBeFalsy();
+
+    flt = {value: 'null'};
+    expect(includes(filter(items, flt), items[0])).toBeFalsy();
+  });
+
+
   describe('should support comparator', function() {
+
+    it('not convert `null` or `undefined` to string in non-strict comparison', function() {
+      var items = [
+        {value: null},
+        {value: undefined}
+      ];
+      var flt = {value: 'u'};
+
+      expect(filter(items, flt).length).toBe(0);
+    });
+
 
     it('not consider objects without a custom `toString` in non-strict comparison', function() {
       var items = [{test: {}}];
