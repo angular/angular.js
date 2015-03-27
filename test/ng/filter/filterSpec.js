@@ -438,30 +438,30 @@ describe('Filter: filter', function() {
 
 
   it('should not throw an error if property is null when comparing object', function() {
-      var items = [
-          { office:1, people: {name:'john'}},
-          { office:2, people: {name:'jane'}},
-          { office:3, people: null}
-      ];
-      var f = { };
-      expect(filter(items, f).length).toBe(3);
+    var items = [
+        { office:1, people: {name:'john'}},
+        { office:2, people: {name:'jane'}},
+        { office:3, people: null}
+    ];
+    var f = { };
+    expect(filter(items, f).length).toBe(3);
 
-      f = { people:null };
-      expect(filter(items, f).length).toBe(1);
+    f = { people:null };
+    expect(filter(items, f).length).toBe(1);
 
-      f = { people: {}};
-      expect(filter(items, f).length).toBe(2);
+    f = { people: {}};
+    expect(filter(items, f).length).toBe(2);
 
-      f = { people:{ name: '' }};
-      expect(filter(items, f).length).toBe(2);
+    f = { people:{ name: '' }};
+    expect(filter(items, f).length).toBe(2);
 
-      f = { people:{ name:'john' }};
-      expect(filter(items, f).length).toBe(1);
+    f = { people:{ name:'john' }};
+    expect(filter(items, f).length).toBe(1);
 
-      f = { people:{ name:'j' }};
-      expect(filter(items, f).length).toBe(2);
-
+    f = { people:{ name:'j' }};
+    expect(filter(items, f).length).toBe(2);
   });
+
 
   describe('should support comparator', function() {
 
