@@ -176,6 +176,10 @@ describe('HTML', function() {
     expectHTML('a<SCRIPT>ev<script>evil</sCript>il</scrIpt>c.').toEqual('ac.');
   });
 
+  it('should not remove elements between script elements', function() {
+    expectHTML('a<script>ev</script>b<script>il</script>c.').toEqual('abc.');
+  });
+
   it('should remove unknown  names', function() {
     expectHTML('a<xxx><B>b</B></xxx>c').toEqual('a<b>b</b>c');
   });
