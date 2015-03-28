@@ -57,7 +57,7 @@ Try out the Live Preview above, and then let's walk through the example and desc
 This looks like normal HTML, with some new markup. In Angular, a file like this is called a
 <a name="template">{@link templates template}</a>. When Angular starts your application, it parses and
 processes this new markup from the template using the <a name="compiler">{@link compiler compiler}</a>.
-The loaded, transformed and rendered DOM is then called the <a name="view">view</a>.
+The loaded, transformed and rendered DOM is then called the <a name="view"></a>*view*.
 
 The first kind of new markup are the <a name="directive">{@link directive directives}</a>.
 They apply special behavior to attributes or elements in the HTML. In the example above we use the
@@ -79,7 +79,7 @@ An <a name="expression">{@link expression expression}</a> in a template is a Jav
 to read and write variables. Note that those variables are not global variables.
 Just like variables in a JavaScript function live in a scope,
 Angular provides a <a name="scope">{@link scope scope}</a> for the variables accessible to expressions.
-The values that are stored in variables on the scope are referred to as the <a name="model">model</a>
+The values that are stored in variables on the scope are referred to as the <a name="model"></a>*model*
 in the rest of the documentation.
 Applied to the example above, the markup directs Angular to "take the data we got from the input widgets
 and multiply them together".
