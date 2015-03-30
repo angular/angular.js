@@ -1701,7 +1701,7 @@ describe('ngOptions', function() {
         scope.values.pop();
       });
 
-      expect(element.val()).toEqual('');
+      expect(element.val()).toEqualUnknownValue();
       expect(scope.selected).toEqual(null);
 
       // Check after model change
@@ -1715,7 +1715,7 @@ describe('ngOptions', function() {
         scope.values.pop();
       });
 
-      expect(element.val()).toEqual('');
+      expect(element.val()).toEqualUnknownValue();
       expect(scope.selected).toEqual(null);
     });
 
