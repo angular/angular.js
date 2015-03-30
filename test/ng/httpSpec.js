@@ -3,6 +3,9 @@
 describe('$http', function() {
 
   var callback, mockedCookies;
+  var customParamSerializer = function(params) {
+    return Object.keys(params).join('_');
+  };
 
   beforeEach(function() {
     callback = jasmine.createSpy('done');
@@ -14,6 +17,9 @@ describe('$http', function() {
     });
   });
 
+  beforeEach(module({
+    customParamSerializer: customParamSerializer
+  }));
   beforeEach(module(function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
   }));
@@ -353,6 +359,20 @@ describe('$http', function() {
       it('should not double quote dates', function() {
         $httpBackend.expect('GET', '/url?date=2014-07-15T17:30:00.000Z').respond('');
         $http({url: '/url', params: {date:new Date('2014-07-15T17:30:00.000Z')}, method: 'GET'});
+      });
+
+
+      describe('custom params serialization', function() {
+
+        it('should allow specifying custom paramSerializer as function', function() {
+          $httpBackend.expect('GET', '/url?foo_bar').respond('');
+          $http({url: '/url', params: {foo: 'fooVal', bar: 'barVal'}, paramSerializer: customParamSerializer});
+        });
+
+        it('should allow specifying custom paramSerializer as function from DI', function() {
+          $httpBackend.expect('GET', '/url?foo_bar').respond('');
+          $http({url: '/url', params: {foo: 'fooVal', bar: 'barVal'}, paramSerializer: 'customParamSerializer'});
+        });
       });
     });
 
@@ -1788,10 +1808,15 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
-      it('should have separate opbjects for defaults PUT and POST', function() {
+      it('should have separate objects for defaults PUT and POST', function() {
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.put);
         expect($http.defaults.headers.post).not.toBe($http.defaults.headers.patch);
         expect($http.defaults.headers.put).not.toBe($http.defaults.headers.patch);
+      });
+
+      it('should expose default param serializer at runtime', function() {
+        var paramSerializer = $http.defaults.paramSerializer;
+        expect(paramSerializer({foo: 'foo', bar: ['bar', 'baz']})).toEqual('bar=bar&bar=baz&foo=foo');
       });
     });
   });
@@ -1928,4 +1953,50 @@ describe('$http with $applyAsync', function() {
     $browser.defer.flush();
     expect(log).toEqual(['response 1', 'response 2', 'response 3']);
   });
+});
+
+describe('$http param serializers', function() {
+
+  var defSer, jqrSer;
+  beforeEach(inject(function($httpParamSerializer, $httpParamSerializerJQLike) {
+    defSer = $httpParamSerializer;
+    jqrSer = $httpParamSerializerJQLike;
+  }));
+
+  describe('common functionality', function() {
+
+    it('should return empty string for null or undefined params', function() {
+        expect(defSer(undefined)).toEqual('');
+        expect(jqrSer(undefined)).toEqual('');
+        expect(defSer(null)).toEqual('');
+        expect(jqrSer(null)).toEqual('');
+    });
+
+    it('should serialize objects', function() {
+      expect(defSer({foo: 'foov', bar: 'barv'})).toEqual('bar=barv&foo=foov');
+      expect(jqrSer({foo: 'foov', bar: 'barv'})).toEqual('bar=barv&foo=foov');
+    });
+
+  });
+
+  describe('default array serialization', function() {
+
+    it('should serialize arrays by repeating param name', function() {
+      expect(defSer({a: 'b', foo: ['bar', 'baz']})).toEqual('a=b&foo=bar&foo=baz');
+    });
+  });
+
+  describe('jquery array and objects serialization', function() {
+
+    it('should serialize arrays by repeating param name with [] suffix', function() {
+      expect(jqrSer({a: 'b', foo: ['bar', 'baz']})).toEqual('a=b&foo%5B%5D=bar&foo%5B%5D=baz');
+      expect(decodeURIComponent(jqrSer({a: 'b', foo: ['bar', 'baz']}))).toEqual('a=b&foo[]=bar&foo[]=baz');
+    });
+
+    it('should serialize objects by repeating param name with [kay] suffix', function() {
+      expect(jqrSer({a: 'b', foo: {'bar': 'barv', 'baz': 'bazv'}})).toEqual('a=b&foo%5Bbar%5D=barv&foo%5Bbaz%5D=bazv');
+                                                                           //a=b&foo[bar]=barv&foo[baz]=bazv
+    });
+  });
+
 });
