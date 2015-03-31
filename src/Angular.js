@@ -278,7 +278,7 @@ function forEach(obj, iterator, context) {
 
 function forEachSorted(obj, iterator, context) {
   var keys = Object.keys(obj).sort();
-  for (var i = 0; i < keys.length; i++) {
+  for (var i = 0, ii = keys.length; i < ii; i++) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
   return keys;
@@ -675,7 +675,7 @@ function isElement(node) {
  */
 function makeMap(str) {
   var obj = {}, items = str.split(","), i;
-  for (i = 0; i < items.length; i++) {
+  for (i = 0, ii = items.length; i < ii; i++) {
     obj[items[i]] = true;
   }
   return obj;
@@ -801,7 +801,7 @@ function copy(source, destination, stackSource, stackDest) {
     var result;
     if (isArray(source)) {
       destination.length = 0;
-      for (var i = 0; i < source.length; i++) {
+      for (var i = 0, ii = source.length; i < ii; i++) {
         result = copy(source[i], null, stackSource, stackDest);
         if (isObject(source[i])) {
           stackSource.push(source[i]);
