@@ -77,6 +77,8 @@
           evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
+    } else if (/touch/.test(eventType) && supportsTouchEvents()) {
+      evnt = createTouchEvent(element, eventType, x, y);
     } else {
       evnt = document.createEvent('MouseEvents');
       x = x || 0;
@@ -112,4 +114,37 @@
 
     return finalProcessDefault;
   };
+
+  function supportsTouchEvents() {
+    if ('_cached' in supportsTouchEvents) {
+      return supportsTouchEvents._cached;
+    }
+    if (!document.createTouch || !document.createTouchList) {
+      supportsTouchEvents._cached = false;
+      return false;
+    }
+    try {
+      document.createEvent('TouchEvent');
+    } catch (e) {
+      supportsTouchEvents._cached = false;
+      return false;
+    }
+    supportsTouchEvents._cached = true;
+    return true;
+  }
+
+  function createTouchEvent(element, eventType, x, y) {
+    var evnt = document.createEvent('TouchEvent');
+    x = x || 0;
+    y = y || 0;
+
+    var touch = document.createTouch(window, element, Date.now(), x, y, x, y);
+    var touches = document.createTouchList(touch);
+    var targetTouches = document.createTouchList(touch);
+    var changedTouches = document.createTouchList(touch);
+
+    evnt.initTouchEvent(eventType, true, true, window, null, 0, 0, 0, 0, false, false, false, false,
+      touches, targetTouches, changedTouches, 1, 0);
+    return evnt;
+  }
 }());
