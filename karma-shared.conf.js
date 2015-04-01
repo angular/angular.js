@@ -66,6 +66,12 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 8.1',
         version: '11'
       },
+      'SL_iOS': {
+        base: "SauceLabs",
+        browserName: "iphone",
+        platform: "OS X 10.10",
+        version: "8.1"
+      },
 
       'BS_Chrome': {
         base: 'BrowserStack',
@@ -105,6 +111,12 @@ module.exports = function(config, specificOptions) {
         browser_version: '11.0',
         os: 'Windows',
         os_version: '8.1'
+      },
+      'BS_iOS': {
+        base: 'BrowserStack',
+        device: 'iPhone 6',
+        os: 'ios',
+        os_version: '8.0'
       }
     }
   });
