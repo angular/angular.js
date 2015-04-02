@@ -123,6 +123,8 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       return; // Too old.
     }
 
+    // Use JQuery originalEvent
+    event = event.originalEvent || event;
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -165,6 +167,8 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Global touchstart handler that creates an allowable region for a click event.
   // This allowable region can be removed by preventGhostClick if we want to bust it.
   function onTouchStart(event) {
+    // Use JQuery originalEvent
+    event = event.originalEvent || event;
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -210,6 +214,8 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     }
 
     element.on('touchstart', function(event) {
+      // Use JQuery originalEvent
+      event = event.originalEvent || event;
       tapping = true;
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
@@ -238,6 +244,8 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
 
+      // Use JQuery originalEvent
+      event = event.originalEvent || event;
       var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
           ((event.touches && event.touches.length) ? event.touches : [event]);
       var e = touches[0].originalEvent || touches[0];
@@ -275,6 +283,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // - But the browser's follow-up slow click will be "busted" before it reaches this handler.
     // Therefore it's safe to use this directive on both mobile and desktop.
     element.on('click', function(event, touchend) {
+      // Use JQuery originalEvent
+      event = event.originalEvent || event;
+
       scope.$apply(function() {
         clickHandler(scope, {$event: (touchend || event)});
       });
