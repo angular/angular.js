@@ -134,17 +134,15 @@
   }
 
   function createTouchEvent(element, eventType, x, y) {
-    var evnt = document.createEvent('TouchEvent');
+    var evnt = new Event(eventType);
     x = x || 0;
     y = y || 0;
 
     var touch = document.createTouch(window, element, Date.now(), x, y, x, y);
     var touches = document.createTouchList(touch);
-    var targetTouches = document.createTouchList(touch);
-    var changedTouches = document.createTouchList(touch);
 
-    evnt.initTouchEvent(eventType, true, true, window, null, 0, 0, 0, 0, false, false, false, false,
-      touches, targetTouches, changedTouches, 1, 0);
+    evnt.touches = touches;
+
     return evnt;
   }
 }());
