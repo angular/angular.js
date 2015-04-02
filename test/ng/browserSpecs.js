@@ -193,7 +193,7 @@ describe('browser', function() {
     expect(browser.cookies).toBeDefined();
   });
 
-  describe('outstading requests', function() {
+  describe('outstanding requests', function() {
     it('should process callbacks immedietly with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
