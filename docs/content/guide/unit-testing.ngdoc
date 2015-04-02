@@ -79,7 +79,7 @@ And then each individual test is defined within a call to the `it` function:
 
 ```js
 describe('sorting the list of users', function() {
-  it('sorts in descending order by default', function() {
+  it('sorts in ascending order by default', function() {
     // your test assertion goes here
   });
 });
@@ -92,7 +92,7 @@ Finally, Jasmine provides matchers which let you make assertions:
 
 ```js
 describe('sorting the list of users', function() {
-  it('sorts in descending order by default', function() {
+  it('sorts in ascending order by default', function() {
     var users = ['jack', 'igor', 'jeff'];
     var sorted = sortUsers(users);
     expect(sorted).toEqual(['jeff', 'jack', 'igor']);
