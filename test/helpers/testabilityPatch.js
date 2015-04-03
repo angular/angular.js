@@ -37,6 +37,17 @@ beforeEach(function() {
 afterEach(function() {
   var count, cache;
 
+  // both of these nodes are persisted across tests
+  // and therefore the hashCode may be cached
+  var node = document.querySelector('html');
+  if (node) {
+    node.$$hashKey = null;
+  }
+  var bod = document.body;
+  if (bod) {
+    bod.$$hashKey = null;
+  }
+
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
     var $rootElement = this.$injector.get('$rootElement');

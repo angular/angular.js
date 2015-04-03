@@ -87,7 +87,16 @@ var angularFiles = {
 
   'angularModules': {
     'ngAnimate': [
-      'src/ngAnimate/animate.js'
+      'src/ngAnimate/shared.js',
+      'src/ngAnimate/animateChildrenDirective.js',
+      'src/ngAnimate/animateCss.js',
+      'src/ngAnimate/animateCssDriver.js',
+      'src/ngAnimate/animateJs.js',
+      'src/ngAnimate/animateJsDriver.js',
+      'src/ngAnimate/animateQueue.js',
+      'src/ngAnimate/animateRunner.js',
+      'src/ngAnimate/animation.js',
+      'src/ngAnimate/module.js'
     ],
     'ngCookies': [
       'src/ngCookies/cookies.js',

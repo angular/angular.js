@@ -9,3 +9,11 @@
 ng\:form {
   display: block;
 }
+
+.ng-animate-shim {
+  visibility:hidden;
+}
+
+.ng-animate-anchor {
+  position:absolute;
+}
