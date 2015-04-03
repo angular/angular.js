@@ -146,6 +146,7 @@
     "they": false,
     "tthey": false,
     "xthey": false,
+    "assertCompareNodes": false,
 
     /* e2e */
     "browser": false,
@@ -165,6 +166,7 @@
     "provideLog": false,
     "spyOnlyCallsWithArgs": false,
     "createMockStyleSheet": false,
+    "browserSupportsCssAnimations": false,
     "browserTrigger": false,
     "jqLiteCacheSize": false
   }

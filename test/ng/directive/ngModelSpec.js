@@ -1156,17 +1156,17 @@ describe('ngModel', function() {
 
 
       it('should minimize janky setting of classes during $validate() and ngModelWatch', inject(function($animate, $compile, $rootScope) {
-        var addClass = $animate.$$addClassImmediately;
-        var removeClass = $animate.$$removeClassImmediately;
+        var addClass = $animate.addClass;
+        var removeClass = $animate.removeClass;
         var addClassCallCount = 0;
         var removeClassCallCount = 0;
         var input;
-        $animate.$$addClassImmediately = function(element, className) {
+        $animate.addClass = function(element, className) {
           if (input && element[0] === input[0]) ++addClassCallCount;
           return addClass.call($animate, element, className);
         };
 
-        $animate.$$removeClassImmediately = function(element, className) {
+        $animate.removeClass = function(element, className) {
           if (input && element[0] === input[0]) ++removeClassCallCount;
           return removeClass.call($animate, element, className);
         };
