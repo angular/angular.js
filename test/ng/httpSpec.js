@@ -1128,6 +1128,23 @@ describe('$http', function() {
           expect(callback).toHaveBeenCalledOnce();
         });
 
+        it('should not allow modifications to headers in a transform functions', function() {
+          var config = {
+            headers: {'Accept': 'bar'},
+            transformRequest: function(data, headers) {
+              angular.extend(headers(), {
+                'Accept': 'foo'
+              });
+            }
+          };
+
+          $httpBackend.expect('GET', '/url', undefined, {Accept: 'bar'}).respond(200);
+          $http.get('/url', config).success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+        });
+
         it('should pipeline more functions', function() {
           function first(d, h) {return d + '-first' + ':' + h('h1');}
           function second(d) {return uppercase(d);}
