@@ -249,6 +249,34 @@ end of the container containing the ngMessages directive).
 </div>
 ```
 
+- **$http:** due to [5da1256](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
+
+`transformRequest` functions can no longer modify request headers.
+
+Before this commit `transformRequest` could modify request headers, ex.:
+
+```javascript
+function requestTransform(data, headers) {
+    headers = angular.extend(headers(), {
+      'X-MY_HEADER': 'abcd'
+    });
+  }
+  return angular.toJson(data);
+}
+```
+
+This behavior was unintended and undocumented, so the change should affect very few applications. If one
+needs to dynamically add / remove headers it should be done in a header function, for example:
+
+```javascript
+$http.get(url, {
+  headers: {
+    'X-MY_HEADER': function(config) {
+      return 'abcd'; //you've got access to a request config object to specify header value dynamically
+    }
+  }
+})
+```
 
 <a name="1.3.14"></a>
 # 1.3.14 instantaneous-browserification (2015-02-24)
