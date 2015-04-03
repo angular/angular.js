@@ -82,12 +82,14 @@ describe("$animate", function() {
       expect($animate.leave(element)).toBeAPromise();
     }));
 
-    it("should provide noop `enabled` and `cancel` methods", inject(function($animate) {
-      expect($animate.enabled).toBe(angular.noop);
+    it("should provide the `enabled` and `cancel` methods", inject(function($animate) {
       expect($animate.enabled()).toBeUndefined();
+      expect($animate.cancel({})).toBeUndefined();
+    }));
 
-      expect($animate.cancel).toBe(angular.noop);
-      expect($animate.cancel()).toBeUndefined();
+    it("should provide the `on` and `off` methods", inject(function($animate) {
+      expect(isFunction($animate.on)).toBe(true);
+      expect(isFunction($animate.off)).toBe(true);
     }));
 
     it("should add and remove classes on SVG elements", inject(function($animate, $rootScope) {
@@ -175,6 +177,30 @@ describe("$animate", function() {
       expect(style.color).toBe('green');
       expect(style.borderColor).toBe('purple');
     }));
+
+    it("should avoid cancelling out add/remove when the element already contains the class",
+      inject(function($animate, $rootScope) {
+
+      var element = jqLite('<div class="ng-hide"></div>');
+
+      $animate.addClass(element, 'ng-hide');
+      $animate.removeClass(element, 'ng-hide');
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('ng-hide');
+    }));
+
+    it("should avoid cancelling out remove/add if the element does not contain the class",
+      inject(function($animate, $rootScope) {
+
+      var element = jqLite('<div></div>');
+
+      $animate.removeClass(element, 'ng-hide');
+      $animate.addClass(element, 'ng-hide');
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('ng-hide');
+    }));
   });
 
   describe('CSS class DOM manipulation', function() {
@@ -190,26 +216,27 @@ describe("$animate", function() {
 
     function setupClassManipulationSpies() {
       inject(function($animate) {
-        addClass = spyOn($animate, '$$addClassImmediately').andCallThrough();
-        removeClass = spyOn($animate, '$$removeClassImmediately').andCallThrough();
+        addClass = spyOn(window, 'jqLiteAddClass').andCallThrough();
+        removeClass = spyOn(window, 'jqLiteRemoveClass').andCallThrough();
       });
     }
 
     function setupClassManipulationLogger(log) {
-      inject(function($animate) {
-        var addClassImmediately = $animate.$$addClassImmediately;
-        var removeClassImmediately = $animate.$$removeClassImmediately;
-        addClass = spyOn($animate, '$$addClassImmediately').andCallFake(function(element, classes) {
+      inject(function() {
+        var _addClass = jqLiteAddClass;
+        addClass = spyOn(window, 'jqLiteAddClass').andCallFake(function(element, classes) {
           var names = classes;
           if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('addClass(' + names + ')');
-          return addClassImmediately.call($animate, element, classes);
+          return _addClass(element, classes);
         });
-        removeClass = spyOn($animate, '$$removeClassImmediately').andCallFake(function(element, classes) {
+
+        var _removeClass = jqLiteRemoveClass;
+        removeClass = spyOn(window, 'jqLiteRemoveClass').andCallFake(function(element, classes) {
           var names = classes;
           if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('removeClass(' + names + ')');
-          return removeClassImmediately.call($animate, element, classes);
+          return _removeClass(element, classes);
         });
       });
     }
@@ -281,7 +308,7 @@ describe("$animate", function() {
     }));
 
 
-    it('should return a promise which is resolved on a different turn', inject(function(log, $animate, $browser, $rootScope) {
+    it('should return a promise which is resolved on a different turn', inject(function(log, $animate, $$rAF, $rootScope) {
       element = jqLite('<p class="test2">test</p>');
 
       $animate.addClass(element, 'test1').then(log.fn('addClass(test1)'));
@@ -289,7 +316,8 @@ describe("$animate", function() {
 
       $rootScope.$digest();
       expect(log).toEqual([]);
-      $browser.defer.flush();
+      $$rAF.flush();
+      $rootScope.$digest();
       expect(log).toEqual(['addClass(test1)', 'removeClass(test2)']);
 
       log.reset();
@@ -298,10 +326,10 @@ describe("$animate", function() {
       $rootScope.$apply(function() {
         $animate.addClass(element, 'test3').then(log.fn('addClass(test3)'));
         $animate.removeClass(element, 'test4').then(log.fn('removeClass(test4)'));
-        expect(log).toEqual([]);
       });
 
-      $browser.defer.flush();
+      $$rAF.flush();
+      $rootScope.$digest();
       expect(log).toEqual(['addClass(test3)', 'removeClass(test4)']);
     }));
 
