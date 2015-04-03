@@ -140,7 +140,7 @@ or JavaScript callbacks.
       {@link ngAnimate#service Services / Factories}
     </td>
     <td>
-      Use {@link ngAnimate.$animate $animate} to trigger animation operations within your directive code.
+      Use {@link ng.$animate $animate} to trigger animation operations within your directive code.
     </td>
   </tr>
   <tr>

@@ -1462,7 +1462,7 @@ describe('ngRepeat animations', function() {
   }));
 
   it('should not change the position of the block that is being animated away via a leave animation',
-    inject(function($compile, $rootScope, $animate, $document, $window, $sniffer, $timeout) {
+    inject(function($compile, $rootScope, $animate, $document, $window, $sniffer, $timeout, $$rAF) {
       if (!$sniffer.transitions) return;
 
       var item;
@@ -1487,10 +1487,9 @@ describe('ngRepeat animations', function() {
         $rootScope.$digest();
 
         expect(element.text()).toBe('123'); // the original order should be preserved
-        $animate.triggerReflow();
+        $$rAF.flush();
         $timeout.flush(1500); // 1s * 1.5 closing buffer
         expect(element.text()).toBe('13');
-
       } finally {
         ss.destroy();
       }
