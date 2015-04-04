@@ -200,6 +200,42 @@ describe('select', function() {
 
     describe('empty option', function() {
 
+      it ('should allow dynamic empty option', function() {
+        scope.dynamicOptions = [];
+
+        compile('<select ng-model="dynamicEmpty">' +
+            '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">' +
+              '{{opt.display}}' +
+            '</option>' +
+          '</selec>');
+
+        expect(element.find('option').length).toBe(1, 'Initially there will be one empty option');
+        expect(element.find('option').val()).toBe('? undefined:undefined ?', 'Initially there will be one empty option with value ?');
+
+        // when dynamicOptions change and one of the elements is empty option self.emptyOption in directive should be defined
+        scope.dynamicOptions = [
+          {
+            val : '',
+            display : 'All Options'
+          },
+          {
+            val : '1',
+            display : 'First Option'
+          }
+        ];
+        scope.dynamicEmpty = '';
+
+        scope.$digest();
+
+        expect(element.find('option').length).toBe(2, 'There should be two option now');
+
+        expect(angular.element(element.find('option')[0]).val()).toBe('', 'First value should be empty');
+        expect(angular.element(element.find('option')[0]).text()).toBe('All Options', 'First text should be "All Options"');
+        expect(angular.element(element.find('option')[1]).val()).toBe('1', 'Second value should be empty');
+        expect(angular.element(element.find('option')[1]).text()).toBe('First Option', 'Second text should be "First Option"');
+
+      });
+
       it('should select the empty option when model is undefined', function() {
         compile('<select ng-model="robot">' +
                   '<option value="">--select--</option>' +
