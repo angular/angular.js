@@ -83,8 +83,11 @@ var SelectController =
 
 
   // Tell the select control that an option, with the given value, has been added
-  self.addOption = function(value) {
+  self.addOption = function(value, element) {
     assertNotHasOwnProperty(value, '"option value"');
+    if (value === '') {
+      self.emptyOption = element
+    }
     var count = optionsMap.get(value) || 0;
     optionsMap.put(value, count + 1);
   };
