@@ -45,6 +45,51 @@ describe('$cookies', function() {
   }));
 
 
+  it('should only set the browser cookie once per cookie change',
+      inject(function($cookies, $browser, $rootScope) {
+    function hasArgs(call) {
+      return call.args.length > 0;
+    }
+
+    spyOn($browser, 'cookies').andCallThrough();
+
+    $cookies.oatmealCookie = 'nom nom';
+    $rootScope.$digest();
+
+    expect($browser.cookies.calls.filter(hasArgs).length).toEqual(1);
+  }));
+
+
+  it('should only delete the browser cookie once per cookie delete',
+      inject(function($cookies, $browser, $rootScope) {
+    function hasArgs(call) {
+      return call.args.length > 0;
+    }
+
+    spyOn($browser, 'cookies').andCallThrough();
+
+    delete $cookies.preexisting;
+    $rootScope.$digest();
+
+    expect($browser.cookies.calls.filter(hasArgs).length).toEqual(1);
+  }));
+
+
+  it('should allow cookies to be set outside the service without overwriting/duplicating',
+      inject(function($cookies, $browser, $rootScope) {
+    var browserCookieSpy = spyOn($browser, 'cookies').andCallThrough();
+
+    function hasArgs(call) {
+      return call.args.length > 0;
+    }
+
+    $browser.cookieHash['preexisting'] = 'vanilla';
+    $cookies.oatmealCookie = 'nom nom';
+    $rootScope.$digest();
+    expect(browserCookieSpy.calls.filter(hasArgs).length).toEqual(1);
+  }));
+
+
   it('should convert non-string values to string',
       inject(function($cookies, $browser, $rootScope) {
     $cookies.nonString = [1, 2, 3];
