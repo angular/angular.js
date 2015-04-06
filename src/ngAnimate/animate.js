@@ -860,8 +860,9 @@ angular.module('ngAnimate', ['ng'])
          * Performs an inline animation on the element which applies the provided `to` and `from` CSS styles to the element.
          * If any detected CSS transition, keyframe or JavaScript matches the provided `className` value then the animation
          * will take on the provided styles. For example, if a transition animation is set for the given className then the
-         * provided `from` and `to` styles will be applied alongside the given transition. If a JavaScript animation is
-         * detected then the provided styles will be given in as function paramters.
+         * provided `from` and `to` styles will be applied alongside the given transition. If the CSS style provided in `from`
+         * does not have a corresponding CSS style in `to`, the CSS style in `from` is applied immediately. If a
+         * JavaScript animation is detected then the provided styles will be given in as function parameters.
          *
          * ```js
          * ngModule.animation('.my-inline-animation', function() {
@@ -873,6 +874,16 @@ angular.module('ngAnimate', ['ng'])
          * });
          * ```
          *
+         * ```js
+         * ngModule.animation('.my-inline-animation', function() {
+         *   return {
+         *     animate : function(element, className, {left: 0}, {left: 50}, done) {
+         *       //styles
+         *     }
+         *   }
+         * });
+         * ```
+         * 
          * Below is a breakdown of each step that occurs during the `animate` animation:
          *
          * | Animation Step                                                                                                        | What the element class attribute looks like                  |
