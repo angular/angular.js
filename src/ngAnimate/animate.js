@@ -177,49 +177,6 @@
  * **version 1.3**, this workaround has been removed with ngAnimate and all non-ngAnimate CSS
  * class transitions are compatible with ngAnimate.
  *
- * There is, however, one special case when dealing with class-based transitions in ngAnimate.
- * When rendering class-based transitions that make use of the setup and active CSS classes
- * (e.g. `.fade-add` and `.fade-add-active` for when `.fade` is added) be sure to define
- * the transition value **on the active CSS class** and not the setup class.
- *
- * ```css
- * .fade-add {
- *   /&#42; remember to place a 0s transition here
- *      to ensure that the styles are applied instantly
- *      even if the element already has a transition style &#42;/
- *   transition:0s linear all;
- *
- *   /&#42; starting CSS styles &#42;/
- *   opacity:1;
- * }
- * .fade-add.fade-add-active {
- *   /&#42; this will be the length of the animation &#42;/
- *   transition:1s linear all;
- *   opacity:0;
- * }
- * ```
- *
- * The setup CSS class (in this case `.fade-add`) also has a transition style property, however, it
- * has a duration of zero. This may not be required, however, incase the browser is unable to render
- * the styling present in this CSS class instantly then it could be that the browser is attempting
- * to perform an unnecessary transition.
- *
- * This workaround, however, does not apply to  standard class-based transitions that are rendered
- * when a CSS class containing a transition is applied to an element:
- *
- * ```css
- * /&#42; this works as expected &#42;/
- * .fade {
- *   transition:1s linear all;
- *   opacity:0;
- * }
- * ```
- *
- * Please keep this in mind when coding the CSS markup that will be used within class-based transitions.
- * Also, try not to mix the two class-based animation flavors together since the CSS code may become
- * overly complex.
- *
- *
  * ### Preventing Collisions With Third Party Libraries
  *
  * Some third-party frameworks place animation duration defaults across many element or className
@@ -1761,8 +1718,10 @@ angular.module('ngAnimate', ['ng'])
         var eventCacheKey = cacheKey + ' ' + className;
         var itemIndex = lookupCache[eventCacheKey] ? ++lookupCache[eventCacheKey].total : 0;
 
+        var isFirst = itemIndex === 0;
+
         var stagger = {};
-        if (itemIndex > 0) {
+        if (!isFirst) {
           var staggerClassName = className + '-stagger';
           var staggerCacheKey = cacheKey + ' ' + staggerClassName;
           var applyClasses = !lookupCache[staggerCacheKey];
@@ -1774,19 +1733,38 @@ angular.module('ngAnimate', ['ng'])
           applyClasses && $$jqLite.removeClass(element, staggerClassName);
         }
 
+        var node = extractElementNode(element);
+
         $$jqLite.addClass(element, className);
 
         var formerData = element.data(NG_ANIMATE_CSS_DATA_KEY) || {};
+
+        if (isFirst) {
+          applyCssStateInstantly(node, 9999);
+        }
+
         var timings = getElementAnimationDetails(element, eventCacheKey);
         var transitionDuration = timings.transitionDuration;
         var animationDuration = timings.animationDuration;
 
         if (structural && transitionDuration === 0 && animationDuration === 0) {
+          applyCssStateInstantly(node, false);
           $$jqLite.removeClass(element, className);
           return false;
         }
 
-        var blockTransition = styles || (structural && transitionDuration > 0);
+        if (transitionDuration > 0) {
+          if (isFirst) {
+            applyCssStateInstantly(node, false);
+            timings = getElementAnimationDetails(element, eventCacheKey + '-delay');
+            transitionDuration = timings.transitionDuration;
+            animationDuration = timings.animationDuration;
+          }
+          applyCssStateInstantly(node, transitionDuration);
+        } else if (isFirst) {
+          applyCssStateInstantly(node, false);
+        }
+
         var blockAnimation = animationDuration > 0 &&
                              stagger.animationDelay > 0 &&
                              stagger.animationDuration === 0;
@@ -1797,17 +1775,11 @@ angular.module('ngAnimate', ['ng'])
           cacheKey: eventCacheKey,
           running: formerData.running || 0,
           itemIndex: itemIndex,
-          blockTransition: blockTransition,
           closeAnimationFns: closeAnimationFns
         });
 
-        var node = extractElementNode(element);
-
-        if (blockTransition) {
-          blockTransitions(node, true);
-          if (styles) {
-            element.css(styles);
-          }
+        if (styles) {
+          element.css(styles);
         }
 
         if (blockAnimation) {
@@ -1853,11 +1825,12 @@ angular.module('ngAnimate', ['ng'])
           staggerTime = Math.round(Math.max(transitionStaggerDelay, animationStaggerDelay) * 100) / 100;
         }
 
+        applyCssStateInstantly(node, false);
+
         if (!staggerTime) {
           $$jqLite.addClass(element, activeClassName);
-          if (elementData.blockTransition) {
-            blockTransitions(node, false);
-          }
+        } else {
+          blockTransitions(node, false);
         }
 
         var eventCacheKey = elementData.cacheKey + ' ' + activeClassName;
@@ -1970,6 +1943,10 @@ angular.module('ngAnimate', ['ng'])
             activeAnimationComplete();
           }
         }
+      }
+
+      function applyCssStateInstantly(node, duration) {
+        node.style[TRANSITION_PROP + DELAY_KEY] = duration ? '-' + duration + 's' : '';
       }
 
       function blockTransitions(node, bool) {

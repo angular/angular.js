@@ -1855,7 +1855,7 @@ describe("ngAnimate", function() {
             })
           );
 
-          it("should place a hard block when a structural CSS transition is run",
+          it("should block transition animations by setting a negative delay value matching the duration of the animation",
             inject(function($animate, $rootScope, $compile, $sniffer) {
 
             if (!$sniffer.transitions) return;
@@ -1872,11 +1872,12 @@ describe("ngAnimate", function() {
             $animate.leave(element);
             $rootScope.$digest();
 
-            expect(element.attr('style')).toMatch(/transition.*?:\s*none/);
+            // Safari likes to strip -delay when the style is inspected
+            expect(element.attr('style')).toMatch(/transition(?:-delay)?:.+?-5s/);
 
             $animate.triggerReflow();
 
-            expect(element.attr('style')).not.toMatch(/transition.*?:\s*none/);
+            expect(element.attr('style')).not.toMatch(/transition(?:-delay)?:.+?-5s/);
           }));
 
           it("should not place a hard block when a class-based CSS transition is run",
