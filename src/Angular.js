@@ -200,7 +200,9 @@ function isArrayLike(obj) {
     return false;
   }
 
-  var length = obj.length;
+  // Support: iOS 8.2 (not reproducible in simulator)
+  // "length" in obj used to prevent JIT error (gh-11508)
+  var length = "length" in Object(obj) && obj.length;
 
   if (obj.nodeType === NODE_TYPE_ELEMENT && length) {
     return true;
