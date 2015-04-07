@@ -12,9 +12,9 @@ set -e
 # before_script:
 #   - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
 
-CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.6-linux.tar.gz"
+CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.7-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
-CONNECT_DOWNLOAD="sc-4.3.6-linux.tar.gz"
+CONNECT_DOWNLOAD="sc-4.3.7-linux.tar.gz"
 
 CONNECT_LOG="$LOGS_DIR/sauce-connect"
 CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
@@ -46,5 +46,5 @@ echo "Starting Sauce Connect in the background, logging into:"
 echo "  $CONNECT_LOG"
 echo "  $CONNECT_STDOUT"
 echo "  $CONNECT_STDERR"
-sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY $ARGS -v \
+sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY $ARGS \
   --logfile $CONNECT_LOG 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &

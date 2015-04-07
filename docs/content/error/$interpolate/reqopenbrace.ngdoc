@@ -1,0 +1,12 @@
+@ngdoc error
+@name $interpolate:reqopenbrace
+@fullName An opening brace was expected but not found
+@description
+
+The plural or select extension keyword or values (such as "other", "male",
+"female", "=0", "one", "many", etc.) MUST be followed by a message enclosed in
+braces.
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}

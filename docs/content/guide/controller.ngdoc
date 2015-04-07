@@ -30,12 +30,12 @@ Do not use controllers to:
 services} instead.
 - Manage the life-cycle of other components (for example, to create service instances).
 
-# Setting up the initial state of a `$scope` object
+## Setting up the initial state of a `$scope` object
 
 Typically, when you create an application you need to set up the initial state for the Angular
 `$scope`. You set up the initial state of a scope by attaching properties to the `$scope` object.
 The properties contain the **view model** (the model that will be presented by the view).  All the
-`$scope` properties will be available to the template at the point in the DOM where the Controller
+`$scope` properties will be available to the {@link templates template} at the point in the DOM where the Controller
 is registered.
 
 The following example demonstrates creating a `GreetingController`, which attaches a `greeting`
@@ -69,7 +69,7 @@ now be data-bound to the template:
 ```
 
 
-# Adding Behavior to a Scope Object
+## Adding Behavior to a Scope Object
 
 In order to react to events or execute computation in the view we must provide behavior to the
 scope. We add behavior to the scope by attaching methods to the `$scope` object.  These methods are
@@ -99,7 +99,7 @@ objects (or primitives) assigned to the scope become model properties. Any metho
 the scope are available in the template/view, and can be invoked via angular expressions
 and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
 
-# Using Controllers Correctly
+## Using Controllers Correctly
 
 In general, a Controller shouldn't try to do too much. It should contain only the business logic
 needed for a single view.
@@ -125,7 +125,7 @@ following components:
 - A model consisting of a string named `spice`
 - A Controller with two functions that set the value of `spice`
 
-The message in our template contains a binding to the `spice` model, which by default is set to the
+The message in our template contains a binding to the `spice` model which, by default, is set to the
 string "very". Depending on which button is clicked, the `spice` model is set to `chili` or
 `jalapeño`, and the message is automatically updated by data-binding.
 
@@ -259,7 +259,7 @@ Inheritance works with methods in the same way as it does with properties. So in
 examples, all of the properties could be replaced with methods that return string values.
 
 
-## Testing Controllers
+# Testing Controllers
 
 Although there are many ways to test a Controller, one of the best conventions, shown below,
 involves injecting the {@link ng.$rootScope $rootScope} and {@link ng.$controller $controller}:

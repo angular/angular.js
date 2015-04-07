@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Falaite",
       "Tokonaki"
     ],
+    "ERANAMES": [
+      "ki mu\u02bba",
+      "ta\u02bbu \u02bbo S\u012bs\u016b"
+    ],
+    "ERAS": [
+      "KM",
+      "TS"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "S\u0101nuali",
       "F\u0113pueli",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "\u02bbOka",
       "N\u014dv",
       "T\u012bs"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

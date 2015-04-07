@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "va\u014bd\u025br\u025bdi",
       "m\u0254n\u0254 s\u0254ndi"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "pamba",
       "wanja",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "nyukul",
       "11",
       "\u0253ul\u0253us\u025b"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE dd MMMM y",
     "longDate": "d MMMM y",

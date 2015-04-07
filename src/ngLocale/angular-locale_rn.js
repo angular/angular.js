@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Ku wa gatanu",
       "Ku wa gatandatu"
     ],
+    "ERANAMES": [
+      "Mbere ya Yezu",
+      "Nyuma ya Yezu"
+    ],
+    "ERAS": [
+      "Mb.Y.",
+      "Ny.Y"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Nzero",
       "Ruhuhuma",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Ukw.",
       "Ugu.",
       "Uku."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

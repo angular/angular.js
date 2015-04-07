@@ -147,6 +147,7 @@ describe('$compile', function() {
 
 
   describe('configuration', function() {
+
     it('should register a directive', function() {
       module(function() {
         directive('div', function(log) {
@@ -198,6 +199,15 @@ describe('$compile', function() {
         expect(function() {
           directive('hasOwnProperty', function() { });
         }).toThrowMinErr('ng','badname', "hasOwnProperty is not a valid directive name");
+      });
+      inject(function($compile) {});
+    });
+
+    it('should throw an exception if a directive name starts with a non-lowercase letter', function() {
+      module(function() {
+        expect(function() {
+          directive('BadDirectiveName', function() { });
+        }).toThrowMinErr('$compile','baddir', "Directive name 'BadDirectiveName' is invalid. The first character must be a lowercase letter");
       });
       inject(function($compile) {});
     });
@@ -1326,16 +1336,10 @@ describe('$compile', function() {
               $rootScope.$digest();
 
 
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>',
-                  '<div><b class="i-hello"></b><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>');
 
               $httpBackend.flush();
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>',
-                  '<div><span class="i-hello" i-hello="">Hello!</span><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>');
             }
         ));
 
@@ -1362,10 +1366,7 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
-                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello, Elvis!</span></div>');
             }
         ));
 
@@ -1394,10 +1395,7 @@ describe('$compile', function() {
               element = template($rootScope);
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).toBeOneOf(
-                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
-                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
-              );
+              expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello, Elvis!</span></div>');
             }
         ));
 
@@ -4205,6 +4203,142 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         element = $compile('<div main dep other></div>')($rootScope);
         expect(log).toEqual('false; dep:main; main');
+      });
+    });
+
+
+    it('should respect explicit return value from controller', function() {
+      var expectedController;
+      module(function() {
+        directive('logControllerProp', function(log) {
+          return {
+            controller: function($scope) {
+              this.foo = 'baz'; // value should not be used.
+              return expectedController = {foo: 'bar'};
+            },
+            link: function(scope, element, attrs, controller) {
+              expect(expectedController).toBeDefined();
+              expect(controller).toBe(expectedController);
+              expect(controller.foo).toBe('bar');
+              log('done');
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
+        expect(log).toEqual('done');
+        expect(element.data('$logControllerPropController')).toBe(expectedController);
+      });
+    });
+
+
+    it('should get explicit return value of required parent controller', function() {
+      var expectedController;
+      module(function() {
+        directive('nested', function(log) {
+          return {
+            require: '^^?nested',
+            controller: function() {
+              if (!expectedController) expectedController = {foo: 'bar'};
+              return expectedController;
+            },
+            link: function(scope, element, attrs, controller) {
+              if (element.parent().length) {
+                expect(expectedController).toBeDefined();
+                expect(controller).toBe(expectedController);
+                expect(controller.foo).toBe('bar');
+                log('done');
+              }
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div nested><div nested></div></div>')($rootScope);
+        expect(log).toEqual('done');
+        expect(element.data('$nestedController')).toBe(expectedController);
+      });
+    });
+
+
+    it('should respect explicit controller return value when using controllerAs', function() {
+      module(function() {
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            scope: {},
+            controller: function() {
+              this.name = 'lucas';
+              return {name: 'george'};
+            },
+            controllerAs: 'mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>template:{{mainCtrl.name}}</span>');
+        element = $compile('<main/>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('template:george');
+      });
+    });
+
+
+    it('transcluded children should receive explicit return value of parent controller', function() {
+      var expectedController;
+      module(function() {
+        directive('nester', valueFn({
+          transclude: true,
+          controller: function($transclude) {
+            this.foo = 'baz';
+            return expectedController = {transclude:$transclude, foo: 'bar'};
+          },
+          link: function(scope, el, attr, ctrl) {
+            ctrl.transclude(cloneAttach);
+            function cloneAttach(clone) {
+              el.append(clone);
+            }
+          }
+        }));
+        directive('nested', function(log) {
+          return {
+            require: '^^nester',
+            link: function(scope, element, attrs, controller) {
+              expect(controller).toBeDefined();
+              expect(controller).toBe(expectedController);
+              log('done');
+            }
+          };
+        });
+      });
+      inject(function(log, $compile) {
+        element = $compile('<div nester><div nested></div></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log.toString()).toBe('done');
+        expect(element.data('$nesterController')).toBe(expectedController);
+      });
+    });
+
+
+    it('explicit controller return values are ignored if they are primitives', function() {
+      module(function() {
+        directive('logControllerProp', function(log) {
+          return {
+            controller: function($scope) {
+              this.foo = 'baz'; // value *will* be used.
+              return 'bar';
+            },
+            link: function(scope, element, attrs, controller) {
+              log(controller.foo);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<log-controller-prop></log-controller-prop>')($rootScope);
+        expect(log).toEqual('baz');
+        expect(element.data('$logControllerPropController').foo).toEqual('baz');
       });
     });
 

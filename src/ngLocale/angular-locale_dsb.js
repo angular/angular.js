@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "p\u011btk",
       "sobota"
     ],
+    "ERANAMES": [
+      "p\u015bed Kristusowym naro\u017aenim",
+      "p\u00f3 Kristusowem naro\u017aenju"
+    ],
+    "ERAS": [
+      "p\u015b.Chr.n.",
+      "p\u00f3 Chr.n."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januara",
       "februara",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "okt.",
       "now.",
       "dec."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",

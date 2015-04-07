@@ -1751,6 +1751,28 @@ describe('ngMock', function() {
       }));
     });
   });
+
+
+  describe('$controllerDecorator', function() {
+    it('should support creating controller with bindings', function() {
+      var called = false;
+      var data = [
+        { name: 'derp1', id: 0 },
+        { name: 'testname', id: 1 },
+        { name: 'flurp', id: 2 }
+      ];
+      module(function($controllerProvider) {
+        $controllerProvider.register('testCtrl', function() {
+          called = true;
+          expect(this.data).toBe(data);
+        });
+      });
+      inject(function($controller, $rootScope) {
+        $controller('testCtrl', { scope: $rootScope }, { data: data });
+        expect(called).toBe(true);
+      });
+    });
+  });
 });
 
 

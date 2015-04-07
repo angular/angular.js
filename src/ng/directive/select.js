@@ -135,13 +135,13 @@ var SelectController =
  * option. See example below for demonstration.
  *
  * <div class="alert alert-warning">
- * **Note:** `ngModel` compares by reference, not value. This is important when binding to an
- * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/).
+ * **Note:** By default, `ngModel` compares by reference, not value. This is important when binding to an
+ * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/). When using `track by`
+ * in an `ngOptions` expression, however, deep equality checks will be performed.
  * </div>
  *
  */
 var selectDirective = function() {
-  var lastView;
 
   return {
     restrict: 'E',
@@ -200,11 +200,13 @@ var selectDirective = function() {
 
         // we have to do it on each watch since ngModel watches reference, but
         // we need to work of an array, so we need to see if anything was inserted/removed
+        var lastView, lastViewRef = NaN;
         scope.$watch(function selectMultipleWatch() {
-          if (!equals(lastView, ngModelCtrl.$viewValue)) {
+          if (lastViewRef === ngModelCtrl.$viewValue && !equals(lastView, ngModelCtrl.$viewValue)) {
             lastView = shallowCopy(ngModelCtrl.$viewValue);
             ngModelCtrl.$render();
           }
+          lastViewRef = ngModelCtrl.$viewValue;
         });
 
         // If we are a multiple select then value is now a collection

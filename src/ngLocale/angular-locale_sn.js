@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Chishanu",
       "Mugovera"
     ],
+    "ERANAMES": [
+      "Kristo asati auya",
+      "Kristo ashaya"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Ndira",
       "Kukadzi",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Gum",
       "Mb",
       "Zvi"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

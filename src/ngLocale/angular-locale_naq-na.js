@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Fraitaxtsees",
       "Satertaxtsees"
     ],
+    "ERANAMES": [
+      "Xristub ai\u01c3\u00e2",
+      "Xristub khao\u01c3g\u00e2"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u01c3Khanni",
       "\u01c3Khan\u01c0g\u00f4ab",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Oct",
       "Nov",
       "Dec"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "ngoLesihlanu",
       "umGqibelo"
     ],
+    "ERANAMES": [
+      "BC",
+      "AD"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Janabari",
       "uFeberbari",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Okt",
       "Usi",
       "Dis"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",

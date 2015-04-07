@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "sexta-feira",
       "s\u00e1bado"
     ],
+    "ERANAMES": [
+      "Antes de Cristo",
+      "Ano do Senhor"
+    ],
+    "ERAS": [
+      "a.C.",
+      "d.C."
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "janeiro",
       "fevereiro",
@@ -52,6 +61,10 @@ $provide.value("$locale", {
       "out",
       "nov",
       "dez"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",

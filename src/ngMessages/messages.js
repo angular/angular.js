@@ -500,27 +500,21 @@ angular.module('ngMessages', [])
 
      return {
        restrict: 'AE',
-       require: '^^ngMessages',
-       compile: function(element, attrs) {
-         var comment = jqLite($document[0].createComment(' ngMessagesInclude: '));
-         element.after(comment);
+       require: '^^ngMessages', // we only require this for validation sake
+       link: function($scope, element, attrs) {
+         var src = attrs.ngMessagesInclude || attrs.src;
+         $templateRequest(src).then(function(html) {
+           $compile(html)($scope, function(contents) {
+             element.after(contents);
 
-         return function($scope, $element, attrs, ngMessagesCtrl) {
-           // we're removing this since we only need access to the newly
-           // created comment node as an anchor.
-           element.remove();
+             // the anchor is placed for debugging purposes
+             var anchor = jqLite($document[0].createComment(' ngMessagesInclude: ' + src + ' '));
+             element.after(anchor);
 
-           $templateRequest(attrs.ngMessagesInclude || attrs.src).then(function(html) {
-             var elements = jqLite('<div></div>').html(html).contents();
-             var cursor = comment;
-             forEach(elements, function(elm) {
-               elm = jqLite(elm);
-               cursor.after(elm);
-               cursor = elm;
-             });
-             $compile(elements)($scope);
+             // we don't want to pollute the DOM anymore by keeping an empty directive element
+             element.remove();
            });
-         };
+         });
        }
      };
    }])
@@ -537,29 +531,58 @@ angular.module('ngMessages', [])
     * must be situated since it determines which messages are visible based on the state
     * of the provided key/value map that `ngMessages` listens on.
     *
+    * More information about using `ngMessage` can be found in the
+    * {@link module:ngMessages `ngMessages` module documentation}.
+    *
     * @usage
     * ```html
     * <!-- using attribute directives -->
     * <ANY ng-messages="expression">
     *   <ANY ng-message="stringValue">...</ANY>
     *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
-    *   <ANY ng-message-exp="expressionValue">...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
     * <ng-messages for="expression">
     *   <ng-message when="stringValue">...</ng-message>
     *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
+    * </ng-messages>
+    * ```
+    *
+    * @param {expression} ngMessage|when a string value corresponding to the message key.
+    */
+  .directive('ngMessage', ngMessageDirectiveFactory('AE'))
+
+
+   /**
+    * @ngdoc directive
+    * @name ngMessageExp
+    * @restrict AE
+    * @scope
+    *
+    * @description
+    * `ngMessageExp` is a directive with the purpose to show and hide a particular message.
+    * For `ngMessageExp` to operate, a parent `ngMessages` directive on a parent DOM element
+    * must be situated since it determines which messages are visible based on the state
+    * of the provided key/value map that `ngMessages` listens on.
+    *
+    * @usage
+    * ```html
+    * <!-- using attribute directives -->
+    * <ANY ng-messages="expression">
+    *   <ANY ng-message-exp="expressionValue">...</ANY>
+    * </ANY>
+    *
+    * <!-- or by using element directives -->
+    * <ng-messages for="expression">
     *   <ng-message when-exp="expressionValue">...</ng-message>
     * </ng-messages>
     * ```
     *
     * {@link module:ngMessages Click here} to learn more about `ngMessages` and `ngMessage`.
     *
-    * @param {expression} ngMessage|when a string value corresponding to the message key.
     * @param {expression} ngMessageExp|whenExp an expression value corresponding to the message key.
     */
-  .directive('ngMessage', ngMessageDirectiveFactory('AE'))
   .directive('ngMessageExp', ngMessageDirectiveFactory('A'));
 
 function ngMessageDirectiveFactory(restrict) {

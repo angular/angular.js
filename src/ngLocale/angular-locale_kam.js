@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Wa katano",
       "Wa thanthat\u0169"
     ],
+    "ERANAMES": [
+      "Mbee wa Yes\u0169",
+      "\u0128tina wa Yes\u0169"
+    ],
+    "ERAS": [
+      "MY",
+      "IY"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mwai wa mbee",
       "Mwai wa kel\u0129",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "\u0128ku",
       "\u0128km",
       "\u0128kl"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

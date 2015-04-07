@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Jimaata",
       "Sanbata"
     ],
+    "ERANAMES": [
+      "KD",
+      "KB"
+    ],
+    "ERAS": [
+      "KD",
+      "KB"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Amajjii",
       "Guraandhala",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Onk",
       "Sad",
       "Mud"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "dd MMMM y",

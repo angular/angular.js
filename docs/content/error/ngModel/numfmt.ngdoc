@@ -1,0 +1,56 @@
+@ngdoc error
+@name ngModel:numfmt
+@fullName Model is not of type `number`
+@description
+
+The number input directive `<input type="number">` requires the model to be a `number`.
+
+If the model is something else, this error will be thrown.
+
+Angular does not set validation errors on the `<input>` in this case
+as this error is caused by incorrect application logic and not by bad input from the user.
+
+If your model does not contain actual numbers then it is up to the application developer
+to use a directive that will do the conversion in the `ngModel` `$formatters` and `$parsers`
+pipeline.
+
+## Example
+
+In this example, our model stores the number as a string, so we provide the `stringToNumber`
+directive to convert it into the format the `input[number]` directive expects.
+
+
+<example module="numfmt-error-module">
+ <file name="index.html">
+  <table>
+    <tr ng-repeat="x in ['0', '1']">
+      <td>
+        <input type="number" string-to-number ng-model="x" /> {{ x }} : {{ typeOf(x) }}
+      </td>
+    </tr>
+  </table>
+ </file>
+ <file name="app.js">
+  angular.module('numfmt-error-module', [])
+
+  .run(function($rootScope) {
+    $rootScope.typeOf = function(value) {
+      return typeof value;
+    };
+  })
+
+  .directive('stringToNumber', function() {
+    return {
+      require: 'ngModel',
+      link: function(scope, element, attrs, ngModel) {
+        ngModel.$parsers.push(function(value) {
+          return '' + value;
+        });
+        ngModel.$formatters.push(function(value) {
+          return parseFloat(value, 10);
+        });
+      }
+    };
+  });
+ </file>
+</example>

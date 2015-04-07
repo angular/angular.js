@@ -298,6 +298,18 @@ describe('filters', function() {
 
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+
+      expect(date(noon, "MMMM dd, y G")).
+                      toEqual('September 03, 2010 AD');
+
+      expect(date(noon, "MMMM dd, y GG")).
+                      toEqual('September 03, 2010 AD');
+
+      expect(date(noon, "MMMM dd, y GGG")).
+                      toEqual('September 03, 2010 AD');
+
+      expect(date(noon, "MMMM dd, y GGGG")).
+                      toEqual('September 03, 2010 Anno Domini');
     });
 
     it('should accept negative numbers as strings', function() {
@@ -464,8 +476,8 @@ describe('filters', function() {
     });
 
     it('should fallback to default timezone in case an unknown timezone was passed', function() {
-      var value = new angular.mock.TzDate(-2, '2003-09-10T01:02:04.000Z');
-      expect(date(value, 'yyyy-MM-dd HH-mm-ssZ', 'WTF')).toEqual('2003-09-10 03-02-04+0200');
+      var value = new Date(2003, 8, 10, 3, 2, 4);
+      expect(date(value, 'yyyy-MM-dd HH-mm-ssZ', 'WTF')).toEqual(date(value, 'yyyy-MM-dd HH-mm-ssZ'));
     });
   });
 });

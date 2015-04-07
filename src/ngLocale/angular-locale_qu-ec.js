@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Viernes",
       "S\u00e1bado"
     ],
+    "ERANAMES": [
+      "BCE",
+      "d.C."
+    ],
+    "ERAS": [
+      "BCE",
+      "d.C."
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Qulla puquy",
       "Hatun puquy",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Kan",
       "Aya",
       "Kap"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "y MMMM d",

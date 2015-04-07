@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "e premte",
       "e shtun\u00eb"
     ],
+    "ERANAMES": [
+      "para er\u00ebs s\u00eb re",
+      "er\u00ebs s\u00eb re"
+    ],
+    "ERAS": [
+      "p.e.r.",
+      "e.r."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "janar",
       "shkurt",
@@ -52,6 +61,10 @@ $provide.value("$locale", {
       "Tet",
       "N\u00ebn",
       "Dhj"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",

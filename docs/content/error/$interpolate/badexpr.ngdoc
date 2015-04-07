@@ -1,0 +1,6 @@
+@ngdoc error
+@name $interpolate:badexpr
+@fullName Expecting end operator
+@description
+
+The Angular expression is missing the corresponding closing operator.

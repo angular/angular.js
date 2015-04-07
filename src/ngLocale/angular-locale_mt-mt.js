@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Il-\u0120img\u0127a",
       "Is-Sibt"
     ],
+    "ERANAMES": [
+      "Qabel Kristu",
+      "Wara Kristu"
+    ],
+    "ERAS": [
+      "QK",
+      "WK"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Jannar",
       "Frar",
@@ -52,6 +61,10 @@ $provide.value("$locale", {
       "Ott",
       "Nov",
       "Di\u010b"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d 'ta'\u2019 MMMM y",
     "longDate": "d 'ta'\u2019 MMMM y",

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "vrijdag",
       "zaterdag"
     ],
+    "ERANAMES": [
+      "voor Christus",
+      "na Christus"
+    ],
+    "ERAS": [
+      "v.Chr.",
+      "n.Chr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januari",
       "februari",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "okt.",
       "nov.",
       "dec."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

@@ -32,8 +32,9 @@ var ngOptionsMinErr = minErr('ngOptions');
  * option. See example below for demonstration.
  *
  * <div class="alert alert-warning">
- * **Note:** `ngModel` compares by reference, not value. This is important when binding to an
- * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/).
+ * **Note:** By default, `ngModel` compares by reference, not value. This is important when binding to an
+ * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/). When using `track by`
+ * in an `ngOptions` expression, however, deep equality checks will be performed.
  * </div>
  *
  * ## `select` **`as`**
@@ -275,6 +276,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
     }
 
     return {
+      trackBy: trackBy,
       getWatchables: $parse(valuesFn, function(values) {
         // Create a collection of things that we would like to watch (watchedArray)
         // so that they can all be watched using a single $watchCollection
@@ -335,6 +337,11 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           selectValueMap: selectValueMap,
           getOptionFromViewValue: function(value) {
             return selectValueMap[getTrackByValue(value, getLocals(value))];
+          },
+          getViewValueFromOption: function(option) {
+            // If the viewValue could be an object that may be mutated by the application,
+            // we need to make a copy and not return the reference to the value on the option.
+            return trackBy ? angular.copy(option.viewValue) : option.viewValue;
           }
         };
       }
@@ -428,7 +435,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         if (selectedOption && !selectedOption.disabled) {
           removeEmptyOption();
           removeUnknownOption();
-          return selectedOption.viewValue;
+          return options.getViewValueFromOption(selectedOption);
         }
         return null;
       };
@@ -462,7 +469,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
           forEach(selectedValues, function(value) {
             var option = options.selectValueMap[value];
-            if (!option.disabled) selections.push(option.viewValue);
+            if (!option.disabled) selections.push(options.getViewValueFromOption(option));
           });
 
           return selections;
@@ -493,6 +500,11 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       // We will re-render the option elements if the option values or labels change
       scope.$watchCollection(ngOptions.getWatchables, updateOptions);
 
+      // We also need to watch to see if the internals of the model changes, since
+      // ngModel only watches for object identity change
+      if (ngOptions.trackBy) {
+        scope.$watch(attr.ngModel, function() { ngModelCtrl.$render(); }, true);
+      }
       // ------------------------------------------------------------------ //
 
 
@@ -634,10 +646,13 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         // Check to see if the value has changed due to the update to the options
         if (!ngModelCtrl.$isEmpty(previousValue)) {
           var nextValue = selectCtrl.readValue();
-          if (!equals(previousValue, nextValue)) {
+          if (ngOptions.trackBy && !equals(previousValue, nextValue) ||
+                previousValue !== nextValue) {
             ngModelCtrl.$setViewValue(nextValue);
+            ngModelCtrl.$render();
           }
         }
+
       }
 
     }

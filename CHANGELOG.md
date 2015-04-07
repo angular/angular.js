@@ -1,3 +1,305 @@
+<a name="1.4.0-beta.6"></a>
+# 1.4.0-beta.6 cookie-liberation (2015-03-17)
+
+
+## Bug Fixes
+
+- **$animate:** call `applyStyles` from options on `leave`
+  ([4374f892](https://github.com/angular/angular.js/commit/4374f892c6fa4af6ba1f2ed47c5f888fdb5fadc5),
+   [#10068](https://github.com/angular/angular.js/issues/10068))
+- **$browser:**  don't crash if `history.state` access causes error in IE
+  ([3b8163b7](https://github.com/angular/angular.js/commit/3b8163b7b664f24499e75460ab50c066eaec0f78),
+   [#10367](https://github.com/angular/angular.js/issues/10367), [#10369](https://github.com/angular/angular.js/issues/10369))
+- **$sanitize:** disallow unsafe svg animation tags
+  ([67688d5c](https://github.com/angular/angular.js/commit/67688d5ca00f6de4c7fe6084e2fa762a00d25610),
+   [#11290](https://github.com/angular/angular.js/issues/11290))
+- **Angular:** properly compare RegExp with other objects for equality
+  ([f22e1fc9](https://github.com/angular/angular.js/commit/f22e1fc9610ae111a3ea8746a3a57169c99ce142),
+   [#11204](https://github.com/angular/angular.js/issues/11204), [#11205](https://github.com/angular/angular.js/issues/11205))
+- **date filter:** display localised era for `G` format codes
+  ([2b4dfa9e](https://github.com/angular/angular.js/commit/2b4dfa9e2b63d7ebb78f3b0fd3439d18f932e1cd),
+   [#10503](https://github.com/angular/angular.js/issues/10503), [#11266](https://github.com/angular/angular.js/issues/11266))
+- **filterFilter:**
+  - fix filtering using an object expression when the filter value is undefined
+  ([c62fa6bd](https://github.com/angular/angular.js/commit/c62fa6bd898e1048d4690d41034489dc60ba6ac2),
+   [#10419](https://github.com/angular/angular.js/issues/10419), [#10424](https://github.com/angular/angular.js/issues/10424))
+  - do not throw an error if property is null when comparing objects
+  ([2c4ffd6a](https://github.com/angular/angular.js/commit/2c4ffd6af4eb012c4054fe7c096267bbc5510af0),
+   [#10991](https://github.com/angular/angular.js/issues/10991), [#10992](https://github.com/angular/angular.js/issues/10992), [#11116](https://github.com/angular/angular.js/issues/11116))
+- **form:** allow dynamic form names which initially evaluate to blank
+  ([410f7c68](https://github.com/angular/angular.js/commit/410f7c682633c681be641cd2a321f9e51671d474))
+- **jqLite:** attr should ignore comment, text and attribute nodes
+  ([bb5bf7f8](https://github.com/angular/angular.js/commit/bb5bf7f8162d11610a53428e630b47030bdc38e5))
+- **ng/$locale:** add ERA info in generic locale
+  ([4acb0af2](https://github.com/angular/angular.js/commit/4acb0af24c7fb3705a197ca96adc532de4766a7a))
+- **ngJq:** don't rely on existence of jqlite
+  ([342e5f3c](https://github.com/angular/angular.js/commit/342e5f3ce38d2fd10c5d5a98ca66f864286a7922),
+   [#11044](https://github.com/angular/angular.js/issues/11044))
+- **ngMessages:** ensure that multi-level transclusion works with `ngMessagesInclude`
+  ([d7ec5f39](https://github.com/angular/angular.js/commit/d7ec5f392e1550658ddf271a30627b1749eccb69),
+   [#11196](https://github.com/angular/angular.js/issues/11196))
+- **ngOptions:** fix model<->option interaction when using `track by`
+  ([6a03ca27](https://github.com/angular/angular.js/commit/6a03ca274314352052c3082163367a146bb11c2d),
+   [#10869](https://github.com/angular/angular.js/issues/10869), [#10893](https://github.com/angular/angular.js/issues/10893))
+- **rootScope:** prevent memory leak when destroying scopes
+  ([fb7db4a0](https://github.com/angular/angular.js/commit/fb7db4a07bd1b0b67824d3808fe315419b272689),
+   [#11173](https://github.com/angular/angular.js/issues/11173), [#11169](https://github.com/angular/angular.js/issues/11169))
+
+
+## Features
+
+- **$cookies:**
+  - allow passing cookie options
+  ([92c366d2](https://github.com/angular/angular.js/commit/92c366d205da36ec26502aded23db71a6473dad7),
+   [#8324](https://github.com/angular/angular.js/issues/8324), [#3988](https://github.com/angular/angular.js/issues/3988), [#1786](https://github.com/angular/angular.js/issues/1786), [#950](https://github.com/angular/angular.js/issues/950))
+  - move logic into $cookies and deprecate $cookieStore
+  ([38fbe3ee](https://github.com/angular/angular.js/commit/38fbe3ee8370fc449b82d80df07b5c2ed2cd5fbe),
+   [#6411](https://github.com/angular/angular.js/issues/6411), [#7631](https://github.com/angular/angular.js/issues/7631))
+- **$cookiesProvider:** provide path, domain, expires and secure options
+  ([53c66369](https://github.com/angular/angular.js/commit/53c663699126815eabc2a3bc1e3bafc8b3874268))
+- **$interval:** pass additional arguments to the callback
+  ([4f1f9cfd](https://github.com/angular/angular.js/commit/4f1f9cfdb721cf308ca1162b2227836dc1d28388),
+   [#10632](https://github.com/angular/angular.js/issues/10632))
+- **$timeout:** pass additional arguments to the callback
+  ([3a4b6b83](https://github.com/angular/angular.js/commit/3a4b6b83efdb8051e5c4803c0892c19ceb2cba50),
+   [#10631](https://github.com/angular/angular.js/issues/10631))
+- **angular.merge:** provide an alternative to `angular.extend` that merges 'deeply'
+  ([c0498d45](https://github.com/angular/angular.js/commit/c0498d45feb913c318224ea70b5adf7112df6bac),
+   [#10507](https://github.com/angular/angular.js/issues/10507), [#10519](https://github.com/angular/angular.js/issues/10519))
+- **filterFilter:** compare object with custom `toString()` to primitive
+  ([f8c42161](https://github.com/angular/angular.js/commit/f8c421617096a8d613f4eb6d0f5b098ee149c029),
+   [#10464](https://github.com/angular/angular.js/issues/10464), [#10548](https://github.com/angular/angular.js/issues/10548))
+- **ngAria:**
+  - add `button` role to `ngClick`
+  ([bb365070](https://github.com/angular/angular.js/commit/bb365070a3ed7c2d26056d378ab6a8ef493b23cc),
+   [#9254](https://github.com/angular/angular.js/issues/9254), [#10318](https://github.com/angular/angular.js/issues/10318))
+  - add roles to custom inputs
+  ([29cdaee2](https://github.com/angular/angular.js/commit/29cdaee2b6e853bc3f8882a00661698d146ecd18),
+   [#10012](https://github.com/angular/angular.js/issues/10012), [#10318](https://github.com/angular/angular.js/issues/10318))
+- **ngLocale:** Add FIRSTDAYOFWEEK and WEEKENDRANGE from google data
+  ([3d149c7f](https://github.com/angular/angular.js/commit/3d149c7f20ffabab5a635af9ddcfc7105112ab4a))
+- **ngMock:**
+  - allow mock $controller service to set up controller bindings
+  ([d02d0585](https://github.com/angular/angular.js/commit/d02d0585a086ecd2e1de628218b5a6d85c8fc7bd),
+   [#9425](https://github.com/angular/angular.js/issues/9425), [#11239](https://github.com/angular/angular.js/issues/11239))
+  - add `they` helpers for testing multiple specs
+  ([e650c458](https://github.com/angular/angular.js/commit/e650c45894abe6314a806e6b3e32c908df5c00fd),
+   [#10864](https://github.com/angular/angular.js/issues/10864))
+- **ngModel:** support conversion to timezone other than UTC
+  ([0413bee8](https://github.com/angular/angular.js/commit/0413bee8cc563a6555f8d42d5f183f6fbefc7350),
+   [#11005](https://github.com/angular/angular.js/issues/11005))
+
+
+## Breaking Changes
+
+- **$cookies:** due to [38fbe3ee](https://github.com/angular/angular.js/commit/38fbe3ee8370fc449b82d80df07b5c2ed2cd5fbe),
+
+
+`$cookies` no longer exposes properties that represent the current browser cookie
+values. Now you must explicitly the methods described above to access the cookie
+values. This also means that you can no longer watch the `$cookies` properties for
+changes to the browser's cookies.
+
+This feature is generally only needed if a 3rd party library was programmatically
+changing the cookies at runtime. If you rely on this then you must either write code that
+can react to the 3rd party library making the changes to cookies or implement your own polling
+mechanism.
+
+
+
+
+<a name="1.3.15"></a>
+# 1.3.15 locality-filtration (2015-03-17)
+
+## Bug Fixes
+
+- **$animate:** call `applyStyles` with options on `leave`
+  ([ebd84e80](https://github.com/angular/angular.js/commit/ebd84e8008f45ccaa84290f6da8c2a114fcfa8cd),
+   [#10068](https://github.com/angular/angular.js/issues/10068))
+- **$browser:**  don't crash if history.state access causes error in IE
+  ([92767c09](https://github.com/angular/angular.js/commit/92767c098feaf8c58faf2d67f882305019d8160e),
+   [#10367](https://github.com/angular/angular.js/issues/10367), [#10369](https://github.com/angular/angular.js/issues/10369))
+- **Angular:** properly compare RegExp with other objects for equality
+  ([b8e8f9af](https://github.com/angular/angular.js/commit/b8e8f9af78f4ef3e556dd3cef6bfee35ad4cb82a),
+   [#11204](https://github.com/angular/angular.js/issues/11204), [#11205](https://github.com/angular/angular.js/issues/11205))
+- **date filter:** display localised era for `G` format codes
+  ([f2683f95](https://github.com/angular/angular.js/commit/f2683f956fcd3216eaa263db20b31e0d46338800),
+   [#10503](https://github.com/angular/angular.js/issues/10503), [#11266](https://github.com/angular/angular.js/issues/11266))
+- **filterFilter:**
+  - fix filtering using an object expression when the filter value is `undefined`
+  ([63b9956f](https://github.com/angular/angular.js/commit/63b9956faf4c3679c88a9401b8ccbb111c0294ee),
+   [#10419](https://github.com/angular/angular.js/issues/10419), [#10424](https://github.com/angular/angular.js/issues/10424))
+  - do not throw an error if property is null when comparing objects
+  ([01161a0e](https://github.com/angular/angular.js/commit/01161a0e9fb1af93e9f06535aed8392ed7f116a4),
+   [#10991](https://github.com/angular/angular.js/issues/10991), [#10992](https://github.com/angular/angular.js/issues/10992), [#11116](https://github.com/angular/angular.js/issues/11116))
+- **form:** allow dynamic form names which initially evaluate to blank
+  ([190ea883](https://github.com/angular/angular.js/commit/190ea883c588d63f8b900a8de1d45c6c9ebb01ec),
+   [#11096](https://github.com/angular/angular.js/issues/11096))
+- **ng/$locale:** add ERA info in generic locale
+  ([57842530](https://github.com/angular/angular.js/commit/578425303f2480959da80f31920d08f277d42010))
+- **rootScope:** prevent memory leak when destroying scopes
+  ([528cf09e](https://github.com/angular/angular.js/commit/528cf09e3f78ad4e3bb6a329ebe315c4f29b4cdb),
+   [#11173](https://github.com/angular/angular.js/issues/11173), [#11169](https://github.com/angular/angular.js/issues/11169))
+- **templateRequest:** avoid throwing syntax error in Android 2.3
+  ([75abbd52](https://github.com/angular/angular.js/commit/75abbd525f07866fdcc6fb311802b8fe700af174),
+   [#11089](https://github.com/angular/angular.js/issues/11089), [#11051](https://github.com/angular/angular.js/issues/11051), [#11088](https://github.com/angular/angular.js/issues/11088))
+
+
+## Features
+
+- **ngAria:**
+  - add `button` role to `ngClick`
+  ([b9ad91cf](https://github.com/angular/angular.js/commit/b9ad91cf1e86310a2d2bf13b29fa13a9b835e1ce),
+   [#9254](https://github.com/angular/angular.js/issues/9254), [#10318](https://github.com/angular/angular.js/issues/10318))
+  - add roles to custom inputs
+  ([21369943](https://github.com/angular/angular.js/commit/21369943fafd577b36827a641b021b1c14cefb57),
+   [#10012](https://github.com/angular/angular.js/issues/10012), [#10318](https://github.com/angular/angular.js/issues/10318))
+- **ngMock:**
+  - allow mock $controller service to set up controller bindings
+  ([b3878a36](https://github.com/angular/angular.js/commit/b3878a36d9f8e56ad7be1eedb9691c9bd12568cb),
+   [#9425](https://github.com/angular/angular.js/issues/9425), [#11239](https://github.com/angular/angular.js/issues/11239))
+  - add `they` helpers for testing multiple specs
+  ([7288be25](https://github.com/angular/angular.js/commit/7288be25a75d6ca6ac7eca05a7d6b12ccb3a22f8),
+   [#10864](https://github.com/angular/angular.js/issues/10864))
+
+
+
+<a name="1.4.0-beta.5"></a>
+# 1.4.0-beta.5 karmic-stabilization (2015-02-24)
+
+
+## Bug Fixes
+
+- **$http:** properly access request headers with mixed case
+  ([5da1256f](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
+   [#10881](https://github.com/angular/angular.js/issues/10881), [#10883](https://github.com/angular/angular.js/issues/10883))
+- **input:** create max and/or min validator regardless of initial value
+  ([c211e7a5](https://github.com/angular/angular.js/commit/c211e7a5ad5f1fb8748125f14912aa8715081925),
+   [#10307](https://github.com/angular/angular.js/issues/10307), [#10327](https://github.com/angular/angular.js/issues/10327))
+- **ngAria:** correctly set "checked" attr for checkboxes and radios
+  ([d6eba217](https://github.com/angular/angular.js/commit/d6eba21733c6e67e90e3a4763d8d41ad89a73a0c),
+   [#10389](https://github.com/angular/angular.js/issues/10389), [#10212](https://github.com/angular/angular.js/issues/10212))
+- **ngModel:** fix issues when parserName is same as validator key
+  ([056a3170](https://github.com/angular/angular.js/commit/056a31700803c0a6014b43cfcc36c5c500cc596e),
+   [#10698](https://github.com/angular/angular.js/issues/10698), [#10850](https://github.com/angular/angular.js/issues/10850), [#11046](https://github.com/angular/angular.js/issues/11046))
+- **ngOptions:** ngModel is optional
+  ([ef894c87](https://github.com/angular/angular.js/commit/ef894c87eaead76d90169113ab6acc9287654ea3))
+- **ngSanitize:** Do not ignore white-listed svg camelCased attributes
+  ([46b80654](https://github.com/angular/angular.js/commit/46b80654cae9105642909cd55f73f7c26d2fbd80),
+   [#10779](https://github.com/angular/angular.js/issues/10779), [#10990](https://github.com/angular/angular.js/issues/10990), [#11124](https://github.com/angular/angular.js/issues/11124))
+- **select:** remove unknown option when model is undefined and empty option is available
+  ([30b48132](https://github.com/angular/angular.js/commit/30b48132e0fb92ea8dd25a9794b4c41a3a81a951),
+   [#11078](https://github.com/angular/angular.js/issues/11078), [#11092](https://github.com/angular/angular.js/issues/11092))
+- **templateRequest:** avoid throwing syntax error in Android 2.3
+  ([f6272333](https://github.com/angular/angular.js/commit/f6272333127d908b19da23f9cd8a74052711795b),
+   [#11089](https://github.com/angular/angular.js/issues/11089), [#11051](https://github.com/angular/angular.js/issues/11051), [#11088](https://github.com/angular/angular.js/issues/11088))
+
+
+## Features
+
+- **CommonJS:** - angular modules are now packaged for npm with helpful exports
+
+- **limitTo:** extend the filter to take a beginning index argument
+  ([aaae3cc4](https://github.com/angular/angular.js/commit/aaae3cc4160417e6dad802ed9d9f6d5471821a87),
+   [#5355](https://github.com/angular/angular.js/issues/5355), [#10899](https://github.com/angular/angular.js/issues/10899))
+- **ngMessages:** provide support for dynamic message resolution
+  ([c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+   [#10036](https://github.com/angular/angular.js/issues/10036), [#9338](https://github.com/angular/angular.js/issues/9338))
+- **ngOptions:** add support for disabling an option
+  ([da9eac86](https://github.com/angular/angular.js/commit/da9eac8660343b1cd9fdcf9d2d1bda06067142d7),
+   [#638](https://github.com/angular/angular.js/issues/638), [#11017](https://github.com/angular/angular.js/issues/11017))
+
+
+## Performance Improvements
+
+- **$compile:**
+  - replace forEach(controller) with plain loops
+  ([5b522867](https://github.com/angular/angular.js/commit/5b5228675f67c8f5e04c7183c3ef5e71cb2bf08b),
+   [#11084](https://github.com/angular/angular.js/issues/11084))
+  - avoid .data when fetching required controllers
+  ([fa0aa839](https://github.com/angular/angular.js/commit/fa0aa83937378cf8fc720c38bcc5c78fc923624e))
+- **ngOptions:** only watch labels if a display expression is specified
+  ([51faaffd](https://github.com/angular/angular.js/commit/51faaffdbcc734c55d52ff6c42b386d5c90207ea))
+
+
+## Breaking Changes
+
+- **ngMessages:** due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+
+
+The `ngMessagesInclude` attribute is now its own directive and that must
+be placed as a **child** element within the element with the ngMessages
+directive. (Keep in mind that the former behaviour of the
+ngMessageInclude attribute was that all **included** ngMessage template
+code was placed at the **bottom** of the element containing the
+ngMessages directive; therefore to make this behave in the same way,
+place the element containing the ngMessagesInclude directive at the
+end of the container containing the ngMessages directive).
+
+```html
+<!-- AngularJS 1.3.x -->
+<div ng-messages="model.$error" ng-messages-include="remote.html">
+  <div ng-message="required">Your message is required</div>
+</div>
+
+<!-- AngularJS 1.4.x -->
+<div ng-messages="model.$error">
+  <div ng-message="required">Your message is required</div>
+  <div ng-messages-include="remote.html"></div>
+</div>
+```
+
+- **$http:** due to [5da1256](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
+
+`transformRequest` functions can no longer modify request headers.
+
+Before this commit `transformRequest` could modify request headers, ex.:
+
+```javascript
+function requestTransform(data, headers) {
+    headers = angular.extend(headers(), {
+      'X-MY_HEADER': 'abcd'
+    });
+  }
+  return angular.toJson(data);
+}
+```
+
+This behavior was unintended and undocumented, so the change should affect very few applications. If one
+needs to dynamically add / remove headers it should be done in a header function, for example:
+
+```javascript
+$http.get(url, {
+  headers: {
+    'X-MY_HEADER': function(config) {
+      return 'abcd'; //you've got access to a request config object to specify header value dynamically
+    }
+  }
+})
+```
+
+<a name="1.3.14"></a>
+# 1.3.14 instantaneous-browserification (2015-02-24)
+
+
+## Features
+
+- **CommonJS:** - angular modules are now packaged for npm with helpful exports
+
+## Bug Fixes
+
+- **input:** create max and/or min validator regardless of initial value
+  ([abfce532](https://github.com/angular/angular.js/commit/abfce5327ce6fd29c33c62d2edf3600674a6b4c0),
+   [#10307](https://github.com/angular/angular.js/issues/10307), [#10327](https://github.com/angular/angular.js/issues/10327))
+- **ngAria:** correctly set "checked" attr for checkboxes and radios
+  ([944c150e](https://github.com/angular/angular.js/commit/944c150e6c3001e51d4bf5e2d8149ae4c565d1e3),
+   [#10389](https://github.com/angular/angular.js/issues/10389), [#10212](https://github.com/angular/angular.js/issues/10212))
+- **ngModel:** fix issues when parserName is same as validator key
+  ([6b7625a0](https://github.com/angular/angular.js/commit/6b7625a09508c4b5355121a9d4206a734b07b2e1),
+   [#10698](https://github.com/angular/angular.js/issues/10698), [#10850](https://github.com/angular/angular.js/issues/10850), [#11046](https://github.com/angular/angular.js/issues/11046))
+
+
+
 <a name="1.4.0-beta.4"></a>
 # 1.4.0-beta.4 overlyexplosive-poprocks (2015-02-09)
 
