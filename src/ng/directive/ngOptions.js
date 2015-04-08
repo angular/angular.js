@@ -370,7 +370,16 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       var selectCtrl = ctrls[0];
       var multiple = attr.multiple;
 
-      var emptyOption = selectCtrl.emptyOption;
+      // The emptyOption allows the application developer to provide their own custom "empty"
+      // option when the viewValue does not match any of the option values.
+      var emptyOption;
+      for (var i = 0, children = selectElement.children(), ii = children.length; i < ii; i++) {
+        if (children[i].value === '') {
+          emptyOption = children.eq(i);
+          break;
+        }
+      }
+
       var providedEmptyOption = !!emptyOption;
 
       var unknownOption = jqLite(optionTemplate.cloneNode(false));
