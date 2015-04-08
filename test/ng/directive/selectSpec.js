@@ -200,7 +200,7 @@ describe('select', function() {
 
     describe('empty option', function() {
 
-      it ('should allow dynamic empty option', function() {
+      it('should allow dynamic empty option', function() {
         scope.dynamicOptions = [];
 
         compile('<select ng-model="dynamicEmpty">' +
@@ -215,12 +215,12 @@ describe('select', function() {
         // when dynamicOptions change and one of the elements is empty option self.emptyOption in directive should be defined
         scope.dynamicOptions = [
           {
-            val : '',
-            display : 'All Options'
+            val: '',
+            display: 'All Options'
           },
           {
-            val : '1',
-            display : 'First Option'
+            val: '1',
+            display: 'First Option'
           }
         ];
         scope.dynamicEmpty = '';
