@@ -200,6 +200,70 @@ describe('select', function() {
 
     describe('empty option', function() {
 
+      it('should allow empty option to be added and removed dynamically', function() {
+
+        scope.dynamicOptions = [];
+        scope.robot = '';
+        compile('<select ng-model="robot">' +
+                  '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
+                '</selec>');
+        expect(element).toEqualSelect(['? string: ?']);
+
+
+        scope.dynamicOptions = [
+          { val: '', display: '--select--' },
+          { val: 'x', display: 'robot x' },
+          { val: 'y', display: 'robot y' }
+        ];
+        scope.$digest();
+        expect(element).toEqualSelect([''], 'x', 'y');
+
+
+        scope.robot = 'x';
+        scope.$digest();
+        expect(element).toEqualSelect('', ['x'], 'y');
+
+
+        scope.dynamicOptions.shift();
+        scope.$digest();
+        expect(element).toEqualSelect(['x'], 'y');
+
+
+        scope.robot = undefined;
+        scope.$digest();
+        expect(element).toEqualSelect([unknownValue(undefined)], 'x', 'y');
+      });
+
+
+    it('should cope with a dynamic empty option added to a static empty option', function() {
+        scope.dynamicOptions = [];
+        scope.robot = 'x';
+        compile('<select ng-model="robot">' +
+                  '<option value="">--static-select--</option>' +
+                  '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
+                '</selec>');
+        scope.$digest();
+        expect(element).toEqualSelect([unknownValue('x')], '');
+
+        scope.robot = undefined;
+        scope.$digest();
+        expect(element.find('option').eq(0).prop('selected')).toBe(true);
+        expect(element.find('option').eq(0).text()).toBe('--static-select--');
+
+        scope.dynamicOptions = [
+          { val: '', display: '--dynamic-select--' },
+          { val: 'x', display: 'robot x' },
+          { val: 'y', display: 'robot y' }
+        ];
+        scope.$digest();
+        expect(element).toEqualSelect([''], '', 'x', 'y');
+
+
+        scope.dynamicOptions = [];
+        scope.$digest();
+        expect(element).toEqualSelect(['']);
+    });
+
       it('should select the empty option when model is undefined', function() {
         compile('<select ng-model="robot">' +
                   '<option value="">--select--</option>' +
