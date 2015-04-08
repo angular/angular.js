@@ -86,7 +86,7 @@ var SelectController =
   self.addOption = function(value, element) {
     assertNotHasOwnProperty(value, '"option value"');
     if (value === '') {
-      self.emptyOption = element
+      self.emptyOption = element;
     }
     var count = optionsMap.get(value) || 0;
     optionsMap.put(value, count + 1);
