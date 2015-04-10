@@ -2421,7 +2421,8 @@ describe("ngAnimate $animateCss", function() {
           duration: 0
         });
 
-        expect(child.attr('class')).toBe('');
+        var className = child[0].getAttribute('class');
+        expect(className).toBe('');
       }));
     });
   });
