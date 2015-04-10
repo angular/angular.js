@@ -169,19 +169,7 @@
  *   start: Function,
  *
  *   // ends (aborts) the animation
- *   end: Function,
- *
- *   // the total number of seconds that the animation will run for
- *   duration: Number,
- *
- *   // the total number of seconds that the animation will delay for before starting
- *   delay: Number,
- *
- *   // whether or not transitions were detected and will therefore be used for the animation
- *   transitions: Boolean,
- *
- *   // whether or not keyframe animations were detected and will therefore be used for the animation
- *   keyframes: Boolean
+ *   end: Function
  * }
  * ```
  *
