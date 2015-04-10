@@ -110,7 +110,6 @@ function applyAnimationClassesFactory($$jqLite) {
     }
     if (options.removeClass) {
       $$removeClass($$jqLite, element, options.removeClass);
-      element.removeClass(options.removeClass);
       options.removeClass = null;
     }
   }
