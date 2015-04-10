@@ -119,8 +119,7 @@ We need to add the 'phonecatServices' module dependency to 'phonecatApp' module'
 We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
 lower-level {@link ng.$http $http} service, replacing it with a new service called
 `Phone`. Angular's {@link ngResource.$resource `$resource`} service is easier to
-use than `$http` for interacting with data sources exposed as RESTful resources. It is also easier
-now to understand what the code in our controllers is doing.
+use than `$http` for interacting with data sources exposed as RESTful resources.
 
 __`app/js/controllers.js`.__
 
