@@ -123,9 +123,10 @@ npm --version
   </a>.
 </div>
 
-Once you have Node.js installed on your machine you can download the tool dependencies by running:
+Once you have Node.js installed on your machine and moved to your working directory, you can initialize it and download the tool dependencies by running:
 
 ```
+npm init
 npm install
 ```
 
