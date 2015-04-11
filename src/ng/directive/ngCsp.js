@@ -10,6 +10,8 @@
  *
  * This is necessary when developing things like Google Chrome Extensions or Universal Windows Apps.
  *
+ * js file to include when using ngCsp: https://code.angularjs.org/snapshot/angular-csp.css
+ * 
  * CSP forbids apps to use `eval` or `Function(string)` generated functions (among other things).
  * For Angular to be CSP compatible there are only two things that we need to do differently:
  *
