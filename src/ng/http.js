@@ -1167,7 +1167,7 @@ function $HttpProvider() {
        *  - resolves the raw $http promise
        *  - calls $apply
        */
-      function done(status, response, headersString, statusText) {
+      function done(status, response, headersString, statusText, timedOut) {
         if (cache) {
           if (isSuccess(status)) {
             cache.put(url, [status, response, parseHeaders(headersString), statusText]);
@@ -1178,7 +1178,7 @@ function $HttpProvider() {
         }
 
         function resolveHttpPromise() {
-          resolvePromise(response, status, headersString, statusText);
+          resolvePromise(response, status, headersString, statusText, timedOut);
         }
 
         if (useApplyAsync) {
@@ -1193,17 +1193,25 @@ function $HttpProvider() {
       /**
        * Resolves the raw $http promise.
        */
-      function resolvePromise(response, status, headers, statusText) {
+      function resolvePromise(response, status, headers, statusText, timedOut) {
         // normalize internal statuses to 0
         status = Math.max(status, 0);
 
-        (isSuccess(status) ? deferred.resolve : deferred.reject)({
+        var result = {
           data: response,
           status: status,
           headers: headersGetter(headers),
           config: config,
           statusText: statusText
-        });
+        };
+        if (isSuccess(status)) {
+          deferred.resolve(result);
+        } else {
+          if (timedOut) {
+            result.timedOut = true;
+          }
+          deferred.reject(result);
+        }
       }
 
       function resolvePromiseWithResult(result) {
