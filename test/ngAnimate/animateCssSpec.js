@@ -1456,7 +1456,7 @@ describe("ngAnimate $animateCss", function() {
         });
       });
 
-      they('should force the class-based values to be applied early if no transition/keyframe is detected at all',
+      they('should force the class-based values to be applied early if no options.applyClassEarly is used as an option',
         ['enter', 'leave', 'move'], function(event) {
         inject(function($animateCss, $rootElement, $document) {
 
@@ -1468,6 +1468,7 @@ describe("ngAnimate $animateCss", function() {
 
           var runner = $animateCss(element, {
             addClass: 'blue',
+            applyClassesEarly: true,
             removeClass: 'red',
             event: event,
             structural: true

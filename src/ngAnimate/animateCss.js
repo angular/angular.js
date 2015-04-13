@@ -221,6 +221,7 @@
  * ({@link ngAnimate#css-staggering-animations Click here to learn how CSS-based staggering works in ngAnimate.})
  * * `staggerIndex` - The numeric index representing the stagger item (e.g. a value of 5 is equal to the sixth item in the stagger; therefore when a
  * `stagger` option value of `0.1` is used then there will be a stagger delay of `600ms`)
+ * `applyClassesEarly` - Whether or not the classes being added or removed will be used when detecting the animation. This is set by `$animate` when enter/leave/move animations are fired to ensure that the CSS classes are resolved in time. (Note that this will prevent any transitions from occuring on the classes being added and removed.)
  *
  * @return {null|object} an object with a start method and details about the animation. If no animation is detected then a value of `null` will be returned.
  *
@@ -563,6 +564,17 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         addRemoveClassName += pendClasses(options.removeClass, '-remove');
       }
 
+      // there may be a situation where a structural animation is combined together
+      // with CSS classes that need to resolve before the animation is computed.
+      // However this means that there is no explicit CSS code to block the animation
+      // from happening (by setting 0s none in the class name). If this is the case
+      // we need to apply the classes before the first rAF so we know to continue if
+      // there actually is a detected transition or keyframe animation
+      if (options.applyClassesEarly && addRemoveClassName.length) {
+        applyAnimationClasses(element, options);
+        addRemoveClassName = '';
+      }
+
       var setupClasses = [structuralClassName, addRemoveClassName].join(' ').trim();
       var fullClassName = classes + ' ' + setupClasses;
       var activeClasses = pendClasses(setupClasses, '-active');
@@ -644,10 +656,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       flags.applyTransitionDuration = hasToStyles && (
                                         (flags.hasTransitions && !flags.hasTransitionAll)
                                          || (flags.hasAnimations && !flags.hasTransitions));
-      flags.applyAnimationDuration   = options.duration && flags.hasAnimations;
-      flags.applyTransitionDelay     = truthyTimingValue(options.delay) && (flags.applyTransitionDuration || flags.hasTransitions);
-      flags.applyAnimationDelay      = truthyTimingValue(options.delay) && flags.hasAnimations;
-      flags.recalculateTimingStyles  = addRemoveClassName.length > 0;
+      flags.applyAnimationDuration  = options.duration && flags.hasAnimations;
+      flags.applyTransitionDelay    = truthyTimingValue(options.delay) && (flags.applyTransitionDuration || flags.hasTransitions);
+      flags.applyAnimationDelay     = truthyTimingValue(options.delay) && flags.hasAnimations;
+      flags.recalculateTimingStyles = addRemoveClassName.length > 0;
 
       if (flags.applyTransitionDuration || flags.applyAnimationDuration) {
         maxDuration = options.duration ? parseFloat(options.duration) : maxDuration;
@@ -664,42 +676,6 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           timings.animationDuration = maxDuration;
           temporaryStyles.push(getCssKeyframeDurationStyle(maxDuration));
         }
-      }
-
-      flags.transitionClassBlock = timings.transitionProperty === 'none' &&
-                                   timings.transitionDuration === 0;
-
-      // there may be a situation where a structural animation is combined together
-      // with CSS classes that need to resolve before the animation is computed.
-      // However this means that there is no explicit CSS code to block the animation
-      // from happening (by setting 0s none in the class name). If this is the case
-      // we need to apply the classes before the first rAF so we know to continue if
-      // there actually is a detected transition or keyframe animation
-      var applyClassesEarly = maxDuration === 0
-                               && isStructural
-                               && addRemoveClassName.length > 0
-                               && !flags.transitionClassBlock;
-
-      // this is an early check to avoid having to do another call to getComputedStyle
-      // call which is expensive. GCS calls are cached to speed things up.
-      if (!applyClassesEarly && maxDuration === 0 && !flags.recalculateTimingStyles) {
-        close();
-        return false;
-      }
-
-      if (applyClassesEarly) {
-        applyAnimationClasses(element, options);
-
-        // no need to calculate this anymore
-        flags.recalculateTimingStyles = false;
-
-        fullClassName = node.className + ' ' + setupClasses;
-        cacheKey = gcsHashFn(node, fullClassName);
-
-        timings = computeTimings(node, fullClassName, cacheKey);
-        relativeDelay = timings.maxDelay;
-        maxDelay = Math.max(relativeDelay, 0);
-        maxDuration = timings.maxDuration;
       }
 
       if (maxDuration === 0 && !flags.recalculateTimingStyles) {

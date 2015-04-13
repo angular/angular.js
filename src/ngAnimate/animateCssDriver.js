@@ -214,7 +214,12 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
     function prepareRegularAnimation(animationDetails) {
       var element = animationDetails.element;
       var options = animationDetails.options || {};
+
       options.structural = animationDetails.structural;
+
+      // structural animations ensure that the CSS classes are always applied
+      // before the detection starts.
+      options.applyClassesEarly = options.structural;
 
       // we special case the leave animation since we want to ensure that
       // the element is removed as soon as the animation is over. Otherwise
