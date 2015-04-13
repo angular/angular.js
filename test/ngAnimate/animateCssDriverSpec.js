@@ -95,6 +95,14 @@ describe("ngAnimate $$animateCssDriver", function() {
         var runner = driver({ element: element });
         expect(isFunction(runner.start)).toBeTruthy();
       }));
+
+      it("should signal $animateCss to apply the classes early when an event is present", inject(function() {
+        driver({ element: element, structural: true });
+        expect(capturedAnimation[1].applyClassesEarly).toBeTruthy();
+
+        driver({ element: element });
+        expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
+      }));
     });
 
     describe("anchored animations", function() {
