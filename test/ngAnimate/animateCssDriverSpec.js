@@ -410,6 +410,59 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(anchorDetails.event).toBeFalsy();
       }));
 
+      they("should only fire the ng-anchor-$prop animation if only a $prop animation is defined",
+        ['out', 'in'], function(direction) {
+
+        var expectedClass = 'ng-anchor-' + direction;
+        var animationStarted;
+        var runner;
+
+        module(function($provide) {
+          $provide.factory('$animateCss', function($$AnimateRunner) {
+            return function(element, options) {
+              var addClass = (options.addClass || '').trim();
+              if (addClass === expectedClass) {
+                return {
+                  start: function() {
+                    animationStarted = addClass;
+                    return runner = new $$AnimateRunner();
+                  }
+                };
+              }
+            };
+          });
+        });
+
+        inject(function($rootElement, $$rAF) {
+          var fromAnchor = jqLite('<div></div>');
+          from.append(fromAnchor);
+          var toAnchor = jqLite('<div></div>');
+          to.append(toAnchor);
+
+          $rootElement.append(fromAnchor);
+          $rootElement.append(toAnchor);
+
+          var complete = false;
+
+          driver({
+            from: fromAnimation,
+            to: toAnimation,
+            anchors: [{
+              'out': fromAnchor,
+              'in': toAnchor
+            }]
+          }).start().done(function() {
+            complete = true;
+          });
+
+          expect(animationStarted).toBe(expectedClass);
+          runner.end();
+          $$rAF.flush();
+          expect(complete).toBe(true);
+        });
+      });
+
+
       it("should provide an explicit delay setting in the options provided to $animateCss for anchor animations",
         inject(function($rootElement) {
 
