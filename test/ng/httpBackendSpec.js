@@ -50,6 +50,13 @@ describe('$httpBackend', function() {
     expect(xhr.$$data).toBe(null);
   });
 
+  it('should pass false to send if false body is set', function() {
+    $backend('GET', '/some-url', false, noop);
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$data).toBe(false);
+  });
+
   it('should call completion function with xhr.statusText if present', function() {
     callback.andCallFake(function(status, response, headers, statusText) {
       expect(statusText).toBe('OK');
