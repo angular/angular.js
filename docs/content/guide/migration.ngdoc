@@ -13,6 +13,301 @@ which drives many of these changes.
 * Several new features, especially animations, would not be possible without a few changes.
 * Finally, some outstanding bugs were best fixed by changing an existing API.
 
+# Migrating from 1.3 to 1.4
+
+Angular 1.4 fixes the major animation issues and introduces some breaking changes for `cookies`, `ngMessages`,
+`$compile`, `ngRepeat`, `ngOptions `and some fixes to core filters: `limitTo` and `filter`.
+
+The reason for the ngAnimate refactor was to fix timing issues and to expose new APIs to allow
+for developers to construct more versatile animations.  We now have access to `$animateCss`
+and the many timing-oriented bugs were fixed which resulted in more smoother animations.
+If animation is something of interest, then please read over the breaking changes below for animations when
+`ngAnimate` is used.
+
+ngMessages has also been upgraded to allow for dynamic message resolution. This handy feature allows for developers
+to render error messages with ngMessages that are listed with a directive such as ngRepeat. A great usecase for this
+involves pulling error message data from a server and then displaying that data via the mechanics of ngMessages. Be
+sure to read the breaking change involved with `ngMessagesInclude` to upgrade your template code.
+
+Other changes, such as the ordering of elements with ngRepeat and ngOptions, may also effect the behavior of your
+application. And be sure to also read up on the changes to `$cookies`. The migration jump from 1.3 to 1.4 should be
+relatively straightforward otherwise.
+
+
+
+
+## Animation (`ngAnimate`)
+
+Animation in 1.4 have been refactored internally and the API has stayed much the same. There are, however,
+some breaking changes that need to be addressed when any Angular animation code is upgraded to work in 1.4.
+
+Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
+JavaSript and CSS animations can no longer be run in
+parallel. With earlier versions of ngAnimate, both CSS and JS animations
+would be run together when multiple animations were detected. This
+feature has now been removed, however, the same effect, with even more
+possibilities, can be achieved by injecting `$animateCss` into a
+JavaScript-defined animation and creating custom CSS-based animations
+from there.
+
+By using `$animateCss` inside of a JavaScript animation in Angular 1.4, we can trigger custom CSS-based animations
+directly from our JavaScript code.
+
+```js
+ngModule.animation('.slide-animation', ['$animateCss', function($animateCss) {
+  return {
+    enter: function(element, doneFn) {
+      // this will trigger a `.ng-enter` and `.ng-enter-active` CSS animation
+      var animation = $animateCss(element, {
+        event: 'enter'
+        // any other CSS-related properties
+        //   addClass: 'some-class',
+        //   removeClass: 'some-other-class',
+        //   from: {},
+        //   to: {}
+      });
+
+      // make sure to read the ngAnimate docs to understand how this works
+      animation.start().done(doneFn);
+    }
+  }
+}]);
+```
+
+{@link ngAnimate.$animateCss Click here to learn how to use $animateCss in your animation code}
+
+Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
+animation-related callbacks are now fired on `$animate.on` instead of directly being on the element.
+
+```js
+// < 1.4
+element.on('$animate:before', function(e, data) {
+  if (data.event === 'enter') { ... }
+});
+element.off('$animate:before', fn);
+
+// 1.4+
+$animate.on(element, 'enter', function(data) {
+  //...
+});
+$animate.off(element, 'enter', fn);
+```
+
+Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
+the function params for `$animate.enabled()` when an element is used are now flipped. This fix allows
+the function to act as a getter when a single element param is provided.
+
+```js
+// < 1.4
+$animate.enabled(false, element);
+
+// 1.4+
+$animate.enabled(element, false);
+```
+
+Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
+in addition to disabling the children of the element, `$animate.enabled(element, false)` will now also
+disable animations on the element itself.
+
+Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
+there is no need to call `$scope.$apply` or `$scope.$digest` inside of a animation promise callback anymore
+since the promise is resolved within a digest automatically. (Not to worry, any extra digests will not be
+run unless the promise is used.)
+
+```js
+// < 1.4
+$animate.enter(element).then(function() {
+  $scope.$apply(function() {
+    $scope.explode = true;
+  });
+});
+
+// 1.4+
+$animate.enter(element).then(function() {
+  $scope.explode = true;
+});
+```
+
+Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
+when an enter, leave or move animation is triggered then it will always end any pending or active parent
+class based animations (animations triggered via ngClass) in order to ensure that any CSS styles are resolved in time.
+
+
+
+
+## Forms (`ngMessages`, `ngOptions`)
+
+### ngMessages
+The ngMessages module has also been subject to an internal refactor to allow the feature to be more flexible
+and compatible with dynamic message data. The ngMessage directive now supports a new attribute called `ng-message-exp`
+which will evaluate an expression and will keep track of that expression as it changes in order to re-evaluate
+the listed messages.
+
+There is only one breaking change. Please consider the following when including remote message templates via `ng-messages-include`:
+
+Due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+the `ngMessagesInclude` attribute has now been removed and cannot be used in the same element containing
+the `ngMessages` directive. Instead, `ngMessagesInclude` is to be used on its own element inline with
+other inline messages situated as children within the `ngMessages` container directive.
+
+```html
+<!-- AngularJS 1.3.x -->
+<div ng-messages="model.$error" ng-messages-include="remote.html">
+  <div ng-message="required">Your message is required</div>
+</div>
+
+<!-- AngularJS 1.4.x -->
+<div ng-messages="model.$error">
+  <div ng-message="required">Your message is required</div>
+  <div ng-messages-include="remote.html"></div>
+</div>
+```
+
+Depending on where the `ngMessagesInclude` directive is placed it will be prioritized inline with the other messages
+before and after it.
+
+### ngOptions
+
+Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
+when `ngOptions` renders the option values within the DOM, the resulting HTML code is different. Normally this
+should not affect your application at all, however, if your code relies on inspecing the value property of `<option>`
+elements (that `ngOptions` generates) then be sure to read the details
+[here](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef).
+
+Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
+when iterating over an object's properties using the `(key, value) in obj` syntax
+the order of the elements used to be sorted alphabetically. This was an artificial
+attempt to create a deterministic ordering since browsers don't guarantee the order.
+But in practice this is not what people want and so this change iterates over properties
+in the order they are returned by Object.keys(obj), which is almost always the order
+in which the properties were defined.
+
+
+
+
+## Templating (`ngRepeat`, `$compile`)
+
+### ngRepeat
+
+Due to [c260e738](https://github.com/angular/angular.js/commit/c260e7386391877625eda086480de73e8a0ba921),
+previously, the order of items when using ngRepeat to iterate over object properties was guaranteed to be consistent
+by sorting the keys into alphabetic order.
+
+Now, the order of the items is browser dependent based on the order returned
+from iterating over the object using the `for key in obj` syntax.
+
+It seems that browsers generally follow the strategy of providing
+keys in the order in which they were defined, although there are exceptions
+when keys are deleted and reinstated. See
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#Cross-browser_issues
+
+The best approach is to convert Objects into Arrays by a filter such as
+https://github.com/petebacondarwin/angular-toArrayFilter
+or some other mechanism, and then sort them manually in the order you need.
+
+
+### $compile
+
+Due to [6a38dbfd](https://github.com/angular/angular.js/commit/6a38dbfd3c34c8f9efff503d17eb3cbeb666d422),
+previously, '&' expressions would always set up a function in the isolate scope. Now, if the binding
+is marked as optional and the attribute is not specified, no function will be added to the isolate scope.
+
+
+
+## Cookies (`ngCookies`)
+
+Due to [38fbe3ee](https://github.com/angular/angular.js/commit/38fbe3ee8370fc449b82d80df07b5c2ed2cd5fbe),
+`$cookies` will no longer expose properties that represent the current browser cookie
+values.
+
+The new API on `$cookies` includes:
+
+ * `get`
+ * `put`
+ * `getObject`
+ * `putObject`
+ * `getAll`
+ * `remove`
+
+The new API no longer polls the browser for changes to the cookies and no longer copy
+cookie values onto the `$cookies` object.
+
+The polling is expensive and caused issues with the `$cookies` properties not
+synchronizing correctly with the actual browser cookie values.
+
+The reason the polling was originally added was to allow communication between
+different tabs, but there are better ways to do this today (for example `localStorage`).
+
+Now you must explictly use the methods above in order to access cookie data. This also means that
+you can no longer watch the any properties on `$cookies` for changes to detect for any changes
+that occur on the browsers cookies.
+
+This feature is generally only needed if a 3rd party library was programmatically
+changing the cookies at runtime. If you rely on this then you must either write code that
+can react to the 3rd party library making the changes to cookies or implement your own polling
+mechanism.
+
+**DEPRECATION NOTICE**
+
+`$cookieStore` is now deprecated as all the useful logic
+has been moved to `$cookies`, to which `$cookieStore` now simply
+delegates calls.
+
+
+
+
+## Server Requests (`$http`)
+
+Due to [5da1256](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
+`transformRequest` functions can no longer modify request headers.
+
+Before this commit `transformRequest` could modify request headers, ex.:
+
+```javascript
+function requestTransform(data, headers) {
+    headers = angular.extend(headers(), {
+      'X-MY_HEADER': 'abcd'
+    });
+  }
+  return angular.toJson(data);
+}
+```
+
+This behavior was unintended and undocumented, so the change should affect very few applications. If one
+needs to dynamically add / remove headers it should be done in a header function, for example:
+
+```javascript
+$http.get(url, {
+  headers: {
+    'X-MY_HEADER': function(config) {
+      return 'abcd'; //you've got access to a request config object to specify header value dynamically
+    }
+  }
+})
+```
+
+
+
+
+## Filters (`filter`, `limitTo`)
+
+### `filter` filter
+Due to [cea8e751](https://github.com/angular/angular.js/commit/cea8e75144e6910b806b63a6ec2a6d118316fddd),
+the `filter` filter will throw an error when a non array. Beforehand it would silently ignore the error
+and return an empty array. This is not the behavior anymore.
+
+If necessary, this can be worked around by converting an object to an array,
+using a filter such as https://github.com/petebacondarwin/angular-toArrayFilter.
+
+### `limitTo` filter
+Due to [a3c3bf33](https://github.com/angular/angular.js/commit/a3c3bf3332e5685dc319c46faef882cb6ac246e1),
+the limitTo filter has changed behavior when the provided limit value is invalid.
+Now, instead of returning empty object/array, it returns unchanged input.
+
+
+
+
+
 # Migrating from 1.2 to 1.3
 
 ## Controllers
