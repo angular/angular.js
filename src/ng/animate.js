@@ -72,6 +72,7 @@ var $$CoreAnimateQueueProvider = function() {
       enabled: noop,
       on: noop,
       off: noop,
+      pin: noop,
 
       push: function(element, event, options, domOperation) {
         domOperation        && domOperation();
@@ -272,6 +273,25 @@ var $AnimateProvider = ['$provide', function($provide) {
       // be interpreted as null within the sub enabled function
       on: $$animateQueue.on,
       off: $$animateQueue.off,
+
+      /**
+       * @ngdoc method
+       * @name $animate#pin
+       * @kind function
+       * @description Associates the provided element with a host parent element to allow the element to be animated even if it exists
+       *    outside of the DOM structure of the Angular application. By doing so, any animation triggered via `$animate` can be issued on the
+       *    element despite being outside the realm of the application or within another application. Say for example if the application
+       *    was bootstrapped on an element that is somewhere inside of the `<body>` tag, but we wanted to allow for an element to be situated
+       *    as a direct child of `document.body`, then this can be achieved by pinning the element via `$animate.pin(element)`. Keep in mind
+       *    that calling `$animate.pin(element, parentElement)` will not actually insert into the DOM anywhere; it will just create the association.
+       *
+       *    Note that this feature is only active when the `ngAnimate` module is used.
+       *
+       * @param {DOMElement} element the external element that will be pinned
+       * @param {DOMElement} parentElement the host parent element that will be associated with the external element
+       */
+      pin: $$animateQueue.pin,
+
       enabled: $$animateQueue.enabled,
 
       cancel: function(runner) {

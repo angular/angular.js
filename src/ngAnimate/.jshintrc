@@ -22,6 +22,7 @@
     "ELEMENT_NODE": false,
     "NG_ANIMATE_CHILDREN_DATA": false,
 
+    "assertArg": false,
     "isPromiseLike": false,
     "mergeClasses": false,
     "mergeAnimationOptions": false,

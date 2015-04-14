@@ -1114,6 +1114,74 @@ describe("animations", function() {
     }));
   });
 
+  describe('.pin()', function() {
+    var capturedAnimation;
+
+    beforeEach(module(function($provide) {
+      capturedAnimation = null;
+      $provide.factory('$$animation', function($$AnimateRunner) {
+        return function() {
+          capturedAnimation = arguments;
+          return new $$AnimateRunner();
+        };
+      });
+    }));
+
+    it('should allow an element to pinned elsewhere and still be available in animations',
+      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+
+      var body = jqLite($document[0].body);
+      var innerParent = jqLite('<div></div>');
+      body.append(innerParent);
+      innerParent.append($rootElement);
+
+      var element = jqLite('<div></div>');
+      body.append(element);
+
+      $animate.addClass(element, 'red');
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeFalsy();
+
+      $animate.pin(element, $rootElement);
+
+      $animate.addClass(element, 'blue');
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeTruthy();
+
+      dealoc(element);
+    }));
+
+    it('should adhere to the disabled state of the hosted parent when an element is pinned',
+      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+
+      var body = jqLite($document[0].body);
+      var innerParent = jqLite('<div></div>');
+      body.append(innerParent);
+      innerParent.append($rootElement);
+      var innerChild = jqLite('<div></div>');
+      $rootElement.append(innerChild);
+
+      var element = jqLite('<div></div>');
+      body.append(element);
+
+      $animate.pin(element, innerChild);
+
+      $animate.enabled(innerChild, false);
+
+      $animate.addClass(element, 'blue');
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeFalsy();
+
+      $animate.enabled(innerChild, true);
+
+      $animate.addClass(element, 'red');
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeTruthy();
+
+      dealoc(element);
+    }));
+  });
+
   describe('callbacks', function() {
     var captureLog = [];
     var capturedAnimation = [];
