@@ -10,6 +10,33 @@ describe("animations", function() {
     dealoc(element);
   }));
 
+  it('should allow animations if the application is bootstrapped on the document node', function() {
+    var capturedAnimation;
+
+    module(function($provide) {
+      $provide.factory('$rootElement', function($document) {
+        return $document;
+      });
+      $provide.factory('$$animation', function($$AnimateRunner) {
+        return function() {
+          capturedAnimation = arguments;
+          return new $$AnimateRunner();
+        };
+      });
+    });
+
+    inject(function($animate, $rootScope, $document) {
+      $animate.enabled(true);
+
+      element = jqLite('<div></div>');
+
+      $animate.enter(element, jqLite($document[0].body));
+      $rootScope.$digest();
+
+      expect(capturedAnimation).toBeTruthy();
+    });
+  });
+
   describe('during bootstrap', function() {
     it('should be enabled only after the first digest is fired and the postDigest queue is empty',
       inject(function($animate, $rootScope) {
