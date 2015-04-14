@@ -491,6 +491,12 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       var animateChildren;
 
       while (parent && parent.length) {
+        if (!rootElementDetected) {
+          // angular doesn't want to attempt to animate elements outside of the application
+          // therefore we need to ensure that the rootElement is an ancestor of the current element
+          rootElementDetected = isMatchingElement(parent, $rootElement);
+        }
+
         var parentNode = parent[0];
         if (parentNode.nodeType !== ELEMENT_NODE) {
           // no point in inspecting the #document element
@@ -514,12 +520,6 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
         // there is no need to continue traversing at this point
         if (parentAnimationDetected && animateChildren === false) break;
-
-        if (!rootElementDetected) {
-          // angular doesn't want to attempt to animate elements outside of the application
-          // therefore we need to ensure that the rootElement is an ancestor of the current element
-          rootElementDetected = isMatchingElement(parent, $rootElement);
-        }
 
         if (!bodyElementDetected) {
           // we also need to ensure that the element is or will be apart of the body element
