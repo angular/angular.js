@@ -190,9 +190,7 @@ function Browser(window, document, $log, $sniffer) {
         // Do the assignment again so that those two variables are referentially identical.
         lastHistoryState = cachedState;
       } else {
-        if (!sameBase) {
-          reloadLocation = url;
-        }
+        reloadLocation = url;
         if (replace) {
           location.replace(url);
         } else if (!sameBase) {
