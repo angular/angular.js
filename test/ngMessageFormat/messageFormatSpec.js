@@ -125,7 +125,7 @@ describe('$$ngMessageFormat', function() {
             "    one   {YOU SHOULD NEVER SEE THIS MESSAGE}\n" +
             "    other {You gave some people gifts}\n" +
             "}}";
-          var parsedFn = $interpolate(text);
+          var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
 
           $rootScope.recipients.length=2;
           expect(parsedFn($rootScope)).toEqual("You gave some people gifts");
@@ -146,7 +146,7 @@ describe('$$ngMessageFormat', function() {
             "    one   {YOU SHOULD NEVER SEE THIS MESSAGE}\n" +
             "    other {{{sender.name}} gave them a gift}\n" +
             "}}";
-          var parsedFn = $interpolate(text);
+          var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
 
           $rootScope.recipients.length=2;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave them a gift");
@@ -167,7 +167,7 @@ describe('$$ngMessageFormat', function() {
             "    one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\\#=#)}\n" +
             "    other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\\#=#)}\n" +
             "}}";
-          var parsedFn = $interpolate(text);
+          var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
 
           $rootScope.recipients.length=3;
           // "#" should get replaced with the value of "recipients.length - offset"
@@ -196,7 +196,7 @@ describe('$$ngMessageFormat', function() {
           "       }\n" +
           "    other {You gave {{recipients.length}} people gifts. -{{sender.name}}}\n" +
           "}}";
-        var parsedFn = $interpolate(text);
+        var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
         var result = parsedFn($rootScope);
         expect(result).toEqual("You gave 3 people gifts. -Harry Potter");
       });

@@ -334,7 +334,7 @@ MessageFormatParser.prototype.ruleInInterpolationOrMessageText = function ruleIn
     this.ruleStack.push(this.ruleEndMustacheInInterpolationOrMessage);
     this.rule = this.ruleEnteredMustache;
   } else if (token == "}") {
-    this.choices[this.choiceKey] = this.interpolationParts.toParsedFn(this.mustHaveExpression, this.text);
+    this.choices[this.choiceKey] = this.interpolationParts.toParsedFn(/*mustHaveExpression=*/false, this.text);
     this.rule = this.ruleChoiceKeyword;
   } else if (token == "#") {
     this.interpolationParts.addExpressionFn(this.expressionMinusOffsetFn);
