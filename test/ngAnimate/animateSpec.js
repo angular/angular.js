@@ -133,7 +133,7 @@ describe("animations", function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/only-allow-this-animation/);
       });
-      inject(function($animate, $rootScope, $document, $rootElement) {
+      inject(function($animate, $rootScope) {
         expect(element).not.toHaveClass('only-allow-this-animation');
 
         $animate.enter(element, parent);
@@ -145,6 +145,22 @@ describe("animations", function() {
         $animate.leave(element, parent);
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
+      });
+    });
+
+    it('should complete the leave DOM operation in case the classNameFilter fails', function() {
+      module(function($animateProvider) {
+        $animateProvider.classNameFilter(/memorable-animation/);
+      });
+      inject(function($animate, $rootScope) {
+        expect(element).not.toHaveClass('memorable-animation');
+
+        parent.append(element);
+        $animate.leave(element);
+        $rootScope.$digest();
+
+        expect(capturedAnimation).toBeFalsy();
+        expect(element[0].parentNode).toBeFalsy();
       });
     });
 

@@ -250,7 +250,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
       var className = [node.className, options.addClass, options.removeClass].join(' ');
       if (!isAnimatableClassName(className)) {
-        runner.end();
+        close();
         return runner;
       }
 
