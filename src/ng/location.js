@@ -883,7 +883,7 @@ function $LocationProvider() {
       $browser.url($location.absUrl(), true);
     }
 
-    var initializing = true;
+    var initializing = true, skipLocationWatch = false;
 
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl, newState) {
@@ -916,6 +916,11 @@ function $LocationProvider() {
 
     // update browser
     $rootScope.$watch(function $locationWatch() {
+      if (skipLocationWatch && !$location.$$replace) {
+        //prevent infinite $digest errors in hashbang mode
+        skipLocationWatch = false;
+        return;
+      }
       var oldUrl = trimEmptyHash($browser.url());
       var newUrl = trimEmptyHash($location.absUrl());
       var oldState = $browser.state();
@@ -943,7 +948,12 @@ function $LocationProvider() {
               setBrowserUrlWithFallback(newUrl, currentReplace,
                                         oldState === $location.$$state ? null : $location.$$state);
             }
+            var oldLocationAbsUrl = $location.absUrl();
             afterLocationChange(oldUrl, oldState);
+            if (oldLocationAbsUrl !== $location.absUrl() &&
+                  trimEmptyHash($location.absUrl()) !== trimEmptyHash($browser.url())) {
+                skipLocationWatch = true;
+            }
           }
         });
       }
