@@ -695,3 +695,7 @@ ul.events > li {
     padding-bottom:0px;
   }
 }
+
+iframe[name="example-anchoringExample"] {
+  height:400px;
+}
