@@ -142,7 +142,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       lastLabelClickCoordinates = null;
     }
     // remember label click coordinates to prevent click busting of trigger click event on input
-    if (event.target.tagName.toLowerCase() === 'label') {
+    if (event.target.tagName.toLowerCase() === 'label' || findUpLabel(event.target)) {
       lastLabelClickCoordinates = [x, y];
     }
 
@@ -161,6 +161,14 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     event.target && event.target.blur();
   }
 
+    function findUpLabel(el) {
+    	while (el.parentNode) {
+    		el = el.parentNode;
+    		if (el.tagName && el.tagName.toLowerCase() === 'label')
+    			return el;
+    	}
+    	return null;
+    }
 
   // Global touchstart handler that creates an allowable region for a click event.
   // This allowable region can be removed by preventGhostClick if we want to bust it.
