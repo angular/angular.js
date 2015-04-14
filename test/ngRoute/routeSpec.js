@@ -1037,6 +1037,383 @@ describe('$route', function() {
     });
   });
 
+  function initBrowserForInfiniteDigestTests() {
+    return function($browser) {
+      $browser.url = function(url, replace, state) {
+        if (angular.isUndefined(state)) {
+          state = null;
+        }
+        if (url) {
+          if (this.$$lastUrl === url) {
+            return this;
+          }
+
+          var index = this.$$lastUrl.indexOf('#');
+          var lastUrlStripped = (index === -1 ? this.$$lastUrl : this.$$lastUrl.substr(0, index));
+          index = url.indexOf('#');
+          var urlStripped = (index === -1 ? url : url.substr(0, index));
+
+          var sameBase = this.$$lastUrl && lastUrlStripped === urlStripped;
+          if (!sameBase) {
+            this.$$reloadLocation = url;
+          }
+          this.$$url = url;
+          this.$$lastUrl = url;
+          // Native pushState serializes & copies the object; simulate it.
+          this.$$state = angular.copy(state);
+          return this;
+        }
+
+        return this.$$reloadLocation || this.$$url;
+      };
+      $browser.$$lastUrl = 'http://server/';
+      $browser.$$baseHref = '/app/';
+      $browser.forceReloadLocationUpdate = function(url) {
+        if (this.$$reloadLocation) {
+          this.$$reloadLocation = url;
+        }
+      };
+    };
+  }
+
+  function initLocationAndRouteServices(options) {
+    return module(function($provide, $locationProvider, $routeProvider) {
+      $locationProvider.html5Mode(options.html5Mode);
+      $provide.value('$sniffer', {history: options.history});
+
+      $routeProvider.
+      when(options.matchingRoute, {
+          templateUrl: 'foo.html',
+      }).
+      otherwise({
+          redirectTo: options.otherwiseRoute
+      });
+    });
+  }
+
+  describe('location watch for hashbang browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: false, matchingRoute: '/Home', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL with home route without trailing slash in non-history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/#/Home');
+        expect($location.path()).toEqual('/Home');
+        expect($browserUrl.calls.length).toEqual(3);
+        expect($browserForceReloadLocationUpdate).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
+  describe('location watch for hashbang browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: false, matchingRoute: '/', otherwiseRoute: '/'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL without home route without trailing slash in non-history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/#/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(3);
+        expect($browserForceReloadLocationUpdate).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
+  describe('location watch for hashbang browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: false, matchingRoute: '/', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL without trailing slash when otherwise route shouldn\'t be called in non-history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/#/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(3);
+        expect($browserForceReloadLocationUpdate).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
+  describe('location watch for hashbang browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: false, matchingRoute: '/Home', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL with home route with trailing slash in non-history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app/');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/#/Home');
+        expect($location.path()).toEqual('/Home');
+        expect($browserUrl.calls.length).toEqual(2);
+        expect($browserForceReloadLocationUpdate).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
+  describe('location watch for hashbang browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: false, matchingRoute: '/', otherwiseRoute: '/'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL without home route with trailing slash in non-history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app/');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/#/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(2);
+        expect($browserForceReloadLocationUpdate).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
+  describe('location watch for hashbang browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: false, matchingRoute: '/', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL with trailing slash when otherwise route shouldn\'t be called in non-history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app/');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/#/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(2);
+        expect($browserForceReloadLocationUpdate).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
+  describe('location watch for HTML5 browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: true, matchingRoute: '/Home', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL with home route without trailing slash in history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/Home');
+        expect($location.path()).toEqual('/Home');
+        expect($browserUrl.calls.length).toEqual(3);
+        expect($browserForceReloadLocationUpdate).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('location watch for HTML5 browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: true, matchingRoute: '/', otherwiseRoute: '/'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL without home route without trailing slash in history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(2);
+        expect($browserForceReloadLocationUpdate).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('location watch for HTML5 browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: true, matchingRoute: '/', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL without trailing slash when otherwise route shouldn\'t be called in history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(2);
+        expect($browserForceReloadLocationUpdate).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('location watch for HTML5 browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: true, matchingRoute: '/Home', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL with home route with trailing slash in history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app/');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/Home');
+        expect($location.path()).toEqual('/Home');
+        expect($browserUrl.calls.length).toEqual(2);
+        expect($browserForceReloadLocationUpdate).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('location watch for HTML5 browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: true, matchingRoute: '/', otherwiseRoute: '/'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL without home route with trailing slash in history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app/');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(1);
+        expect($browserForceReloadLocationUpdate).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('location watch for HTML5 browsers with routing taken into account', function() {
+    beforeEach(initLocationAndRouteServices({html5Mode: true, history: true, matchingRoute: '/', otherwiseRoute: '/Home'}));
+    beforeEach(inject(initBrowserForInfiniteDigestTests()));
+
+    it('should not infinite $digest when going to base URL with trailing slash when otherwise route shouldn\'t be called in history browser', function() {
+      inject(function($rootScope, $injector, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserForceReloadLocationUpdate = spyOn($browser, 'forceReloadLocationUpdate').andCallThrough();
+
+        $browser.url('http://server/app/');
+
+        var $location = $injector.get('$location');
+        var $route = $injector.get('$route');
+
+        $browser.poll();
+
+        $rootScope.$digest();
+
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
+        expect($browser.url()).toEqual('http://server/app/');
+        expect($location.path()).toEqual('/');
+        expect($browserUrl.calls.length).toEqual(1);
+        expect($browserForceReloadLocationUpdate).not.toHaveBeenCalled();
+      });
+    });
+  });
 
   describe('reloadOnSearch', function() {
     it('should reload a route when reloadOnSearch is enabled and .search() changes', function() {

@@ -883,7 +883,7 @@ function $LocationProvider() {
       $browser.url($location.absUrl(), true);
     }
 
-    var initializing = true;
+    var initializing = true, previousOldUrl = null, previousNewUrl = null;
 
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl, newState) {
@@ -918,6 +918,15 @@ function $LocationProvider() {
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = trimEmptyHash($browser.url());
       var newUrl = trimEmptyHash($location.absUrl());
+      if ($location.$$html5 && !$sniffer.history) {
+        if (previousOldUrl === oldUrl && previousNewUrl === newUrl) {
+          // break out of infinite $digest loops caused by default routes in hashbang mode
+          $browser.forceReloadLocationUpdate(newUrl);
+          previousOldUrl = previousNewUrl = null;
+          return;
+        }
+        previousOldUrl = oldUrl, previousNewUrl = newUrl;
+      }
       var oldState = $browser.state();
       var currentReplace = $location.$$replace;
       var urlOrStateChanged = oldUrl !== newUrl ||
