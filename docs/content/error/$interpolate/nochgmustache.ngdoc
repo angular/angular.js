@@ -4,7 +4,7 @@
 @description
 
 You have redefined `$interpolate.startSymbol`/`$interpolate.endSymbol` and also
-loaded the `ngMessageFormat` module (provided by angular-messageFormat.min.js)
+loaded the `ngMessageFormat` module (provided by angular-message-format.min.js)
 while creating your injector.
 
 `ngMessageFormat` currently does not support redefinition of the
