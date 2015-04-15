@@ -215,7 +215,7 @@ function $HttpProvider() {
    * - **`defaults.paramSerializer`** - {string|function(Object<string,string>):string} - A function used to prepare string representation
    * of request parameters (specified as an object).
    * Is specified as string, it is interpreted as function registered in with the {$injector}.
-   * Defaults to {$httpParamSerializer}.
+   * Defaults to {@link ng.$httpParamSerializer $httpParamSerializer}.
    *
    **/
   var defaults = this.defaults = {
