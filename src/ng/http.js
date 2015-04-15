@@ -61,7 +61,7 @@ function $HttpParamSerializerJQLikeProvider() {
    * @name $httpParamSerializerJQLike
    * @description
    *
-   * Alternative $http params serializer that follows jQuerys `param()` method {http://api.jquery.com/jquery.param/} logic.
+   * Alternative $http params serializer that follows jQuery's [`param()`](http://api.jquery.com/jquery.param/) method logic.
    * */
   this.$get = function() {
     return paramSerializerFactory(true);
@@ -214,8 +214,8 @@ function $HttpProvider() {
    *
    * - **`defaults.paramSerializer`** - {string|function(Object<string,string>):string} - A function used to prepare string representation
    * of request parameters (specified as an object).
-   * Is specified as string, it is interpreted as function registered in with the {$injector}.
-   * Defaults to {$httpParamSerializer}.
+   * If specified as string, it is interpreted as a function registered with the {@link auto.$injector $injector}.
+   * Defaults to {@link ng.$httpParamSerializer $httpParamSerializer}.
    *
    **/
   var defaults = this.defaults = {
