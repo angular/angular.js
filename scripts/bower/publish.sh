@@ -14,21 +14,7 @@ function init {
   TMP_DIR=$(resolveDir ../../tmp)
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
-  REPOS=(
-    angular
-    angular-animate
-    angular-aria
-    angular-cookies
-    angular-i18n
-    angular-loader
-    angular-mocks
-    angular-route
-    angular-resource
-    angular-sanitize
-    angular-scenario
-    angular-touch
-    angular-messages
-  )
+  source $(dirname $0)/repos.inc
 }
 
 
