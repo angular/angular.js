@@ -710,7 +710,7 @@ function $HttpProvider() {
      *      Overriding the Default Transformations}
      *    - **paramSerializer** - {string|function(Object<string,string>):string} - A function used to prepare string representation
      *      of request parameters (specified as an object).
-     *      Is specified as string, it is interpreted as function registered in with the {$injector}.
+     *      If specified as string, it is interpreted as a function registered with the {@link ng.$injector $injector}.
      *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
      *      GET request, otherwise if a cache instance built with
      *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
