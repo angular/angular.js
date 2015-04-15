@@ -154,8 +154,8 @@ You can read more about the ICU MessageFormat syntax at
 
 This extended syntax is provided by way of the
 `ngMessageFormat` module that your application can depend
-upon (shipped separately as `angular-messageFormat.min.js` and
-`angular-messageFormat.js`.)  A current limitation of the
+upon (shipped separately as `angular-message-format.min.js` and
+`angular-message-format.js`.)  A current limitation of the
 `ngMessageFormat` module, is that it does not support
 redefining the `$interpolate` start and end symbols. Only the
 default `{{` and `}}` are allowed.
