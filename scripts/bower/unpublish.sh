@@ -13,7 +13,6 @@ ARG_DEFS=(
 
 function init {
   TMP_DIR=$(resolveDir ../../tmp)
-  source $(dirname $0)/repos.inc
 }
 
 function prepare {
@@ -39,4 +38,5 @@ function publish {
   done
 }
 
+source $(dirname $0)/repos.inc
 source $(dirname $0)/../utils.inc

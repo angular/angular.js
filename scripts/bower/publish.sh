@@ -14,7 +14,6 @@ function init {
   TMP_DIR=$(resolveDir ../../tmp)
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
-  source $(dirname $0)/repos.inc
 }
 
 
@@ -115,4 +114,5 @@ function publish {
   done
 }
 
+source $(dirname $0)/repos.inc
 source $(dirname $0)/../utils.inc
