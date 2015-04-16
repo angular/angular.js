@@ -881,6 +881,12 @@ function $HttpProvider() {
 </file>
 <file name="script.js">
   angular.module('httpExample', [])
+    .config(['$sceDelegateProvider', function($sceDelegateProvider) {
+      $sceDelegateProvider.resourceUrlWhitelist([
+        'self',
+        'https://angularjs.org/**'
+      ]);
+    }])
     .controller('FetchController', ['$scope', '$http', '$templateCache',
       function($scope, $http, $templateCache) {
         $scope.method = 'GET';

@@ -3,11 +3,16 @@
 
 describe('$httpBackend', function() {
 
-  var $backend, $browser, $jsonpCallbacks,
+  var $sce, $backend, $browser, $jsonpCallbacks,
       xhr, fakeDocument, callback;
 
-  beforeEach(inject(function($injector) {
+  beforeEach(module(function($sceDelegateProvider) {
+    // Setup a special whitelisted url that we can use in testing JSONP requests
+    $sceDelegateProvider.resourceUrlWhitelist(['http://special.whitelisted.resource.com/**']);
+  }));
 
+  beforeEach(inject(function($injector) {
+    $sce = $injector.get('$sce');
     $browser = $injector.get('$browser');
 
     fakeDocument = {
@@ -48,7 +53,7 @@ describe('$httpBackend', function() {
       }
     };
 
-    $backend = createHttpBackend($browser, createMockXhr, $browser.defer, $jsonpCallbacks, fakeDocument);
+    $backend = createHttpBackend($sce, $browser, createMockXhr, $browser.defer, $jsonpCallbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -273,7 +278,7 @@ describe('$httpBackend', function() {
 
   it('should call $xhrFactory with method and url', function() {
     var mockXhrFactory = jasmine.createSpy('mockXhrFactory').and.callFake(createMockXhr);
-    $backend = createHttpBackend($browser, mockXhrFactory, $browser.defer, $jsonpCallbacks, fakeDocument);
+    $backend = createHttpBackend($sce, $browser, mockXhrFactory, $browser.defer, $jsonpCallbacks, fakeDocument);
     $backend('GET', '/some-url', 'some-data', noop);
     expect(mockXhrFactory).toHaveBeenCalledWith('GET', '/some-url');
   });
@@ -334,20 +339,20 @@ describe('$httpBackend', function() {
 
     var SCRIPT_URL = /([^\?]*)\?cb=(.*)/;
 
-
     it('should add script tag for JSONP request', function() {
       callback.and.callFake(function(status, response) {
         expect(status).toBe(200);
         expect(response).toBe('some-data');
       });
 
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      $backend('JSONP', 'http://special.whitelisted.resource.com/path?cb=JSON_CALLBACK', null, callback);
+
       expect(fakeDocument.$$scripts.length).toBe(1);
 
       var script = fakeDocument.$$scripts.shift(),
           url = script.src.match(SCRIPT_URL);
 
-      expect(url[1]).toBe('http://example.org/path');
+      expect(url[1]).toBe('http://special.whitelisted.resource.com/path');
       $jsonpCallbacks[url[2]]('some-data');
       browserTrigger(script, 'load');
 
@@ -358,7 +363,8 @@ describe('$httpBackend', function() {
     it('should clean up the callback and remove the script', function() {
       spyOn($jsonpCallbacks, 'removeCallback').and.callThrough();
 
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      $backend('JSONP', 'http://special.whitelisted.resource.com/path?cb=JSON_CALLBACK', null, callback);
+
       expect(fakeDocument.$$scripts.length).toBe(1);
 
 
@@ -375,6 +381,7 @@ describe('$httpBackend', function() {
 
     it('should set url to current location if not specified or empty string', function() {
       $backend('JSONP', undefined, null, callback);
+
       expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
       fakeDocument.$$scripts.shift();
 
@@ -390,7 +397,8 @@ describe('$httpBackend', function() {
         expect(status).toBe(-1);
       });
 
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback, null, 2000);
+      $backend('JSONP', 'http://special.whitelisted.resource.com/path?cb=JSON_CALLBACK', null, callback, null, 2000);
+
       expect(fakeDocument.$$scripts.length).toBe(1);
       expect($browser.deferredFns[0].time).toBe(2000);
 
@@ -404,6 +412,18 @@ describe('$httpBackend', function() {
       expect($jsonpCallbacks.removeCallback).toHaveBeenCalledOnceWith(callbackId);
     });
 
+
+    it('should throw error if the url is not a trusted resource', function() {
+      expect(function() {
+        $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      }).toThrowMinErr('$sce', 'insecurl');
+    });
+
+    it('should not throw error if the url is an explicitly trusted resource', function() {
+      expect(function() {
+        $backend('JSONP', $sce.trustAsResourceUrl('http://example.org/path?cb=JSON_CALLBACK'), null, callback);
+      }).not.toThrow();
+    });
 
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
@@ -420,7 +440,7 @@ describe('$httpBackend', function() {
     }
 
     beforeEach(function() {
-      $backend = createHttpBackend($browser, createMockXhr);
+      $backend = createHttpBackend($sce, $browser, createMockXhr);
     });
 
 

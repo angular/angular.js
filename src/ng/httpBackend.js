@@ -49,17 +49,19 @@ function $xhrFactoryProvider() {
  * $httpBackend} which can be trained with responses.
  */
 function $HttpBackendProvider() {
-  this.$get = ['$browser', '$jsonpCallbacks', '$document', '$xhrFactory', function($browser, $jsonpCallbacks, $document, $xhrFactory) {
-    return createHttpBackend($browser, $xhrFactory, $browser.defer, $jsonpCallbacks, $document[0]);
+  this.$get = ['$sce', '$browser', '$jsonpCallbacks', '$document', '$xhrFactory', function($sce, $browser, $jsonpCallbacks, $document, $xhrFactory) {
+    return createHttpBackend($sce, $browser, $xhrFactory, $browser.defer, $jsonpCallbacks, $document[0]);
   }];
 }
 
-function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
+function createHttpBackend($sce, $browser, createXhr, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType, eventHandlers, uploadEventHandlers) {
-    url = url || $browser.url();
 
     if (lowercase(method) === 'jsonp') {
+      // This is a pretty sensitive operation where we're allowing a script to have full access to
+      // our DOM and JS space.  So we require that the URL satisfies SCE.RESOURCE_URL.
+      url = $sce.getTrustedResourceUrl(url) || $browser.url();
       var callbackPath = callbacks.createCallback(url);
       var jsonpDone = jsonpReq(url, callbackPath, function(status, text) {
         // jsonpReq only ever sets status to 200 (OK), 404 (ERROR) or -1 (WAITING)
@@ -69,6 +71,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       });
     } else {
 
+      url = url || $browser.url();
       var xhr = createXhr(method, url);
 
       xhr.open(method, url, true);
