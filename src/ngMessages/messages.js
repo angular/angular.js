@@ -119,7 +119,7 @@ var jqLite = angular.element;
  *     <div ng-message="email">Your email address is invalid</div>
  *
  *     <!-- and here are the generic error messages -->
- *     <div ng-messages-include="error-messages"></div>
+ *     <div ng-messages-include="my-custom-messages"></div>
  *   </div>
  * </form>
  * ```
