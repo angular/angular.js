@@ -1110,7 +1110,11 @@ function $HttpProvider() {
           cache,
           cachedResp,
           reqHeaders = config.headers,
-          url = buildUrl(config.url, config.paramSerializer(config.params));
+          // origUrl could be a $sce trusted URL which used a wrapper class
+          origUrl = config.url,
+          url = $sce.valueOf(origUrl);
+
+      url = buildUrl(url, config.paramSerializer(config.params));
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
@@ -1154,7 +1158,7 @@ function $HttpProvider() {
           reqHeaders[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
         }
 
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
+        $httpBackend(config.method, (url === $sce.valueOf(origUrl) ? origUrl : url), reqData, done, reqHeaders, config.timeout,
             config.withCredentials, config.responseType);
       }
 
