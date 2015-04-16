@@ -50,6 +50,23 @@ describe('$httpBackend', function() {
     expect(xhr.$$data).toBe(null);
   });
 
+  it('should pass the correct falsy value to send if falsy body is set (excluding NaN)', function() {
+    var values = [false, 0, "", null, undefined];
+    angular.forEach(values, function(value) {
+      $backend('GET', '/some-url', value, noop);
+      xhr = MockXhr.$$lastInstance;
+
+      expect(xhr.$$data).toBe(value);
+    });
+  });
+
+  it('should pass NaN to send if NaN body is set', function() {
+    $backend('GET', '/some-url', NaN, noop);
+    xhr = MockXhr.$$lastInstance;
+
+    expect(isNaN(xhr.$$data)).toEqual(true);
+  });
+
   it('should call completion function with xhr.statusText if present', function() {
     callback.andCallFake(function(status, response, headers, statusText) {
       expect(statusText).toBe('OK');
