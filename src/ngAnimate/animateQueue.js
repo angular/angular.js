@@ -388,6 +388,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
           // it, otherwise if it's the same then the end result will be the same too
           if (animationCancelled || (isStructural && animationDetails.event !== event)) {
             options.domOperation();
+            runner.end();
           }
 
           return;
@@ -482,7 +483,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       // animations to properly function (otherwise any CSS selectors may not work)
       function examineParentAnimation(node, animationDetails) {
         // enter/leave/move always have priority
-        if (animationDetails.structural) return;
+        if (animationDetails.structural || !hasAnimationClasses(animationDetails.options)) return;
 
         if (animationDetails.state === RUNNING_STATE) {
           animationDetails.runner.end();
