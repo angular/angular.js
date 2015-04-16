@@ -831,6 +831,13 @@ function $HttpProvider() {
 </example>
      */
     function $http(requestConfig) {
+      var config = {
+        method: 'get',
+        transformRequest: defaults.transformRequest,
+        transformResponse: defaults.transformResponse,
+        progress: null
+      };
+      var headers = mergeHeaders(requestConfig);
 
       if (!angular.isObject(requestConfig)) {
         throw minErr('$http')('badreq', 'Http request configuration must be an object.  Received: {0}', requestConfig);
@@ -1155,7 +1162,7 @@ function $HttpProvider() {
         }
 
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
-            config.withCredentials, config.responseType);
+            config.withCredentials, config.responseType, config.progress);
       }
 
       return promise;
