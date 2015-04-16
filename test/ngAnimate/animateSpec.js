@@ -510,16 +510,49 @@ describe("animations", function() {
 
     describe('parent animations', function() {
       it('should immediately end a pre-digest parent class-based animation if a structural child is active',
-        inject(function($rootScope, $animate) {
+        inject(function($rootScope, $animate, $$rAF) {
 
         parent.append(element);
         var child = jqLite('<div></div>');
-        $animate.addClass(parent, 'abc');
+
+        var itsOver = false;
+        $animate.addClass(parent, 'abc').done(function() {
+          itsOver = true;
+        });
 
         $animate.enter(child, element);
+        $$rAF.flush();
+
+        expect(itsOver).toBe(false);
         $rootScope.$digest();
 
         expect(parent).toHaveClass('abc');
+        expect(itsOver).toBe(true);
+      }));
+
+      it('should not end a pre-digest parent animation if it does not have any classes to add/remove',
+        inject(function($rootScope, $animate, $$rAF) {
+
+        parent.append(element);
+        var child = jqLite('<div></div>');
+        var runner = $animate.animate(parent,
+          { height:'0px' },
+          { height:'100px' });
+
+        var doneCount = 0;
+        runner.done(function() {
+          doneCount++;
+        });
+
+        var runner2 = $animate.enter(child, element);
+        runner2.done(function() {
+          doneCount++;
+        });
+
+        $rootScope.$digest();
+        $$rAF.flush();
+
+        expect(doneCount).toBe(0);
       }));
 
       it('should immediately end a parent class-based animation if a structural child is active',
