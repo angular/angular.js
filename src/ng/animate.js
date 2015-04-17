@@ -163,7 +163,7 @@ var $$CoreAnimateQueueProvider = function() {
 var $AnimateProvider = ['$provide', function($provide) {
   var provider = this;
 
-  this.$$registeredAnimations = [];
+  this.$$registeredAnimations = Object.create(null);
 
    /**
    * @ngdoc method
