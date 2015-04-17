@@ -9,33 +9,13 @@ var JSON_ENDS = {
 };
 var JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/;
 
-function paramSerializerFactory(jQueryMode) {
-
-  function serializeValue(v) {
-    if (isObject(v)) {
-      return isDate(v) ? v.toISOString() : toJson(v);
-    }
-    return v;
+function serializeValue(v) {
+  if (isObject(v)) {
+    return isDate(v) ? v.toISOString() : toJson(v);
   }
-
-  return function paramSerializer(params) {
-    if (!params) return '';
-    var parts = [];
-    forEachSorted(params, function(value, key) {
-      if (value === null || isUndefined(value)) return;
-      if (isArray(value) || isObject(value) && jQueryMode) {
-        forEach(value, function(v, k) {
-          var keySuffix = jQueryMode ? '[' + (!isArray(value) ? k : '') + ']' : '';
-          parts.push(encodeUriQuery(key + keySuffix)  + '=' + encodeUriQuery(serializeValue(v)));
-        });
-      } else {
-        parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(serializeValue(value)));
-      }
-    });
-
-    return parts.length > 0 ? parts.join('&') : '';
-  };
+  return v;
 }
+
 
 function $HttpParamSerializerProvider() {
   /**
@@ -51,7 +31,22 @@ function $HttpParamSerializerProvider() {
    * * `{'foo': {'bar':'baz'}}` results in `foo=%7B%22bar%22%3A%22baz%22%7D"` (stringified and encoded representation of an object)
    * */
   this.$get = function() {
-    return paramSerializerFactory(false);
+    return function ngParamSerializer(params) {
+      if (!params) return '';
+      var parts = [];
+      forEachSorted(params, function(value, key) {
+        if (value === null || isUndefined(value)) return;
+        if (isArray(value)) {
+          forEach(value, function(v, k) {
+            parts.push(encodeUriQuery(key)  + '=' + encodeUriQuery(serializeValue(v)));
+          });
+        } else {
+          parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(serializeValue(value)));
+        }
+      });
+
+      return parts.join('&');
+    };
   };
 }
 
@@ -64,7 +59,30 @@ function $HttpParamSerializerJQLikeProvider() {
    * Alternative $http params serializer that follows jQuery's [`param()`](http://api.jquery.com/jquery.param/) method logic.
    * */
   this.$get = function() {
-    return paramSerializerFactory(true);
+    return function jQueryLikeParamSerializer(params) {
+      if (!params) return '';
+      var parts = [];
+      serialize(params, '', true);
+      return parts.join('&');
+
+      function serialize(toSerialize, prefix, topLevel) {
+        if (toSerialize === null || isUndefined(toSerialize)) return;
+        if (isArray(toSerialize)) {
+          forEach(toSerialize, function(value) {
+            serialize(value, prefix + '[]');
+          });
+        } else if (isObject(toSerialize) && !isDate(toSerialize)) {
+          forEachSorted(toSerialize, function(value, key) {
+            serialize(value, prefix +
+                (topLevel ? '' : '[') +
+                key +
+                (topLevel ? '' : ']'));
+          });
+        } else {
+          parts.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(serializeValue(toSerialize)));
+        }
+      }
+    }
   };
 }
 

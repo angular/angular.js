@@ -1992,6 +1992,8 @@ describe('$http param serializers', function() {
     it('should serialize objects', function() {
       expect(defSer({foo: 'foov', bar: 'barv'})).toEqual('bar=barv&foo=foov');
       expect(jqrSer({foo: 'foov', bar: 'barv'})).toEqual('bar=barv&foo=foov');
+      expect(defSer({someDate: new Date('2014-07-15T17:30:00.000Z')})).toEqual('someDate=2014-07-15T17:30:00.000Z');
+      expect(jqrSer({someDate: new Date('2014-07-15T17:30:00.000Z')})).toEqual('someDate=2014-07-15T17:30:00.000Z');
     });
 
   });
@@ -2010,9 +2012,15 @@ describe('$http param serializers', function() {
       expect(decodeURIComponent(jqrSer({a: 'b', foo: ['bar', 'baz']}))).toEqual('a=b&foo[]=bar&foo[]=baz');
     });
 
-    it('should serialize objects by repeating param name with [kay] suffix', function() {
+    it('should serialize objects by repeating param name with [key] suffix', function() {
       expect(jqrSer({a: 'b', foo: {'bar': 'barv', 'baz': 'bazv'}})).toEqual('a=b&foo%5Bbar%5D=barv&foo%5Bbaz%5D=bazv');
                                                                            //a=b&foo[bar]=barv&foo[baz]=bazv
+    });
+
+    it('should serialize nested objects by repeating param name with [key] suffix', function() {
+      expect(jqrSer({a: ['b', {c: 'd'}], e: {f: 'g', 'h': ['i', 'j']}})).toEqual(
+         'a%5B%5D=b&a%5B%5D%5Bc%5D=d&e%5Bf%5D=g&e%5Bh%5D%5B%5D=i&e%5Bh%5D%5B%5D=j');
+         //a[]=b&a[][c]=d&e[f]=g&e[h][]=i&e[h][]=j
     });
   });
 
