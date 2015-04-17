@@ -115,6 +115,21 @@ describe("$animate", function() {
       inject();
     });
 
+    it("should register the animation and be available for lookup", function() {
+      var provider;
+      module(function($animateProvider) {
+        provider = $animateProvider;
+      });
+      inject(function() {
+        // by using hasOwnProperty we know for sure that the lookup object is an empty object
+        // instead of inhertiting properties from its original prototype.
+        expect(provider.$$registeredAnimations.hasOwnProperty).toBeFalsy();
+
+        provider.register('.filter', noop);
+        expect(provider.$$registeredAnimations['filter']).toBe('.filter-animation');
+      });
+    });
+
     it("should apply and retain inline styles on the element that is animated", inject(function($animate, $rootScope) {
       var element = jqLite('<div></div>');
       var parent = jqLite('<div></div>');
