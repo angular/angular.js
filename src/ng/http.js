@@ -11,6 +11,8 @@ var JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/;
 
 function paramSerializerFactory(jQueryMode) {
 
+  return jQueryMode ? jQueryLikeParamSerializer : paramSerializer;
+
   function serializeValue(v) {
     if (isObject(v)) {
       return isDate(v) ? v.toISOString() : toJson(v);
@@ -18,23 +20,47 @@ function paramSerializerFactory(jQueryMode) {
     return v;
   }
 
-  return function paramSerializer(params) {
+  function paramSerializer(params) {
     if (!params) return '';
     var parts = [];
     forEachSorted(params, function(value, key) {
       if (value === null || isUndefined(value)) return;
-      if (isArray(value) || isObject(value) && jQueryMode) {
+      if (isArray(value)) {
         forEach(value, function(v, k) {
-          var keySuffix = jQueryMode ? '[' + (!isArray(value) ? k : '') + ']' : '';
-          parts.push(encodeUriQuery(key + keySuffix)  + '=' + encodeUriQuery(serializeValue(v)));
+          parts.push(encodeUriQuery(key)  + '=' + encodeUriQuery(serializeValue(v)));
         });
       } else {
         parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(serializeValue(value)));
       }
     });
 
-    return parts.length > 0 ? parts.join('&') : '';
-  };
+    return parts.join('&');
+  }
+
+  function jQueryLikeParamSerializer(params) {
+    if (!params) return '';
+    var parts = [];
+    serialize(params, '', true);
+    return parts.join('&');
+
+    function serialize(toSerialize, prefix, topLevel) {
+      if (toSerialize === null || isUndefined(toSerialize)) return;
+      if (isArray(toSerialize)) {
+        forEach(toSerialize, function(value) {
+          serialize(value, prefix + '[]');
+        });
+      } else if (isObject(toSerialize) && !isDate(toSerialize)) {
+        forEachSorted(toSerialize, function(value, key) {
+          serialize(value, prefix +
+              (topLevel ? '' : '[') +
+              key +
+              (topLevel ? '' : ']'));
+        });
+      } else {
+        parts.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(serializeValue(toSerialize)));
+      }
+    }
+  }
 }
 
 function $HttpParamSerializerProvider() {
