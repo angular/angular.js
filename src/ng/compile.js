@@ -2545,9 +2545,19 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         lastValue,
         parentGet, parentSet, compare;
 
+        if (!hasOwnProperty.call(attrs, attrName)) {
+          // In the case of user defined a binding with the same name as a method in Object.prototype but didn't set
+          // the corresponding attribute. We need to make sure subsequent code won't access to the prototype function
+          attrs[attrName] = undefined;
+        }
+
         switch (mode) {
 
           case '@':
+            if (!attrs[attrName] && !optional) {
+              destination[scopeName] = undefined;
+            }
+
             attrs.$observe(attrName, function(value) {
               destination[scopeName] = value;
             });
@@ -2564,6 +2574,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               return;
             }
             parentGet = $parse(attrs[attrName]);
+
             if (parentGet.literal) {
               compare = equals;
             } else {
@@ -2602,9 +2613,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             break;
 
           case '&':
-            // Don't assign Object.prototype method to scope
-            if (!attrs.hasOwnProperty(attrName) && optional) break;
-
             parentGet = $parse(attrs[attrName]);
 
             // Don't assign noop to destination if expression is not valid
