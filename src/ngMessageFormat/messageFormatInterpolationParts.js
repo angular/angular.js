@@ -95,10 +95,10 @@ InterpolationParts.prototype.toParsedFn = function toParsedFn(mustHaveExpression
     return self.watchDelegate(scope, listener, objectEquality);
   };
 
-  parsedFn.exp = originalText; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-  parsedFn.expressions = new Array(this.expressionFns.length); // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
+  parsedFn['exp'] = originalText; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
+  parsedFn['expressions'] = new Array(this.expressionFns.length); // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
   for (var i = 0; i < this.expressionFns.length; i++) {
-    parsedFn.expressions[i] = this.expressionFns[i].exp;
+    parsedFn['expressions'][i] = this.expressionFns[i]['exp'];
   }
 
   return parsedFn;
