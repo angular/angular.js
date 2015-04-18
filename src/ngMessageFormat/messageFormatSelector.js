@@ -24,6 +24,8 @@ function MessageSelectorBase(expressionFn, choices) {
   this.parsedFn['$$watchDelegate'] = function $$watchDelegate(scope, listener, objectEquality) {
     return self.watchDelegate(scope, listener, objectEquality);
   };
+  this.parsedFn['exp'] = expressionFn['exp'];
+  this.parsedFn['expressions'] = expressionFn['expressions'];
 }
 
 MessageSelectorBase.prototype.getMessageFn = function getMessageFn(value) {

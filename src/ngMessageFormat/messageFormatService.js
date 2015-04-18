@@ -24,12 +24,12 @@
  * <file name="index.html">
  *   <div ng-controller="AppController">
  *     <button ng-click="decreaseRecipients()" id="decreaseRecipients">decreaseRecipients</button><br>
- *     <span id="message">{{recipients.length, plural, offset:1
- *                          =0    {{{sender.name}} gave no gifts (\#=#)}
- *                          =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\#=#)}
- *                          one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\#=#)}
- *                          other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\#=#)}
- *                        }}</span>
+ *     <span>{{recipients.length, plural, offset:1
+ *             =0    {{{sender.name}} gave no gifts (\#=#)}
+ *             =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\#=#)}
+ *             one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\#=#)}
+ *             other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\#=#)}
+ *           }}</span>
  *   </div>
  * </file>
  *
@@ -57,7 +57,7 @@
  * <file name="protractor.js" type="protractor">
  *   describe('MessageFormat plural', function() {
  *     it('should pluralize initial values', function() {
- *       var messageElem = element(by.id('message')), decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
+ *       var messageElem = element(by.binding('recipients.length')), decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
  *       decreaseRecipientsBtn.click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');

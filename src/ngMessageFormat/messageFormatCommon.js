@@ -51,8 +51,8 @@ function parseTextLiteral(text) {
     return unwatch;
   };
   PARSE_CACHE_FOR_TEXT_LITERALS[text] = parsedFn;
-  parsedFn.exp = text; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-  parsedFn.expressions = []; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
+  parsedFn['exp'] = text; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
+  parsedFn['expressions'] = []; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
   return parsedFn;
 }
 
