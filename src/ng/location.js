@@ -944,6 +944,9 @@ function $LocationProvider() {
                                         oldState === $location.$$state ? null : $location.$$state);
             }
             afterLocationChange(oldUrl, oldState);
+            if ($location.$$html5 && $location.absUrl().indexOf("#") > -1 && $location.absUrl() !== $browser.url()) {
+                $browser.forceReloadLocationUpdate($location.absUrl());
+            }
           }
         });
       }

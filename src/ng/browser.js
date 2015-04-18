@@ -135,6 +135,12 @@ function Browser(window, document, $log, $sniffer) {
   cacheState();
   lastHistoryState = cachedState;
 
+  self.forceReloadLocationUpdate = function(url) {
+    if (reloadLocation) {
+      reloadLocation = url;
+    }
+  };
+  
   /**
    * @name $browser#url
    *
@@ -190,7 +196,9 @@ function Browser(window, document, $log, $sniffer) {
         // Do the assignment again so that those two variables are referentially identical.
         lastHistoryState = cachedState;
       } else {
-        reloadLocation = url;
+        if (!sameBase) {
+          reloadLocation = url;
+        }
         if (replace) {
           location.replace(url);
         } else if (!sameBase) {
