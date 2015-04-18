@@ -264,7 +264,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   3. **Model mutation**
 
      For mutations to be properly observed, you should make them only within the {@link
-     ng.$rootScope.Scope#$apply scope.$apply()}. (Angular APIs do this
+     ng.$rootScope.Scope#$apply scope.$apply()}. Angular APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
      or asynchronous work with {@link ng.$http $http}, {@link ng.$timeout $timeout}
      or {@link ng.$interval $interval} services.
