@@ -957,7 +957,7 @@ var csp = function() {
  * @name ngJq
  *
  * @element ANY
- * @param {string=} the name of the library available under `window`
+ * @param {string=} ngJq the name of the library available under `window`
  * to be used for angular.element
  * @description
  * Use this directive to force the angular.element library.  This should be
