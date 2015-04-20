@@ -135,12 +135,26 @@ function Browser(window, document, $log, $sniffer) {
   cacheState();
   lastHistoryState = cachedState;
 
+  /**
+   * @name $browser#forceReloadLocationUpdate
+   *
+   * @description
+   * This method is a setter.
+   *
+   * If the reloadLocation variable is already set, it will be reset to
+   * the passed-in URL.
+   *
+   * NOTE: this api is intended for use only by the $location service in the
+   * $locationWatch function.
+   *
+   * @param {string} url New url
+   */
   self.forceReloadLocationUpdate = function(url) {
     if (reloadLocation) {
       reloadLocation = url;
     }
   };
-  
+
   /**
    * @name $browser#url
    *
