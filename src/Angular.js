@@ -859,7 +859,12 @@ function shallowCopy(src, dst) {
 
   return dst || src;
 }
-
+function equalsCacheContains(cache, o1, o2) {
+  for (var i = 0, ii = cache.length; i < ii; i += 2) {
+    if (cache[i] === o1 && cache[i + 1] === o2) return true;
+  }
+  return false;
+}
 
 /**
  * @ngdoc function
@@ -890,10 +895,13 @@ function shallowCopy(src, dst) {
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  */
-function equals(o1, o2) {
+function equals(o1, o2, cache) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
+  cache = cache || [];
+  if (equalsCacheContains(cache, o1, o2)) return true;
+  cache.push(o1, o2);
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2) {
     if (t1 == 'object') {
@@ -901,13 +909,13 @@ function equals(o1, o2) {
         if (!isArray(o2)) return false;
         if ((length = o1.length) == o2.length) {
           for (key = 0; key < length; key++) {
-            if (!equals(o1[key], o2[key])) return false;
+            if (!equals(o1[key], o2[key], cache)) return false;
           }
           return true;
         }
       } else if (isDate(o1)) {
         if (!isDate(o2)) return false;
-        return equals(o1.getTime(), o2.getTime());
+        return equals(o1.getTime(), o2.getTime(), cache);
       } else if (isRegExp(o1)) {
         return isRegExp(o2) ? o1.toString() == o2.toString() : false;
       } else {
@@ -916,7 +924,7 @@ function equals(o1, o2) {
         keySet = {};
         for (key in o1) {
           if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-          if (!equals(o1[key], o2[key])) return false;
+          if (!equals(o1[key], o2[key], cache)) return false;
           keySet[key] = true;
         }
         for (key in o2) {
