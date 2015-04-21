@@ -420,7 +420,7 @@ $animate.off(element, 'enter', fn);
 
 - **$animate:** due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
   There is no need to call `$scope.$apply` or
-`$scope.$digest` inside of a animation promise callback anymore
+`$scope.$digest` inside of an animation promise callback anymore
 since the promise is resolved within a digest automatically (but a
 digest is not run unless the promise is chained).
 
