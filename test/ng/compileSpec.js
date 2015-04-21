@@ -1170,6 +1170,79 @@ describe('$compile', function() {
         }));
       });
 
+      describe('directives', function() {
+        beforeEach(module(function() {
+          directive('grandParentFn', valueFn({
+            restrict: 'E',
+            directives: ['parentFn'],
+            templateUrl: 'grand-parent.html'
+          }));
+          directive('parentFn', valueFn({
+            restrict: 'E',
+            directives: ['child'],
+            templateUrl: function() {
+              return 'parent.html';
+            }
+          }));
+          directive('grandParent', valueFn({
+            restrict: 'E',
+            directives: ['parent'],
+            templateUrl: 'grand-parent.html'
+          }));
+          directive('parent', valueFn({
+            restrict: 'E',
+            directives: ['child'],
+            templateUrl: 'parent.html'
+          }));
+          directive('child', valueFn({
+            restrict: 'E',
+            templateUrl: 'child.html'
+          }));
+        }));
+
+
+        it('should download templateUrl of nested directives immediately', function() {
+          inject(function($compile, $httpBackend, $rootScope) {
+            $httpBackend.expect('GET', 'child.html').respond('World');
+            $httpBackend.expect('GET', 'parent.html').respond('Hello <child/>');
+
+            element = $compile('<parent/>')($rootScope);
+            $httpBackend.flush();
+            expect(sortedHtml(element)).toEqual('<parent>Hello <child>World</child></parent>');
+          });
+        });
+
+
+        it('should download templateUrl of multi-nested directives immediately', function() {
+          inject(function($compile, $httpBackend, $rootScope) {
+            $httpBackend.expect('GET', 'child.html').respond('World');
+            $httpBackend.expect('GET', 'parent.html').respond('Hello <child/>');
+            $httpBackend.expect('GET', 'grand-parent.html').respond('Hello <parent/>');
+
+            element = $compile('<grand-parent/>')($rootScope);
+            $httpBackend.flush();
+            expect(sortedHtml(element)).toEqual(
+              '<grand-parent>Hello <parent>Hello <child>World</child></parent></grand-parent>');
+          });
+        });
+
+
+        it('should not download nested templateUrl functions', function() {
+          inject(function($compile, $httpBackend, $rootScope) {
+            $httpBackend.expect('GET', 'child.html').respond('World');
+            $httpBackend.expect('GET', 'grand-parent.html').respond(function() {
+              $httpBackend.verifyNoOutstandingRequest();
+              return [200, 'Hello <parent-fn/>'];
+            });
+            $httpBackend.expect('GET', 'parent.html').respond('Hello <child/>');
+
+            element = $compile('<grand-parent-fn/>')($rootScope);
+            $httpBackend.flush();
+            expect(sortedHtml(element)).toEqual(
+              '<grand-parent-fn>Hello <parent-fn>Hello <child>World</child></parent-fn></grand-parent-fn>');
+          });
+        });
+      });
 
       describe('templateUrl', function() {
 
