@@ -41,8 +41,8 @@
  * In the following example a new block of HTML containing a `ng-controller`
  * directive is added to the end of the document body by JQuery. We then compile and link
  * it into the current AngularJS scope.
- * Note: The below code works only when debug info is enabled. (see {@link api/ng/function/angular.injector debugInfoEnabled}).
- * The scope() function is available only when debug info is enabled. 
+ * <div class="alert alert-info">**Note:** The below code works only when debug info is enabled. (see {@link api/ng/function/angular.injector debugInfoEnabled}).
+ * The scope() function is available only when debug info is enabled.</div> 
  * ```js
  * var $div = $('<div ng-controller="MyCtrl">{{content.label}}</div>');
  * $(document.body).append($div);
