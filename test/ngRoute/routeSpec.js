@@ -1083,7 +1083,7 @@ describe('$route', function() {
 
       $routeProvider.
       when(options.matchingRoute, {
-          templateUrl: 'foo.html',
+          templateUrl: 'foo.html'
       }).
       otherwise({
           redirectTo: options.otherwiseRoute
