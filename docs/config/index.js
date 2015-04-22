@@ -6,7 +6,7 @@ var packagePath = __dirname;
 var Package = require('dgeni').Package;
 
 // Create and export a new Dgeni package called angularjs. This package depends upon
-// the ngdoc,nunjucks and examples packages defined in the dgeni-packages npm module.
+// the ngdoc, nunjucks, and examples packages defined in the dgeni-packages npm module.
 module.exports = new Package('angularjs', [
   require('dgeni-packages/ngdoc'),
   require('dgeni-packages/nunjucks'),
