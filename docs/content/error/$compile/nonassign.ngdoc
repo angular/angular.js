@@ -36,9 +36,25 @@ Following are invalid uses of this directive:
 ```
 
 
-To resolve this error, always use path expressions with scope properties that are two-way data-bound:
+To resolve this error, do one of the following options:
+
+- use path expressions with scope properties that are two-way data-bound like so:
+
 ```
 <my-directive bind="some.property">
 <my-directive bind="some[3]['property']">
 ```
 
+- Make the binding optional
+
+```
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    scope: {
+      localValue: '=?bind' // <-- the '?' makes it optional
+    }
+    ...
+  }
+});
+```
