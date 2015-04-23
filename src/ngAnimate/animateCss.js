@@ -494,9 +494,12 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         //WILL RESULT IN AN UNPREDICTABLE BUG THAT IS VERY HARD TO TRACK DOWN AND
         //WILL TAKE YEARS AWAY FROM YOUR LIFE.
         var width = bod.offsetWidth + 1;
-        forEach(rafWaitQueue, function(cb) {
-          cb(width);
-        });
+
+        // we use a for loop to ensure that if the queue is changed
+        // during this looping then it will consider new requests
+        for (var i = 0; i < rafWaitQueue.length; i++) {
+          rafWaitQueue[i](width);
+        }
         rafWaitQueue.length = 0;
       });
     }
