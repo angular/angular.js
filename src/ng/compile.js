@@ -1242,6 +1242,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function compile($compileNodes, transcludeFn, maxPriority, ignoreDirective,
                         previousCompileContext) {
+      if ($compileNodes === '') {
+        throw $compileMinErr('tplrt', 'An empty string is not a valid template');
+      }
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, whereas we need to preserve the original selector so that we can
         // modify it.
