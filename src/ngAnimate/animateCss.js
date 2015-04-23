@@ -699,9 +699,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
                                        stagger.animationDuration === 0;
       }
 
-      if (flags.blockTransition) {
-        applyAnimationFromStyles(element, options);
-      } else {
+      applyAnimationFromStyles(element, options);
+      if (!flags.blockTransition) {
         blockTransitions(node, false);
       }
 
