@@ -2116,6 +2116,26 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css('height')).toBe('66px');
         }));
 
+        it("should always apply the from styles before the start function is called even if no transition is detected when started",
+          inject(function($animateCss, $rootElement) {
+
+          ss.addRule('.my-class', 'transition: 0s linear color');
+
+          var options = {
+            addClass: 'my-class',
+            from: { height: '26px' },
+            to: { height: '500px' }
+          };
+
+          var animator = $animateCss(element, options);
+          expect(element.css('height')).toBe('26px');
+
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css('height')).toBe('500px');
+        }));
+
         it("should apply an inline transition if [to] styles and a duration are provided",
           inject(function($animateCss, $rootElement) {
 
