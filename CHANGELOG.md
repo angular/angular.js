@@ -1,3 +1,58 @@
+<a name="v1.4.0-rc.1"></a>
+# v1.4.0-rc.1 Sartorial Chronography (2015-04-24)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure that from styles are applied for class-based animations
+  ([8f819d2c](https://github.com/angular/angular.js/commit/8f819d2cb5c8025b25534529a6e897dc8805885b))
+  - make sure the JS animation lookup is an object lookup
+  ([103a39ca](https://github.com/angular/angular.js/commit/103a39ca8dad0300bead15c358aad846510b2229),
+   [#11619](https://github.com/angular/angular.js/issues/11619))
+- **$animateCss:** ensure that rAF waiting loop doesn't ignore pending items during a flush
+  ([90e424b2](https://github.com/angular/angular.js/commit/90e424b206239e261024e8ef7fcac762236cd8b7))
+- **$http:** stop coercing falsy HTTP request bodies to null / empty body
+  ([e04a887c](https://github.com/angular/angular.js/commit/e04a887c9b506de18516600310fe6e529d9d2ca3),
+   [#11552](https://github.com/angular/angular.js/issues/11552), [#11593](https://github.com/angular/angular.js/issues/11593))
+- **ngAnimate:**
+  - close parent animations only when there are classes to resolve
+  ([1459be17](https://github.com/angular/angular.js/commit/1459be170dabfca40501dcf219dfced5ba513169))
+  - ensure ngClass-based classes are always resolved for CSS-enabled animations
+  ([89f081e4](https://github.com/angular/angular.js/commit/89f081e452e9a75c2d3bf86bfef8b7f9bd1f2b0e))
+  - do not abort animation if only `ng-anchor-in` is used
+  ([3333a5c3](https://github.com/angular/angular.js/commit/3333a5c380f830cba8efec5825cb6648f930f206))
+  - ensure that a filtered-out leave animation always runs its DOM operation
+  ([6dd64ab5](https://github.com/angular/angular.js/commit/6dd64ab5f34fa19db8f90e6eabc810843089ba14),
+   [#11555](https://github.com/angular/angular.js/issues/11555))
+  - ensure that animations work when the app is bootstrapped on the document node
+  ([bee14ed1](https://github.com/angular/angular.js/commit/bee14ed1e7b77ea7dc62326611380da36dec297e),
+   [#11574](https://github.com/angular/angular.js/issues/11574))
+  - ensure SVG classes are properly removed
+  ([fa0bbded](https://github.com/angular/angular.js/commit/fa0bbded1ea040fbfdb1a4339e4a374fe9717a82))
+- **ngAria:** change accessibility keypress event to use event.which if it is provided
+  ([249f9b81](https://github.com/angular/angular.js/commit/249f9b81cbad5c57cf978a47842744aadd85cdb4),
+   [#11340](https://github.com/angular/angular.js/issues/11340))
+- **ngMessageFormat:**
+  - ensure bindings are valid for Protractor
+  ([992114f7](https://github.com/angular/angular.js/commit/992114f7a7f5f39778753e0c49458f14b6290ffc),
+   [#11644](https://github.com/angular/angular.js/issues/11644), [#11649](https://github.com/angular/angular.js/issues/11649))
+  - minified symbol and nested required expression
+  ([8a45064f](https://github.com/angular/angular.js/commit/8a45064f2bdec13ba3de5b0a0785df76188ab172),
+   [#11414](https://github.com/angular/angular.js/issues/11414), [#11592](https://github.com/angular/angular.js/issues/11592))
+- **select:** allow empty option to be added dynamically by ng-repeat
+  ([abf59c28](https://github.com/angular/angular.js/commit/abf59c285c3ff6af20dbf4236eba5204ae735abb),
+   [#11470](https://github.com/angular/angular.js/issues/11470), [#11512](https://github.com/angular/angular.js/issues/11512))
+
+
+## Features
+
+- **$animate:** provide support for animations on elements outside of $rootElement
+  ([e41faaa2](https://github.com/angular/angular.js/commit/e41faaa2a155a42bcc66952497a6f33866878508))
+
+
+
+
 <a name="v1.4.0-rc.0"></a>
 # v1.4.0-rc.0 smooth-unwinding (2015-04-10)
 
