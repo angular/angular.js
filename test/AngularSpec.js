@@ -481,6 +481,16 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+
+
+    it('should copy dates by reference', function() {
+      var src = { date: new Date() };
+      var dst = {};
+
+      extend(dst, src);
+
+      expect(dst.date).toBe(src.date);
+    });
   });
 
 
@@ -547,6 +557,18 @@ describe('angular', function() {
         foo: [1,2,3]
       });
       expect(dst.foo).not.toBe(src.foo);
+    });
+
+
+    it('should copy dates by value', function() {
+      var src = { date: new Date() };
+      var dst = {};
+
+      merge(dst, src);
+
+      expect(dst.date).not.toBe(src.date);
+      expect(isDate(dst.date)).toBeTruthy();
+      expect(dst.date.valueOf()).toEqual(src.date.valueOf());
     });
   });
 
