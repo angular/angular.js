@@ -9,8 +9,9 @@
  * Orders a specified `array` by the `expression` predicate. It is ordered alphabetically
  * for strings and numerically for numbers. Note: if you notice numbers are not being sorted
  * as expected, make sure they are actually being saved as numbers and not strings.
+ * Array-like values (e.g. NodeLists, jQuery objects, TypedArrays, Strings, etc) are also supported.
  *
- * @param {Array} array The array to sort.
+ * @param {Array} array The array (or array-like object) to sort.
  * @param {function(*)|string|Array.<(function(*)|string)>=} expression A predicate to be
  *    used by the comparator to determine the order of elements.
  *
@@ -177,7 +178,10 @@ orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse) {
   return function(array, sortPredicate, reverseOrder) {
 
-    if (!(isArrayLike(array))) return array;
+    if (array == null) return array;
+    if (!isArrayLike(array)) {
+      throw minErr('orderBy')('notarray', 'Expected array but received: {0}', array);
+    }
 
     if (!isArray(sortPredicate)) { sortPredicate = [sortPredicate]; }
     if (sortPredicate.length === 0) { sortPredicate = ['+']; }
