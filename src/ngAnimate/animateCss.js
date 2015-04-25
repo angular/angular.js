@@ -39,16 +39,12 @@
  *   return {
  *     enter: function(element, doneFn) {
  *       var height = element[0].offsetHeight;
- *       var animation = $animateCss(element, {
+ *       var animator = $animateCss(element, {
  *         from: { height:'0px' },
  *         to: { height:height + 'px' },
  *         duration: 1 // one second
  *       });
- *
- *       // if no possible animation can be triggered due
- *       // to the combination of options then `animation`
- *       // will be returned as undefined
- *       animation.start().done(doneFn);
+ *       animator.start().done(doneFn);
  *     }
  *   }
  * }]);
@@ -71,18 +67,14 @@
  *   return {
  *     enter: function(element, doneFn) {
  *       var height = element[0].offsetHeight;
- *       var animation = $animateCss(element, {
+ *       var animator = $animateCss(element, {
  *         addClass: 'red large-text pulse-twice',
  *         easing: 'ease-out',
  *         from: { height:'0px' },
  *         to: { height:height + 'px' },
  *         duration: 1 // one second
  *       });
- *
- *       // if no possible animation can be triggered due
- *       // to the combination of options then `animation`
- *       // will be returned as undefined
- *       animation.start().done(doneFn);
+ *       animator.start().done(doneFn);
  *     }
  *   }
  * }]);
@@ -122,10 +114,11 @@
  * styles using the `from` and `to` properties.
  *
  * ```js
- * var animation = $animateCss(element, {
+ * var animator = $animateCss(element, {
  *   from: { background:'red' },
  *   to: { background:'blue' }
  * });
+ * animator.start();
  * ```
  *
  * ```css
@@ -158,10 +151,10 @@
  * added and removed on the element). Once `$animateCss` is called it will return an object with the following properties:
  *
  * ```js
- * var animation = $animateCss(element, { ... });
+ * var animator = $animateCss(element, { ... });
  * ```
  *
- * Now what do the contents of our `animation` variable look like:
+ * Now what do the contents of our `animator` variable look like:
  *
  * ```js
  * {
@@ -185,18 +178,11 @@
  * The example below should put this into perspective:
  *
  * ```js
- * var animation = $animateCss(element, { ... });
- *
- * // remember that if there is no CSS animation detected on the element
- * // then the value returned from $animateCss will be null
- * if (animation) {
- *   animation.start().done(function() {
- *     // yaay the animation is over
- *     doneCallback();
- *   });
- * } else {
+ * var animator = $animateCss(element, { ... });
+ * animator.start().done(function() {
+ *   // yaay the animation is over
  *   doneCallback();
- * }
+ * });
  * ```
  *
  * @param {DOMElement} element the element that will be animated
@@ -223,7 +209,7 @@
  * `stagger` option value of `0.1` is used then there will be a stagger delay of `600ms`)
  * `applyClassesEarly` - Whether or not the classes being added or removed will be used when detecting the animation. This is set by `$animate` when enter/leave/move animations are fired to ensure that the CSS classes are resolved in time. (Note that this will prevent any transitions from occuring on the classes being added and removed.)
  *
- * @return {null|object} an object with a start method and details about the animation. If no animation is detected then a value of `null` will be returned.
+ * @return {object} an object with start and end methods and details about the animation.
  *
  * * `start` - The method to start the animation. This will return a `Promise` when called.
  * * `end` - This method will cancel the animation and remove all applied CSS classes and styles.
@@ -538,8 +524,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       var maxDurationTime;
 
       if (options.duration === 0 || (!$sniffer.animations && !$sniffer.transitions)) {
-        close();
-        return;
+        return closeAndReturnNoopAnimator();
       }
 
       var method = options.event && isArray(options.event)
@@ -586,8 +571,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       // there is no way we can trigger an animation since no styles and
       // no classes are being applied which would then trigger a transition
       if (!hasToStyles && !setupClasses) {
-        close();
-        return false;
+        return closeAndReturnNoopAnimator();
       }
 
       var cacheKey, stagger;
@@ -682,8 +666,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       }
 
       if (maxDuration === 0 && !flags.recalculateTimingStyles) {
-        close();
-        return false;
+        return closeAndReturnNoopAnimator();
       }
 
       // we need to recalculate the delay value since we used a pre-emptive negative
@@ -711,6 +694,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       // TODO(matsko): for 1.5 change this code to have an animator object for better debugging
       return {
+        $$willAnimate: true,
         end: endFn,
         start: function() {
           if (animationClosed) return;
@@ -788,6 +772,23 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         if (flags.blockKeyframeAnimation) {
           blockKeyframeAnimations(node, !!duration);
         }
+      }
+
+      function closeAndReturnNoopAnimator() {
+        runner = new $$AnimateRunner({
+          end: endFn,
+          cancel: cancelFn
+        });
+
+        close();
+
+        return {
+          $$willAnimate: false,
+          start: function() {
+            return runner;
+          },
+          end: endFn
+        };
       }
 
       function start() {

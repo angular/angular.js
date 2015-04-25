@@ -58,6 +58,7 @@ describe("ngAnimate $$animateCssDriver", function() {
           });
 
           return {
+            $$willAnimate: true,
             start: function() {
               return runner;
             }
@@ -124,7 +125,9 @@ describe("ngAnimate $$animateCssDriver", function() {
 
       it("should not return anything if no animation is detected", function() {
         module(function($provide) {
-          $provide.value('$animateCss', noop);
+          $provide.value('$animateCss', function() {
+            return { $$willAnimate: false };
+          });
         });
         inject(function() {
           var runner = driver({
@@ -151,6 +154,7 @@ describe("ngAnimate $$animateCssDriver", function() {
           $provide.factory('$animateCss', function($q, $$AnimateRunner) {
             return function() {
               return {
+                $$willAnimate: true,
                 start: function() {
                   return new $$AnimateRunner({
                     end: function() {
@@ -190,6 +194,7 @@ describe("ngAnimate $$animateCssDriver", function() {
               var type = options.event || 'anchor';
               closeLog[type] = closeLog[type] || [];
               return {
+                $$willAnimate: true,
                 start: function() {
                   return new $$AnimateRunner({
                     end: function() {
@@ -252,6 +257,7 @@ describe("ngAnimate $$animateCssDriver", function() {
           $provide.factory('$animateCss', function($$AnimateRunner) {
             return function(element, details) {
               return {
+                $$willAnimate: true,
                 start: function() {
                   animationLog.push([element, details.event]);
                   return new $$AnimateRunner();
@@ -429,14 +435,13 @@ describe("ngAnimate $$animateCssDriver", function() {
           $provide.factory('$animateCss', function($$AnimateRunner) {
             return function(element, options) {
               var addClass = (options.addClass || '').trim();
-              if (addClass === expectedClass) {
-                return {
-                  start: function() {
-                    animationStarted = addClass;
-                    return runner = new $$AnimateRunner();
-                  }
-                };
-              }
+              return {
+                $$willAnimate: addClass === expectedClass,
+                start: function() {
+                  animationStarted = addClass;
+                  return runner = new $$AnimateRunner();
+                }
+              };
             };
           });
         });

@@ -363,17 +363,12 @@
  * myModule.animation('.slide', ['$animateCss', function($animateCss) {
  *   return {
  *     enter: function(element, doneFn) {
- *       var animation = $animateCss(element, {
- *         event: 'enter'
- *       });
- *
- *       if (animation) {
- *         // this will trigger `.slide.ng-enter` and `.slide.ng-enter-active`.
- *         var runner = animation.start();
- *         runner.done(doneFn);
- *       } else { //no CSS animation was detected
- *         doneFn();
- *       }
+*        // this will trigger `.slide.ng-enter` and `.slide.ng-enter-active`.
+ *       var runner = $animateCss(element, {
+ *         event: 'enter',
+ *         structural: true
+ *       }).start();
+*        runner.done(doneFn);
  *     }
  *   }
  * }]
@@ -389,18 +384,14 @@
  * myModule.animation('.slide', ['$animateCss', function($animateCss) {
  *   return {
  *     enter: function(element, doneFn) {
- *       var animation = $animateCss(element, {
+ *       var runner = $animateCss(element, {
  *         event: 'enter',
  *         addClass: 'maroon-setting',
  *         from: { height:0 },
  *         to: { height: 200 }
- *       });
+ *       }).start();
  *
- *       if (animation) {
- *         animation.start().done(doneFn);
- *       } else {
- *         doneFn();
- *       }
+ *       runner.done(doneFn);
  *     }
  *   }
  * }]
