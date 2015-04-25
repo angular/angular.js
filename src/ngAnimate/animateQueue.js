@@ -142,7 +142,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
     return {
       on: function(event, container, callback) {
-        var node = extractElementNode(container);
+        var node = extractNonCommentNode(container);
         callbackRegistry[event] = callbackRegistry[event] || [];
         callbackRegistry[event].push({
           node: node,
@@ -159,7 +159,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             : filterFromRegistry(entries, container, callback);
 
         function filterFromRegistry(list, matchContainer, matchCallback) {
-          var containerNode = extractElementNode(matchContainer);
+          var containerNode = extractNonCommentNode(matchContainer);
           return list.filter(function(entry) {
             var isMatch = entry.node === containerNode &&
                             (!matchCallback || entry.callback === matchCallback);

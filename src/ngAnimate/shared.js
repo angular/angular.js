@@ -14,6 +14,7 @@ var isFunction  = angular.isFunction;
 var isElement   = angular.isElement;
 
 var ELEMENT_NODE = 1;
+var TEXT_NODE = 3;
 var COMMENT_NODE = 8;
 
 var NG_ANIMATE_CHILDREN_DATA = '$$ngAnimateChildren';
@@ -72,7 +73,7 @@ function removeFromArray(arr, val) {
 }
 
 function stripCommentsFromElement(element) {
-  if (element.nodeType === ELEMENT_NODE) {
+  if (element.nodeType === ELEMENT_NODE || element.nodeType === TEXT_NODE) {
     return jqLite(element);
   }
   if (element.length === 0) return [];
@@ -81,17 +82,17 @@ function stripCommentsFromElement(element) {
   // is the only element within the jqLite wrapper.
   // (it's important that we retain the element instance.)
   if (element.length === 1) {
-    return element[0].nodeType === ELEMENT_NODE && element;
+    return (element[0].nodeType === ELEMENT_NODE || element[0].nodeType === TEXT_NODE) && element;
   } else {
-    return jqLite(extractElementNode(element));
+    return jqLite(extractNonCommentNode(element));
   }
 }
 
-function extractElementNode(element) {
+function extractNonCommentNode(element) {
   if (!element[0]) return element;
   for (var i = 0; i < element.length; i++) {
     var elm = element[i];
-    if (elm.nodeType == ELEMENT_NODE) {
+    if (elm.nodeType === ELEMENT_NODE || elm.nodeType === TEXT_NODE) {
       return elm;
     }
   }
