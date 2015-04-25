@@ -544,6 +544,66 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
+    they("$prop should asynchronously render the $prop animation when a start/end animator object is returned",
+      allEvents, function(event) {
+
+      inject(function($$rAF, $$AnimateRunner) {
+        var runner;
+        animations[event] = function(element, a, b, c) {
+          return {
+            start: function() {
+              log.push('start ' + event);
+              return runner = new $$AnimateRunner();
+            }
+          };
+        };
+
+        runAnimation(event, function() {
+          log.push('complete');
+        });
+
+        if (event === 'leave') {
+          expect(log).toEqual(['start leave']);
+          runner.end();
+          $$rAF.flush();
+          expect(log).toEqual(['start leave', 'dom leave', 'complete']);
+        } else {
+          expect(log).toEqual(['dom ' + event, 'start ' + event]);
+          runner.end();
+          $$rAF.flush();
+          expect(log).toEqual(['dom ' + event, 'start ' + event, 'complete']);
+        }
+      });
+    });
+
+    they("$prop should asynchronously render the $prop animation when an instance of $$AnimateRunner is returned",
+      allEvents, function(event) {
+
+      inject(function($$rAF, $$AnimateRunner) {
+        var runner;
+        animations[event] = function(element, a, b, c) {
+          log.push('start ' + event);
+          return runner = new $$AnimateRunner();
+        };
+
+        runAnimation(event, function() {
+          log.push('complete');
+        });
+
+        if (event === 'leave') {
+          expect(log).toEqual(['start leave']);
+          runner.end();
+          $$rAF.flush();
+          expect(log).toEqual(['start leave', 'dom leave', 'complete']);
+        } else {
+          expect(log).toEqual(['dom ' + event, 'start ' + event]);
+          runner.end();
+          $$rAF.flush();
+          expect(log).toEqual(['dom ' + event, 'start ' + event, 'complete']);
+        }
+      });
+    });
+
     they("$prop should asynchronously reject the before animation if the callback function is called with false", otherEvents, function(event) {
       inject(function($$rAF, $rootScope) {
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);

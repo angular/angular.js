@@ -39,12 +39,11 @@
  *   return {
  *     enter: function(element, doneFn) {
  *       var height = element[0].offsetHeight;
- *       var animator = $animateCss(element, {
+ *       return $animateCss(element, {
  *         from: { height:'0px' },
  *         to: { height:height + 'px' },
  *         duration: 1 // one second
  *       });
- *       animator.start().done(doneFn);
  *     }
  *   }
  * }]);
@@ -67,14 +66,13 @@
  *   return {
  *     enter: function(element, doneFn) {
  *       var height = element[0].offsetHeight;
- *       var animator = $animateCss(element, {
+ *       return $animateCss(element, {
  *         addClass: 'red large-text pulse-twice',
  *         easing: 'ease-out',
  *         from: { height:'0px' },
  *         to: { height:height + 'px' },
  *         duration: 1 // one second
  *       });
- *       animator.start().done(doneFn);
  *     }
  *   }
  * }]);
@@ -171,19 +169,14 @@
  * applied to the element during the preparation phase). Note that all other properties such as duration, delay, transitions and keyframes are just properties
  * and that changing them will not reconfigure the parameters of the animation.
  *
- * By calling `animation.start()` we do get back a promise, however, due to the nature of animations we may not want to tap into the default behaviour of
- * animations (since they cause a digest to occur which may slow down the animation performance-wise). Therefore instead of calling `then` to capture when
- * the animation ends be sure to call `done(callback)` (this is the recommended way to use `$animateCss` within JavaScript-animations).
+ * ### runner.done() vs runner.then()
+ * It is documented that `animation.start()` will return a promise object and this is true, however, there is also an additional method available on the
+ * runner called `.done(callbackFn)`. The done method works the same as `.finally(callbackFn)`, however, it does **not trigger a digest to occur**.
+ * Therefore, for performance reasons, it's always best to use `runner.done(callback)` instead of `runner.then()`, `runner.catch()` or `runner.finally()`
+ * unless you really need a digest to kick off afterwards.
  *
- * The example below should put this into perspective:
- *
- * ```js
- * var animator = $animateCss(element, { ... });
- * animator.start().done(function() {
- *   // yaay the animation is over
- *   doneCallback();
- * });
- * ```
+ * Keep in mind that, to make this easier, ngAnimate has tweaked the JS animations API to recognize when a runner instance is returned from $animateCss
+ * (so there is no need to call `runner.done(doneFn)` inside of your JavaScript animation code). Check the [animation code above](#usage) to see how this works.
  *
  * @param {DOMElement} element the element that will be animated
  * @param {object} options the animation-related options that will be applied during the animation
