@@ -145,9 +145,20 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
         args.push(options);
 
         var value = fn.apply(fn, args);
+        if (value) {
+          if (isFunction(value.start)) {
+            value = value.start();
+          }
 
-        // optional onEnd / onCancel callback
-        return isFunction(value) ? value : noop;
+          if (value instanceof $$AnimateRunner) {
+            value.done(onDone);
+          } else if (isFunction(value)) {
+            // optional onEnd / onCancel callback
+            return value;
+          }
+        }
+
+        return noop;
       }
 
       function groupEventedAnimations(element, event, options, animations, fnName) {
