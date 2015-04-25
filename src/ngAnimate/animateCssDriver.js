@@ -130,11 +130,15 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       }
 
       function prepareOutAnimation() {
-        return $animateCss(clone, {
+        var animator = $animateCss(clone, {
           addClass: NG_OUT_ANCHOR_CLASS_NAME,
           delay: true,
           from: calculateAnchorStyles(outAnchor)
         });
+
+        // read the comment within `prepareRegularAnimation` to understand
+        // why this check is necessary
+        return animator.$$willAnimate ? animator : null;
       }
 
       function getClassVal(element) {
@@ -146,12 +150,16 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
         var toAdd = getUniqueValues(endingClasses, startingClasses);
         var toRemove = getUniqueValues(startingClasses, endingClasses);
 
-        return $animateCss(clone, {
+        var animator = $animateCss(clone, {
           to: calculateAnchorStyles(inAnchor),
           addClass: NG_IN_ANCHOR_CLASS_NAME + ' ' + toAdd,
           removeClass: NG_OUT_ANCHOR_CLASS_NAME + ' ' + toRemove,
           delay: true
         });
+
+        // read the comment within `prepareRegularAnimation` to understand
+        // why this check is necessary
+        return animator.$$willAnimate ? animator : null;
       }
 
       function end() {
@@ -232,7 +240,13 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
         options.onDone = animationDetails.domOperation;
       }
 
-      return $animateCss(element, options);
+      var animator = $animateCss(element, options);
+
+      // the driver lookup code inside of $$animation attempts to spawn a
+      // driver one by one until a driver returns a.$$willAnimate animator object.
+      // $animateCss will always return an object, however, it will pass in
+      // a flag as a hint as to whether an animation was detected or not
+      return animator.$$willAnimate ? animator : null;
     }
   }];
 }];
