@@ -1,5 +1,5 @@
 <a name="v1.4.0-rc.1"></a>
-# v1.4.0-rc.1 Sartorial Chronography (2015-04-24)
+# v1.4.0-rc.1 sartorial-chronography (2015-04-24)
 
 
 ## Bug Fixes
