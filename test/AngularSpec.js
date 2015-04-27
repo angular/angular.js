@@ -651,6 +651,15 @@ describe('angular', function() {
     it('should return false when comparing an object and a Date', function() {
       expect(equals({}, new Date())).toBe(false);
     });
+
+    it('should handle objects with circular references', function() {
+      var elem1, elem2;
+      elem1 = {};
+      elem1.ref = elem1;
+      elem2 = {};
+      elem2.ref = elem2;
+      expect(equals(elem1, elem2)).toBe(true);
+    });
   });
 
 
