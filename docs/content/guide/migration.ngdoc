@@ -29,7 +29,7 @@ to render error messages with ngMessages that are listed with a directive such a
 involves pulling error message data from a server and then displaying that data via the mechanics of ngMessages. Be
 sure to read the breaking change involved with `ngMessagesInclude` to upgrade your template code.
 
-Other changes, such as the ordering of elements with ngRepeat and ngOptions, may also effect the behavior of your
+Other changes, such as the ordering of elements with ngRepeat and ngOptions, may also affect the behavior of your
 application. And be sure to also read up on the changes to `$cookies`. The migration jump from 1.3 to 1.4 should be
 relatively straightforward otherwise.
 
