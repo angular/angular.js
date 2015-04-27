@@ -1318,6 +1318,25 @@ describe("animations", function() {
       expect(callbackTriggered).toBe(true);
     }));
 
+    it('should fire a callback if the element is matched against a container selector',
+      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+
+      element = jqLite('<div class="the-chosen-one"></div>');
+
+      var callbackTriggered = false;
+      $animate.on('enter', '.the-chosen-one',
+        function(element, phase, data) {
+
+        callbackTriggered = true;
+      });
+
+      $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      expect(callbackTriggered).toBe(true);
+    }));
+
     it('should remove all the event-based event listeners when $animate.off(event) is called',
       inject(function($animate, $rootScope, $$rAF, $rootElement) {
 
@@ -1374,6 +1393,35 @@ describe("animations", function() {
       $$rAF.flush();
 
       expect(count).toBe(3);
+    }));
+
+    it('should remove the query-based event listeners when $animate.off(event, query) is called',
+      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+
+      element = jqLite('<div class="special-node"></div>');
+
+      var count = 0;
+      $animate.on('enter', '.special-node', counter);
+
+      function counter(element, phase) {
+        if (phase === 'start') {
+          count++;
+        }
+      }
+
+      $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      expect(count).toBe(1);
+
+      $animate.off('enter', '.special-node');
+
+      $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      expect(count).toBe(1);
     }));
 
     it('should remove the callback-based event listener when $animate.off(event, container, callback) is called',

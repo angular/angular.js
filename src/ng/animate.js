@@ -278,20 +278,29 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @name $animate#on
        * @kind function
        * @description Sets up an event listener to fire whenever the animation event (enter, leave, move, etc...)
-       *    has fired on the given element or among any of its children. Once the listener is fired, the provided callback
-       *    is fired with the following params:
+       *    has fired on the given element or among any of its children or within a matched query selector.
+       *    Once the listener is fired, the provided callback is fired. The example code below shows that in action:
        *
        * ```js
-       * $animate.on('enter', container,
+       * // using a DOM container
+       * $animate.on('enter', containerNode,
        *    function callback(element, phase) {
        *      // cool we detected an enter animation within the container
+       *    }
+       * );
+       *
+       * // using a query-selector
+       * $animate.on('enter', '[ng-view]',
+       *    function callback(element, phase) {
+       *      // cool, looks like the view element is entering
        *    }
        * );
        * ```
        *
        * @param {string} event the animation event that will be captured (e.g. enter, leave, move, addClass, removeClass, etc...)
-       * @param {DOMElement} container the container element that will capture each of the animation events that are fired on itself
-       *     as well as among its children
+       * @param {DOMElement|string} target the target element that will capture each of the animation events that are
+       *     fired on itself as well as among its children. If a string is provided then it will act as a querySelector
+       *     that will be used for the detection of animated elements with a matching event
        * @param {Function} callback the callback function that will be fired when the listener is triggered
        *
        * The arguments present in the callback function are:
@@ -321,7 +330,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        * ```
        *
        * @param {string} event the animation event (e.g. enter, leave, move, addClass, removeClass, etc...)
-       * @param {DOMElement=} container the container element the event listener was placed on
+       * @param {(string|DOMElement)=} target the target element (element node or query selector) the event
+       *        listener was placed on
        * @param {Function=} callback the callback function that was registered as the listener
        */
       off: $$animateQueue.off,
