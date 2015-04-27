@@ -515,7 +515,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       // We also need to watch to see if the internals of the model changes, since
       // ngModel only watches for object identity change
       if (ngOptions.trackBy) {
-        scope.$watch(attr.ngModel, function() { ngModelCtrl.$render(); }, true);
+        scope.$watchCollection(attr.ngModel, function() { ngModelCtrl.$render(); });
       }
       // ------------------------------------------------------------------ //
 

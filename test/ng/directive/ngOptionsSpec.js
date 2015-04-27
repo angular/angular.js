@@ -901,8 +901,7 @@ describe('ngOptions', function() {
 
       // Update the properties on the object in the selected array, rather than replacing the whole object
       scope.$apply(function() {
-        scope.selected[0].id = 20;
-        scope.selected[0].label = 'new twenty';
+        scope.selected[0] = {id: 20, label: 'new twenty'};
       });
 
       // The value of the select should change since the id property changed
