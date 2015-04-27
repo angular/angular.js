@@ -43,7 +43,7 @@ Currently, ngAria interfaces with the following directives:
 
 Most of ngAria's heavy lifting happens in the {@link ngModel ngModel}
 directive.  For elements using ngModel, special attention is paid by ngAria if that element also
-has a a role or type of `checkbox`, `radio`, `range` or `textbox`.
+has a role or type of `checkbox`, `radio`, `range` or `textbox`.
 
 For those elements using ngModel, ngAria will dynamically bind and update the following ARIA
 attributes (if they have not been explicitly specified by the developer):
