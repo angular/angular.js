@@ -116,6 +116,10 @@ describe('injector', function() {
     expect($injector).not.toBe(providerInjector);
   }));
 
+  it('should have an false strictDi property', inject(function($injector) {
+    expect($injector.strictDi).toBe(false);
+  }));
+
 
   describe('invoke', function() {
     var args;
@@ -1036,4 +1040,8 @@ describe('strict-di injector', function() {
     inject(function($test) {});
     expect(called).toBe(true);
   });
+
+  it('should set strictDi property to true on the injector instance', inject(function($injector) {
+    expect($injector.strictDi).toBe(true);
+  }));
 });

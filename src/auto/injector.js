@@ -646,6 +646,8 @@ function createInjector(modulesToLoad, strictDi) {
 
   forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
 
+  instanceInjector.strictDi = strictDi;
+
   return instanceInjector;
 
   ////////////////////////////////////
