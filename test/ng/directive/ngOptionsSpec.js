@@ -776,6 +776,54 @@ describe('ngOptions', function() {
     });
 
 
+    it('should re-render if an item in an array source is added/removed', function() {
+      createSelect({
+        'ng-model': 'selected',
+        'multiple': true,
+        'ng-options': 'item.id as item.label for item in arr'
+      });
+
+      scope.$apply(function() {
+        scope.selected = [10];
+      });
+      expect(element).toEqualSelectValue([10], true);
+
+      scope.$apply(function() {
+        scope.selected.push(20);
+      });
+      expect(element).toEqualSelectValue([10, 20], true);
+
+
+      scope.$apply(function() {
+        scope.selected.shift();
+      });
+      expect(element).toEqualSelectValue([20], true);
+    });
+
+
+    it('should handle a options containing circular references', function() {
+      scope.arr[0].ref = scope.arr[0];
+      scope.selected = [scope.arr[0]];
+      createSelect({
+        'ng-model': 'selected',
+        'multiple': true,
+        'ng-options': 'item as item.label for item in arr'
+      });
+      expect(element).toEqualSelectValue([scope.arr[0]], true);
+
+      scope.$apply(function() {
+        scope.selected.push(scope.arr[1]);
+      });
+      expect(element).toEqualSelectValue([scope.arr[0], scope.arr[1]], true);
+
+
+      scope.$apply(function() {
+        scope.selected.pop();
+      });
+      expect(element).toEqualSelectValue([scope.arr[0]], true);
+    });
+
+
     it('should support single select with object source', function() {
       createSelect({
         'ng-model': 'selected',
@@ -1041,7 +1089,7 @@ describe('ngOptions', function() {
       }).not.toThrow();
     });
 
-    it('should setup equality watches on ngModel changes if using trackBy', function() {
+    it('should re-render if a propery of the model is changed when using trackBy', function() {
 
       createSelect({
         'ng-model': 'selected',
@@ -1063,7 +1111,7 @@ describe('ngOptions', function() {
 
     });
 
-    it('should not setup equality watches on ngModel changes if not using trackBy', function() {
+    it('should not re-render if a property of the model is changed when not using trackBy', function() {
 
       createSelect({
         'ng-model': 'selected',
@@ -1084,6 +1132,40 @@ describe('ngOptions', function() {
       expect(element.controller('ngModel').$render).not.toHaveBeenCalled();
     });
 
+
+    it('should handle options containing circular references (single)', function() {
+      scope.arr[0].ref = scope.arr[0];
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item for item in arr track by item.id'
+      });
+
+      expect(function() {
+        scope.$apply(function() {
+          scope.selected = scope.arr[0];
+        });
+      }).not.toThrow();
+    });
+
+
+    it('should handle options containing circular references (multiple)', function() {
+      scope.arr[0].ref = scope.arr[0];
+      createSelect({
+        'ng-model': 'selected',
+        'multiple': true,
+        'ng-options': 'item for item in arr track by item.id'
+      });
+
+      expect(function() {
+        scope.$apply(function() {
+          scope.selected = [scope.arr[0]];
+        });
+
+        scope.$apply(function() {
+          scope.selected.push(scope.arr[1]);
+        });
+      }).not.toThrow();
+    });
   });
 
 
