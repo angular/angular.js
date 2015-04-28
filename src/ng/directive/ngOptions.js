@@ -31,11 +31,21 @@ var ngOptionsMinErr = minErr('ngOptions');
  * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
  *
- * <div class="alert alert-warning">
- * **Note:** By default, `ngModel` compares by reference, not value. This is important when binding to an
- * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/). When using `track by`
- * in an `ngOptions` expression, however, deep equality checks will be performed.
- * </div>
+ * ## Complex Models (objects or collections)
+ *
+ * **Note:** By default, `ngModel` watches the model by reference, not value. This is important when
+ * binding any input directive to a model that is an object or a collection.
+ *
+ * Since this is a common situation for `ngOptions` the directive additionally watches the model using
+ * `$watchCollection` when the select has the `multiple` attribute or when there is a `track by` clause in
+ * the options expression. This allows ngOptions to trigger a re-rendering of the options even if the actual
+ * object/collection has not changed identity but only a property on the object or an item in the collection
+ * changes.
+ *
+ * Note that `$watchCollection` does a shallow comparison of the properties of the object (or the items in the collection
+ * if the model is an array). This means that changing a property deeper inside the object/collection that the
+ * first level will not trigger a re-rendering.
+ *
  *
  * ## `select` **`as`**
  *
@@ -515,7 +525,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       // We also need to watch to see if the internals of the model changes, since
       // ngModel only watches for object identity change
       if (ngOptions.trackBy) {
-        scope.$watch(attr.ngModel, function() { ngModelCtrl.$render(); }, true);
+        scope.$watchCollection(attr.ngModel, function() { ngModelCtrl.$render(); });
       }
       // ------------------------------------------------------------------ //
 
