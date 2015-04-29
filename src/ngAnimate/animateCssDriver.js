@@ -16,8 +16,8 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
     // only browsers that support these properties can render animations
     if (!$sniffer.animations && !$sniffer.transitions) return noop;
 
-    var bodyNode = $document[0].body;
-    var rootNode = $rootElement[0];
+    var bodyNode = getDomNode($document).body;
+    var rootNode = getDomNode($rootElement);
 
     var rootBodyElement = jqLite(bodyNode.parentNode === rootNode ? bodyNode : rootNode);
 
@@ -44,7 +44,7 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
     }
 
     function prepareAnchoredAnimation(classes, outAnchor, inAnchor) {
-      var clone = jqLite(outAnchor[0].cloneNode(true));
+      var clone = jqLite(getDomNode(outAnchor).cloneNode(true));
       var startingClasses = filterCssClasses(clone.attr('class') || '');
       var anchorClasses = pendClasses(classes, NG_ANIMATE_ANCHOR_SUFFIX);
 
@@ -113,7 +113,7 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       function calculateAnchorStyles(anchor) {
         var styles = {};
 
-        var coords = anchor[0].getBoundingClientRect();
+        var coords = getDomNode(anchor).getBoundingClientRect();
 
         // we iterate directly since safari messes up and doesn't return
         // all the keys for the coods object when iterated
