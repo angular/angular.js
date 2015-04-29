@@ -128,7 +128,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         var refLookup = {};
         forEach(animations, function(animation, index) {
           var element = animation.element;
-          var node = element[0];
+          var node = getDomNode(element);
           var event = animation.event;
           var enterOrMove = ['enter', 'move'].indexOf(event) >= 0;
           var anchorNodes = animation.structural ? getAnchorNodes(node) : [];
