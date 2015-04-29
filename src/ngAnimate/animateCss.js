@@ -472,7 +472,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       return stagger || {};
     }
 
-    var bod = $document[0].body;
+    var bod = getDomNode($document).body;
     var cancelLastRAFRequest;
     var rafWaitQueue = [];
     function waitUntilQuiet(callback) {
@@ -521,7 +521,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
     }
 
     function init(element, options) {
-      var node = element[0];
+      var node = getDomNode(element);
       options = prepareAnimationOptions(options);
 
       var temporaryStyles = [];
