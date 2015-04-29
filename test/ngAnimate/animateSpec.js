@@ -571,6 +571,32 @@ describe("animations", function() {
         expect(itsOver).toBe(true);
       }));
 
+      it('should immediately end a parent class-based form animation if a structural child is active',
+        inject(function($rootScope, $animate, $rootElement, $$rAF, $$AnimateRunner) {
+
+        parent.remove();
+        element.remove();
+
+        parent = jqLite('<form></form>');
+        $rootElement.append(parent);
+
+        element = jqLite('<input type="text" name="myInput" />');
+
+        $animate.addClass(parent, 'abc');
+        $rootScope.$digest();
+
+        // we do this since the old runner was already closed
+        overriddenAnimationRunner = new $$AnimateRunner();
+
+        $animate.enter(element, parent);
+        $rootScope.$digest();
+
+        $$rAF.flush();
+
+        expect(parent.attr('data-ng-animate')).toBeFalsy();
+        expect(element.attr('data-ng-animate')).toBeTruthy();
+      }));
+
       it('should not end a pre-digest parent animation if it does not have any classes to add/remove',
         inject(function($rootScope, $animate, $$rAF) {
 

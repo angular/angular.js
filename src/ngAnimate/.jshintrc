@@ -36,6 +36,7 @@
     "packageStyles": false,
     "removeFromArray": false,
     "stripCommentsFromElement": false,
-    "extractElementNode": false
+    "extractElementNode": false,
+    "getDomNode": false
   }
 }

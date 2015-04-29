@@ -245,3 +245,7 @@ function resolveElementClasses(existing, toAdd, toRemove) {
 
   return classes;
 }
+
+function getDomNode(element) {
+  return (element instanceof angular.element) ? element[0] : element;
+}
