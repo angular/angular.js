@@ -876,6 +876,51 @@ describe("animations", function() {
         expect(enterComplete).toBe(true);
       }));
 
+      it('should cancel the previously running removeClass animation if a follow-up addClass animation is using the same class value',
+        inject(function($animate, $rootScope, $$rAF) {
+
+        parent.append(element);
+        var runner = $animate.addClass(element, 'active-class');
+        $rootScope.$digest();
+
+        var closed = false;
+        runner.done(function(status) {
+          closed = true;
+        });
+
+        $$rAF.flush();
+
+        expect(closed).toBe(false);
+
+        $animate.removeClass(element, 'active-class');
+        $rootScope.$digest();
+
+        expect(closed).toBe(true);
+      }));
+
+      it('should cancel the previously running addClass animation if a follow-up removeClass animation is using the same class value',
+        inject(function($animate, $rootScope, $$rAF) {
+
+        element.addClass('active-class');
+        parent.append(element);
+        var runner = $animate.removeClass(element, 'active-class');
+        $rootScope.$digest();
+
+        var closed = false;
+        runner.done(function(status) {
+          closed = true;
+        });
+
+        $$rAF.flush();
+
+        expect(closed).toBe(false);
+
+        $animate.addClass(element, 'active-class');
+        $rootScope.$digest();
+
+        expect(closed).toBe(true);
+      }));
+
       it('should skip the class-based animation entirely if there is an active structural animation',
         inject(function($animate, $rootScope) {
 
