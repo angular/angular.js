@@ -1083,7 +1083,7 @@ describe('ngRepeat', function() {
     beforeEach(function() {
       element = $compile(
         '<ul>' +
-          '<li ng-repeat="item in items">{{key}}:{{val}}|></li>' +
+          '<li ng-repeat="item in items">{{item}}</li>' +
         '</ul>')(scope);
       a = {};
       b = {};
