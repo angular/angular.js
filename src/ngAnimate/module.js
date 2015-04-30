@@ -601,7 +601,7 @@
  * imagine we have a greeting box that shows and hides itself when the data changes
  *
  * ```html
- * <greeing-box active="onOrOff">Hi there</greeting-box>
+ * <greeting-box active="onOrOff">Hi there</greeting-box>
  * ```
  *
  * ```js
