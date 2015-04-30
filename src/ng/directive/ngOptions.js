@@ -325,13 +325,25 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         // The option values were already computed in the `getWatchables` fn,
         // which must have been called to trigger `getOptions`
         var optionValues = valuesFn(scope) || [];
+        var optionValuesKeys;
 
-        var keys = Object.keys(optionValues);
-        keys.forEach(function getOption(key) {
 
-          // Ignore "angular" properties that start with $ or $$
-          if (key.charAt(0) === '$') return;
+        if (!keyName && isArrayLike(optionValues)) {
+          optionValuesKeys = optionValues;
+        } else {
+          // if object, extract keys, in enumeration order, unsorted
+          optionValuesKeys = [];
+          for (var itemKey in optionValues) {
+            if (optionValues.hasOwnProperty(itemKey) && itemKey.charAt(0) !== '$') {
+              optionValuesKeys.push(itemKey);
+            }
+          }
+        }
 
+        var optionValuesLength = optionValuesKeys.length;
+
+        for (var index = 0; index < optionValuesLength; index++) {
+          var key = (optionValues === optionValuesKeys) ? index : optionValuesKeys[index];
           var value = optionValues[key];
           var locals = getLocals(value, key);
           var viewValue = viewValueFn(scope, locals);
@@ -343,7 +355,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
           optionItems.push(optionItem);
           selectValueMap[selectValue] = optionItem;
-        });
+        }
 
         return {
           items: optionItems,

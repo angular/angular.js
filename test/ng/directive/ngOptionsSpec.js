@@ -180,6 +180,47 @@ describe('ngOptions', function() {
   });
 
 
+  it('should not include properties with non-numeric keys in array-like collections when using array syntax', function() {
+    createSelect({
+      'ng-model':'selected',
+      'ng-options':'value for value in values'
+    });
+
+    scope.$apply(function() {
+      scope.values = { 0: 'X', 1: 'Y', 2: 'Z', 'a': 'A', length: 3};
+      scope.selected = scope.values[1];
+    });
+
+    var options = element.find('option');
+    expect(options.length).toEqual(3);
+    expect(options.eq(0)).toEqualOption('X');
+    expect(options.eq(1)).toEqualOption('Y');
+    expect(options.eq(2)).toEqualOption('Z');
+
+  });
+
+
+  it('should include properties with non-numeric keys in array-like collections when using object syntax', function() {
+    createSelect({
+      'ng-model':'selected',
+      'ng-options':'value for (key, value) in values'
+    });
+
+    scope.$apply(function() {
+      scope.values = { 0: 'X', 1: 'Y', 2: 'Z', 'a': 'A', length: 3};
+      scope.selected = scope.values[1];
+    });
+
+    var options = element.find('option');
+    expect(options.length).toEqual(5);
+    expect(options.eq(0)).toEqualOption('X');
+    expect(options.eq(1)).toEqualOption('Y');
+    expect(options.eq(2)).toEqualOption('Z');
+    expect(options.eq(3)).toEqualOption('A');
+    expect(options.eq(4)).toEqualOption(3);
+  });
+
+
   it('should render an object', function() {
     createSelect({
       'ng-model': 'selected',
