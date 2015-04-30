@@ -264,13 +264,23 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
                 elem.attr('role', 'slider');
               }
               if ($aria.config('ariaValue')) {
-                if (attr.min && !elem.attr('aria-valuemin')) {
-                  elem.attr('aria-valuemin', attr.min);
+                var needsAriaValuemin = !elem.attr('aria-valuemin') &&
+                    (attr.hasOwnProperty('min') || attr.hasOwnProperty('ngMin'));
+                var needsAriaValuemax = !elem.attr('aria-valuemax') &&
+                    (attr.hasOwnProperty('max') || attr.hasOwnProperty('ngMax'));
+                var needsAriaValuenow = !elem.attr('aria-valuenow');
+
+                if (needsAriaValuemin) {
+                  attr.$observe('min', function ngAriaValueMinReaction(newVal) {
+                    elem.attr('aria-valuemin', newVal);
+                  });
                 }
-                if (attr.max && !elem.attr('aria-valuemax')) {
-                  elem.attr('aria-valuemax', attr.max);
+                if (needsAriaValuemax) {
+                  attr.$observe('max', function ngAriaValueMinReaction(newVal) {
+                    elem.attr('aria-valuemax', newVal);
+                  });
                 }
-                if (!elem.attr('aria-valuenow')) {
+                if (needsAriaValuenow) {
                   scope.$watch(ngAriaWatchModelValue, function ngAriaValueNowReaction(newVal) {
                     elem.attr('aria-valuenow', newVal);
                   });

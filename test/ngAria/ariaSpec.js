@@ -549,6 +549,36 @@ describe('$aria', function() {
       expectAriaAttrOnEachElement(element, 'aria-valuemin', 'userSetValue2');
       expectAriaAttrOnEachElement(element, 'aria-valuemax', 'userSetValue3');
     });
+
+
+    it('should update `aria-valuemin/max` when `min/max` changes dynamically', function() {
+      scope.$apply('min = 25; max = 75');
+      compileElement('<input type="range" ng-model="val" min="{{min}}" max="{{max}}" />');
+
+      expect(element.attr('aria-valuemin')).toBe('25');
+      expect(element.attr('aria-valuemax')).toBe('75');
+
+      scope.$apply('min = 0');
+      expect(element.attr('aria-valuemin')).toBe('0');
+
+      scope.$apply('max = 100');
+      expect(element.attr('aria-valuemax')).toBe('100');
+    });
+
+
+    it('should update `aria-valuemin/max` when `ng-min/ng-max` changes dynamically', function() {
+      scope.$apply('min = 25; max = 75');
+      compileElement('<input type="range" ng-model="val" ng-min="min" ng-max="max" />');
+
+      expect(element.attr('aria-valuemin')).toBe('25');
+      expect(element.attr('aria-valuemax')).toBe('75');
+
+      scope.$apply('min = 0');
+      expect(element.attr('aria-valuemin')).toBe('0');
+
+      scope.$apply('max = 100');
+      expect(element.attr('aria-valuemax')).toBe('100');
+    });
   });
 
   describe('announcing ngMessages', function() {
