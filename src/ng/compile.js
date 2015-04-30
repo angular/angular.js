@@ -802,6 +802,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     if (!letter || letter !== lowercase(letter)) {
       throw $compileMinErr('baddir', "Directive name '{0}' is invalid. The first character must be a lowercase letter", name);
     }
+    if (name !== name.trim()) {
+      throw $compileMinErr('baddir',
+            "Directive name '{0}' is invalid. The name should not contain leading or trailing whitespaces",
+            name);
+    }
   }
 
   /**
