@@ -28,23 +28,6 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  * See {@link ngSanitize.$sanitize `$sanitize`} for usage.
  */
 
-/*
- * HTML Parser By Misko Hevery (misko@hevery.com)
- * based on:  HTML Parser By John Resig (ejohn.org)
- * Original code by Erik Arvidsson, Mozilla Public License
- * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
- *
- * // Use like so:
- * htmlParser(htmlString, {
- *     start: function(tag, attrs, unary) {},
- *     end: function(tag) {},
- *     chars: function(text) {},
- *     comment: function(text) {}
- * });
- *
- */
-
-
 /**
  * @ngdoc service
  * @name $sanitize
@@ -164,16 +147,7 @@ function sanitizeText(chars) {
 
 
 // Regular Expressions for parsing tags and attributes
-var START_TAG_REGEXP =
-       /^<((?:[a-zA-Z])[\w:-]*)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*(>?)/,
-  END_TAG_REGEXP = /^<\/\s*([\w:-]+)[^>]*>/,
-  ATTR_REGEXP = /([\w:-]+)(?:\s*=\s*(?:(?:"((?:[^"])*)")|(?:'((?:[^'])*)')|([^>\s]+)))?/g,
-  BEGIN_TAG_REGEXP = /^</,
-  BEGING_END_TAGE_REGEXP = /^<\//,
-  COMMENT_REGEXP = /<!--(.*?)-->/g,
-  DOCTYPE_REGEXP = /<!DOCTYPE([^>]*?)>/i,
-  CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
-  SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
+var SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
   // Match everything outside of normal chars and " (quote character)
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
 
@@ -184,23 +158,23 @@ var START_TAG_REGEXP =
 
 // Safe Void Elements - HTML5
 // http://dev.w3.org/html5/spec/Overview.html#void-elements
-var voidElements = makeMap("area,br,col,hr,img,wbr");
+var voidElements = toMap("area,br,col,hr,img,wbr");
 
 // Elements that you can, intentionally, leave open (and which close themselves)
 // http://dev.w3.org/html5/spec/Overview.html#optional-tags
-var optionalEndTagBlockElements = makeMap("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr"),
-    optionalEndTagInlineElements = makeMap("rp,rt"),
+var optionalEndTagBlockElements = toMap("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr"),
+    optionalEndTagInlineElements = toMap("rp,rt"),
     optionalEndTagElements = angular.extend({},
                                             optionalEndTagInlineElements,
                                             optionalEndTagBlockElements);
 
 // Safe Block Elements - HTML5
-var blockElements = angular.extend({}, optionalEndTagBlockElements, makeMap("address,article," +
+var blockElements = angular.extend({}, optionalEndTagBlockElements, toMap("address,article," +
         "aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5," +
         "h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul"));
 
 // Inline Elements - HTML5
-var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a,abbr,acronym,b," +
+var inlineElements = angular.extend({}, optionalEndTagInlineElements, toMap("a,abbr,acronym,b," +
         "bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s," +
         "samp,small,span,strike,strong,sub,sup,time,tt,u,var"));
 
@@ -208,12 +182,12 @@ var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Elements
 // Note: the elements animate,animateColor,animateMotion,animateTransform,set are intentionally omitted.
 // They can potentially allow for arbitrary javascript to be executed. See #11290
-var svgElements = makeMap("circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph," +
+var svgElements = toMap("circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph," +
         "hkern,image,linearGradient,line,marker,metadata,missing-glyph,mpath,path,polygon,polyline," +
         "radialGradient,rect,stop,svg,switch,text,title,tspan,use");
 
 // Special Elements (can contain anything)
-var specialElements = makeMap("script,style");
+var specialElements = toMap("script,style");
 
 var validElements = angular.extend({},
                                    voidElements,
@@ -223,9 +197,9 @@ var validElements = angular.extend({},
                                    svgElements);
 
 //Attributes that have href and hence need to be sanitized
-var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap,xlink:href");
+var uriAttrs = toMap("background,cite,href,longdesc,src,usemap,xlink:href");
 
-var htmlAttrs = makeMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
+var htmlAttrs = toMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
     'scope,scrolling,shape,size,span,start,summary,target,title,type,' +
@@ -233,7 +207,7 @@ var htmlAttrs = makeMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspac
 
 // SVG attributes (without "id" and "name" attributes)
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Attributes
-var svgAttrs = makeMap('accent-height,accumulate,additive,alphabetic,arabic-form,ascent,' +
+var svgAttrs = toMap('accent-height,accumulate,additive,alphabetic,arabic-form,ascent,' +
     'baseProfile,bbox,begin,by,calcMode,cap-height,class,color,color-rendering,content,' +
     'cx,cy,d,dx,dy,descent,display,dur,end,fill,fill-rule,font-family,font-size,font-stretch,' +
     'font-style,font-variant,font-weight,from,fx,fy,g1,g2,glyph-name,gradientUnits,hanging,' +
@@ -254,7 +228,7 @@ var validAttrs = angular.extend({},
                                 svgAttrs,
                                 htmlAttrs);
 
-function makeMap(str, lowercaseKeys) {
+function toMap(str, lowercaseKeys) {
   var obj = {}, items = str.split(','), i;
   for (i = 0; i < items.length; i++) {
     obj[lowercaseKeys ? angular.lowercase(items[i]) : items[i]] = true;
@@ -262,11 +236,34 @@ function makeMap(str, lowercaseKeys) {
   return obj;
 }
 
+var baseNode;
+(function(window) {
+  var doc;
+  if (window.DOMDocument) {
+    doc = new window.DOMDocument();
+  } else if (window.document && window.document.implementation) {
+    doc = window.document.implementation.createHTMLDocument("inert");
+  } else if (window.ActiveXObject) {
+    doc = new window.ActiveXObject("Msxml.DOMDocument");
+  } else {
+    throw ngMinErr('ddns', "DOMDocument not supported!");
+  }
+  var docElement = doc.documentElement || doc.getDocumentElement();
+  var bodyElements = docElement.getElementsByTagName('body');
+  if (bodyElements.length === 1) {
+    baseNode = bodyElements[0];
+  } else {
+    var html = doc.createElement('html');
+    baseNode = doc.createElement('body');
+    html.appendChild(baseNode);
+    doc.appendChild(html);
+  }
+})(window);
 
 /**
  * @example
  * htmlParser(htmlString, {
- *     start: function(tag, attrs, unary) {},
+ *     start: function(tag, attrs) {},
  *     end: function(tag) {},
  *     chars: function(text) {},
  *     comment: function(text) {}
@@ -276,153 +273,60 @@ function makeMap(str, lowercaseKeys) {
  * @param {object} handler
  */
 function htmlParser(html, handler) {
-  if (typeof html !== 'string') {
-    if (html === null || typeof html === 'undefined') {
-      html = '';
-    } else {
-      html = '' + html;
-    }
+  if (html === null || html === undefined) {
+    html = '';
+  } else if (typeof html !== 'string') {
+    html = '' + html;
   }
-  var index, chars, match, stack = [], last = html, text;
-  stack.last = function() { return stack[stack.length - 1]; };
-
-  while (html) {
-    text = '';
-    chars = true;
-
-    // Make sure we're not in a script or style element
-    if (!stack.last() || !specialElements[stack.last()]) {
-
-      // Comment
-      if (html.indexOf("<!--") === 0) {
-        // comments containing -- are not allowed unless they terminate the comment
-        index = html.indexOf("--", 4);
-
-        if (index >= 0 && html.lastIndexOf("-->", index) === index) {
-          if (handler.comment) handler.comment(html.substring(4, index));
-          html = html.substring(index + 3);
-          chars = false;
+  baseNode.innerHTML = html;
+  var node = baseNode.firstChild;
+  while (node) {
+    switch (node.nodeType) {
+      case 1: // ELEMENT_NODE
+        handler.start(node.nodeName.toLowerCase(), attrToMap(node.attributes));
+        break;
+      case 3: // TEXT NODE
+        handler.chars(node.textContent);
+        break;
+      case 8: // COMMENT NODE
+        handler.comment(node.textContent);
+        break;
+    }
+    var nextNode;
+    if (!(nextNode = node.firstChild)) {
+      if (nextNode = node.nextSibling) {
+        if (node.nodeType == 1) {
+          handler.end(node.nodeName.toLowerCase());
         }
-      // DOCTYPE
-      } else if (DOCTYPE_REGEXP.test(html)) {
-        match = html.match(DOCTYPE_REGEXP);
-
-        if (match) {
-          html = html.replace(match[0], '');
-          chars = false;
+      } else {
+        if (node.nodeType == 1) {
+          handler.end(node.nodeName.toLowerCase());
         }
-      // end tag
-      } else if (BEGING_END_TAGE_REGEXP.test(html)) {
-        match = html.match(END_TAG_REGEXP);
-
-        if (match) {
-          html = html.substring(match[0].length);
-          match[0].replace(END_TAG_REGEXP, parseEndTag);
-          chars = false;
-        }
-
-      // start tag
-      } else if (BEGIN_TAG_REGEXP.test(html)) {
-        match = html.match(START_TAG_REGEXP);
-
-        if (match) {
-          // We only have a valid start-tag if there is a '>'.
-          if (match[4]) {
-            html = html.substring(match[0].length);
-            match[0].replace(START_TAG_REGEXP, parseStartTag);
+        while (nextNode == null) {
+          node = node.parentNode;
+          if (node === baseNode) break;
+          nextNode = node.nextSibling;
+          if (node.nodeType == 1) {
+            handler.end(node.nodeName.toLowerCase());
           }
-          chars = false;
-        } else {
-          // no ending tag found --- this piece should be encoded as an entity.
-          text += '<';
-          html = html.substring(1);
         }
       }
-
-      if (chars) {
-        index = html.indexOf("<");
-
-        text += index < 0 ? html : html.substring(0, index);
-        html = index < 0 ? "" : html.substring(index);
-
-        if (handler.chars) handler.chars(decodeEntities(text));
-      }
-
-    } else {
-      // IE versions 9 and 10 do not understand the regex '[^]', so using a workaround with [\W\w].
-      html = html.replace(new RegExp("([\\W\\w]*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'),
-        function(all, text) {
-          text = text.replace(COMMENT_REGEXP, "$1").replace(CDATA_REGEXP, "$1");
-
-          if (handler.chars) handler.chars(decodeEntities(text));
-
-          return "";
-      });
-
-      parseEndTag("", stack.last());
     }
-
-    if (html == last) {
-      throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block " +
-                                        "of html: {0}", html);
-    }
-    last = html;
+    node = nextNode;
   }
 
-  // Clean up any remaining tags
-  parseEndTag();
-
-  function parseStartTag(tag, tagName, rest, unary) {
-    tagName = angular.lowercase(tagName);
-    if (blockElements[tagName]) {
-      while (stack.last() && inlineElements[stack.last()]) {
-        parseEndTag("", stack.last());
-      }
-    }
-
-    if (optionalEndTagElements[tagName] && stack.last() == tagName) {
-      parseEndTag("", tagName);
-    }
-
-    unary = voidElements[tagName] || !!unary;
-
-    if (!unary) {
-      stack.push(tagName);
-    }
-
-    var attrs = {};
-
-    rest.replace(ATTR_REGEXP,
-      function(match, name, doubleQuotedValue, singleQuotedValue, unquotedValue) {
-        var value = doubleQuotedValue
-          || singleQuotedValue
-          || unquotedValue
-          || '';
-
-        attrs[name] = decodeEntities(value);
-    });
-    if (handler.start) handler.start(tagName, attrs, unary);
+  while (node = baseNode.firstChild) {
+    baseNode.removeChild(node);
   }
+}
 
-  function parseEndTag(tag, tagName) {
-    var pos = 0, i;
-    tagName = angular.lowercase(tagName);
-    if (tagName) {
-      // Find the closest opened tag of the same type
-      for (pos = stack.length - 1; pos >= 0; pos--) {
-        if (stack[pos] == tagName) break;
-      }
-    }
-
-    if (pos >= 0) {
-      // Close all the open elements, up the stack
-      for (i = stack.length - 1; i >= pos; i--)
-        if (handler.end) handler.end(stack[i]);
-
-      // Remove the open elements from the stack
-      stack.length = pos;
-    }
+function attrToMap(attrs) {
+  var map = {};
+  for (var i = 0, ii = attrs.length; i < ii; i++) {
+    var attr = attrs[i];
+    map[attr.name] = attr.value;
   }
+  return map;
 }
 
 var hiddenPre=document.createElement("pre");
@@ -466,7 +370,7 @@ function encodeEntities(value) {
  * create an HTML/XML writer which writes to buffer
  * @param {Array} buf use buf.jain('') to get out sanitized html string
  * @returns {object} in the form of {
- *     start: function(tag, attrs, unary) {},
+ *     start: function(tag, attrs) {},
  *     end: function(tag) {},
  *     chars: function(text) {},
  *     comment: function(text) {}
@@ -476,7 +380,7 @@ function htmlSanitizeWriter(buf, uriValidator) {
   var ignore = false;
   var out = angular.bind(buf, buf.push);
   return {
-    start: function(tag, attrs, unary) {
+    start: function(tag, attrs) {
       tag = angular.lowercase(tag);
       if (!ignore && specialElements[tag]) {
         ignore = tag;
@@ -496,25 +400,25 @@ function htmlSanitizeWriter(buf, uriValidator) {
             out('"');
           }
         });
-        out(unary ? '/>' : '>');
+        out('>');
       }
     },
     end: function(tag) {
-        tag = angular.lowercase(tag);
-        if (!ignore && validElements[tag] === true) {
-          out('</');
-          out(tag);
-          out('>');
-        }
-        if (tag == ignore) {
-          ignore = false;
-        }
-      },
-    chars: function(chars) {
-        if (!ignore) {
-          out(encodeEntities(chars));
-        }
+      tag = angular.lowercase(tag);
+      if (!ignore && validElements[tag] === true) {
+        out('</');
+        out(tag);
+        out('>');
       }
+      if (tag == ignore) {
+        ignore = false;
+      }
+    },
+    chars: function(chars) {
+      if (!ignore) {
+        out(encodeEntities(chars));
+      }
+    }
   };
 }
 
