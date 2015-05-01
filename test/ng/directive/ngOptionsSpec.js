@@ -539,7 +539,7 @@ describe('ngOptions', function() {
 
     scope.$apply('values[0].name = "X"');
 
-    var options = element.find('option');
+    options = element.find('option');
     expect(options.eq(0).prop('label')).toEqual('X');
 
   });
