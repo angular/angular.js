@@ -521,6 +521,30 @@ describe('ngOptions', function() {
   });
 
 
+  it('should update the label if only the property has changed', function() {
+    // ng-options="value.name for value in values"
+    // ng-model="selected"
+    createSingleSelect();
+
+    scope.$apply(function() {
+      scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
+      scope.selected = scope.values[0];
+    });
+
+    var options = element.find('option');
+    expect(options.eq(0).prop('label')).toEqual('A');
+    expect(options.eq(1).prop('label')).toEqual('B');
+    expect(options.eq(2).prop('label')).toEqual('C');
+
+
+    scope.$apply('values[0].name = "X"');
+
+    var options = element.find('option');
+    expect(options.eq(0).prop('label')).toEqual('X');
+
+  });
+
+
   // bug fix #9714
   it('should select the matching option when the options are updated', function() {
 
