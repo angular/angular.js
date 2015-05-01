@@ -1012,9 +1012,9 @@ describe('ngOptions', function() {
 
       expect(element.val()).toEqual(['10']);
 
-      // Update the properties on the object in the selected array, rather than replacing the whole object
+      // Update the tracked property on the object in the selected array, rather than replacing the whole object
       scope.$apply(function() {
-        scope.selected[0] = {id: 20, label: 'new twenty'};
+        scope.selected[0].id = 20;
       });
 
       // The value of the select should change since the id property changed
@@ -1154,7 +1154,7 @@ describe('ngOptions', function() {
       }).not.toThrow();
     });
 
-    it('should re-render if a propery of the model is changed when using trackBy', function() {
+    it('should re-render if the tracked property of the model is changed when using trackBy', function() {
 
       createSelect({
         'ng-model': 'selected',
@@ -1162,13 +1162,13 @@ describe('ngOptions', function() {
       });
 
       scope.$apply(function() {
-        scope.selected = scope.arr[0];
+        scope.selected = {id: 10, label: 'ten'};
       });
 
       spyOn(element.controller('ngModel'), '$render');
 
       scope.$apply(function() {
-        scope.selected.label = 'changed';
+        scope.arr[0].id = 20;
       });
 
       // update render due to equality watch
