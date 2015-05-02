@@ -819,7 +819,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *    {@link guide/directive} for more info.
    * @returns {ng.$compileProvider} Self for chaining.
    */
-   this.directive = function registerDirective(name, directiveFactory) {
+  this.directive = function registerDirective(name, directiveFactory, ngModule) {
     assertNotHasOwnProperty(name, 'directive');
     if (isString(name)) {
       assertValidDirectiveName(name);
@@ -837,6 +837,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 } else if (!directive.compile && directive.link) {
                   directive.compile = valueFn(directive.link);
                 }
+                directive.ngModule = ngModule;
                 directive.priority = directive.priority || 0;
                 directive.index = index;
                 directive.name = directive.name || name;
@@ -2299,7 +2300,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function assertNoDuplicate(what, previousDirective, directive, element) {
       if (previousDirective) {
         throw $compileMinErr('multidir', 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
-            previousDirective.name, directive.name, what, startingTag(element));
+            getDirectiveLabel(previousDirective), getDirectiveLabel(directive), what, startingTag(element));
+      }
+      
+      function getDirectiveLabel(dir) {
+        if (dir.ngModule) {
+          return dir.name + ' (module: ' + dir.ngModule.name + ')';
+        } else {
+          return dir.name;
+        }
       }
     }
 
