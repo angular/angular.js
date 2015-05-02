@@ -2113,6 +2113,7 @@ describe('$compile', function() {
         var iscope;
 
         beforeEach(module(function() {
+          var fakeModule = {name: 'fakeModule'};
           forEach(['', 'a', 'b'], function(name) {
             directive('scope' + uppercase(name), function(log) {
               return {
@@ -2125,7 +2126,7 @@ describe('$compile', function() {
                   }};
                 }
               };
-            });
+            }, fakeModule);
             directive('iscope' + uppercase(name), function(log) {
               return {
                 scope: {},
@@ -2138,7 +2139,7 @@ describe('$compile', function() {
                   };
                 }
               };
-            });
+            }, fakeModule);
             directive('tscope' + uppercase(name), function(log) {
               return {
                 scope: true,
@@ -2320,7 +2321,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function() {
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA (module: fakeModule), scopeB (module: fakeModule)] asking for new/isolated scope on: ' +
                 '<div class="iscope-a; scope-b">');
           })
         );

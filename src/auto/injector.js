@@ -722,13 +722,14 @@ function createInjector(modulesToLoad, strictDi) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);
 
-      function runInvokeQueue(queue) {
+      function runInvokeQueue(queue, moduleFn) {
         var i, ii;
         for (i = 0, ii = queue.length; i < ii; i++) {
           var invokeArgs = queue[i],
               provider = providerInjector.get(invokeArgs[0]);
-
-          provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
+          var args = Array.prototype.slice.call(invokeArgs[2]);
+          args.push(moduleFn); // add the module function here
+          provider[invokeArgs[1]].apply(provider, args);
         }
       }
 
@@ -736,8 +737,8 @@ function createInjector(modulesToLoad, strictDi) {
         if (isString(module)) {
           moduleFn = angularModule(module);
           runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
-          runInvokeQueue(moduleFn._invokeQueue);
-          runInvokeQueue(moduleFn._configBlocks);
+          runInvokeQueue(moduleFn._invokeQueue, moduleFn);
+          runInvokeQueue(moduleFn._configBlocks, moduleFn);
         } else if (isFunction(module)) {
             runBlocks.push(providerInjector.invoke(module));
         } else if (isArray(module)) {
